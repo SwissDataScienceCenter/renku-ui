@@ -15,64 +15,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
-  CheckCircleFill,
+  CircleFill,
   Pencil,
-  SlashCircleFill,
-  ThreeDotsVertical,
   Trash,
-  XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
+import { Link } from "react-router-dom-v5-compat";
 import {
   Badge,
   Button,
   Col,
   DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   Form,
   FormGroup,
   Input,
   Label,
+  ListGroupItem,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Offcanvas,
+  OffcanvasBody,
   Row,
-  UncontrolledDropdown,
 } from "reactstrap";
 
-import { Loader } from "../../../../components/Loader";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
-import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
-import { Project } from "../../../projectsV2/api/projectV2.api";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-
-import { skipToken } from "@reduxjs/toolkit/query";
+import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import {
   ErrorAlert,
   RenkuAlert,
   WarnAlert,
 } from "../../../../components/Alert";
-import dotsDropdownStyles from "../../../../components/buttons/ThreeDots.module.scss";
+import { Loader } from "../../../../components/Loader";
+import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import connectedServicesApi, {
-  useGetProvidersQuery,
-} from "../../../connectedServices/connectedServices.api";
+import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
+import {
+  connectedServicesApi,
+  useGetOauth2ProvidersQuery,
+} from "../../../connectedServices/api/connectedServices.api";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import repositoriesApi, {
   useGetRepositoryMetadataQuery,
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
-import { Link, useLocation } from "react-router-dom-v5-compat";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import { Url } from "../../../../utils/helpers/url";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 interface EditCodeRepositoryModalProps {
   project: Project;
@@ -138,11 +136,8 @@ function EditCodeRepositoryModal({
   return (
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader toggle={toggleModal}>
-          <RenkuFrogIcon className="me-2" size={30} />
-          Edit code repository
-        </ModalHeader>
-        <ModalBody className="py-0">
+        <ModalHeader toggle={toggleModal}>Edit code repository</ModalHeader>
+        <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
           <p>Specify a code repository by its URL.</p>
           <Row>
@@ -176,24 +171,25 @@ function EditCodeRepositoryModal({
               </FormGroup>
             </Col>
           </Row>
-          <ModalFooter className="px-0">
-            <Button
-              color="rk-green"
-              className={cx("float-right", "mt-1", "ms-2")}
-              data-cy="edit-code-repository-modal-button"
-              type="submit"
-            >
-              {result.isLoading ? (
-                <>
-                  <Loader className="me-1" inline size={16} />
-                  Edit code repository
-                </>
-              ) : (
-                <>Edit code repository</>
-              )}
-            </Button>
-          </ModalFooter>
         </ModalBody>
+        <ModalFooter>
+          <Button color="outline-primary" onClick={toggleModal}>
+            <XLg className={cx("bi", "me-1")} />
+            Close
+          </Button>
+          <Button
+            color="primary"
+            data-cy="edit-code-repository-modal-button"
+            type="submit"
+          >
+            {result.isLoading ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <Pencil className={cx("bi", "me-1")} />
+            )}
+            Edit code repository
+          </Button>
+        </ModalFooter>
       </Form>
     </Modal>
   );
@@ -251,7 +247,7 @@ function CodeRepositoryDeleteModal({
       <ModalHeader className="text-danger" toggle={toggleModal}>
         Remove Code Repository
       </ModalHeader>
-      <ModalBody className="py-0">
+      <ModalBody>
         <Row>
           <Col>
             {result.error && <RtkOrNotebooksError error={result.error} />}
@@ -265,35 +261,33 @@ function CodeRepositoryDeleteModal({
         </Row>
       </ModalBody>
       <ModalFooter>
-        <div className="d-flex justify-content-end">
-          <Button color="outline-danger" onClick={toggleModal}>
-            <XLg className={cx("bi", "me-1")} />
-            Cancel
-          </Button>
-          <Button
-            color="danger"
-            className={cx("float-right", "ms-2")}
-            data-cy="delete-code-repository-modal-button"
-            type="submit"
-            onClick={onDeleteCodeRepository}
-          >
-            {result.isLoading ? (
-              <>
-                <Loader className="me-2" inline size={16} />
-                Deleting code repository
-              </>
-            ) : (
-              <>
-                <Trash className={cx("bi", "me-1")} />
-                Remove repository
-              </>
-            )}
-          </Button>
-        </div>
+        <Button color="outline-danger" onClick={toggleModal}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="danger"
+          data-cy="delete-code-repository-modal-button"
+          type="submit"
+          onClick={onDeleteCodeRepository}
+        >
+          {result.isLoading ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Deleting code repository
+            </>
+          ) : (
+            <>
+              <Trash className={cx("bi", "me-1")} />
+              Remove repository
+            </>
+          )}
+        </Button>
       </ModalFooter>
     </Modal>
   );
 }
+
 function CodeRepositoryActions({
   url,
   project,
@@ -301,6 +295,8 @@ function CodeRepositoryActions({
   url: string;
   project: Project;
 }) {
+  const permissions = useProjectPermissions({ projectId: project.id });
+
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
@@ -311,121 +307,141 @@ function CodeRepositoryActions({
     setIsEditOpen((open) => !open);
   }, []);
 
+  const defaultAction = (
+    <Button
+      className="text-nowrap"
+      color="outline-primary"
+      data-cy="code-repository-edit"
+      onClick={toggleEdit}
+      size="sm"
+    >
+      <Pencil className={cx("bi", "me-1")} />
+      Edit
+    </Button>
+  );
+
   return (
-    <>
-      <UncontrolledDropdown>
-        <DropdownToggle
-          className={cx(
-            "m-0",
-            "p-0",
-            "bg-transparent",
-            "d-flex",
-            "border-0",
-            "shadow-none",
-            dotsDropdownStyles.threeDotsDark
-          )}
-          data-cy="code-repository-actions"
-        >
-          <ThreeDotsVertical size={24} className="fs-3" />
-          <span className="visually-hidden">Actions</span>
-        </DropdownToggle>
-        <DropdownMenu
-          className={cx("text-end", "mx-0", "mt-2")}
-          end
-          data-cy="code-repository-menu"
-        >
-          <DropdownItem
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "justify-content-start"
-            )}
-            onClick={toggleEdit}
-            data-cy="code-repository-edit"
+    <PermissionsGuard
+      disabled={null}
+      enabled={
+        <>
+          <ButtonWithMenuV2
+            color="outline-primary"
+            default={defaultAction}
+            preventPropagation
+            size="sm"
           >
-            <Pencil /> Edit code repository
-          </DropdownItem>
-          <DropdownItem
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "gap-2",
-              "justify-content-start"
-            )}
-            onClick={toggleDelete}
-            data-cy="code-repository-delete"
-          >
-            <Trash /> Remove code repository
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
-      <CodeRepositoryDeleteModal
-        repositoryUrl={url}
-        isOpen={isDeleteOpen}
-        toggleModal={toggleDelete}
-        project={project}
-      />
-      <EditCodeRepositoryModal
-        toggleModal={toggleEdit}
-        isOpen={isEditOpen}
-        project={project}
-        repositoryUrl={url}
-      />
-    </>
+            <DropdownItem
+              data-cy="code-repository-delete"
+              onClick={toggleDelete}
+            >
+              <Trash className={cx("bi", "me-1")} />
+              Remove
+            </DropdownItem>
+          </ButtonWithMenuV2>
+          <CodeRepositoryDeleteModal
+            repositoryUrl={url}
+            isOpen={isDeleteOpen}
+            toggleModal={toggleDelete}
+            project={project}
+          />
+          <EditCodeRepositoryModal
+            toggleModal={toggleEdit}
+            isOpen={isEditOpen}
+            project={project}
+            repositoryUrl={url}
+          />
+        </>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
   );
 }
+
 interface RepositoryItemProps {
   project: Project;
+  readonly?: boolean;
   url: string;
-  showMenu: boolean;
 }
-
 export function RepositoryItem({
-  url,
   project,
-  showMenu = true,
+  readonly = false,
+  url,
 }: RepositoryItemProps) {
+  const [showDetails, setShowDetails] = useState(false);
+  const toggleDetails = useCallback(() => {
+    setShowDetails((open) => !open);
+  }, []);
   const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
   const canonicalUrl = useMemo(
     () => safeNewUrl(canonicalUrlStr),
     [canonicalUrlStr]
   );
 
-  const title = canonicalUrl?.pathname.split("/").pop() ?? canonicalUrlStr;
+  const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
+  // ! Product team wants this restored -- keeping the code for the next iteration
+  // const urlDisplay = (
+  //   <div className={cx("d-flex", "align-items-center", "gap-2")}>
+  //     <RepositoryIcon
+  //       className="flex-shrink-0"
+  //       provider={canonicalUrl?.origin ?? window.location.origin}
+  //     />
+  //     <div className={cx("d-flex", "flex-column")}>
+  //       {canonicalUrl?.hostname && (
+  //         <span data-cy="code-repository-title">{canonicalUrl.hostname}</span>
+  //       )}
+  //       <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
+  //         {title || canonicalUrlStr}
+  //         <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
+  //       </a>
+  //     </div>
+  //   </div>
+  // );
 
-  const urlDisplay = (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <RepositoryIcon
-        className="flex-shrink-0"
-        provider={canonicalUrl?.origin ?? window.location.origin}
-      />
-      <div className={cx("d-flex", "flex-column")}>
-        {canonicalUrl?.hostname && (
-          <span data-cy="code-repository-title">{canonicalUrl.hostname}</span>
-        )}
-        <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
-          {title || canonicalUrlStr}
-          <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
-        </a>
-      </div>
-    </div>
-  );
+  const listGroupProps = !readonly
+    ? {
+        action: true,
+        className: cx(
+          !readonly && ["cursor-pointer", "link-primary", "text-body"]
+        ),
+        onClick: toggleDetails,
+      }
+    : {};
 
   return (
-    <Row className={cx("mb-4")}>
-      <Col xs={showMenu ? 8 : 10} className="text-truncate">
-        {urlDisplay}
-      </Col>
-      <Col xs={2} className="text-truncate">
-        <RepositoryPermissions repositoryUrl={url} />
-      </Col>
-      {showMenu && (
-        <Col xs={2} className={cx("d-flex", "justify-content-end")}>
-          <CodeRepositoryActions project={project} url={url} />
-        </Col>
+    <>
+      <ListGroupItem {...listGroupProps} data-cy="code-repository-item">
+        <Row className={cx("align-items-center", "g-2")}>
+          <Col className={cx("align-items-center", "flex-row")}>
+            <div>
+              <span className={cx("me-2", !readonly && "fw-bold")}>
+                {title || canonicalUrlStr || (
+                  <span className="fwd-italic">Unknown repository</span>
+                )}
+              </span>
+              <RepositoryPermissions repositoryUrl={url} />
+            </div>
+          </Col>
+          {!readonly && (
+            <>
+              <Col xs={12} sm="auto" className="ms-auto">
+                <CodeRepositoryActions project={project} url={url} />
+              </Col>
+            </>
+          )}
+        </Row>
+      </ListGroupItem>
+      {!readonly && (
+        <RepositoryView
+          project={project}
+          repositoryUrl={url}
+          showDetails={showDetails}
+          title={title}
+          toggleDetails={toggleDetails}
+        />
       )}
-    </Row>
+    </>
   );
 }
 
@@ -435,18 +451,22 @@ interface RepositoryIconProps {
 }
 
 function RepositoryIcon({ className, provider }: RepositoryIconProps) {
-  if (provider == null) {
+  const iconUrl = useMemo(
+    // eslint-disable-next-line spellcheck/spell-checker
+    () => (provider != null ? safeNewUrl("/favicon.ico", provider) : null),
+    [provider]
+  );
+
+  if (iconUrl == null) {
     return null;
   }
 
-  // eslint-disable-next-line spellcheck/spell-checker
-  const iconUrl = new URL("/favicon.ico", provider);
   return (
     <img
       className={className}
       src={iconUrl.toString()}
-      width={24}
-      height={24}
+      width={16}
+      height={16}
     />
   );
 }
@@ -483,72 +503,50 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
     repositoryProviderMatch?.repository_metadata?.permissions,
   ]);
 
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const toggleDetails = useCallback(() => {
-    setIsDetailsOpen((open) => !open);
-  }, []);
-
-  const commonButtonClasses = [
-    "border",
-    "rounded-circle",
-    "fs-6",
-    "lh-1",
-    "p-2",
-  ];
-
-  const buttonContent = isLoading ? (
-    <Loader className="bi" inline size={16} />
-  ) : permissions.pull && permissions.push ? (
-    <CheckCircleFill className="bi" />
-  ) : permissions.pull ? (
-    <SlashCircleFill className="bi" />
+  const badgeIcon = isLoading ? (
+    <Loader className="me-1" inline size={12} />
   ) : (
-    <XCircleFill className="bi" />
+    <CircleFill className={cx("me-1", "bi")} />
   );
 
-  const buttonClasses = isLoading
-    ? ["border-dark-subtle", "bg-light", "text-dark"]
-    : permissions.pull && permissions.push
-    ? ["border-success", "bg-success-subtle", "text-success"]
+  const badgeText = isLoading
+    ? null
+    : permissions.push
+    ? "Push & pull"
     : permissions.pull
-    ? ["border-warning", "bg-warning-subtle", "text-warning"]
-    : ["border-danger", "bg-danger-subtle", "text-danger"];
+    ? "Pull only"
+    : "No access";
+
+  const badgeColorClasses = isLoading
+    ? ["border-dark-subtle", "bg-light", "text-dark-emphasis"]
+    : permissions.push
+    ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
+    : permissions.pull
+    ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
+    : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
 
   return (
-    <>
-      <Button
-        className={cx(...commonButtonClasses, ...buttonClasses)}
-        onClick={toggleDetails}
-        title="View repository permissions"
-      >
-        {buttonContent}
-        <span className="visually-hidden">View repository permissions</span>
-      </Button>
-      <Modal
-        size="lg"
-        fullscreen="sm"
-        isOpen={isDetailsOpen}
-        toggle={toggleDetails}
-        centered
-      >
-        <ModalHeader toggle={toggleDetails}>Repository permissions</ModalHeader>
-        <RepositoryPermissionsModalContent repositoryUrl={repositoryUrl} />
-        <ModalFooter>
-          <div className="d-flex justify-content-end">
-            <Button color="outline-danger" onClick={toggleDetails}>
-              <XLg className={cx("bi", "me-1")} />
-              Close
-            </Button>
-          </div>
-        </ModalFooter>
-      </Modal>
-    </>
+    <Badge pill className={cx("border", badgeColorClasses)}>
+      {badgeIcon}
+      {badgeText && <span className="fw-normal">{badgeText}</span>}
+    </Badge>
   );
 }
 
-function RepositoryPermissionsModalContent({
+interface RepositoryViewProps {
+  project: Project;
+  repositoryUrl: string;
+  showDetails: boolean;
+  title: string;
+  toggleDetails: () => void;
+}
+function RepositoryView({
+  project,
   repositoryUrl,
-}: RepositoryPermissionsProps) {
+  showDetails,
+  title,
+  toggleDetails,
+}: RepositoryViewProps) {
   const {
     data: repositoryProviderMatch,
     isLoading: isLoadingRepositoryProviderMatch,
@@ -557,7 +555,7 @@ function RepositoryPermissionsModalContent({
     repositoryUrl,
   });
   const { isLoading: isLoadingProviders, error: providersError } =
-    useGetProvidersQuery();
+    useGetOauth2ProvidersQuery();
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
@@ -588,68 +586,119 @@ function RepositoryPermissionsModalContent({
     () => `${repositoryUrl.replace(/.git$/i, "")}`,
     [repositoryUrl]
   );
+  const canonicalUrl = useMemo(
+    () => safeNewUrl(canonicalUrlStr),
+    [canonicalUrlStr]
+  );
 
   return (
-    <ModalBody>
-      <Row className="gy-2">
-        <Col xs={12}>
-          Repository:{" "}
-          <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
-            {repositoryUrl}
-            <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
-          </a>
-        </Col>
-        {providersError && (
-          <Col xs={12}>
-            <RtkOrNotebooksError error={providersError} dismissible={false} />
-          </Col>
-        )}
-        {error && !isNotFound && (
-          <Col xs={12}>
-            <RtkOrNotebooksError error={error} dismissible={false} />
-          </Col>
-        )}
-        {!isLoading && !permissions.push && (
-          <Col xs={12}>
-            <RepositoryPermissionsAlert repositoryUrl={repositoryUrl} />
-          </Col>
-        )}
-        <Col xs={12}>
-          <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Permissions</h6>
-        </Col>
-        <Col className="mt-0" xs={12} sm={6}>
-          Clone, Pull:{" "}
-          {isLoading ? (
-            <Loader className="bi" inline size={16} />
-          ) : permissions.pull ? (
-            <YesBadge />
-          ) : (
-            <NoBadge />
-          )}
-        </Col>
-        <Col className={cx("mt-1", "mt-sm-0")} xs={12} sm={6}>
-          Push:{" "}
-          {isLoading ? (
-            <Loader className="bi" inline size={16} />
-          ) : permissions.push ? (
-            <YesBadge />
-          ) : (
-            <NoBadge />
-          )}
-        </Col>
-        <Col xs={12}>
-          <RepositoryProviderDetails repositoryUrl={repositoryUrl} />
-        </Col>
-      </Row>
-    </ModalBody>
+    <Offcanvas
+      key={`data-source-details-${repositoryUrl}`}
+      toggle={toggleDetails}
+      isOpen={showDetails}
+      direction="end"
+      backdrop={true}
+    >
+      <OffcanvasBody>
+        <div className="mb-3">
+          <button
+            aria-label="Close"
+            className="btn-close"
+            data-bs-dismiss="offcanvas"
+            onClick={toggleDetails}
+          ></button>
+        </div>
+
+        <div>
+          <div className="mb-4">
+            <div>
+              <div className={cx("float-end", "mt-1", "ms-1")}>
+                <CodeRepositoryActions project={project} url={repositoryUrl} />
+              </div>
+              <h2
+                className={cx("m-0", "text-break")}
+                data-cy="data-source-title"
+              >
+                {title}
+              </h2>
+            </div>
+            <p className={cx("fst-italic", "m-0")}>Code repository</p>
+          </div>
+
+          <div className={cx("d-flex", "flex-column", "gap-3")}>
+            <div>
+              <h5>Repository</h5>
+              <p className="mb-0">
+                URL:{" "}
+                <a
+                  href={canonicalUrlStr}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {repositoryUrl}
+                  <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
+                </a>
+              </p>
+            </div>
+            {canonicalUrl && (
+              <p className="mb-0">
+                From:{" "}
+                <RepositoryIcon
+                  className="me-1"
+                  provider={canonicalUrl?.origin}
+                />
+                <span data-cy="code-repository-title">
+                  {canonicalUrl?.hostname}
+                </span>
+              </p>
+            )}
+            {providersError && (
+              <RtkOrNotebooksError error={providersError} dismissible={false} />
+            )}
+            {error && !isNotFound && (
+              <RtkOrNotebooksError error={error} dismissible={false} />
+            )}
+            {!isLoading && !permissions.push && (
+              <RepositoryPermissionsAlert repositoryUrl={repositoryUrl} />
+            )}
+            <div>
+              <h5>Permissions</h5>
+              <Row>
+                <Col xs={6}>
+                  Clone, Pull:{" "}
+                  {isLoading ? (
+                    <Loader className="bi" inline size={12} />
+                  ) : permissions.pull ? (
+                    <YesBadge />
+                  ) : (
+                    <NoBadge />
+                  )}
+                </Col>
+                <Col xs={6}>
+                  Push:{" "}
+                  {isLoading ? (
+                    <Loader className="bi" inline size={12} />
+                  ) : permissions.push ? (
+                    <YesBadge />
+                  ) : (
+                    <NoBadge />
+                  )}
+                </Col>
+              </Row>
+            </div>
+            <Col xs={12}>
+              <RepositoryProviderDetails repositoryUrl={repositoryUrl} />
+            </Col>
+          </div>
+        </div>
+      </OffcanvasBody>
+    </Offcanvas>
   );
 }
 
 function RepositoryPermissionsAlert({
   repositoryUrl,
 }: RepositoryPermissionsProps) {
-  const location = useLocation();
-
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
@@ -659,7 +708,7 @@ function RepositoryPermissionsAlert({
       repositoryUrl,
     });
   const { data: providers } =
-    connectedServicesApi.endpoints.getProviders.useQueryState();
+    connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
@@ -698,9 +747,7 @@ function RepositoryPermissionsAlert({
       ? "connected"
       : "not-connected";
 
-  const loginUrl = Url.get(Url.pages.login.link, {
-    pathname: location.pathname,
-  });
+  const loginUrl = useLoginUrl();
 
   if (error && isNotFound) {
     const color = permissions.pull ? "warning" : "danger";
@@ -738,8 +785,8 @@ function RepositoryPermissionsAlert({
           </p>
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              You need to <Link to={loginUrl}>log in</Link> to perform pushes on
-              git repositories.
+              You need to <a href={loginUrl.href}>log in</a> to perform pushes
+              on git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
@@ -765,8 +812,8 @@ function RepositoryPermissionsAlert({
           </p>
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              You need to <Link to={loginUrl}>log in</Link> to perform pushes on
-              git repositories.
+              You need to <a href={loginUrl.href}>log in</a> to perform pushes
+              on git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
@@ -792,15 +839,12 @@ function YesBadge() {
       className={cx(
         "border",
         "rounded-pill",
-        "fs-6",
-        "lh-1",
-        "p-2",
         "border-success",
         "bg-success-subtle",
-        "text-success"
+        "text-success-emphasis"
       )}
     >
-      <CheckCircleFill className={cx("bi", "me-1")} />
+      <CircleFill className={cx("bi", "me-1")} />
       Yes
     </Badge>
   );
@@ -812,15 +856,12 @@ function NoBadge() {
       className={cx(
         "border",
         "rounded-pill",
-        "fs-6",
-        "lh-1",
-        "p-2",
         "border-danger",
         "bg-danger-subtle",
-        "text-danger"
+        "text-danger-emphasis"
       )}
     >
-      <XCircleFill className={cx("bi", "me-1")} />
+      <CircleFill className={cx("bi", "me-1")} />
       No
     </Badge>
   );
@@ -844,7 +885,7 @@ function RepositoryProviderDetails({
     data: providers,
     isLoading: isLoadingProviders,
     error: providersError,
-  } = connectedServicesApi.endpoints.getProviders.useQueryState();
+  } = connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
 
   const isLoading = isLoadingRepositoryProviderMatch || isLoadingProviders;
   const error = repositoryProviderMatchError ?? providersError;
@@ -890,11 +931,11 @@ function RepositoryProviderDetails({
 
   if (provider) {
     return (
-      <>
-        <h6 className={cx("fs-5", "fw-bold", "mb-0")}>Git Provider</h6>
-        <p className="mb-0">{provider.display_name}</p>
-        <p className="mb-0">Status: {status}</p>
-      </>
+      <div>
+        <h5>Git provider</h5>
+        <p className="mb-2">{provider.display_name}</p>
+        <p>Status: {status}</p>
+      </div>
     );
   }
 

@@ -16,32 +16,31 @@
  * limitations under the License.
  */
 
-import type {
-  DockerImageStatus,
-  SessionEnvironmentVariable,
-} from "../session/startSessionOptions.types";
-import type { CloudStorageGetRead } from "../projectsV2/api/storagesV2.api";
+import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
+import type { DataConnectorRead } from "../dataConnectorsV2/api/data-connectors.api";
 
-export interface SessionStartCloudStorageConfiguration {
+export interface SessionStartDataConnectorConfiguration {
   active: boolean;
-  cloudStorage: CloudStorageGetRead;
+  dataConnector: DataConnectorRead;
   sensitiveFieldDefinitions: {
     friendlyName: string;
     help: string;
     name: string;
   }[];
   sensitiveFieldValues: Record<string, string>;
+  saveCredentials: boolean;
+  savedCredentialFields: string[];
 }
 
 export interface StartSessionOptionsV2 {
-  cloudStorage: SessionStartCloudStorageConfiguration[];
+  cloudStorage?: SessionStartDataConnectorConfiguration[];
   defaultUrl: string;
-  dockerImageStatus: DockerImageStatus;
   environmentVariables: SessionEnvironmentVariable[];
   lfsAutoFetch: boolean;
   repositories: SessionRepository[];
   sessionClass: number;
   storage: number;
+  userSecretsReady: boolean;
 }
 
 export interface SessionRepository {

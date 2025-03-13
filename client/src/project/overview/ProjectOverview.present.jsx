@@ -296,7 +296,7 @@ class OverviewCommitsBody extends Component {
     this.setState({ currentPage: newPage });
     const currentSearch = qs.parse(this.props.location.search);
     const newSearch = qs.stringify({ ...currentSearch, page: newPage });
-    this.props.history.push({
+    this.props.navigate({
       pathname: this.props.location.pathname,
       search: newSearch,
     });

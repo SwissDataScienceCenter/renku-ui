@@ -4,11 +4,13 @@
  */
 
 // import { useHistory, useRouteMatch } from "react-router";
+import { useLocation, useNavigate, useMatch } from "react-router-dom-v5-compat";
+
 import ProjectV1 from "./Project";
 import AppContext from "../utils/context/appContext";
 import { useContext, useEffect, useMemo } from "react";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
-import { useLocation, useMatch, useNavigate } from "react-router-dom-v5-compat";
+// import { useLocation, useMatch, useNavigate } from "react-router-dom-v5-compat";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { useRouteMatch } from "react-router";
 
@@ -49,6 +51,21 @@ function ProjectView() {
       navigate={navigate}
       // match={match}
       subUrl={subUrl}
+      // function ProjectView(props: ProjectViewProps) {
+      //   const location = useLocation();
+      //   const navigate = useNavigate();
+
+      //   return (
+      //     <ProjectV1.View
+      //       client={props.client}
+      //       params={props.params}
+      //       model={props.model}
+      //       user={props.user}
+      //       blockAnonymous={props.blockAnonymous}
+      //       notifications={props.notifications}
+      //       socket={props.socket}
+      //       location={location}
+      //       navigate={navigate}
     />
   );
 }

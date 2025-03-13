@@ -26,15 +26,16 @@ import {
   Container,
   Row,
 } from "reactstrap";
-
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { ErrorLabel } from "../../components/formlabels/FormLabels";
 import type {
-  SessionEnvironment,
-  SessionEnvironmentList,
-} from "../sessionsV2/sessionsV2.types";
+  Environment as SessionEnvironment,
+  EnvironmentList as SessionEnvironmentList,
+} from "../sessionsV2/api/sessionLaunchersV2.api";
+import { safeStringify } from "../sessionsV2/session.utils";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
@@ -42,8 +43,8 @@ import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
 
 export default function SessionEnvironmentsSection() {
   return (
-    <section className="mt-5">
-      <h2 className="fs-5">Session Environments - Renku 1.0</h2>
+    <section className="mt-4">
+      <h2 className="fs-4">Session Environments - Renku 2.0</h2>
       <SessionEnvironments />
     </section>
   );
@@ -107,8 +108,20 @@ interface SessionEnvironmentDisplayProps {
 function SessionEnvironmentDisplay({
   environment,
 }: SessionEnvironmentDisplayProps) {
-  const { container_image, creation_date, name, default_url, description } =
-    environment;
+  const {
+    container_image,
+    creation_date,
+    name,
+    default_url,
+    description,
+    port,
+    gid,
+    uid,
+    working_directory,
+    mount_directory,
+    command,
+    args,
+  } = environment;
 
   return (
     <Col className={cx("col-12", "col-sm-6")}>
@@ -135,6 +148,28 @@ function SessionEnvironmentDisplay({
               </i>
             )}
           </CardText>
+          <CardText className="mb-0">
+            Mount directory: <code>{mount_directory}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Work directory: <code>{working_directory}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Port: <code>{port}</code>
+          </CardText>
+          <CardText className="mb-0">
+            GID: <code>{gid}</code>
+          </CardText>
+          <CardText className="mb-0">
+            UID: <code>{uid}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Command:{" "}
+            <EnvironmentCode value={command ? safeStringify(command) : "-"} />
+          </CardText>
+          <CardText className="mb-0">
+            Args: <EnvironmentCode value={args ? safeStringify(args) : "-"} />
+          </CardText>
           <CardText>
             <TimeCaption
               datetime={creation_date}
@@ -151,4 +186,9 @@ function SessionEnvironmentDisplay({
       </Card>
     </Col>
   );
+}
+
+function EnvironmentCode({ value }: { value: string | null }) {
+  if (value === null) return <ErrorLabel text={"Invalid JSON array value"} />;
+  return <code>{value}</code>;
 }

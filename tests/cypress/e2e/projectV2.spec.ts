@@ -25,86 +25,56 @@ describe("Add new v2 project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects();
-    fixtures.createProjectV2().listNamespaceV2().readProjectV2();
+    fixtures
+      .createProjectV2({
+        slug,
+        namespace: "user1-uuid",
+      })
+      .listNamespaceV2()
+      .readProjectV2();
     cy.visit("/v2/projects/new");
   });
 
   it("create a new project", () => {
-    cy.contains("New Project (V2)").should("be.visible");
+    cy.contains("Create a new project").should("be.visible");
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
-    cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.wait("@listNamespaceV2");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
-      .first()
-      .click(); // click on first option
-    cy.contains("Set Visibility").click();
-    cy.contains("Add repositories").click();
-    cy.getDataCy("project-add-repository").click();
-    cy.getDataCy("project-repository-input-0")
-      .clear()
-      .type("https://domain.name/repo1.git");
-    cy.contains("button", "Review").click();
-    cy.contains("button", "Create").click();
-
-    cy.wait("@createProjectV2");
-    cy.location("pathname").should("eq", `/v2/projects/user1.uuid/${slug}`);
-  });
-
-  it("keeps namespace set after going back", () => {
-    cy.contains("New Project (V2)").should("be.visible");
-    cy.getDataCy("project-name-input").clear().type(newProjectTitle);
+    cy.getDataCy("project-slug-toggle").click();
     cy.getDataCy("project-slug-input").should("have.value", slug);
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
-    cy.contains("user1.uuid").should("exist");
-    cy.contains("Set Visibility").click();
-    cy.get(".rk-forms").contains("Back").click();
-    cy.contains("user1.uuid").should("exist");
+    cy.contains("Visibility").click();
+    cy.contains("button", "Create").click();
+
+    cy.wait("@createProjectV2");
+    cy.location("pathname").should("eq", `/v2/projects/user1-uuid/${slug}`);
   });
 
   it("prevents invalid input", () => {
-    cy.contains("button", "Set Visibility").click();
-    cy.contains("Please provide a name").should("be.visible");
+    cy.contains("Name").should("be.visible");
+    cy.contains("Owner").should("be.visible");
+    cy.contains("Visibility").should("be.visible");
+    cy.contains("Description").should("be.visible");
+
+    cy.getDataCy("project-slug-toggle").click();
     cy.getDataCy("project-name-input").clear().type(newProjectTitle);
     cy.getDataCy("project-slug-input").clear().type(newProjectTitle);
-    cy.contains("button", "Set Visibility").click();
+    cy.getDataCy("project-create-button").click();
     cy.contains(
-      "Please provide a slug consisting of lowercase letters, numbers, and hyphens."
+      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'."
     ).should("be.visible");
-    cy.contains("A project must belong to a namespace.").should("be.visible");
+
     cy.getDataCy("project-slug-input").clear().type(slug);
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       .first()
       .click();
-    cy.contains("Set Visibility").click();
-
-    cy.contains("Define access").should("be.visible");
     cy.getDataCy("project-visibility-public").click();
-    cy.contains("button", "Add repositories").click();
-
-    cy.contains("button", "Review").click();
-    cy.contains("button", "Back").click();
-    cy.getDataCy("project-add-repository").click();
-    cy.contains("button", "Review").click();
-    cy.contains("Please provide a valid URL or remove the repository").should(
-      "be.visible"
-    );
-    cy.getDataCy("project-repository-input-0")
-      .clear()
-      .type("https://domain.name/repo1.git");
-
-    cy.contains("button", "Review").click();
-    cy.contains(newProjectTitle).should("be.visible");
-    cy.contains(slug).should("be.visible");
-    cy.contains("public").should("be.visible");
-    cy.contains("https://domain.name/repo1.git").should("be.visible");
 
     cy.contains("button", "Create").click();
     cy.wait("@createProjectV2");
-    cy.location("pathname").should("eq", `/v2/projects/user1.uuid/${slug}`);
+    cy.location("pathname").should("eq", `/v2/projects/user1-uuid/${slug}`);
   });
 });
 
@@ -115,34 +85,9 @@ describe("Add new v2 project -- not logged in", () => {
   });
 
   it("create a new project", () => {
-    cy.contains("Please log in to create a project").should("be.visible");
-  });
-});
-
-describe("List v2 project", () => {
-  beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects().listProjectV2();
-    cy.visit("/v2/projects");
-  });
-
-  it("list projects", () => {
-    cy.contains("List Projects (V2)").should("be.visible");
-  });
-
-  it("list projects with pagination", () => {
-    fixtures.listManyProjectV2();
-    cy.wait("@listProjectV2");
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.get("ul.rk-search-pagination").should("be.visible");
-  });
-
-  it("shows projects", () => {
-    fixtures.readProjectV2();
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.contains("test 2 v2-project").should("be.visible").click();
-    cy.wait("@readProjectV2");
-    cy.contains("test 2 v2-project").should("be.visible");
+    cy.contains("Only authenticated users can create new projects.").should(
+      "be.visible"
+    );
   });
 });
 
@@ -169,8 +114,8 @@ describe("Navigate to project", () => {
     fixtures.listProjectV2Members().readProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.contains("user1@email.com").should("be.visible");
-    cy.contains("user3-uuid").should("be.visible");
+    cy.contains("user 1").should("be.visible");
+    cy.contains("user 3").should("be.visible");
   });
 
   it("show project information", () => {
@@ -183,8 +128,32 @@ describe("Navigate to project", () => {
       "contain.text",
       "Project 2 description"
     );
-    cy.getDataCy("project-visibility").should("contain.text", "Public");
-    cy.getDataCy("project-namespace").should("contain.text", "user1-uuid");
+    cy.getDataCy("project-info-card").contains("public");
+    cy.getDataCy("project-info-card").contains("user1-uuid");
+    cy.getDataCy("project-documentation-text").should("be.visible");
+    cy.getDataCy("project-documentation-text")
+      .contains(
+        "A description of this project, supporting markdown and math symbols"
+      )
+      .should("be.visible");
+    cy.getDataCy("project-documentation-edit").should("not.exist");
+  });
+
+  it("show project empty documentation", () => {
+    fixtures.readProjectV2({
+      overrides: {
+        documentation: undefined,
+      },
+    });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    // check project data
+    cy.getDataCy("project-documentation-text").should("be.visible");
+    cy.getDataCy("project-documentation-text")
+      .contains(
+        "Describe your project, so others can understand what it does and how to use it."
+      )
+      .should("be.visible");
   });
 
   it("shows at most 5 members, owners first", () => {
@@ -198,11 +167,11 @@ describe("Navigate to project", () => {
     cy.contains("User One").should("be.visible");
     cy.contains("User Two").should("be.visible");
     cy.contains("User Three").should("be.visible");
-    cy.contains("user4@email.com").should("be.visible");
+    cy.contains("User Four").should("be.visible");
     cy.contains("user5-uuid").should("not.exist");
-    cy.contains("user6-uuid").should("be.visible");
+    cy.contains("UserSix").should("be.visible");
     cy.contains("All members").should("be.visible").click();
-    cy.contains("user5-uuid").should("be.visible");
+    cy.contains("@user5").should("be.visible");
   });
 });
 
@@ -215,34 +184,37 @@ describe("Edit v2 project", () => {
       .dataServicesUser({
         response: {
           id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
           email: "user1@email.com",
         },
       })
       .namespaces()
+      .getProjectV2Permissions()
       .listProjectV2Members()
       .projects()
       .landingUserProjects()
       .listProjectV2();
-    cy.visit("/v2/projects");
+    cy.visit("/v2");
   });
 
   it("changes project metadata", () => {
     fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy("project-card")
+    cy.contains("My projects").should("be.visible");
+    cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
       .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").should("be.visible").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
     cy.getDataCy("project-name-input").clear().type("new name");
     cy.getDataCy("project-description-input").clear().type("new description");
+    cy.getDataCy("project-template").click();
     fixtures.readProjectV2({
       fixture: "projectV2/update-projectV2-metadata.json",
       name: "readPostUpdate",
     });
-    cy.get("button").contains("Update project").should("be.visible").click();
+    cy.getDataCy("project-update-button").should("be.visible").click();
     cy.wait("@updateProjectV2");
     cy.wait("@readPostUpdate");
     cy.contains("The project has been successfully updated.").should(
@@ -251,18 +223,55 @@ describe("Edit v2 project", () => {
     cy.contains("new name").should("be.visible");
   });
 
+  it("changes project documentation", () => {
+    fixtures.readProjectV2().updateProjectV2().listNamespaceV2();
+    cy.contains("My projects").should("be.visible");
+    cy.getDataCy("dashboard-project-list")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
+    cy.wait("@readProjectV2");
+    cy.getDataCy("project-documentation-edit").click();
+    cy.getDataCy("project-documentation-modal-body")
+      .contains(
+        "A description of this project, supporting **markdown** and math symbols"
+      )
+      .should("be.visible");
+    const newDescription =
+      "# Heading\nA new description with **bold** and _italics_.";
+    cy.getDataCy("project-documentation-modal-body")
+      .find("#documentation-text-area")
+      .click()
+      .clear()
+      .type(newDescription);
+    cy.getDataCy("project-documentation-modal-body")
+      .find("#documentation-text-area")
+      .contains("A new description with **bold**")
+      .should("be.visible");
+    cy.getDataCy("documentation-display-mode-preview").click();
+    cy.getDataCy("project-documentation-modal-body")
+      .contains("A new description with bold")
+      .should("be.visible");
+    cy.getDataCy("project-documentation-modal-footer").contains("Save").click();
+    cy.getDataCy("project-documentation-modal-body").should("not.be.visible");
+  });
+
   it("changes project namespace", () => {
-    fixtures.readProjectV2().updateProjectV2().listManyNamespaceV2();
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy("project-card")
+    fixtures
+      .readProjectV2()
+      .updateProjectV2()
+      .listManyNamespaceV2()
+      .readUserV2Namespace();
+    cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
       .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").should("be.visible").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
     // Fetch the second page of namespaces
     cy.wait("@listNamespaceV2");
+    cy.wait("@readUserV2Namespace");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select");
     cy.get("button").contains("Fetch more").click();
     // Need to click away so the dropdown option selection works
@@ -270,14 +279,14 @@ describe("Edit v2 project", () => {
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions("project-namespace-input", "namespace-select")
       // Pick an element from the second page of results
-      .eq(25)
+      .contains("test-25-group-v2")
       .click();
     fixtures.readProjectV2({
       fixture: "projectV2/update-projectV2-metadata.json",
       name: "readPostUpdate",
       namespace: "test-25-group-v2",
     });
-    cy.get("button").contains("Update project").should("be.visible").click();
+    cy.getDataCy("project-update-button").should("be.visible").click();
     cy.wait("@updateProjectV2");
     cy.wait("@readPostUpdate");
     cy.contains("new name").should("be.visible");
@@ -287,15 +296,13 @@ describe("Edit v2 project", () => {
     fixtures.readProjectV2().updateProjectV2({
       fixture: "projectV2/update-projectV2-repositories.json",
     });
-    cy.contains("List Projects (V2)").should("be.visible");
-    cy.getDataCy("project-card")
+    cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
       .click();
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("add-repository").click();
-    cy.contains("Connect an existing repository").click();
+    cy.getDataCy("add-code-repository").click();
     cy.getDataCy("project-add-repository-url").type(
       "https://domain.name/repo3.git"
     );
@@ -314,117 +321,63 @@ describe("Edit v2 project", () => {
 
   it("remove project members", () => {
     const projectMemberToRemove = "user3-uuid";
-    fixtures
-      .exactUser({
-        name: "getExactUserSuccess",
-        exactEmailQueryString: "foo%40bar.com",
-        response: [
-          {
-            id: "user-id",
-            email: "foo@bar.com",
-            first_name: "Foo",
-            last_name: "Bar",
-          },
-        ],
-      })
-      .exactUser({
-        name: "getExactUserFail",
-        exactEmailQueryString: "noone%40bar.com",
-        response: [],
-      })
-      .listProjectV2Members()
-      .readProjectV2();
+    fixtures.listProjectV2Members().readProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
-    cy.contains("user3-uuid").should("be.visible");
+    cy.contains("@user3").should("be.visible");
     fixtures
       .deleteProjectV2Member({ memberId: projectMemberToRemove })
       .listProjectV2Members({ removeMemberId: projectMemberToRemove });
     cy.getDataCy("project-member-actions-1")
-      .find('[data-cy="more-menu"]')
+      .find('[data-cy="button-with-menu-dropdown"]')
       .click();
     cy.getDataCy("project-member-actions-1").contains("Remove").click();
     cy.getDataCy("remove-member-form").should("be.visible");
     cy.contains("Remove member").should("be.visible").click();
-    cy.getDataCy("remove-member-form").should("not.be.visible");
-    cy.contains("user3-uuid").should("not.exist");
+    cy.contains("@user3").should("not.exist");
   });
 
   it("adds project members", () => {
     fixtures
-      .exactUser({
-        name: "getExactUserSuccess",
-        exactEmailQueryString: "foo%40bar.com",
-        response: [
-          {
-            id: "user-id",
-            email: "foo@bar.com",
-            first_name: "Foo",
-            last_name: "Bar",
-          },
-        ],
-      })
-      .exactUser({
-        name: "getExactUserFail",
-        exactEmailQueryString: "noone%40bar.com",
-        response: [],
-      })
       .listProjectV2Members()
+      .searchV2ListProjects({ numberOfProjects: 0, numberOfUsers: 5 })
       .readProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
-    cy.contains("user1@email.com").should("be.visible");
+    cy.contains("user 1").should("be.visible");
 
     cy.getDataCy("project-add-member").click();
-    cy.getDataCy("add-project-member-email").clear().type("foo@bar.com");
-    cy.contains("Lookup").should("be.visible").click();
-    cy.wait("@getExactUserSuccess");
+    cy.getDataCy("add-project-member").type("foo");
+    cy.contains("Foo_1001").should("be.visible").click();
     fixtures.patchProjectV2Member().listProjectV2Members({
       addMember: {
-        id: "foo-id",
-        email: "foo@bar.com",
-        role: "editor",
+        id: "id_1001",
+        role: "member",
+        first_name: "Foo_1001",
+        last_name: "Bar_1001",
+        namespace: "FooBar_1001",
       },
     });
     cy.get("button").contains("Add Member").should("be.visible").click();
-    cy.contains("foo@bar.com").should("be.visible");
+    cy.contains("@FooBar_1001").should("be.visible");
   });
 
   it("cannot add non-existent user", () => {
     fixtures
-      .exactUser({
-        name: "getExactUserSuccess",
-        exactEmailQueryString: "foo%40bar.com",
-        response: [
-          {
-            id: "user-id",
-            email: "foo@bar.com",
-            first_name: "Foo",
-            last_name: "Bar",
-          },
-        ],
-      })
-      .exactUser({
-        name: "getExactUserFail",
-        exactEmailQueryString: "noone%40bar.com",
-        response: [],
-      })
       .listProjectV2Members()
+      .searchV2ListProjects({ numberOfProjects: 0, numberOfUsers: 5 })
       .readProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
-    cy.contains("user1@email.com").should("be.visible");
+    cy.contains("user1").should("be.visible");
 
     // Try to add a user
     cy.getDataCy("project-add-member").click();
-    cy.getDataCy("add-project-member-email").clear().type("noone@bar.com");
-    cy.contains("Lookup").should("be.visible").click();
-    cy.wait("@getExactUserFail");
-    cy.contains("No user found for noone@bar.com").should("be.visible");
-    cy.getDataCy("user-lookup-close-button").should("be.visible").click();
+    cy.getDataCy("add-project-member").type("none");
+    cy.contains("0 users found.").should("be.visible");
   });
 
   it("edits project members", () => {
@@ -434,16 +387,19 @@ describe("Edit v2 project", () => {
       .readProjectV2()
       .patchProjectV2Member({ memberId: projectMemberToEdit });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
-    cy.contains(projectMemberToEdit).should("be.visible");
-    cy.getDataCy("project-member-edit-1").should("be.visible").click();
+    cy.contains("@user3").should("be.visible");
+    cy.getDataCy("project-member-edit-2").should("be.visible").click();
     cy.getDataCy("member-role").select("Viewer");
     fixtures.listProjectV2Members({
       removeMemberId: projectMemberToEdit,
       addMember: {
         id: projectMemberToEdit,
         role: "viewer",
+        first_name: "Foo_1001",
+        last_name: "Bar_1001",
+        namespace: "FooBar_1001",
       },
     });
     cy.contains("button", "Change access").click();
@@ -456,9 +412,9 @@ describe("Edit v2 project", () => {
       .readProjectV2()
       .patchProjectV2Member({ memberId: projectMemberToEdit });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
-    cy.contains("user1@email.com").should("be.visible");
+    cy.contains("user 1").should("be.visible");
     cy.getDataCy("project-member-edit-0").should("be.disabled");
   });
 
@@ -471,11 +427,11 @@ describe("Edit v2 project", () => {
       .readProjectV2()
       .patchProjectV2Member({ memberId: projectMemberToEdit });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings#members");
-    cy.contains("Members of the project").should("be.visible");
+    cy.contains("Project Members").should("be.visible");
     cy.wait("@readProjectV2");
     cy.getDataCy("project-member-edit-0").should("be.enabled");
     cy.getDataCy("project-member-edit-1").should("be.enabled");
-    cy.getDataCy("project-member-edit-1").should("be.visible").click();
+    cy.getDataCy("project-member-edit-0").should("be.visible").click();
     cy.getDataCy("member-role").select("Viewer");
     fixtures.listProjectV2Members({
       fixture: "projectV2/list-projectV2-members-many.json",
@@ -483,6 +439,9 @@ describe("Edit v2 project", () => {
       addMember: {
         id: projectMemberToEdit,
         role: "viewer",
+        first_name: "Foo_1001",
+        last_name: "Bar_1001",
+        namespace: "FooBar_1001",
       },
     });
     cy.contains("button", "Change access").click();
@@ -493,7 +452,6 @@ describe("Edit v2 project", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project/settings");
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.get("a").contains("Delete").should("be.visible").click();
     cy.get("button")
       .contains("Delete project")
       .should("be.visible")
@@ -509,7 +467,7 @@ describe("Edit v2 project", () => {
       fixture: "projectV2/list-projectV2-post-delete.json",
       name: "listProjectV2PostDelete",
     });
-    cy.contains("List Projects (V2)");
+    cy.contains("My projects");
     cy.contains("Project deleted").should("be.visible");
   });
 });
@@ -523,6 +481,7 @@ describe("Editor cannot maintain members", () => {
       .dataServicesUser({
         response: {
           id: "user3-uuid",
+          username: "user3",
         },
       })
       .namespaces();
@@ -531,16 +490,20 @@ describe("Editor cannot maintain members", () => {
       .landingUserProjects()
       .listProjectV2()
       .readProjectV2()
-      .listProjectV2Members();
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-editor.json",
+      })
+      .listProjectV2Members()
+      .listProjectDataConnectors()
+      .getDataConnector();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
   });
 
   it("can change project metadata", () => {
     cy.contains("test 2 v2-project").should("be.visible");
-    cy.getDataCy("project-settings-edit").should("be.visible").click();
+    cy.get("a[title='Settings']").should("be.visible").click();
     cy.contains("a", "Overview").click();
-    cy.getDataCy("project-description-edit").should("be.visible").click();
   });
 
   it("can change project components", () => {
@@ -548,17 +511,17 @@ describe("Editor cannot maintain members", () => {
     cy.wait("@listProjectV2Members");
     cy.wait("@getDataServicesUser");
     cy.getDataCy("add-session-launcher").should("be.visible");
-    cy.getDataCy("add-data-source").should("be.visible");
-    cy.getDataCy("add-repository").should("be.visible");
+    cy.getDataCy("add-data-connector").should("be.visible");
+    cy.getDataCy("add-code-repository").should("be.visible");
   });
 
   it("cannot change project members except self", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.wait("@listProjectV2Members");
     cy.get("a[title='Settings']").click();
-    cy.getDataCy("project-member-edit-2").should("be.disabled");
+    cy.getDataCy("project-member-edit-2").should("not.exist");
     // TODO: can edit self
-    cy.getDataCy("project-member-remove-1").should("be.enabled");
+    cy.getDataCy("project-member-remove-2").should("be.enabled");
   });
 });
 
@@ -571,6 +534,7 @@ describe("Viewer cannot edit project", () => {
       .dataServicesUser({
         response: {
           id: "user2-uuid",
+          username: "user2",
         },
       })
       .namespaces();
@@ -579,6 +543,9 @@ describe("Viewer cannot edit project", () => {
       .landingUserProjects()
       .listProjectV2()
       .readProjectV2()
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-viewer.json",
+      })
       .listProjectV2Members();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -591,7 +558,7 @@ describe("Viewer cannot edit project", () => {
     cy.getDataCy("project-settings-edit").should("not.exist");
     cy.getDataCy("project-description-edit").should("not.exist");
     cy.get("a[title='Settings']").click();
-    cy.getDataCy("project-member-edit-0").should("be.disabled");
+    cy.getDataCy("project-member-edit-0").should("not.exist");
   });
 
   it("cannot change project components", () => {
@@ -599,261 +566,289 @@ describe("Viewer cannot edit project", () => {
     cy.wait("@listProjectV2Members");
     cy.wait("@getDataServicesUser");
     cy.getDataCy("add-session-launcher").should("not.exist");
-    cy.getDataCy("add-data-source").should("not.exist");
-    cy.getDataCy("add-repository").should("not.exist");
+    cy.getDataCy("add-data-connector").should("not.exist");
+    cy.getDataCy("add-code-repository").should("not.exist");
   });
 });
 
-describe("launch sessions with cloud storage", () => {
+describe("Project templates and copies", () => {
   beforeEach(() => {
     fixtures
       .config()
       .versions()
       .userTest()
-      .dataServicesUser({
-        response: {
-          id: "user1-uuid",
-          email: "user1@email.com",
-        },
-      })
-      .namespaces();
-    fixtures
+      .namespaces()
       .projects()
       .landingUserProjects()
-      .listProjectV2()
-      .readProjectV2()
-      .resourcePoolsTest()
-      .getResourceClass()
-      .listProjectV2Members();
-    fixtures
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .sessionLaunchers()
-      .newLauncher()
-      .environments();
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+      .readProjectV2();
   });
 
-  it("launch session with public data source", () => {
-    fixtures
-      .testCloudStorage()
-      .sessionServersEmpty()
-      .sessionImage()
-      .cloudStorage({
-        isV2: true,
-        fixture: "cloudStorage/cloud-storage.json",
-        name: "getCloudStorageV2",
-      });
-    fixtures.sessionLaunchers({
-      fixture: "projectV2/session-launchers.json",
-      name: "session-launchers-custom",
-    });
-
+  it("copy a regular project with edit access", () => {
+    fixtures.getProjectV2Permissions().listNamespaceV2().copyProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.wait("@getSessionServers");
-    cy.wait("@sessionLaunchers");
 
-    // ensure the data source is there
-    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
-    cy.getDataCy("data-storage-name").click();
-    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
-    cy.getDataCy("requires-credentials-section")
-      .contains("No")
-      .should("be.visible");
-    cy.getDataCy("data-source-view-back-button").click();
-
-    // ensure the session launcher is there
-    cy.getDataCy("session-launcher-item").within(() => {
-      cy.getDataCy("session-name").should("contain.text", "Session-custom");
-      cy.getDataCy("session-status").should("contain.text", "Not Running");
-      cy.getDataCy("start-session-button").should("contain.text", "Launch");
+    cy.getDataCy("project-info-card")
+      .find("[data-cy=button-with-menu-dropdown]")
+      .click();
+    cy.getDataCy("project-copy-menu-item").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("copy-modal")
+      .find("[data-cy=project-name-input]")
+      .clear()
+      .type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    fixtures.readProjectV2({
+      namespace: "e2e",
+      projectSlug: "copy-project-name",
+      name: "readProjectCopy",
     });
-
-    // start session
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
-      // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        req.reply({ body: sessions[0] });
-      }).as("createSession");
-    });
-    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
-    cy.getDataCy("session-launcher-item").within(() => {
-      cy.getDataCy("start-session-button").click();
-    });
-    cy.wait("@getResourceClass");
-    cy.wait("@createSession");
-
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.wait("@copyProjectV2");
+    cy.contains("Go to new project").should("be.visible").click();
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
   });
 
-  it("launch session with data source requiring credentials", () => {
-    fixtures
-      .testCloudStorage()
-      .sessionServersEmpty()
-      .sessionImage()
-      .resourcePoolsTest()
-      .cloudStorage({
-        isV2: true,
-        fixture: "cloudStorage/cloud-storage-with-secrets.json",
-        name: "getCloudStorageV2",
-      });
-    fixtures.sessionLaunchers({
-      fixture: "projectV2/session-launchers.json",
-      name: "session-launchers-custom",
-    });
-
+  it("copy a regular project without edit access", () => {
+    fixtures.listNamespaceV2().copyProjectV2();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.wait("@getSessionServers");
-    cy.wait("@sessionLaunchers");
 
-    // ensure the data source is there
-    cy.getDataCy("data-storage-name").should("contain.text", "example-storage");
-    cy.getDataCy("data-storage-name").click();
-    cy.getDataCy("data-source-title").should("contain.text", "example-storage");
-    cy.getDataCy("requires-credentials-section")
-      .contains("Yes")
-      .should("be.visible");
-    cy.getDataCy("data-source-view-back-button").click();
+    cy.getDataCy("project-info-card")
+      .find("[data-cy=button-with-menu-dropdown]")
+      .click();
+    cy.getDataCy("project-copy-menu-item").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    fixtures.readProjectV2({
+      namespace: "e2e",
+      projectSlug: "copy-project-name",
+      name: "readProjectCopy",
+    });
+    cy.wait("@copyProjectV2");
+    cy.contains("Go to new project").should("be.visible").click();
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
+  });
 
-    // ensure the session launcher is there
-    cy.getDataCy("session-launcher-item").within(() => {
-      cy.getDataCy("session-name").should("contain.text", "Session-custom");
-      cy.getDataCy("session-status").should("contain.text", "Not Running");
-      cy.getDataCy("start-session-button").should("contain.text", "Launch");
+  it("copy a template project", () => {
+    fixtures
+      .readProjectV2({ overrides: { is_template: true } })
+      .listNamespaceV2()
+      .copyProjectV2()
+      .listProjectV2Copies({ count: 0, writeable: true });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.getDataCy("copy-project-button").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    fixtures.readProjectV2({
+      namespace: "e2e",
+      projectSlug: "copy-project-name",
+      name: "readProjectCopy",
     });
+    cy.wait("@copyProjectV2");
+    cy.contains("Go to new project").should("be.visible").click();
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should("eq", "/v2/projects/e2e/copy-project-name");
+  });
 
-    // start session
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
-      // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.configuration).to.have.property("access_key_id");
-        expect(storage.configuration).to.have.property("secret_access_key");
-        expect(storage.configuration["access_key_id"]).to.equal("access key");
-        expect(storage.configuration["secret_access_key"]).to.equal(
-          "secret key"
-        );
-        req.reply({ body: sessions[0] });
-      }).as("createSession");
+  it("navigate to a template project copy", () => {
+    fixtures
+      .readProjectV2({
+        projectSlug: "test-2-v2-template",
+        overrides: { is_template: true },
+      })
+      .listNamespaceV2()
+      .copyProjectV2()
+      .listProjectV2Copies({ count: 1, writeable: true });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-template");
+    cy.wait("@readProjectV2");
+    cy.wait("@listProjectV2Copies");
+    cy.getDataCy("copy-project-button").should("not.exist");
+    cy.contains(
+      "You already have a project created from this template."
+    ).should("be.visible");
+    fixtures.readProjectV2({
+      projectSlug: "test-2-v2-project",
+      name: "readProjectCopy",
     });
-    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
-    cy.getDataCy("session-launcher-item").within(() => {
-      cy.getDataCy("start-session-button").click();
+    cy.contains("Go to my copy").should("be.visible").click();
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should(
+      "eq",
+      "/v2/projects/user1-uuid/test-2-v2-project"
+    );
+  });
+
+  it("list template project copies", () => {
+    fixtures
+      .readProjectV2({
+        projectSlug: "test-2-v2-template",
+        overrides: { is_template: true },
+      })
+      .listNamespaceV2()
+      .listProjectV2Copies({ writeable: true })
+      .copyProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-template");
+    cy.wait("@readProjectV2");
+    cy.wait("@listProjectV2Copies");
+    cy.getDataCy("copy-project-button").should("not.exist");
+    cy.contains("copies of this project.").should("be.visible");
+    cy.contains("View my copies").should("be.visible").click();
+    cy.contains("My copies of").should("be.visible");
+  });
+
+  it("copy a project with data-connector-error", () => {
+    fixtures
+      .readProjectV2({ overrides: { is_template: true } })
+      .listNamespaceV2()
+      .listProjectV2Copies({ count: 0, writeable: true })
+      .copyProjectV2({ dataConnectorError: true });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.getDataCy("copy-project-button").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    fixtures.readProjectV2({
+      namespace: "e2e",
+      projectSlug: "copy-project-name",
+      name: "readProjectCopy",
     });
-    cy.wait("@getResourceClass");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
+    cy.wait("@copyProjectV2");
+    cy.contains("not all data connectors were included")
       .should("be.visible")
-      .contains("Please provide")
-      .should("not.be.visible");
-
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Continue")
       .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Please provide")
-      .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .find("#access_key_id")
-      .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Secret Access Key (password)")
-      .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .find("#secret_access_key")
-      .type("secret key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.wait("@testCloudStorage");
-    cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.contains("Close").should("be.visible").click();
+    cy.getDataCy("copy-project-button").click();
+    cy.getDataCy("copy-modal")
+      .find("button")
+      .contains("Copy")
+      .should("be.enabled");
   });
 
-  it("launch session with data source requiring multiple credentials", () => {
+  it("copy a project, overriding the slug", () => {
     fixtures
-      .sessionServersEmpty()
-      .sessionImage()
-      .resourcePoolsTest()
-      .cloudStorage({
-        isV2: true,
-        fixture: "cloudStorage/cloud-storage-multiple.json",
-        name: "getCloudStorageV2",
-      });
-    fixtures.sessionLaunchers({
-      fixture: "projectV2/session-launchers.json",
-      name: "session-launchers-custom",
-    });
-
+      .readProjectV2({ overrides: { is_template: true } })
+      .listNamespaceV2()
+      .listProjectV2Copies({ count: 0, writeable: true })
+      .copyProjectV2({ dataConnectorError: true, name: "copyProjectV2Fail" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.wait("@getSessionServers");
-    cy.wait("@sessionLaunchers");
+    cy.getDataCy("copy-project-button").click();
+    cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
+      "be.visible"
+    );
+    cy.wait("@listNamespaceV2");
+    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    cy.wait("@copyProjectV2Fail");
+    cy.get("button").contains("Configure").click();
+    cy.getDataCy("project-slug-input").clear().type("copy-of-test2");
+    fixtures.copyProjectV2().readProjectV2({
+      namespace: "e2e",
+      projectSlug: "copy-of-test2",
+      name: "readProjectCopy",
+    });
+    cy.getDataCy("copy-modal").find("button").contains("Copy").click();
+    cy.wait("@copyProjectV2");
+    cy.contains("Go to new project").should("be.visible").click();
+    cy.wait("@readProjectCopy");
+    cy.location("pathname").should("eq", "/v2/projects/e2e/copy-of-test2");
+  });
 
-    // start session
-    cy.fixture("sessions/sessionsV2.json").then((sessions) => {
-      // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/ui-server/api/notebooks/v2/servers", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(2);
-        let storage = csConfig[0];
-        expect(storage.configuration).to.not.have.property("access_key_id");
-        expect(storage.configuration).to.not.have.property("secret_access_key");
-        storage = csConfig[1];
-        expect(storage.configuration).to.have.property("access_key_id");
-        expect(storage.configuration).to.have.property("secret_access_key");
-        expect(storage.configuration["access_key_id"]).to.equal("access key");
-        expect(storage.configuration["secret_access_key"]).to.equal(
-          "secret key"
-        );
-        req.reply({ body: sessions[0] });
-      }).as("createSession");
-    });
-    fixtures.getSessions({ fixture: "sessions/sessionsV2.json" });
-    cy.getDataCy("session-launcher-item").within(() => {
-      cy.getDataCy("start-session-button").click();
-    });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .find("#access_key_id")
-      .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .find("#secret_access_key")
-      .type("secret key");
-    fixtures.testCloudStorage({ success: false });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("could not be mounted")
-      .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Retry")
-      .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("could not be mounted")
-      .should("be.visible");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Skip")
-      .click();
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .find("#access_key_id")
-      .type("access key");
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .find("#secret_access_key")
-      .type("secret key");
-    fixtures.testCloudStorage({ success: true });
-    cy.getDataCy("session-cloud-storage-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.wait("@testCloudStorage");
-    cy.wait("@getResourceClass");
-    cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+  it("show a template project as editor", () => {
+    fixtures
+      .readProjectV2({ overrides: { is_template: true } })
+      .getProjectV2Permissions()
+      .listNamespaceV2()
+      .listProjectV2Copies({ count: 15 });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getProjectV2Permissions");
+    cy.wait("@listProjectV2Copies");
+    cy.getDataCy("copy-project-button").should("not.exist");
+    cy.contains("copies visible to you").should("be.visible");
+    cy.getDataCy("list-copies-link").click();
+    cy.contains("Projects copied from").should("be.visible");
+  });
+
+  it("show a copied project", () => {
+    fixtures
+      .readProjectV2({
+        overrides: {
+          template_id: "TEMPLATE-ULID",
+        },
+      })
+      .readProjectV2ById({
+        projectId: "TEMPLATE-ULID",
+        overrides: {
+          name: "template project",
+          namespace: "user1-uuid",
+          slug: "template-project",
+        },
+      })
+      .readUserV2Namespace();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2ById");
+    cy.contains("Copied from:").should("be.visible");
+  });
+
+  it("break the template link", () => {
+    fixtures
+      .readProjectV2({
+        overrides: {
+          template_id: "TEMPLATE-ULID",
+        },
+      })
+      .getProjectV2Permissions()
+      .listNamespaceV2()
+      .copyProjectV2()
+      .updateProjectV2();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+
+    cy.get("a[title='Settings']").should("be.visible").click();
+    cy.contains("Break template link").should("be.visible");
+    cy.contains("Unlink project").should("be.disabled");
+    cy.getDataCy("unlink-confirmation-input").clear().type("test-2-v2-project");
+    cy.contains("Unlink project").should("be.enabled").click();
+    cy.wait("@updateProjectV2");
+  });
+});
+
+describe("Anonymous project copy experience", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userNone()
+      .namespaces()
+      .projects()
+      .landingUserProjects()
+      .readProjectV2();
+  });
+
+  it("copy as an anonymous user", () => {
+    fixtures.readProjectV2({ overrides: { is_template: true } });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.contains("To make a copy, you must first log in.").should("be.visible");
   });
 });

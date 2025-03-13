@@ -16,13 +16,16 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
+
+import StatusBanner from "../../features/platform/components/StatusBanner";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
+import type { AppParams } from "../../utils/context/appParams.types";
 import { Url } from "../../utils/helpers/url";
-import cx from "classnames";
 import { RenkuNavLink } from "../RenkuNavLink";
 import {
   RenkuToolbarHelpMenu,
@@ -30,7 +33,6 @@ import {
   RenkuToolbarNotifications,
 } from "./NavBarItems";
 import { RENKU_LOGO } from "./navbar.constans";
-import type { AppParams } from "../../utils/context/appParams.types";
 
 interface AnonymousNavBarProps {
   model: unknown;
@@ -112,6 +114,7 @@ export default function AnonymousNavBar({
           </Collapse>
         </Navbar>
       </header>
+      <StatusBanner params={params} />
       <NavBarWarnings model={model} uiShortSha={uiShortSha} />
     </>
   );

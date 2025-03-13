@@ -31,9 +31,9 @@ export default function DescriptionFormField<T extends FieldValues>({
   name,
 }: GenericFormFieldProps<T>) {
   return (
-    <div className="mb-3">
+    <div>
       <Label className="form-label" for={`${entityName}-description`}>
-        Description
+        Description (Optional)
       </Label>
       <Controller
         control={control}
@@ -51,7 +51,7 @@ export default function DescriptionFormField<T extends FieldValues>({
         rules={{ maxLength: 500, required: false }}
       />
       <FormText id={`${entityName}DescriptionHelp`} className="input-hint">
-        A brief (at most 500 character) description of the project.
+        A brief (at most 500 character) description of the {entityName}.
       </FormText>
       <div className="invalid-feedback">Please provide a description</div>
     </div>

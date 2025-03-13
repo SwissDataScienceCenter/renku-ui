@@ -24,6 +24,7 @@ import type { GenericProjectFormFieldProps } from "./formField.types";
 export default function ProjectNameFormField<T extends FieldValues>({
   control,
   errors,
+  helpText,
   name,
 }: GenericProjectFormFieldProps<T>) {
   return (
@@ -31,6 +32,7 @@ export default function ProjectNameFormField<T extends FieldValues>({
       control={control}
       entityName="project"
       errors={errors}
+      helpText={helpText}
       name={name}
     />
   );

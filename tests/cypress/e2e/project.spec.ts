@@ -31,9 +31,6 @@ describe("display a project - not found", () => {
 
     cy.getDataCy("not-found-title")
       .should("be.visible")
-      .should("contain.text", "404");
-    cy.getDataCy("not-found-subtitle")
-      .should("be.visible")
       .should("contain.text", "Project not found");
     cy.getDataCy("not-found-description")
       .should("be.visible")
@@ -57,9 +54,6 @@ describe("display a project - not found", () => {
 
     cy.getDataCy("not-found-title")
       .should("be.visible")
-      .should("contain.text", "404");
-    cy.getDataCy("not-found-subtitle")
-      .should("be.visible")
       .should("contain.text", "Project not found");
     cy.getDataCy("not-found-description")
       .should("be.visible")
@@ -81,9 +75,6 @@ describe("display a project - not found", () => {
 
     cy.getDataCy("not-found-title")
       .should("be.visible")
-      .should("contain.text", "404");
-    cy.getDataCy("not-found-subtitle")
-      .should("be.visible")
       .should("contain.text", "Project not found");
     cy.getDataCy("not-found-description")
       .should("be.visible")
@@ -104,9 +95,6 @@ describe("display a project - not found", () => {
     cy.visit("/projects/12345");
 
     cy.getDataCy("not-found-title")
-      .should("be.visible")
-      .should("contain.text", "404");
-    cy.getDataCy("not-found-subtitle")
       .should("be.visible")
       .should("contain.text", "Project not found");
     cy.getDataCy("not-found-description")

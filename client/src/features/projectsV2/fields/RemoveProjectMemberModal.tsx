@@ -23,7 +23,6 @@ import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -33,6 +32,7 @@ import {
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import type { ProjectMemberResponse } from "../api/projectV2.api";
 import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectV2.enhanced-api";
+import { ProjectMemberDisplay } from "../shared/ProjectMemberDisplay";
 
 interface RemoveProjectMemberModalProps {
   isOpen: boolean;
@@ -61,7 +61,6 @@ function RemoveProjectMemberAccessForm({
   const { handleSubmit } = useForm<ProjectMemberForRemove>({
     defaultValues: {
       id: member.id,
-      email: member.email,
     },
   });
 
@@ -81,17 +80,16 @@ function RemoveProjectMemberAccessForm({
           onSubmit={handleSubmit(onRemove)}
         >
           {result.error && <RtkOrNotebooksError error={result.error} />}
-          <div
-            className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
-          >
-            <Label>
-              Remove <b>{member.email ?? member.id}</b> from project?
-            </Label>
+          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
+            <p className="mb-0">
+              Remove <ProjectMemberDisplay member={member} nameInBold={true} />{" "}
+              from project?
+            </p>
           </div>
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>

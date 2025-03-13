@@ -34,6 +34,6 @@ export function getSessionStatusColor({
     : status === "starting" || status === "stopping"
     ? "warning"
     : status === "hibernated"
-    ? "rk-text-light"
+    ? "dark"
     : "danger";
 }

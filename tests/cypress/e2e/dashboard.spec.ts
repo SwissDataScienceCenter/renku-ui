@@ -45,7 +45,7 @@ describe("dashboard", () => {
 
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getKeycloakUser");
+    cy.wait("@getDataServiceUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -91,7 +91,7 @@ describe("dashboard", () => {
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getKeycloakUser");
+    cy.wait("@getDataServiceUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
@@ -141,7 +141,7 @@ describe("dashboard", () => {
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getKeycloakUser");
+    cy.wait("@getDataServiceUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
@@ -202,7 +202,7 @@ describe("dashboard", () => {
     cy.wait("@getFirstProject");
 
     cy.wait("@getUser");
-    cy.wait("@getKeycloakUser");
+    cy.wait("@getDataServiceUser");
     cy.wait("@getSessions");
     cy.getDataCy("session-container").should("be.visible");
     cy.getDataCy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
@@ -250,7 +250,7 @@ describe("dashboard message", () => {
   const visitDashboardPage = () => {
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getKeycloakUser");
+    cy.wait("@getDataServiceUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -278,9 +278,8 @@ describe("dashboard message", () => {
       .and("include.text", "This is an example welcome message");
 
     cy.getDataCy("dashboard-message")
-      .find(".alert-icon")
-      .find(".text-info")
-      .should("be.visible");
+      .should("be.visible")
+      .and("have.class", "alert-info");
 
     cy.getDataCy("dashboard-message")
       .find("button.btn-close")
@@ -311,9 +310,8 @@ describe("dashboard message", () => {
       .and("include.text", "This is an example welcome message");
 
     cy.getDataCy("dashboard-message")
-      .find(".alert-icon")
-      .find(".text-success")
-      .should("be.visible");
+      .should("be.visible")
+      .and("have.class", "alert-success");
 
     cy.getDataCy("dashboard-message")
       .find("button.btn-close")

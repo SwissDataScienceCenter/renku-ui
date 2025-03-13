@@ -23,8 +23,11 @@ describe("Secrets", () => {
     fixtures.config().versions();
   });
 
-  it("Load and empty secrets page", () => {
-    fixtures.userTest().listSecrets();
+  it("Load an empty secrets page", () => {
+    fixtures
+      .userTest()
+      .listSecrets({ secretsKind: "general" })
+      .listSecrets({ secretsKind: "storage" });
     cy.visit("/secrets");
 
     cy.get("#new-secret-button").should("be.visible");
@@ -32,7 +35,10 @@ describe("Secrets", () => {
   });
 
   it("Cannot load secrets when logged out", () => {
-    fixtures.userNone().listSecrets();
+    fixtures
+      .userNone()
+      .listSecrets({ secretsKind: "general" })
+      .listSecrets({ secretsKind: "storage" });
     cy.visit("/secrets");
 
     cy.getDataCy("secrets-list").should("not.exist");
@@ -43,7 +49,11 @@ describe("Secrets", () => {
   });
 
   it("Load page with secrets and create a new one", () => {
-    fixtures.userTest().listSecrets({ numberOfSecrets: 5 }).newSecret();
+    fixtures
+      .userTest()
+      .listSecrets({ numberOfSecrets: 0, secretsKind: "storage" })
+      .listSecrets({ numberOfSecrets: 5, secretsKind: "general" })
+      .newSecret();
     cy.visit("/secrets");
 
     cy.get("#new-secret-button").should("be.visible");
@@ -55,24 +65,28 @@ describe("Secrets", () => {
     cy.getDataCy("secrets-new-add-button").should("be.visible").click();
 
     cy.getDataCy("secrets-new-form")
-      .contains("Please provide a name.")
+      .contains("Please provide a name")
       .should("be.visible");
     cy.getDataCy("secrets-new-form")
-      .contains("Please provide a value.")
+      .contains("Please provide a value")
       .should("be.visible");
 
-    cy.get("#new-secret-name").type("new secret");
+    cy.get("#user-secret-name").type("New Secret");
     cy.getDataCy("secrets-new-form")
-      .contains("Please provide a name.")
+      .contains("Please provide a name")
       .should("not.exist");
-    cy.getDataCy("secrets-new-form")
-      .contains("Only letters, numbers,")
-      .should("be.visible");
-    cy.get("#new-secret-name").clear().type("new_secret");
 
-    cy.get("#new-secret-value").type("new_value");
+    cy.get("#user-secret-filename").type("New Secret");
     cy.getDataCy("secrets-new-form")
-      .contains("Please provide a value.")
+      .contains(
+        'A valid filename must consist of alphanumeric characters, "-", "_" or "."'
+      )
+      .should("be.visible");
+    cy.get("#user-secret-filename").clear().type("my-secret.txt");
+
+    cy.get("#user-secret-value").type("new_value");
+    cy.getDataCy("secrets-new-form")
+      .contains("Please provide a value")
       .should("not.exist");
 
     cy.getDataCy("secrets-new-add-button").should("be.enabled").click();
@@ -80,32 +94,54 @@ describe("Secrets", () => {
   });
 
   it("Edit secret", () => {
-    fixtures.userTest().listSecrets({ numberOfSecrets: 2 }).editSecret();
+    fixtures
+      .userTest()
+      .listSecrets({ secretsKind: "storage" })
+      .listSecrets({ numberOfSecrets: 2, secretsKind: "general" })
+      .editSecret();
     cy.visit("/secrets");
 
     cy.getDataCy("secrets-list").first().contains("secret_0").click();
     cy.getDataCy("secrets-list")
-      .find('[data-cy="secret-edit-button"]')
+      .find('[data-cy="user-secret-actions"]')
       .first()
+      .contains("button", "Replace")
       .click();
 
-    cy.getDataCy("secrets-edit-form").should("be.visible");
-    cy.get("#edit-secret-value").type("new_value");
-    cy.getDataCy("secrets-edit-edit-button").should("be.enabled").click();
-    cy.getDataCy("secrets-edit-form").should("not.be.visible");
+    cy.getDataCy("replace-secret-value-form").should("be.visible");
+    cy.get("#user-secret-value").type("new_value");
+    cy.getDataCy("replace-secret-value-form")
+      .contains("button", "Replace value")
+      .click();
+    cy.getDataCy("replace-secret-value-form").should("not.be.visible");
   });
 
   it("Delete secret", () => {
-    fixtures.userTest().listSecrets({ numberOfSecrets: 2 }).deleteSecret();
+    fixtures
+      .userTest()
+      .listSecrets({ secretsKind: "storage" })
+      .listSecrets({ numberOfSecrets: 2, secretsKind: "general" })
+      .deleteSecret();
     cy.visit("/secrets");
 
     cy.getDataCy("secrets-list").first().contains("secret_0").click();
     cy.getDataCy("secrets-list")
-      .find('[data-cy="secret-delete-button"]')
+      .find('[data-cy="user-secret-actions"]')
       .first()
+      .find("[data-cy=more-menu]")
+      .click();
+    cy.getDataCy("secrets-list")
+      .find('[data-cy="user-secret-actions"]')
+      .first()
+      .contains("button", "Delete")
       .click();
 
-    cy.getDataCy("secrets-delete-delete-button").should("be.enabled").click();
-    cy.getDataCy("secrets-delete-delete-button").should("not.be.visible");
+    cy.contains(".modal-content", "Delete user secret").should("be.visible");
+    cy.contains(".modal-content", "Delete user secret")
+      .contains("button", "Delete secret")
+      .click();
+    cy.contains(".modal-content", "Delete user secret").should(
+      "not.be.visible"
+    );
   });
 });

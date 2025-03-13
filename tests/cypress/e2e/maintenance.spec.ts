@@ -50,9 +50,8 @@ describe("display the maintenance page when there is no user response", () => {
   it("displays an error when trying to get status page information", () => {
     fixtures.renkuDown().statuspageDown();
     cy.visit("/");
-    cy.get("h1").should("have.length", 1);
     cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get(".alert-content")
+    cy.get(".alert-warning")
       .contains("Could not retrieve status information")
       .should("be.visible");
   });
@@ -75,21 +74,10 @@ describe("display the status page", () => {
     fixtures.config().versions().userNone().getStatuspageInfo();
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
-    cy.get(".alert").should("not.exist");
+    cy.get(".alert").contains("Ongoing incident").should("not.exist");
   });
 
-  it("Shows the banner on the home page if there is a major incident", () => {
-    fixtures
-      .config()
-      .versions()
-      .userNone()
-      .getStatuspageInfo({ fixture: "statuspage/statuspage-outage.json" });
-    cy.visit("/");
-    cy.wait("@getStatuspageInfo");
-    cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
-  });
-
-  it("Shows the banner everywhere if there is a major incident", () => {
+  it("Shows the banner on the dashboard if there is an incident", () => {
     fixtures
       .config()
       .versions()
@@ -97,30 +85,17 @@ describe("display the status page", () => {
       .getStatuspageInfo({ fixture: "statuspage/statuspage-outage.json" });
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
-    cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
-    cy.contains("Search").click();
-    cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
-    cy.get(".btn-close").should("not.exist");
+    cy.get(".alert").contains("Ongoing incident").should("be.visible");
   });
 
-  it("Shows the banner only on the dashboard if there is a minor incident", () => {
-    fixtures
-      .config()
-      .versions()
-      .userTest()
-      .getStatuspageInfo({
-        overrides: {
-          status: {
-            indicator: "minor",
-            description: "Everything is a little slow, but working",
-          },
-        },
-      });
+  it("Shows the banner everywhere if there is an incident", () => {
+    fixtures.config().versions().userTest().getStatuspageInfo({
+      fixture: "statuspage/statuspage-outage.json",
+    });
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
-    cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
-    cy.get(".btn-close").should("be.visible");
+    cy.get(".alert").contains("Ongoing incident").should("be.visible");
     cy.contains("Search").click();
-    cy.get(".alert").should("not.exist");
+    cy.get(".alert").contains("Ongoing incident").should("be.visible");
   });
 });

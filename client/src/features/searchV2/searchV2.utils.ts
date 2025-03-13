@@ -16,149 +16,486 @@
  * limitations under the License
  */
 
-import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
+import { DateTime } from "luxon";
+import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 import {
-  DateFilter,
-  DateFilterItems,
+  CREATION_DATE_FILTER_KEY,
+  DATE_AFTER_LEEWAY,
+  DATE_BEFORE_LEEWAY,
+  DATE_FILTER_AFTER_KNOWN_VALUES,
+  DATE_FILTER_BEFORE_KNOWN_VALUES,
+  DEFAULT_ROLE_FILTER,
+  DEFAULT_SORT_BY,
+  DEFAULT_TYPE_FILTER,
+  DEFAULT_VISIBILITY_FILTER,
+  KEY_GREATER_THAN_VALUE,
+  KEY_LESS_THAN_VALUE,
+  KEY_VALUE_SEPARATOR,
+  ROLE_FILTER_ALLOWED_VALUES,
+  ROLE_FILTER_KEY,
+  SORT_BY_ALLOWED_VALUES,
+  SORT_BY_KEY,
+  TERM_SEPARATOR,
+  TYPE_FILTER_ALLOWED_VALUES,
+  TYPE_FILTER_KEY,
+  VALUES_SEPARATOR,
+  VISIBILITY_FILTER_ALLOWED_VALUES,
+  VISIBILITY_FILTER_KEY,
+} from "./searchV2.constants";
+import type {
+  AfterDateValue,
+  BeforeDateValue,
+  CreationDateFilter,
+  InterpretedTerm,
+  ParseSearchQueryResult,
+  RoleFilter,
+  SearchDateFilter,
+  SearchDateFilters,
+  SearchFilter,
+  SearchFilters,
+  SearchOption,
   SearchV2State,
-  SortingItems,
+  SortBy,
+  TypeFilter,
+  VisibilityFilter,
 } from "./searchV2.types";
-import type { Role } from "../projectsV2/api/projectV2.api";
 
-const ROLE_FILTER: { [key in Role]: string } = {
-  owner: "Owner",
-  editor: "Editor",
-  viewer: "Viewer",
-};
+export function parseSearchQuery(query: string): ParseSearchQueryResult {
+  const terms = query
+    .split(TERM_SEPARATOR)
+    .filter((term) => term != "")
+    .map(parseTerm);
 
-export const AVAILABLE_FILTERS = {
-  role: ROLE_FILTER,
-  type: {
-    project: "Project",
-    group: "Group",
-    user: "User",
-  },
-  visibility: {
-    private: "Private",
-    public: "Public",
-  },
-};
+  const reversedTerms = [...terms].reverse();
 
-export const ANONYMOUS_USERS_EXCLUDE_FILTERS: (keyof typeof AVAILABLE_FILTERS)[] =
-  ["visibility", "role"];
+  // Retain the last filter option only
+  const roleFilter = reversedTerms.find(
+    isRoleFilterInterpretation
+  )?.interpretation;
 
-export const AVAILABLE_SORTING: SortingItems = {
-  scoreDesc: {
-    friendlyName: "Score: best match",
-    sortingString: "score-desc",
-  },
-  dateDesc: {
-    friendlyName: "Date: recently created",
-    sortingString: "created-desc",
-  },
-  dateAsc: {
-    friendlyName: "Date: older",
-    sortingString: "created-asc",
-  },
-  titleAsc: {
-    friendlyName: "Name: alphabetical",
-    sortingString: "name-asc",
-  },
-  titleDesc: {
-    friendlyName: "Name: reverse",
-    sortingString: "name-desc",
-  },
-};
+  // Retain the last filter option only
+  const typeFilter = reversedTerms.find(
+    isTypeFilterInterpretation
+  )?.interpretation;
 
-export const AVAILABLE_DATE_FILTERS: DateFilterItems = {
-  all: {
-    friendlyName: "All",
-    getDateString: () => "",
-  },
-  lastWeek: {
-    friendlyName: "Last Week",
-    getDateString: (filter: string) => `${filter}>today-7d`,
-  },
-  lastMonth: {
-    friendlyName: "Last Month",
-    getDateString: (filter: string) => `${filter}>today-31d`,
-  },
-  last90days: {
-    friendlyName: "Last 90 days",
-    getDateString: (filter: string) => `${filter}>today-90d`,
-  },
-  older: {
-    friendlyName: "Older",
-    getDateString: (filter: string) => `${filter}>today+90d`,
-  },
-  custom: {
-    friendlyName: "Custom",
-    getDateString: (filter: string, from?: string, to?: string) => {
-      const filters = [];
-      if (from) filters.push(`${filter}>${from}-1d`);
+  // Retain the last filter option only
+  const visibilityFilter = reversedTerms.find(
+    isVisibilityFilterInterpretation
+  )?.interpretation;
 
-      if (to) filters.push(`${filter}<${to}+1d`);
-      return filters.join(" ");
-    },
-  },
-};
+  const filters: SearchFilters = {
+    role: roleFilter ?? DEFAULT_ROLE_FILTER,
+    type: typeFilter ?? DEFAULT_TYPE_FILTER,
+    visibility: visibilityFilter ?? DEFAULT_VISIBILITY_FILTER,
+  };
 
-const DATE_FILTERS = ["created"];
+  const createdAfterFilterValue = reversedTerms
+    .filter(isCreationDateFilterInterpretation)
+    .map(({ interpretation }) => interpretation)
+    .find(({ value }) => value.after != null)?.value.after;
+  const createdBeforeFilterValue = reversedTerms
+    .filter(isCreationDateFilterInterpretation)
+    .map(({ interpretation }) => interpretation)
+    .find(({ value }) => value != null)?.value.before;
+  const creationDateFilter: CreationDateFilter = {
+    key: "created",
+    value: mergeDateFilterValues(
+      createdAfterFilterValue,
+      createdBeforeFilterValue
+    ),
+  };
 
-export const SORT_KEY = "sort";
+  const dateFilters: SearchDateFilters = {
+    created: creationDateFilter,
+  };
 
-export const FILTER_ASSIGNMENT_CHAR = ":";
+  // Retain the last sorting option only
+  const sortByOption = reversedTerms.find(
+    isSortByInterpretation
+  )?.interpretation;
 
-export const buildSearchQuery = (searchState: SearchV2State): string => {
-  const query = searchState.search.query;
-  const searchQueryItems: string[] = [];
+  const optionsAsTerms = [
+    roleFilter,
+    typeFilter,
+    visibilityFilter,
+    creationDateFilter,
+    sortByOption,
+  ]
+    .map(asQueryTerm)
+    .filter((term) => term !== "");
 
-  // Add sorting unless already re-defined by the user
-  const sortPrefix = `${SORT_KEY}${FILTER_ASSIGNMENT_CHAR}`;
-  if (!query.includes(sortPrefix))
-    searchQueryItems.push(`${sortPrefix}${searchState.sorting.sortingString}`);
+  const uninterpretedTerms = terms
+    .filter(({ interpretation }) => interpretation == null)
+    .map(({ term }) => term);
 
-  for (const filterName in searchState.filters) {
-    if (DATE_FILTERS.includes(filterName) || filterName === "createdBy")
-      continue;
-    const filter = searchState.filters[
-      filterName as keyof SearchV2State["filters"]
-    ] as string[];
-    const filterPrefix = `${filterName}${FILTER_ASSIGNMENT_CHAR}`;
+  const canonicalQuery = [...optionsAsTerms, ...uninterpretedTerms].join(" ");
 
-    const totalAvailableFilters = Object.keys(
-      AVAILABLE_FILTERS[filterName as "role" | "visibility" | "type"]
-    ).length;
-    // Exclude empty filters and filters where all members are selected, only role should add the filter even if both are selected
-    if (
-      filter.length > 0 &&
-      (filter.length < totalAvailableFilters || filterName == "role") &&
-      !query.includes(filterPrefix)
-    ) {
-      searchQueryItems.push(`${filterPrefix}${filter.join(",")}`);
+  const searchBarQuery = uninterpretedTerms.join(" ");
+
+  return {
+    canonicalQuery,
+    dateFilters,
+    filters,
+    searchBarQuery,
+    sortBy: sortByOption ?? DEFAULT_SORT_BY,
+  };
+}
+
+/** Attempt to parse `term` as a search option */
+function parseTerm(term: string): InterpretedTerm {
+  const termLower = term.toLowerCase();
+
+  if (termLower.startsWith(`${ROLE_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
+    const filterValues = termLower.slice(
+      ROLE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+    );
+    const values = filterValues.split(`${VALUES_SEPARATOR}`);
+    const [allowedValues, hasDisallowedValue] = filterAllowedValues(
+      values,
+      ROLE_FILTER_ALLOWED_VALUES
+    );
+    const matchedValues = makeValuesSetAsArray(
+      allowedValues,
+      (a, b) => toNumericRole(b) - toNumericRole(a)
+    );
+    if (!hasDisallowedValue) {
+      return {
+        term,
+        interpretation: {
+          key: "role",
+          values: matchedValues,
+        },
+      };
     }
   }
 
-  // add date filters
-  DATE_FILTERS.map((filter: string) => {
-    const dateFilter = searchState.filters[
-      filter as keyof SearchV2State["filters"]
-    ] as DateFilter;
-    if (dateFilter.option !== DateFilterTypes.all) {
-      const dateStringFilter = AVAILABLE_DATE_FILTERS[
-        dateFilter.option
-      ].getDateString("created", dateFilter.from, dateFilter.to);
-      searchQueryItems.push(dateStringFilter);
+  if (termLower.startsWith(`${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
+    const filterValues = termLower.slice(
+      TYPE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+    );
+    const values = filterValues.split(`${VALUES_SEPARATOR}`);
+    const [allowedValues, hasDisallowedValue] = filterAllowedValues(
+      values,
+      TYPE_FILTER_ALLOWED_VALUES
+    );
+    const matchedValues = makeValuesSetAsArray(allowedValues);
+    if (!hasDisallowedValue) {
+      return {
+        term,
+        interpretation: {
+          key: "type",
+          values: matchedValues,
+        },
+      };
     }
-  });
-
-  // add createdBy filter
-  if (searchState.filters.createdBy)
-    searchQueryItems.push(`createdBy:${searchState.filters.createdBy}`);
-
-  if (query) {
-    searchQueryItems.push(query);
   }
 
-  return searchQueryItems.join(" ");
-};
+  if (termLower.startsWith(`${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
+    const filterValues = termLower.slice(
+      VISIBILITY_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+    );
+    const values = filterValues.split(`${VALUES_SEPARATOR}`);
+    const [allowedValues, hasDisallowedValue] = filterAllowedValues(
+      values,
+      VISIBILITY_FILTER_ALLOWED_VALUES
+    );
+    const matchedValues = makeValuesSetAsArray(allowedValues);
+    if (!hasDisallowedValue) {
+      return {
+        term,
+        interpretation: {
+          key: "visibility",
+          values: matchedValues,
+        },
+      };
+    }
+  }
+
+  if (
+    termLower.startsWith(`${CREATION_DATE_FILTER_KEY}${KEY_GREATER_THAN_VALUE}`)
+  ) {
+    const filterValue = termLower.slice(
+      CREATION_DATE_FILTER_KEY.length + KEY_GREATER_THAN_VALUE.length
+    );
+    const matchedKnownValue = DATE_FILTER_AFTER_KNOWN_VALUES.find(
+      (value) => value === filterValue
+    );
+    if (matchedKnownValue) {
+      return {
+        term,
+        interpretation: {
+          key: "created",
+          value: {
+            after: matchedKnownValue,
+          },
+        },
+      };
+    }
+    if (filterValue.endsWith(DATE_AFTER_LEEWAY)) {
+      const filterValue_ = filterValue.slice(0, -DATE_AFTER_LEEWAY.length);
+      const parsed = DateTime.fromISO(filterValue_, { zone: "utc" });
+      if (parsed.isValid && filterValue_ === parsed.toISODate()) {
+        return {
+          term,
+          interpretation: {
+            key: "created",
+            value: {
+              after: { date: parsed },
+            },
+          },
+        };
+      }
+    }
+  }
+  if (
+    termLower.startsWith(`${CREATION_DATE_FILTER_KEY}${KEY_LESS_THAN_VALUE}`)
+  ) {
+    const filterValue = termLower.slice(
+      CREATION_DATE_FILTER_KEY.length + KEY_LESS_THAN_VALUE.length
+    );
+    const matchedKnownValue = DATE_FILTER_BEFORE_KNOWN_VALUES.find(
+      (value) => value === filterValue
+    );
+    if (matchedKnownValue) {
+      return {
+        term,
+        interpretation: {
+          key: "created",
+          value: {
+            before: matchedKnownValue,
+          },
+        },
+      };
+    }
+    if (filterValue.endsWith(DATE_BEFORE_LEEWAY)) {
+      const filterValue_ = filterValue.slice(0, -DATE_BEFORE_LEEWAY.length);
+      const parsed = DateTime.fromISO(filterValue_, { zone: "utc" });
+      if (parsed.isValid && filterValue_ === parsed.toISODate()) {
+        return {
+          term,
+          interpretation: {
+            key: "created",
+            value: {
+              before: { date: parsed },
+            },
+          },
+        };
+      }
+    }
+  }
+
+  if (termLower.startsWith(`${SORT_BY_KEY}${KEY_VALUE_SEPARATOR}`)) {
+    const sortValue = termLower.slice(
+      SORT_BY_KEY.length + KEY_VALUE_SEPARATOR.length
+    );
+    const matched = SORT_BY_ALLOWED_VALUES.find((value) => value === sortValue);
+    if (matched) {
+      return {
+        term,
+        interpretation: {
+          key: "sort",
+          value: matched,
+        },
+      };
+    }
+  }
+
+  return {
+    term,
+    interpretation: null,
+  };
+}
+
+export function valuesAsSet<T>(values: T[]): Set<T> {
+  return values.reduce((set, value) => set.add(value), new Set<T>());
+}
+
+function makeValuesSetAsArray<T extends string>(
+  values: T[],
+  compareFn?: ((a: T, b: T) => number) | undefined
+): T[] {
+  return Array.from(valuesAsSet(values)).sort(compareFn);
+}
+
+function filterAllowedValues<T extends string>(
+  values: string[],
+  allowedValues: T[]
+): [T[], boolean] {
+  function isAllowed(value: string): value is T {
+    return !!allowedValues.find((allowedValue) => value === allowedValue);
+  }
+  return [
+    values.filter(isAllowed),
+    !!values.find((value) => !isAllowed(value)),
+  ];
+}
+
+function isRoleFilterInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: RoleFilter } {
+  return term.interpretation?.key === "role";
+}
+
+function isTypeFilterInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: TypeFilter } {
+  return term.interpretation?.key === "type";
+}
+
+function isVisibilityFilterInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: VisibilityFilter } {
+  return term.interpretation?.key === "visibility";
+}
+
+function isCreationDateFilterInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: CreationDateFilter } {
+  return term.interpretation?.key === "created";
+}
+
+function isSortByInterpretation(
+  term: InterpretedTerm
+): term is InterpretedTerm & { interpretation: SortBy } {
+  return term.interpretation?.key === "sort";
+}
+
+function asQueryTerm(option: SearchOption | null | undefined): string {
+  if (option == null) {
+    return "";
+  }
+
+  if (option.key === "role" && option.values.length == 0) {
+    return "";
+  }
+  if (option.key === "role") {
+    const valuesStr = option.values.join(VALUES_SEPARATOR);
+    return `${ROLE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${valuesStr}`;
+  }
+
+  if (option.key === "type" && option.values.length == 0) {
+    return "";
+  }
+  if (option.key === "type") {
+    const valuesStr = option.values.join(VALUES_SEPARATOR);
+    return `${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${valuesStr}`;
+  }
+
+  if (option.key === "visibility" && option.values.length == 0) {
+    return "";
+  }
+  if (option.key === "visibility") {
+    const valuesStr = option.values.join(VALUES_SEPARATOR);
+    return `${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}${valuesStr}`;
+  }
+
+  if (
+    option.key === "created" &&
+    option.value.after == null &&
+    option.value.before == null
+  ) {
+    return "";
+  }
+  if (option.key === "created") {
+    const afterValueStr =
+      typeof option.value.after === "string"
+        ? option.value.after
+        : option.value.after?.date != null
+        ? `${option.value.after.date.toISODate()}${DATE_AFTER_LEEWAY}`
+        : "";
+    const afterStr = afterValueStr
+      ? `${CREATION_DATE_FILTER_KEY}${KEY_GREATER_THAN_VALUE}${afterValueStr}`
+      : "";
+    const beforeValueStr =
+      typeof option.value.before === "string"
+        ? option.value.before
+        : option.value.before?.date != null
+        ? `${option.value.before.date.toISODate()}${DATE_BEFORE_LEEWAY}`
+        : "";
+    const beforeStr = beforeValueStr
+      ? `${CREATION_DATE_FILTER_KEY}${KEY_LESS_THAN_VALUE}${beforeValueStr}`
+      : "";
+    return [afterStr, beforeStr]
+      .filter((term) => term != "")
+      .join(TERM_SEPARATOR);
+  }
+
+  if (option.key === "sort" && option.value === DEFAULT_SORT_BY.value) {
+    return "";
+  }
+  if (option.key === "sort") {
+    return `${SORT_BY_KEY}${KEY_VALUE_SEPARATOR}${option.value}`;
+  }
+
+  return "";
+}
+
+function mergeDateFilterValues(
+  after: AfterDateValue | undefined,
+  before: BeforeDateValue | undefined
+): {
+  after?: AfterDateValue;
+  before?: BeforeDateValue;
+} {
+  const merged = {
+    ...(after != null ? { after } : {}),
+    ...(before != null ? { before } : {}),
+  };
+
+  if (merged.after == null || merged.before == null) {
+    return merged;
+  }
+
+  // ? Providing both `after` and `before` as predefined tokens is not supported
+  const today = DateTime.utc().startOf("day");
+  if (typeof merged.after === "string") {
+    const adjusted: AfterDateValue =
+      merged.after === "today-7d"
+        ? { date: today.minus({ days: 7 }) }
+        : merged.after === "today-31d"
+        ? { date: today.minus({ days: 31 }) }
+        : { date: today.minus({ days: 90 }) };
+    merged.after = adjusted;
+  }
+  if (typeof merged.before === "string") {
+    const adjusted: BeforeDateValue = { date: today.minus({ days: 90 }) };
+    merged.before = adjusted;
+  }
+
+  return merged;
+}
+
+export function buildSearchQuery(
+  state: Pick<
+    SearchV2State,
+    "searchBarQuery" | "sortBy" | "filters" | "dateFilters"
+  >
+): string {
+  const { dateFilters, filters, searchBarQuery, sortBy } = state;
+
+  const optionsAsTerms = [
+    filters.role,
+    filters.type,
+    filters.visibility,
+    dateFilters.created,
+    sortBy,
+  ]
+    .map(asQueryTerm)
+    .filter((term) => term !== "");
+
+  const draftQuery = [...optionsAsTerms, searchBarQuery].join(" ");
+
+  const { canonicalQuery } = parseSearchQuery(draftQuery);
+
+  return canonicalQuery;
+}
+
+export function filtersAsArray(filters: SearchFilters): SearchFilter[] {
+  return [filters.role, filters.type, filters.visibility];
+}
+
+export function dateFiltersAsArray(
+  dateFilters: SearchDateFilters
+): SearchDateFilter[] {
+  return [dateFilters.created];
+}

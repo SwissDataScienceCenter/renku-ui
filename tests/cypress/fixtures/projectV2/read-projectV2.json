@@ -10,5 +10,7 @@
     "https://domain.name/repo2.git"
   ],
   "visibility": "public",
-  "description": "Project 2 description"
+  "description": "Project 2 description",
+  "secrets_mount_directory": "/secrets",
+  "documentation": "A description of this project, supporting **markdown** and math symbols like: $\\sqrt 2$."
 }

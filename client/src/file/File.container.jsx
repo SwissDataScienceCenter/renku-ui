@@ -173,7 +173,6 @@ class ShowFile extends React.Component {
         projectPathWithNamespace={this.props.projectPathWithNamespace}
         hashElement={this.props.hashElement}
         fileSize={fileSize}
-        history={this.props.history}
         previewThreshold={previewThreshold}
         fileInfo={this.state.fileInfo}
         branch={this.props.branch}

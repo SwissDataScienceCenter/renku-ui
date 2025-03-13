@@ -23,7 +23,6 @@ import {
   ChevronLeft,
   ChevronRight,
   CloudFill,
-  Database,
   PencilSquare,
   PlusLg,
   XLg,
@@ -33,15 +32,14 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import AddOrEditCloudStorage, {
-  AddOrEditCloudStorageV2,
-} from "./AddOrEditCloudStorage";
+import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import { useTestCloudStorageConnectionMutation } from "./projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "./projectCloudStorage.constants";
 import {
   AddCloudStorageState,
   CloudStorageDetails,
   CloudStorageSchema,
+  AuxiliaryCommandStatus,
 } from "./projectCloudStorage.types";
 
 import { SerializedError } from "@reduxjs/toolkit";
@@ -67,7 +65,7 @@ export function AddCloudStorageBackButton({
   if (state.step <= 1 || success)
     return (
       <Button
-        className="btn-outline-rk-green"
+        color="outline-primary"
         data-cy="cloud-storage-edit-close-button"
         onClick={() => toggle()}
       >
@@ -77,7 +75,7 @@ export function AddCloudStorageBackButton({
     );
   return (
     <Button
-      className="btn-outline-rk-green"
+      color="outline-primary"
       data-cy="cloud-storage-edit-back-button"
       disabled={validationResult.isLoading}
       onClick={() => {
@@ -93,9 +91,10 @@ export function AddCloudStorageBackButton({
   );
 }
 
-interface AddCloudStorageBodyContentProps
+export interface AddCloudStorageBodyContentProps
   extends AddCloudStorageHeaderContentProps {
   addResultStorageName: string | undefined;
+  credentialSaveStatus: AuxiliaryCommandStatus;
   redraw: boolean;
   schema: CloudStorageSchema[] | undefined;
   schemaError: FetchBaseQueryError | SerializedError | undefined;
@@ -107,10 +106,11 @@ interface AddCloudStorageBodyContentProps
   state: AddCloudStorageState;
   storageDetails: CloudStorageDetails;
   success: boolean;
+  validationSucceeded: boolean;
 }
 export function AddCloudStorageBodyContent({
   addResultStorageName,
-  isV2,
+  credentialSaveStatus,
   redraw,
   schema,
   schemaError,
@@ -123,68 +123,39 @@ export function AddCloudStorageBodyContent({
   success,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
-  if (success)
+  if (success) {
     return (
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="p-0">
-          The storage {addResultStorageName} has been successfully{" "}
-          {storageId ? "updated" : "added"}.
-        </p>
-      </SuccessAlert>
-    );
-  if (schemaIsFetching || !schema) return <Loader />;
-  if (schemaError) return <RtkOrNotebooksError error={schemaError} />;
-  if (!isV2) {
-    return (
-      <AddOrEditCloudStorage
-        schema={schema}
-        setState={setStateSafe}
-        setStorage={setStorageDetailsSafe}
-        state={state}
-        storage={storageDetails}
+      <AddCloudStorageSuccessAlert
+        {...{ addResultStorageName, storageId, credentialSaveStatus }}
       />
     );
   }
+  if (schemaIsFetching || !schema) return <Loader />;
+  if (schemaError) return;
+  <div data-cy="cloud-storage-add-error">
+    <RtkOrNotebooksError error={schemaError} />
+  </div>;
   return (
-    <>
-      {!storageId && (
-        <p>
-          Add published datasets from data repositories for use in your project.
-          Or, connect to cloud storage to read and write custom data.
-        </p>
-      )}
-      <AddOrEditCloudStorageV2
-        schema={schema}
-        setState={setStateSafe}
-        setStorage={setStorageDetailsSafe}
-        state={state}
-        storage={storageDetails}
-        isV2={isV2}
-      />
-    </>
+    <AddOrEditCloudStorage
+      schema={schema}
+      setState={setStateSafe}
+      setStorage={setStorageDetailsSafe}
+      state={state}
+      storage={storageDetails}
+      storageSecrets={[]}
+    />
   );
 }
 
 interface AddCloudStorageHeaderContentProps {
-  isV2: boolean;
   storageId: string | null;
 }
 export function AddCloudStorageHeaderContent({
   storageId,
-  isV2,
 }: AddCloudStorageHeaderContentProps) {
-  if (isV2)
-    return (
-      <>
-        <Database className={cx("bi", "me-2")} />{" "}
-        <span className="text-uppercase">
-          {storageId ? "Edit" : "Add"} data source
-        </span>
-      </>
-    );
   return (
     <>
-      <CloudFill className={cx("bi", "me-2")} />
+      <CloudFill className={cx("bi", "me-1")} />
       {storageId ? "Edit" : "Add"} Cloud Storage
     </>
   );
@@ -196,7 +167,9 @@ interface AddCloudStorageContinueButtonProps
   addOrEditStorage: () => void;
   disableAddButton: boolean;
   disableContinueButton: boolean;
+  hasStoredCredentialsInConfig: boolean;
   isResultLoading: boolean;
+  setValidationSucceeded: (succeeded: boolean) => void;
   storageDetails: CloudStorageDetails;
   storageId: string | null;
   validateConnection: () => void;
@@ -206,9 +179,11 @@ export function AddCloudStorageContinueButton({
   addOrEditStorage,
   disableAddButton,
   disableContinueButton,
+  hasStoredCredentialsInConfig,
   isResultLoading,
-  state,
   setStateSafe,
+  setValidationSucceeded,
+  state,
   storageDetails,
   storageId,
   validateConnection,
@@ -220,6 +195,7 @@ export function AddCloudStorageContinueButton({
     return (
       <div id={`${addButtonId}-div`} className="d-inline-block">
         <Button
+          color="primary"
           data-cy="cloud-storage-edit-update-button"
           id={`${addButtonId}-button`}
           disabled={disableAddButton}
@@ -242,7 +218,11 @@ export function AddCloudStorageContinueButton({
       </div>
     );
   }
-  if (state.step === 2 && state.completedSteps >= 1) {
+  if (
+    state.step === 2 &&
+    state.completedSteps >= 1 &&
+    !hasStoredCredentialsInConfig
+  ) {
     return (
       <div id={`${continueButtonId}-div`} className="d-inline-block">
         <TestConnectionAndContinueButtons
@@ -250,6 +230,7 @@ export function AddCloudStorageContinueButton({
           actionTest={validateConnection}
           continueId="add-cloud-storage-continue"
           resetTest={validationResult.reset}
+          setValidationSucceeded={setValidationSucceeded}
           step={state.step}
           testId="test-cloud-storage"
           testIsFailure={validationResult.isError}
@@ -272,6 +253,7 @@ export function AddCloudStorageContinueButton({
   return (
     <div id={`${continueButtonId}-div`} className="d-inline-block">
       <Button
+        color="primary"
         id={`${continueButtonId}-button`}
         data-cy="cloud-storage-edit-next-button"
         disabled={disableContinueButton}
@@ -287,7 +269,7 @@ export function AddCloudStorageContinueButton({
           });
         }}
       >
-        Next <ChevronRight className={cx("bi", "me-1")} />
+        Next <ChevronRight className={cx("bi", "ms-1")} />
       </Button>
       {disableContinueButton && (
         <UncontrolledTooltip placement="top" target={`${continueButtonId}-div`}>
@@ -311,12 +293,18 @@ export function AddCloudStorageConnectionTestResult({
     return null;
   if (validationResult.error)
     return (
-      <div className={cx("w-100", "my-0")}>
+      <div
+        className={cx("w-100", "my-0")}
+        data-cy="cloud-storage-connection-failure"
+      >
         <RtkOrNotebooksError error={validationResult.error} />
       </div>
     );
   return (
-    <div className={cx("w-100", "my-0")}>
+    <div
+      className={cx("w-100", "my-0")}
+      data-cy="cloud-storage-connection-success"
+    >
       {" "}
       <SuccessAlert timeout={0}>
         <p className="p-0">The connection to the storage works correctly.</p>
@@ -325,11 +313,79 @@ export function AddCloudStorageConnectionTestResult({
   );
 }
 
+type AddCloudStorageSuccessAlertProps = Pick<
+  AddCloudStorageBodyContentProps,
+  "addResultStorageName" | "credentialSaveStatus" | "storageId"
+>;
+
+export function AddCloudStorageSuccessAlert({
+  addResultStorageName,
+  credentialSaveStatus,
+  storageId,
+}: AddCloudStorageSuccessAlertProps) {
+  if (credentialSaveStatus == "trying")
+    return (
+      <SuccessAlert
+        data-cy="cloud-storage-add-success"
+        dismissible={false}
+        timeout={0}
+      >
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"}; saving the credentials...
+        </p>
+      </SuccessAlert>
+    );
+
+  if (credentialSaveStatus == "success")
+    return (
+      <SuccessAlert
+        data-cy="cloud-storage-add-success"
+        dismissible={false}
+        timeout={0}
+      >
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"}, along with its credentials.
+        </p>
+      </SuccessAlert>
+    );
+  if (credentialSaveStatus == "failure")
+    return (
+      <SuccessAlert
+        data-cy="cloud-storage-add-success"
+        dismissible={false}
+        timeout={0}
+      >
+        <p className="mb-0">
+          The storage {addResultStorageName} has been successfully{" "}
+          {storageId ? "updated" : "added"},{" "}
+          <b>but the credentials were not saved</b>. You can re-enter them and
+          save by editing the storage.
+        </p>
+      </SuccessAlert>
+    );
+
+  return (
+    <SuccessAlert
+      data-cy="cloud-storage-add-success"
+      dismissible={false}
+      timeout={0}
+    >
+      <p className="mb-0">
+        The storage {addResultStorageName} has been successfully{" "}
+        {storageId ? "updated" : "added"}.
+      </p>
+    </SuccessAlert>
+  );
+}
+
 interface TestConnectionAndContinueButtonsProps {
   actionState: (newState: Partial<AddCloudStorageState>) => void;
   actionTest: () => void;
   continueId: string;
   resetTest: () => void;
+  setValidationSucceeded: AddCloudStorageContinueButtonProps["setValidationSucceeded"];
   step: number;
   testId: string;
   testIsFailure: boolean;
@@ -341,6 +397,7 @@ function TestConnectionAndContinueButtons({
   actionTest,
   continueId,
   resetTest,
+  setValidationSucceeded,
   step,
   testId,
   testIsFailure,
@@ -363,18 +420,17 @@ function TestConnectionAndContinueButtons({
         Test connection <ChevronRight className={cx("bi", "me-1")} />
       </>
     );
-  const testConnectionColorClass = testIsSuccess
-    ? "btn-outline-rk-green"
+  const testConnectionColor = testIsSuccess
+    ? "outline-primary"
     : testIsFailure
-    ? "btn-danger"
-    : "btn-secondary";
+    ? "danger"
+    : "outline-primary";
   const testConnectionSection = (
     <div id={divTestId} className="d-inline-block">
       <Button
-        color=""
+        color={testConnectionColor}
         id={buttonTestId}
         data-cy={buttonTestId}
-        className={cx(testConnectionColorClass)}
         disabled={testIsOngoing}
         onClick={() => actionTest()}
       >
@@ -395,10 +451,10 @@ function TestConnectionAndContinueButtons({
     </>
   ) : null;
   const continueColorClass = testIsSuccess
-    ? "btn-secondary"
+    ? "btn-primary"
     : testIsFailure
     ? "btn-outline-danger"
-    : "btn-outline-rk-green";
+    : "btn-primary";
   const continueSection =
     !testIsFailure && !testIsSuccess ? null : (
       <div id={divContinueId} className={cx("d-inline-block", "ms-2")}>
@@ -409,6 +465,7 @@ function TestConnectionAndContinueButtons({
           className={cx(continueColorClass)}
           disabled={testIsOngoing}
           onClick={() => {
+            setValidationSucceeded(testIsSuccess);
             if (testIsFailure || testIsSuccess) {
               resetTest();
             }

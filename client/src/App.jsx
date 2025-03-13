@@ -31,20 +31,22 @@ import { Route, Switch } from "react-router-dom";
 import { CompatRoute } from "react-router-dom-v5-compat";
 import { ToastContainer } from "react-toastify";
 
-import { LoginHelper, LoginRedirect } from "./authentication";
+import { LoginHelper } from "./authentication";
+import { DashboardBanner } from "./components/earlyAccessBanner/EarlyAccessBanner";
 import { Loader } from "./components/Loader";
+import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import LazyShowDataset from "./dataset/LazyShowDataset";
-import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import LazyDashboard from "./features/dashboard/LazyDashboard";
+import { Favicon } from "./features/favicon/Favicon";
 import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
 import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
+import LazySecrets from "./features/secrets/LazySecrets";
 import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
-import { useGetUserQuery } from "./features/user/dataServicesUser.api";
-import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
+import { useGetUserQuery } from "./features/usersV2/api/users.api";
 import LazyHelp from "./help/LazyHelp";
 import LazyAnonymousHome from "./landing/LazyAnonymousHome";
 import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
@@ -55,7 +57,6 @@ import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
 import LazyProjectList from "./project/list/LazyProjectList";
 import LazyNewProject from "./project/new/LazyNewProject";
-import LazySecrets from "./features/secrets/LazySecrets";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
@@ -75,12 +76,9 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 function CentralContentContainer(props) {
   const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
 
-  const { data: userInfo } = useGetUserInfoQuery(
+  const { data: userInfo } = useGetUserQuery(
     props.user.logged ? undefined : skipToken
   );
-  // ? In the future, we should get the user info from `renku-data-services` instead of Keycloak.
-  // ? See: https://github.com/SwissDataScienceCenter/renku-ui/pull/3080.
-  useGetUserQuery(props.user.logged ? undefined : skipToken);
 
   const appContext = {
     client: props.client,
@@ -99,11 +97,6 @@ function CentralContentContainer(props) {
           <title>Reproducible Data Science | Open Research | Renku</title>
         </Helmet>
         <Switch>
-          <CompatRoute exact path="/login">
-            <ContainerWrap fullSize>
-              <LoginRedirect />
-            </ContainerWrap>
-          </CompatRoute>
           <CompatRoute exact path="/">
             {props.user.logged ? (
               <ContainerWrap>
@@ -161,7 +154,7 @@ function CentralContentContainer(props) {
               model={props.model}
             />
           </Route>
-          <Route path="/datasets/:identifier">
+          <CompatRoute path="/datasets/:identifier">
             <LazyShowDataset
               insideProject={false}
               client={props.client}
@@ -175,7 +168,7 @@ function CentralContentContainer(props) {
               logged={props.user.logged}
               model={props.model}
             />
-          </Route>
+          </CompatRoute>
           <CompatRoute path="/datasets">
             <Redirect to="/search?type=dataset" />
           </CompatRoute>
@@ -192,7 +185,7 @@ function CentralContentContainer(props) {
               <LazyStyleGuide />
             </ContainerWrap>
           </CompatRoute>
-          {userInfo?.isAdmin && (
+          {userInfo?.isLoggedIn && userInfo.is_admin && (
             <CompatRoute path="/admin">
               <ContainerWrap>
                 <LazyAdminPage />
@@ -252,8 +245,8 @@ function App(props) {
   const user = useLegacySelector((state) => state.stateModel.user);
   if (!user?.fetched && user?.fetching) {
     return (
-      <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
-        <h3 className="text-center text-primary">Checking user data</h3>
+      <section className="py-5">
+        <h3 className="text-center">Checking user data</h3>
         <Loader />
       </section>
     );
@@ -265,7 +258,9 @@ function App(props) {
 
   return (
     <Fragment>
+      <Favicon />
       <RenkuNavBar {...props} notifications={notifications} />
+      <DashboardBanner user={props.user} />
       <CentralContentContainer
         notifications={notifications}
         socket={webSocket}

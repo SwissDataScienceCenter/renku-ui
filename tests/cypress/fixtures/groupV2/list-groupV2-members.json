@@ -1,16 +1,20 @@
 [
   {
     "id": "0945f006-e117-49b7-8966-4c0842146313",
-    "email": "user1@email.com",
+    "first_name": "User",
+    "last_name": "1",
+    "namespace": "user1",
     "role": "owner"
   },
   {
     "id": "user2-uuid",
-    "email": "user2@email.com",
+    "namespace": "user2",
     "role": "editor"
   },
   {
     "id": "user3-uuid",
+    "first_name": "user3-uuid",
+    "namespace": "user3",
     "role": "viewer"
   }
 ]

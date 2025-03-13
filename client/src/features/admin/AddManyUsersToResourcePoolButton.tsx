@@ -404,12 +404,12 @@ function UserItem({
     >
       {userItem.isFetching ? (
         <span>
-          <Loader className="me-2" inline size={16} />
+          <Loader className="me-1" inline size={16} />
           {userItem.email}
         </span>
       ) : !userItem.found ? (
         <span>
-          <ExclamationCircleFill className={cx("bi", "me-2")} />
+          <ExclamationCircleFill className={cx("bi", "me-1")} />
           {userItem.email}
         </span>
       ) : (

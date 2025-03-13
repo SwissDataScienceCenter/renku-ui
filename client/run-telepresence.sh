@@ -104,6 +104,15 @@ if [[ ! $NAMESPACE ]]
 then
   if [[ ! $DEV_NAMESPACE ]]
   then
+    # Try to guess the namespace using the GitHub CLI
+    GH_CLI="${GH_CLI:-gh}"
+    PR_NUMBER=$($GH_CLI pr view --json number --jq .number || true)
+    if [[ $PR_NUMBER ]]
+    then
+      echo "Detected current PR: ${PR_NUMBER}"
+      NAMESPACE=$PR_NUMBER
+    fi
+
     while [[ ! $NAMESPACE ]]; do
       read -p "Enter your k8s namespace. Numbers-only will be converted to the renku-ui PR deployment: "
       NAMESPACE=$REPLY
@@ -190,7 +199,8 @@ tee > ./public/config.json << EOF
     "datasetSlug": "${HOMEPAGE_DATASET_SLUG}"
   },
   "USER_PREFERENCES_MAX_PINNED_PROJECTS": ${USER_PREFERENCES_MAX_PINNED_PROJECTS:-5},
-  "SESSION_CLASS_EMAIL_US": { "enabled": false }
+  "SESSION_CLASS_EMAIL_US": { "enabled": false },
+  "IMAGE_BUILDERS_ENABLED": true
 }
 EOF
 

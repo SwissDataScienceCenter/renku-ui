@@ -16,39 +16,36 @@
  * limitations under the License.
  */
 
-import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
+import type { FieldValues } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import Select, {
   ClassNamesConfig,
-  components,
   GroupBase,
   MenuListProps,
   OptionProps,
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
+  components,
 } from "react-select";
-import { Button, FormText, Label, UncontrolledTooltip } from "reactstrap";
-
-import type { FieldValues } from "react-hook-form";
-import { Controller } from "react-hook-form";
+import { Button, Label } from "reactstrap";
 
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import type { PaginatedState } from "../../session/components/options/fetchMore.types";
 import type { GetNamespacesApiResponse } from "../api/projectV2.enhanced-api";
 import {
-  projectV2Api,
+  useGetNamespacesByNamespaceSlugQuery,
   useGetNamespacesQuery,
   useLazyGetNamespacesQuery,
 } from "../api/projectV2.enhanced-api";
-
 import type { GenericFormFieldProps } from "./formField.types";
+
 import styles from "./ProjectNamespaceFormField.module.scss";
-import { useDispatch } from "react-redux";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];
 type ResponseNamespace = ResponseNamespaces[number];
@@ -61,7 +58,7 @@ const selectComponents: SelectComponentsConfig<
   DropdownIndicator: (props) => {
     return (
       <components.DropdownIndicator {...props}>
-        <ChevronDown size="20" />
+        <ChevronDown className="bi" />
       </components.DropdownIndicator>
     );
   },
@@ -109,19 +106,20 @@ function CustomMenuList({
       <components.MenuList {...props}>
         {props.children}
         {hasMore && (
-          <div className={cx("d-flex", "px-3", "pt-1")}>
+          <div className={cx("d-grid")}>
+            {/* TODO: Make this button accessible. At the moment, it cannot be used from keyboard-only navigation. */}
             <Button
-              className={cx("btn-outline-rk-green")}
+              className={cx("rounded-0", "rounded-bottom")}
+              color="secondary"
               disabled={isFetchingMore}
               onClick={onFetchMore}
-              size="sm"
             >
               {isFetchingMore ? (
-                <Loader className="me-2" inline size={16} />
+                <Loader inline size={16} />
               ) : (
-                <ThreeDots className={cx("bi", "me-2")} />
+                <ThreeDots className="bi" />
               )}
-              Fetch more
+              <span className="ms-2">Fetch more</span>
             </Button>
           </div>
         )}
@@ -133,6 +131,7 @@ function CustomMenuList({
 interface NamespaceSelectorProps {
   currentNamespace?: string;
   hasMore?: boolean;
+  inputId: string;
   isFetchingMore?: boolean;
   namespaces: ResponseNamespaces;
   onChange?: (newValue: SingleValue<ResponseNamespace>) => void;
@@ -142,6 +141,7 @@ interface NamespaceSelectorProps {
 function NamespaceSelector({
   currentNamespace,
   hasMore,
+  inputId,
   isFetchingMore,
   namespaces,
   onChange,
@@ -162,6 +162,7 @@ function NamespaceSelector({
 
   return (
     <Select
+      inputId={inputId}
       options={namespaces}
       value={currentValue}
       unstyled
@@ -180,62 +181,58 @@ function NamespaceSelector({
 }
 
 const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
-  control: ({ menuIsOpen }) =>
+  control: ({ menuIsOpen, isFocused }) =>
     cx(
       menuIsOpen ? "rounded-top" : "rounded",
       "border",
-      "py-2",
-      styles.control,
-      menuIsOpen && styles.controlIsOpen
+      isFocused && "border-primary-subtle",
+      styles.control
     ),
   dropdownIndicator: () => cx("pe-3"),
   menu: () =>
-    cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
+    cx(
+      "bg-white",
+      "rounded-bottom",
+      "border",
+      "border-top-0",
+      "z-2",
+      styles.zDropdown
+    ),
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
     cx(
       "d-flex",
       "flex-column",
       "flex-sm-row",
-      "align-items-start",
-      "align-items-sm-center",
       "column-gap-3",
       "px-3",
-      "py-1",
+      "py-2",
       styles.option,
       isFocused && styles.optionIsFocused,
       !isFocused && isSelected && styles.optionIsSelected
     ),
   placeholder: () => cx("px-3"),
   singleValue: () =>
-    cx(
-      "d-flex",
-      "flex-column",
-      "flex-sm-row",
-      "align-items-start",
-      "align-items-sm-center",
-      "column-gap-3",
-      "px-3",
-      styles.singleValue
-    ),
+    cx("d-flex", "flex-column", "flex-sm-row", "column-gap-3", "px-3"),
 };
+
+interface ProjectNamespaceFormFieldProps<T extends FieldValues>
+  extends GenericFormFieldProps<T> {
+  ensureNamespace?: string;
+}
 
 export default function ProjectNamespaceFormField<T extends FieldValues>({
   control,
   entityName,
+  ensureNamespace,
   errors,
+  helpText,
   name,
-}: GenericFormFieldProps<T>) {
-  // Handle forced refresh
-  const dispatch = useDispatch();
-  const refetch = useCallback(() => {
-    dispatch(projectV2Api.util.invalidateTags(["Namespace"]));
-  }, [dispatch]);
+}: ProjectNamespaceFormFieldProps<T>) {
   return (
-    <div className="mb-3">
-      <Label className="form-label" for={`${entityName}-namespace`}>
-        Namespace
-        <RefreshNamespaceButton refresh={refetch} />
+    <div>
+      <Label className="form-label" for={`${entityName}-namespace-input`}>
+        Owner
       </Label>
       <Controller
         control={control}
@@ -246,10 +243,11 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
           return (
             <ProjectNamespaceControl
               {...fields}
-              aria-describedby={`${entityName}NamespaceHelp`}
               className={cx(errors.namespace && "is-invalid")}
               data-cy={`${entityName}-namespace-input`}
+              ensureNamespace={ensureNamespace}
               id={`${entityName}-namespace`}
+              inputId={`${entityName}-namespace-input`}
               onChange={(newValue) => field.onChange(newValue?.slug)}
             />
           );
@@ -261,12 +259,8 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
             /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
         }}
       />
-      <div className="invalid-feedback">
-        A project must belong to a namespace.
-      </div>
-      <FormText id={`${entityName}NamespaceHelp`} className="input-hint">
-        The user or group namespace where this project should be located.
-      </FormText>
+      <div className="invalid-feedback">A project must belong to an owner.</div>
+      {helpText}
     </div>
   );
 }
@@ -274,20 +268,35 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
 interface ProjectNamespaceControlProps {
   className: string;
   "data-cy": string;
+  ensureNamespace?: string;
   id: string;
+  inputId: string;
   onChange: (newValue: SingleValue<ResponseNamespace>) => void;
   value?: string;
 }
 
-function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
-  const { className, id, onChange, value } = props;
-  const dataCy = props["data-cy"];
+export function ProjectNamespaceControl({
+  className,
+  ensureNamespace,
+  id,
+  inputId,
+  onChange,
+  value,
+  "data-cy": dataCy,
+}: ProjectNamespaceControlProps) {
   const {
     data: namespacesFirstPage,
     isError,
     isFetching,
     requestId,
-  } = useGetNamespacesQuery({ minimumRole: "editor" });
+  } = useGetNamespacesQuery({ params: { minimum_role: "editor" } });
+  const {
+    data: specificNamespace,
+    isError: specificNamespaceIsError,
+    requestId: specificNamespaceRequestId,
+  } = useGetNamespacesByNamespaceSlugQuery(
+    ensureNamespace ? { namespaceSlug: ensureNamespace } : skipToken
+  );
 
   const [
     { data: allNamespaces, fetchedPages, hasMore, currentRequestId },
@@ -303,9 +312,11 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     useLazyGetNamespacesQuery();
   const onFetchMore = useCallback(() => {
     const request = fetchNamespacesPage({
-      page: fetchedPages + 1,
-      perPage: namespacesFirstPage?.perPage,
-      minimumRole: "editor",
+      params: {
+        page: fetchedPages + 1,
+        per_page: namespacesFirstPage?.perPage,
+        minimum_role: "editor",
+      },
     });
     setState((prevState: PaginatedState<ResponseNamespace>) => ({
       ...prevState,
@@ -317,13 +328,24 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     if (namespacesFirstPage == null) {
       return;
     }
+    const userNamespace = namespacesFirstPage.namespaces.find(
+      (namespace) => namespace.namespace_kind === "user"
+    );
+    if (userNamespace != null && !value) {
+      onChange(userNamespace);
+    }
+  }, [namespacesFirstPage, onChange, value]);
+
+  useEffect(() => {
+    if (namespacesFirstPage == null) {
+      return;
+    }
     setState({
       data: namespacesFirstPage.namespaces,
       fetchedPages: namespacesFirstPage.page ?? 0,
       hasMore: namespacesFirstPage.totalPages > namespacesFirstPage.page,
       currentRequestId: "",
     });
-    ``;
   }, [namespacesFirstPage, requestId]);
 
   useEffect(() => {
@@ -334,12 +356,17 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     ) {
       return;
     }
+    const hasMore =
+      namespacesPageResult.currentData.totalPages >
+      namespacesPageResult.currentData.page;
+    const namespacesAvailable = [
+      ...allNamespaces,
+      ...namespacesPageResult.currentData.namespaces,
+    ];
     setState({
-      data: [...allNamespaces, ...namespacesPageResult.currentData.namespaces],
+      data: namespacesAvailable,
       fetchedPages: namespacesPageResult.currentData.page ?? 0,
-      hasMore:
-        namespacesPageResult.currentData.totalPages >
-        namespacesPageResult.currentData.page,
+      hasMore,
       currentRequestId: "",
     });
   }, [
@@ -348,6 +375,22 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     namespacesPageResult.requestId,
     currentRequestId,
   ]);
+
+  useEffect(() => {
+    if (specificNamespace == null || allNamespaces == null) {
+      return;
+    }
+    const hasNamespace = allNamespaces.find(
+      ({ slug }) => slug === specificNamespace.slug
+    );
+    if (hasNamespace) {
+      return;
+    }
+    setState((prevState) => {
+      const namespaces = [specificNamespace, ...(prevState.data ?? [])];
+      return { ...prevState, data: namespaces };
+    });
+  }, [allNamespaces, specificNamespace, specificNamespaceRequestId]);
 
   if (isFetching) {
     return (
@@ -358,7 +401,7 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
     );
   }
 
-  if (!allNamespaces || isError) {
+  if (!allNamespaces || isError || specificNamespaceIsError) {
     return (
       <div className={className} id={id}>
         <ErrorAlert>
@@ -373,6 +416,7 @@ function ProjectNamespaceControl(props: ProjectNamespaceControlProps) {
       <NamespaceSelector
         currentNamespace={value}
         hasMore={hasMore}
+        inputId={inputId}
         isFetchingMore={namespacesPageResult.isFetching}
         namespaces={allNamespaces}
         onChange={onChange}
@@ -395,31 +439,6 @@ function OptionOrSingleValueContent({
       <span className={cx("fst-italic", "text-body-secondary", styles.kind)}>
         ({namespace.namespace_kind})
       </span>
-    </>
-  );
-}
-
-interface RefreshNamespaceButtonProps {
-  refresh: () => void;
-}
-
-function RefreshNamespaceButton({ refresh }: RefreshNamespaceButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null);
-
-  return (
-    <>
-      <Button
-        className={cx("ms-2", "p-0")}
-        color="link"
-        innerRef={ref}
-        onClick={refresh}
-        size="sm"
-      >
-        <FontAwesomeIcon icon={faSyncAlt} />
-      </Button>
-      <UncontrolledTooltip placement="top" target={ref}>
-        Refresh namespaces
-      </UncontrolledTooltip>
     </>
   );
 }

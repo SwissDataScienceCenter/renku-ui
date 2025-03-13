@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
+import { useEffect } from "react";
 import {
+  generatePath,
   Outlet,
+  useNavigate,
   useOutletContext,
   useParams,
 } from "react-router-dom-v5-compat";
@@ -27,23 +29,45 @@ import { Col, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import type { Project } from "../../projectsV2/api/projectV2.api";
-import { useGetProjectsByNamespaceAndSlugQuery } from "../../projectsV2/api/projectV2.api";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
-
-import styles from "./ProjectPageContainer.module.scss";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 export default function ProjectPageContainer() {
   const { namespace, slug } = useParams<{
-    id: string | undefined;
     namespace: string | undefined;
     slug: string | undefined;
   }>();
-  const { data, isLoading, error } = useGetProjectsByNamespaceAndSlugQuery({
-    namespace: namespace ?? "",
-    slug: slug ?? "",
-  });
+  const { data, currentData, isLoading, error } =
+    useGetNamespacesByNamespaceProjectsAndSlugQuery({
+      namespace: namespace ?? "",
+      slug: slug ?? "",
+      withDocumentation: true,
+    });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (namespace && currentData && currentData.namespace !== namespace) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: currentData.namespace,
+          slug: currentData.slug,
+        }),
+        { replace: true }
+      );
+    } else if (slug && currentData && currentData.slug !== slug) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: currentData.namespace,
+          slug: currentData.slug,
+        }),
+        { replace: true }
+      );
+    }
+  }, [currentData, namespace, navigate, slug]);
 
   if (isLoading) return <Loader className="align-self-center" />;
 
@@ -52,20 +76,17 @@ export default function ProjectPageContainer() {
   }
 
   return (
-    <ContainerWrap fullSize className="container-lg">
+    <ContainerWrap>
       <Row>
-        <Col
-          sm={12}
-          className={cx("py-4", "px-0", "px-lg-2", styles.HeaderContainer)}
-        >
+        <Col xs={12}>
           <ProjectPageHeader project={data} />
         </Col>
-        <Col sm={12} lg={1} className={cx(styles.NavContainer)}>
-          <div className="sticky-top pt-2 pt-md-4">
+        <Col xs={12} className="mb-2">
+          <div className="mb-3">
             <ProjectPageNav project={data} />
           </div>
         </Col>
-        <Col sm={12} lg={11}>
+        <Col xs={12}>
           <main>
             <Outlet context={{ project: data } satisfies ContextType} />
           </main>

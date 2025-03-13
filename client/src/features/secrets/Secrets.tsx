@@ -19,34 +19,51 @@
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
-import SecretsList from "./SecretsList";
-import SecretNew from "./SecretNew";
 import { ExternalLink } from "../../components/ExternalLinks";
-import { SECRETS_DOCS_URL } from "./secrets.utils";
-import WipBadge from "../projectsV2/shared/WipBadge";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { User } from "../../model/renkuModels.types";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
+import { User } from "../../model/renkuModels.types";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import WipBadge from "../projectsV2/shared/WipBadge";
 
-export default function Secrets() {
-  const user = useLegacySelector<User>((state) => state.stateModel.user);
+import GeneralSecretNew from "./GeneralSecretNew";
+import SecretsList from "./SecretsList";
+import { SECRETS_DOCS_URL } from "./secrets.constants";
 
-  if (!user.fetched) return <Loader />;
-
-  const pageInfo = user.logged ? (
+function GeneralSecretSection() {
+  return (
     <>
-      <p>Here you can store secrets to use in your sessions.</p>
+      <Row>
+        <Col>
+          <div className={cx("d-flex", "justify-content-between")}>
+            <h3>General Secrets</h3>
+            <GeneralSecretNew />
+          </div>
+          <p>
+            To use general secrets in a session, start a session via “Start with
+            Options” in the Session start drop down menu. Then scroll down to
+            the User Secrets section and select the secrets you would like to
+            include in the session. The secrets you select will be mounted in
+            the session as files in a directory of your choice as{" "}
+            <code>secret-filename</code>.
+          </p>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <SecretsList />
+        </Col>
+      </Row>
+    </>
+  );
+}
 
+function SecretsPageInfo() {
+  return (
+    <>
       <p>
-        To use secrets in a session, start a session via “Start with Options” in
-        the Session start drop down menu. Then scroll down to the User Secrets
-        section and select the secrets you would like to include in the session.
-        The secrets you select will be mounted in the session as files in a
-        directory of your choice as <code>secret-name</code>.
-      </p>
-      <p>
-        For more information, please refer to{" "}
+        Here you can store secrets to use in your sessions. For more
+        information, please refer to{" "}
         <ExternalLink
           role="text"
           iconSup={true}
@@ -57,15 +74,13 @@ export default function Secrets() {
         .
       </p>
     </>
-  ) : (
-    <>
-      <LoginAlert
-        logged={user.logged}
-        textIntro="Only authenticated users can create and manage Secrets."
-        textPost="to access this page."
-      />
-    </>
   );
+}
+
+export default function Secrets() {
+  const user = useLegacySelector<User>((state) => state.stateModel.user);
+
+  if (!user.fetched) return <Loader />;
 
   return (
     <div data-cy="secrets-page">
@@ -74,26 +89,23 @@ export default function Secrets() {
           <div className={cx("d-flex", "mb-2")}>
             <h2 className={cx("mb-0", "me-2")}>User Secrets</h2>
             <div className="my-auto">
-              <WipBadge text="This feature is under development and certain pieces may not work correctly." />
+              <WipBadge tooltip="This feature is under development and certain pieces may not work correctly." />
             </div>
           </div>
-          <div>{pageInfo}</div>
+          <div>
+            {!user.logged ? (
+              <LoginAlert
+                logged={user.logged}
+                textIntro="Only authenticated users can create and manage Secrets."
+                textPost="to access this page."
+              />
+            ) : (
+              <SecretsPageInfo />
+            )}
+          </div>
         </Col>
       </Row>
-      {user.logged && (
-        <>
-          <Row>
-            <Col>
-              <SecretNew />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <SecretsList />
-            </Col>
-          </Row>
-        </>
-      )}
+      {user.logged && <GeneralSecretSection />}
     </div>
   );
 }

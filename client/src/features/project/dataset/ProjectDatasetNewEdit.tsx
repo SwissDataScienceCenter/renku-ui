@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
 import { Alert, Button, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -49,8 +49,6 @@ type ChangeDatasetProps = {
   apiVersion: string | undefined;
   client: DatasetPostClient;
   fetchDatasets: PostSubmitProps["fetchDatasets"];
-  history: ReturnType<typeof useHistory>;
-  location: { pathname: string };
   model: unknown;
   notifications: unknown;
   metadataVersion: number | undefined;
@@ -113,7 +111,9 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
     projectUrlProps
   );
 
-  const { dataset, history, submitting, setSubmitting } = props;
+  const { dataset, submitting, setSubmitting } = props;
+
+  const navigate = useNavigate();
 
   const onCancel = React.useCallback(() => {
     const targetPath = { path: projectPathWithNamespace };
@@ -123,8 +123,8 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
           dataset: dataset.slug,
         })
       : Url.get(Url.pages.project.datasets.base, { ...targetPath });
-    history.push({ pathname });
-  }, [dataset, history, projectPathWithNamespace]);
+    navigate(pathname);
+  }, [dataset, navigate, projectPathWithNamespace]);
 
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return (
@@ -178,8 +178,6 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
       externalUrl={projectMetadata.externalUrl}
       fetchDatasets={props.fetchDatasets}
       initialized={true}
-      history={props.history}
-      location={props.location}
       metadataVersion={props.metadataVersion}
       notifications={props.notifications}
       onCancel={onCancel}
@@ -198,7 +196,8 @@ function ProjectDatasetNew(
   props: Omit<ChangeDatasetProps, "submitting" | "setSubmitting"> &
     ProjectDatasetNewOnlyProps
 ) {
-  const location = props.location;
+  const location = useLocation();
+
   const project = useLegacySelector<StateModelProject>(
     (state) => state.stateModel.project
   );
@@ -230,8 +229,6 @@ function ProjectDatasetNew(
           apiVersion={props.apiVersion}
           client={props.client}
           fetchDatasets={props.fetchDatasets}
-          history={props.history}
-          location={props.location}
           metadataVersion={props.metadataVersion}
           model={props.model}
           notifications={props.notifications}
@@ -253,7 +250,7 @@ function ProjectDatasetEditForm(
     DatasetModifyDisplayProps &
     ProjectDatasetEditOnlyProps
 ) {
-  const location = props.location;
+  const location = useLocation();
   const project = useLegacySelector<StateModelProject>(
     (state) => state.stateModel.project
   );
@@ -279,8 +276,6 @@ function ProjectDatasetEditForm(
       datasetId={props.datasetId}
       fetchDatasets={props.fetchDatasets}
       files={files}
-      history={props.history}
-      location={props.location}
       metadataVersion={props.metadataVersion}
       model={props.model}
       notifications={props.notifications}
@@ -341,8 +336,6 @@ function ProjectDatasetEdit(props: ProjectDatasetEditProps) {
         datasetId={datasetId}
         fetchDatasets={props.fetchDatasets}
         files={props.files}
-        history={props.history}
-        location={props.location}
         metadataVersion={props.metadataVersion}
         model={props.model}
         notifications={props.notifications}

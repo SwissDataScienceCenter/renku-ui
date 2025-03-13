@@ -17,14 +17,24 @@
  */
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Pencil } from "react-bootstrap-icons";
-import { useForm } from "react-hook-form";
+import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import {
   generatePath,
   useLocation,
   useNavigate,
 } from "react-router-dom-v5-compat";
-import { Button, Form, Input, Label } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Form,
+  FormGroup,
+  FormText,
+  Input,
+  Label,
+} from "reactstrap";
 
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
@@ -34,6 +44,7 @@ import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.con
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import AppContext from "../../../../utils/context/appContext";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescriptionFormField";
@@ -43,11 +54,12 @@ import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibi
 
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
-import AccessGuard from "../../utils/AccessGuard";
-import useProjectAccess from "../../utils/useProjectAccess.hook";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
+import ProjectSessionSecrets from "../SessionSecrets/ProjectSessionSecrets";
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
+import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -61,11 +73,29 @@ function notificationProjectUpdated(
   );
 }
 
+function ProjectReadOnlyNameField({ name }: { name: string }) {
+  return (
+    <div>
+      <Label className="form-label" for="project-name">
+        Name
+      </Label>
+      <Input
+        className="form-control"
+        id="project-name"
+        type="text"
+        value={name}
+        disabled={true}
+        readOnly
+      />
+    </div>
+  );
+}
+
 function ProjectReadOnlyNamespaceField({ namespace }: { namespace: string }) {
   return (
-    <div className="mb-3">
+    <div>
       <Label className="form-label" for="project-namespace">
-        Namespace
+        Owner
       </Label>
       <Input
         className="form-control"
@@ -85,7 +115,7 @@ function ProjectReadOnlyVisibilityField({
   visibility: string;
 }) {
   return (
-    <div className="mb-3">
+    <div>
       <Label className="form-label" for="project-visibility">
         Visibility
       </Label>
@@ -101,21 +131,71 @@ function ProjectReadOnlyVisibilityField({
   );
 }
 
-function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
+function ProjectReadOnlyDescriptionFiled({
+  description,
+}: {
+  description: string;
+}) {
+  return (
+    <div>
+      <Label className="form-label" for="project-description">
+        Description
+      </Label>
+      <Input
+        className="form-control"
+        id="project-description"
+        type="textarea"
+        value={description}
+        disabled={true}
+        readOnly
+      />
+    </div>
+  );
+}
+
+function ProjectReadOnlyTemplateField({ isTemplate }: { isTemplate: boolean }) {
+  return (
+    <div>
+      <Label className="form-label" for="project-template">
+        Template
+      </Label>
+      <div className={cx("d-flex", "flex-row gap-4")}>
+        <FormGroup switch>
+          <Input
+            className="form-control"
+            type="checkbox"
+            role="switch"
+            id="project-template"
+            disabled={true}
+            checked={isTemplate}
+          />
+          <Label for="project-template" check>
+            <Diagram3Fill className={cx("bi", "me-1")} />
+            Template Project
+          </Label>
+        </FormGroup>
+      </div>
+    </div>
+  );
+}
+
+function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
+  const permissions = useProjectPermissions({ projectId: project.id });
   const {
     control,
     formState: { errors, isDirty },
     handleSubmit,
     watch,
     register,
+    reset,
   } = useForm<Required<ProjectV2Metadata>>({
     defaultValues: {
-      description: project.description,
+      description: project.description ?? "",
       name: project.name,
       namespace: project.namespace,
       visibility: project.visibility,
-      keywords: project.keywords,
+      keywords: project.keywords ?? [],
+      is_template: project.is_template ?? false,
     },
   });
   const currentNamespace = watch("namespace");
@@ -125,7 +205,7 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
   const { notifications } = useContext(AppContext);
   const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
-  const [updateProject, { isLoading, error, isSuccess }] =
+  const [updateProject, { isLoading, error, isSuccess, data: updatedProject }] =
     usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
@@ -142,6 +222,20 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
     },
     [project, updateProject]
   );
+
+  useEffect(() => {
+    if (isSuccess && updatedProject != null) {
+      reset({
+        description: updatedProject.description ?? "",
+        name: updatedProject.name,
+        namespace: updatedProject.namespace,
+        visibility: updatedProject.visibility,
+        keywords: updatedProject.keywords ?? [],
+        is_template: updatedProject.is_template ?? false,
+      });
+    }
+  }, [isSuccess, reset, updatedProject]);
+
   useEffect(() => {
     if (isSuccess && redirectAfterUpdate) {
       if (notifications && currentName)
@@ -167,17 +261,29 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
       {error && <RtkErrorAlert error={error} />}
       {isSuccess && (
         <SuccessAlert dismissible={false} timeout={0}>
-          <p className="p-0">The project has been successfully updated.</p>
+          <p className="mb-0">The project has been successfully updated.</p>
         </SuccessAlert>
       )}
 
       <Form
-        className="form-rk-green"
+        className={cx("d-flex", "flex-column", "gap-3")}
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ProjectNameFormField name="name" control={control} errors={errors} />
-        <AccessGuard
+        <PermissionsGuard
+          disabled={<ProjectReadOnlyNameField name={project.name} />}
+          enabled={
+            <ProjectNameFormField
+              name="name"
+              control={control}
+              errors={errors}
+            />
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+
+        <PermissionsGuard
           disabled={
             <ProjectReadOnlyNamespaceField namespace={project.namespace} />
           }
@@ -186,18 +292,26 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               name="namespace"
               control={control}
               entityName="project"
+              ensureNamespace={project.namespace}
               errors={errors}
             />
           }
-          role={userRole}
+          requestedPermission="write"
+          userPermissions={permissions}
         />
         {currentNamespace !== project.namespace && (
-          <RenkuAlert color={"warning"} dismissible={false} timeout={0}>
-            Modifying the namespace also change the project&apos;s URL. Once the
+          <RenkuAlert
+            className={cx("mb-0", "mt-1")}
+            color="warning"
+            dismissible={false}
+            timeout={0}
+          >
+            Modifying the owner also change the project&apos;s URL. Once the
             change is saved, it will redirect to the updated project URL.
           </RenkuAlert>
         )}
-        <AccessGuard
+
+        <PermissionsGuard
           disabled={
             <ProjectReadOnlyVisibilityField visibility={project.visibility} />
           }
@@ -208,106 +322,136 @@ function ProjectSettingsEditForm({ project }: ProjectPageSettingsProps) {
               errors={errors}
             />
           }
-          role={userRole}
+          requestedPermission="write"
+          userPermissions={permissions}
         />
-        <ProjectDescriptionFormField
-          name="description"
-          control={control}
-          errors={errors}
-        />
-        <KeywordsInput
-          hasError={errors.keywords != null}
-          help="Keywords are used to describe the project. To add one, type a keyword and press enter."
-          label="Keywords"
-          name="keywords"
-          register={register("keywords", { validate: () => !areKeywordsDirty })}
-          setDirty={setKeywordsDirty}
-          value={project.keywords as string[]}
-        />
-        <div className={cx("d-flex", "justify-content-end")}>
-          <Button
-            disabled={isUpdating || !isDirty}
-            className="me-1"
-            type="submit"
-          >
-            {isUpdating ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <Pencil size={16} className={cx("bi", "me-1")} />
-            )}
-            Update project
-          </Button>
-        </div>
-      </Form>
-    </div>
-  );
-}
 
-function ProjectSettingsDisplay({ project }: ProjectPageSettingsProps) {
-  const onSubmit = () => {};
+        <PermissionsGuard
+          disabled={
+            <ProjectReadOnlyDescriptionFiled
+              description={project.description ?? ""}
+            />
+          }
+          enabled={
+            <ProjectDescriptionFormField
+              name="description"
+              control={control}
+              errors={errors}
+            />
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
 
-  return (
-    <div>
-      <Form className="form-rk-green" noValidate onSubmit={onSubmit}>
-        <div className="mb-3">
-          <Label className="form-label" for="project-name">
-            Name
-          </Label>
-          <Input
-            className="form-control"
-            id="project-name"
-            type="text"
-            value={project.name}
-            disabled={true}
-            readOnly
-          />
-        </div>
-        <ProjectReadOnlyNamespaceField namespace={project.namespace} />
-        <div className="mb-3">
-          <Label className="form-label" for="project-description">
-            Description
-          </Label>
-          <Input
-            className="form-control"
-            id="project-description"
-            type="textarea"
-            value={project.description}
-            disabled={true}
-            readOnly
-          />
-        </div>
-        <ProjectReadOnlyVisibilityField visibility={project.visibility} />
+        <PermissionsGuard
+          disabled={
+            <ProjectReadOnlyTemplateField
+              isTemplate={project.is_template ?? false}
+            />
+          }
+          enabled={
+            <div>
+              <div className="form-label">Template</div>
+              <Controller
+                aria-describedby="projectTemplateHelp"
+                control={control}
+                name={"is_template"}
+                render={({ field }) => {
+                  const { value, ...props } = field;
+                  return (
+                    <div className={cx("d-flex", "flex-row gap-4")}>
+                      <FormGroup switch>
+                        <Input
+                          type="checkbox"
+                          role="switch"
+                          className={cx(errors.is_template && "is-invalid")}
+                          data-cy="project-template"
+                          id="project-template"
+                          {...props}
+                          checked={value}
+                        />
+                        <Label
+                          for="project-template"
+                          className="cursor-pointer"
+                          check
+                        >
+                          <Diagram3Fill className={cx("bi", "me-1")} />
+                          Mark this project as a template
+                        </Label>
+                      </FormGroup>
+                    </div>
+                  );
+                }}
+              />
+              <FormText id="projectTemplateHelp" className="input-hint">
+                Make this a template project to indicate to viewers that this
+                project should be copied before being used.
+              </FormText>
+            </div>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <KeywordsInput
+              hasError={errors.keywords != null}
+              help="Keywords are used to describe the project. To add one, type a keyword and press enter."
+              label="Keywords"
+              name="keywords"
+              register={register("keywords", {
+                validate: () => !areKeywordsDirty,
+              })}
+              setDirty={setKeywordsDirty}
+              value={project.keywords as string[]}
+            />
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <div className={cx("d-flex", "justify-content-end")}>
+              <Button
+                color="primary"
+                data-cy="project-update-button"
+                disabled={isUpdating || !isDirty}
+                type="submit"
+              >
+                {isUpdating ? (
+                  <Loader className="me-1" inline size={16} />
+                ) : (
+                  <Pencil className={cx("bi", "me-1")} />
+                )}
+                Update project
+              </Button>
+            </div>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
       </Form>
     </div>
   );
 }
 
 function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
   return (
-    <>
-      <h4 className="fw-bold">General settings</h4>
-      <AccessGuard
-        disabled={null}
-        enabled={
-          <small>
-            Update your project title, description, visibility and namespace.
-          </small>
-        }
-        role={userRole}
-      />
-      <div
-        id="general"
-        className={cx("bg-white", "rounded-3", "mt-3", "p-3", "p-md-4")}
-      >
-        <AccessGuard
-          disabled={<ProjectSettingsDisplay project={project} />}
-          enabled={<ProjectSettingsEditForm project={project} />}
-          minimumRole="editor"
-          role={userRole}
-        />
-      </div>
-    </>
+    <Card data-cy="project-settings-general" id="general">
+      <CardHeader>
+        <h4 className="m-0">
+          <Sliders className={cx("me-1", "bi")} />
+          General settings
+        </h4>
+      </CardHeader>
+      <CardBody>
+        <ProjectSettingsForm project={project} />
+      </CardBody>
+    </Card>
   );
 }
 
@@ -318,7 +462,7 @@ export default function ProjectPageSettings() {
   const { project } = useProject();
 
   const { hash } = useLocation();
-  const { userRole } = useProjectAccess({ projectId: project.id });
+  const permissions = useProjectPermissions({ projectId: project.id });
 
   // Handle anchor links https://stackoverflow.com/a/61311926/5804638
   useEffect(() => {
@@ -339,21 +483,21 @@ export default function ProjectPageSettings() {
   }, [hash]);
 
   return (
-    <div className={cx("pb-5", "pt-0")}>
-      <div id="general" className={cx("px-2", "px-md-5", "pt-4")}>
-        <ProjectSettingsMetadata project={project} />
-      </div>
-      <div id="members" className={cx("px-2", "px-md-5", "pt-4")}>
-        <ProjectPageSettingsMembers project={project} />
-      </div>
-      <AccessGuard
+    <div className={cx("d-flex", "flex-column", "gap-4")}>
+      <ProjectSettingsMetadata project={project} />
+      <ProjectPageSettingsMembers project={project} />
+      <ProjectSessionSecrets />
+      <PermissionsGuard
         disabled={null}
-        enabled={
-          <div id="delete" className={cx("px-2", "px-md-5", "pt-4")}>
-            <ProjectPageDelete project={project} />
-          </div>
-        }
-        role={userRole}
+        enabled={<ProjectUnlinkTemplate project={project} />}
+        requestedPermission="write"
+        userPermissions={permissions}
+      />
+      <PermissionsGuard
+        disabled={null}
+        enabled={<ProjectPageDelete project={project} />}
+        requestedPermission="delete"
+        userPermissions={permissions}
       />
     </div>
   );

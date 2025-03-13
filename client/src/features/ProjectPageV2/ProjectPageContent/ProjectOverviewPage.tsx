@@ -16,19 +16,40 @@
  * limitations under the License
  */
 
-import cx from "classnames";
 import { Col, Row } from "reactstrap";
+
+import SessionsV2 from "../../sessionsV2/SessionsV2";
+import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
+import { CodeRepositoriesDisplay } from "./CodeRepositories/RepositoriesBox";
+import ProjectDataConnectorsBox from "./DataConnectors/ProjectDataConnectorsBox";
+import Documentation from "./Documentation/Documentation";
 import ProjectInformation from "./ProjectInformation/ProjectInformation";
-import ProjectPageOverview from "./ProjectOverview/ProjectOverview";
 
 export default function ProjectOverviewPage() {
+  const { project } = useProject();
+
   return (
-    <Row className="pt-4">
-      <Col sm={12} lg={10}>
-        <ProjectPageOverview />
+    <Row className="g-4">
+      <Col xs={12} md={8} xl={9}>
+        <Row className="g-4">
+          <Col xs={12}>
+            <SessionsV2 project={project} />
+          </Col>
+          <Col className="order-3" xs={12} xl={6}>
+            <ProjectDataConnectorsBox project={project} />
+          </Col>
+          <Col className="order-4" xs={12} xl={6}>
+            <CodeRepositoriesDisplay project={project} />
+          </Col>
+          <Col className="order-5" xs={12}>
+            <Documentation project={project} />
+          </Col>
+        </Row>
       </Col>
-      <Col sm={12} lg={2} className={cx("d-none", "d-lg-block", " d-sm-none")}>
-        <ProjectInformation />
+      <Col xs={12} md={4} xl={3}>
+        <div className="mb-3">
+          <ProjectInformation output="card" />
+        </div>
       </Col>
     </Row>
   );

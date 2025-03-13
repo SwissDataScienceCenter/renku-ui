@@ -19,14 +19,14 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useCallback, useEffect, useState } from "react";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetResourceClassByIdQuery } from "../dataServices/computeResources.api";
 import {
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
-import { SessionLauncher } from "./sessionsV2.types";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 
 interface UseSessionResourceClassProps {
   isCustomLaunch: boolean;
@@ -47,10 +47,18 @@ export default function useSessionResourceClass({
   const [isPendingResourceClass, setIsPendingResourceClass] =
     useState<boolean>(false);
   const setResourceClass = useCallback(
-    (envClass: ResourceClass) => {
+    (envClass: ResourceClass, diskStorage: number | undefined) => {
       if (envClass) {
         dispatch(
           startSessionOptionsV2Slice.actions.setSessionClass(envClass.id)
+        );
+        const cappedStorage = diskStorage
+          ? Math.min(diskStorage, envClass.max_storage)
+          : diskStorage;
+        dispatch(
+          startSessionOptionsV2Slice.actions.setStorage(
+            cappedStorage ?? envClass.default_storage
+          )
         );
         setIsPendingResourceClass(false);
       }
@@ -59,7 +67,7 @@ export default function useSessionResourceClass({
   );
 
   // Select the default session class only if it is not a custom launch and
-  // the launcher resource class exists in the user resource pool.
+  // the launcher resource class exists in the user resource pool
   useEffect(() => {
     if (resourcePools == null || isLoadingLauncherClass) {
       return;
@@ -81,10 +89,11 @@ export default function useSessionResourceClass({
     }
 
     if (initialSessionClass && !isCustomLaunch)
-      setResourceClass(initialSessionClass);
+      setResourceClass(initialSessionClass, launcher.disk_storage);
   }, [
     isCustomLaunch,
     isLoadingLauncherClass,
+    launcher.disk_storage,
     launcherClass,
     resourcePools,
     setResourceClass,

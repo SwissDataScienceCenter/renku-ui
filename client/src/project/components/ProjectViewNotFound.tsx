@@ -16,25 +16,22 @@
  * limitations under the License.
  */
 
-import { Location } from "history";
-import { Link } from "react-router-dom";
-
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import NotFound from "../../not-found/NotFound";
-import { Url } from "../../utils/helpers/url";
 
 interface ProjectViewNotFoundProps {
   userLogged: boolean;
   projectPathWithNamespace?: string | null | undefined;
   projectId?: string | null | undefined;
-  location: Location;
 }
 
 export const ProjectViewNotFound = ({
   userLogged,
   projectPathWithNamespace,
   projectId,
-  location,
 }: ProjectViewNotFoundProps) => {
+  const loginUrl = useLoginUrl();
+
   const tip = userLogged ? (
     <>
       <p>
@@ -51,21 +48,14 @@ export const ProjectViewNotFound = ({
       </ul>
     </>
   ) : (
-    (() => {
-      const to = Url.get(Url.pages.login.link, {
-        pathname: location.pathname,
-      });
-      return (
-        <>
-          <p>
-            You might need to be logged in to see this project. Please try to{" "}
-            <Link className="btn btn-secondary btn-sm" to={to}>
-              Log in
-            </Link>
-          </p>
-        </>
-      );
-    })()
+    <>
+      <p>
+        You might need to be logged in to see this project. Please try to{" "}
+        <a className="btn btn-secondary btn-sm" href={loginUrl.href}>
+          Log in
+        </a>
+      </p>
+    </>
   );
 
   const notFoundText = projectPathWithNamespace ? (

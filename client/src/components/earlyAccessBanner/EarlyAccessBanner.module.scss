@@ -1,0 +1,9 @@
+@import "../../styles/bootstrap/_custom_bootstrap_variables.scss";
+.EarlyAccessBannerBtn {
+  &:hover,
+  &:active {
+    background-color: #{$rk-green-hover} !important;
+    border-color: #{$rk-green-hover} !important;
+    color: var(--bs-white) !important;
+  }
+}

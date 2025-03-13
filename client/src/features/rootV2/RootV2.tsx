@@ -18,35 +18,43 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom-v5-compat";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom-v5-compat";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
-import { RELATIVE_ROUTES } from "../../routing/routes.constants";
+import {
+  ABSOLUTE_ROUTES,
+  RELATIVE_ROUTES,
+} from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
-
-import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
-import LazyProjectInformation from "../ProjectPageV2/ProjectPageContent/LazyProjectInformation";
-import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
-import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
-import LazyGroupV2Show from "../groupsV2/LazyGroupV2Show";
-import LazyGroupV2List from "../projectsV2/LazyGroupList";
-import LazyGroupV2New from "../projectsV2/LazyGroupNew";
-import LazyProjectV2List from "../projectsV2/LazyProjectV2List";
-import LazyProjectV2New from "../projectsV2/LazyProjectV2New";
+import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
+import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
+import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
+import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
+import GroupNew from "../groupsV2/new/GroupNew";
+import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
+import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
+import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
+import ProjectV2New from "../projectsV2/new/ProjectV2New";
 import LazySearchV2 from "../searchV2/LazySearchV2";
+import LazySecretsV2 from "../secretsV2/LazySecretsV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
 import NavbarV2 from "./NavbarV2";
-import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -73,13 +81,15 @@ export default function RootV2() {
   return (
     <div className="w-100">
       <NavbarV2 />
+      <ProjectV2New />
+      <GroupNew />
 
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
           <Route
             index
             element={
-              <ContainerWrap>
+              <ContainerWrap fullSize={true}>
                 <LazyDashboardV2 />
               </ContainerWrap>
             }
@@ -117,10 +127,18 @@ export default function RootV2() {
             }
           />
           <Route
-            path="connected-services"
+            path={RELATIVE_ROUTES.v2.connectedServices}
             element={
               <ContainerWrap>
                 <LazyConnectedServicesPage />
+              </ContainerWrap>
+            }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v2.secrets}
+            element={
+              <ContainerWrap>
+                <LazySecretsV2 />
               </ContainerWrap>
             }
           />
@@ -141,17 +159,27 @@ export default function RootV2() {
 function GroupsV2Routes() {
   return (
     <Routes>
-      <Route index element={<LazyGroupV2List />} />
       <Route
         path={RELATIVE_ROUTES.v2.groups.new}
-        element={<LazyGroupV2New />}
+        element={
+          <Navigate
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.root,
+              hash: GROUP_CREATION_HASH,
+            }}
+            replace
+          />
+        }
       />
+
       <Route path={RELATIVE_ROUTES.v2.groups.show.root}>
-        <Route index element={<LazyGroupV2Show />} />
-        <Route
-          path={RELATIVE_ROUTES.v2.groups.show.settings}
-          element={<LazyGroupV2Settings />}
-        />
+        <Route element={<LazyGroupContainer />}>
+          <Route index element={<LazyGroupV2Overview />} />
+          <Route
+            path={RELATIVE_ROUTES.v2.groups.show.settings}
+            element={<LazyGroupV2Settings />}
+          />
+        </Route>
       </Route>
       <Route
         path="*"
@@ -177,28 +205,20 @@ function ProjectsV2Routes() {
   return (
     <Routes>
       <Route
-        path="/"
-        element={
-          <ContainerWrap>
-            <LazyProjectV2List />
-          </ContainerWrap>
-        }
-      />
-      <Route
         path={RELATIVE_ROUTES.v2.projects.new}
         element={
-          <ContainerWrap>
-            <LazyProjectV2New />
-          </ContainerWrap>
+          <Navigate
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.root,
+              hash: PROJECT_CREATION_HASH,
+            }}
+            replace
+          />
         }
       />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route element={<LazyProjectPageV2Show />}>
           <Route index element={<LazyProjectPageOverview />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.projects.show.info}
-            element={<LazyProjectInformation />}
-          />
           <Route
             path={RELATIVE_ROUTES.v2.projects.show.settings}
             element={<LazyProjectPageSettings />}

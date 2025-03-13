@@ -3,33 +3,38 @@
     "id": "0945f006-e117-49b7-8966-4c0842146313",
     "first_name": "User",
     "last_name": "One",
-    "email": "user1@email.com",
+    "namespace": "user1",
     "role": "owner"
   },
   {
     "id": "user2-uuid",
     "first_name": "User",
     "last_name": "Two",
-    "email": "user2@email.com",
+    "namespace": "user2",
     "role": "viewer"
   },
   {
     "first_name": "User",
     "last_name": "Three",
     "id": "user3-uuid",
-    "role": "editor"
+    "role": "editor",
+    "namespace": "user3"
   },
   {
     "id": "user4-uuid",
-    "email": "user4@email.com",
+    "namespace": "user4",
+    "first_name": "User",
+    "last_name": "Four",
     "role": "viewer"
   },
   {
     "id": "user5-uuid",
-    "role": "viewer"
+    "role": "viewer",
+    "namespace": "user5"
   },
   {
     "id": "user6-uuid",
-    "role": "owner"
+    "role": "owner",
+    "first_name": "UserSix"
   }
 ]

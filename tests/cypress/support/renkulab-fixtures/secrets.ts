@@ -19,62 +19,108 @@
 import { FixturesConstructor } from "./fixtures";
 import { NameOnlyFixture } from "./fixtures.types";
 
-interface ListSecretsArgs extends NameOnlyFixture {
+interface ListSecretsArgs extends SecretArgs {
   numberOfSecrets?: number;
 }
 
-function generateFakeSecrets(num: number) {
+interface SecretArgs extends NameOnlyFixture {
+  secretsKind?: "general" | "storage";
+}
+
+function generateFakeSecretsGeneral(num: number) {
   const secrets = [];
   for (let i = 0; i < num; ++i) {
+    const secretName = `secret_${i}`;
     secrets.push({
       id: `id_${i}`,
       modification_date: new Date(),
-      name: `secret_${i}`,
+      name: secretName,
+      kind: "general",
+      session_secret_slot_ids: [],
+      data_connector_ids: [],
     });
   }
   return secrets;
 }
 
+function generateFakeSecretsStorage(num: number) {
+  const secrets = [];
+  // The first part of the id is the data-source id.
+  // Make two secrets per data-source.
+  const dataSourcesCount = Math.ceil(num / 2);
+  for (let i = 0; i < dataSourcesCount; ++i) {
+    const dataSourceId = `data_source_${i}`;
+    for (let j = 0; j < 2; ++j) {
+      const secretName = `${dataSourceId}-secret_${i}`;
+      secrets.push({
+        id: `id_${i}_${j}`,
+        modification_date: new Date(),
+        name: secretName,
+        kind: "storage",
+        session_secret_slot_ids: [],
+        data_connector_ids: [dataSourceId],
+      });
+    }
+  }
+  return secrets;
+}
+
+function generateFakeSecrets(
+  num: number,
+  kind: ListSecretsArgs["secretsKind"]
+) {
+  if (kind === "general") {
+    return generateFakeSecretsGeneral(num);
+  } else if (kind === "storage") {
+    return generateFakeSecretsStorage(num);
+  }
+  return [];
+}
+
 export function Secrets<T extends FixturesConstructor>(Parent: T) {
   return class SecretsFixtures extends Parent {
     listSecrets(args?: ListSecretsArgs) {
-      const { name = "listSecrets", numberOfSecrets = 0 } = args ?? {};
+      const {
+        name = "listSecrets",
+        numberOfSecrets = 0,
+        secretsKind = "general",
+      } = args ?? {};
       const response = {
-        body: generateFakeSecrets(numberOfSecrets),
+        body: generateFakeSecrets(numberOfSecrets, secretsKind),
       };
-      cy.intercept("GET", "/ui-server/api/data/user/secrets", response).as(
-        name
-      );
+      cy.intercept(
+        "GET",
+        `/api/data/user/secrets?kind=${secretsKind}`,
+        response
+      ).as(name);
       return this;
     }
 
-    newSecret(args?: NameOnlyFixture) {
-      const { name = "fake_id" } = args ?? {};
+    newSecret(args?: SecretArgs) {
+      const { name = "fake_id", secretsKind = "general" } = args ?? {};
       const response = {
         body: {
           id: "fake_id",
           modification_date: new Date(),
           name: "fake_secret",
+          kind: secretsKind,
         },
       };
-      cy.intercept("POST", "/ui-server/api/data/user/secrets", response).as(
-        name
-      );
+      cy.intercept("POST", "/api/data/user/secrets", response).as(name);
       return this;
     }
 
-    editSecret(args?: NameOnlyFixture) {
-      const { name = "editSecret" } = args ?? {};
+    editSecret(args?: SecretArgs) {
+      const { name = "editSecret", secretsKind } = args ?? {};
       const response = {
         body: {
           id: "fake_id",
           modification_date: new Date(),
           name: "fake_secret",
+          kind: secretsKind,
         },
       };
-      cy.intercept("PATCH", "/ui-server/api/data/user/secrets/*", response).as(
-        name
-      );
+      cy.intercept("PATCH", "/api/data/user/secrets/*", response).as(name);
       return this;
     }
 
@@ -83,9 +129,7 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
       const response = {
         body: {},
       };
-      cy.intercept("DELETE", "/ui-server/api/data/user/secrets/*", response).as(
-        name
-      );
+      cy.intercept("DELETE", "/api/data/user/secrets/*", response).as(name);
       return this;
     }
   };

@@ -26,7 +26,7 @@ import { User } from "../../../../model/renkuModels.types";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { useGetSecretsQuery } from "../../../secrets/secrets.api";
+import { useGetUserSecretsQuery } from "../../../usersV2/api/users.api";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { setSecretsList, setSecretsPath } from "../../startSessionOptionsSlice";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
@@ -68,7 +68,9 @@ function SessionUserSecretsSection() {
   const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
   // Fetch the secrets
-  const secrets = useGetSecretsQuery();
+  const secrets = useGetUserSecretsQuery({
+    userSecretsParams: { kind: "general" },
+  });
 
   // Get current values from the store
   const sessionOptions = useAppSelector((state) => state.startSessionOptions);
@@ -216,7 +218,7 @@ function SecretsCheckboxList({
             className={cx("form-check-label", "my-auto")}
             for={`secrets-session-${secret.name}`}
           >
-            {secret.name}
+            {secret.name} - filename: <code>{secret.default_filename}</code>
           </Label>
         </div>
       ))}

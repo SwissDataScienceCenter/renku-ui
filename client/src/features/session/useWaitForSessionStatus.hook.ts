@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
 import { useGetSessionsQuery } from "./sessions.api";
 import { SessionStatusState } from "./sessions.types";
 
@@ -38,6 +39,46 @@ export default function useWaitForSessionStatus({
   const [isWaiting, setIsWaiting] = useState(false);
 
   const result = useGetSessionsQuery(undefined, {
+    pollingInterval,
+    skip: skip || !isWaiting,
+  });
+  const session = useMemo(() => {
+    if (result.data == null) {
+      return undefined;
+    }
+    return Object.values(result.data).find(({ name }) => name === sessionName);
+  }, [result.data, sessionName]);
+
+  useEffect(() => {
+    if (skip) {
+      setIsWaiting(false);
+    }
+  }, [skip]);
+
+  useEffect(() => {
+    if (skip) {
+      return;
+    }
+    const desiredStatuses =
+      typeof desiredStatus === "string" ? [desiredStatus] : desiredStatus;
+    const isWaiting =
+      (session != null && !desiredStatuses.includes(session.status.state)) ||
+      (session == null && !desiredStatuses.includes("stopping"));
+    setIsWaiting(isWaiting);
+  }, [desiredStatus, session, skip]);
+
+  return { isWaiting, session };
+}
+
+export function useWaitForSessionStatusV2({
+  desiredStatus,
+  pollingInterval = DEFAULT_POLLING_INTERVAL_MS,
+  sessionName,
+  skip,
+}: UseWaitForSessionStatusArgs) {
+  const [isWaiting, setIsWaiting] = useState(false);
+
+  const result = useGetSessionsQueryV2(undefined, {
     pollingInterval,
     skip: skip || !isWaiting,
   });

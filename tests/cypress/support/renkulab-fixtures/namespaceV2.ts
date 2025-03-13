@@ -29,7 +29,13 @@ interface ListManyGroupArgs extends NameOnlyFixture {
 
 interface ListGroupV2MembersFixture extends GroupV2Args {
   removeUserId?: string;
-  addMember?: { id: string; email: string; role: string };
+  addMember?: {
+    id: string;
+    role: string;
+    first_name?: string;
+    last_name?: string;
+    namespace: string;
+  };
 }
 
 interface GroupV2Args extends SimpleFixture {
@@ -45,6 +51,10 @@ interface GroupV2DeleteMemberFixture extends GroupV2Args {
 }
 interface ListManyNamespacesArgs extends NameOnlyFixture {
   numberOfNamespaces?: number;
+}
+
+interface UserNamespaceV2Args extends SimpleFixture {
+  username?: string;
 }
 
 function generateGroups(numberOfGroups: number, start: number) {
@@ -195,6 +205,21 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getGroupV2Permissions(args?: GroupV2Args) {
+      const {
+        fixture = "groupV2/groupV2-permissions.json",
+        name = "getGroupV2Permissions",
+        groupSlug = "test-2-group-v2",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/groups/${groupSlug}/permissions`,
+        response
+      ).as(name);
+      return this;
+    }
+
     listGroupV2Members(args?: ListGroupV2MembersFixture) {
       const {
         fixture = "groupV2/list-groupV2-members.json",
@@ -259,12 +284,15 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         name = "readGroupV2",
         groupSlug = "test-2-group-v2",
       } = args ?? {};
-      const response = { fixture };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/groups/${groupSlug}`,
-        response
-      ).as(name);
+      cy.fixture(fixture).then((group_) => {
+        const group = {
+          ...group_,
+          slug: groupSlug,
+        };
+        cy.intercept("GET", `/ui-server/api/data/groups/${groupSlug}`, {
+          body: group,
+        }).as(name);
+      });
       return this;
     }
 
@@ -274,10 +302,28 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         name = "readGroupV2Namespace",
         groupSlug = "test-2-group-v2",
       } = args ?? {};
+      cy.fixture(fixture).then((namespace_) => {
+        const namespace = {
+          ...namespace_,
+          slug: groupSlug,
+        };
+        cy.intercept("GET", `/ui-server/api/data/namespaces/${groupSlug}`, {
+          body: namespace,
+        }).as(name);
+      });
+      return this;
+    }
+
+    readUserV2Namespace(args?: UserNamespaceV2Args) {
+      const {
+        fixture = "namespaceV2/namespaceV2-user1.json",
+        name = "readUserV2Namespace",
+        username = "user1-uuid",
+      } = args ?? {};
       const response = { fixture };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/namespaces/${groupSlug}`,
+        `/ui-server/api/data/namespaces/${username}`,
         response
       ).as(name);
       return this;

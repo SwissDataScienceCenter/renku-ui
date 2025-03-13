@@ -1,0 +1,13 @@
+@import "/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+
+.modal :global(.modal-content) {
+  height: unset !important;
+}
+
+.listGroupItemActive {
+  border: 1px solid $rk-green !important;
+  color: $rk-green;
+  &:hover {
+    color: $rk-green;
+  }
+}

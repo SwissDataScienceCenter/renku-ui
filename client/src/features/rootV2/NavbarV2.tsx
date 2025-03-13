@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useContext, useState } from "react";
 import {
   List,
-  PlusCircleFill,
+  PlusCircle,
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
@@ -33,7 +33,6 @@ import {
   DropdownToggle,
   Nav,
   NavItem,
-  Navbar,
   NavbarToggler,
 } from "reactstrap";
 
@@ -43,47 +42,43 @@ import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
+import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
+import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
+import StatusBanner from "../platform/components/StatusBanner";
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import BackToV1Button from "../projectsV2/shared/BackToV1Button";
 import WipBadge from "../projectsV2/shared/WipBadge";
 
-const RENKU_ALPHA_LOGO = "/static/public/img/logo-yellow.svg";
+const RENKU_ALPHA_LOGO = "/static/public/img/logo.svg";
 
 function NavbarItemPlus() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
+  const [, setHash] = useLocationHash();
+  const toggleNewProject = useCallback(() => {
+    setHash(PROJECT_CREATION_HASH);
+  }, [setHash]);
+  const toggleNewGroup = useCallback(() => {
+    setHash(GROUP_CREATION_HASH);
+  }, [setHash]);
+
   return (
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
       <DropdownToggle
-        className={cx("nav-link", "fs-5", "ps-sm-2", "pe-2")}
         nav
-        caret
+        className={cx("nav-link", "fs-5")}
+        data-cy="navbar-new-entity"
         id="plus-dropdown"
       >
-        <PlusCircleFill className="bi" id="createPlus" />
+        <PlusCircle className="bi" id="createPlus" />
       </DropdownToggle>
-      <DropdownMenu
-        aria-labelledby="plus-menu"
-        className={cx("plus-menu", "btn-with-menu-options", "z-3")}
-        end
-      >
-        <DropdownItem className="p-0">
-          <Link
-            className="dropdown-item"
-            data-cy="navbar-project-new"
-            to="/v2/projects/new"
-          >
-            Project
-          </Link>
+      <DropdownMenu end>
+        <DropdownItem data-cy="navbar-project-new" onClick={toggleNewProject}>
+          Project
         </DropdownItem>
-        <DropdownItem className="p-0">
-          <Link
-            className="dropdown-item"
-            data-cy="navbar-group-new"
-            to="/v2/groups/new"
-          >
-            Group
-          </Link>
+        <DropdownItem data-cy="navbar-group-new" onClick={toggleNewGroup}>
+          Group
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -101,49 +96,33 @@ function NavbarItemHelp() {
       toggle={toggleOpen}
       className="nav-item"
     >
-      <DropdownToggle
-        className={cx("nav-link", "fs-5", "px-2", "ps-sm-2")}
-        nav
-        caret
-      >
+      <DropdownToggle nav className={cx("nav-link", "fs-5")}>
         <QuestionCircle className="bi" id="helpDropdownToggle" />
       </DropdownToggle>
-      <DropdownMenu
-        className={cx("help-menu", "btn-with-menu-options")}
-        key="help-bar"
-        aria-labelledby="help-menu"
-      >
-        <DropdownItem className="p-0">
-          <Link
-            data-cy="help-link"
-            className="dropdown-item"
-            to={ABSOLUTE_ROUTES.v2.help.root}
-          >
-            Help
-          </Link>
-        </DropdownItem>
+      <DropdownMenu>
+        <Link
+          data-cy="help-link"
+          className="dropdown-item"
+          to={ABSOLUTE_ROUTES.v2.help.root}
+        >
+          Help
+        </Link>
         <DropdownItem divider />
-        <DropdownItem className="p-0">
-          <ExternalDocsLink
-            url={Links.DISCOURSE}
-            title="Forum"
-            className="dropdown-item"
-          />
-        </DropdownItem>
-        <DropdownItem className="p-0">
-          <ExternalDocsLink
-            url={Links.GITTER}
-            title="Gitter"
-            className="dropdown-item"
-          />
-        </DropdownItem>
-        <DropdownItem className="p-0">
-          <ExternalDocsLink
-            url={Links.GITHUB}
-            title="GitHub"
-            className="dropdown-item"
-          />
-        </DropdownItem>
+        <ExternalDocsLink
+          url={Links.DISCOURSE}
+          title="Forum"
+          className="dropdown-item"
+        />
+        <ExternalDocsLink
+          url={Links.GITTER}
+          title="Gitter"
+          className="dropdown-item"
+        />
+        <ExternalDocsLink
+          url={Links.GITHUB}
+          title="GitHub"
+          className="dropdown-item"
+        />
       </DropdownMenu>
     </Dropdown>
   );
@@ -166,92 +145,86 @@ export default function NavbarV2() {
   }
 
   return (
-    <header
-      className={cx(
-        "bg-rk-blue",
-        "navbar",
-        "navbar-expand-lg",
-        "navbar-dark",
-        "p-0",
-        "rk-navbar"
-      )}
-    >
-      <Navbar
-        color="primary"
-        className={cx(
-          "container-fluid",
-          "flex-wrap",
-          "flex-lg-nowrap",
-          "renku-container",
-          "px-2"
-        )}
+    <>
+      <header
+        className={cx("navbar-expand-lg", "text-body", "bg-body")}
+        data-bs-theme="navy"
       >
-        <div
-          className={cx(
-            "text-white",
-            "d-flex",
-            "align-items-center",
-            "flex-wrap",
-            "gap-2"
-          )}
-        >
-          <RenkuNavLinkV2
-            id="link-home"
-            data-cy="link-home"
-            to={ABSOLUTE_ROUTES.v2.root}
-            className={cx("navbar-brand", "me-2", "pb-0", "pt-0")}
-          >
-            <img
-              src={RENKU_ALPHA_LOGO}
-              alt="Renku v2 (alpha)"
-              className="pe-2"
-              height="50"
-            />
-          </RenkuNavLinkV2>
-          <WipBadge label="2.0 Alpha" />
-          <BackToV1Button outline={true} />
-        </div>
-        <NavbarToggler onClick={onToggle} className="border-0">
-          <List className={cx("bi", "text-rk-white")} />
-        </NavbarToggler>
-        <Collapse isOpen={isOpen} navbar>
-          <Nav
+        <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
+          <div
             className={cx(
-              "flex-row",
-              "flex-wrap",
-              "flex-sm-nowrap",
-              "justify-content-end",
               "align-items-center",
-              "ms-lg-auto"
+              "d-flex",
+              "flex-wrap",
+              "gap-3",
+              "text-white"
             )}
-            navbar
           >
-            <NavItem className="me-3">
-              <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v2.search} title="Search">
-                <Search className="bi" /> Search
-              </RenkuNavLinkV2>
-            </NavItem>
-            <NavItem className="me-3">
-              <RenkuNavLinkV2
-                end
-                to={ABSOLUTE_ROUTES.v2.root}
-                title="Dashboard"
-              >
-                Dashboard
-              </RenkuNavLinkV2>
-            </NavItem>
-            <NavItem className={cx("me-2", "nav-item", "col-auto")}>
-              <NavbarItemPlus />
-            </NavItem>
-            <NavItem className={cx("me-2", "nav-item", "col-auto")}>
-              <NavbarItemHelp />
-            </NavItem>
-            <NavItem className={cx("nav-item", "col-auto")}>
-              <RenkuToolbarItemUser params={params!} />
-            </NavItem>
-          </Nav>
-        </Collapse>
-      </Navbar>
-    </header>
+            <RenkuNavLinkV2
+              id="link-home"
+              data-cy="link-home"
+              to={ABSOLUTE_ROUTES.v2.root}
+            >
+              <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (beta)" height="50" />
+            </RenkuNavLinkV2>
+            <WipBadge>
+              <span className="fw-bold">2.0</span> Early access
+            </WipBadge>
+            <BackToV1Button outline={true} />
+          </div>
+          <div className="ms-auto">
+            <NavbarToggler onClick={onToggle} className={cx("border-0", "p-2")}>
+              <List className="bi" />
+            </NavbarToggler>
+          </div>
+          <Collapse isOpen={isOpen} navbar>
+            <Nav
+              className={cx(
+                "align-items-center",
+                "flex-row",
+                "gap-3",
+                "gap-lg-0",
+                "justify-content-end",
+                "ms-lg-auto",
+                "pe-2",
+                "pe-lg-0"
+              )}
+              navbar
+            >
+              <NavItem>
+                <RenkuNavLinkV2
+                  data-cy="navbar-link-search"
+                  end
+                  title="Search"
+                  to={ABSOLUTE_ROUTES.v2.search}
+                >
+                  <Search className="bi" /> Search
+                </RenkuNavLinkV2>
+              </NavItem>
+              <NavItem>
+                <RenkuNavLinkV2
+                  data-cy="navbar-link-dashboard"
+                  end
+                  title="Dashboard"
+                  to={ABSOLUTE_ROUTES.v2.root}
+                >
+                  Dashboard
+                </RenkuNavLinkV2>
+              </NavItem>
+              <NavItem>
+                <NavbarItemPlus />
+              </NavItem>
+              <NavItem>
+                <NavbarItemHelp />
+              </NavItem>
+              <NavItem>
+                <RenkuToolbarItemUser isV2 params={params!} />
+              </NavItem>
+            </Nav>
+          </Collapse>
+        </div>
+      </header>
+      <StatusBanner params={params} />
+    </>
   );
 }

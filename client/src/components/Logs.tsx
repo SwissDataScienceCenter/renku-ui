@@ -16,9 +16,7 @@
  * limitations under the License.
  */
 
-import { faSave, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import {
   Button,
   Modal,
@@ -44,7 +42,10 @@ import {
 } from "../utils/helpers/HelperFunctions";
 import { Loader } from "./Loader";
 
-import "./Logs.css";
+import cx from "classnames";
+import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
+
+import styles from "./Logs.module.scss";
 
 export interface ILogs {
   data: Record<string, string>;
@@ -104,7 +105,7 @@ const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
 
   return (
     <div>
-      <Nav pills className="nav-pills-underline log-nav bg-white">
+      <Nav tabs className="mb-2">
         {Object.keys(data).map((tab) => {
           return (
             <NavItem key={tab} data-cy="log-tab" role="button">
@@ -125,7 +126,10 @@ const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
           return (
             <TabPane key={`log_${tab}`} tabId={tab}>
               <div className="d-flex flex-column">
-                <pre className="bg-primary text-white p-2 w-100 overflow-hidden log-container border-radius-8">
+                <pre
+                  className="overflow-hidden"
+                  style={{ whiteSpace: "pre-line" }}
+                >
                   {data[tab]}
                 </pre>
               </div>
@@ -163,14 +167,14 @@ const LogDownloadButton = ({
   return (
     <Button
       data-cy="session-log-download-button"
-      color={color ?? "rk-green"}
+      color={color ?? "primary"}
       size={size ?? "s"}
       disabled={!canDownload(logs)}
       onClick={() => {
         save();
       }}
     >
-      <FontAwesomeIcon icon={faSave} />
+      <FileEarmarkArrowDown className={cx("bi", "me-1")} />
       {downloading ? " Downloading " : " Download"}
       {downloading && <Loader inline size={16} />}
     </Button>
@@ -221,8 +225,8 @@ function NoLogsAvailable(props: LogBodyProps) {
       <p>
         You can try to{" "}
         <Button
+          color="primary"
           data-cy="retry-logs-body"
-          className="btn-outline-rk-green"
           size="sm"
           onClick={() => {
             fetchLogs(name);
@@ -244,11 +248,11 @@ function SessionLogsBody(props: LogBodyProps) {
       <p data-cy="logs-unavailable-message">
         Logs unavailable. Please{" "}
         <Button
-          className="btn-outline-rk-green"
-          size="sm"
+          color="primary"
           onClick={() => {
             fetchLogs(name);
           }}
+          size="sm"
         >
           download
         </Button>{" "}
@@ -280,11 +284,10 @@ function SessionLogs(props: LogBodyProps) {
   // TODO: Revisit after #1219
   return (
     <>
-      <div className="p-2 p-lg-3 text-nowrap">
+      <div className={cx("text-nowrap", "mb-3")}>
         <Button
           key="button"
-          color="rk-green"
-          size="sm"
+          color="outline-primary"
           style={{ marginRight: 8 }}
           id="session-refresh-logs"
           onClick={() => {
@@ -292,17 +295,16 @@ function SessionLogs(props: LogBodyProps) {
           }}
           disabled={logs.fetching}
         >
-          <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
+          <ArrowRepeat className={cx("bi", "me-1")} /> Refresh logs
         </Button>
         <LogDownloadButton
           logs={logs}
           downloading={downloading}
           save={save}
-          size="sm"
-          color="secondary"
+          color="outline-primary"
         />
       </div>
-      <div className="p-2 p-lg-3 border-top">
+      <div>
         <SessionLogsBody fetchLogs={fetchLogs} logs={logs} name={sessionName} />
       </div>
     </>
@@ -334,13 +336,27 @@ const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
     );
   };
 
+  const cleanAnnotations = NotebooksHelper.cleanAnnotations(
+    annotations
+  ) as NotebookAnnotations;
+
+  const modalTitle = !cleanAnnotations.renkuVersion && (
+    <div className="fs-5 fw-normal">
+      <small>
+        {cleanAnnotations["namespace"]}/{cleanAnnotations["projectName"]} [
+        {cleanAnnotations["branch"]}@
+        {cleanAnnotations["commit-sha"].substring(0, 8)}]
+      </small>
+    </div>
+  );
+
   return (
     <EnvironmentLogsPresent
       fetchLogs={fetchLogs}
       toggleLogs={toggleLogs}
       logs={logs}
       name={name}
-      annotations={annotations}
+      title={modalTitle}
     />
   );
 };
@@ -352,59 +368,48 @@ const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
  * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
  * @param {object} logs - log object from redux store enhanced with `show` property
  * @param {string} name - server name
- * @param {object} annotations - list of annotations
+ * @param {ReactNode | string} title - modal title
  */
 interface EnvironmentLogsPresentProps {
-  annotations: Record<string, unknown>;
+  title: ReactNode;
   fetchLogs: IFetchableLogs["fetchLogs"];
   logs?: ILogs;
   name: string;
   toggleLogs: (name: string) => unknown;
 }
-const EnvironmentLogsPresent = ({
+function EnvironmentLogsPresent({
   logs,
   name,
   toggleLogs,
   fetchLogs,
-  annotations,
-}: EnvironmentLogsPresentProps) => {
+  title,
+}: EnvironmentLogsPresentProps) {
   if (!logs?.show || logs?.show !== name || !logs) return null;
-
-  const cleanAnnotations = NotebooksHelper.cleanAnnotations(
-    annotations
-  ) as NotebookAnnotations;
 
   return (
     <Modal
       isOpen={!!logs.show}
-      className="bg-body modal-dynamic-width"
+      className="modal-xl"
       scrollable={true}
       toggle={() => {
         toggleLogs(name);
       }}
     >
       <ModalHeader
-        className="bg-body header-multiline"
+        className={cx(styles.modalHeader, "header-multiline")}
         toggle={() => {
           toggleLogs(name);
         }}
       >
-        <div>Logs</div>
-        <div className="fs-5 fw-normal">
-          <small>
-            {cleanAnnotations["namespace"]}/{cleanAnnotations["projectName"]} [
-            {cleanAnnotations["branch"]}@
-            {cleanAnnotations["commit-sha"].substring(0, 8)}]
-          </small>
-        </div>
+        {title}
       </ModalHeader>
-      <ModalBody className="logs-modal">
-        <div className="mx-2 bg-white">
+      <ModalBody>
+        <div className="mx-2">
           <SessionLogs fetchLogs={fetchLogs} logs={logs} name={name} />
         </div>
       </ModalBody>
     </Modal>
   );
-};
+}
 
 export { EnvironmentLogs, EnvironmentLogsPresent, SessionLogs };

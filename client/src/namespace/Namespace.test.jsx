@@ -25,10 +25,10 @@
 
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router-dom";
 import { describe, it } from "vitest";
 
 import { testClient as client } from "../api-client";
+import MemoryRouter from "../components/router/MemoryRouter";
 import { NamespaceProjects } from "./index";
 
 describe("rendering", () => {

@@ -35,17 +35,19 @@ describe("Search V2", () => {
   it("Updates the search parameters", () => {
     fixtures.searchV2ListProjects({ numberOfProjects: 5, numberOfUsers: 2 });
     cy.visit("/v2/search");
-    cy.getDataCy("search-input").type("test{enter}");
+    cy.getDataCy("search-input").type("type:project test{enter}");
 
-    cy.getDataCy("search-filter-type-project").should("be.checked");
+    cy.getDataCy("search-filter-type-project")
+      .filter(":visible")
+      .should("be.checked");
     cy.getDataCy("search-filter-type-user").should("not.be.checked");
     cy.getDataCy("search-card").should("have.length", 5);
 
-    cy.getDataCy("search-filter-type-user").click();
+    cy.getDataCy("search-filter-type-user").filter(":visible").click();
     cy.getDataCy("search-filter-type-user").should("be.checked");
     cy.getDataCy("search-card").should("have.length", 7);
 
-    cy.getDataCy("search-filter-type-project").click();
+    cy.getDataCy("search-filter-type-project").filter(":visible").click();
     cy.getDataCy("search-filter-type-project").should("not.be.checked");
     cy.getDataCy("search-card").should("have.length", 2);
   });
@@ -53,10 +55,10 @@ describe("Search V2", () => {
   it("Updates the search sorting", () => {
     fixtures.searchV2ListProjects();
     cy.visit("/v2/search");
-    cy.getDataCy("search-input").type("test{enter}");
-    cy.getDataCy("search-header").contains("sort:score-desc");
+    cy.getDataCy("search-input").type("sort:name-asc test{enter}");
+    cy.getDataCy("search-header").contains("sort:name-asc");
 
-    cy.getDataCy("search-sorting-select").select("Date: recently created");
+    cy.getDataCy("search-sorting-select").select("Newest");
     cy.getDataCy("search-header").contains("sort:created-desc");
   });
 });

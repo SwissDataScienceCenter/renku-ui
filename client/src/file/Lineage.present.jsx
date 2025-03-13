@@ -16,19 +16,20 @@
  * limitations under the License.
  */
 
-import { Component } from "react";
-import { Badge, CardBody, Card, CardHeader } from "reactstrap";
-import * as dagreD3 from "dagre-d3-es";
 import * as d3 from "d3";
+import * as dagreD3 from "dagre-d3-es";
+import { Component } from "react";
 import { Download } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom-v5-compat";
+import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
-import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
-import { formatBytes } from "../utils/helpers/HelperFunctions";
-import FileAndLineageSwitch from "./FileAndLineageComponents";
 import { ExternalIconLink } from "../components/ExternalLinks";
 import { Clipboard } from "../components/clipboard/Clipboard";
+import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { KgStatusWrapper } from "../components/kgStatus/KgStatus";
 import SessionFileButton from "../features/session/components/SessionFileButton";
+import { formatBytes } from "../utils/helpers/HelperFunctions";
+import FileAndLineageSwitch from "./FileAndLineageComponents";
 
 import "./Lineage.css";
 
@@ -195,7 +196,7 @@ class FileLineageGraph extends Component {
       svgGroup = svg.select("g");
     }
 
-    const history = this.props.history;
+    const navigate = this.props.navigate;
 
     render(svgGroup, g);
 
@@ -220,7 +221,7 @@ class FileLineageGraph extends Component {
         d3.select(this).attr("r", 25).style("text-decoration-line", "unset");
       })
       .on("click", function () {
-        history.push(d3.select(this).attr("data-href"));
+        navigate(d3.select(this).attr("data-href"));
       });
 
     // Center the graph
@@ -262,13 +263,15 @@ class FileLineageGraph extends Component {
 }
 
 function FileLineageWrapped(props) {
+  const navigate = useNavigate();
+
   return (
     <KgStatusWrapper
       maintainer={props.maintainer}
       projectId={props.projectId}
       projectName={props.projectPath}
     >
-      <FileLineage {...props} />
+      <FileLineage {...props} navigate={navigate} />
     </KgStatusWrapper>
   );
 }
@@ -282,7 +285,7 @@ class FileLineage extends Component {
         graph={graph}
         currentNode={currentNode}
         lineagesUrl={this.props.lineagesUrl}
-        history={this.props.history}
+        navigate={this.props.navigate}
       />
     ) : this.props.error ? (
       <p>{this.props.error}</p>
@@ -302,7 +305,7 @@ class FileLineage extends Component {
       filePath !== undefined && currentNode.type !== "Directory" ? (
         <FileAndLineageSwitch
           insideFile={false}
-          history={this.props.history}
+          navigate={this.props.navigate}
           switchToPath={filePath}
         />
       ) : null;
@@ -311,7 +314,7 @@ class FileLineage extends Component {
       <ExternalIconLink
         tooltip="Open in GitLab"
         icon={<BootstrapGitLabIcon className="bi" />}
-        to={externalFileUrl}
+        url={externalFileUrl}
       />
     );
 
@@ -330,7 +333,7 @@ class FileLineage extends Component {
           tooltip="Download File"
           icon={<Download className="bi" />}
           // TODO: change this!!!
-          to={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
+          url={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
         />
       );
 

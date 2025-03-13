@@ -17,16 +17,16 @@
  */
 
 import cx from "classnames";
-import { Card, CardBody } from "reactstrap";
+import { Card, CardBody, Col } from "reactstrap";
 
 import { TimeCaption } from "../../components/TimeCaption";
-import SecretEdit from "./SecretEdit";
-import SecretDelete from "./SecretDelete";
-import { SecretDetails } from "./secrets.types";
+import SecretItemActions from "../secretsV2/SecretItemActions";
+import type { SecretWithId } from "../usersV2/api/users.api";
 
 interface SecretsListItemProps {
-  secret: SecretDetails;
+  secret: SecretWithId;
 }
+
 export default function SecretsListItem({ secret }: SecretsListItemProps) {
   return (
     <Card
@@ -54,10 +54,12 @@ export default function SecretsListItem({ secret }: SecretsListItemProps) {
               prefix=""
             />
           </span>
-          <div className={cx("ms-auto", "d-flex", "gap-2")}>
-            <SecretEdit secret={secret} />
-            <SecretDelete secret={secret} />
-          </div>
+          <Col xs={12} sm="auto" className="ms-auto">
+            <SecretItemActions secret={secret} />
+          </Col>
+        </div>
+        <div>
+          Filename: <code>{secret.default_filename}</code>
         </div>
       </CardBody>
     </Card>

@@ -17,11 +17,9 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect } from "react";
 import { PencilSquare, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-
 import {
   Button,
   Form,
@@ -34,12 +32,13 @@ import {
 } from "reactstrap";
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-
+import { Loader } from "../../../components/Loader";
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
 } from "../api/projectV2.api";
 import { usePatchProjectsByProjectIdMembersMutation } from "../api/projectV2.enhanced-api";
+import { ProjectMemberDisplay } from "../shared/ProjectMemberDisplay";
 
 interface EditProjectMemberModalProps {
   isOpen: boolean;
@@ -67,10 +66,13 @@ function EditProjectMemberAccessForm({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [patchProjectMembers, result] =
     usePatchProjectsByProjectIdMembersMutation();
-  const { control, handleSubmit } = useForm<ProjectMemberForEdit>({
+  const {
+    control,
+    formState: { isDirty },
+    handleSubmit,
+  } = useForm<ProjectMemberForEdit>({
     defaultValues: {
       id: member.id,
-      email: member.email,
       role: member.role,
     },
   });
@@ -104,16 +106,12 @@ function EditProjectMemberAccessForm({
   return (
     <>
       <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkErrorAlert error={result.error} />}
-          <div
-            className={cx("align-items-baseline", "d-flex", "flex-row", "mb-3")}
-          >
-            <Label>{member.email ?? member.id}</Label>
+          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
+            <Label>
+              <ProjectMemberDisplay member={member} />
+            </Label>
             <Controller
               control={control}
               name="role"
@@ -137,12 +135,21 @@ function EditProjectMemberAccessForm({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button onClick={handleSubmit(onSubmit)} type="submit">
-          <PencilSquare className={cx("bi", "me-1")} />
+        <Button
+          color="primary"
+          disabled={result.isLoading || !isDirty}
+          onClick={handleSubmit(onSubmit)}
+          type="submit"
+        >
+          {result.isLoading ? (
+            <Loader inline size={16} />
+          ) : (
+            <PencilSquare className={cx("bi", "me-1")} />
+          )}
           Change access
         </Button>
       </ModalFooter>

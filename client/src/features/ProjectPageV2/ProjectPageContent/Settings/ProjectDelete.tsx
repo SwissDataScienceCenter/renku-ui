@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Trash } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom-v5-compat";
-import { Button, Input } from "reactstrap";
+import { Button, Card, CardBody, CardHeader, Input } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
@@ -55,7 +55,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
 
   useEffect(() => {
     if (result.isSuccess) {
-      navigate(ABSOLUTE_ROUTES.v2.projects.root);
+      navigate(ABSOLUTE_ROUTES.v2.root);
       if (notifications)
         notificationProjectDeleted(notifications, project.name);
     }
@@ -70,20 +70,17 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
   );
 
   return (
-    <>
-      <div className={cx("pt-3")}>
-        <h4 className="fw-bold">Delete project</h4>
-        <small>
-          Are you sure you want to delete this project?
-          <br />
-          Deleting the project will remove its repository, launcher sessions and
-          data sources.
-        </small>
-        <div
-          id={"general"}
-          className={cx("bg-white", "rounded-3", "mt-3", "p-3", "p-md-4")}
-        >
-          <p className={cx("mb-0", "pb-3")}>
+    <Card data-cy="project-delete">
+      <CardHeader>
+        <h4 className="mb-0">
+          <Trash className={cx("me-1", "bi")} />
+          Delete project
+        </h4>
+      </CardHeader>
+      <CardBody>
+        <p className="fw-bold">Are you sure you want to delete this project?</p>
+        <div className="mb-3">
+          <p className="mb-2">
             Deleted projects cannot be restored. Please type{" "}
             <strong>{project.slug}</strong>, the slug of the project, to
             confirm.
@@ -93,23 +90,23 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
             value={typedName}
             onChange={onChange}
           />
-          <div className="text-end">
-            <Button
-              className="ms-2 mt-5"
-              color="danger"
-              disabled={typedName !== project.slug?.trim()}
-              onClick={onDelete}
-            >
-              {result.isLoading ? (
-                <Loader className="me-1" inline size={16} />
-              ) : (
-                <Trash className={cx("bi", "me-1")} />
-              )}
-              Delete project
-            </Button>
-          </div>
         </div>
-      </div>
-    </>
+        <div className="text-end">
+          <Button
+            color="danger"
+            data-cy="project-delete-button"
+            disabled={typedName !== project.slug?.trim() || result.isLoading}
+            onClick={onDelete}
+          >
+            {result.isLoading ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <Trash className={cx("bi", "me-1")} />
+            )}
+            Delete project
+          </Button>
+        </div>
+      </CardBody>
+    </Card>
   );
 }

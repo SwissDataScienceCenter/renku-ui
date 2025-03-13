@@ -20,7 +20,11 @@ import cx from "classnames";
 import React from "react";
 import type { FieldErrors } from "react-hook-form";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import {
+  type NavigateFunction,
+  useLocation,
+  useNavigate,
+} from "react-router-dom-v5-compat";
 import { Button, FormGroup, UncontrolledAlert } from "reactstrap";
 
 import { ExternalLink } from "../../../components/ExternalLinks";
@@ -70,7 +74,7 @@ export type PostSubmitProps = {
   datasetId: string;
   dispatch: AppDispatch;
   fetchDatasets: (forceRefetch: boolean, versionUrl: string) => Promise<void>;
-  history: DatasetModifyProps["history"];
+  navigate: NavigateFunction;
   projectPathWithNamespace: string;
   state?: unknown;
   versionUrl: string;
@@ -79,15 +83,14 @@ async function redirectAfterSubmit({
   datasetId,
   dispatch,
   fetchDatasets,
-  history,
+  navigate,
   projectPathWithNamespace,
   state,
   versionUrl,
 }: PostSubmitProps) {
   dispatch(reset());
   await fetchDatasets(true, versionUrl);
-  history.push({
-    pathname: `/projects/${projectPathWithNamespace}/datasets/${datasetId}`,
+  navigate(`/projects/${projectPathWithNamespace}/datasets/${datasetId}`, {
     state,
   });
 }
@@ -359,9 +362,7 @@ export interface DatasetModifyProps extends DatasetModifyDisplayProps {
   existingFiles: DatasetModifyFormProps["existingFiles"];
   externalUrl: string;
   fetchDatasets: PostSubmitProps["fetchDatasets"];
-  history: ReturnType<typeof useHistory>;
   initialized: boolean;
-  location: { pathname: string };
   metadataVersion: number | undefined;
   notifications: unknown;
   onCancel: () => void;
@@ -380,14 +381,15 @@ export default function DatasetModify(props: DatasetModifyProps) {
     defaultBranch,
     externalUrl,
     fetchDatasets,
-    history,
-    location,
     metadataVersion,
     overviewCommitsUrl,
     projectPathWithNamespace,
     setSubmitting,
     versionUrl,
   } = props;
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const edit = dataset != null;
   const slug = dataset?.slug;
@@ -487,7 +489,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
                 await redirectAfterSubmit({
                   datasetId: dataset?.slug ?? response.data.slug,
                   fetchDatasets,
-                  history,
+                  navigate,
                   projectPathWithNamespace,
                   state: undefined,
                   dispatch,
@@ -524,7 +526,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
                     await redirectAfterSubmit({
                       datasetId: response.data.slug,
                       fetchDatasets,
-                      history,
+                      navigate,
                       projectPathWithNamespace,
                       state: { errorOnCreation: true },
                       dispatch,
@@ -541,7 +543,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
                   await redirectAfterSubmit({
                     datasetId: dataset?.slug ?? response.data.slug,
                     fetchDatasets,
-                    history,
+                    navigate,
                     projectPathWithNamespace,
                     state: undefined,
                     dispatch,
@@ -599,7 +601,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
       edit,
       externalUrl,
       fetchDatasets,
-      history,
+      navigate,
       metadataVersion,
       slug,
       postDatasetMutation,

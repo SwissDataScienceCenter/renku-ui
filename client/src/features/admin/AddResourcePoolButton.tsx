@@ -74,6 +74,17 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
         .find((c) => c.default),
     [resourcePools]
   );
+  const defaultQuota = useMemo(
+    () =>
+      defaultSessionClass
+        ? {
+            cpu: 2 * defaultSessionClass.cpu,
+            memory: 2 * defaultSessionClass.memory,
+            gpu: 2 * defaultSessionClass.gpu,
+          }
+        : { cpu: 1, memory: 1, gpu: 0 },
+    [defaultSessionClass]
+  );
 
   // Form state
   const {
@@ -85,9 +96,9 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
     defaultValues: {
       name: "",
       public: false,
-      quotaCpu: 1,
-      quotaMemory: 1,
-      quotaGpu: 0,
+      quotaCpu: defaultQuota.cpu,
+      quotaMemory: defaultQuota.memory,
+      quotaGpu: defaultQuota.gpu,
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
     },
@@ -127,6 +138,18 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
     },
     [addResourcePool, defaultSessionClass]
   );
+
+  useEffect(() => {
+    reset({
+      name: "",
+      public: false,
+      quotaCpu: defaultQuota.cpu,
+      quotaMemory: defaultQuota.memory,
+      quotaGpu: defaultQuota.gpu,
+      idleThresholdMinutes: undefined,
+      hibernationThresholdMinutes: undefined,
+    });
+  }, [defaultQuota, reset]);
 
   // Reset form and close modal on successful submissions
   useEffect(() => {

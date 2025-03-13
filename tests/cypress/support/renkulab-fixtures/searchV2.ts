@@ -44,6 +44,9 @@ function generateSearchUsers(num: number) {
     const user = {
       id: `id_${id}`,
       type: "User",
+      firstName: `Foo_${id}`,
+      lastName: `Bar_${id}`,
+      namespace: `FooBar_${id}`,
     };
     users.push(user);
   }

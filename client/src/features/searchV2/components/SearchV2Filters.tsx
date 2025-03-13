@@ -15,159 +15,234 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
-import React, { useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { Card, CardBody, Col, Row } from "reactstrap";
 
-import { setCreated, setCreatedBy, toggleFilter } from "../searchV2.slice";
+import cx from "classnames";
+import { useCallback, useMemo } from "react";
+import {
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  Row,
+  UncontrolledAccordion,
+} from "reactstrap";
+
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import type { Role } from "../../projectsV2/api/projectV2.api";
 import {
-  DateFilter,
-  SearchV2FilterOptions,
-  SearchV2State,
+  FILTER_KEY_LABELS,
+  FILTER_VALUE_LABELS,
+  ROLE_FILTER_ALLOWED_VALUES,
+  TYPE_FILTER_ALLOWED_VALUES,
+  VISIBILITY_FILTER_ALLOWED_VALUES,
+} from "../searchV2.constants";
+import {
+  toggleRoleFilterValue,
+  toggleTypeFilterValue,
+  toggleVisibilityFilterValue,
+} from "../searchV2.slice";
+import type {
+  SearchEntityType,
+  SearchEntityVisibility,
+  SearchFilter,
 } from "../searchV2.types";
-import {
-  ANONYMOUS_USERS_EXCLUDE_FILTERS,
-  AVAILABLE_FILTERS,
-} from "../searchV2.utils";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { User } from "../../../model/renkuModels.types";
-import { SearchV2DateFilter } from "./SearchV2DateFilter.tsx";
-import { SearchV2UserFilter } from "./SearchV2UserFilter.tsx";
+import { dateFiltersAsArray, filtersAsArray } from "../searchV2.utils";
+import SearchV2DateFilter from "./SearchV2DateFilters";
+import { SearchV2Visualization } from "./SearchV2Filters.types";
 
 export default function SearchV2Filters() {
-  const dispatch = useDispatch();
-  const searchState = useAppSelector((state) => state.searchV2);
-  const { filters } = searchState;
-  const userLogged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
+  const { filters } = useAppSelector(({ searchV2 }) => searchV2);
+  const { dateFilters } = useAppSelector(({ searchV2 }) => searchV2);
+
+  const filtersArray = useMemo(() => filtersAsArray(filters), [filters]);
+  const dateFiltersArray = useMemo(
+    () => dateFiltersAsArray(dateFilters),
+    [dateFilters]
   );
 
-  const handleToggleFilter = useCallback(
-    (filter: keyof SearchV2State["filters"], value: string | DateFilter) => {
-      if (filter === "created") dispatch(setCreated(value as DateFilter));
-      else dispatch(toggleFilter({ filter, value: value as string }));
+  const content = useCallback(
+    (visualization: SearchV2Visualization) => {
+      return (
+        <>
+          {filtersArray.map((filter, index) => (
+            <SearchV2Filter
+              key={filter.key}
+              filter={filter}
+              index={index}
+              visualization={visualization}
+            />
+          ))}
+          {dateFiltersArray.map((dateFilter, index) => (
+            <SearchV2DateFilter
+              key={dateFilter.key}
+              dateFilter={dateFilter}
+              index={filtersArray.length + index}
+              visualization={visualization}
+            />
+          ))}
+        </>
+      );
     },
-    [dispatch]
+    [dateFiltersArray, filtersArray]
   );
-
-  const filtersList = Object.entries(AVAILABLE_FILTERS)
-    .filter(([filterName]) => {
-      if (!userLogged)
-        return !ANONYMOUS_USERS_EXCLUDE_FILTERS.includes(
-          filterName as keyof typeof AVAILABLE_FILTERS
-        );
-      return true;
-    })
-    .map(([filterName, options]) => (
-      <SearchV2Filter
-        key={filterName}
-        name={filterName}
-        options={Object.entries(options).map(([key, value]) => ({
-          checked: (
-            filters[filterName as keyof SearchV2State["filters"]] as string[]
-          ).includes(key),
-          key,
-          value,
-        }))}
-        title={filterName.charAt(0).toUpperCase() + filterName.slice(1)}
-        toggleOption={(value: string) => {
-          handleToggleFilter(
-            filterName as keyof SearchV2State["filters"],
-            value
-          );
-        }}
-      />
-    ));
 
   return (
-    <>
-      <Row className="mb-3" data-cy="search-filters">
-        <Col className="d-sm-none" xs={12}>
-          <h3>Filters</h3>
-        </Col>
-        <Col className={cx("d-flex", "flex-column", "gap-3")}>
-          <SearchV2UserFilter
-            createdBy={filters["createdBy"]}
-            removeUserFilter={() => dispatch(setCreatedBy(""))}
-          />
-          {filtersList}
-          <SearchV2DateFilter
-            name="CreationDate"
-            title="Creation Date"
-            checked={filters["created"]}
-            toggleOption={(value: DateFilter) => {
-              handleToggleFilter("created", value);
-            }}
-          />
-        </Col>
-      </Row>
-    </>
+    <div className="mb-3">
+      <h4 className="d-sm-none">Filters</h4>
+      <UncontrolledAccordion
+        className={cx("d-block", "d-sm-none")}
+        defaultOpen={[]}
+        toggle={() => {}}
+      >
+        {content("accordion")}
+      </UncontrolledAccordion>
+      <ListGroup flush className={cx("d-none", "d-sm-block")}>
+        {content("list")}
+      </ListGroup>
+    </div>
   );
 }
 
 interface SearchV2FilterContainerProps {
   children: React.ReactNode;
-  name: string;
-  title: string;
+  filterKey: string;
+  filterName: string;
+  index: number;
+  visualization: SearchV2Visualization;
 }
 export function SearchV2FilterContainer({
   children,
-  name,
-  title,
+  filterKey,
+  filterName,
+  index,
+  visualization,
 }: SearchV2FilterContainerProps) {
-  return (
-    <Card className={cx("border", "rounded")}>
-      <div data-cy={`search-filter-${name}`}>
-        <CardBody>
-          <p className={cx("form-text", "mb-1", "mt-0")}>{title}</p>
-          {children}
-        </CardBody>
-      </div>
-    </Card>
+  const targetIndex = index.toString();
+  return visualization === "accordion" ? (
+    <AccordionItem data-cy={`search-filter-${filterKey}`}>
+      <AccordionHeader targetId={targetIndex}>
+        <h6 className={cx("fw-semibold", "mb-0")}>{filterName}</h6>
+      </AccordionHeader>
+      <AccordionBody accordionId={targetIndex}>
+        <Row className={cx("g-3", "g-sm-0")}>{children}</Row>
+      </AccordionBody>
+    </AccordionItem>
+  ) : (
+    <ListGroupItem
+      className={cx("mb-3", "px-0", "pt-0")}
+      data-cy={`search-filter-${filterKey}`}
+    >
+      <h6 className="fw-semibold">{filterName}</h6>
+      <div>{children}</div>
+    </ListGroupItem>
   );
 }
 
 interface SearchV2FilterProps {
-  name: string;
-  options: SearchV2FilterOptions[];
-  title: string;
-  toggleOption: (key: string) => void;
+  filter: SearchFilter;
+  index: number;
+  visualization: SearchV2Visualization;
 }
-function SearchV2Filter({
-  name,
-  options,
-  title,
-  toggleOption,
-}: SearchV2FilterProps) {
-  return (
-    <SearchV2FilterContainer name={name} title={title}>
-      {options.map(({ checked, key, value }) => {
-        const id = `search-filter-${name}-${key}`;
+function SearchV2Filter({ filter, index, visualization }: SearchV2FilterProps) {
+  const { key } = filter;
 
-        return (
-          <div
-            className={cx("form-rk-green", "d-flex", "align-items-center")}
-            key={id}
-          >
-            <input
-              checked={checked}
-              className="form-check-input"
-              data-cy={id}
-              id={id}
-              onChange={() => toggleOption(key)}
-              type="checkbox"
-            />
-            <label
-              className={cx("form-check-label", "ms-2", "mt-1")}
-              htmlFor={id}
-            >
-              {value}
-            </label>
-          </div>
-        );
-      })}
+  const { label } = FILTER_KEY_LABELS[key];
+
+  const options =
+    key === "role"
+      ? ROLE_FILTER_ALLOWED_VALUES
+      : key === "type"
+      ? TYPE_FILTER_ALLOWED_VALUES
+      : key === "visibility"
+      ? VISIBILITY_FILTER_ALLOWED_VALUES
+      : [];
+
+  return (
+    <SearchV2FilterContainer
+      filterKey={key}
+      filterName={label}
+      index={index}
+      visualization={visualization}
+    >
+      {options.map((option) => (
+        <Col xs={6} sm={12} key={option}>
+          <SearchV2FilterOption
+            filter={filter}
+            option={option}
+            visualization={visualization}
+          />
+        </Col>
+      ))}
     </SearchV2FilterContainer>
+  );
+}
+
+interface SearchV2FilterOptionProps {
+  filter: SearchFilter;
+  option: SearchFilter["values"][number];
+  visualization: SearchV2Visualization;
+}
+
+function SearchV2FilterOption({
+  filter,
+  option,
+  visualization,
+}: SearchV2FilterOptionProps) {
+  const { key, values } = filter;
+
+  const isChecked = useMemo(
+    () => !!values.find((value) => value === option),
+    [option, values]
+  );
+
+  const dispatch = useAppDispatch();
+
+  const onToggle = useCallback(() => {
+    if (key === "role") {
+      dispatch(toggleRoleFilterValue(option as Role));
+      return;
+    }
+    if (key === "type") {
+      dispatch(toggleTypeFilterValue({ value: option as SearchEntityType }));
+      return;
+    }
+    if (key === "visibility") {
+      dispatch(toggleVisibilityFilterValue(option as SearchEntityVisibility));
+    }
+  }, [dispatch, key, option]);
+
+  const id = `search-filter-${key}-${option}`;
+
+  const { icon: Icon, label } = FILTER_VALUE_LABELS[option];
+
+  return (
+    <div className={cx(visualization === "accordion" ? "w-100" : "d-flex")}>
+      <input
+        checked={isChecked}
+        className={cx(
+          visualization === "accordion"
+            ? "btn-check"
+            : ["cursor-pointer", "form-check-input"]
+        )}
+        data-cy={id}
+        id={id}
+        onChange={onToggle}
+        type="checkbox"
+      />
+      <label
+        className={cx(
+          visualization === "accordion"
+            ? ["btn", "btn-outline-primary", "w-100"]
+            : ["cursor-pointer", "form-check-label", "ps-2"]
+        )}
+        htmlFor={id}
+      >
+        {Icon && <Icon className={cx("bi", "me-2")} />}
+        {label}
+      </label>
+    </div>
   );
 }

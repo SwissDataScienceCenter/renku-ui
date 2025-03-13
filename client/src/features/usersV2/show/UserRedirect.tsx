@@ -20,21 +20,17 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
 import { ArrowLeft, BoxArrowInRight } from "react-bootstrap-icons";
-import {
-  Link,
-  generatePath,
-  useLocation,
-  useNavigate,
-} from "react-router-dom-v5-compat";
+import { Link, generatePath, useNavigate } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 
+import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { Url } from "../../../utils/helpers/url";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
-import { useGetUserQuery } from "../../user/dataServicesUser.api";
+// import { useGetUserQuery } from "../../user/dataServicesUser.api";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 export default function UserRedirect() {
   const navigate = useNavigate();
@@ -50,7 +46,7 @@ export default function UserRedirect() {
   } = useGetUserQuery(isUserLoggedIn ? undefined : skipToken);
 
   useEffect(() => {
-    if (user?.username) {
+    if (user?.isLoggedIn && user.username) {
       navigate(
         generatePath(ABSOLUTE_ROUTES.v2.users.show, {
           username: user.username,
@@ -58,7 +54,7 @@ export default function UserRedirect() {
         { replace: true }
       );
     }
-  }, [navigate, user?.username]);
+  }, [navigate, user]);
 
   if (!isUserLoggedIn) {
     return <NotLoggedIn />;
@@ -72,11 +68,7 @@ export default function UserRedirect() {
 }
 
 function NotLoggedIn() {
-  const location = useLocation();
-
-  const loginUrl = Url.get(Url.pages.login.link, {
-    pathname: location.pathname,
-  });
+  const loginUrl = useLoginUrl();
 
   return (
     <ContainerWrap fullSize className="container-lg">
@@ -86,10 +78,13 @@ function NotLoggedIn() {
 
           <p>You can only view your own user page if you are logged in.</p>
           <p>
-            <Link className={cx("btn", "btn-primary", "btn-sm")} to={loginUrl}>
+            <a
+              className={cx("btn", "btn-primary", "btn-sm")}
+              href={loginUrl.href}
+            >
               <BoxArrowInRight className={cx("bi", "me-1")} />
               Log in
-            </Link>
+            </a>
           </p>
 
           <div>

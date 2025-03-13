@@ -17,17 +17,24 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { CodeSquare } from "react-bootstrap-icons";
+import { FileCode, PlusLg } from "react-bootstrap-icons";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  ListGroup,
+} from "reactstrap";
 
-import { PlusRoundButton } from "../../../../components/buttons/Button.tsx";
-import { Project } from "../../../projectsV2/api/projectV2.api.ts";
-import { AddCodeRepositoryStep1Modal } from "./AddCodeRepositoryModal.tsx";
-import AccessGuard from "../../utils/AccessGuard.tsx";
-import useProjectAccess from "../../utils/useProjectAccess.hook.ts";
-import { RepositoryItem } from "./CodeRepositoryDisplay.tsx";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
+import { Project } from "../../../projectsV2/api/projectV2.api";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import AddCodeRepositoryModal from "./AddCodeRepositoryModal";
+import { RepositoryItem } from "./CodeRepositoryDisplay";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
-  const { userRole } = useProjectAccess({ projectId: project.id });
+  const permissions = useProjectPermissions({ projectId: project.id });
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -35,42 +42,66 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
 
   const totalRepositories = project.repositories?.length || 0;
   return (
-    <>
-      <div
-        className={cx("p-3", "d-flex", "justify-content-between")}
-        data-cy="code-repositories-box"
-      >
-        <div className="fw-bold">
-          <CodeSquare size={20} className={cx("me-2")} />
-          Code Repositories ({project?.repositories?.length})
+    <Card data-cy="code-repositories-box">
+      <CardHeader>
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between"
+          )}
+        >
+          <div className={cx("align-items-center", "d-flex")}>
+            <h4 className={cx("mb-0", "me-2")}>
+              <FileCode className={cx("me-1", "bi")} />
+              Code Repositories
+            </h4>
+            {project?.repositories?.length != null && (
+              <Badge>{project?.repositories?.length}</Badge>
+            )}
+          </div>
+
+          <div className="my-auto">
+            <PermissionsGuard
+              disabled={null}
+              enabled={
+                <Button
+                  data-cy="add-code-repository"
+                  color="outline-primary"
+                  onClick={toggle}
+                  size="sm"
+                >
+                  <PlusLg className="bi" />
+                </Button>
+              }
+              requestedPermission="write"
+              userPermissions={permissions}
+            />
+          </div>
         </div>
-        <AccessGuard
-          disabled={null}
-          enabled={
-            <PlusRoundButton data-cy="add-repository" handler={toggle} />
-          }
-          minimumRole="editor"
-          role={userRole}
-        />
-      </div>
-      <p className={cx("px-3", totalRepositories > 0 ? "d-none" : "")}>
-        Connect code repositories to save and share code.
-      </p>
-      <div className={cx("p-2", "ps-3", "pb-0")}>
-        {project.repositories?.map((repositoryUrl, index) => (
-          <RepositoryItem
-            key={index}
-            project={project}
-            url={repositoryUrl}
-            showMenu={true}
-          />
-        ))}
-      </div>
-      <AddCodeRepositoryStep1Modal
+      </CardHeader>
+      <CardBody>
+        {totalRepositories === 0 ? (
+          <p className={cx("m-0", "text-body-secondary")}>
+            Connect code repositories to save and share code.
+          </p>
+        ) : (
+          <ListGroup flush>
+            {project.repositories?.map((repositoryUrl, index) => (
+              <RepositoryItem
+                key={index}
+                project={project}
+                url={repositoryUrl}
+              />
+            ))}
+          </ListGroup>
+        )}
+      </CardBody>
+      <AddCodeRepositoryModal
         toggleModal={toggle}
         isOpen={isOpen}
         project={project}
       />
-    </>
+    </Card>
   );
 }

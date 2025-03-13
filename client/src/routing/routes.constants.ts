@@ -25,7 +25,6 @@ export const ABSOLUTE_ROUTES = {
       show: "/v2/users/:username",
     },
     groups: {
-      root: "/v2/groups",
       new: "/v2/groups/new",
       show: {
         root: "/v2/groups/:slug",
@@ -33,11 +32,9 @@ export const ABSOLUTE_ROUTES = {
       },
     },
     projects: {
-      root: "/v2/projects",
       new: "/v2/projects/new",
       show: {
         root: "/v2/projects/:namespace/:slug",
-        info: "/v2/projects/:namespace/:slug/info",
         settings: "/v2/projects/:namespace/:slug/settings",
         sessions: {
           root: "/v2/projects/:namespace/:slug/sessions",
@@ -57,6 +54,7 @@ export const ABSOLUTE_ROUTES = {
     },
     search: "/v2/search",
     connectedServices: "/v2/connected-services",
+    secrets: "/v2/secrets",
   },
 } as const;
 
@@ -81,8 +79,7 @@ export const RELATIVE_ROUTES = {
       new: "new",
       show: {
         root: ":namespace/:slug/*",
-        info: "info",
-        settings: "settings/*",
+        settings: "settings",
         sessions: {
           root: "sessions/*",
           show: "show/:session",
@@ -101,5 +98,6 @@ export const RELATIVE_ROUTES = {
     },
     search: "search",
     connectedServices: "connected-services",
+    secrets: "secrets",
   },
 } as const;

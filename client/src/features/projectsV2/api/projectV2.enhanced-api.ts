@@ -1,55 +1,67 @@
-import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
+import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
+import { usersApi } from "../../usersV2/api/users.api";
 
-import { projectStoragesApi as api } from "./storagesV2.api";
+import { projectAndNamespaceApi as api } from "./namespace.api";
+
 import type {
   GetProjectsApiArg,
   GetProjectsApiResponse as GetProjectsApiResponseOrig,
+  GetProjectsByProjectIdApiArg,
+  GetProjectsByProjectIdApiResponse,
   ProjectsList,
+  SessionSecretSlot,
 } from "./projectV2.api";
 
 import type {
   GetGroupsApiArg,
   GetGroupsApiResponse as GetGroupsApiResponseOrig,
-  GroupResponseList,
   GetNamespacesApiArg,
   GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
+  GroupResponseList,
   NamespaceResponseList,
 } from "./namespace.api";
-import {
-  GetStoragesV2ApiArg,
-  GetStoragesV2ApiResponse as GetStoragesV2ApiResponseOrig,
-} from "./storagesV2.api.ts";
 
-interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
+export interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
 }
+
+interface GetProjectsByProjectIdsApiArg {
+  projectIds: GetProjectsByProjectIdApiArg["projectId"][];
+}
+
+type GetProjectsByProjectIdsApiResponse = Record<
+  string,
+  GetProjectsByProjectIdApiResponse
+>;
+
+interface GetSessionSecretSlotsByIdsApiArg {
+  sessionSecretSlotIds: string[];
+}
+
+type GetSessionSecretSlotsByIdsApiResponse = SessionSecretSlot[];
 
 export interface GetNamespacesApiResponse extends AbstractKgPaginatedResponse {
   namespaces: GetNamespacesApiResponseOrig;
 }
 
-interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
+export interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
   projects: GetProjectsApiResponseOrig;
-}
-
-interface GetStoragesV2ApiResponse extends AbstractKgPaginatedResponse {
-  storages: GetStoragesV2ApiResponseOrig;
 }
 
 const injectedApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getGroupsPaged: builder.query<GetGroupsApiResponse, GetGroupsApiArg>({
-      query: (queryArg) => ({
+      query: ({ params }) => ({
         url: "/groups",
-        params: { page: queryArg.page, per_page: queryArg.perPage },
+        params,
       }),
-      transformResponse: (response, meta, queryArg) => {
+      transformResponse: (response, meta, { params }) => {
         const groups = response as GroupResponseList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          queryArg,
+          { page: params?.page, perPage: params?.per_page },
           groups
         );
 
@@ -66,20 +78,16 @@ const injectedApi = api.injectEndpoints({
       GetNamespacesApiResponse,
       GetNamespacesApiArg
     >({
-      query: (queryArg) => ({
+      query: ({ params }) => ({
         url: "/namespaces",
-        params: {
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-          minimum_role: queryArg.minimumRole,
-        },
+        params,
       }),
-      transformResponse: (response, meta, queryArg) => {
+      transformResponse: (response, meta, { params }) => {
         const namespaces = response as NamespaceResponseList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          queryArg,
+          { page: params?.page, perPage: params?.per_page },
           namespaces
         );
 
@@ -93,20 +101,16 @@ const injectedApi = api.injectEndpoints({
       },
     }),
     getProjectsPaged: builder.query<GetProjectsApiResponse, GetProjectsApiArg>({
-      query: (queryArg) => ({
+      query: ({ params }) => ({
         url: "/projects",
-        params: {
-          namespace: queryArg["namespace"],
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-        },
+        params,
       }),
-      transformResponse: (response, meta, queryArg) => {
+      transformResponse: (response, meta, { params }) => {
         const projects = response as ProjectsList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          queryArg,
+          { page: params?.page, perPage: params?.per_page },
           projects
         );
 
@@ -119,26 +123,63 @@ const injectedApi = api.injectEndpoints({
         };
       },
     }),
-    getStoragesPaged: builder.query<
-      GetStoragesV2ApiResponse,
-      GetStoragesV2ApiArg
+    getProjectsByProjectIds: builder.query<
+      GetProjectsByProjectIdsApiResponse,
+      GetProjectsByProjectIdsApiArg
     >({
-      query: (queryArg) => ({
-        url: "/storages",
-        params: { project_id: queryArg.projectId },
-      }),
+      async queryFn(queryArg, _api, _options, fetchWithBQ) {
+        const { projectIds } = queryArg;
+        const result: GetProjectsByProjectIdsApiResponse = {};
+        const promises = projectIds.map((projectId) =>
+          fetchWithBQ(`/projects/${projectId}`)
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < projectIds.length; i++) {
+          const projectId = projectIds[i];
+          const response = responses[i];
+          if (response.error) return response;
+          result[projectId] =
+            response.data as GetProjectsByProjectIdApiResponse;
+        }
+        return { data: result };
+      },
+    }),
+    getSessionSecretSlotsByIds: builder.query<
+      GetSessionSecretSlotsByIdsApiResponse,
+      GetSessionSecretSlotsByIdsApiArg
+    >({
+      queryFn: async (
+        { sessionSecretSlotIds },
+        _api,
+        _options,
+        fetchWithBQ
+      ) => {
+        const result: GetSessionSecretSlotsByIdsApiResponse = [];
+        const promises = sessionSecretSlotIds.map((slotId) =>
+          fetchWithBQ(`/session_secret_slots/${slotId}`)
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < sessionSecretSlotIds.length; i++) {
+          const response = responses[i];
+          if (response.error) return response;
+          result.push(response.data as SessionSecretSlot);
+        }
+        return { data: result };
+      },
     }),
   }),
 });
 
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: [
+    "DataConnectors",
     "Group",
     "GroupMembers",
     "Namespace",
     "Project",
     "ProjectMembers",
-    "Storages",
+    "SessionSecretSlot",
+    "SessionSecret",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -152,9 +193,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     deleteProjectsByProjectIdMembersAndMemberId: {
       invalidatesTags: ["ProjectMembers"],
-    },
-    deleteStoragesV2ByStorageId: {
-      invalidatesTags: ["Storages"],
     },
     getGroups: {
       providesTags: ["Group"],
@@ -181,17 +219,37 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsPaged: {
       providesTags: ["Project"],
     },
-    getProjectsByNamespaceAndSlug: {
+    getProjectsByProjectIds: {
+      providesTags: ["Project"],
+    },
+    getNamespacesByNamespaceProjectsAndSlug: {
+      // Forces the requested URL to not contain "?" when not requesting documentation.
+      query: ({ namespace, slug, withDocumentation }) => ({
+        url: `/namespaces/${namespace}/projects/${slug}`,
+        params: withDocumentation
+          ? { with_documentation: withDocumentation }
+          : undefined,
+      }),
       providesTags: ["Project"],
     },
     getProjectsByProjectId: {
+      // Forces the requested URL to not contain "?" when not requesting documentation.
+      query: ({ projectId, withDocumentation }) => ({
+        url: `/projects/${projectId}`,
+        params: withDocumentation
+          ? { with_documentation: withDocumentation }
+          : undefined,
+      }),
       providesTags: ["Project"],
+    },
+    getProjectsByProjectIdCopies: {
+      providesTags: ["Project"],
+    },
+    getProjectsByProjectIdDataConnectorLinks: {
+      providesTags: ["DataConnectors"],
     },
     getProjectsByProjectIdMembers: {
       providesTags: ["ProjectMembers"],
-    },
-    getStoragesV2: {
-      providesTags: ["Storages"],
     },
     patchGroupsByGroupSlug: {
       invalidatesTags: ["Group", "Namespace"],
@@ -205,33 +263,119 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     patchProjectsByProjectIdMembers: {
       invalidatesTags: ["ProjectMembers"],
     },
-    patchStoragesV2ByStorageId: {
-      invalidatesTags: ["Storages"],
-    },
     postGroups: {
       invalidatesTags: ["Group", "Namespace"],
     },
     postProjects: {
       invalidatesTags: ["Project"],
     },
-    postStoragesV2: {
-      invalidatesTags: ["Storages"],
+    getProjectsByProjectIdSessionSecretSlots: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "SessionSecretSlot" as const,
+                id,
+              })),
+              { type: "SessionSecretSlot", id: `LIST-${projectId}` },
+            ]
+          : ["SessionSecretSlot"],
+    },
+    postSessionSecretSlots: {
+      invalidatesTags: (
+        result,
+        _,
+        { sessionSecretSlotPost: { project_id: projectId } }
+      ) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: `LIST-${projectId}` }]
+          : ["SessionSecretSlot"],
+    },
+    patchSessionSecretSlotsBySlotId: {
+      invalidatesTags: (result, _, { slotId }) =>
+        result
+          ? [{ type: "SessionSecretSlot", id: slotId }]
+          : ["SessionSecretSlot"],
+    },
+    deleteSessionSecretSlotsBySlotId: {
+      invalidatesTags: ["SessionSecretSlot"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(usersApi.endpoints.invalidateUserSecrets.initiate());
+        });
+      },
+    },
+    getProjectsByProjectIdSessionSecrets: {
+      providesTags: (result, _, { projectId }) =>
+        result
+          ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
+          : ["SessionSecret"],
+    },
+    patchProjectsByProjectIdSessionSecrets: {
+      invalidatesTags: (result, _, { projectId }) =>
+        result
+          ? [{ type: "SessionSecret", id: `LIST-${projectId}` }]
+          : ["SessionSecret"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(usersApi.endpoints.invalidateUserSecrets.initiate());
+        });
+      },
+    },
+    getSessionSecretSlotsByIds: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "SessionSecretSlot" as const,
+                id,
+              })),
+            ]
+          : ["SessionSecretSlot"],
+    },
+    postProjectsByProjectIdCopies: {
+      invalidatesTags: ["Project"],
     },
   },
 });
 
-export { enhancedApi as projectV2Api };
+// Adds tag invalidation endpoints
+const withInvalidation = enhancedApi.injectEndpoints({
+  endpoints: (build) => ({
+    invalidateSessionSecrets: build.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["SessionSecret", "SessionSecretSlot"],
+    }),
+  }),
+});
+
+export { withInvalidation as projectV2Api };
 export const {
   // project hooks
+  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsPagedQuery: useGetProjectsQuery,
-  usePostProjectsMutation,
-  useGetProjectsByNamespaceAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
+  useGetProjectsByProjectIdCopiesQuery,
+  useGetProjectsByProjectIdPermissionsQuery,
   useGetProjectsByProjectIdQuery,
+  useGetProjectsByProjectIdsQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
-  useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
+  usePostProjectsMutation,
+  usePostProjectsByProjectIdCopiesMutation,
+
+  // project session secret hooks
+  useGetProjectsByProjectIdSessionSecretSlotsQuery,
+  usePostSessionSecretSlotsMutation,
+  usePatchSessionSecretSlotsBySlotIdMutation,
+  useDeleteSessionSecretSlotsBySlotIdMutation,
+  useGetProjectsByProjectIdSessionSecretsQuery,
+  usePatchProjectsByProjectIdSessionSecretsMutation,
+
+  // data connector hooks
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
 
   // group hooks
   useGetGroupsPagedQuery: useGetGroupsQuery,
@@ -242,13 +386,11 @@ export const {
   useGetGroupsByGroupSlugMembersQuery,
   usePatchGroupsByGroupSlugMembersMutation,
   useDeleteGroupsByGroupSlugMembersAndUserIdMutation,
+  useGetGroupsByGroupSlugPermissionsQuery,
+  useGetSessionSecretSlotsByIdsQuery,
 
   //namespace hooks
   useGetNamespacesPagedQuery: useGetNamespacesQuery,
   useLazyGetNamespacesPagedQuery: useLazyGetNamespacesQuery,
   useGetNamespacesByNamespaceSlugQuery,
-
-  // storages hooks
-  useGetStoragesV2Query,
-  usePostStoragesV2Mutation,
-} = enhancedApi;
+} = withInvalidation;

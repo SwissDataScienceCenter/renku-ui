@@ -159,7 +159,7 @@ function AnonymousDeleteSessionModal({
               >
                 {isStopping ? (
                   <>
-                    <Loader className="me-2" inline size={16} />
+                    <Loader className="me-1" inline size={16} />
                     Deleting session
                   </>
                 ) : (
@@ -310,7 +310,7 @@ function PauseSessionModalBody({
             >
               {isStopping ? (
                 <>
-                  <Loader className="me-2" inline size={16} />
+                  <Loader className="me-1" inline size={16} />
                   Pausing session
                 </>
               ) : (
@@ -416,7 +416,7 @@ function DeleteSessionModalBody({
             >
               {isStopping ? (
                 <>
-                  <Loader className="me-2" inline size={16} />
+                  <Loader className="me-1" inline size={16} />
                   Deleting session
                 </>
               ) : (

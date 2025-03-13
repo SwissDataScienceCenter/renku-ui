@@ -69,9 +69,10 @@ function newDataset(newDataset: Dataset) {
   }
 
   if (newDataset.description)
-    cy.get("[data-cy='ckeditor-description']")
-      .find("p")
+    cy.getDataCy("ckeditor-description")
+      .find(".ck-content[contenteditable=true]")
       .click()
+      .clear()
       .type(newDataset.description);
 
   if (newDataset.file) {

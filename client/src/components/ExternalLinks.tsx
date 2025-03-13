@@ -139,13 +139,13 @@ export function ExternalLink({
     );
     const icon = iconSup ? <sup>{iconNode}</sup> : <>{iconNode}</>;
     displayTitle = iconAfter ? (
-      <span className="btn-icon-text-after">
+      <span>
         {title}
-        {icon}
+        <span className="ms-1">{icon}</span>
       </span>
     ) : (
-      <span className="btn-icon-text">
-        {icon}
+      <span>
+        <span className="me-1">{icon}</span>
         {title}
       </span>
     );

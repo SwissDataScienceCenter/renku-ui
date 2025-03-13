@@ -15,69 +15,85 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import cx from "classnames";
-import { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { Button, InputGroup } from "reactstrap";
-
-import { setQuery } from "../searchV2.slice";
+import { useCallback, useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
+import { Button, Form, InputGroup } from "reactstrap";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants.ts";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import useStartNewSearch from "../useStartSearch.hook";
+import { setSearchBarQuery } from "../searchV2.slice";
 
 export default function SearchV2Bar() {
-  const dispatch = useDispatch();
-  const searchState = useAppSelector((state) => state.searchV2);
-  const { startNewSearch } = useStartNewSearch();
+  const dispatch = useAppDispatch();
+  const { searchBarQuery } = useAppSelector(({ searchV2 }) => searchV2);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isSearchPage = location.pathname === ABSOLUTE_ROUTES.v2.search;
+
+  const { register, handleSubmit, setFocus, setValue } = useForm<SearchBarForm>(
+    {
+      defaultValues: { searchBarQuery: searchBarQuery ?? "" },
+    }
+  );
+
+  useEffect(() => {
+    setValue("searchBarQuery", searchBarQuery ?? "");
+  }, [searchBarQuery, setValue]);
+
+  const onSubmitInner = useCallback(
+    (data: SearchBarForm) => {
+      if (isSearchPage) {
+        dispatch(setSearchBarQuery(data.searchBarQuery));
+      } else {
+        const search = new URLSearchParams({
+          q: `type:project ${data.searchBarQuery}`,
+        });
+        navigate({
+          pathname: ABSOLUTE_ROUTES.v2.search,
+          search: search.toString(),
+        });
+      }
+    },
+    [dispatch, isSearchPage, navigate]
+  );
+  const onSubmit = useMemo(
+    () => handleSubmit(onSubmitInner),
+    [handleSubmit, onSubmitInner]
+  );
 
   // focus search input when loading the component
-  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
-
-  // handle pressing Enter to search
-  // ? We could use react-hotkeys-hook if we wish to handle Enter also outside the input
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      startNewSearch();
-    }
-  };
-
-  // basic autocomplete for searched values, without duplicates
-  const previousSearchEntries = Array.from(
-    new Set(searchState.search.history.map((entry) => entry.query))
-  ).map((value) => <option key={value} value={value} />);
+    setFocus("searchBarQuery");
+  }, [setFocus]);
 
   return (
-    <InputGroup data-cy="search-bar">
-      <input
-        autoComplete="renku-search"
-        className={cx("form-control", "rounded-0", "rounded-start")}
-        data-cy="search-input"
-        id="search-input"
-        list="previous-searches"
-        onChange={(e) => dispatch(setQuery(e.target.value))}
-        onKeyDown={handleKeyDown}
-        placeholder="Search..."
-        ref={inputRef}
-        tabIndex={-1}
-        type="text"
-        value={searchState.search.query}
-      />
-      {previousSearchEntries.length > 0 && (
-        <datalist id="previous-searches">{previousSearchEntries}</datalist>
-      )}
-      <Button
-        className="rounded-end"
-        color="secondary"
-        data-cy="search-button"
-        id="search-button"
-        onClick={startNewSearch}
-      >
-        Search
-      </Button>
-    </InputGroup>
+    <Form noValidate onSubmit={onSubmit}>
+      <InputGroup data-cy="search-bar">
+        <input
+          autoComplete="renku-search"
+          className="form-control"
+          data-cy="search-input"
+          id="search-input"
+          placeholder="Search..."
+          type="text"
+          {...register("searchBarQuery", {
+            onBlur: isSearchPage ? onSubmit : undefined,
+          })}
+        />
+        <Button
+          color="primary"
+          data-cy="search-button"
+          id="search-button"
+          type="submit"
+        >
+          Search
+        </Button>
+      </InputGroup>
+    </Form>
   );
+}
+
+interface SearchBarForm {
+  searchBarQuery: string;
 }

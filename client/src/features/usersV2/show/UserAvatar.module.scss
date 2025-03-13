@@ -5,20 +5,35 @@
 @import "~bootstrap/scss/mixins";
 
 .avatar {
-  --size: 20px;
-  --font-size: 11px;
+  --size: 28px;
+  --font-size: 14px;
 
   height: var(--size);
   width: var(--size);
   font-size: var(--font-size);
 
-  &.large {
-    --size: 48px;
-    --font-size: 18px;
-
-    @include media-breakpoint-up(sm) {
-      --size: 64px;
-      --font-size: 28px;
-    }
+  &.medium {
+    --size: 43px;
+    --font-size: 20px;
   }
+
+  &.large {
+    --size: 56px;
+    --font-size: 24px;
+  }
+
+  &.extraLarge {
+    --size: 56px;
+    --font-size: 24px;
+  }
+
+  &.extraLarge {
+    --size: 56px;
+    --font-size: 24px;
+  }
+}
+
+.typeBadge {
+  width: 75px;
+  height: 65px;
 }

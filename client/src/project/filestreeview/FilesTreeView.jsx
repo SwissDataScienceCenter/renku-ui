@@ -1,11 +1,11 @@
 import cx from "classnames";
 import { Component } from "react";
-import { Link } from "react-router-dom";
 import {
   FileEarmarkFill,
-  FolderFill,
   Folder2Open,
+  FolderFill,
 } from "react-bootstrap-icons";
+import { Link, useNavigate } from "react-router-dom-v5-compat";
 import { Button, ButtonGroup } from "reactstrap";
 
 import "./treeviewstyle.css";
@@ -59,7 +59,6 @@ class TreeNode extends Component {
               nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
               currentUrl={this.props.currentUrl}
               savePosition={this.props.savePosition}
-              history={this.props.history}
             />
           );
         })
@@ -78,7 +77,9 @@ class TreeNode extends Component {
 
     const order =
       this.props.node.type === "tree" ? "order-second" : "order-third";
-    const hidden = this.props.node.name.startsWith(".") ? "rk-opacity-50" : "";
+    const hidden = this.props.node.name.startsWith(".")
+      ? "text-opacity-50"
+      : "";
     const selected = this.props.nodeInsideIsSelected ? "selected-file" : "";
 
     const urlPrefix = this.props.fileView
@@ -110,11 +111,19 @@ class TreeNode extends Component {
 }
 
 function TreeContainer(props) {
-  const { style, fileView, toLineage, toFile, tree } = props;
+  const navigate = useNavigate();
+  return <TreeContainerInner {...props} navigate={navigate} />;
+}
+
+function TreeContainerInner(props) {
+  const { style, fileView, toLineage, toFile, tree, navigate } = props;
 
   const togglePage = () => {
-    if (fileView) props.history.push(toLineage);
-    else props.history.push(toFile);
+    if (fileView) {
+      navigate(toLineage);
+    } else {
+      navigate(toFile);
+    }
   };
 
   return (
@@ -177,7 +186,6 @@ class FilesTreeView extends Component {
                 nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
                 currentUrl={this.props.currentUrl}
                 savePosition={this.savePosition.bind(this)}
-                history={this.props.history}
               />
             );
           })
@@ -187,17 +195,13 @@ class FilesTreeView extends Component {
     const treeProps = { fileView, toLineage, toFile, tree };
 
     // return the plain component if there is no need to limit the height
-    if (!limitHeight)
-      return (
-        <TreeContainer history={this.props.history} {...treeProps} style={{}} />
-      );
+    if (!limitHeight) return <TreeContainer {...treeProps} style={{}} />;
 
     // on small devices, the file tree is positioned on top, therefore it's better to limit
     // the height based on the display size
     if (window.innerWidth <= 768) {
       return (
         <TreeContainer
-          history={this.props.history}
           {...treeProps}
           style={{ maxHeight: Math.floor((window.innerHeight * 2) / 3) }}
         />
@@ -206,7 +210,7 @@ class FilesTreeView extends Component {
 
     return (
       <div className="tree-container">
-        <TreeContainer history={this.props.history} {...treeProps} />
+        <TreeContainer {...treeProps} />
       </div>
     );
   }

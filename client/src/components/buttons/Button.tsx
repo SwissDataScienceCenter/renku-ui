@@ -30,8 +30,9 @@ import { Fragment, ReactNode, useRef, useState } from "react";
 import {
   ArrowRight,
   ChevronDown,
-  PencilSquare,
+  Pencil,
   PlusLg,
+  ThreeDotsVertical,
 } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
@@ -41,6 +42,7 @@ import {
   Col,
   DropdownMenu,
   DropdownToggle,
+  UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -115,6 +117,91 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
       {props.default}
       {options}
     </ButtonDropdown>
+  );
+}
+
+interface ButtonWithMenuV2Props {
+  children?: React.ReactNode;
+  className?: string;
+  color?: string;
+  default: React.ReactNode;
+  direction?: "up" | "down" | "start" | "end";
+  disabled?: boolean;
+  id?: string;
+  preventPropagation?: boolean;
+  size?: string;
+}
+export const ButtonWithMenuV2 = SplitButtonWithMenu;
+
+export function SplitButtonWithMenu({
+  children,
+  className,
+  color,
+  default: defaultButton,
+  direction,
+  disabled,
+  id,
+  preventPropagation,
+  size,
+}: ButtonWithMenuV2Props) {
+  // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
+  const additionalProps = preventPropagation
+    ? { onClick: (e: React.MouseEvent) => e.stopPropagation() }
+    : {};
+  return (
+    <UncontrolledDropdown
+      {...additionalProps}
+      className={className}
+      color={color ?? "primary"}
+      direction={direction ?? "down"}
+      disabled={disabled}
+      group
+      id={id}
+      size={size ?? "md"}
+    >
+      {defaultButton}
+      <DropdownToggle
+        caret
+        className={cx("border-start-0", "dropdown-toggle-split")}
+        data-bs-toggle="dropdown"
+        color={color ?? "primary"}
+        data-cy="button-with-menu-dropdown"
+        disabled={disabled}
+      />
+      <DropdownMenu end>{children}</DropdownMenu>
+    </UncontrolledDropdown>
+  );
+}
+
+export function SingleButtonWithMenu({
+  children,
+  className,
+  color,
+  direction,
+  disabled,
+  id,
+  size,
+}: Omit<ButtonWithMenuV2Props, "default" | "preventPropagation">) {
+  return (
+    <UncontrolledDropdown
+      className={className}
+      color={color ?? "primary"}
+      direction={direction ?? "down"}
+      disabled={disabled}
+      id={id}
+      size={size ?? "md"}
+    >
+      <DropdownToggle
+        caret={false}
+        data-bs-toggle="dropdown"
+        color={color ?? "primary"}
+        data-cy="button-with-menu-dropdown"
+        disabled={disabled}
+      >
+        <ThreeDotsVertical />
+      </DropdownToggle>
+      <DropdownMenu end>{children}</DropdownMenu>
+    </UncontrolledDropdown>
   );
 }
 
@@ -308,8 +395,8 @@ function UnderlineArrowLink({
   const ref = useRef(null);
   return (
     <>
-      <span ref={ref} className={buttonStyles.LinkUnderline}>
-        <Link className="text-decoration-none" to={to}>
+      <span ref={ref}>
+        <Link to={to}>
           {text}
           <ArrowRight className={cx("bi", "ms-1")} />
         </Link>
@@ -322,26 +409,33 @@ function UnderlineArrowLink({
 /*
  * Edit button
  */
+interface EditButtonLinkProps {
+  "data-cy"?: string;
+  disabled?: boolean;
+  to: string;
+  tooltip: ReactNode;
+}
 function EditButtonLink({
   "data-cy": dataCy,
   disabled = false,
   to,
   tooltip,
-}: {
-  "data-cy"?: string;
-  disabled?: boolean;
-  to: string;
-  tooltip: ReactNode;
-}) {
+}: EditButtonLinkProps) {
   const ref = useRef(null);
   return (
     <>
-      <span ref={ref} className={buttonStyles.LinkIcon}>
+      <span ref={ref}>
         {disabled ? (
-          <PencilSquare />
+          <Button color="outline-primary" disabled size="sm">
+            <Pencil className="bi" />
+          </Button>
         ) : (
-          <Link className="text-decoration-none" data-cy={dataCy} to={to}>
-            <PencilSquare />
+          <Link
+            className={cx("btn", "btn-sm", "btn-outline-primary")}
+            data-cy={dataCy}
+            to={to}
+          >
+            <Pencil className="bi" />
           </Link>
         )}
       </span>

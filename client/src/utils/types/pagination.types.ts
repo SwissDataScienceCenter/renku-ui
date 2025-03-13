@@ -40,7 +40,7 @@ export interface Pagination {
   totalPages?: number;
 }
 
-export interface PaginatedResponse<T> {
+export interface PaginatedResponse<T, P extends Pagination = Pagination> {
   data: T[];
-  pagination: Pagination;
+  pagination: P;
 }

@@ -17,41 +17,36 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useMemo } from "react";
-import { Globe2, LockFill } from "react-bootstrap-icons";
-import {
-  Link,
-  generatePath,
-  useSearchParams,
-} from "react-router-dom-v5-compat";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { useCallback, useEffect, useMemo } from "react";
+import { Folder, PlusLg } from "react-bootstrap-icons";
+import { Link, useSearchParams } from "react-router-dom-v5-compat";
+import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
-import { TimeCaption } from "../../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import type { Project } from "../api/projectV2.api";
-import {
-  useGetNamespacesByNamespaceSlugQuery,
-  useGetProjectsQuery,
-} from "../api/projectV2.enhanced-api";
+import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
+import { NamespaceKind } from "../api/namespace.api";
+import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
+import ProjectShortHandDisplay from "../show/ProjectShortHandDisplay";
 
-const DEFAULT_PER_PAGE = 10;
+const DEFAULT_PER_PAGE = 5;
 const DEFAULT_PAGE_PARAM = "page";
 
 interface ProjectListDisplayProps {
   namespace?: string;
   pageParam?: string;
   perPage?: number;
-  emptyListElement?: ReactNode;
+  namespaceKind: NamespaceKind;
 }
 
 export default function ProjectListDisplay({
   namespace: ns,
   pageParam: pageParam_,
   perPage: perPage_,
-  emptyListElement,
+  namespaceKind,
 }: ProjectListDisplayProps) {
   const pageParam = useMemo(
     () => (pageParam_ ? pageParam_ : DEFAULT_PAGE_PARAM),
@@ -91,9 +86,11 @@ export default function ProjectListDisplay({
   }, [pageParam, searchParams]);
 
   const { data, error, isLoading } = useGetProjectsQuery({
-    namespace: ns,
-    page,
-    perPage,
+    params: {
+      namespace: ns,
+      page: page,
+      per_page: perPage,
+    },
   });
 
   useEffect(() => {
@@ -112,123 +109,179 @@ export default function ProjectListDisplay({
     }
   }, [data?.totalPages, page, pageParam, setSearchParams]);
 
-  if (isLoading)
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader />
-          <div>Retrieving projects...</div>
-        </div>
-      </div>
-    );
-
   if (error || data == null) {
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  if (!data.total) {
-    return emptyListElement ?? <p>The project list is empty.</p>;
-  }
+  const emptyListElement =
+    namespaceKind === "group" ? (
+      <AddEmptyListForGroupNamespace namespace={ns ?? ""} />
+    ) : (
+      <AddEmptyListForUserNamespace namespace={ns ?? ""} />
+    );
 
   return (
-    <>
-      <Row className={cx("row-cols-1", "row-cols-sm-2", "g-3")}>
-        {data.projects?.map((project) => (
-          <ProjectV2ListProject key={project.id} project={project} />
-        ))}
-      </Row>
-      <Pagination
-        currentPage={data.page}
-        perPage={perPage}
-        totalItems={data.total}
-        onPageChange={onPageChange}
-        className={cx(
-          "d-flex",
-          "justify-content-center",
-          "rk-search-pagination"
-        )}
-      />
-    </>
-  );
-}
-
-interface ProjectV2ListProjectProps {
-  project: Project;
-}
-function ProjectV2ListProject({ project }: ProjectV2ListProjectProps) {
-  const { data: namespaceData } = useGetNamespacesByNamespaceSlugQuery({
-    namespaceSlug: project.namespace,
-  });
-
-  const {
-    name,
-    namespace,
-    description,
-    visibility,
-    creation_date: creationDate,
-  } = project;
-
-  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: project.namespace,
-    slug: project.slug,
-  });
-  const namespaceUrl =
-    namespaceData && namespaceData.namespace_kind === "group"
-      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: namespace })
-      : generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-          username: project.namespace,
-        });
-
-  return (
-    <Col>
-      <Card className="h-100" data-cy="project-card">
-        <CardBody className={cx("d-flex", "flex-column")}>
-          <h3 className="card-title">
-            <Link className={cx("link-offset-1")} to={projectUrl}>
-              {name}
-            </Link>
-          </h3>
-          <p className={cx("mb-2", "card-text")}>
-            <Link to={namespaceUrl}>
-              {"@"}
-              {namespace}
-            </Link>
-          </p>
-          {description && (
-            <p className={cx("mb-2", "card-text")}>{description}</p>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <Card className="h-100" data-cy="project-box">
+        <ProjectBoxHeader
+          totalProjects={data.total ?? 0}
+          namespaceKind={namespaceKind}
+          namespace={ns ?? ""}
+        />
+        <CardBody>
+          {isLoading && (
+            <div className={cx("d-flex", "justify-content-center", "w-100")}>
+              <div className={cx("d-flex", "flex-column")}>
+                <Loader />
+                <div>Retrieving projects...</div>
+              </div>
+            </div>
           )}
-          <div
-            className={cx(
-              "mt-auto",
-              "mb-0",
-              "card-text",
-              "d-flex",
-              "flex-wrap"
-            )}
-          >
-            <div className={cx("flex-grow-1", "me-2")}>
-              {visibility === "private" ? (
-                <>
-                  <LockFill className={cx("bi", "me-1")} />
-                  Private
-                </>
-              ) : (
-                <>
-                  <Globe2 className={cx("bi", "me-1")} />
-                  Public
-                </>
-              )}
-            </div>
-            <div>
-              <TimeCaption
-                datetime={creationDate}
-                prefix="Created"
-                enableTooltip
+          {!data.total && emptyListElement}
+          {data.projects.length > 0 && (
+            <>
+              <div className={cx("d-flex", "flex-column", "gap-3")}>
+                <ListGroup flush data-cy="dashboard-project-list">
+                  {data?.projects?.map((project) => (
+                    <ProjectShortHandDisplay
+                      key={project.id}
+                      project={project}
+                    />
+                  ))}
+                </ListGroup>
+              </div>
+              <Pagination
+                currentPage={data.page}
+                perPage={perPage}
+                totalItems={data.total}
+                onPageChange={onPageChange}
+                className={cx(
+                  "d-flex",
+                  "justify-content-center",
+                  "rk-search-pagination"
+                )}
               />
-            </div>
-          </div>
+            </>
+          )}
         </CardBody>
       </Card>
-    </Col>
+    </div>
   );
+}
+
+interface ProjectBoxHeaderProps {
+  totalProjects: number;
+  namespace: string;
+  namespaceKind: NamespaceKind;
+}
+function ProjectBoxHeader({
+  totalProjects,
+  namespaceKind,
+  namespace,
+}: ProjectBoxHeaderProps) {
+  return (
+    <CardHeader>
+      <div
+        className={cx(
+          "align-items-center",
+          "d-flex",
+          "justify-content-between"
+        )}
+      >
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("mb-0", "me-2")}>
+            <Folder className={cx("me-1", "bi")} />
+            Projects
+          </h4>
+          <Badge>{totalProjects}</Badge>
+        </div>
+        {namespaceKind === "group" && (
+          <AddButtonForGroupNamespace namespace={namespace} />
+        )}
+        {namespaceKind === "user" && (
+          <AddButtonForUserNamespace namespace={namespace} />
+        )}
+      </div>
+    </CardHeader>
+  );
+}
+
+function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
+  const { permissions } = useGroupPermissions({ groupSlug: namespace });
+
+  return (
+    <PermissionsGuard
+      disabled={null}
+      enabled={
+        <Link
+          className={cx(
+            "btn",
+            "btn-outline-primary",
+            "btn-sm",
+            "ms-auto",
+            "my-auto"
+          )}
+          to="/v2/projects/new"
+        >
+          <PlusLg className="bi" id="createPlus" />
+        </Link>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
+  );
+}
+
+function AddButtonForUserNamespace({ namespace }: { namespace: string }) {
+  const { data: currentUser } = useGetUserQuery();
+
+  if (currentUser?.isLoggedIn && currentUser.username === namespace) {
+    return (
+      <Link
+        className={cx(
+          "btn",
+          "btn-outline-primary",
+          "btn-sm",
+          "ms-auto",
+          "my-auto"
+        )}
+        to="/v2/projects/new"
+      >
+        <PlusLg className="bi" id="createPlus" />
+      </Link>
+    );
+  }
+  return null;
+}
+
+function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
+  const { permissions } = useGroupPermissions({ groupSlug: namespace });
+
+  return (
+    <PermissionsGuard
+      disabled={<p>This group has no visible projects.</p>}
+      enabled={
+        <p className="text-body-secondary">
+          Collaborate on projects with anyone, with data, code, and compute
+          together in one place.
+        </p>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
+  );
+}
+
+function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
+  const { data: currentUser } = useGetUserQuery();
+
+  if (currentUser?.isLoggedIn && currentUser.username === namespace) {
+    return (
+      <p className="text-body-secondary">
+        Collaborate on projects with anyone, with data, code, and compute
+        together in one place.
+      </p>
+    );
+  }
+  return <p>This user has no visible personal projects.</p>;
 }

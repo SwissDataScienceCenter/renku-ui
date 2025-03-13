@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom-v5-compat";
 import {
   Button,
   Card,
@@ -31,6 +31,7 @@ import {
   Modal,
   ModalBody,
 } from "reactstrap";
+
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
@@ -78,13 +79,13 @@ export const ProjectSettingsGeneralDeleteProject = ({
     setShowModal((showModal) => !showModal);
   }, []);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   useEffect(() => {
     if (result.isSuccess) {
       addNotification({ notifications, projectPathWithNamespace });
-      history.push("/");
+      navigate("/");
     }
-  }, [history, notifications, projectPathWithNamespace, result.isSuccess]);
+  }, [navigate, notifications, projectPathWithNamespace, result.isSuccess]);
   useEffect(() => {
     if (result.isError) {
       setConfirmText("");

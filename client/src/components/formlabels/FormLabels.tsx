@@ -57,11 +57,11 @@ interface InputLabelProps extends LabelProps {
 }
 
 const InputLabel = ({ text, isRequired = false }: InputLabelProps) => {
-  return (
+  return text ? (
     <Label>
       {text} <RequiredLabel isRequired={isRequired} />
     </Label>
-  );
+  ) : null;
 };
 
 const LoadingLabel = ({ className, text }: LabelProps) => {

@@ -1,8 +1,8 @@
 {
   "id": "THEPROJECTULID26CHARACTERS",
   "name": "new name",
-  "slug": "new-slug",
-  "namespace": "test-2-group-v2",
+  "slug": "test-2-v2-project",
+  "namespace": "user1-uuid",
   "creation_date": "2023-11-15T09:55:59Z",
   "created_by": "user1-uuid",
   "repositories": [
@@ -10,5 +10,7 @@
     "https://domain.name/repo2.git"
   ],
   "visibility": "public",
-  "description": "new description"
+  "description": "new description",
+  "is_template": true,
+  "secrets_mount_directory": "/secrets"
 }

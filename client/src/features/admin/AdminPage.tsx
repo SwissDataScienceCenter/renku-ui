@@ -53,6 +53,7 @@ import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
+import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
@@ -61,12 +62,15 @@ import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
+import ConnectedServicesSection from "./ConnectedServicesSection";
 
 export default function AdminPage() {
   return (
     <>
       <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
+      <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
+      <ConnectedServicesSection />
       <SessionEnvironmentsSection />
     </>
   );
@@ -74,8 +78,8 @@ export default function AdminPage() {
 
 function ComputeResourcesSection() {
   return (
-    <section>
-      <h2 className="fs-5">Compute Resources</h2>
+    <section className="mt-4">
+      <h2 className="fs-4">Compute Resources</h2>
       <AdminComputeResourcesOverview />
     </section>
   );
@@ -434,7 +438,7 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
   if (isLoading) {
     return (
       <div>
-        <Loader className="me-2" inline size={16} />
+        <Loader className="me-1" inline size={16} />
         Loading users...
       </div>
     );

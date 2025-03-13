@@ -13,46 +13,89 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-import { skipToken } from "@reduxjs/toolkit/query";
-import cx from "classnames";
-import { useDispatch } from "react-redux";
-import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Card, CardBody, Col, Row } from "reactstrap";
 
-import { ReactNode } from "react";
-import { Globe2, LockFill } from "react-bootstrap-icons";
+import cx from "classnames";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
+import {
+  Folder2Open,
+  Globe2,
+  Icon,
+  Lock,
+  People,
+  Person,
+  Question,
+} from "react-bootstrap-icons";
+import {
+  Link,
+  generatePath,
+  useSearchParams,
+} from "react-router-dom-v5-compat";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  UncontrolledTooltip,
+} from "reactstrap";
+
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { Group, Project, User, searchV2Api } from "../api/searchV2Api.api";
-import { setCreatedBy, setPage } from "../searchV2.slice";
+import {
+  Group,
+  Project,
+  SearchEntity,
+  User,
+  searchV2Api,
+} from "../api/searchV2Api.api";
+import useClampSearchPage from "../hooks/useClampSearchPage.hook";
 
 export default function SearchV2Results() {
-  const searchState = useAppSelector((state) => state.searchV2);
-  const dispatch = useDispatch();
+  const [, setSearchParams] = useSearchParams();
+
+  const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
+
+  const [search, { data: searchResults }] =
+    searchV2Api.endpoints.getQuery.useLazyQuery();
+
+  useEffect(() => {
+    search({ page, perPage, q: query });
+  }, [page, perPage, query, search]);
+
+  useClampSearchPage({ totalPages: searchResults?.pagingInfo.totalPages });
+
+  const onPageChange = useCallback(
+    (page: number) => {
+      setSearchParams((prev) => {
+        prev.set("page", `${page}`);
+        return prev;
+      });
+    },
+    [setSearchParams]
+  );
 
   return (
     <Row data-cy="search-results">
       <Col className="d-sm-none" xs={12}>
-        <h3>Results</h3>
+        <h4>Results</h4>
       </Col>
       <Col xs={12}>
         <SearchV2ResultsContent />
       </Col>
       <Col className="mt-4" xs={12}>
         <Pagination
-          currentPage={searchState.search.page}
-          perPage={searchState.search.perPage}
-          totalItems={searchState.search.totalResults}
-          onPageChange={(page: number) => {
-            dispatch(setPage(page));
-          }}
+          currentPage={page}
+          perPage={perPage}
+          totalItems={searchResults?.pagingInfo.totalResult ?? 0}
+          onPageChange={onPageChange}
           showDescription={true}
-          className="rk-search-pagination"
         />
       </Col>
     </Row>
@@ -60,32 +103,25 @@ export default function SearchV2Results() {
 }
 
 function SearchV2ResultsContent() {
-  const dispatch = useDispatch();
-  // get the search state
-  const { search } = useAppSelector((state) => state.searchV2);
-  const searchResults = searchV2Api.endpoints.$get.useQueryState(
-    search.lastSearch != null
-      ? {
-          q: search.lastSearch,
-          page: search.page,
-          perPage: search.perPage,
-        }
-      : skipToken
-  );
+  const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
+
+  const searchResults = searchV2Api.endpoints.getQuery.useQueryState({
+    page,
+    perPage,
+    q: query,
+  });
 
   if (searchResults.isFetching) {
     return <Loader />;
   }
-  if (search.lastSearch == null) {
-    return <p>Start searching by typing in the search bar above.</p>;
-  }
 
   if (!searchResults.data?.items?.length) {
-    return (
+    return query == null ? (
+      <p>No results</p>
+    ) : (
       <>
         <p>
-          No results for{" "}
-          <span className="fw-bold">{`"${search.lastSearch}"`}</span>.
+          No results for <span className="fw-bold">{`"${query}"`}</span>
         </p>
         <p>You can try another search, or change some filters.</p>
       </>
@@ -96,9 +132,6 @@ function SearchV2ResultsContent() {
     if (entity.type === "Project") {
       return (
         <SearchV2ResultProject
-          searchByUser={(userId) => {
-            dispatch(setCreatedBy(userId));
-          }}
           key={`project-result-${entity.id}`}
           project={entity}
         />
@@ -116,69 +149,125 @@ function SearchV2ResultsContent() {
     return <SearchV2ResultsUnknown key={`unknown-result-${index}`} />;
   });
 
-  return <Row className="gy-4">{resultsOutput}</Row>;
+  return <Row className="g-3">{resultsOutput}</Row>;
 }
 
 interface SearchV2ResultsCardProps {
   children?: ReactNode;
 }
-function SearchV2ResultsCard({ children }: SearchV2ResultsCardProps) {
+function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
   return (
-    <Col xs={12} lg={6}>
-      <Card className={cx("border", "rounded", "h-100")} data-cy="search-card">
-        <CardBody className={cx("d-flex", "flex-column")}>{children}</CardBody>
-      </Card>
+    <Col xs={12} md={6} xl={4} data-cy="search-card">
+      <Card className="h-100">{children}</Card>
     </Col>
   );
 }
 
 interface SearchV2CardTitleProps {
-  children?: ReactNode;
-  entityType: ReactNode;
-  url: string;
+  entityType?: SearchEntity["type"];
+  entityUrl: string;
+  name: string;
+  namespace: string;
+  namespaceUrl: string;
 }
 function SearchV2CardTitle({
-  children,
   entityType,
-  url,
+  entityUrl,
+  name,
+  namespace,
+  namespaceUrl,
 }: SearchV2CardTitleProps) {
   return (
-    <div
-      className={cx(
-        "d-flex",
-        "flex-row",
-        "flex-wrap",
-        "flex-sm-nowrap",
-        "align-items-start",
-        "h3"
-      )}
-    >
-      <h3 className={cx("card-title", "fw-medium", "me-2")}>
-        <Link className={cx("link-offset-1")} to={url}>
-          {children}
-        </Link>
-      </h3>
-      <div
-        className={cx(
-          "ms-auto",
-          "pt-1",
-          "fst-italic",
-          "fs-6",
-          "text-dark-emphasis"
-        )}
-      >
-        {entityType}
+    <CardHeader className={cx("d-flex", "gap-2")}>
+      <div>
+        <h5 className="mb-1">
+          <Link data-cy="search-card-entity-link" to={entityUrl}>
+            {name}
+          </Link>
+        </h5>
+        <p className="mb-0">
+          <Link data-cy="search-card-namespace-link" to={namespaceUrl}>
+            @{namespace}
+          </Link>
+        </p>
       </div>
-    </div>
+      {entityType && (
+        <div className={cx("mb-auto", "ms-auto")}>
+          <EntityPill
+            entityType={entityType}
+            size="sm"
+            tooltipPlacement="bottom"
+          />
+        </div>
+      )}
+    </CardHeader>
+  );
+}
+
+interface EntityPillProps {
+  entityType: SearchEntity["type"];
+  size?: "sm" | "md" | "lg" | "xl" | "auto";
+  tooltip?: boolean;
+  tooltipPlacement?: "top" | "bottom" | "left" | "right";
+}
+export function EntityPill({
+  entityType,
+  size = "auto",
+  tooltip = true,
+  tooltipPlacement = "top",
+}: EntityPillProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const IconComponent: Icon =
+    entityType === "Project"
+      ? Folder2Open
+      : entityType === "Group"
+      ? People
+      : entityType === "User"
+      ? Person
+      : Question;
+  const sizeClass =
+    size == "sm"
+      ? "fs-6"
+      : size === "md"
+      ? "fs-5"
+      : size === "lg"
+      ? "fs-4"
+      : size === "xl"
+      ? "fs-2"
+      : null;
+
+  return (
+    <>
+      <div ref={ref}>
+        <Badge
+          className={cx(
+            "bg-light",
+            "border-dark-subtle",
+            "border",
+            "d-flex",
+            "p-2",
+            "text-dark-emphasis",
+            sizeClass
+          )}
+          pill
+        >
+          <IconComponent />
+        </Badge>
+      </div>
+      {tooltip && (
+        <UncontrolledTooltip placement={tooltipPlacement} target={ref}>
+          {entityType}
+        </UncontrolledTooltip>
+      )}
+    </>
   );
 }
 
 interface SearchV2ResultProjectProps {
   project: Project;
-  searchByUser: (userId: string) => void;
 }
 function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
-  const { creationDate, description, name, namespace, slug, visibility } =
+  const { creationDate, description, id, name, namespace, slug, visibility } =
     project;
 
   const namespaceUrl =
@@ -189,44 +278,54 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
       : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
           slug: namespace?.namespace ?? "",
         });
-  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-    namespace: namespace?.namespace ?? "",
-    slug,
-  });
+  const projectUrl =
+    namespace?.namespace != null
+      ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: namespace.namespace,
+          slug,
+        })
+      : generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
+          id,
+        });
 
   return (
-    <SearchV2ResultsCard>
-      <SearchV2CardTitle url={projectUrl} entityType="Project">
-        {name}
-      </SearchV2CardTitle>
-      <p className={cx("mb-2", "card-text")}>
-        <Link to={namespaceUrl}>
-          {"@"}
-          {namespace?.namespace}
-        </Link>
-      </p>
-      {description && <p className={cx("mb-2", "card-text")}>{description}</p>}
-      <div
-        className={cx("mt-auto", "mb-0", "card-text", "d-flex", "flex-wrap")}
-      >
-        <div className={cx("flex-grow-1", "me-2")}>
-          {visibility.toLowerCase() === "private" ? (
-            <>
-              <LockFill className={cx("bi", "me-1")} />
-              Private
-            </>
-          ) : (
-            <>
-              <Globe2 className={cx("bi", "me-1")} />
-              Public
-            </>
+    <SearchV2ResultsContainer>
+      <SearchV2CardTitle
+        entityType="Project"
+        entityUrl={projectUrl}
+        name={name}
+        namespace={namespace?.namespace ?? ""}
+        namespaceUrl={namespaceUrl}
+      />
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+        {description && <ClampedParagraph>{description}</ClampedParagraph>}
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "flex-wrap",
+            "gap-2",
+            "justify-content-between",
+            "mt-auto"
           )}
-        </div>
-        <div>
+        >
+          <div>
+            {visibility.toLowerCase() === "private" ? (
+              <>
+                <Lock className={cx("bi", "me-1")} />
+                Private
+              </>
+            ) : (
+              <>
+                <Globe2 className={cx("bi", "me-1")} />
+                Public
+              </>
+            )}
+          </div>
           <TimeCaption datetime={creationDate} prefix="Created" enableTooltip />
         </div>
-      </div>
-    </SearchV2ResultsCard>
+      </CardBody>
+    </SearchV2ResultsContainer>
   );
 }
 
@@ -241,16 +340,21 @@ function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
   });
 
   return (
-    <SearchV2ResultsCard>
-      <SearchV2CardTitle url={groupUrl} entityType="Group">
-        {name}
-      </SearchV2CardTitle>
-      <p className={cx("mb-2", "card-text")}>
-        {"@"}
-        {namespace}
-      </p>
-      {description && <p className={cx("mb-0", "card-text")}>{description}</p>}
-    </SearchV2ResultsCard>
+    <SearchV2ResultsContainer>
+      <SearchV2CardTitle
+        entityType="Group"
+        entityUrl={groupUrl}
+        name={name}
+        namespace={namespace}
+        namespaceUrl={groupUrl}
+      />
+
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+        {description && (
+          <ClampedParagraph className="mb-0">{description}</ClampedParagraph>
+        )}
+      </CardBody>
+    </SearchV2ResultsContainer>
   );
 }
 
@@ -270,23 +374,28 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
       : firstName || lastName || namespace;
 
   return (
-    <SearchV2ResultsCard>
-      <SearchV2CardTitle url={userUrl} entityType="User">
-        {displayName}
-      </SearchV2CardTitle>
-      <p className={cx("mb-0", "card-text")}>
-        {"@"}
-        {namespace}
-      </p>
-    </SearchV2ResultsCard>
+    <SearchV2ResultsContainer>
+      <SearchV2CardTitle
+        entityType="User"
+        entityUrl={userUrl}
+        name={displayName || "unknown"}
+        namespace={namespace || "unknown"}
+        namespaceUrl={userUrl}
+      />
+      <CardBody />
+    </SearchV2ResultsContainer>
   );
 }
 
 function SearchV2ResultsUnknown() {
   return (
-    <SearchV2ResultsCard>
-      <h4 className="mb-0">Unknown entity</h4>
-      <p className="form-text mb-0">This entity type is not supported yet.</p>
-    </SearchV2ResultsCard>
+    <SearchV2ResultsContainer>
+      <CardHeader>
+        <h5 className="mb-0">Unknown entity</h5>
+      </CardHeader>
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+        <p className="mb-0">This entity type is not supported yet.</p>
+      </CardBody>
+    </SearchV2ResultsContainer>
   );
 }

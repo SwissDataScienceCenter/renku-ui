@@ -23,10 +23,10 @@
  *  LoginAlert component
  */
 
+import cx from "classnames";
 import { Alert } from "reactstrap";
-import { Link, useLocation } from "react-router-dom";
 
-import { Url } from "../../utils/helpers/url";
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 
 export interface LoginAlertProps {
   logged: boolean;
@@ -45,18 +45,15 @@ const LoginAlert = ({
   textPost = " to use this feature.",
   textPre,
 }: LoginAlertProps) => {
-  const location = useLocation();
+  const loginUrl = useLoginUrl();
 
   // No need to show anything when the user is logged.
   if (logged) return null;
 
-  const loginUrl = Url.get(Url.pages.login.link, {
-    pathname: location.pathname,
-  });
   const link = (
-    <Link className="btn btn-primary btn-sm" to={loginUrl}>
+    <a className={cx("btn", "btn-primary", "btn-sm")} href={loginUrl.href}>
       {textLogin}
-    </Link>
+    </a>
   );
   const introElement = textIntro ? <p>{textIntro}</p> : null;
 

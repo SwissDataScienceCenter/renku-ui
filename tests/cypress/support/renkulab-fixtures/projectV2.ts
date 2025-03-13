@@ -19,6 +19,19 @@
 import { FixturesConstructor } from "./fixtures";
 import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
+interface ProjectOverrides {
+  id: string;
+  name: string;
+  namespace: string;
+  slug: string;
+  visibility: string;
+  description?: string;
+  keywords?: string[];
+  template_id?: string;
+  is_template?: boolean;
+  documentation: string | null | undefined;
+}
+
 /**
  * Fixtures for New Project
  */
@@ -29,20 +42,43 @@ interface ListManyProjectArgs extends NameOnlyFixture {
 
 interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
   removeMemberId?: string;
-  addMember?: { id: string; email?: string; role: string };
+  addMember?: {
+    id: string;
+    role: string;
+    first_name: string;
+    last_name: string;
+    namespace: string;
+  };
+}
+
+interface ProjectV2CreateArgs extends SimpleFixture {
+  slug?: string;
+  namespace?: string;
 }
 
 interface ProjectV2IdArgs extends SimpleFixture {
   projectId?: string;
+  overrides?: Partial<ProjectOverrides>;
+}
+
+interface ProjectV2CopyFixture extends ProjectV2IdArgs {
+  dataConnectorError?: boolean;
 }
 
 interface ProjectV2DeleteFixture extends NameOnlyFixture {
   projectId?: string;
 }
 
+interface ProjectV2ListCopiesFixture
+  extends Omit<ProjectV2IdArgs, "overrides"> {
+  writeable?: boolean;
+  count?: number | null;
+}
+
 interface ProjectV2NameArgs extends SimpleFixture {
   namespace?: string;
   projectSlug?: string;
+  overrides?: Partial<ProjectOverrides>;
 }
 
 interface ProjectV2PatchOrDeleteMemberFixture extends ProjectV2IdArgs {
@@ -74,13 +110,55 @@ export function generateProjects(numberOfProjects: number, start: number) {
 
 export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
   return class ProjectV2Fixtures extends Parent {
-    createProjectV2(args?: SimpleFixture) {
+    copyProjectV2(args?: ProjectV2CopyFixture) {
+      const {
+        fixture = "projectV2/create-projectV2.json",
+        projectId = "THEPROJECTULID26CHARACTERS",
+        name = "copyProjectV2",
+        dataConnectorError = false,
+      } = args ?? {};
+      cy.fixture(fixture).then((project) => {
+        cy.intercept(
+          "POST",
+          `/ui-server/api/data/projects/${projectId}/copies`,
+          (req) => {
+            const newProject = req.body;
+            expect(newProject.name).to.not.be.undefined;
+            expect(newProject.namespace).to.not.be.undefined;
+            expect(newProject.slug).to.not.be.undefined;
+            expect(newProject.visibility).to.not.be.undefined;
+            if (dataConnectorError) {
+              const body = {
+                error: {
+                  code: 1404,
+                  message: `The project was copied to ${newProject.namespace}/${newProject.slug}, but not all data connectors were included.`,
+                },
+              };
+              req.reply({ body, statusCode: 403, delay: 1000 });
+              return;
+            }
+            const body = { ...project, ...newProject };
+            req.reply({ body, statusCode: 201, delay: 1000 });
+          }
+        ).as(name);
+      });
+      return this;
+    }
+
+    createProjectV2(args?: ProjectV2CreateArgs) {
       const {
         fixture = "projectV2/create-projectV2.json",
         name = "createProjectV2",
       } = args ?? {};
-      const response = { fixture, statusCode: 201 };
-      cy.intercept("POST", "/ui-server/api/data/projects", response).as(name);
+      cy.fixture(fixture).then((values) => {
+        cy.intercept("POST", "/ui-server/api/data/projects", {
+          body: {
+            values,
+            ...args,
+          },
+          statusCode: 201,
+        }).as(name);
+      });
       return this;
     }
 
@@ -147,6 +225,77 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    listProjectV2ByNamespace(args?: Omit<ProjectV2NameArgs, "projectSlug">) {
+      const {
+        fixture = "projectV2/list-projectV2.json",
+        name = "listProjectV2ByNamespace",
+        namespace = "test-2-group-v2",
+      } = args ?? {};
+      cy.fixture(fixture).then((content) => {
+        const result = content.map((project) => {
+          project.namespace = namespace;
+          return project;
+        });
+        const response = { body: result };
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/projects?namespace=${namespace}*`,
+          response
+        ).as(name);
+      });
+      return this;
+    }
+
+    listProjectV2Copies(args?: ProjectV2ListCopiesFixture) {
+      const {
+        fixture = "projectV2/list-projectV2.json",
+        name = "listProjectV2Copies",
+        projectId = "THEPROJECTULID26CHARACTERS",
+        writeable = false,
+        count = null,
+      } = args ?? {};
+
+      cy.fixture(fixture).then((projects) => {
+        const url = writeable
+          ? `/ui-server/api/data/projects/${projectId}/copies?writable=true`
+          : `/ui-server/api/data/projects/${projectId}/copies?`;
+        cy.intercept("GET", url, (req) => {
+          if (count === 0) {
+            req.reply({ body: [], statusCode: 200, delay: 1000 });
+            return;
+          }
+          if (count === 1) {
+            const body = [projects[0]];
+            req.reply({ body, statusCode: 200, delay: 1000 });
+            return;
+          }
+          if (count > 2) {
+            const body = generateProjects(count, 0);
+            req.reply({ body, statusCode: 200, delay: 1000 });
+            return;
+          }
+          const body = projects;
+          req.reply({ body, statusCode: 200, delay: 1000 });
+        }).as(name);
+      });
+      return this;
+    }
+
+    getProjectV2Permissions(args?: ProjectV2IdArgs) {
+      const {
+        fixture = "projectV2/projectV2-permissions.json",
+        name = "getProjectV2Permissions",
+        projectId = "THEPROJECTULID26CHARACTERS",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/projects/${projectId}/permissions`,
+        response
+      ).as(name);
+      return this;
+    }
+
     listProjectV2Members(args?: ListProjectV2MembersFixture) {
       const {
         fixture = "projectV2/list-projectV2-members.json",
@@ -202,7 +351,7 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/projects/${namespace}/${projectSlug}`,
+        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}*`,
         response
       ).as(name);
       return this;
@@ -214,11 +363,35 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "readProjectV2",
         namespace = "user1-uuid",
         projectSlug = "test-2-v2-project",
+        overrides = {},
+      } = args ?? {};
+      cy.fixture(fixture).then((project) => {
+        const response = {
+          ...project,
+          namespace,
+          slug: projectSlug,
+          ...overrides,
+        };
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}*`,
+          response
+        ).as(name);
+      });
+      return this;
+    }
+
+    readProjectV2WithoutDocumentation(args?: ProjectV2NameArgs) {
+      const {
+        fixture = "projectV2/read-projectV2-without-documentation.json",
+        name = "readProjectV2WithoutDocumentation",
+        namespace = "user1-uuid",
+        projectSlug = "test-2-v2-project",
       } = args ?? {};
       const response = { fixture };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/projects/${namespace}/${projectSlug}`,
+        `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}`,
         response
       ).as(name);
       return this;
@@ -229,13 +402,18 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         fixture = "projectV2/read-projectV2.json",
         name = "readProjectV2ById",
         projectId = "THEPROJECTULID26CHARACTERS",
+        overrides = {},
       } = args ?? {};
-      const response = { fixture };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/projects/${projectId}`,
-        response
-      ).as(name);
+      cy.fixture(fixture).then((project) => {
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/projects/${projectId}*`,
+          (req) => {
+            const response = { ...project, ...overrides, id: projectId };
+            req.reply({ body: response, delay: 1000 });
+          }
+        ).as(name);
+      });
       return this;
     }
 
@@ -259,7 +437,85 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/projects/*/session_launchers`,
+        `/api/data/projects/*/session_launchers`,
+        response
+      ).as(name);
+      return this;
+    }
+
+    sessionSecretSlots(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/secret_slots.json",
+        name = "sessionSecretSlots",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/data/projects/*/session_secret_slots",
+        response
+      ).as(name);
+      return this;
+    }
+
+    postSessionSecretSlot(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/post_secret_slot.json",
+        name = "postSessionSecretSlot",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "POST",
+        "/ui-server/api/data/session_secret_slots",
+        response
+      ).as(name);
+      return this;
+    }
+
+    patchSessionSecretSlot(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/post_secret_slot.json",
+        name = "patchSessionSecretSlot",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "PATCH",
+        "/ui-server/api/data/session_secret_slots/*",
+        response
+      ).as(name);
+      return this;
+    }
+
+    deleteSessionSecretSlot(args?: NameOnlyFixture) {
+      const { name = "deleteSessionSecretSlot" } = args ?? {};
+      cy.intercept("DELETE", "/ui-server/api/data/session_secret_slots/*", {
+        statusCode: 204,
+      }).as(name);
+      return this;
+    }
+
+    sessionSecrets(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/secrets.json",
+        name = "sessionSecrets",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/data/projects/*/session_secrets",
+        response
+      ).as(name);
+      return this;
+    }
+
+    patchSessionSecrets(args?: SimpleFixture) {
+      const {
+        fixture = "projectV2SessionSecrets/secrets.json",
+        name = "patchSessionSecrets",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "PATCH",
+        "/ui-server/api/data/projects/*/session_secrets",
         response
       ).as(name);
       return this;

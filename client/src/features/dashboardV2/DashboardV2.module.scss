@@ -1,0 +1,40 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.DashboardHeader {
+  height: auto;
+}
+
+.DashboardHeaderImg {
+  height: 150px;
+  background-image: url("/dashboardV2header.png");
+  background-size: cover;
+  background-position: top center;
+  overflow: hidden;
+}
+
+.AnonymousAvatar {
+  width: 64px;
+  height: 64px;
+}
+
+.DashboardCard {
+  background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+
+  &:hover {
+    background-color: var(--bs-primary-bg-subtle) !important;
+  }
+}
+
+.FooterCard {
+  a svg {
+    transition: all 0.3s linear;
+  }
+  a:hover svg,
+  a:focus svg {
+    transform: scale(1.3);
+  }
+}

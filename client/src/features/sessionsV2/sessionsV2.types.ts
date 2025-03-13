@@ -16,66 +16,168 @@
  * limitations under the License.
  */
 
-export interface SessionEnvironment {
+import { ReactNode } from "react";
+import { ResourceClass } from "../dataServices/dataServices.types";
+import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type {
+  BuildParametersPost,
+  DefaultUrl,
+  EnvironmentGid,
+  EnvironmentId,
+  EnvironmentKind,
+  EnvironmentPort,
+  EnvironmentPost,
+  EnvironmentUid,
+  SessionLauncherEnvironmentParams,
+  SessionLauncherPost,
+} from "./api/sessionLaunchersV2.api";
+
+export type SessionLauncherEnvironment = {
+  id?: string;
+  name: string;
+  description?: string;
   container_image: string;
-  creation_date: string;
-  id: string;
-  name: string;
   default_url?: string;
-  description?: string;
-}
-
-export type SessionEnvironmentList = SessionEnvironment[];
-
-export type SessionLauncher = {
-  id: string;
-  project_id: string;
-  name: string;
-  creation_date: string;
-  default_url?: string;
-  description?: string;
-  resource_class_id?: number;
+  uid?: number;
+  gid?: number;
+  working_directory?: string;
+  mount_directory?: string;
+  port?: number;
   environment_kind: EnvironmentKind;
-} & SessionLauncherEnvironment;
+  command?: string[];
+  args?: string[];
+};
 
-export type EnvironmentKind = "global_environment" | "container_image";
-
-export type SessionLauncherEnvironment =
-  | {
-      environment_kind: Extract<EnvironmentKind, "global_environment">;
-      environment_id: string;
-    }
-  | {
-      environment_kind: Extract<EnvironmentKind, "container_image">;
-      container_image: string;
-    };
-
-export type SessionLauncherList = SessionLauncher[];
-
+export interface GetProjectSessionLauncherParams {
+  id: string;
+}
 export interface GetProjectSessionLaunchersParams {
   projectId: string;
 }
 
 export type AddSessionLauncherParams = {
-  default_url?: string;
   description?: string;
   name: string;
   project_id: string;
   resource_class_id?: number;
-  environment_kind: EnvironmentKind;
-} & SessionLauncherEnvironment;
+  disk_storage?: number;
+  environment: SessionLauncherEnvironmentParams;
+};
 
 export interface UpdateSessionLauncherParams {
-  launcherId?: string;
-  default_url?: string;
+  launcherId: string;
   description?: string;
   name?: string;
-  environment_kind?: EnvironmentKind;
-  environment_id?: string;
   resource_class_id?: number;
-  container_image?: string;
+  disk_storage?: number | null;
+  environment?: SessionLauncherEnvironmentParams;
 }
 
 export interface DeleteSessionLauncherParams {
   launcherId: string;
+}
+
+export interface SessionLauncherForm
+  extends Pick<
+      SessionLauncherPost,
+      "name" | "description" | "disk_storage" | "project_id"
+    >,
+    Pick<
+      EnvironmentPost,
+      "container_image" | "mount_directory" | "working_directory"
+    >,
+    Pick<
+      BuildParametersPost,
+      "builder_variant" | "frontend_variant" | "repository"
+    > {
+  resourceClass: ResourceClass;
+
+  // Substitute for Environment Kind and Environment Image Source in forms
+  environmentSelect: "global" | "custom + image" | "custom + build";
+
+  // For "global" environments
+  environmentId: EnvironmentId;
+
+  // For "custom" + "image" environments
+  default_url: DefaultUrl;
+  uid: EnvironmentUid;
+  gid: EnvironmentGid;
+  port: EnvironmentPort;
+
+  args: string;
+  command: string;
+}
+
+export interface SessionResources {
+  requests?: {
+    cpu?: number;
+    gpu?: number;
+    memory?: number;
+    storage?: number;
+  };
+}
+
+export interface SessionStatus {
+  message?: string;
+  state: "running" | "starting" | "stopping" | "failed" | "hibernated";
+  will_hibernate_at?: string | null;
+  will_delete_at?: string | null;
+  ready_containers: number;
+  total_containers: number;
+}
+
+export type SessionList = SessionV2[];
+export interface SessionV2 {
+  image: string;
+  name: string;
+  resources: SessionResources;
+  started: string | null;
+  status: SessionStatus;
+  url: string;
+  project_id: string;
+  launcher_id: string;
+  resource_class_id: number;
+}
+
+export interface SessionCloudStorageV2 {
+  configuration: CloudStorageDetailsOptions;
+  readonly: boolean;
+  source_path: string;
+  storage_id: string;
+  target_path: string;
+}
+
+export interface LaunchSessionParams {
+  launcher_id: string;
+  disk_storage?: number;
+  cloudstorage?: SessionCloudStorageV2[];
+  resource_class_id?: number;
+}
+
+export interface PatchSessionParams {
+  session_id: string;
+  state?: Extract<"running" | "hibernated", SessionStatus["state"]>;
+  resource_class_id?: number;
+}
+
+export interface GetLogsParams {
+  session_id: string;
+  max_lines: number;
+}
+
+export interface StopSessionParams {
+  session_id: string;
+}
+export interface SessionImageParams {
+  image_url: string;
+}
+
+export interface DockerImage {
+  error?: unknown;
+}
+
+export interface BuilderSelectorOption {
+  label: string;
+  value: string;
+  description?: ReactNode;
 }

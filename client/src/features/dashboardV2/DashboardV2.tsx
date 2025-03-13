@@ -15,352 +15,595 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { PlusLg } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
-import { Col, Row } from "reactstrap";
-
-import { WarnAlert } from "../../components/Alert";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { Loader } from "../../components/Loader";
-import { TimeCaption } from "../../components/TimeCaption";
-import VisibilityIcon from "../../components/entities/VisibilityIcon";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import type { Project } from "../projectsV2/api/projectV2.api";
+import { ReactNode } from "react";
 import {
+  Calendar3Week,
+  Eye,
+  FileEarmarkText,
+  Folder,
+  Megaphone,
+  People,
+  PersonFillExclamation,
+  PlayCircle,
+  PlusLg,
+  PlusSquare,
+  Send,
+} from "react-bootstrap-icons";
+import { generatePath, Link } from "react-router-dom-v5-compat";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  ListGroup,
+  Row,
+} from "reactstrap";
+
+import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
+import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import {
+  GetGroupsApiResponse,
+  GetProjectsApiResponse,
   useGetGroupsQuery,
   useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
-import BackToV1Button from "../projectsV2/shared/BackToV1Button";
-
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
+import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
+import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
+import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
+import SearchV2Bar from "../searchV2/components/SearchV2Bar";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
+import { useGetUserQuery } from "../usersV2/api/users.api";
+import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
-import "../dashboard/Dashboard.scss";
-import styles from "./Dashboard.module.scss";
-
-type ListElement = Pick<
-  Project,
-  "name" | "description" | "visibility" | "creation_date"
-> & {
-  readableId: string;
-  url: string;
-};
+import DashboardStyles from "./DashboardV2.module.scss";
 
 export default function DashboardV2() {
-  return (
-    <div>
-      <DashboardWelcome />
-      <SessionsDashboard />
-      <ProjectsDashboard />
-      <GroupsDashboard />
-    </div>
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
   );
-}
 
-interface DashboardListElementProps {
-  "data-cy": string;
-  element: ListElement;
-}
+  if (!userLogged) return <AnonymousDashboard />;
 
-function DashboardListElement({
-  "data-cy": dataCy,
-  element,
-}: DashboardListElementProps) {
   return (
-    <div data-cy={dataCy} className={cx(styles.containerEntityListBar, "p-3")}>
+    <div className={cx("position-relative", "d-flex")}>
+      <HeaderDashboard />
       <div
-        className={cx(styles.entityTitle, "text-truncate", "cursor-pointer")}
+        className={cx("container-xxl", "px-2", "px-sm-3", "px-xxl-0", "my-5")}
       >
-        <Link
-          data-cy={`${dataCy}-link`}
-          className="text-decoration-none"
-          to={element.url}
-        >
-          <div className={cx("text-truncate")}>
-            <span className={cx("card-title", "text-truncate")}>
-              {element.name}
-            </span>
-          </div>
-        </Link>
-      </div>
-      <div
-        className={cx(
-          styles.entityIdentifier,
-          "text-truncate",
-          "cursor-pointer",
-          "mb-3"
-        )}
-      >
-        <Link
-          data-cy={`${dataCy}-link`}
-          className="text-decoration-none"
-          to={element.url}
-        >
-          <div className={cx("fst-italic", "text-truncate")}>
-            {element.readableId}
-          </div>
-        </Link>
-      </div>
-      <div className={cx(styles.entityDescription, "cursor-pointer")}>
-        <Link className="text-decoration-none" to={element.url}>
-          <div className={cx("card-text", "text-rk-dark", "m-0")}>
-            {element.description}
-          </div>
-        </Link>
-      </div>
-      <div className={cx(styles.entityTypeVisibility, "align-items-baseline")}>
-        <span className={cx("text-rk-green")}>
-          <VisibilityIcon visibility={element.visibility} />
-        </span>
-      </div>
-      <div className={cx(styles.entityDate)}>
-        <TimeCaption datetime={element.creation_date} prefix="Created" />
-      </div>
-    </div>
-  );
-}
-
-function DashboardWelcome() {
-  return (
-    <>
-      <Row className="mb-3">
-        <Col>
-          <h2>
-            <b>Welcome to the Renku 2.0 alpha preview!</b>
-          </h2>
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col md={7}>
-          <p>
-            <b>Learn more about Renku 2.0</b> on our{" "}
-            <ExternalLink
-              className="me-2"
-              url="https://blog.renkulab.io/renku-2/"
-              iconAfter={true}
-              role="text"
-              title="blog"
-            />
-            and see what&rsquo;s ahead on our{" "}
-            <ExternalLink
-              url="https://github.com/SwissDataScienceCenter/renku-design-docs/blob/main/roadmap.md"
-              iconAfter={true}
-              role="text"
-              title="roadmap"
-            />
-            . Feedback?{" "}
-            <a href="mailto:hello@renku.io">We&rsquo;d love to hear it!</a>
-          </p>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <WarnAlert timeout={0} dismissible={false}>
-            <h4>
-              Do not do any important work in the Renku 2.0 alpha preview!
-            </h4>
-            <p>
-              The alpha is for testing only. We do not guarantee saving and
-              persisting work in the alpha.
-            </p>
-            <div>
-              You can go back to Renku 1.0 at any time.{" "}
-              <BackToV1Button color="warning" />
-            </div>
-          </WarnAlert>
-        </Col>
-      </Row>
-    </>
-  );
-}
-
-function GroupsDashboard() {
-  return (
-    <div
-      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
-      data-cy="groups-container"
-    >
-      <div
-        className={cx(
-          "d-flex",
-          "justify-content-between",
-          "align-items-center",
-          "flex-wrap",
-          "pb-3"
-        )}
-      >
-        <h2>Groups</h2>
-        <Link
-          className={cx("btn", "btn-rk-green", "btn-icon-text")}
-          to="/v2/groups/new"
-        >
-          <PlusLg className="bi" id="createPlus" />
-          <span className="d-none d-sm-inline">Create new group</span>
-        </Link>
-      </div>
-      <GroupsList />
-      <div className={cx("d-flex", "justify-content-center", "mt-2")}>
-        <Link
-          to="/v2/groups"
-          data-cy="view-my-groups-btn"
-          className={cx(
-            "btn",
-            "btn-outline-rk-green",
-            "d-flex",
-            "align-items-center"
-          )}
-        >
-          View all my groups
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function GroupsList() {
-  const { data, error, isLoading } = useGetGroupsQuery({
-    page: 1,
-    perPage: 5,
-  });
-
-  if (isLoading)
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader className="me-2" />
-          <div>Retrieving groups...</div>
+        <div className={cx("d-flex", "flex-column", "gap-4", "mb-4")}>
+          <Row className="g-4">
+            <Col
+              xs={12}
+              lg={4}
+              xl={3}
+              className={cx("d-flex", "flex-column", "gap-4")}
+            >
+              <UserDashboard />
+              <GroupsDashboard />
+            </Col>
+            <Col
+              xs={12}
+              lg={8}
+              xl={9}
+              className={cx("d-flex", "flex-column", "gap-4")}
+            >
+              <SessionsDashboard />
+              <ProjectsDashboard />
+              <FooterDashboard />
+            </Col>
+          </Row>
         </div>
       </div>
-    );
-  if (error) return <div>Cannot show groups.</div>;
+    </div>
+  );
+}
 
-  if (data == null) return <div>No 2.0 groups.</div>;
-
+function HeaderDashboard() {
   return (
     <div
-      data-cy="dashboard-group-list"
-      className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
+      className={cx(
+        DashboardStyles.DashboardHeader,
+        "position-absolute",
+        "w-100",
+        "bg-navy"
+      )}
     >
-      {data.groups?.map((group) => (
-        <DashboardListElement
-          data-cy="list-group"
-          key={group.id}
-          element={{
-            ...group,
-            readableId: group.slug,
-            visibility: "public",
-            url: generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-              slug: group.slug,
-            }),
-          }}
-        />
-      ))}
+      <div
+        className={cx("container-xxl", DashboardStyles.DashboardHeaderImg)}
+      ></div>
     </div>
+  );
+}
+
+function FooterDashboard() {
+  return (
+    <Row className="g-3">
+      <Col xs={12} lg={6} xl={3}>
+        <FooterDashboardCard url="https://blog.renkulab.io/">
+          <Megaphone size={27} />
+          Renku updates
+        </FooterDashboardCard>
+      </Col>
+      <Col xs={12} lg={6} xl={3}>
+        <FooterDashboardCard url="https://renku.notion.site/Documentation-db396cfc9a664cd2b161e4c6068a5ec9">
+          <FileEarmarkText size={27} />
+          Documentation
+        </FooterDashboardCard>
+      </Col>
+      <Col xs={12} lg={6} xl={3}>
+        <FooterDashboardCard url="https://renku.notion.site/f9caf41b579f474b8007803b007e3999?v=807326f870984774900fd87095225d7a">
+          <Calendar3Week size={27} />
+          Community events
+        </FooterDashboardCard>
+      </Col>
+      <Col xs={12} lg={6} xl={3}>
+        <FooterDashboardCard url="mailto:hello@renku.io">
+          <Send size={27} />
+          Contact us
+        </FooterDashboardCard>
+      </Col>
+    </Row>
+  );
+}
+
+interface FooterDashboardCardProps {
+  children: ReactNode;
+  url: string;
+}
+function FooterDashboardCard({ children, url }: FooterDashboardCardProps) {
+  return (
+    <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
+      <CardBody className={DashboardStyles.FooterCard}>
+        <a
+          target="_blank"
+          className={cx(
+            "text-primary",
+            "d-flex",
+            "flex-column",
+            "gap-4",
+            "align-items-center",
+            "py-4",
+            "link-primary",
+            "stretched-link"
+          )}
+          rel="noreferrer noopener"
+          href={url}
+        >
+          {children}
+        </a>
+      </CardBody>
+    </Card>
+  );
+}
+function DashboardSearch() {
+  return (
+    <Row>
+      <Col xs={12}>
+        <Card className="bg-white">
+          <CardHeader>
+            <h3>Explore Renkulab</h3>
+            <p>Explore projects on RenkuLab.</p>
+          </CardHeader>
+          <CardBody>
+            <SearchV2Bar />
+          </CardBody>
+        </Card>
+      </Col>
+    </Row>
   );
 }
 
 function ProjectsDashboard() {
+  const { data, error, isLoading } = useGetProjectsQuery({
+    params: {
+      page: 1,
+      per_page: 5,
+      direct_member: true,
+    },
+  });
+  const hasProjects = data && data?.projects?.length > 0;
   return (
-    <div
-      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
-      data-cy="projects-container"
-    >
-      <div
-        className={cx(
-          "d-flex",
-          "justify-content-between",
-          "align-items-center",
-          "flex-wrap",
-          "pb-3"
+    <Card data-cy="projects-container">
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("mb-0", "me-2")}>
+            <Folder className={cx("bi", "me-1")} />
+            My projects
+          </h4>
+          <Badge>{data?.total ?? 0}</Badge>
+        </div>
+        {hasProjects && (
+          <CreateProjectV2Button
+            className={cx("btn-sm", "ms-auto", "my-auto")}
+            data-cy="dashboard-project-new"
+            color="outline-primary"
+          >
+            <PlusLg className="bi" id="createPlus" />
+          </CreateProjectV2Button>
         )}
-      >
-        <h2>Projects</h2>
-        <Link
-          className={cx("btn", "btn-rk-green", "btn-icon-text")}
-          to="/v2/projects/new"
-        >
-          <PlusLg className="bi" id="createPlus" />
-          <span className="d-none d-sm-inline">Create new project</span>
-        </Link>
+      </CardHeader>
+
+      <CardBody>
+        <ProjectList data={data} isLoading={isLoading} error={error} />
+      </CardBody>
+    </Card>
+  );
+}
+
+interface ProjectListProps {
+  data: GetProjectsApiResponse | undefined;
+  error: FetchBaseQueryError | SerializedError | undefined;
+  isLoading: boolean;
+}
+function ProjectList({ data, error, isLoading }: ProjectListProps) {
+  const hasProjects = data && data?.projects?.length > 0;
+  const noProjects = isLoading ? (
+    <div className={cx("d-flex", "flex-column", "mx-auto")}>
+      <Loader />
+      <p className={cx("mx-auto", "my-3")}>Retrieving projects...</p>
+    </div>
+  ) : error ? (
+    <div>
+      <p>Cannot show projects.</p>
+      <RtkOrNotebooksError error={error} />
+    </div>
+  ) : !hasProjects ? (
+    <div className="text-body-secondary">
+      Collaborate on projects with anyone, with data, code, and compute together
+      in one place.
+    </div>
+  ) : null;
+
+  const projectFooter = hasProjects ? (
+    <ViewAllLink
+      noItems={!hasProjects}
+      type="project"
+      total={data?.total ?? 0}
+    />
+  ) : (
+    <EmptyProjectsButtons />
+  );
+
+  if (noProjects)
+    return (
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        {noProjects}
+        {projectFooter}
       </div>
-      <ProjectList />
-      <div className={cx("d-flex", "justify-content-center", "mt-2")}>
-        <Link
-          to="/v2/projects"
-          data-cy="view-my-projects-btn"
-          className={cx(
-            "btn",
-            "btn-outline-rk-green",
-            "d-flex",
-            "align-items-center"
-          )}
-        >
-          View all my projects
-        </Link>
-      </div>
+    );
+
+  return (
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <ListGroup flush data-cy="dashboard-project-list">
+        {data?.projects?.map((project) => (
+          <ProjectShortHandDisplay key={project.id} project={project} />
+        ))}
+      </ListGroup>
+      {projectFooter}
     </div>
   );
 }
 
-function ProjectList() {
-  const { data, error, isLoading } = useGetProjectsQuery({
-    page: 1,
-    perPage: 5,
+function GroupsDashboard() {
+  const { data, error, isLoading } = useGetGroupsQuery({
+    params: {
+      page: 1,
+      per_page: 5,
+      direct_member: true,
+    },
+  });
+  const hasGroups = data && data?.groups?.length > 0;
+  return (
+    <Card data-cy="groups-container">
+      <CardHeader className={cx("d-flex", "gap-2")}>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("mb-0", "me-2")}>
+            <People className={cx("bi", "me-1")} />
+            My groups
+          </h4>
+          <Badge>{data?.total ?? 0}</Badge>
+        </div>
+        {hasGroups && (
+          <CreateGroupButton
+            className={cx("btn-sm", "ms-auto", "my-auto")}
+            data-cy="dashboard-group-new"
+            color="outline-primary"
+          >
+            <PlusLg className="bi" id="createPlus" />
+          </CreateGroupButton>
+        )}
+      </CardHeader>
+
+      <CardBody>
+        <GroupsList data={data} isLoading={isLoading} error={error} />
+      </CardBody>
+    </Card>
+  );
+}
+
+function UserDashboard() {
+  const { data: userInfo, isLoading } = useGetUserQuery();
+
+  if (!userInfo?.isLoggedIn || isLoading) {
+    return null;
+  }
+
+  const userPageUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+    username: userInfo?.username ?? "",
   });
 
-  if (isLoading)
-    return (
-      <div className={cx("d-flex", "justify-content-center", "w-100")}>
-        <div className={cx("d-flex", "flex-column")}>
-          <Loader className="me-2" />
-          <div>Retrieving projects...</div>
+  return (
+    <Card data-cy="user-container" className="position-relative">
+      <CardBody
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "align-items-center",
+          "gap-2",
+          "my-2",
+          "my-md-4"
+        )}
+      >
+        <UserAvatar namespace={userInfo.username} size="lg" />
+        <h3 className={cx("text-center", "mb-0")}>
+          {userInfo.first_name} {userInfo.last_name}
+        </h3>
+        <p className="mb-0">
+          <Link
+            to={userPageUrl}
+            className={cx("link-primary", "stretched-link")}
+          >
+            @{userInfo.username ?? "unknown"}
+          </Link>
+        </p>
+      </CardBody>
+    </Card>
+  );
+}
+
+function AnonymousDashboard() {
+  return (
+    <div className={cx("position-relative", "d-flex")}>
+      <HeaderDashboard />
+      <div
+        className={cx("container-xxl", "px-2", "px-sm-3", "px-xxl-0", "my-5")}
+      >
+        <div className={cx("d-flex", "flex-column", "gap-4", "mb-4")}>
+          <Row className="g-4">
+            <Col
+              xs={12}
+              lg={4}
+              xl={3}
+              className={cx("d-flex", "flex-column", "gap-4")}
+            >
+              <LoginCard />
+            </Col>
+            <Col
+              xs={12}
+              lg={8}
+              xl={9}
+              className={cx(
+                "d-flex",
+                "flex-column",
+                "gap-4",
+                "gap-xl-0",
+                "justify-content-between"
+              )}
+            >
+              <DashboardSearch />
+              <FooterDashboard />
+            </Col>
+          </Row>
         </div>
       </div>
-    );
-  if (error) return <div>Cannot show projects.</div>;
+    </div>
+  );
+}
+function LoginCard() {
+  const userLogged = useLegacySelector<boolean>(
+    (state) => state.stateModel.user.logged
+  );
+  const loginUrl = useLoginUrl();
+  if (userLogged) {
+    return null;
+  }
+  return (
+    <Card data-cy="user-container" className={cx("bg-primary", "text-white")}>
+      <CardBody
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "align-items-center",
+          "gap-5",
+          "my-5"
+        )}
+      >
+        <div
+          className={cx("d-flex", "flex-column", "align-items-center", "gap-2")}
+        >
+          <div
+            className={cx(
+              "border",
+              "rounded-pill",
+              "bg-white",
+              "text-primary",
+              DashboardStyles.AnonymousAvatar,
+              "d-flex",
+              "justify-content-center",
+              "align-items-center"
+            )}
+          >
+            <PersonFillExclamation size={48} />
+          </div>
+          <p className="mb-0">You are not logged in.</p>
+        </div>
+        <div
+          className={cx(
+            "d-flex",
+            "flex-column",
+            "align-items-center",
+            "gap-2",
+            "text-center"
+          )}
+        >
+          <a
+            className={cx("btn", "bg-white", "text-primary")}
+            id="login-button"
+            href={loginUrl.href}
+          >
+            Log in
+          </a>
+          <p className="mb-0">
+            To create projects, groups and launch sessions.
+          </p>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
 
-  if (data == null) return <div>No 2.0 projects.</div>;
+interface GroupListProps {
+  data: GetGroupsApiResponse | undefined;
+  error: FetchBaseQueryError | SerializedError | undefined;
+  isLoading: boolean;
+}
+function GroupsList({ data, error, isLoading }: GroupListProps) {
+  const hasGroups = data && data?.groups?.length > 0;
+  const noGroups = isLoading ? (
+    <div className={cx("d-flex", "flex-column", "mx-auto")}>
+      <Loader />
+      <p className={cx("mx-auto", "my-3")}>Retrieving groups...</p>
+    </div>
+  ) : error ? (
+    <div>
+      <p>Cannot show groups.</p>
+      <RtkOrNotebooksError error={error} />
+    </div>
+  ) : !hasGroups ? (
+    <div className="text-body-secondary">
+      Share and organize projects & data with your team.
+    </div>
+  ) : null;
+
+  const groupFooter = hasGroups ? (
+    <ViewAllLink noItems={!hasGroups} type="group" total={data?.total ?? 0} />
+  ) : (
+    <div className="d-flex">
+      <Link
+        to={{ hash: GROUP_CREATION_HASH }}
+        className={cx("btn", "btn-outline-primary")}
+      >
+        <PlusSquare className={cx("bi", "me-1")} />
+        Create my first group
+      </Link>
+    </div>
+  );
+
+  if (noGroups)
+    return (
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        {noGroups}
+        {groupFooter}
+      </div>
+    );
 
   return (
-    <div
-      data-cy="dashboard-project-list"
-      className={cx("d-flex", "flex-column", "gap-3", "mb-sm-2", "mb-md-4")}
-    >
-      {data.projects?.map((project) => (
-        <DashboardListElement
-          data-cy="list-project"
-          key={project.id}
-          element={{
-            ...project,
-            readableId: `${project.namespace}/${project.slug}`,
-            url: generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-              namespace: project.namespace,
-              slug: project.slug,
-            }),
-          }}
-        />
-      ))}
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <ListGroup flush data-cy="dashboard-group-list">
+        {data?.groups?.map((group) => (
+          <GroupShortHandDisplay
+            element="list-item"
+            key={group.id}
+            group={group}
+          />
+        ))}
+      </ListGroup>
+      {groupFooter}
     </div>
   );
 }
 
 function SessionsDashboard() {
+  const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
+  const totalSessions = sessions ? sessions?.length : 0;
   return (
-    <div
-      className={cx("bg-white", "p-2", "p-md-4", "mb-4")}
-      data-cy="sessions-container"
+    <Card data-cy="sessions-container">
+      <CardHeader>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h4 className={cx("mb-0", "me-2")}>
+            <PlayCircle className={cx("me-1", "bi")} />
+            My sessions
+          </h4>
+          <Badge>{totalSessions}</Badge>
+        </div>
+      </CardHeader>
+
+      <CardBody>
+        <DashboardV2Sessions
+          sessions={sessions}
+          isLoading={isLoading}
+          error={error}
+        />
+      </CardBody>
+    </Card>
+  );
+}
+
+function ViewAllLink({
+  type,
+  noItems,
+  total,
+}: {
+  type: "project" | "group";
+  noItems: boolean;
+  total: number;
+}) {
+  return noItems ? (
+    <Link
+      to={`/v2/search?page=1&perPage=12&q=type:${type}`}
+      data-cy={`view-other-${type}s-btn`}
     >
-      <div
-        className={cx(
-          "d-flex",
-          "justify-content-between",
-          "align-items-center",
-          "flex-wrap"
-        )}
+      View other {type === "project" ? "projects" : "groups"}
+    </Link>
+  ) : (
+    <Link
+      to={`/v2/search?page=1&perPage=12&q=role:owner,editor,viewer+type:${type}+sort:created-desc`}
+      data-cy={`view-my-${type}s-btn`}
+    >
+      View all my {total > 5 ? total : ""}{" "}
+      {type === "project" ? "projects" : "groups"}
+    </Link>
+  );
+}
+
+function EmptyProjectsButtons() {
+  return (
+    <div className={cx("d-flex", "gap-3")}>
+      <Link
+        to={{ hash: PROJECT_CREATION_HASH }}
+        className={cx("btn", "btn-primary")}
       >
-        <h2>Sessions</h2>
-      </div>
-      <DashboardV2Sessions />
+        <PlusSquare className={cx("bi", "me-1")} />
+        Create my first project
+      </Link>
+      <Link
+        to={"/v2/search?page=1&perPage=12&q=type:project"}
+        className={cx("btn", "btn-outline-primary")}
+      >
+        <Eye className={cx("bi", "me-1")} />
+        View existing projects
+      </Link>
     </div>
   );
 }

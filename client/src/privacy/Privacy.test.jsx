@@ -25,10 +25,10 @@
 
 import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
-import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 import { describe, it } from "vitest";
 
+import MemoryRouter from "../components/router/MemoryRouter";
 import Cookie from "./Cookie";
 import RoutedContent from "./RoutedContent";
 

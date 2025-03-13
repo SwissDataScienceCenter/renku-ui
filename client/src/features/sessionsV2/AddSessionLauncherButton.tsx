@@ -20,9 +20,7 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { PlusLg } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
-
-import { PlusRoundButton } from "../../components/buttons/Button.tsx";
-import { Step1AddSessionModal } from "./components/SessionModals/AddSession.tsx";
+import NewSessionLauncherModal from "./components/SessionModals/NewSessionLauncherModal.tsx";
 
 export default function AddSessionLauncherButton({
   "data-cy": dataCy,
@@ -39,18 +37,21 @@ export default function AddSessionLauncherButton({
   return (
     <>
       {styleBtn === "iconTextBtn" ? (
-        <Button
-          data-cy={dataCy}
-          className="btn-rk-green"
-          onClick={() => toggle()}
-        >
-          <PlusLg className={cx("bi", "me-1")} />
+        <Button data-cy={dataCy} onClick={() => toggle()}>
+          <PlusLg className={cx("me-2", "bi")} />
           Add session
         </Button>
       ) : (
-        <PlusRoundButton data-cy={dataCy} handler={toggle} />
+        <Button
+          color="outline-primary"
+          data-cy={dataCy}
+          onClick={toggle}
+          size="sm"
+        >
+          <PlusLg className="bi" />
+        </Button>
       )}
-      <Step1AddSessionModal isOpen={isOpen} toggleModal={toggle} />
+      <NewSessionLauncherModal isOpen={isOpen} toggle={toggle} />
     </>
   );
 }

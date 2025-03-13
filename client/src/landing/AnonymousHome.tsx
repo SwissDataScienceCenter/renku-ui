@@ -32,7 +32,6 @@ import { Col, Row } from "reactstrap";
 
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { stateToSearchString } from "../features/kgSearch";
-import { StatuspageBanner } from "../statuspage";
 import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
 import { Url } from "../utils/helpers/url";
@@ -74,16 +73,10 @@ export default function AnonymousHome() {
 }
 
 export function HomeHeader(props: AnonymousHomeConfig) {
-  const { urlMap } = props;
   return (
     <Fragment>
       <Row key="statuspage">
         <Col>
-          <StatuspageBanner
-            siteStatusUrl={urlMap.siteStatusUrl}
-            model={props.model}
-            location={{ pathname: Url.get(Url.pages.landing) }}
-          />
           <NavBarWarnings
             model={props.model}
             uiShortSha={props.params["UI_SHORT_SHA"]}

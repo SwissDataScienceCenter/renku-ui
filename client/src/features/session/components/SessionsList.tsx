@@ -314,11 +314,12 @@ function SessionRowProject({ annotations }: SessionRowProjectProps) {
 }
 
 export interface SessionLauncherResources {
+  poolName?: string;
   name?: string;
-  cpu: number;
-  memory: number;
-  gpu: number;
-  storage: number;
+  cpu?: number;
+  memory?: number;
+  gpu?: number;
+  storage?: number;
 }
 interface SessionRowResourceRequestsProps {
   resourceRequests: Session["resources"]["requests"] | SessionLauncherResources;
@@ -330,21 +331,46 @@ export function SessionRowResourceRequests({
   if (!resourceRequests) {
     return null;
   }
-  const entries = Object.entries(resourceRequests);
-  if (entries.length == 0) {
+  if (Object.entries(resourceRequests).length == 0) {
     return null;
   }
 
+  const numericEntries = Object.entries(resourceRequests).filter(
+    ([name]) => name !== "name" && name !== "poolName"
+  );
+  const { poolName, name } = resourceRequests as SessionLauncherResources;
+  const resourceClassName =
+    poolName && name ? (
+      <>
+        <span className="fw-bold">{name}</span> class from{" "}
+        <span className="fw-bold">{poolName}</span> pool
+      </>
+    ) : name ? (
+      <>
+        <span className="fw-bold">{name}</span> class
+      </>
+    ) : null;
+
   return (
-    <>
-      {entries.map(([key, value], index) => (
-        <span key={key} className="text-nowrap">
-          <span className="fw-bold">{value} </span>
-          {key !== "name" && key}
-          {entries.length - 1 === index ? " " : " | "}
+    <div>
+      {resourceClassName && (
+        <span key="name">
+          <span className="text-nowrap">{resourceClassName}</span>
+          {" | "}
+        </span>
+      )}
+      {numericEntries.map(([key, value], index) => (
+        <span key={key}>
+          <span className="text-nowrap">
+            <span className="fw-bold">
+              {value} {(key === "memory" || key === "storage") && "GB "}
+            </span>
+            {key}
+          </span>
+          {numericEntries.length - 1 === index ? " " : " | "}
         </span>
       ))}
-    </>
+    </div>
   );
 }
 

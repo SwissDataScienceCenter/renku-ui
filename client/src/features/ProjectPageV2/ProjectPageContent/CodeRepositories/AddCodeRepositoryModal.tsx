@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { CodeSquare, Github, PlusLg } from "react-bootstrap-icons";
+import { useCallback, useEffect } from "react";
+import { CodeSquare, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Badge,
   Button,
   Col,
   Form,
@@ -36,117 +35,19 @@ import {
 
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import BootstrapGitLabIcon from "../../../../components/icons/BootstrapGitLabIcon";
-import RenkuFrogIcon from "../../../../components/icons/RenkuIcon";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 
-import stylesButton from "../../../../components/buttons/Buttons.module.scss";
-import styles from "../ProjectOverview/ProjectOverview.module.scss";
+interface AddCodeRepositoryForm {
+  repositoryUrl: string;
+}
 
 interface AddCodeRepositoryModalProps {
   project: Project;
   isOpen: boolean;
   toggleModal: () => void;
 }
-export function AddCodeRepositoryStep1Modal({
-  project,
-  toggleModal,
-  isOpen,
-}: AddCodeRepositoryModalProps) {
-  const [isOpenStep2, setIsOpenStep2] = useState(false);
-  const toggle = useCallback(() => {
-    setIsOpenStep2((open) => !open);
-  }, []);
-  const openNextStep = useCallback(() => {
-    setIsOpenStep2((open) => !open);
-    toggleModal();
-  }, [toggleModal]);
-  return (
-    <>
-      <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
-        <ModalHeader toggle={toggleModal}>
-          <span className="d-flex align-items-center">
-            <CodeSquare size={20} className="me-3 mb-1" />
-            <small className="text-uppercase">Add code repositories</small>
-          </span>
-        </ModalHeader>
-        <ModalBody className="pt-0">
-          <p className="fw-500 fst-normal">
-            Connect a code repository to save and share code.
-            <br />
-            You can skip this step and add your repositories later.
-          </p>
-          <Row className="mb-3">
-            <Col xs={12}>
-              <Button
-                onClick={() => openNextStep()}
-                className={cx(
-                  "w-100",
-                  "bg-transparent",
-                  "text-dark",
-                  "rounded-3",
-                  "my-2",
-                  "py-3",
-                  "border-black",
-                  styles.BorderDashed,
-                  stylesButton.EmptyButton
-                )}
-                data-cy="add-existing-repository-button"
-              >
-                <Github className="bi me-2" />
-                <BootstrapGitLabIcon className="bi me-2" />
-                <RenkuFrogIcon className="me-2" size={24} />
-                Connect an existing repository
-              </Button>
-            </Col>
-            <Col xs={12}>
-              <Button
-                disabled
-                className={cx(
-                  "w-100",
-                  "bg-transparent",
-                  "text-dark",
-                  "rounded-3",
-                  "my-2",
-                  "py-3",
-                  "border-black",
-                  styles.BorderDashed,
-                  stylesButton.EmptyButton
-                )}
-              >
-                <PlusLg className="me-2" />
-                Create new repository
-                <Badge
-                  pill
-                  className={cx(
-                    "fst-italic",
-                    "text-warning",
-                    "bg-warning-subtle",
-                    "border",
-                    "border-warning",
-                    "ms-2",
-                    "alert-warning"
-                  )}
-                  title="coming soon"
-                >
-                  {" "}
-                  coming soon{" "}
-                </Badge>
-              </Button>
-            </Col>
-          </Row>
-        </ModalBody>
-      </Modal>
-      <AddCodeRepositoryStep2Modal
-        project={project}
-        toggleModal={toggle}
-        isOpen={isOpenStep2}
-      />
-    </>
-  );
-}
-function AddCodeRepositoryStep2Modal({
+export default function AddCodeRepositoryModal({
   project,
   toggleModal,
   isOpen,
@@ -188,13 +89,13 @@ function AddCodeRepositoryStep2Modal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
+    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggleModal}>
-          <RenkuFrogIcon className="me-2" size={30} />
+          <CodeSquare className={cx("bi", "me-1")} />
           Connect an existing code repository
         </ModalHeader>
-        <ModalBody className="py-0">
+        <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
           <p>Specify a code repository by its URL.</p>
           <Row>
@@ -228,32 +129,32 @@ function AddCodeRepositoryStep2Modal({
               </FormGroup>
             </Col>
           </Row>
-          <ModalFooter className="px-0">
-            <Button
-              color="rk-green"
-              className={cx("float-right", "mt-1", "ms-2")}
-              data-cy="add-code-repository-modal-button"
-              type="submit"
-            >
-              {result.isLoading ? (
-                <>
-                  <Loader className="me-1" inline size={16} />
-                  Adding code repository
-                </>
-              ) : (
-                <>
-                  <PlusLg className={cx("bi", "me-1")} />
-                  Add code repository
-                </>
-              )}
-            </Button>
-          </ModalFooter>
         </ModalBody>
+        <ModalFooter>
+          <Button color="outline-primary" onClick={toggleModal}>
+            <XLg className={cx("bi", "me-1")} />
+            Close
+          </Button>
+          <Button
+            color="primary"
+            data-cy="add-code-repository-modal-button"
+            disabled={result.isLoading}
+            type="submit"
+          >
+            {result.isLoading ? (
+              <>
+                <Loader className="me-1" inline size={16} />
+                Adding code repository
+              </>
+            ) : (
+              <>
+                <PlusLg className={cx("bi", "me-1")} />
+                Add code repository
+              </>
+            )}
+          </Button>
+        </ModalFooter>
       </Form>
     </Modal>
   );
-}
-
-interface AddCodeRepositoryForm {
-  repositoryUrl: string;
 }

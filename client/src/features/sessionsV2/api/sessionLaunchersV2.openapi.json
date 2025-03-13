@@ -1,0 +1,1366 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Renku Data Services API",
+    "description": "This service is the main backend for Renku. It provides information about users, projects,\ncloud storage, access to compute resources and many other things.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api/data"
+    }
+  ],
+  "paths": {
+    "/environments": {
+      "get": {
+        "summary": "Get all global environments",
+        "parameters": [
+          {
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "name": "get_environment_params",
+            "schema": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "include_archived": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to return archived environments or not"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of global environments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["environments"]
+      },
+      "post": {
+        "summary": "Create a new global session environment",
+        "description": "Requires admin permissions",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvironmentPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The session environment was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Environment"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["environments"]
+      }
+    },
+    "/environments/{environment_id}": {
+      "get": {
+        "summary": "Get a global session environment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The session environment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Environment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The session environment does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["environments"]
+      },
+      "patch": {
+        "summary": "Update specific fields of an existing global session environment",
+        "description": "Requires admin permissions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvironmentPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The patched session environment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Environment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The session environment does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["environments"]
+      },
+      "delete": {
+        "summary": "Remove a global session environment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "environment_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The session environment was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["environments"]
+      }
+    },
+    "/session_launchers": {
+      "get": {
+        "summary": "Get all user's session launchers",
+        "responses": {
+          "200": {
+            "description": "List of sessions launchers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLaunchersList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_launchers"]
+      },
+      "post": {
+        "summary": "Create a new session launcher",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionLauncherPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The session launcher was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLauncher"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_launchers"]
+      }
+    },
+    "/session_launchers/{launcher_id}": {
+      "get": {
+        "summary": "Get a session launcher",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "launcher_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The session launcher",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLauncher"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The session launcher does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_launchers"]
+      },
+      "patch": {
+        "summary": "Update specific fields of an existing session launcher",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "launcher_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionLauncherPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The patched session launcher",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLauncher"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The session launcher does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_launchers"]
+      },
+      "delete": {
+        "summary": "Remove a session launcher",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "launcher_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The session was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_launchers"]
+      }
+    },
+    "/projects/{project_id}/session_launchers": {
+      "get": {
+        "summary": "Get a project's session launchers",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of sessions launchers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLaunchersList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["session_launchers"]
+      }
+    },
+    "/builds/{build_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "build_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the details of a container image build",
+        "responses": {
+          "200": {
+            "description": "The container image build",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Build"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      },
+      "patch": {
+        "summary": "Update a container image build",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuildPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated container image build",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Build"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      }
+    },
+    "/builds/{build_id}/logs": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "build_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the logs of a container image build",
+        "parameters": [
+          {
+            "description": "The maximum number of most-recent lines to return for each container",
+            "in": "query",
+            "name": "max_lines",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 250
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The build logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildLogs"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      }
+    },
+    "/environments/{environment_id}/builds": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "environment_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a session environment's list of builds",
+        "responses": {
+          "200": {
+            "description": "List of container image builds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      },
+      "post": {
+        "summary": "Create a new container image build",
+        "responses": {
+          "201": {
+            "description": "The build was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Build"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["builds"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EnvironmentList": {
+        "description": "A list of session environments",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Environment"
+        }
+      },
+      "EnvironmentWithoutContainerImage": {
+        "description": "A Renku 2.0 session environment",
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/SessionName"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "default_url": {
+            "$ref": "#/components/schemas/DefaultUrl"
+          },
+          "uid": {
+            "$ref": "#/components/schemas/EnvironmentUid"
+          },
+          "gid": {
+            "$ref": "#/components/schemas/EnvironmentGid"
+          },
+          "working_directory": {
+            "$ref": "#/components/schemas/EnvironmentWorkingDirectory"
+          },
+          "mount_directory": {
+            "$ref": "#/components/schemas/EnvironmentMountDirectory"
+          },
+          "port": {
+            "$ref": "#/components/schemas/EnvironmentPort"
+          },
+          "command": {
+            "$ref": "#/components/schemas/EnvironmentCommand"
+          },
+          "args": {
+            "$ref": "#/components/schemas/EnvironmentArgs"
+          },
+          "is_archived": {
+            "$ref": "#/components/schemas/IsArchived"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "creation_date",
+          "port",
+          "uid",
+          "gid",
+          "default_url"
+        ]
+      },
+      "Environment": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentWithoutContainerImage"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "container_image": {
+                "$ref": "#/components/schemas/ContainerImage"
+              }
+            },
+            "required": ["container_image"]
+          }
+        ]
+      },
+      "EnvironmentGetInLauncher": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentWithImageGet"
+          },
+          {
+            "$ref": "#/components/schemas/EnvironmentWithBuildGet"
+          }
+        ]
+      },
+      "EnvironmentWithImageGet": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Environment"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "environment_image_source": {
+                "$ref": "#/components/schemas/EnvironmentImageSourceImage"
+              },
+              "environment_kind": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EnvironmentKind"
+                  }
+                ],
+                "default": "custom"
+              }
+            },
+            "required": ["environment_image_source", "environment_kind"]
+          }
+        ]
+      },
+      "EnvironmentWithBuildGet": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentWithoutContainerImage"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "container_image": {
+                "$ref": "#/components/schemas/ContainerImage"
+              },
+              "build_parameters": {
+                "$ref": "#/components/schemas/BuildParameters"
+              },
+              "environment_image_source": {
+                "$ref": "#/components/schemas/EnvironmentImageSourceBuild"
+              },
+              "environment_kind": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/EnvironmentKind"
+                  }
+                ],
+                "default": "custom"
+              }
+            },
+            "required": [
+              "build_parameters",
+              "environment_image_source",
+              "environment_kind"
+            ]
+          }
+        ]
+      },
+      "EnvironmentPostInLauncherHelper": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentPost"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "environment_kind": {
+                "$ref": "#/components/schemas/EnvironmentKind"
+              }
+            },
+            "required": ["environment_kind"]
+          }
+        ]
+      },
+      "EnvironmentPostInLauncher": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentPostInLauncherHelper"
+          },
+          {
+            "$ref": "#/components/schemas/BuildParametersPost"
+          }
+        ]
+      },
+      "EnvironmentPost": {
+        "description": "Data required to create a session environment",
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/SessionName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "container_image": {
+            "$ref": "#/components/schemas/ContainerImage"
+          },
+          "default_url": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DefaultUrl"
+              }
+            ],
+            "default": "/lab"
+          },
+          "uid": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentUid"
+              }
+            ],
+            "default": 1000
+          },
+          "gid": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentGid"
+              }
+            ],
+            "default": 1000
+          },
+          "working_directory": {
+            "$ref": "#/components/schemas/EnvironmentWorkingDirectory"
+          },
+          "mount_directory": {
+            "$ref": "#/components/schemas/EnvironmentMountDirectory"
+          },
+          "port": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentPort"
+              }
+            ],
+            "default": 8080
+          },
+          "command": {
+            "$ref": "#/components/schemas/EnvironmentCommand"
+          },
+          "args": {
+            "$ref": "#/components/schemas/EnvironmentArgs"
+          },
+          "is_archived": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IsArchived"
+              }
+            ],
+            "default": false
+          },
+          "environment_image_source": {
+            "$ref": "#/components/schemas/EnvironmentImageSourceImage"
+          }
+        },
+        "required": ["name", "container_image", "environment_image_source"]
+      },
+      "EnvironmentPatchInLauncher": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentPatch"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "environment_kind": {
+                "$ref": "#/components/schemas/EnvironmentKind"
+              },
+              "environment_image_source": {
+                "$ref": "#/components/schemas/EnvironmentImageSource"
+              },
+              "build_parameters": {
+                "$ref": "#/components/schemas/BuildParametersPatch"
+              }
+            }
+          }
+        ]
+      },
+      "EnvironmentPatch": {
+        "type": "object",
+        "description": "Update a session environment",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/SessionName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "container_image": {
+            "$ref": "#/components/schemas/ContainerImage"
+          },
+          "default_url": {
+            "$ref": "#/components/schemas/DefaultUrl"
+          },
+          "uid": {
+            "$ref": "#/components/schemas/EnvironmentUid"
+          },
+          "gid": {
+            "$ref": "#/components/schemas/EnvironmentGid"
+          },
+          "working_directory": {
+            "$ref": "#/components/schemas/EnvironmentWorkingDirectoryPatch"
+          },
+          "mount_directory": {
+            "$ref": "#/components/schemas/EnvironmentMountDirectoryPatch"
+          },
+          "port": {
+            "$ref": "#/components/schemas/EnvironmentPort"
+          },
+          "command": {
+            "$ref": "#/components/schemas/EnvironmentCommand"
+          },
+          "args": {
+            "$ref": "#/components/schemas/EnvironmentArgs"
+          },
+          "is_archived": {
+            "$ref": "#/components/schemas/IsArchived"
+          }
+        }
+      },
+      "SessionLaunchersList": {
+        "description": "A list of Renku session launchers",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionLauncher"
+        },
+        "minItems": 0
+      },
+      "SessionLauncher": {
+        "description": "A Renku 2.0 session definition and metadata",
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/SessionName"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/EnvironmentGetInLauncher"
+          },
+          "resource_class_id": {
+            "$ref": "#/components/schemas/ResourceClassId"
+          },
+          "disk_storage": {
+            "$ref": "#/components/schemas/DiskStorage"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "name",
+          "creation_date",
+          "environment",
+          "resource_class_id"
+        ]
+      },
+      "SessionLauncherPost": {
+        "description": "Data required to create a session launcher",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/SessionName"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "resource_class_id": {
+            "$ref": "#/components/schemas/ResourceClassId"
+          },
+          "disk_storage": {
+            "$ref": "#/components/schemas/DiskStorage"
+          },
+          "environment": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentPostInLauncher"
+              },
+              {
+                "$ref": "#/components/schemas/EnvironmentIdOnlyPost"
+              }
+            ]
+          }
+        },
+        "required": ["name", "project_id", "environment"],
+        "example": {
+          "project_id": "01AN4Z79ZS5XN0F25N3DB94T4R",
+          "name": "Renku R Session",
+          "environment": {
+            "id": "01AN4Z79ZS6XX96588FDX0H099"
+          }
+        }
+      },
+      "SessionLauncherPatch": {
+        "type": "object",
+        "description": "Update a session launcher",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/SessionName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/Description"
+          },
+          "resource_class_id": {
+            "$ref": "#/components/schemas/ResourceClassId"
+          },
+          "disk_storage": {
+            "$ref": "#/components/schemas/DiskStoragePatch"
+          },
+          "environment": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EnvironmentPatchInLauncher"
+              },
+              {
+                "$ref": "#/components/schemas/EnvironmentIdOnlyPatch"
+              }
+            ]
+          }
+        }
+      },
+      "Ulid": {
+        "description": "ULID identifier",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      },
+      "SessionName": {
+        "description": "Renku session name",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99,
+        "example": "My Renku Session :)"
+      },
+      "BuilderVariant": {
+        "description": "Type of virtual environment manager when building custom environments.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99
+      },
+      "FrontendVariant": {
+        "description": "User's Frontend Choice.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99
+      },
+      "EnvironmentIdOnlyPatch": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EnvironmentId"
+          }
+        }
+      },
+      "EnvironmentIdOnlyPost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EnvironmentId"
+          }
+        },
+        "required": ["id"]
+      },
+      "EnvironmentKind": {
+        "description": "Kind of the environment",
+        "type": "string",
+        "enum": ["GLOBAL", "CUSTOM"]
+      },
+      "EnvironmentImageSourceImage": {
+        "type": "string",
+        "enum": ["image"]
+      },
+      "EnvironmentImageSourceBuild": {
+        "type": "string",
+        "enum": ["build"]
+      },
+      "EnvironmentImageSource": {
+        "description": "Source of the environment's image",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/EnvironmentImageSourceImage"
+          },
+          {
+            "$ref": "#/components/schemas/EnvironmentImageSourceBuild"
+          }
+        ]
+      },
+      "EnvironmentId": {
+        "description": "Id of the environment to use",
+        "type": "string",
+        "minLength": 1,
+        "example": "01AN4Z79ZS6XX96588FDX0H099"
+      },
+      "CreationDate": {
+        "description": "The date and time the resource was created (in UTC and ISO-8601 format)",
+        "type": "string",
+        "format": "date-time",
+        "example": "2023-11-01T17:32:28Z"
+      },
+      "Description": {
+        "description": "A description for the resource",
+        "type": "string",
+        "maxLength": 500
+      },
+      "BuildParameters": {
+        "description": "Build parameters",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "repository": {
+            "$ref": "#/components/schemas/Repository"
+          },
+          "builder_variant": {
+            "$ref": "#/components/schemas/BuilderVariant"
+          },
+          "frontend_variant": {
+            "$ref": "#/components/schemas/FrontendVariant"
+          }
+        },
+        "required": ["repository", "builder_variant", "frontend_variant"]
+      },
+      "BuildParametersPost": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BuildParameters"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "environment_image_source": {
+                "$ref": "#/components/schemas/EnvironmentImageSourceBuild"
+              }
+            },
+            "required": ["environment_image_source"]
+          }
+        ]
+      },
+      "BuildParametersPatch": {
+        "description": "Data for updating a build",
+        "type": "object",
+        "properties": {
+          "repository": {
+            "$ref": "#/components/schemas/Repository"
+          },
+          "builder_variant": {
+            "$ref": "#/components/schemas/BuilderVariant"
+          },
+          "frontend_variant": {
+            "$ref": "#/components/schemas/FrontendVariant"
+          }
+        }
+      },
+      "ContainerImage": {
+        "description": "A container image",
+        "type": "string",
+        "maxLength": 500,
+        "pattern": "^[a-z0-9]+((\\.|_|__|-+)[a-z0-9]+)*(\\/[a-z0-9]+((\\.|_|__|-+)[a-z0-9]+)*)*(:[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}|@sha256:[a-fA-F0-9]{64}){0,1}$",
+        "example": "renku/renkulab-py:3.10-0.18.1"
+      },
+      "Repository": {
+        "description": "A git repository URL",
+        "type": "string"
+      },
+      "DefaultUrl": {
+        "description": "The default path to open in a session",
+        "type": "string",
+        "maxLength": 200,
+        "example": "/lab"
+      },
+      "ResourceClassId": {
+        "description": "The identifier of a resource class",
+        "type": "integer",
+        "default": null,
+        "nullable": true
+      },
+      "DiskStorage": {
+        "description": "The size of disk storage for the session, in gigabytes",
+        "type": "integer",
+        "minimum": 1,
+        "example": 8
+      },
+      "DiskStoragePatch": {
+        "type": "integer",
+        "minimum": 1,
+        "nullable": true
+      },
+      "EnvironmentPort": {
+        "type": "integer",
+        "minimum": 0,
+        "exclusiveMinimum": true,
+        "exclusiveMaximum": true,
+        "maximum": 65400,
+        "description": "The TCP port (on any container in the session) where user requests will be routed to from the ingress"
+      },
+      "EnvironmentUid": {
+        "type": "integer",
+        "minimum": 0,
+        "exclusiveMinimum": true,
+        "maximum": 65535,
+        "description": "The user ID used to run the session"
+      },
+      "EnvironmentGid": {
+        "type": "integer",
+        "minimum": 0,
+        "exclusiveMinimum": true,
+        "maximum": 65535,
+        "description": "The group ID used to run the session"
+      },
+      "EnvironmentWorkingDirectory": {
+        "type": "string",
+        "description": "The location where the session will start, if left unset it will default to the session image working directory.",
+        "minLength": 1,
+        "example": "/home/jovyan/work"
+      },
+      "EnvironmentWorkingDirectoryPatch": {
+        "type": "string",
+        "example": "/home/jovyan/work"
+      },
+      "EnvironmentMountDirectory": {
+        "type": "string",
+        "description": "The location where the persistent storage for the session will be mounted, usually it should be identical to or a parent of the working directory, if left unset will default to the working directory.",
+        "minLength": 1,
+        "example": "/home/jovyan/work"
+      },
+      "EnvironmentMountDirectoryPatch": {
+        "type": "string",
+        "example": "/home/jovyan/work"
+      },
+      "EnvironmentCommand": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "The command that will be run i.e. will overwrite the image Dockerfile ENTRYPOINT, equivalent to command in Kubernetes",
+        "minItems": 1
+      },
+      "EnvironmentArgs": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "The arguments that will follow the command, i.e. will overwrite the image Dockerfile CMD, equivalent to args in Kubernetes",
+        "minItems": 1
+      },
+      "IsArchived": {
+        "type": "boolean",
+        "description": "Whether this environment is archived and not for use in new projects or not",
+        "default": false
+      },
+      "Build": {
+        "description": "A container image build",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BuildCommonPart"
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuildNotCompletedPart"
+              },
+              {
+                "$ref": "#/components/schemas/BuildCompletedPart"
+              }
+            ]
+          }
+        ]
+      },
+      "BuildCommonPart": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "environment_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "error_reason": {
+            "$ref": "#/components/schemas/ErrorReason"
+          }
+        },
+        "required": ["id", "environment_id", "created_at"],
+        "additionalProperties": false
+      },
+      "BuildNotCompletedPart": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["in_progress", "failed", "cancelled"],
+            "example": "in_progress"
+          }
+        },
+        "required": ["status"],
+        "additionalProperties": false
+      },
+      "BuildCompletedPart": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["succeeded"],
+            "example": "succeeded"
+          },
+          "result": {
+            "$ref": "#/components/schemas/BuildResult"
+          }
+        },
+        "required": ["status", "result"],
+        "additionalProperties": false
+      },
+      "BuildList": {
+        "description": "A list of container image builds",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Build"
+        }
+      },
+      "BuildPatch": {
+        "description": "The requested update of a container image build",
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["cancelled"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuildLogs": {
+        "description": "The logs of a container image build",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "container-A": "Log line 1\nLog line 2",
+          "container-B": "Log line 1\nLog line 2"
+        }
+      },
+      "BuildResult": {
+        "description": "The result of a container image build",
+        "type": "object",
+        "properties": {
+          "image": {
+            "$ref": "#/components/schemas/ContainerImage"
+          },
+          "completed_at": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "repository_url": {
+            "type": "string"
+          },
+          "repository_git_commit_sha": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "image",
+          "completed_at",
+          "repository_url",
+          "repository_git_commit_sha"
+        ],
+        "additionalProperties": false
+      },
+      "BuildStatus": {
+        "description": "The status of a container image build",
+        "type": "string",
+        "enum": ["in_progress", "succeeded", "failed", "cancelled"],
+        "example": "succeeded"
+      },
+      "ErrorReason": {
+        "description": "The reason why a container image build did not succeed, if available.",
+        "type": "string",
+        "example": "StepOutOfMemory"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}
