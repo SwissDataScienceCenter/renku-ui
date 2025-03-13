@@ -26,8 +26,8 @@
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Component, Fragment, useEffect } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Component, Fragment, useEffect, useMemo } from "react";
+// import { Route, Switch } from "react-router-dom";
 import {
   CompatRoute,
   Link,
@@ -82,6 +82,9 @@ import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
+
+const Route = NewRoute;
+const Switch = Routes;
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -687,42 +690,50 @@ class ProjectViewOverviewNav extends Component {
   }
 }
 
-class ProjectViewOverview extends Component {
-  render() {
-    const { projectCoordinator } = this.props;
-    return (
-      <Col key="overview" data-cy="project-overview">
-        <Row>
-          <Col key="nav" sm={12} md={2}>
-            <ProjectViewOverviewNav {...this.props} />
-          </Col>
-          <Col key="content" sm={12} md={10} data-cy="project-overview-content">
-            <Switch>
-              <Route exact path={this.props.baseUrl}>
-                <ProjectViewGeneral
-                  readme={this.props.data.readme}
-                  {...this.props}
-                />
-              </Route>
-              <Route exact path={this.props.statsUrl}>
-                <ProjectOverviewStats
-                  projectCoordinator={projectCoordinator}
-                  branches={this.props.branches.standard}
-                />
-              </Route>
-              <Route exact path={this.props.overviewCommitsUrl}>
-                <ProjectOverviewCommits
-                  location={this.props.location}
-                  projectCoordinator={projectCoordinator}
-                  navigate={this.props.navigate}
-                />
-              </Route>
-            </Switch>
-          </Col>
-        </Row>
-      </Col>
-    );
-  }
+function ProjectViewOverview(props) {
+  const { projectCoordinator } = props;
+  return (
+    <Col key="overview" data-cy="project-overview">
+      <Row>
+        <Col key="nav" sm={12} md={2}>
+          <ProjectViewOverviewNav {...props} />
+        </Col>
+        <Col key="content" sm={12} md={10} data-cy="project-overview-content">
+          {props.index ? (
+            <ProjectViewGeneral readme={props.data.readme} {...props} />
+          ) : (
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProjectViewGeneral readme={props.data.readme} {...props} />
+                }
+              />
+              <Route
+                path="stats"
+                element={
+                  <ProjectOverviewStats
+                    projectCoordinator={projectCoordinator}
+                    branches={props.branches.standard}
+                  />
+                }
+              />
+              <Route
+                path="commits"
+                element={
+                  <ProjectOverviewCommits
+                    location={props.location}
+                    projectCoordinator={projectCoordinator}
+                    navigate={props.navigate}
+                  />
+                }
+              />
+            </Routes>
+          )}
+        </Col>
+      </Row>
+    </Col>
+  );
 }
 
 function ProjectViewWorkflows(props) {
@@ -844,30 +855,24 @@ class ProjectViewLoading extends Component {
   }
 }
 
-class NotFoundInsideProject extends Component {
-  render() {
-    return (
-      <Col key="notFound">
-        <Row>
-          <Col xs={12} md={12}>
-            <Alert color="primary">
-              <h4>404 - Page not found</h4>
-              The URL
-              <strong>
-                {" "}
-                {this.props.location.pathname.replace(
-                  this.props.subUrl,
-                  ""
-                )}{" "}
-              </strong>
-              was not found inside this project. You can explore the current
-              project using the tabs on top.
-            </Alert>
-          </Col>
-        </Row>
-      </Col>
-    );
-  }
+function NotFoundInsideProject({ baseUrl }) {
+  const location = useLocation();
+
+  return (
+    <Col key="notFound">
+      <Row>
+        <Col xs={12} md={12}>
+          <Alert color="primary">
+            <h4>404 - Page not found</h4>
+            The URL
+            <strong> {location.pathname.replace(baseUrl, "")} </strong>
+            was not found inside this project. You can explore the current
+            project using the tabs on top.
+          </Alert>
+        </Col>
+      </Row>
+    </Col>
+  );
 }
 
 function ProjectView(props) {
@@ -922,8 +927,24 @@ function ProjectView(props) {
 
   console.log({
     settingsUrl: props.settingsUrl,
+    settingsMatch: props.settingsUrl
+      .replace(props.baseUrl, "")
+      .replace(/^[/]/, ""),
     workflows: props.workflowsUrl,
   });
+
+  const prefixUrl = props.projectsUrl.endsWith("/")
+    ? props.projectsUrl
+    : `${props.projectsUrl}/`;
+  const baseUrl = props.baseUrl.startsWith(prefixUrl)
+    ? props.baseUrl.slice(prefixUrl.length)
+    : props.baseUrl;
+  const overviewUrl = `${baseUrl}/overview/*`;
+  const filesUrl = `${baseUrl}/files/*`;
+  const datasetsUrl = `${baseUrl}/datasets/*`;
+  const datasetUrl = `${baseUrl}/datasets/:datasetId`;
+
+  console.log({ datasetUrl: props.datasetUrl });
 
   return [
     <ProjectPageTitle
@@ -933,22 +954,22 @@ function ProjectView(props) {
       projectTitle={props.metadata.title}
     />,
     <ContainerWrap key="project-content" fullSize={isShowSession}>
-      <Switch key="projectHeader">
-        <Route exact path={props.baseUrl}>
-          <ProjectViewHeader {...props} />
-        </Route>
-        <Route path={props.overviewUrl}>
-          <ProjectViewHeader {...props} />
-        </Route>
-        <Route path={props.editDatasetUrl} />
-        <Route path={props.datasetUrl} />
-        <Route path={props.launchNotebookUrl} />
-        <Route path={props.sessionShowUrl} />
-        <Route>
-          <ProjectViewHeader {...props} />
-        </Route>
-      </Switch>
-      <Switch key="projectNav">
+      <Routes key="projectHeader">
+        <Route path={props.editDatasetUrl} element={null} />
+        <Route path={datasetUrl} element={null} />
+        <Route path={props.launchNotebookUrl} element={null} />
+        <Route path={props.sessionShowUrl} element={null} />
+        <Route path="*" element={<ProjectViewHeader {...props} />} />
+      </Routes>
+      <Routes key="projectNav">
+        <Route path={props.editDatasetUrl} element={null} />
+        <Route path={datasetUrl} element={null} />
+        <Route path={props.launchNotebookUrl} element={null} />
+        <Route path={props.sessionShowUrl} element={null} />
+        <Route path="*" element={<ProjectNav key="nav" {...props} />} />
+      </Routes>
+
+      {/* <Switch key="projectNav">
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
@@ -956,9 +977,51 @@ function ProjectView(props) {
         <Route>
           <ProjectNav key="nav" {...props} />
         </Route>
-      </Switch>
+      </Switch> */}
       <Row key="content" className={cx(isShowSession && "m-0")}>
-        <Switch>
+        <div>Content</div>
+        <div>{props.baseUrl}</div>
+        <div>{baseUrl}</div>
+        <div>{overviewUrl}</div>
+        <div>{filesUrl}</div>
+        <div>{datasetsUrl}</div>
+        <div>{datasetUrl}</div>
+        <Routes>
+          <Route
+            path={baseUrl}
+            element={<ProjectViewOverview key="overview" {...props} index />}
+          />
+          <Route
+            path={overviewUrl}
+            element={<ProjectViewOverview key="overview" {...props} />}
+          />
+          <Route
+            path={filesUrl}
+            element={<ProjectViewFiles key="files" {...props} />}
+          />
+          <Route
+            path={datasetsUrl}
+            element={<ProjectDatasetsView key="datasets" {...props} />}
+          />
+
+          <Route
+            path={`${props.subUrl}/settings`}
+            element={
+              // <ProjectSettings
+              //   key="settings"
+              //   {...props}
+              //   apiVersion={apiVersion}
+              //   metadataVersion={metadataVersion}
+              // />
+              <>Hello</>
+            }
+          />
+          <Route
+            path="*"
+            element={<NotFoundInsideProject baseUrl={props.baseUrl} />}
+          />
+        </Routes>
+        {/* <Switch>
           <Route exact path={props.baseUrl}>
             <ProjectViewOverview key="overview" {...props} />
           </Route>
@@ -986,7 +1049,7 @@ function ProjectView(props) {
             <ProjectSessionsRouter key="sessions" />
           </Route>
           <Route component={NotFoundInsideProject} />
-        </Switch>
+        </Switch> */}
       </Row>
     </ContainerWrap>,
   ];
