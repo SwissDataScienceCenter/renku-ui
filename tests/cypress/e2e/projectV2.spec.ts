@@ -23,9 +23,23 @@ describe("Add new v2 project", () => {
   const slug = "new-project";
 
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects();
     fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .namespaces()
+      .projects()
+      .listProjectV2Members()
+      .getProjectV2Permissions()
+      .landingUserProjects()
+      .readProjectV2()
       .createProjectV2({
         slug,
         namespace: "user1-uuid",
@@ -36,16 +50,29 @@ describe("Add new v2 project", () => {
   });
 
   it("create a new project", () => {
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.getDataCy("project-settings-link").click();
+    cy.getDataCy("navbar-new-entity").click();
+    cy.getDataCy("navbar-project-new").click();
+
     cy.contains("Create a new project").should("be.visible");
-    cy.getDataCy("project-name-input").clear().type(newProjectTitle);
-    cy.getDataCy("project-slug-toggle").click();
-    cy.getDataCy("project-slug-input").should("have.value", slug);
-    cy.wait("@listNamespaceV2");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
-      .first()
-      .click();
-    cy.contains("Visibility").click();
-    cy.contains("button", "Create").click();
+    cy.getDataCy("new-project-modal").within(() => {
+      cy.getDataCy("project-creation-form-project-name-input")
+        .clear()
+        .type(newProjectTitle);
+      cy.getDataCy("project-slug-toggle").click();
+      cy.getDataCy("project-slug-input").should("have.value", slug);
+      cy.wait("@listNamespaceV2");
+      cy.findReactSelectOptions(
+        "project-creation-form-project-namespace-input",
+        "namespace-select"
+      )
+        .first()
+        .click();
+      cy.contains("Visibility").click();
+      cy.contains("button", "Create").click();
+    });
 
     cy.wait("@createProjectV2");
     cy.location("pathname").should("eq", `/v2/projects/user1-uuid/${slug}`);
@@ -58,7 +85,9 @@ describe("Add new v2 project", () => {
     cy.contains("Description").should("be.visible");
 
     cy.getDataCy("project-slug-toggle").click();
-    cy.getDataCy("project-name-input").clear().type(newProjectTitle);
+    cy.getDataCy("project-creation-form-project-name-input")
+      .clear()
+      .type(newProjectTitle);
     cy.getDataCy("project-slug-input").clear().type(newProjectTitle);
     cy.getDataCy("project-create-button").click();
     cy.contains(
@@ -67,7 +96,10 @@ describe("Add new v2 project", () => {
 
     cy.getDataCy("project-slug-input").clear().type(slug);
     cy.wait("@listNamespaceV2");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
+    cy.findReactSelectOptions(
+      "project-creation-form-project-namespace-input",
+      "namespace-select"
+    )
       .first()
       .click();
     cy.getDataCy("project-visibility-public").click();
@@ -207,8 +239,12 @@ describe("Edit v2 project", () => {
     cy.wait("@readProjectV2");
     cy.contains("test 2 v2-project").should("be.visible");
     cy.get("a[title='Settings']").should("be.visible").click();
-    cy.getDataCy("project-name-input").clear().type("new name");
-    cy.getDataCy("project-description-input").clear().type("new description");
+    cy.getDataCy("project-settings-form-project-name-input")
+      .clear()
+      .type("new name");
+    cy.getDataCy("project-settings-form-project-description-input")
+      .clear()
+      .type("new description");
     cy.getDataCy("project-template").click();
     fixtures.readProjectV2({
       fixture: "projectV2/update-projectV2-metadata.json",
@@ -272,12 +308,18 @@ describe("Edit v2 project", () => {
     // Fetch the second page of namespaces
     cy.wait("@listNamespaceV2");
     cy.wait("@readUserV2Namespace");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select");
+    cy.findReactSelectOptions(
+      "project-settings-form-project-namespace-input",
+      "namespace-select"
+    );
     cy.get("button").contains("Fetch more").click();
     // Need to click away so the dropdown option selection works
-    cy.getDataCy("project-name-input").click();
+    cy.getDataCy("project-settings-form-project-name-input").click();
     cy.wait("@listNamespaceV2");
-    cy.findReactSelectOptions("project-namespace-input", "namespace-select")
+    cy.findReactSelectOptions(
+      "project-settings-form-project-namespace-input",
+      "namespace-select"
+    )
       // Pick an element from the second page of results
       .contains("test-25-group-v2")
       .click();
@@ -597,7 +639,7 @@ describe("Project templates and copies", () => {
     );
     cy.wait("@listNamespaceV2");
     cy.getDataCy("copy-modal")
-      .find("[data-cy=project-name-input]")
+      .find("[data-cy=project-copy-form-project-name-input]")
       .clear()
       .type("copy project name");
     cy.getDataCy("copy-modal").find("button").contains("Copy").click();
@@ -625,7 +667,9 @@ describe("Project templates and copies", () => {
       "be.visible"
     );
     cy.wait("@listNamespaceV2");
-    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("project-copy-form-project-name-input")
+      .clear()
+      .type("copy project name");
     cy.getDataCy("copy-modal").find("button").contains("Copy").click();
     fixtures.readProjectV2({
       namespace: "e2e",
@@ -651,7 +695,9 @@ describe("Project templates and copies", () => {
       "be.visible"
     );
     cy.wait("@listNamespaceV2");
-    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("project-copy-form-project-name-input")
+      .clear()
+      .type("copy project name");
     cy.getDataCy("copy-modal").find("button").contains("Copy").click();
     fixtures.readProjectV2({
       namespace: "e2e",
@@ -723,7 +769,9 @@ describe("Project templates and copies", () => {
       "be.visible"
     );
     cy.wait("@listNamespaceV2");
-    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("project-copy-form-project-name-input")
+      .clear()
+      .type("copy project name");
     cy.getDataCy("copy-modal").find("button").contains("Copy").click();
     fixtures.readProjectV2({
       namespace: "e2e",
@@ -755,11 +803,15 @@ describe("Project templates and copies", () => {
       "be.visible"
     );
     cy.wait("@listNamespaceV2");
-    cy.getDataCy("project-name-input").clear().type("copy project name");
+    cy.getDataCy("project-copy-form-project-name-input")
+      .clear()
+      .type("copy project name");
     cy.getDataCy("copy-modal").find("button").contains("Copy").click();
     cy.wait("@copyProjectV2Fail");
     cy.get("button").contains("Configure").click();
-    cy.getDataCy("project-slug-input").clear().type("copy-of-test2");
+    cy.getDataCy("project-copy-form-project-slug-input")
+      .clear()
+      .type("copy-of-test2");
     fixtures.copyProjectV2().readProjectV2({
       namespace: "e2e",
       projectSlug: "copy-of-test2",
