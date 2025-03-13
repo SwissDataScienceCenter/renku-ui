@@ -208,7 +208,7 @@ function DocumentationModal({
       toggle={safeToggle}
     >
       <ModalHeader
-        title={
+        modalTitle={
           <>
             <FileEarmarkText className={cx("me-1", "bi")} />
             Documentation

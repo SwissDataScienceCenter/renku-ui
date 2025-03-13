@@ -75,7 +75,7 @@ export default function ProjectV2New() {
       >
         <ModalHeader
           toggle={toggleModal}
-          title={
+          modalTitle={
             <>
               <Folder className="bi" />
               Create a new project

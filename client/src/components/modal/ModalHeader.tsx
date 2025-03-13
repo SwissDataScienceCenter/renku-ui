@@ -19,14 +19,15 @@
 import cx from "classnames";
 import { type ModalHeaderProps as BaseModalHeaderProps } from "reactstrap";
 
-interface ModalHeaderProps extends Omit<BaseModalHeaderProps, "title>"> {
-  title: React.ReactNode;
+interface ModalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  modalTitle: React.ReactNode;
+  toggle?: BaseModalHeaderProps["toggle"];
 }
 
 export default function ModalHeader({
   children,
   className,
-  title,
+  modalTitle,
   toggle,
   ...props
 }: ModalHeaderProps) {
@@ -36,7 +37,7 @@ export default function ModalHeader({
         className={cx(className, "modal-header", children && "border-0")}
         {...props}
       >
-        <h1 className={cx("modal-title", "fs-5")}>{title}</h1>
+        <h1 className={cx("modal-title", "fs-5")}>{modalTitle}</h1>
         {toggle && (
           <button
             type="button"

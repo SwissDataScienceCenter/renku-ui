@@ -72,7 +72,7 @@ export default function GroupNew() {
       >
         <ModalHeader
           toggle={toggleModal}
-          title={
+          modalTitle={
             <>
               <People className="bi" />
               Create a new group

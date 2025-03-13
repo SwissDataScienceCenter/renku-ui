@@ -89,7 +89,7 @@ export default function ProjectConnectDataConnectorsModal({
       toggle={toggle}
     >
       <ModalHeader
-        title={<ProjectConnectDataConnectorModalTitle />}
+        modalTitle={<ProjectConnectDataConnectorModalTitle />}
         toggle={toggle}
         data-cy="project-data-connector-connect-header"
       >
