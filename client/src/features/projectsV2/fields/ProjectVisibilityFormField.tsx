@@ -27,11 +27,12 @@ import type { GenericProjectFormFieldProps } from "./formField.types";
 
 export default function ProjectVisibilityFormField<T extends FieldValues>({
   control,
+  formId,
   name,
 }: GenericProjectFormFieldProps<T>) {
   return (
     <div>
-      <Label className="form-label" for="project-visibility">
+      <Label className="form-label" for={`${formId}-project-visibility`}>
         Visibility
       </Label>
       <div data-cy="project-visibility-controller">
@@ -40,12 +41,12 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
           name={name}
           render={({ field }) => (
             <>
-              <ButtonGroup id="project-visibility">
+              <ButtonGroup id={`${formId}-project-visibility`}>
                 <Input
                   aria-describedby="projectVisibilityHelp"
                   type="radio"
                   className="btn-check"
-                  id="project-visibility-public"
+                  id={`${formId}-project-visibility-public`}
                   value="public"
                   checked={field.value === "public"}
                   onChange={(e) => {
@@ -55,7 +56,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 <Label
                   className={cx("btn", "btn-outline-primary", "mb-0")}
                   data-cy="project-visibility-public"
-                  for="project-visibility-public"
+                  for={`${formId}-project-visibility-public`}
                 >
                   <Globe className={cx("bi", "me-1")} />
                   Public
@@ -64,7 +65,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   aria-describedby="projectVisibilityHelp"
                   type="radio"
                   className="btn-check"
-                  id="project-visibility-private"
+                  id={`${formId}-project-visibility-private`}
                   value="private"
                   checked={field.value === "private"}
                   onChange={(e) => {
@@ -74,14 +75,14 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 <Label
                   className={cx("btn", "btn-outline-primary", "mb-0")}
                   data-cy="project-visibility-private"
-                  for="project-visibility-private"
+                  for={`${formId}-project-visibility-private`}
                 >
                   <Lock className={cx("bi", "me-1")} />
                   Private
                 </Label>
               </ButtonGroup>
               <div
-                id="project-visibility-help"
+                id={`${formId}-project-visibility-help`}
                 className={cx("form-text", "text-muted")}
               >
                 {field.value === "public"

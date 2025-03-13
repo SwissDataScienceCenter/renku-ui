@@ -37,6 +37,7 @@ interface ProjectOwnerSlugFormFieldProps<T extends FieldValues>
 export default function ProjectOwnerSlugFormField<T extends FieldValues>({
   control,
   errors,
+  formId,
   getValues,
   name,
   namespaceName,
@@ -48,7 +49,7 @@ export default function ProjectOwnerSlugFormField<T extends FieldValues>({
       <div className="mb-3">
         <SlugFormField
           control={control}
-          entityName="project"
+          entityName={`${formId}-project`}
           errors={errors}
           name={name}
         />

@@ -24,13 +24,14 @@ import type { GenericProjectFormFieldProps } from "./formField.types";
 export default function ProjectNameFormField<T extends FieldValues>({
   control,
   errors,
+  formId,
   helpText,
   name,
 }: GenericProjectFormFieldProps<T>) {
   return (
     <NameFormField
       control={control}
-      entityName="project"
+      entityName={`${formId}-project`}
       errors={errors}
       helpText={helpText}
       name={name}

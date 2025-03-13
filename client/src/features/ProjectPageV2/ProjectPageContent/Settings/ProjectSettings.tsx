@@ -256,6 +256,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
     notifications,
   ]);
 
+  const formId = "project-settings-form";
   return (
     <div>
       {error && <RtkErrorAlert error={error} />}
@@ -267,6 +268,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
 
       <Form
         className={cx("d-flex", "flex-column", "gap-3")}
+        id={formId}
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -275,6 +277,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectNameFormField
               name="name"
+              formId={formId}
               control={control}
               errors={errors}
             />
@@ -291,7 +294,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
             <ProjectNamespaceFormField
               name="namespace"
               control={control}
-              entityName="project"
+              entityName={`${formId}-project`}
               ensureNamespace={project.namespace}
               errors={errors}
             />
@@ -318,6 +321,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectVisibilityFormField
               name="visibility"
+              formId={formId}
               control={control}
               errors={errors}
             />
@@ -335,6 +339,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectDescriptionFormField
               name="description"
+              formId={formId}
               control={control}
               errors={errors}
             />

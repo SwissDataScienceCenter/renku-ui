@@ -168,12 +168,14 @@ function ProjectV2CreationDetails() {
 
   const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
 
+  const formId = "project-creation-form";
+
   return (
     <>
       <ModalBody>
         <Form
           data-cy="project-creation-form"
-          id="project-creation-form"
+          id={formId}
           onSubmit={handleSubmit(onSubmit)}
         >
           <FormGroup className="d-inline" disabled={result.isLoading}>
@@ -182,13 +184,14 @@ function ProjectV2CreationDetails() {
               <ProjectNameFormField
                 control={control}
                 errors={errors}
+                formId={formId}
                 name="name"
               />
 
               <div className="mb-1">
                 <ProjectNamespaceFormField
                   control={control}
-                  entityName="project"
+                  entityName={`${formId}-project`}
                   errors={errors}
                   name="namespace"
                 />
@@ -209,6 +212,7 @@ function ProjectV2CreationDetails() {
 
               <div className="mb-1">
                 <ProjectVisibilityFormField
+                  formId={formId}
                   name="visibility"
                   control={control}
                   errors={errors}
@@ -218,6 +222,7 @@ function ProjectV2CreationDetails() {
               <ProjectDescriptionFormField
                 control={control}
                 errors={errors}
+                formId={formId}
                 name="description"
               />
 

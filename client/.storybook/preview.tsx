@@ -29,6 +29,7 @@ export const decorators = [
       model: undefined,
       notifications: undefined,
       params: { ...DEFAULT_APP_PARAMS },
+      webSocket: undefined,
     };
     return (
       <MemoryRouter initialEntries={["/"]}>
