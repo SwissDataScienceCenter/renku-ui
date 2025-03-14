@@ -24,7 +24,7 @@
  */
 
 import { createMemoryHistory } from "history";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import { Col, Row } from "reactstrap";
 import cx from "classnames";
 

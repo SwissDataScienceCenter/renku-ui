@@ -1,6 +1,6 @@
 import cx from "classnames";
 import React, { Component, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import {
   FileEarmarkFill,
   FolderFill,
