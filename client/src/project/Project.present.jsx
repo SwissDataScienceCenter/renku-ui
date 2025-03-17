@@ -53,6 +53,9 @@ import { ACCESS_LEVELS } from "../api-client";
 import { InfoAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
+import RenkuNavLinkV2, {
+  RenkuNavLinkV2WithAlternates,
+} from "../components/RenkuNavLinkV2";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
@@ -79,7 +82,6 @@ import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
-import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -531,46 +533,36 @@ class ProjectNav extends Component {
         <Col className="d-flex pb-2 mb-1 justify-content-start" md={12} lg={12}>
           <Nav pills className="nav-pills-underline">
             <NavItem>
-              <RenkuNavLinkV2
+              <RenkuNavLinkV2WithAlternates
+                alternates={[this.props.overviewUrl]}
                 to={this.props.baseUrl}
-                alternate={this.props.overviewUrl}
-                title="Overview"
-              />
+                end
+              >
+                Overview
+              </RenkuNavLinkV2WithAlternates>
             </NavItem>
             <NavItem>
-              <RenkuNavLinkV2
-                exact={false}
-                to={this.props.filesUrl}
-                title="Files"
-              />
+              <RenkuNavLinkV2 to={this.props.filesUrl}>Files</RenkuNavLinkV2>
             </NavItem>
             <NavItem>
-              <RenkuNavLinkV2
-                exact={false}
-                to={this.props.datasetsUrl}
-                title="Datasets"
-              />
+              <RenkuNavLinkV2 to={this.props.datasetsUrl}>
+                Datasets
+              </RenkuNavLinkV2>
             </NavItem>
             <NavItem>
-              <RenkuNavLinkV2
-                exact={false}
-                to={this.props.workflowsUrl}
-                title="Workflows"
-              />
+              <RenkuNavLinkV2 to={this.props.workflowsUrl}>
+                Workflows
+              </RenkuNavLinkV2>
             </NavItem>
             <NavItem>
-              <RenkuNavLinkV2
-                exact={false}
-                to={this.props.notebookServersUrl}
-                title="Sessions"
-              />
+              <RenkuNavLinkV2 to={this.props.notebookServersUrl}>
+                Sessions
+              </RenkuNavLinkV2>
             </NavItem>
             <NavItem className="pe-0">
-              <RenkuNavLinkV2
-                exact={false}
-                to={this.props.settingsUrl}
-                title="Settings"
-              />
+              <RenkuNavLinkV2 to={this.props.settingsUrl}>
+                Settings
+              </RenkuNavLinkV2>
             </NavItem>
           </Nav>
         </Col>
@@ -668,17 +660,17 @@ class ProjectViewOverviewNav extends Component {
         data-cy="project-overview-nav"
       >
         <NavItem>
-          <RenkuNavLinkV2
-            to={this.props.baseUrl}
-            title="General"
-            id="nav-overview-general"
-          />
+          <RenkuNavLinkV2 id="nav-overview-general" to={this.props.baseUrl} end>
+            General
+          </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLinkV2 to={this.props.statsUrl} title="Stats" />
+          <RenkuNavLinkV2 to={this.props.statsUrl}>Stats</RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLinkV2 to={this.props.overviewCommitsUrl} title="Commits" />
+          <RenkuNavLinkV2 to={this.props.overviewCommitsUrl}>
+            Commits
+          </RenkuNavLinkV2>
         </NavItem>
       </Nav>
     );
