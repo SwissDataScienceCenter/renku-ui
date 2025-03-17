@@ -27,11 +27,9 @@ import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Component, Fragment, useEffect } from "react";
-import { Route, Switch } from "react-router-dom";
 import {
-  CompatRoute,
   Link,
-  Route as NewRoute,
+  Route,
   Routes,
   useLocation,
   useParams,
@@ -687,42 +685,50 @@ class ProjectViewOverviewNav extends Component {
   }
 }
 
-class ProjectViewOverview extends Component {
-  render() {
-    const { projectCoordinator } = this.props;
-    return (
-      <Col key="overview" data-cy="project-overview">
-        <Row>
-          <Col key="nav" sm={12} md={2}>
-            <ProjectViewOverviewNav {...this.props} />
-          </Col>
-          <Col key="content" sm={12} md={10} data-cy="project-overview-content">
-            <Switch>
-              <Route exact path={this.props.baseUrl}>
-                <ProjectViewGeneral
-                  readme={this.props.data.readme}
-                  {...this.props}
-                />
-              </Route>
-              <Route exact path={this.props.statsUrl}>
-                <ProjectOverviewStats
-                  projectCoordinator={projectCoordinator}
-                  branches={this.props.branches.standard}
-                />
-              </Route>
-              <Route exact path={this.props.overviewCommitsUrl}>
-                <ProjectOverviewCommits
-                  location={this.props.location}
-                  projectCoordinator={projectCoordinator}
-                  navigate={this.props.navigate}
-                />
-              </Route>
-            </Switch>
-          </Col>
-        </Row>
-      </Col>
-    );
-  }
+function ProjectViewOverview(props) {
+  const { projectCoordinator } = props;
+  return (
+    <Col key="overview" data-cy="project-overview">
+      <Row>
+        <Col key="nav" sm={12} md={2}>
+          <ProjectViewOverviewNav {...props} />
+        </Col>
+        <Col key="content" sm={12} md={10} data-cy="project-overview-content">
+          {props.index ? (
+            <ProjectViewGeneral readme={props.data.readme} {...props} />
+          ) : (
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProjectViewGeneral readme={props.data.readme} {...props} />
+                }
+              />
+              <Route
+                path="stats"
+                element={
+                  <ProjectOverviewStats
+                    projectCoordinator={projectCoordinator}
+                    branches={props.branches.standard}
+                  />
+                }
+              />
+              <Route
+                path="commits"
+                element={
+                  <ProjectOverviewCommits
+                    location={props.location}
+                    projectCoordinator={projectCoordinator}
+                    navigate={props.navigate}
+                  />
+                }
+              />
+            </Routes>
+          )}
+        </Col>
+      </Row>
+    </Col>
+  );
 }
 
 function ProjectViewWorkflows(props) {
@@ -758,7 +764,7 @@ class ProjectViewFiles extends Component {
       </div>,
       <div key="content" className="flex-shrink-1 variableWidthColRight">
         <Routes>
-          <NewRoute
+          <Route
             path={lineageUrl}
             element={
               <ProjectFileLineageRoute
@@ -771,7 +777,7 @@ class ProjectViewFiles extends Component {
               />
             }
           />
-          <NewRoute
+          <Route
             path={fileContentUrl}
             element={
               <ProjectFileViewRoute
@@ -844,30 +850,24 @@ class ProjectViewLoading extends Component {
   }
 }
 
-class NotFoundInsideProject extends Component {
-  render() {
-    return (
-      <Col key="notFound">
-        <Row>
-          <Col xs={12} md={12}>
-            <Alert color="primary">
-              <h4>404 - Page not found</h4>
-              The URL
-              <strong>
-                {" "}
-                {this.props.location.pathname.replace(
-                  this.props.match.url,
-                  ""
-                )}{" "}
-              </strong>
-              was not found inside this project. You can explore the current
-              project using the tabs on top.
-            </Alert>
-          </Col>
-        </Row>
-      </Col>
-    );
-  }
+function NotFoundInsideProject({ baseUrl }) {
+  const location = useLocation();
+
+  return (
+    <Col key="notFound">
+      <Row>
+        <Col xs={12} md={12}>
+          <Alert color="primary">
+            <h4>404 - Page not found</h4>
+            The URL
+            <strong> {location.pathname.replace(baseUrl, "")} </strong>
+            was not found inside this project. You can explore the current
+            project using the tabs on top.
+          </Alert>
+        </Col>
+      </Row>
+    </Col>
+  );
 }
 
 function ProjectView(props) {
@@ -920,6 +920,22 @@ function ProjectView(props) {
     props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
   const isShowSession = cleanSessionUrl === props.sessionShowUrl;
 
+  const prefixUrl = props.projectsUrl.endsWith("/")
+    ? props.projectsUrl
+    : `${props.projectsUrl}/`;
+  const baseUrl = props.baseUrl.startsWith(prefixUrl)
+    ? props.baseUrl.slice(prefixUrl.length)
+    : props.baseUrl;
+  const overviewUrl = `${baseUrl}/overview/*`;
+  const filesUrl = `${baseUrl}/files/*`;
+  const datasetsUrl = `${baseUrl}/datasets/*`;
+  const datasetUrl = `${baseUrl}/datasets/:datasetId`;
+  const workflowsUrl = `${baseUrl}/workflows/*`;
+  const settingsUrl = `${baseUrl}/settings/*`;
+  const notebookServersUrl = `${baseUrl}/sessions/*`;
+  const launchNotebookUrl = `${baseUrl}/sessions/new`;
+  const sessionShowUrl = `${baseUrl}/sessions/show/:server`;
+
   return [
     <ProjectPageTitle
       key="page-title"
@@ -928,60 +944,62 @@ function ProjectView(props) {
       projectTitle={props.metadata.title}
     />,
     <ContainerWrap key="project-content" fullSize={isShowSession}>
-      <Switch key="projectHeader">
-        <Route exact path={props.baseUrl}>
-          <ProjectViewHeader {...props} />
-        </Route>
-        <Route path={props.overviewUrl}>
-          <ProjectViewHeader {...props} />
-        </Route>
-        <Route path={props.editDatasetUrl} />
-        <Route path={props.datasetUrl} />
-        <Route path={props.launchNotebookUrl} />
-        <Route path={props.sessionShowUrl} />
-        <Route>
-          <ProjectViewHeader {...props} />
-        </Route>
-      </Switch>
-      <Switch key="projectNav">
-        <Route path={props.editDatasetUrl} />
-        <Route path={props.datasetUrl} />
-        <Route path={props.launchNotebookUrl} />
-        <Route path={props.sessionShowUrl} />
-        <Route>
-          <ProjectNav key="nav" {...props} />
-        </Route>
-      </Switch>
+      <Routes key="projectHeader">
+        <Route path={`${datasetUrl}/*`} element={null} />
+        <Route path={launchNotebookUrl} element={null} />
+        <Route path={sessionShowUrl} element={null} />
+        <Route path="*" element={<ProjectViewHeader {...props} />} />
+      </Routes>
+      <Routes key="projectNav">
+        <Route path={`${datasetUrl}/*`} element={null} />
+        <Route path={launchNotebookUrl} element={null} />
+        <Route path={sessionShowUrl} element={null} />
+        <Route path="*" element={<ProjectNav key="nav" {...props} />} />
+      </Routes>
       <Row key="content" className={cx(isShowSession && "m-0")}>
-        <Switch>
-          <Route exact path={props.baseUrl}>
-            <ProjectViewOverview key="overview" {...props} />
+        <Routes>
+          <Route
+            path={baseUrl}
+            element={<ProjectViewOverview key="overview" {...props} index />}
+          />
+          <Route
+            path={overviewUrl}
+            element={<ProjectViewOverview key="overview" {...props} />}
+          />
+          <Route
+            path={filesUrl}
+            element={<ProjectViewFiles key="files" {...props} />}
+          />
+          <Route
+            path={datasetsUrl}
+            element={<ProjectDatasetsView key="datasets" {...props} />}
+          />
+          <Route
+            path={workflowsUrl}
+            element={<ProjectViewWorkflows key="workflows" {...props} />}
+          >
+            <Route path=":workflowId" element={null} />
           </Route>
-          <Route path={props.overviewUrl}>
-            <ProjectViewOverview key="overview" {...props} />
-          </Route>
-          <CompatRoute path={props.filesUrl}>
-            <ProjectViewFiles key="files" {...props} />
-          </CompatRoute>
-          <CompatRoute path={props.datasetsUrl}>
-            <ProjectDatasetsView key="datasets" {...props} />
-          </CompatRoute>
-          <Route path={[props.workflowUrl, props.workflowsUrl]}>
-            <ProjectViewWorkflows key="workflows" {...props} />
-          </Route>
-          <CompatRoute path={props.settingsUrl}>
-            <ProjectSettings
-              key="settings"
-              {...props}
-              apiVersion={apiVersion}
-              metadataVersion={metadataVersion}
-            />
-          </CompatRoute>
-          <Route path={props.notebookServersUrl}>
-            <ProjectSessionsRouter key="sessions" />
-          </Route>
-          <Route component={NotFoundInsideProject} />
-        </Switch>
+          <Route
+            path={settingsUrl}
+            element={
+              <ProjectSettings
+                key="settings"
+                {...props}
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+              />
+            }
+          />
+          <Route
+            path={notebookServersUrl}
+            element={<ProjectSessionsRouter key="sessions" />}
+          />
+          <Route
+            path="*"
+            element={<NotFoundInsideProject baseUrl={props.baseUrl} />}
+          />
+        </Routes>
       </Row>
     </ContainerWrap>,
   ];
