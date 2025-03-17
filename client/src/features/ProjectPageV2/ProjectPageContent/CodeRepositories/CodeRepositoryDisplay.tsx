@@ -211,7 +211,7 @@ function EditCodeRepositoryModal({
             ) : (
               <Pencil className={cx("bi", "me-1")} />
             )}
-            Edit code repository
+            Update code repository
           </Button>
         </ModalFooter>
       </Form>
