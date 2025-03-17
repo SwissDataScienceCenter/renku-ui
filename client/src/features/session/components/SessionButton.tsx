@@ -29,7 +29,7 @@ import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom-v5-compat";
 import { SingleValue } from "react-select";
 import {
   Button,
@@ -184,7 +184,7 @@ interface SessionActionsProps {
 }
 
 function SessionActions({ className, session }: SessionActionsProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { notifications } = useContext(AppContext);
 
@@ -227,12 +227,13 @@ function SessionActions({ className, session }: SessionActionsProps) {
   });
   useEffect(() => {
     if (isSuccessResumeSession && !isWaitingForResumedSession) {
-      history.push({ pathname: showSessionUrl });
+      // history.push({ pathname: showSessionUrl });
+      navigate({ pathname: showSessionUrl });
     }
   }, [
-    history,
     isSuccessResumeSession,
     isWaitingForResumedSession,
+    navigate,
     showSessionUrl,
   ]);
   useEffect(() => {

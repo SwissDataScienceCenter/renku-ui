@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { LocationDescriptor } from "history";
 import { ReactNode, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom-v5-compat";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

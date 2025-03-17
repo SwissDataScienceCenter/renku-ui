@@ -23,7 +23,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Link, useRouteMatch } from "react-router-dom";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { Url } from "../../../../utils/helpers/url";
@@ -31,6 +30,7 @@ import { ProjectMigrationLevel } from "../../projectEnums";
 import { projectKgApi } from "../../projectKg.api";
 import { useCoreSupport } from "../../useProjectCoreSupport";
 import { getRenkuLevel } from "../../utils/migrations";
+import { Link } from "react-router-dom-v5-compat";
 
 interface ProjectStatusIconProps {
   branch: string;
@@ -66,7 +66,8 @@ export function ProjectStatusIcon({
     namespace: projectNamespace,
     path: projectPath,
   });
-  const matchRoute = useRouteMatch(settingsUrl);
+  // const matchRoute = useRouteMatch(settingsUrl);
+  const matchRoute = false; //TODO
   const maintainerText =
     isMaintainer && !matchRoute ? " Click to see details." : "";
 

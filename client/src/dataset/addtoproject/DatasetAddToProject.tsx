@@ -17,7 +17,7 @@
  */
 
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+// import { useHistory, useParams } from "react-router-dom";
 
 import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
@@ -30,6 +30,7 @@ import type {
   AddDatasetStatus,
   SubmitProject,
 } from "./DatasetAdd.types";
+import { useNavigate, useParams } from "react-router-dom-v5-compat";
 
 type DatasetImportResponse = {
   data?: {
@@ -53,7 +54,7 @@ function DatasetAddToProject({
   insideProject,
   model,
 }: AddDatasetToProjectProps) {
-  const { identifier: identifier_ } = useParams<{ identifier?: string }>();
+  const { identifier: identifier_ } = useParams<"identifier">();
   const identifier = identifier_?.replaceAll("-", "");
 
   const [currentStatus, setCurrentStatus] = useState<AddDatasetStatus | null>(
@@ -65,7 +66,8 @@ function DatasetAddToProject({
   const [datasetCoordinator, setDatasetCoordinator] =
     useState<DatasetCoordinator | null>(null);
   const { client } = useContext(AppContext);
-  const history = useHistory();
+  // const history = useHistory();
+  const navigate = useNavigate();
 
   const [srcProjectDetails, setSrcProjectDetails] =
     useState<ProjectDetails | null>(null);
@@ -366,10 +368,10 @@ function DatasetAddToProject({
 
   const redirectUser = (projectPath: string, datasetSlug: string) => {
     setCurrentStatus(null);
-    history.push({
-      pathname: `/projects/${projectPath}/datasets/${datasetSlug}`,
-      state: { reload: true },
-    });
+    navigate(
+      { pathname: `/projects/${projectPath}/datasets/${datasetSlug}` },
+      { state: { reload: true } }
+    );
   };
   /* end import dataset */
 

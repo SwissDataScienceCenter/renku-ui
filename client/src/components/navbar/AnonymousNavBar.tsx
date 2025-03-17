@@ -26,7 +26,7 @@ import StatusBanner from "../../features/platform/components/StatusBanner";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
 import type { AppParams } from "../../utils/context/appParams.types";
 import { Url } from "../../utils/helpers/url";
-import { RenkuNavLink } from "../RenkuNavLink";
+import RenkuNavLinkV2 from "../RenkuNavLinkV2";
 import {
   RenkuToolbarHelpMenu,
   RenkuToolbarItemUser,
@@ -82,16 +82,19 @@ export default function AnonymousNavBar({
               )}
             >
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
-                <RenkuNavLink
+                <RenkuNavLinkV2
                   to={Url.get(Url.pages.search)}
                   title="Search"
                   id="link-search"
-                  icon={<Search />}
+                  // icon={<Search />}
                   className="d-flex gap-2 align-items-center"
-                />
+                >
+                  <Search />
+                  <span className="visually-hidden">Search</span>
+                </RenkuNavLinkV2>
               </NavItem>
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
-                <RenkuNavLink
+                <RenkuNavLinkV2
                   to={Url.get(Url.pages.sessions)}
                   title="Sessions"
                   id="link-sessions"
