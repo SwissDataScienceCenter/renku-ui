@@ -3,35 +3,44 @@
  * New implementation of the Project component in TypeScript.
  */
 
-import { useLocation, useNavigate } from "react-router-dom-v5-compat";
-
+import { useContext, useMemo } from "react";
+import { useLocation, useMatch, useNavigate } from "react-router-dom-v5-compat";
+import AppContext from "../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import ProjectV1 from "./Project";
 
-interface ProjectViewProps {
-  client: unknown;
-  params: unknown;
-  model: unknown;
-  user: unknown;
-  blockAnonymous: boolean;
-  notifications: unknown;
-  socket: unknown;
-}
-
-function ProjectView(props: ProjectViewProps) {
+function ProjectView() {
   const location = useLocation();
   const navigate = useNavigate();
+  const match = useMatch("/projects/*");
+
+  const { client, model, notifications, params, webSocket } =
+    useContext(AppContext);
+
+  const user = useLegacySelector((state) => state.stateModel.user);
+
+  const subUrl = useMemo(() => match?.params["*"] ?? "", [match?.params]);
+
+  // check anonymous sessions settings
+  const blockAnonymous = useMemo(() => {
+    const anonymousSessions =
+      params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
+    return !user.logged && !anonymousSessions;
+  }, [params?.ANONYMOUS_SESSIONS, user.logged]);
 
   return (
     <ProjectV1.View
-      client={props.client}
-      params={props.params}
-      model={props.model}
-      user={props.user}
-      blockAnonymous={props.blockAnonymous}
-      notifications={props.notifications}
-      socket={props.socket}
+      client={client}
+      params={params}
+      model={model}
+      user={user}
+      blockAnonymous={blockAnonymous}
+      notifications={notifications}
+      socket={webSocket}
       location={location}
       navigate={navigate}
+      subUrl={subUrl}
     />
   );
 }
