@@ -40,10 +40,8 @@ interface SessionHibernatedProps {
 export default function SessionHibernated({
   sessionName,
 }: SessionHibernatedProps) {
-  const location = useLocation();
-  const locationFilePath = (
-    location as Location<{ filePath?: string } | undefined>
-  ).state?.filePath;
+  const location: Location<{ filePath?: string } | undefined> = useLocation();
+  const locationFilePath = location.state?.filePath;
 
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace

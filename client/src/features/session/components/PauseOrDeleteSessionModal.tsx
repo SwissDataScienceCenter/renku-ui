@@ -21,8 +21,8 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Duration } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Redirect } from "react-router";
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { useNavigate } from "react-router-dom-v5-compat";
 
 import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -97,6 +97,8 @@ function AnonymousDeleteSessionModal({
   sessionName,
   toggleModal,
 }: AnonymousDeleteSessionModalProps) {
+  const navigate = useNavigate();
+
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -131,9 +133,15 @@ function AnonymousDeleteSessionModal({
     }
   }, [error, notifications]);
 
-  if (isSuccess && !isWaiting) {
-    return <Redirect push to={sessionsListUrl} />;
-  }
+  useEffect(() => {
+    if (isSuccess && !isWaiting) {
+      navigate(sessionsListUrl);
+    }
+  }, [isSuccess, isWaiting, navigate, sessionsListUrl]);
+
+  // if (isSuccess && !isWaiting) {
+  //   return <Redirect push to={sessionsListUrl} />;
+  // }
 
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
@@ -214,6 +222,8 @@ function PauseSessionModalBody({
   toggleAction,
   toggleModal,
 }: ModalBodyProps) {
+  const navigate = useNavigate();
+
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -248,9 +258,11 @@ function PauseSessionModalBody({
     }
   }, [error, notifications]);
 
-  if (isSuccess && !isWaiting) {
-    return <Redirect push to={sessionsListUrl} />;
-  }
+  useEffect(() => {
+    if (isSuccess && !isWaiting) {
+      navigate(sessionsListUrl);
+    }
+  }, [isSuccess, isWaiting, navigate, sessionsListUrl]);
 
   const annotations = session
     ? (NotebooksHelper.cleanAnnotations(
@@ -330,6 +342,8 @@ function DeleteSessionModalBody({
   toggleAction,
   toggleModal,
 }: ModalBodyProps) {
+  const navigate = useNavigate();
+
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -364,9 +378,15 @@ function DeleteSessionModalBody({
     }
   }, [error, notifications]);
 
-  if (isSuccess && !isWaiting) {
-    return <Redirect push to={sessionsListUrl} />;
-  }
+  useEffect(() => {
+    if (isSuccess && !isWaiting) {
+      navigate(sessionsListUrl);
+    }
+  }, [isSuccess, isWaiting, navigate, sessionsListUrl]);
+
+  // if (isSuccess && !isWaiting) {
+  //   return <Redirect push to={sessionsListUrl} />;
+  // }
 
   const annotations = session
     ? (NotebooksHelper.cleanAnnotations(
