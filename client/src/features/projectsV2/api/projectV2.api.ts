@@ -43,6 +43,24 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getRenkuV1ProjectsByV1IdMigrations: build.query<
+      GetRenkuV1ProjectsByV1IdMigrationsApiResponse,
+      GetRenkuV1ProjectsByV1IdMigrationsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/renku_v1_projects/${queryArg.v1Id}/migrations`,
+      }),
+    }),
+    postRenkuV1ProjectsByV1IdMigrations: build.mutation<
+      PostRenkuV1ProjectsByV1IdMigrationsApiResponse,
+      PostRenkuV1ProjectsByV1IdMigrationsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/renku_v1_projects/${queryArg.v1Id}/migrations`,
+        method: "POST",
+        body: queryArg.projectMigrationPost,
+      }),
+    }),
     getNamespacesByNamespaceProjectsAndSlug: build.query<
       GetNamespacesByNamespaceProjectsAndSlugApiResponse,
       GetNamespacesByNamespaceProjectsAndSlugApiArg
@@ -69,6 +87,14 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/projects/${queryArg.projectId}/copies`,
         method: "POST",
         body: queryArg.projectPost,
+      }),
+    }),
+    getProjectsByProjectIdMigrationInfo: build.query<
+      GetProjectsByProjectIdMigrationInfoApiResponse,
+      GetProjectsByProjectIdMigrationInfoApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/migration_info`,
       }),
     }),
     getProjectsByProjectIdMembers: build.query<
@@ -219,6 +245,19 @@ export type DeleteProjectsByProjectIdApiResponse =
 export type DeleteProjectsByProjectIdApiArg = {
   projectId: Ulid;
 };
+export type GetRenkuV1ProjectsByV1IdMigrationsApiResponse =
+  /** status 200 Project exists in v2 and has been migrated */ Project;
+export type GetRenkuV1ProjectsByV1IdMigrationsApiArg = {
+  /** The ID of the project in Renku v1 */
+  v1Id: number;
+};
+export type PostRenkuV1ProjectsByV1IdMigrationsApiResponse =
+  /** status 201 The project was created */ Project;
+export type PostRenkuV1ProjectsByV1IdMigrationsApiArg = {
+  /** The ID of the project in Renku v1 */
+  v1Id: number;
+  projectMigrationPost: ProjectMigrationPost;
+};
 export type GetNamespacesByNamespaceProjectsAndSlugApiResponse =
   /** status 200 The project */ Project;
 export type GetNamespacesByNamespaceProjectsAndSlugApiArg = {
@@ -238,6 +277,11 @@ export type PostProjectsByProjectIdCopiesApiResponse =
 export type PostProjectsByProjectIdCopiesApiArg = {
   projectId: Ulid;
   projectPost: ProjectPost;
+};
+export type GetProjectsByProjectIdMigrationInfoApiResponse =
+  /** status 200 Project exists in v2 and is a migrated project from v1 */ ProjectMigrationInfo;
+export type GetProjectsByProjectIdMigrationInfoApiArg = {
+  projectId: Ulid;
 };
 export type GetProjectsByProjectIdMembersApiResponse =
   /** status 200 The project's members */ ProjectMemberListResponse;
@@ -393,6 +437,28 @@ export type ProjectPatch = {
   is_template?: IsTemplate;
   secrets_mount_directory?: SecretsMountDirectoryPatch;
 };
+export type SessionName = string;
+export type ContainerImage = string;
+export type DefaultUrl = string;
+export type ResourceClassId = number | null;
+export type DiskStorage = number;
+export type MigrationSessionLauncherPost = {
+  name: SessionName;
+  container_image: ContainerImage;
+  default_url?: DefaultUrl & any;
+  resource_class_id?: ResourceClassId;
+  disk_storage?: DiskStorage;
+};
+export type ProjectMigrationPost = {
+  project: ProjectPost;
+  session_launcher?: MigrationSessionLauncherPost;
+};
+export type ProjectMigrationInfo = {
+  project_id: Ulid;
+  /** The id of the project in v1 */
+  v1_id: number;
+  launcher_id?: Ulid;
+};
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
@@ -468,9 +534,12 @@ export const {
   useGetProjectsByProjectIdQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
+  useGetRenkuV1ProjectsByV1IdMigrationsQuery,
+  usePostRenkuV1ProjectsByV1IdMigrationsMutation,
   useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdCopiesQuery,
   usePostProjectsByProjectIdCopiesMutation,
+  useGetProjectsByProjectIdMigrationInfoQuery,
   useGetProjectsByProjectIdMembersQuery,
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
