@@ -323,7 +323,7 @@ function RunPipeline() {
   );
 }
 
-function useDockerImageStatusStateMachine() {
+export function useDockerImageStatusStateMachine() {
   const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
@@ -689,4 +689,10 @@ function useDockerImageStatusStateMachine() {
       window.clearTimeout(timeout);
     };
   }, [dispatch, status]);
+
+  return {
+    registry,
+    registryTag,
+    registryTagIsFetching,
+  };
 }

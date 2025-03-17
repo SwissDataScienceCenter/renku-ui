@@ -279,6 +279,7 @@ function ProjectViewHeaderMinimal(props) {
         defaultBranch={props.metadata?.defaultBranch}
         description={{ value: props.metadata.description }} // ? overwritten by KG where available
         devAccess={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        accessLevel={props.metadata.accessLevel}
         fullPath={props.metadata.pathWithNamespace}
         gitUrl={props.externalUrl}
         hideEmptyTags={true}
