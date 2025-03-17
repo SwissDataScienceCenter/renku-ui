@@ -24,7 +24,7 @@
  */
 
 import cx from "classnames";
-import { Link, Route, Switch, useLocation } from "react-router-dom";
+import { Link, Route, Routes, useLocation } from "react-router-dom-v5-compat";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
 import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
@@ -62,25 +62,28 @@ function RenkuNavBarInner(props) {
   });
 
   return (
-    <Switch key="mainNav">
-      <Route path={sessionShowUrl} />
-      <Route path="/v2/" />
-      <Route>
-        {user.logged ? (
-          <LoggedInNavBar
-            model={props.model}
-            notifications={props.notifications}
-            params={props.params}
-          />
-        ) : (
-          <AnonymousNavBar
-            model={props.model}
-            notifications={props.notifications}
-            params={props.params}
-          />
-        )}
-      </Route>
-    </Switch>
+    <Routes key="mainNav">
+      <Route path={sessionShowUrl} element={null} />
+      <Route path={`${ABSOLUTE_ROUTES.v2.root}/*`} element={null} />
+      <Route
+        path="*"
+        element={
+          user.logged ? (
+            <LoggedInNavBar
+              model={props.model}
+              notifications={props.notifications}
+              params={props.params}
+            />
+          ) : (
+            <AnonymousNavBar
+              model={props.model}
+              notifications={props.notifications}
+              params={props.params}
+            />
+          )
+        }
+      />
+    </Routes>
   );
 }
 
@@ -200,11 +203,14 @@ function FooterNavbarInner({ location, params }) {
   );
 
   return (
-    <Switch key="footerNav">
-      <Route path={sessionShowUrl} />
-      <Route path="/v2/projects/:namespace/:slug/sessions/show/:server" />
-      <Route>{footer}</Route>
-    </Switch>
+    <Routes key="footerNav">
+      <Route path={sessionShowUrl} element={null} />
+      <Route
+        path={ABSOLUTE_ROUTES.v2.projects.show.sessions.show}
+        element={null}
+      />
+      <Route path="*" element={footer} />
+    </Routes>
   );
 }
 
