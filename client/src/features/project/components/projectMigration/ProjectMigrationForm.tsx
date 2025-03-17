@@ -72,7 +72,7 @@ export function ProjectMigrationFormInputs({
   }/`;
   const location = useLocation();
   const isRenkuV1 = isRenkuLegacy(location.pathname);
-
+  const formId = "project-migration-form";
   return (
     <>
       <div className="mb-3">
@@ -126,6 +126,7 @@ export function ProjectMigrationFormInputs({
           name="visibility"
           control={control}
           errors={errors}
+          formId={formId}
         />
       </div>
     </>
