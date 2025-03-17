@@ -38,18 +38,16 @@ const LOGOUT_EVENT_TIMEOUT = 5000;
 const LoginHelper = {
   /**
    * Remove renku login parameters and set localStorage object
-   *
-   * @param {object} history - return url for the authentication backend
    */
-  handleLoginParams: (history) => {
+  handleLoginParams: (location, navigate) => {
     // check if user has just logged in
-    const queryParams = new URLSearchParams(history.location.search);
+    const queryParams = new URLSearchParams(location.search);
     if (
       queryParams.get(RenkuQueryParams.login) === RenkuQueryParams.loginValue
     ) {
       // delete the login param
       queryParams.delete(RenkuQueryParams.login);
-      history.replace({ search: queryParams.toString() });
+      navigate({ search: queryParams.toString() }, { replace: true });
 
       // save the login time to localStorage to allow other tabs to handle the event
       localStorage.setItem(RenkuQueryParams.login, Date.now());
