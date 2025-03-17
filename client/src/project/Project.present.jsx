@@ -53,7 +53,6 @@ import { ACCESS_LEVELS } from "../api-client";
 import { InfoAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
-import { RenkuNavLink } from "../components/RenkuNavLink";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
@@ -80,6 +79,7 @@ import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
+import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -531,42 +531,42 @@ class ProjectNav extends Component {
         <Col className="d-flex pb-2 mb-1 justify-content-start" md={12} lg={12}>
           <Nav pills className="nav-pills-underline">
             <NavItem>
-              <RenkuNavLink
+              <RenkuNavLinkV2
                 to={this.props.baseUrl}
                 alternate={this.props.overviewUrl}
                 title="Overview"
               />
             </NavItem>
             <NavItem>
-              <RenkuNavLink
+              <RenkuNavLinkV2
                 exact={false}
                 to={this.props.filesUrl}
                 title="Files"
               />
             </NavItem>
             <NavItem>
-              <RenkuNavLink
+              <RenkuNavLinkV2
                 exact={false}
                 to={this.props.datasetsUrl}
                 title="Datasets"
               />
             </NavItem>
             <NavItem>
-              <RenkuNavLink
+              <RenkuNavLinkV2
                 exact={false}
                 to={this.props.workflowsUrl}
                 title="Workflows"
               />
             </NavItem>
             <NavItem>
-              <RenkuNavLink
+              <RenkuNavLinkV2
                 exact={false}
                 to={this.props.notebookServersUrl}
                 title="Sessions"
               />
             </NavItem>
             <NavItem className="pe-0">
-              <RenkuNavLink
+              <RenkuNavLinkV2
                 exact={false}
                 to={this.props.settingsUrl}
                 title="Settings"
@@ -668,17 +668,17 @@ class ProjectViewOverviewNav extends Component {
         data-cy="project-overview-nav"
       >
         <NavItem>
-          <RenkuNavLink
+          <RenkuNavLinkV2
             to={this.props.baseUrl}
             title="General"
             id="nav-overview-general"
           />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={this.props.statsUrl} title="Stats" />
+          <RenkuNavLinkV2 to={this.props.statsUrl} title="Stats" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={this.props.overviewCommitsUrl} title="Commits" />
+          <RenkuNavLinkV2 to={this.props.overviewCommitsUrl} title="Commits" />
         </NavItem>
       </Nav>
     );

@@ -27,15 +27,15 @@ import cx from "classnames";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
-import { RenkuNavLink } from "../components/RenkuNavLink";
+import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
 import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../components/navbar/navbar.constans";
 import { parseChartVersion } from "../help/release.utils";
+import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 import { Links } from "../utils/constants/Docs";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../utils/helpers/url";
-import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 
 import "./NavBar.css";
 
@@ -102,7 +102,7 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
     : Url.pages.help;
   return (
     <>
-      <RenkuNavLink to={helpLocation} title="Help" />
+      <RenkuNavLinkV2 to={helpLocation} title="Help" />
       {privacyLink}
       <ExternalDocsLink
         url={Links.DISCOURSE}
@@ -142,7 +142,7 @@ function FooterNavbarInner({ location, params }) {
 
   const privacyLink =
     params && params["PRIVACY_STATEMENT"] ? (
-      <RenkuNavLink to="/privacy" title="Privacy" />
+      <RenkuNavLinkV2 to="/privacy" title="Privacy" />
     ) : null;
   const chartVersion = params && params["RENKU_CHART_VERSION"];
   const parsedChartVersion = chartVersion && parseChartVersion(chartVersion);

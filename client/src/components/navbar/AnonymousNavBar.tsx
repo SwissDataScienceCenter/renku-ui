@@ -86,7 +86,6 @@ export default function AnonymousNavBar({
                   to={Url.get(Url.pages.search)}
                   title="Search"
                   id="link-search"
-                  // icon={<Search />}
                   className="d-flex gap-2 align-items-center"
                 >
                   <Search />
