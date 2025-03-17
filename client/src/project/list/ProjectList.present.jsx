@@ -460,27 +460,28 @@ function ProjectListNav(props) {
       <Nav pills className="nav-pills-underline" size="sm">
         <NavItem>
           <RenkuNavLinkV2
-            title="Your Projects"
             id="link-projects-your"
             to={getPreciseUrl(sectionsMap.own)}
-            noSubPath={true}
-          />
+            end
+          >
+            Your Projects
+          </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
           <RenkuNavLinkV2
-            title="Starred Projects"
             id="link-projects-starred"
             to={getPreciseUrl(sectionsMap.starred)}
-            exact={false}
-          />
+          >
+            Starred Projects
+          </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
           <RenkuNavLinkV2
-            title="All Projects"
             id="link-projects-all"
             to={getPreciseUrl(sectionsMap.all)}
-            exact={false}
-          />
+          >
+            All Projects
+          </RenkuNavLinkV2>
         </NavItem>
       </Nav>
     </Col>
