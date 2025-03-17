@@ -17,7 +17,7 @@
  */
 
 import { useCallback, useContext, useEffect, useState } from "react";
-// import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom-v5-compat";
 
 import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
@@ -30,7 +30,6 @@ import type {
   AddDatasetStatus,
   SubmitProject,
 } from "./DatasetAdd.types";
-import { useNavigate, useParams } from "react-router-dom-v5-compat";
 
 type DatasetImportResponse = {
   data?: {
@@ -66,7 +65,6 @@ function DatasetAddToProject({
   const [datasetCoordinator, setDatasetCoordinator] =
     useState<DatasetCoordinator | null>(null);
   const { client } = useContext(AppContext);
-  // const history = useHistory();
   const navigate = useNavigate();
 
   const [srcProjectDetails, setSrcProjectDetails] =

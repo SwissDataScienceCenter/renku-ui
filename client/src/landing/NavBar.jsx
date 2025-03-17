@@ -99,10 +99,10 @@ function FooterNavbarAnonymousLinks() {
 function FooterNavbarLoggedInLinks({ privacyLink }) {
   const helpLocation = location.pathname.startsWith("/v2")
     ? ABSOLUTE_ROUTES.v2.help.root
-    : Url.pages.help;
+    : Url.pages.help.base;
   return (
     <>
-      <RenkuNavLinkV2 to={helpLocation} title="Help" />
+      <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
       {privacyLink}
       <ExternalDocsLink
         url={Links.DISCOURSE}
@@ -142,7 +142,7 @@ function FooterNavbarInner({ location, params }) {
 
   const privacyLink =
     params && params["PRIVACY_STATEMENT"] ? (
-      <RenkuNavLinkV2 to="/privacy" title="Privacy" />
+      <RenkuNavLinkV2 to="/privacy">Privacy</RenkuNavLinkV2>
     ) : null;
   const chartVersion = params && params["RENKU_CHART_VERSION"];
   const parsedChartVersion = chartVersion && parseChartVersion(chartVersion);

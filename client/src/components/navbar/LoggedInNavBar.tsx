@@ -85,13 +85,12 @@ export default function LoggedInNavBar({
             >
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
                 <RenkuNavLinkV2
-                  to={Url.get(Url.pages.search)}
-                  title="Search"
+                  className={cx("d-flex", "gap-2", "align-items-center")}
                   id="link-search"
-                  className="d-flex gap-2 align-items-center"
+                  to={Url.get(Url.pages.search)}
                 >
                   <Search />
-                  <span className="visually-hidden">Search</span>
+                  Search
                 </RenkuNavLinkV2>
               </NavItem>
               <NavItem
@@ -100,10 +99,11 @@ export default function LoggedInNavBar({
                 className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4"
               >
                 <RenkuNavLinkV2
-                  to={Url.get(Url.pages.landing)}
-                  title="Dashboard"
                   id="link-dashboard"
-                />
+                  to={Url.get(Url.pages.landing)}
+                >
+                  Dashboard
+                </RenkuNavLinkV2>
               </NavItem>
               <NavItem className="nav-item col-auto ms-sm-auto">
                 <RenkuToolbarItemPlus />

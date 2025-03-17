@@ -145,12 +145,12 @@ function CentralContentContainer(props) {
           <Route exact path={Url.get(Url.pages.sessions)}>
             {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
           </Route>
-          <Route path="/datasets/:identifier/add">
+          <CompatRoute path="/datasets/:identifier/add">
             <LazyDatasetAddToProject
               insideProject={false}
               model={props.model}
             />
-          </Route>
+          </CompatRoute>
           <CompatRoute path="/datasets/:identifier">
             <LazyShowDataset
               insideProject={false}

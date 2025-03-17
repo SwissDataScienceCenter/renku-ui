@@ -227,7 +227,6 @@ function SessionActions({ className, session }: SessionActionsProps) {
   });
   useEffect(() => {
     if (isSuccessResumeSession && !isWaitingForResumedSession) {
-      // history.push({ pathname: showSessionUrl });
       navigate({ pathname: showSessionUrl });
     }
   }, [
