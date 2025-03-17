@@ -28,13 +28,13 @@ import {
   CardHeader,
   Form,
   ModalBody,
-  ModalHeader,
   ModalFooter,
 } from "reactstrap";
 import { useForm } from "react-hook-form";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ModalHeader from "../../../../components/modal/ModalHeader";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 
@@ -207,12 +207,17 @@ function DocumentationModal({
       size="lg"
       toggle={safeToggle}
     >
-      <ModalHeader toggle={toggle} data-cy="project-documentation-modal-header">
-        <div>
-          <FileEarmarkText className={cx("me-1", "bi")} />
-          Documentation
-        </div>
-      </ModalHeader>
+      <ModalHeader
+        modalTitle={
+          <>
+            <FileEarmarkText className={cx("me-1", "bi")} />
+            Documentation
+          </>
+        }
+        toggle={toggle}
+        data-cy="project-documentation-modal-header"
+      />
+
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalBody
           data-cy="project-documentation-modal-body"
