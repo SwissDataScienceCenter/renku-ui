@@ -19,7 +19,7 @@
 import type { CSSProperties } from "react";
 import React from "react";
 import { List } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
 import { useLoginUrl } from "../authentication/useLoginUrl.hook";

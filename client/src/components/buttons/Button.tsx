@@ -34,7 +34,7 @@ import {
   PlusLg,
   ThreeDotsVertical,
 } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom-v5-compat";
 import {
   Button,
   ButtonDropdown,
