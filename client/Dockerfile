@@ -62,6 +62,9 @@ USER node
 ARG SHORT_SHA
 ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
+ARG PORT="8080"
+ENV PORT=$PORT
+
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
 CMD ["npm", "run-script", "remix:start", "/app/build/server/index.js"]
 
