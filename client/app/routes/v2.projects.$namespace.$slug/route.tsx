@@ -16,12 +16,22 @@
  * limitations under the License.
  */
 
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import {
+  json,
+  type LoaderFunctionArgs,
+  type LoaderFunction,
+  type MetaFunction,
+} from "@remix-run/node";
 import { env } from "node:process";
+import { startCase } from "lodash-es";
 
+import { type Project } from "~/old-src/features/projectsV2/api/projectV2.api";
 import App from "~/old-src/newIndex";
 
-export async function loader({ params, request }: LoaderFunctionArgs) {
+export async function loader({
+  params,
+  request,
+}: LoaderFunctionArgs): Promise<ReturnType<LoaderFunction>> {
   const { namespace, slug } = params;
   console.log({ namespace, slug });
 
@@ -45,13 +55,38 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         ...(cookie ? { Cookie: cookie } : {}),
       },
     });
-    console.log({ projectResponse });
-
-    return json({ ok: true });
+    const projectData = await projectResponse.json();
+    return json({ ok: true, project: projectData });
   } catch {
     return json({ ok: false });
   }
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data.ok) {
+    return [];
+  }
+
+  const { name, visibility, description } = data.project as Project;
+
+  return [
+    {
+      title: `${name} | ${startCase(visibility)} project on Renku`,
+    },
+    {
+      name: "description",
+      content: description,
+    },
+    {
+      property: "og:title",
+      content: name,
+    },
+    {
+      property: "og:description",
+      content: description,
+    },
+  ];
+};
 
 export default function ProjectRoute() {
   return <App />;
