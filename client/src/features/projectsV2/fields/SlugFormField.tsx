@@ -20,9 +20,12 @@ import cx from "classnames";
 import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import { useLocation } from "react-router-dom";
 import { Button, FormText, Input, InputGroup, Label } from "reactstrap";
+import { isRenkuLegacy } from "../../../utils/helpers/HelperFunctionsV2.ts";
 
 import type { SlugFormFieldProps } from "./formField.types";
+import styles from "./RenkuV1FormFields.module.scss";
 
 export default function SlugFormField<T extends FieldValues>({
   compact,
@@ -33,6 +36,8 @@ export default function SlugFormField<T extends FieldValues>({
   name,
   url,
 }: SlugFormFieldProps<T>) {
+  const location = useLocation();
+  const isRenkuV1 = isRenkuLegacy(location.pathname);
   const content = (
     <Controller
       control={control}
@@ -48,7 +53,9 @@ export default function SlugFormField<T extends FieldValues>({
               className={cx(
                 "form-control",
                 errors.slug && "is-invalid",
-                compact && "p-1"
+                compact && "p-1",
+                isRenkuV1 && styles.RenkuV1inputGroup,
+                isRenkuV1 && styles.RenkuV1input
               )}
               data-cy={`${entityName}-slug-input`}
               id={`${entityName}-slug`}
