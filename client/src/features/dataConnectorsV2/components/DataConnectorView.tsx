@@ -24,6 +24,7 @@ import {
   Key,
   Lock,
   PersonBadge,
+  Globe2,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
@@ -429,6 +430,19 @@ function DataConnectorViewMetadata({
             )}
           </div>
         </div>
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue title="Visibility">
+        {dataConnector.visibility.toLowerCase() === "private" ? (
+          <div>
+            <Lock className={cx("bi", "me-1")} />
+            Private
+          </div>
+        ) : (
+          <div>
+            <Globe2 className={cx("bi", "me-1")} />
+            Public
+          </div>
+        )}
       </DataConnectorPropertyValue>
       {nonRequiredCredentialConfigurationKeys.map((key) => {
         const title =
