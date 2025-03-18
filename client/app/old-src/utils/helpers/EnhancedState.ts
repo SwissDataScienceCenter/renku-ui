@@ -24,7 +24,6 @@ import {
   Action,
   AnyAction,
   ReducersMapObject,
-  StoreEnhancer,
   configureStore,
 } from "@reduxjs/toolkit";
 
@@ -69,8 +68,7 @@ import featureFlagsSlice from "../feature-flags/featureFlags.slice";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
-  renkuStateModelReducer: ReducersMapObject<S, A>,
-  enhancers: StoreEnhancer[] | undefined = undefined
+  renkuStateModelReducer: ReducersMapObject<S, A>
 ) => {
   const enhancedReducer = {
     ...renkuStateModelReducer,
@@ -153,7 +151,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(usersApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
-    enhancers,
   });
   return store;
 };

@@ -291,13 +291,13 @@ export default function CloudStorageModal({
         storage_id: storageId as string,
       };
       modifyCloudStorageForProject(storageParametersWithId).then((result) => {
-        if ("data" in result && result.data.storage.storage_id) {
+        if ("data" in result && result.data?.storage.storage_id) {
           setSuccess(true);
         }
       });
     } else {
       addCloudStorageForProject(storageParameters).then((result) => {
-        if ("data" in result && result.data.storage.storage_id) {
+        if ("data" in result && result.data?.storage.storage_id) {
           setSuccess(true);
         }
       });
