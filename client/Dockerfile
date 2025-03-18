@@ -37,25 +37,26 @@ COPY scripts/generate_sitemap.sh /app/scripts/generate_sitemap.sh
 
 # Set up the config files written by docker-entrypoint
 USER root
-RUN touch /app/build/client/static/public/config.json
-RUN chmod a+r /app/build/client/static/public/config.json
-RUN chown node /app/build/client/static/public/config.json
+#/app/build/client
+RUN touch /app/build/client/config.json
+RUN chmod a+r /app/build/client/config.json
+RUN chown node /app/build/client/config.json
 
-RUN touch /app/build/client/static/public/robots.txt
-RUN chmod a+r /app/build/client/static/public/robots.txt
-RUN chown node /app/build/client/static/public/robots.txt
+RUN touch /app/build/client/robots.txt
+RUN chmod a+r /app/build/client/robots.txt
+RUN chown node /app/build/client/robots.txt
 
-RUN touch /app/build/client/static/public/sitemap.xml
-RUN chmod a+r /app/build/client/static/public/sitemap.xml
-RUN chown node /app/build/client/static/public/sitemap.xml
+RUN touch /app/build/client/sitemap.xml
+RUN chmod a+r /app/build/client/sitemap.xml
+RUN chown node /app/build/client/sitemap.xml
 
-RUN touch /app/build/client/static/public/privacy-statement.md
-RUN chmod a+r /app/build/client/static/public/privacy-statement.md
-RUN chown node /app/build/client/static/public/privacy-statement.md
+RUN touch /app/build/client/privacy-statement.md
+RUN chmod a+r /app/build/client/privacy-statement.md
+RUN chown node /app/build/client/privacy-statement.md
 
-RUN touch /app/build/client/static/public/terms-of-use.md
-RUN chmod a+r /app/build/client/static/public/terms-of-use.md
-RUN chown node /app/build/client/static/public/terms-of-use.md
+RUN touch /app/build/client/terms-of-use.md
+RUN chmod a+r /app/build/client/terms-of-use.md
+RUN chown node /app/build/client/terms-of-use.md
 
 USER node
 
@@ -71,32 +72,32 @@ CMD ["npm", "run-script", "remix:start", "/app/build/server/index.js"]
 # FROM nginxinc/nginx-unprivileged:1.27-alpine
 
 # COPY --from=builder /app/build /app/build/client/static/public
-# COPY --from=builder /app/storybook-static /app/build/client/static/public/storybook
+# COPY --from=builder /app/storybook-static /app/build/client/storybook
 # COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 # COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 # COPY scripts/generate_sitemap.sh /app/scripts/generate_sitemap.sh
 
 # # Set up the config files written by docker-entrypoint
 # USER root
-# RUN touch /app/build/client/static/public/config.json
-# RUN chmod a+r /app/build/client/static/public/config.json
-# RUN chown nginx /app/build/client/static/public/config.json
+# RUN touch /app/build/client/config.json
+# RUN chmod a+r /app/build/client/config.json
+# RUN chown nginx /app/build/client/config.json
 
-# RUN touch /app/build/client/static/public/robots.txt
-# RUN chmod a+r /app/build/client/static/public/robots.txt
-# RUN chown nginx /app/build/client/static/public/robots.txt
+# RUN touch /app/build/client/robots.txt
+# RUN chmod a+r /app/build/client/robots.txt
+# RUN chown nginx /app/build/client/robots.txt
 
-# RUN touch /app/build/client/static/public/sitemap.xml
-# RUN chmod a+r /app/build/client/static/public/sitemap.xml
-# RUN chown nginx /app/build/client/static/public/sitemap.xml
+# RUN touch /app/build/client/sitemap.xml
+# RUN chmod a+r /app/build/client/sitemap.xml
+# RUN chown nginx /app/build/client/sitemap.xml
 
-# RUN touch /app/build/client/static/public/privacy-statement.md
-# RUN chmod a+r /app/build/client/static/public/privacy-statement.md
-# RUN chown nginx /app/build/client/static/public/privacy-statement.md
+# RUN touch /app/build/client/privacy-statement.md
+# RUN chmod a+r /app/build/client/privacy-statement.md
+# RUN chown nginx /app/build/client/privacy-statement.md
 
-# RUN touch /app/build/client/static/public/terms-of-use.md
-# RUN chmod a+r /app/build/client/static/public/terms-of-use.md
-# RUN chown nginx /app/build/client/static/public/terms-of-use.md
+# RUN touch /app/build/client/terms-of-use.md
+# RUN chmod a+r /app/build/client/terms-of-use.md
+# RUN chown nginx /app/build/client/terms-of-use.md
 
 # USER nginx
 
