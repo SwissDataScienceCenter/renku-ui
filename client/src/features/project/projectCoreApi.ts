@@ -76,10 +76,26 @@ interface UpdateConfigParams extends Omit<GetConfigParams, "commit"> {
   };
 }
 
+export interface ProjectMetadataParams extends CoreVersionUrl {
+  commitSha: string;
+  projectRepositoryUrl: string;
+  isDelayed: boolean;
+}
+
 interface UpdateConfigResponse {
   branch: string;
   update: {
     [key: string]: string | null;
+  };
+}
+
+interface ProjectMetadataResponse {
+  result?: {
+    name: string;
+    template_info: string;
+    id: string;
+    agent: string;
+    created: string;
   };
 }
 
@@ -99,7 +115,7 @@ function urlWithQueryParams(url: string, queryParams: any) {
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/renku" }),
-  tagTypes: ["project", "project-status", "ProjectConfig"],
+  tagTypes: ["project", "project-status", "ProjectConfig", "ProjectMetadata"],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
@@ -310,6 +326,39 @@ export const projectCoreApi = createApi({
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
     }),
+    projectMetadata: builder.mutation<
+      ProjectMetadataResponse,
+      ProjectMetadataParams
+    >({
+      query: ({
+        projectRepositoryUrl,
+        commitSha,
+        isDelayed,
+        metadataVersion,
+        apiVersion,
+      }) => {
+        const body = {
+          git_url: projectRepositoryUrl,
+          commit_sha: commitSha,
+          is_delayed: isDelayed,
+        };
+        return {
+          url: versionedPathForEndpoint({
+            endpoint: "project.show",
+            metadataVersion,
+            apiVersion,
+          }),
+          method: "POST",
+          body,
+          validateStatus: (response, body) =>
+            response.status >= 200 && response.status < 300 && !body.error,
+        };
+      },
+      transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "ProjectMetadata", id: arg.projectRepositoryUrl },
+      ],
+    }),
   }),
 });
 
@@ -419,4 +468,5 @@ export const {
   useStartMigrationMutation,
   useGetConfigQuery,
   useUpdateConfigMutation,
+  useProjectMetadataMutation,
 } = projectCoreApi;
