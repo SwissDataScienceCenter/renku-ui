@@ -17,7 +17,7 @@
 # limitations under the License.
 
 # export NGINX_PATH=/usr/share/nginx/html
-export NGINX_PATH=/app/build/client/static/public
+export NGINX_PATH=/app/build/client
 
 echo "Config file contains the following settings:"
 echo "==================================================="
