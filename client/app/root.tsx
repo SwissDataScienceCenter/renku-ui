@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
-import { Outlet } from "@remix-run/react";
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "@remix-run/react";
 
 export default function Root() {
   return (
@@ -30,11 +36,15 @@ export default function Root() {
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
         <title>My React App</title>
+        <Meta />
+        <Links />
       </head>
       <body>
         <div id="root">
           <Outlet />
         </div>
+        <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
   );
