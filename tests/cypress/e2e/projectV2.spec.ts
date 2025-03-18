@@ -292,7 +292,7 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-documentation-modal-body").should("not.be.visible");
   });
 
-  it.only("changes project namespace", () => {
+  it("changes project namespace", () => {
     fixtures
       .readProjectV2()
       .updateProjectV2()
@@ -323,14 +323,6 @@ describe("Edit v2 project", () => {
       // Pick an element from the second page of results
       .contains("test-25-group-v2")
       .click();
-
-    // // Return 404 for the old namespace
-    // cy.intercept(
-    //   "GET",
-    //   `/ui-server/api/data/namespaces/user1-uuid/projects/test-2-v2-project*`,
-    //   { statusCode: 404 }
-    // );
-
     fixtures.readProjectV2({
       fixture: "projectV2/update-projectV2-metadata.json",
       name: "readPostUpdate",
