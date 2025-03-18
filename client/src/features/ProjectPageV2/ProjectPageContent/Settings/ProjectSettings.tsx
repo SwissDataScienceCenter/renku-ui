@@ -201,8 +201,10 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const { notifications } = useContext(AppContext);
   const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
-  const [updateProject, { isLoading, error, isSuccess, data: updatedProject }] =
-    usePatchProjectsByProjectIdMutation();
+  const [
+    updateProject,
+    { isLoading, error, isSuccess, data: updatedProject, reset: resetPatch },
+  ] = usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
 
@@ -241,15 +243,17 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
         slug: project.slug,
       });
       navigate(projectUrl);
+      resetPatch();
     }
   }, [
-    isSuccess,
-    redirectAfterUpdate,
-    navigate,
-    project.slug,
-    currentNamespace,
     currentName,
+    currentNamespace,
+    isSuccess,
+    navigate,
     notifications,
+    project.slug,
+    redirectAfterUpdate,
+    resetPatch,
   ]);
 
   const formId = "project-settings-form";
