@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
 import {
   Badge,
@@ -26,6 +26,7 @@ import {
   CardBody,
   CardHeader,
   ListGroup,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
@@ -46,7 +47,6 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../../proje
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
-import { InfoAlert } from "../../../../components/Alert";
 
 interface DataConnectorListDisplayProps {
   project: Project;
@@ -110,7 +110,8 @@ function ProjectDataConnectorBoxContent({
         <ProjectDataConnectorBoxHeader
           projectId={project.id}
           toggleOpen={toggleOpen}
-          totalConnectors={data.length + (inaccessibleDataConnectors || 0)}
+          accessibleConnectors={data.length}
+          inaccessibleConnectors={inaccessibleDataConnectors || 0}
         />
         <CardBody>
           {data.length === 0 && (
@@ -119,15 +120,6 @@ function ProjectDataConnectorBoxContent({
               cloud storage to read and write custom data.
             </p>
           )}
-          {inaccessibleDataConnectors != null &&
-            inaccessibleDataConnectors > 0 && (
-              <InfoAlert timeout={0} dismissible={false} className={cx("mb-3")}>
-                <p className="mb-0">
-                  You are missing access to {inaccessibleDataConnectors} data
-                  connector(s) in this project.
-                </p>
-              </InfoAlert>
-            )}
           {data != null && data.length > 0 && (
             <ListGroup flush>
               {data.map((dc) => (
@@ -156,13 +148,15 @@ function ProjectDataConnectorBoxContent({
 interface ProjectDataConnectorBoxHeaderProps {
   projectId: Project["id"];
   toggleOpen: () => void;
-  totalConnectors: number;
+  accessibleConnectors: number;
+  inaccessibleConnectors: number;
 }
 
 function ProjectDataConnectorBoxHeader({
   projectId,
   toggleOpen,
-  totalConnectors,
+  accessibleConnectors,
+  inaccessibleConnectors,
 }: ProjectDataConnectorBoxHeaderProps) {
   const permissions = useProjectPermissions({ projectId });
 
@@ -180,7 +174,15 @@ function ProjectDataConnectorBoxHeader({
             <Database className={cx("me-1", "bi")} />
             Data
           </h4>
-          <Badge>{totalConnectors}</Badge>
+          <Badge>{accessibleConnectors}</Badge>
+          {inaccessibleConnectors > 0 && (
+            <>
+              &nbsp;
+              <MissingDataConnectorsBadge
+                inaccessibleConnectors={inaccessibleConnectors}
+              />
+            </>
+          )}
         </div>
         <div className="my-auto">
           <PermissionsGuard
@@ -250,12 +252,50 @@ function DataConnectorLinkDisplay({
     <DataConnectorBoxListDisplay
       dataConnector={dataConnector}
       dataConnectorLink={dataConnectorLink}
-      warning={
+      visibilityWarning={
         projectPath != dataConnector.namespace &&
         dataConnector.visibility == "private"
           ? "Some members of this project may not be able to access this data connector"
           : undefined
       }
     />
+  );
+}
+
+interface MissingDataConnectorsBadgeProps {
+  className?: string;
+  inaccessibleConnectors: number;
+}
+
+function MissingDataConnectorsBadge({
+  className,
+  inaccessibleConnectors,
+}: MissingDataConnectorsBadgeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  if (inaccessibleConnectors <= 0) return;
+  return (
+    <>
+      <Badge
+        className={cx("rounded-pill", className)}
+        color="info"
+        innerRef={ref}
+      >
+        {inaccessibleConnectors} hidden
+      </Badge>
+      <UncontrolledTooltip target={ref}>
+        {inaccessibleConnectors == 1 ? (
+          <>
+            There is 1 data connector linked to this project but not visible to
+            you.
+          </>
+        ) : (
+          <>
+            There are {{ inaccessibleConnectors }} data connectors linked to
+            this project but not visible to you.
+          </>
+        )}
+      </UncontrolledTooltip>
+    </>
   );
 }

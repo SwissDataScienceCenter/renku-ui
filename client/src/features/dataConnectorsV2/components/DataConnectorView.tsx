@@ -53,6 +53,7 @@ import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-c
 
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
+import { WarnAlert } from "../../../components/Alert";
 
 const SECTION_CLASSES = [
   "border-top",
@@ -83,12 +84,14 @@ interface DataConnectorViewProps {
   dataConnectorLink?: DataConnectorToProjectLink;
   showView: boolean;
   toggleView: () => void;
+  visibilityWarning?: string;
 }
 export default function DataConnectorView({
   dataConnector,
   dataConnectorLink,
   showView,
   toggleView,
+  visibilityWarning,
 }: DataConnectorViewProps) {
   return (
     <Offcanvas
@@ -110,7 +113,10 @@ export default function DataConnectorView({
         <DataConnectorViewHeader
           {...{ dataConnector, dataConnectorLink, toggleView }}
         />
-        <DataConnectorViewMetadata dataConnector={dataConnector} />
+        <DataConnectorViewMetadata
+          dataConnector={dataConnector}
+          visibilityWarning={visibilityWarning}
+        />
         <DataConnectorViewConfiguration dataConnector={dataConnector} />
         <DataConnectorViewProjects dataConnector={dataConnector} />
         <DataConnectorViewAccess dataConnector={dataConnector} />
@@ -333,9 +339,15 @@ function DataConnectorViewProjects({
   );
 }
 
+interface DataConnectorViewMetadataProps {
+  dataConnector: DataConnectorRead;
+  visibilityWarning?: string;
+}
+
 function DataConnectorViewMetadata({
   dataConnector,
-}: Pick<DataConnectorViewProps, "dataConnector">) {
+  visibilityWarning,
+}: DataConnectorViewMetadataProps) {
   const storageDefinition = dataConnector.storage;
   const credentialFieldDefinitions = useMemo(
     () =>
@@ -442,6 +454,11 @@ function DataConnectorViewMetadata({
             <Globe2 className={cx("bi", "me-1")} />
             Public
           </div>
+        )}
+        {visibilityWarning && (
+          <WarnAlert className="mt-2" timeout={0} dismissible={false}>
+            {visibilityWarning}
+          </WarnAlert>
         )}
       </DataConnectorPropertyValue>
       {nonRequiredCredentialConfigurationKeys.map((key) => {

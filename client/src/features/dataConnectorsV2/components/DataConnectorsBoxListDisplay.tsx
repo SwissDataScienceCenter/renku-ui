@@ -17,9 +17,15 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { EyeFill, Globe2, Lock, Pencil, Folder } from "react-bootstrap-icons";
-import { Col, ListGroupItem, Row } from "reactstrap";
+import {
+  Col,
+  ListGroupItem,
+  Row,
+  UncontrolledTooltip,
+  Badge,
+} from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -36,13 +42,13 @@ interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
   dataConnectorLink?: DataConnectorToProjectLink;
   extendedPreview?: boolean;
-  warning?: string;
+  visibilityWarning?: string;
 }
 export default function DataConnectorBoxListDisplay({
   dataConnector,
   dataConnectorLink,
   extendedPreview,
-  warning,
+  visibilityWarning,
 }: DataConnectorBoxListDisplayProps) {
   const {
     name,
@@ -144,7 +150,6 @@ export default function DataConnectorBoxListDisplay({
                     Public
                   </div>
                 )}
-                {warning && <p>{warning}</p>}
                 {extendedPreview && readOnly}
               </div>
               <TimeCaption
@@ -153,6 +158,11 @@ export default function DataConnectorBoxListDisplay({
                 enableTooltip
               />
             </div>
+            {visibilityWarning && (
+              <div>
+                <DataConnectorNotVisibleToAllUsersBadge />
+              </div>
+            )}
           </Col>
         </Row>
       </ListGroupItem>
@@ -161,7 +171,40 @@ export default function DataConnectorBoxListDisplay({
         dataConnectorLink={dataConnectorLink}
         showView={showDetails}
         toggleView={toggleDetails}
+        visibilityWarning={visibilityWarning}
       />
+    </>
+  );
+}
+
+interface DataConnectorNotVisibleToAllUsersBadgeProps {
+  className?: string;
+  warning?: string;
+}
+
+export function DataConnectorNotVisibleToAllUsersBadge({
+  className,
+  warning,
+}: DataConnectorNotVisibleToAllUsersBadgeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  return (
+    <>
+      <Badge
+        className={cx(
+          "rounded-pill border bg-warning-subtle border-warning text-warning-emphasis",
+          className
+        )}
+        color="info"
+        innerRef={ref}
+      >
+        Visibility warning
+      </Badge>
+      {warning && (
+        <UncontrolledTooltip target={ref} placement="bottom">
+          {warning}
+        </UncontrolledTooltip>
+      )}
     </>
   );
 }
