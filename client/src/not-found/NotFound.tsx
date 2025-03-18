@@ -24,7 +24,7 @@
  */
 import cx from "classnames";
 import { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom-v5-compat";
 
 import { ArrowLeft } from "react-bootstrap-icons";
 import ContainerWrap from "../components/container/ContainerWrap";
@@ -44,6 +44,7 @@ export default function NotFound({
   description: description_,
   children,
 }: NotFoundProps) {
+  const location = useLocation();
   const isV2 = !isRenkuLegacy(location.pathname);
   const title = title_ ?? "Page not found";
   const description =
@@ -57,6 +58,7 @@ export default function NotFound({
       ? "p"
       : "div";
 
+  const homeLink = isV2 ? "/" : "/v1/";
   return (
     <ContainerWrap>
       <div className={cx("d-flex")}>
@@ -79,7 +81,7 @@ export default function NotFound({
           <Tag data-cy="not-found-description">{description}</Tag>
           <div>
             <Link
-              to="/"
+              to={homeLink}
               className={cx("btn", isV2 ? "btn-primary" : "btn-rk-green")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />
