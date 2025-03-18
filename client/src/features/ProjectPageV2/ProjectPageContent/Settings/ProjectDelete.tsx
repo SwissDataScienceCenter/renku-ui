@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Trash } from "react-bootstrap-icons";
-import { useNavigate } from "react-router-dom-v5-compat";
+import { useNavigate } from "react-router";
 import { Button, Card, CardBody, CardHeader, Input } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";

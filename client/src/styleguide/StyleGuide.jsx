@@ -24,7 +24,7 @@
  */
 
 import { Fragment } from "react";
-import { Route, Routes } from "react-router-dom-v5-compat";
+import { Route, Routes } from "react-router";
 import { Col, Nav, NavItem, Row, Table } from "reactstrap";
 
 import { ExternalLink } from "../components/ExternalLinks";

@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
 
 import StatusBanner from "../../features/platform/components/StatusBanner";

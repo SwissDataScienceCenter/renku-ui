@@ -17,7 +17,7 @@
  */
 
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom-v5-compat";
+import { useNavigate, useParams } from "react-router";
 
 import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../utils/constants/Dataset";

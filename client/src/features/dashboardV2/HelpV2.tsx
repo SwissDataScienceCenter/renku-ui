@@ -18,7 +18,7 @@
 import cx from "classnames";
 import { ChatSquareDots, Github, JournalText } from "react-bootstrap-icons";
 import { useContext } from "react";
-import { Route, Routes } from "react-router-dom-v5-compat";
+import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
 
 import {

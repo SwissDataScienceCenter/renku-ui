@@ -21,7 +21,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom-v5-compat";
+import { useParams } from "react-router";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { SuccessAlert } from "../../../../components/Alert";

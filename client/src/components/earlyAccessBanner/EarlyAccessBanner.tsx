@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { Link, useLocation } from "react-router-dom-v5-compat";
+import { Link, useLocation } from "react-router";
 import { Alert, Container } from "reactstrap";
 import { Links } from "../../utils/constants/Docs.js";
 import { Url } from "../../utils/helpers/url";

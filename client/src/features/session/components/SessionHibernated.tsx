@@ -22,7 +22,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Link, useLocation, type Location } from "react-router-dom-v5-compat";
+import { Link, useLocation, type Location } from "react-router";
 import { Alert, Button } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

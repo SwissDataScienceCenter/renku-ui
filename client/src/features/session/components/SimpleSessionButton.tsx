@@ -20,7 +20,7 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { MouseEvent, useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom-v5-compat";
+import { Link, useNavigate } from "react-router";
 import { Button } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

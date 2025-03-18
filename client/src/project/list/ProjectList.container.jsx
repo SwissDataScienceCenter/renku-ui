@@ -18,10 +18,7 @@
 
 import { isEqual } from "lodash-es";
 import { useContext, useEffect, useState } from "react";
-import {
-  useNavigate,
-  useLocation as useRouterLocation,
-} from "react-router-dom-v5-compat";
+import { useNavigate, useLocation as useRouterLocation } from "react-router";
 
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";

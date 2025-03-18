@@ -24,7 +24,7 @@
  */
 
 import cx from "classnames";
-import { Link, Route, Routes, useLocation } from "react-router-dom-v5-compat";
+import { Link, Route, Routes, useLocation } from "react-router";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
 import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";

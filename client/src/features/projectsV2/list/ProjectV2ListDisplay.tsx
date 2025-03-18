@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { Folder, PlusLg } from "react-bootstrap-icons";
-import { Link, useSearchParams } from "react-router-dom-v5-compat";
+import { Link, useSearchParams } from "react-router";
 import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

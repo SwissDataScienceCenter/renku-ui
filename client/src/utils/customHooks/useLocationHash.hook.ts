@@ -17,11 +17,7 @@
  */
 
 import { useCallback, useMemo } from "react";
-import {
-  type NavigateOptions,
-  useLocation,
-  useNavigate,
-} from "react-router-dom-v5-compat";
+import { type NavigateOptions, useLocation, useNavigate } from "react-router";
 
 /**
  * useLocationHash() is a hook similar to react-router's useSearchParams but for the URL hash.

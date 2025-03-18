@@ -20,11 +20,7 @@ import cx from "classnames";
 import React from "react";
 import type { FieldErrors } from "react-hook-form";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {
-  type NavigateFunction,
-  useLocation,
-  useNavigate,
-} from "react-router-dom-v5-compat";
+import { type NavigateFunction, useLocation, useNavigate } from "react-router";
 import { Button, FormGroup, UncontrolledAlert } from "reactstrap";
 
 import { ExternalLink } from "../../../components/ExternalLinks";

@@ -17,7 +17,7 @@
  */
 
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom-v5-compat";
+import { useSearchParams } from "react-router";
 
 interface UseClampSearchPageArgs {
   totalPages?: number | null | undefined;

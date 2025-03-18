@@ -32,7 +32,7 @@ import {
   PlusSquare,
   Send,
 } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router";
 import {
   Badge,
   Card,

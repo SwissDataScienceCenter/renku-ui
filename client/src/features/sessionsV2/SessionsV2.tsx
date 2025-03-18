@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
-import { generatePath } from "react-router-dom-v5-compat";
+import { generatePath } from "react-router";
 import {
   Badge,
   Button,

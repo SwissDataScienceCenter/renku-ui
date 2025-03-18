@@ -27,13 +27,7 @@ import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Component, Fragment, useEffect } from "react";
-import {
-  Link,
-  Route,
-  Routes,
-  useLocation,
-  useParams,
-} from "react-router-dom-v5-compat";
+import { Link, Route, Routes, useLocation, useParams } from "react-router";
 import {
   Alert,
   Button,

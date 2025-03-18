@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { generatePath, Link } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router";
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";

@@ -27,7 +27,7 @@ import { faDiscourse, faGitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import { Github } from "react-bootstrap-icons";
-import { Route, Routes } from "react-router-dom-v5-compat";
+import { Route, Routes } from "react-router";
 import { Col, Nav, NavItem, Row } from "reactstrap";
 
 import {

@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Sliders } from "react-bootstrap-icons";
-import { useParams } from "react-router-dom-v5-compat";
+import { useParams } from "react-router";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

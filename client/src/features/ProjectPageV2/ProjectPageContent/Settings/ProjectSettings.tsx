@@ -19,11 +19,7 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import {
-  generatePath,
-  useLocation,
-  useNavigate,
-} from "react-router-dom-v5-compat";
+import { generatePath, useLocation, useNavigate } from "react-router";
 import {
   Button,
   Card,

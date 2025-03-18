@@ -32,7 +32,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Url } from "../../../utils/helpers/url";

@@ -20,11 +20,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import {
-  generatePath,
-  useNavigate,
-  useParams,
-} from "react-router-dom-v5-compat";
+import { generatePath, useNavigate, useParams } from "react-router";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { Loader } from "../../components/Loader";

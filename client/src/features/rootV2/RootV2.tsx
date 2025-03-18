@@ -18,12 +18,7 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import {
-  Navigate,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom-v5-compat";
+import { Navigate, Route, Routes, useNavigate } from "react-router";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";

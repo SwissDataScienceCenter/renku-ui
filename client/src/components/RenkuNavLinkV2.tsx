@@ -23,7 +23,7 @@ import {
   NavLink as RRNavLink,
   type NavLinkProps as RRNavLinkProps,
   useLocation,
-} from "react-router-dom-v5-compat";
+} from "react-router";
 import { NavLink } from "reactstrap";
 
 type RenkuNavLinkV2Props = RRNavLinkProps & RefAttributes<HTMLAnchorElement>;
