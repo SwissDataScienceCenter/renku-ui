@@ -109,7 +109,7 @@ export default function RootV2() {
             path="help/*"
             element={
               <ContainerWrap>
-                <HelpV2Routes />
+                <LazyHelpV2 />
               </ContainerWrap>
             }
           />
@@ -184,14 +184,6 @@ function GroupsV2Routes() {
           </ContainerWrap>
         }
       />
-    </Routes>
-  );
-}
-
-function HelpV2Routes() {
-  return (
-    <Routes>
-      <Route path="/*" element={<LazyHelpV2 />} />
     </Routes>
   );
 }

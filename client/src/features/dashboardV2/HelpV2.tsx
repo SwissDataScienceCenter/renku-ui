@@ -16,8 +16,8 @@
  * limitations under the License
  */
 import cx from "classnames";
-import { ChatSquareDots, Github, JournalText } from "react-bootstrap-icons";
 import { useContext } from "react";
+import { ChatSquareDots, Github, JournalText } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
 
@@ -29,6 +29,7 @@ import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
 import TermsOfService from "../../help/TermsOfService";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { isStatusConfigured } from "../../statuspage";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
@@ -46,26 +47,34 @@ function HelpNav({ statuspageId }: HelpNavProps) {
   return (
     <Nav tabs className="mb-3">
       <NavItem>
-        <RenkuNavLinkV2 end to=".">
+        <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v2.help.root}>
           Getting Help
         </RenkuNavLinkV2>
       </NavItem>
       {isStatusConfigured(statuspageId) && (
         <NavItem>
-          <RenkuNavLinkV2 to="status">Status</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.status}>
+            Status
+          </RenkuNavLinkV2>
         </NavItem>
       )}
       <NavItem>
-        <RenkuNavLinkV2 to="release">Release Information</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.release}>
+          Release Information
+        </RenkuNavLinkV2>
       </NavItem>
       {termsConfigured && (
         <NavItem>
-          <RenkuNavLinkV2 to="tos">Terms of Use</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.tos}>
+            Terms of Use
+          </RenkuNavLinkV2>
         </NavItem>
       )}
       {privacyPolicyConfigured && (
         <NavItem>
-          <RenkuNavLinkV2 to="privacy">Privacy Policy</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.privacy}>
+            Privacy Policy
+          </RenkuNavLinkV2>
         </NavItem>
       )}
     </Nav>
