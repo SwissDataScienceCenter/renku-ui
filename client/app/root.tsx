@@ -19,31 +19,43 @@
 import {
   Links,
   Meta,
+  type MetaFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
+  type MetaDescriptor,
 } from "@remix-run/react";
 import cx from "classnames";
+
+export const DEFAULT_META: MetaDescriptor[] = [
+  {
+    title: "Reproducible Data Science | Open Research | Renku",
+  },
+  {
+    name: "description",
+    content:
+      "An open-source platform for reproducible and collaborative data science. Share code, data and computational environments whilst tracking provenance and lineage of research objects.",
+  },
+  {
+    property: "og:title",
+    content: "Reproducible Data Science | Open Research | Renku",
+  },
+  {
+    property: "og:description",
+    content:
+      "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources.",
+  },
+];
+
+export const meta: MetaFunction = () => {
+  return DEFAULT_META;
+};
 
 export default function Root() {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta
-          name="description"
-          content="An open-source platform for reproducible and collaborative data science. Share code, data and computational environments whilst tracking provenance and lineage of research objects."
-        />
-
-        <meta
-          property="og:title"
-          content="Reproducible Data Science | Open Research | Renku"
-        />
-        <meta
-          property="og:description"
-          // eslint-disable-next-line spellcheck/spell-checker
-          content="Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources."
-        />
 
         <meta
           name="viewport"
@@ -74,8 +86,6 @@ export default function Root() {
           href="/favicon-16x16.png"
         />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-
-        <title>Reproducible Data Science | Open Research | Renku</title>
         <Meta />
         <Links />
       </head>

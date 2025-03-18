@@ -18,15 +18,16 @@
 
 import {
   json,
-  type LoaderFunctionArgs,
   type LoaderFunction,
+  type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import { env } from "node:process";
 import { startCase } from "lodash-es";
+import { env } from "node:process";
 
 import { type Project } from "~/old-src/features/projectsV2/api/projectV2.api";
 import App from "~/old-src/newIndex";
+import { DEFAULT_META } from "~/root";
 
 export async function loader({
   params,
@@ -64,7 +65,7 @@ export async function loader({
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data.ok) {
-    return [];
+    return DEFAULT_META;
   }
 
   const { name, visibility, description } = data.project as Project;
