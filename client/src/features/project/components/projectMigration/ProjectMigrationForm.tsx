@@ -26,7 +26,7 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Input, Label } from "reactstrap";
 import AppContext from "../../../../utils/context/appContext";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions.js";
