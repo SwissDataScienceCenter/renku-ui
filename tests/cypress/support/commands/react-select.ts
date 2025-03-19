@@ -31,10 +31,23 @@ function findReactSelectOptions(
   );
 }
 
+function findReactSelectSelectedValue(
+  selectDataCy: string,
+  reactSelectClassPrefix: string
+) {
+  return cy
+    .getDataCy(selectDataCy)
+    .find(`.${reactSelectClassPrefix}__single-value`);
+}
+
 export default function registerReactSelectCommands() {
   // This line incites a Type instantiation is excessively deep and possibly infinite.ts(2589) error
   // but we can ignore it
   Cypress.Commands.add("findReactSelectOptions", findReactSelectOptions);
+  Cypress.Commands.add(
+    "findReactSelectSelectedValue",
+    findReactSelectSelectedValue
+  );
 }
 
 declare global {
@@ -42,6 +55,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       findReactSelectOptions: typeof findReactSelectOptions;
+      findReactSelectSelectedValue: typeof findReactSelectSelectedValue;
     }
   }
 }
