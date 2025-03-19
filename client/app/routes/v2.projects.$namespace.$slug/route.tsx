@@ -17,7 +17,6 @@
  */
 
 import {
-  json,
   type LoaderFunction,
   type LoaderFunctionArgs,
   type MetaFunction,
@@ -47,12 +46,12 @@ export async function loader({
       },
     });
     if (projectResponse.status >= 400) {
-      return json({ ok: false });
+      return { ok: false };
     }
     const projectData = await projectResponse.json();
-    return json({ ok: true, project: projectData });
+    return { ok: true, project: projectData };
   } catch {
-    return json({ ok: false });
+    return { ok: false };
   }
 }
 

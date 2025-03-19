@@ -1,31 +1,29 @@
 import eslintPlugin from "@nabla/vite-plugin-eslint";
-// import react from "@vitejs/plugin-react";
+import { vitePlugin as remix } from "@remix-run/dev";
 import { resolve } from "path";
 import { defineConfig } from "vite";
-import { vitePlugin as remix } from "@remix-run/dev";
 import tsconfigPaths from "vite-tsconfig-paths";
+
+declare module "@remix-run/node" {
+  interface Future {
+    v3_singleFetch: true;
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // build: {
-  //   outDir: "build",
-  //   sourcemap: true,
-  // },
-  // server: {
-  //   allowedHosts: [".dev.renku.ch"],
-  // },
-  // plugins: [react({ include: "/index.html" }), eslintPlugin()],
-  // resolve: {
-  //   alias: {
-  //     "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),
-  //   },
-  // },
-
+  build: {
+    outDir: "build",
+    sourcemap: true,
+  },
   server: {
     allowedHosts: [".dev.renku.ch"],
   },
   plugins: [
     remix({
+      future: {
+        v3_singleFetch: true,
+      },
       ignoredRouteFiles: ["**/*.css"],
     }),
     tsconfigPaths(),
