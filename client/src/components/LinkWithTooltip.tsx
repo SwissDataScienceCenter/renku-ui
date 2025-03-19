@@ -17,7 +17,7 @@
  */
 
 import { ReactNode, useRef } from "react";
-import { Link, LinkProps } from "react-router-dom-v5-compat";
+import { Link, LinkProps } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 type LinkWithTooltipProps = LinkProps & {

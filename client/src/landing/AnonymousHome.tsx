@@ -27,7 +27,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useContext, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom-v5-compat";
+import { useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";

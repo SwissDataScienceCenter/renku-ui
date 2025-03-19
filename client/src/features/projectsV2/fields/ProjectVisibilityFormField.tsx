@@ -22,7 +22,7 @@ import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
 import { Globe, Lock } from "react-bootstrap-icons";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { ButtonGroup, Input, Label } from "reactstrap";
 import { isRenkuLegacy } from "../../../utils/helpers/HelperFunctionsV2";
 import type { GenericProjectFormFieldProps } from "./formField.types";

@@ -38,7 +38,7 @@ import {
   useNavigate,
   useParams,
   type Location,
-} from "react-router-dom-v5-compat";
+} from "react-router";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
 
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";

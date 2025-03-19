@@ -22,7 +22,7 @@ import cx from "classnames";
 import { Duration } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
-import { useNavigate } from "react-router-dom-v5-compat";
+import { useNavigate } from "react-router";
 
 import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";

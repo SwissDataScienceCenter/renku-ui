@@ -3,11 +3,12 @@ import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
 import {
+  BrowserRouter,
   Route,
   Routes,
   useLocation,
   useNavigate,
-} from "react-router-dom-v5-compat";
+} from "react-router";
 
 import "bootstrap";
 
@@ -20,7 +21,6 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
-import Router from "./components/router/Router";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
@@ -108,7 +108,7 @@ configFetch.then((valuesRead) => {
     const VisibleApp = connect(mapStateToProps)(uiApplication);
     root.render(
       <Provider store={model.reduxStore}>
-        <Router>
+        <BrowserRouter>
           <AppErrorBoundary>
             <LoginHandler />
             <FeatureFlagHandler />
@@ -121,7 +121,7 @@ configFetch.then((valuesRead) => {
               statuspageId={statuspageId}
             />
           </AppErrorBoundary>
-        </Router>
+        </BrowserRouter>
       </Provider>
     );
   });

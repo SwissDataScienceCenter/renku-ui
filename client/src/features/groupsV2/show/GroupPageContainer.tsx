@@ -25,7 +25,7 @@ import {
   useNavigate,
   useOutletContext,
   useParams,
-} from "react-router-dom-v5-compat";
+} from "react-router";
 import { Col, Row } from "reactstrap";
 
 import ContainerWrap from "../../../components/container/ContainerWrap";

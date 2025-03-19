@@ -44,7 +44,7 @@ import {
   People,
   XLg,
 } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import {
   faArrowRight,
   faCheck,

@@ -17,7 +17,7 @@
  */
 import { Fragment } from "react";
 import { Search } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import {
   SearchEntitiesQueryParams,

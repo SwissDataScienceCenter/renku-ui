@@ -28,7 +28,7 @@ import {
   JournalAlbum,
   People,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Link, generatePath } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";

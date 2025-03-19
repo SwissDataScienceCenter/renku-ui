@@ -18,12 +18,7 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import {
-  Navigate,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom-v5-compat";
+import { Navigate, Route, Routes, useNavigate } from "react-router";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
@@ -114,7 +109,7 @@ export default function RootV2() {
             path="help/*"
             element={
               <ContainerWrap>
-                <HelpV2Routes />
+                <LazyHelpV2 />
               </ContainerWrap>
             }
           />
@@ -189,14 +184,6 @@ function GroupsV2Routes() {
           </ContainerWrap>
         }
       />
-    </Routes>
-  );
-}
-
-function HelpV2Routes() {
-  return (
-    <Routes>
-      <Route path="/*" element={<LazyHelpV2 />} />
     </Routes>
   );
 }

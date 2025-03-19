@@ -25,11 +25,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import {
-  useLocation,
-  useNavigate,
-  type Location,
-} from "react-router-dom-v5-compat";
+import { useLocation, useNavigate, type Location } from "react-router";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";

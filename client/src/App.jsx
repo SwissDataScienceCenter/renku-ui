@@ -26,12 +26,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom-v5-compat";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 
 import { LoginHelper } from "./authentication";

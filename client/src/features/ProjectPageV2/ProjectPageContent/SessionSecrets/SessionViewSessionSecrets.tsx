@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
 import { ShieldLock } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router";
 import { Badge, ListGroup } from "reactstrap";
 
 import { InfoAlert } from "../../../../components/Alert";

@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useMemo } from "react";
-import { useLocation } from "react-router-dom-v5-compat";
+import { useLocation } from "react-router";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 import { setError } from "../../startSession.slice";

@@ -21,7 +21,7 @@ import cx from "classnames";
 import { useCallback, useMemo } from "react";
 import { XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import {
   Button,
   FormText,

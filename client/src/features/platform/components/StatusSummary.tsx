@@ -28,7 +28,7 @@ import {
   WrenchAdjustableCircleFill,
   XCircleFill,
 } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { WarnAlert } from "../../../components/Alert";
