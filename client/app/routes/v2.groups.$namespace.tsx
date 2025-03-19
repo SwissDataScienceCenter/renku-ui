@@ -17,31 +17,25 @@
  */
 
 import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
-import { startCase } from "lodash-es";
 
-import { type Project } from "~/old-src/features/projectsV2/api/projectV2.api";
+import { type GroupResponse } from "~/old-src/features/projectsV2/api/namespace.api";
 import App from "~/old-src/index";
 import { DEFAULT_META, DEFAULT_META_DESCRIPTION } from "~/root";
 import { getBaseApiUrl } from "~/server-side/utils";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
-  const { namespace, slug } = params;
-  const cookie = request.headers.get("Cookie");
+  const { namespace } = params;
 
   const apiUrl = getBaseApiUrl({ requestUrl: request.url });
-  const projectUrl = `${apiUrl}/data/namespaces/${namespace}/projects/${slug}`;
+  const groupUrl = `${apiUrl}/data/groups/${namespace}`;
 
   try {
-    const projectResponse = await fetch(projectUrl, {
-      headers: {
-        ...(cookie ? { Cookie: cookie } : {}),
-      },
-    });
-    if (projectResponse.status >= 400) {
+    const groupResponse = await fetch(groupUrl);
+    if (groupResponse.status >= 400) {
       return { ok: false } as const;
     }
-    const projectData = (await projectResponse.json()) as Project;
-    return { ok: true, project: projectData } as const;
+    const groupData = (await groupResponse.json()) as GroupResponse;
+    return { ok: true, group: groupData } as const;
   } catch {
     return { ok: false } as const;
   }
@@ -52,9 +46,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
     return DEFAULT_META;
   }
 
-  const { name, visibility, description } = data.project;
+  const { name, description } = data.group;
 
-  const metaTitle = `${name} | ${startCase(visibility)} project on Renku`;
+  const metaTitle = `${name} | Group on Renku`;
   const metaDescription = description || DEFAULT_META_DESCRIPTION;
 
   return [
@@ -76,6 +70,6 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
-export default function ProjectRoute() {
+export default function UserRoute() {
   return <App />;
 }
