@@ -17,7 +17,8 @@
  */
 
 import cx from "classnames";
-import { useLocation } from "react-router";
+import { useLocation, type Location } from "react-router-dom-v5-compat";
+
 import { appendCustomUrlPath } from "../../../utils/helpers/url";
 import { Session } from "../sessions.types";
 
@@ -32,7 +33,7 @@ export default function SessionJupyter({
   isSessionReady,
   session,
 }: SessionJupyterProps) {
-  const location = useLocation<{ filePath?: string } | undefined>();
+  const location: Location<{ filePath?: string } | undefined> = useLocation();
 
   if (session.status.state !== "running") {
     return null;

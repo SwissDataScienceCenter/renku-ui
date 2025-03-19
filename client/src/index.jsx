@@ -2,8 +2,12 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
-import { Route, Switch, useHistory } from "react-router-dom";
-import { CompatRoute } from "react-router-dom-v5-compat";
+import {
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom-v5-compat";
 
 import "bootstrap";
 
@@ -124,11 +128,13 @@ configFetch.then((valuesRead) => {
 });
 
 function LoginHandler() {
-  const history = useHistory();
+  // const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    LoginHelper.handleLoginParams(history);
-  }, [history]);
+    LoginHelper.handleLoginParams(location, navigate);
+  }, [location, navigate]);
 
   return null;
 }
@@ -140,17 +146,23 @@ function FeatureFlagHandler() {
 
 export function StyleHandler() {
   return (
-    <Switch>
-      <CompatRoute path="/v2">
-        <Helmet>
-          <style type="text/css">{v2Styles}</style>
-        </Helmet>
-      </CompatRoute>
-      <Route path="*">
-        <Helmet>
-          <style type="text/css">{v1Styles}</style>
-        </Helmet>
-      </Route>
-    </Switch>
+    <Routes>
+      <Route
+        path="/v2/*"
+        element={
+          <Helmet>
+            <style type="text/css">{v2Styles}</style>
+          </Helmet>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <Helmet>
+            <style type="text/css">{v1Styles}</style>
+          </Helmet>
+        }
+      />
+    </Routes>
   );
 }

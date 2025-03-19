@@ -22,7 +22,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, type Location } from "react-router-dom-v5-compat";
 import { Alert, Button } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -40,7 +40,7 @@ interface SessionHibernatedProps {
 export default function SessionHibernated({
   sessionName,
 }: SessionHibernatedProps) {
-  const location = useLocation<{ filePath?: string } | undefined>();
+  const location: Location<{ filePath?: string } | undefined> = useLocation();
   const locationFilePath = location.state?.filePath;
 
   const pathWithNamespace = useLegacySelector<string>(

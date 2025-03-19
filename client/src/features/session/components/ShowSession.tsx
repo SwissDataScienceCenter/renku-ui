@@ -33,7 +33,12 @@ import {
   Journals,
   Save,
 } from "react-bootstrap-icons";
-import { Redirect, useLocation, useParams } from "react-router";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  type Location,
+} from "react-router-dom-v5-compat";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
 
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
@@ -69,7 +74,7 @@ export default function ShowSession() {
     (state) => state.stateModel.user.logged
   );
 
-  const { server: sessionName } = useParams<{ server: string }>();
+  const { server: sessionName } = useParams<"server">();
 
   if (!logged && !anonymousSessionsEnabled) {
     return (
@@ -81,7 +86,7 @@ export default function ShowSession() {
 
   return (
     <Row>
-      <ShowSessionFullscreen sessionName={sessionName} />
+      <ShowSessionFullscreen sessionName={sessionName ?? ""} />
     </Row>
   );
 }
@@ -103,9 +108,10 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     path: pathWithNamespace,
   });
 
-  const location = useLocation<
+  const location: Location<
     { redirectFromStartServer?: boolean; fromLanding?: boolean } | undefined
-  >();
+  > = useLocation();
+  const navigate = useNavigate();
 
   const { data: sessions, isLoading } = useGetSessionsQuery();
   const thisSession = useMemo(() => {
@@ -189,6 +195,13 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     setIsTheSessionReady(false);
   }, [thisSession?.status.state]);
 
+  useEffect(() => {
+    // Redirect to the sessions list if the session has failed
+    if (thisSession?.status.state === "failed") {
+      navigate(sessionsListUrl, { replace: true });
+    }
+  }, [navigate, sessionsListUrl, thisSession?.status.state]);
+
   // Modals
   const aboutModal = (
     <AboutSessionModal
@@ -261,11 +274,6 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
         toggleLogs={toggleToResourcesLogs}
       />
     );
-
-  // Redirect to the sessions list if the session has failed
-  if (thisSession?.status.state === "failed") {
-    return <Redirect to={sessionsListUrl} />;
-  }
 
   return (
     <div className={cx("bg-white", "p-0")}>

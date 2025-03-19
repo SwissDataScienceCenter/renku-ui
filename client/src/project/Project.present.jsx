@@ -53,7 +53,9 @@ import { ACCESS_LEVELS } from "../api-client";
 import { InfoAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
-import { RenkuNavLink } from "../components/RenkuNavLink";
+import RenkuNavLinkV2, {
+  RenkuNavLinkV2WithAlternates,
+} from "../components/RenkuNavLinkV2";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
@@ -532,46 +534,36 @@ class ProjectNav extends Component {
         <Col className="d-flex pb-2 mb-1 justify-content-start" md={12} lg={12}>
           <Nav pills className="nav-pills-underline">
             <NavItem>
-              <RenkuNavLink
+              <RenkuNavLinkV2WithAlternates
+                alternates={[this.props.overviewUrl]}
                 to={this.props.baseUrl}
-                alternate={this.props.overviewUrl}
-                title="Overview"
-              />
+                end
+              >
+                Overview
+              </RenkuNavLinkV2WithAlternates>
             </NavItem>
             <NavItem>
-              <RenkuNavLink
-                exact={false}
-                to={this.props.filesUrl}
-                title="Files"
-              />
+              <RenkuNavLinkV2 to={this.props.filesUrl}>Files</RenkuNavLinkV2>
             </NavItem>
             <NavItem>
-              <RenkuNavLink
-                exact={false}
-                to={this.props.datasetsUrl}
-                title="Datasets"
-              />
+              <RenkuNavLinkV2 to={this.props.datasetsUrl}>
+                Datasets
+              </RenkuNavLinkV2>
             </NavItem>
             <NavItem>
-              <RenkuNavLink
-                exact={false}
-                to={this.props.workflowsUrl}
-                title="Workflows"
-              />
+              <RenkuNavLinkV2 to={this.props.workflowsUrl}>
+                Workflows
+              </RenkuNavLinkV2>
             </NavItem>
             <NavItem>
-              <RenkuNavLink
-                exact={false}
-                to={this.props.notebookServersUrl}
-                title="Sessions"
-              />
+              <RenkuNavLinkV2 to={this.props.notebookServersUrl}>
+                Sessions
+              </RenkuNavLinkV2>
             </NavItem>
             <NavItem className="pe-0">
-              <RenkuNavLink
-                exact={false}
-                to={this.props.settingsUrl}
-                title="Settings"
-              />
+              <RenkuNavLinkV2 to={this.props.settingsUrl}>
+                Settings
+              </RenkuNavLinkV2>
             </NavItem>
           </Nav>
         </Col>
@@ -669,17 +661,17 @@ class ProjectViewOverviewNav extends Component {
         data-cy="project-overview-nav"
       >
         <NavItem>
-          <RenkuNavLink
-            to={this.props.baseUrl}
-            title="General"
-            id="nav-overview-general"
-          />
+          <RenkuNavLinkV2 id="nav-overview-general" to={this.props.baseUrl} end>
+            General
+          </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={this.props.statsUrl} title="Stats" />
+          <RenkuNavLinkV2 to={this.props.statsUrl}>Stats</RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={this.props.overviewCommitsUrl} title="Commits" />
+          <RenkuNavLinkV2 to={this.props.overviewCommitsUrl}>
+            Commits
+          </RenkuNavLinkV2>
         </NavItem>
       </Nav>
     );

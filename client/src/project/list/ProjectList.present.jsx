@@ -47,9 +47,9 @@ import { Url } from "../../utils/helpers/url";
 import "../Project.css";
 import { Label } from "reactstrap";
 import { Loader } from "../../components/Loader";
-import { RenkuNavLink } from "../../components/RenkuNavLink";
 import LazyMarkdownTextExcerpt from "../../components/markdown/LazyMarkdownTextExcerpt";
 import ListDisplay from "../../components/List";
+import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 
 function ProjectListRows(props) {
   const { currentPage, perPage, projects, search, totalItems, gridDisplay } =
@@ -459,28 +459,29 @@ function ProjectListNav(props) {
     >
       <Nav pills className="nav-pills-underline" size="sm">
         <NavItem>
-          <RenkuNavLink
-            title="Your Projects"
+          <RenkuNavLinkV2
             id="link-projects-your"
             to={getPreciseUrl(sectionsMap.own)}
-            noSubPath={true}
-          />
+            end
+          >
+            Your Projects
+          </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLink
-            title="Starred Projects"
+          <RenkuNavLinkV2
             id="link-projects-starred"
             to={getPreciseUrl(sectionsMap.starred)}
-            exact={false}
-          />
+          >
+            Starred Projects
+          </RenkuNavLinkV2>
         </NavItem>
         <NavItem>
-          <RenkuNavLink
-            title="All Projects"
+          <RenkuNavLinkV2
             id="link-projects-all"
             to={getPreciseUrl(sectionsMap.all)}
-            exact={false}
-          />
+          >
+            All Projects
+          </RenkuNavLinkV2>
         </NavItem>
       </Nav>
     </Col>
