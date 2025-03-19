@@ -38,8 +38,6 @@ import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import type { PaginatedState } from "../../session/components/options/fetchMore.types";
 import type { GetNamespacesApiResponse } from "../api/projectV2.enhanced-api";
-import type { Project } from "../api/projectV2.api";
-import type { NamespaceResponse } from "../api/namespace.enhanced-api";
 import {
   useGetNamespacesByNamespaceSlugQuery,
   useGetNamespacesQuery,
@@ -150,7 +148,7 @@ function NamespaceSelector({
   onFetchMore,
 }: NamespaceSelectorProps) {
   const currentValue = useMemo(
-    () => namespaces.find(({ slug }) => slug === currentNamespace),
+    () => namespaces.find(({ path }) => path === currentNamespace),
     [namespaces, currentNamespace]
   );
 
@@ -168,8 +166,6 @@ function NamespaceSelector({
       options={namespaces}
       value={currentValue}
       unstyled
-      getOptionValue={(option) => option.id}
-      getOptionLabel={(option) => option.slug}
       onChange={onChange}
       classNames={selectClassNames}
       // see https://stackoverflow.com/a/63844955/5804638
@@ -250,7 +246,8 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
               ensureNamespace={ensureNamespace}
               id={`${entityName}-namespace`}
               inputId={`${entityName}-namespace-input`}
-              onChange={(newValue) => field.onChange(newValue?.slug)}
+              onChange={(newValue) => field.onChange(newValue?.path)}
+              includeProjectNamespaces={false}
             />
           );
         }}
@@ -258,7 +255,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
           required: true,
           maxLength: 99,
           pattern:
-            /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
+            /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*(?<!\.git)(?<!\.atom)(?:[a-z0-9][a-z0-9\-_.]*)*$/,
         }}
       />
       <div className="invalid-feedback">A project must belong to an owner.</div>
@@ -275,7 +272,7 @@ interface ProjectNamespaceControlProps {
   inputId: string;
   onChange: (newValue: SingleValue<ResponseNamespace>) => void;
   value?: string;
-  project?: Project;
+  includeProjectNamespaces: boolean;
 }
 
 export function ProjectNamespaceControl({
@@ -286,14 +283,19 @@ export function ProjectNamespaceControl({
   onChange,
   value,
   "data-cy": dataCy,
-  project,
+  includeProjectNamespaces = false,
 }: ProjectNamespaceControlProps) {
   const {
     data: namespacesFirstPage,
     isError,
     isFetching,
     requestId,
-  } = useGetNamespacesQuery({ params: { minimum_role: "editor" } });
+  } = useGetNamespacesQuery({
+    minimumRole: "editor",
+    kinds: includeProjectNamespaces
+      ? ["group", "user", "project"]
+      : ["group", "user"],
+  });
   const {
     data: specificNamespace,
     isError: specificNamespaceIsError,
@@ -316,17 +318,23 @@ export function ProjectNamespaceControl({
     useLazyGetNamespacesQuery();
   const onFetchMore = useCallback(() => {
     const request = fetchNamespacesPage({
-      params: {
-        page: fetchedPages + 1,
-        per_page: namespacesFirstPage?.perPage,
-        minimum_role: "editor",
-      },
+      page: fetchedPages + 1,
+      perPage: namespacesFirstPage?.perPage,
+      minimumRole: "editor",
+      kinds: includeProjectNamespaces
+        ? ["group", "user", "project"]
+        : ["group", "user"],
     });
     setState((prevState: PaginatedState<ResponseNamespace>) => ({
       ...prevState,
       currentRequestId: request.requestId,
     }));
-  }, [namespacesFirstPage?.perPage, fetchNamespacesPage, fetchedPages]);
+  }, [
+    namespacesFirstPage?.perPage,
+    fetchNamespacesPage,
+    fetchedPages,
+    includeProjectNamespaces,
+  ]);
 
   useEffect(() => {
     if (namespacesFirstPage == null) {
@@ -385,7 +393,7 @@ export function ProjectNamespaceControl({
       return;
     }
     const hasNamespace = allNamespaces.find(
-      ({ slug }) => slug === specificNamespace.slug
+      ({ path }) => path === specificNamespace.path
     );
     if (hasNamespace) {
       return;
@@ -395,23 +403,6 @@ export function ProjectNamespaceControl({
       return { ...prevState, data: namespaces };
     });
   }, [allNamespaces, specificNamespace, specificNamespaceRequestId]);
-
-  const allNamespacesWithProject = useMemo(() => {
-    if (!project) {
-      return allNamespaces || [];
-    }
-    return [
-      {
-        id: project.id,
-        slug: `${project.namespace}/${project.slug}`,
-        creation_date: project.creation_date,
-        created_by: project.created_by,
-        namespace_kind: "project",
-        name: `${project.namespace}/${project.slug}`,
-      } as NamespaceResponse,
-      ...(allNamespaces || []),
-    ];
-  }, [allNamespaces, project]);
 
   if (isFetching) {
     return (
@@ -439,7 +430,7 @@ export function ProjectNamespaceControl({
         hasMore={hasMore}
         inputId={inputId}
         isFetchingMore={namespacesPageResult.isFetching}
-        namespaces={allNamespacesWithProject}
+        namespaces={allNamespaces}
         onChange={onChange}
         onFetchMore={onFetchMore}
       />
@@ -456,7 +447,7 @@ function OptionOrSingleValueContent({
 }: OptionOrSingleValueContentProps) {
   return (
     <>
-      <span className={cx(styles.slug)}>{namespace.slug}</span>
+      <span className={cx(styles.slug)}>{namespace.path}</span>
       <span className={cx("fst-italic", "text-body-secondary", styles.kind)}>
         ({namespace.namespace_kind})
       </span>
