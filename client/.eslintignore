@@ -1,9 +1,9 @@
 *.css
 *.svg
 # Generated files should not be linted
-src/features/dataConnectorsV2/api/data-connectors.api.ts
-src/features/projectsV2/api/projectV2.api.ts
-src/features/projectsV2/api/storagesV2.api.ts
-src/features/sessionsV2/api/sessionLaunchersV2.generated-api.ts
-src/features/sessionsV2/api/sessionsV2.generated-api.ts
-src/features/usersV2/api/users.generated-api.ts
+app/old-src/features/dataConnectorsV2/api/data-connectors.api.ts
+app/old-src/features/projectsV2/api/projectV2.api.ts
+app/old-src/features/projectsV2/api/storagesV2.api.ts
+app/old-src/features/sessionsV2/api/sessionLaunchersV2.generated-api.ts
+app/old-src/features/sessionsV2/api/sessionsV2.generated-api.ts
+app/old-src/features/usersV2/api/users.generated-api.ts
