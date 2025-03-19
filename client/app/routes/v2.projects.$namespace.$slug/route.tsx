@@ -37,7 +37,10 @@ export async function loader({
 
   const originUrl = new URL(request.url);
   const apiUrl = new URL("/api", env["GATEWAY_URL"] || originUrl);
+  // const apiUrl = new URL("/api", "https://dev.renku.ch/");
   const projectUrl = `${apiUrl.href}/data/namespaces/${namespace}/projects/${slug}`;
+
+  console.log({ projectUrl });
 
   try {
     const projectResponse = await fetch(projectUrl, {
