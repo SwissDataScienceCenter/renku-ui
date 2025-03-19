@@ -16,12 +16,8 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import {
-  ResourceClass,
-  ResourcePool,
-  ResourcePoolsQueryParams,
-} from "./dataServices.types";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import {
   AddResourceClassParams,
   AddResourcePoolParams,
@@ -34,6 +30,11 @@ import {
   UpdateResourceClassParams,
   UpdateResourcePoolParams,
 } from "../admin/adminComputeResources.types";
+import {
+  ResourceClass,
+  ResourcePool,
+  ResourcePoolsQueryParams,
+} from "./dataServices.types";
 
 const computeResourcesApi = createApi({
   reducerPath: "computeResourcesApi",

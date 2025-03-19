@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
+    "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2021", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
 
@@ -21,8 +21,14 @@
     "noFallthroughCasesInSwitch": true,
 
     /* JavaScript support */
-    "allowJs": true
+    "allowJs": true,
+
+    /* New */
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"]
+    }
   },
-  "include": ["src"],
+  "include": ["app"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
