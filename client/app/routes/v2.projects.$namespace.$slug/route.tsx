@@ -25,7 +25,6 @@ import {
 import { startCase } from "lodash-es";
 import { env } from "node:process";
 
-import { projectV2Api } from "~/old-src/features/projectsV2/api/projectV2.enhanced-api";
 import { type Project } from "~/old-src/features/projectsV2/api/projectV2.api";
 import App from "~/old-src/index";
 import { DEFAULT_META, DEFAULT_META_DESCRIPTION } from "~/root";
@@ -37,17 +36,9 @@ export async function loader({
   const { namespace, slug } = params;
   const cookie = request.headers.get("Cookie");
 
-  // const originUrl = new URL(request.url);
-  const originUrl = new URL("https://dev.renku.ch/");
-  console.log({ originUrl: originUrl.href });
-
-  console.log({ GATEWAY_URL: env["GATEWAY_URL"] });
-
+  const originUrl = new URL(request.url);
   const apiUrl = new URL("/api", env["GATEWAY_URL"] || originUrl);
-  console.log({ apiUrl: apiUrl.href });
-
   const projectUrl = `${apiUrl.href}/data/namespaces/${namespace}/projects/${slug}`;
-  console.log({ projectUrl });
 
   try {
     const projectResponse = await fetch(projectUrl, {
