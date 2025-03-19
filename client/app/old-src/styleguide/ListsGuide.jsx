@@ -18,7 +18,7 @@
 
 import { Fragment } from "react";
 
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import { Card, CardBody, CardHeader } from "reactstrap";
 import { TimeCaption } from "../components/TimeCaption";
 import Pagination from "../components/Pagination";

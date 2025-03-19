@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import type { CSSProperties } from "react";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { TimeCaption } from "../TimeCaption";

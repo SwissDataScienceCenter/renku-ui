@@ -17,6 +17,7 @@
  */
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { Link } from "@remix-run/react";
 import cx from "classnames";
 import { ReactNode } from "react";
 import {
@@ -32,7 +33,7 @@ import {
   PlusSquare,
   Send,
 } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router";
+import { generatePath } from "react-router";
 import {
   Badge,
   Card,

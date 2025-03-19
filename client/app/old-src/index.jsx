@@ -2,13 +2,8 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
-import {
-  BrowserRouter,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router";
+import { Route, Routes, useLocation, useNavigate } from "react-router";
+import { BrowserRouter } from "react-router-dom";
 
 import "bootstrap";
 

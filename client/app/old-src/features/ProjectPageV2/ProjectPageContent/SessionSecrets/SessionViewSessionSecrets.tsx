@@ -17,10 +17,11 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { Link } from "@remix-run/react";
 import cx from "classnames";
 import { useMemo } from "react";
 import { ShieldLock } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router";
+import { generatePath } from "react-router";
 import { Badge, ListGroup } from "reactstrap";
 
 import { InfoAlert } from "../../../../components/Alert";

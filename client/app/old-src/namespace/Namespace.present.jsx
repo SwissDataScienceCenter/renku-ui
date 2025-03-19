@@ -24,7 +24,7 @@
  */
 
 import { createMemoryHistory } from "history";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import { Col, Row } from "reactstrap";
 import cx from "classnames";
 

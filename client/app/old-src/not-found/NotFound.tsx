@@ -24,7 +24,7 @@
  */
 import cx from "classnames";
 import { ReactNode } from "react";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 
 import { ArrowLeft } from "react-bootstrap-icons";
 import ContainerWrap from "../components/container/ContainerWrap";

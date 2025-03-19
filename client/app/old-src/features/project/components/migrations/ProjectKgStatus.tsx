@@ -24,7 +24,7 @@ import {
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import { Collapse } from "reactstrap";
 
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";

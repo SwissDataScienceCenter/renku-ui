@@ -26,7 +26,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import {
   Badge,
   Button,

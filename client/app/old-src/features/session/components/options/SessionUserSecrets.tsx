@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import { Button, Card, CardBody, Collapse, Input, Label } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";

@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { BookmarksFill, Send, TerminalFill } from "react-bootstrap-icons";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 
 import { ExternalLink } from "../../components/ExternalLinks";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";

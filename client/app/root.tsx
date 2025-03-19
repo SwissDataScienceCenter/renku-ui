@@ -41,6 +41,7 @@ export default function Root() {
         />
         <meta
           property="og:description"
+          // eslint-disable-next-line spellcheck/spell-checker
           content="Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources."
         />
 

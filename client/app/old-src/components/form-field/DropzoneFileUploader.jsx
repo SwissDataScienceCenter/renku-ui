@@ -30,7 +30,7 @@ import {
   UncontrolledCollapse,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import Dropzone from "dropzone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

@@ -19,7 +19,8 @@
 import cx from "classnames";
 import { LocationDescriptor } from "history";
 import { ReactNode, useRef } from "react";
-import { Link, useLocation } from "react-router";
+import { Link } from "@remix-run/react";
+import { useLocation } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

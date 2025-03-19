@@ -18,10 +18,11 @@
 
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { Link } from "@remix-run/react";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { QuestionCircle } from "react-bootstrap-icons";
-import { generatePath, Link, useParams } from "react-router";
+import { generatePath, useParams } from "react-router";
 import { Alert, Button } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

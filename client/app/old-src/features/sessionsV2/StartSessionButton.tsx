@@ -18,7 +18,8 @@
 
 import cx from "classnames";
 import { PlayCircle } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { Link } from "@remix-run/react";
+import { generatePath } from "react-router";
 
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";

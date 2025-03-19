@@ -21,13 +21,9 @@ import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
-import {
-  generatePath,
-  Link,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router";
+import { generatePath, useNavigate, useParams } from "react-router";
+import { Link } from "@remix-run/react";
+import { useSearchParams } from "react-router-dom";
 
 import { ErrorAlert } from "../../components/Alert";
 import PageLoader from "../../components/PageLoader";

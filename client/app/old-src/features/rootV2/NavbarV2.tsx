@@ -24,7 +24,8 @@ import {
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
-import { Link, useMatch } from "react-router";
+import { Link } from "@remix-run/react";
+import { useMatch } from "react-router";
 import {
   Collapse,
   Dropdown,

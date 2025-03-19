@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import { DropdownItem } from "reactstrap";
 import { useGetUserQuery } from "../features/usersV2/api/users.api";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";

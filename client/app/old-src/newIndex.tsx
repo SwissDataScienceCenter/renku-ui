@@ -23,9 +23,8 @@ export default function AppRoot() {
 
   if (isHydrated) {
     return <AppRootInner />;
-  } else {
-    return null;
   }
+  return null;
 }
 
 function AppRootInner() {

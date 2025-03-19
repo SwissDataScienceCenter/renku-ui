@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useRef } from "react";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import { Button, Col, Row, UncontrolledTooltip } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";

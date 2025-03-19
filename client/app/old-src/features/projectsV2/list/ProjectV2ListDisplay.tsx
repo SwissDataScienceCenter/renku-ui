@@ -16,10 +16,11 @@
  * limitations under the License
  */
 
+import { Link } from "@remix-run/react";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { Folder, PlusLg } from "react-bootstrap-icons";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

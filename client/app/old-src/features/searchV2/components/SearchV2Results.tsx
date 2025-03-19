@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { Link } from "@remix-run/react";
 import cx from "classnames";
 import { ReactNode, useCallback, useEffect, useRef } from "react";
 import {
@@ -27,7 +28,8 @@ import {
   Person,
   Question,
 } from "react-bootstrap-icons";
-import { Link, generatePath, useSearchParams } from "react-router";
+import { generatePath } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import {
   Badge,
   Card,

@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import {
   Badge,
   Button,

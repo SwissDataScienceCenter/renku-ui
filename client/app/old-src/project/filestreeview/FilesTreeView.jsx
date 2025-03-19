@@ -5,7 +5,8 @@ import {
   Folder2Open,
   FolderFill,
 } from "react-bootstrap-icons";
-import { Link, useNavigate } from "react-router";
+import { Link } from "@remix-run/react";
+import { useNavigate } from "react-router";
 import { Button, ButtonGroup } from "reactstrap";
 
 import "./treeviewstyle.css";

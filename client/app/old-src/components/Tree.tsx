@@ -23,7 +23,7 @@ import {
   Diagram2,
   Link45deg,
 } from "react-bootstrap-icons";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import { Col } from "reactstrap";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import LinkWithTooltip from "./LinkWithTooltip";

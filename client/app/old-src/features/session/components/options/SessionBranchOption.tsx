@@ -22,7 +22,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import Select, {
   ClassNamesConfig,
   GroupBase,

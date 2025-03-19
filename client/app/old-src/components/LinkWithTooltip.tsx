@@ -17,7 +17,8 @@
  */
 
 import { ReactNode, useRef } from "react";
-import { Link, LinkProps } from "react-router";
+import { Link } from "@remix-run/react";
+import { LinkProps } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 type LinkWithTooltipProps = LinkProps & {

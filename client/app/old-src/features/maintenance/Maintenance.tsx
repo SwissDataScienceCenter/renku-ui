@@ -18,8 +18,8 @@
 
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { BrowserRouter } from "react-router-dom";
 import { Button, Col, Row } from "reactstrap";
-import { BrowserRouter } from "react-router";
 
 import { FooterNavbar } from "../../landing/NavBar";
 import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";

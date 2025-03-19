@@ -20,7 +20,8 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
 import { ArrowLeft, BoxArrowInRight } from "react-bootstrap-icons";
-import { Link, generatePath, useNavigate } from "react-router";
+import { Link } from "@remix-run/react";
+import { generatePath, useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";

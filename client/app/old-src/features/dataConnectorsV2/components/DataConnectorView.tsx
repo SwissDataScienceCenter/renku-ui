@@ -25,7 +25,8 @@ import {
   Lock,
   PersonBadge,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { Link } from "@remix-run/react";
+import { generatePath } from "react-router";
 import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";

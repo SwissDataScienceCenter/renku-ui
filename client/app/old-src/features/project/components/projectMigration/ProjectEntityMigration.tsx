@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
+import { Link } from "@remix-run/react";
 import cx from "classnames";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { generatePath, Link } from "react-router";
+import { generatePath } from "react-router";
 import {
   Button,
   Form,

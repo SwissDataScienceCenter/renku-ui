@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback } from "react";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 import {
   Badge,
   Button,

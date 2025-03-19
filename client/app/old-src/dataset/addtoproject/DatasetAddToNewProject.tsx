@@ -17,7 +17,7 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "@remix-run/react";
 
 import { WarnAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";

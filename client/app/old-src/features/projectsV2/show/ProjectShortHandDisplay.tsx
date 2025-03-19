@@ -16,8 +16,10 @@
  * limitations under the License
  */
 
+import { Link } from "@remix-run/react";
 import cx from "classnames";
-import { generatePath, Link } from "react-router";
+import { generatePath } from "react-router";
+
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";

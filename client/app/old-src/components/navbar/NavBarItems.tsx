@@ -22,7 +22,8 @@ import {
   PlusCircleFill,
   QuestionCircle,
 } from "react-bootstrap-icons";
-import { Link, useLocation } from "react-router";
+import { Link } from "@remix-run/react";
+import { useLocation } from "react-router";
 import {
   DropdownItem,
   DropdownMenu,

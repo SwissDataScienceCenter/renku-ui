@@ -16,10 +16,11 @@
  * limitations under the License
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BoxArrowUpRight, CircleFill, XLg } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import {
   Badge,
   Button,
@@ -32,7 +33,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 import { InfoAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
