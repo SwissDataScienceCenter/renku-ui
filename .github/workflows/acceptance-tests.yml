@@ -42,7 +42,7 @@ jobs:
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.14.2
+        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.16.0
         with:
           pr_ref: ${{ github.event.number }}
 
@@ -58,6 +58,10 @@ jobs:
       url: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: SwissDataScienceCenter/renku
+          sparse-checkout: |
+            minimal-deployment
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v3
         id: deploymentUrlMessage
@@ -74,19 +78,15 @@ jobs:
           body: |
             You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
       - name: Build and deploy
-        uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.14.2
+        uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.16.0
         env:
           DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
           KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
-          RANCHER_DEV_API_ENDPOINT: ${{ secrets.RANCHER_DEV_API_ENDPOINT }}
-          RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
-          RENKU_BOT_DEV_PASSWORD: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
           RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
-          RENKU_TESTS_ENABLED: true
           RENKU_VALUES_FILE: ${{ github.workspace }}/values.yaml
-          RENKU_VALUES: ${{ secrets.COMBINED_CHARTS_CI_RENKU_VALUES }}
+          RENKU_VALUES: minimal-deployment/minimal-deployment-values.yaml
           RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
           RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
           TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
@@ -120,7 +120,7 @@ jobs:
     steps:
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
-      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.14.2
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.16.0
         with:
           e2e-target: ${{ matrix.tests }}
           renku-reference: ${{ env.RENKU_REFERENCE }}
@@ -146,7 +146,7 @@ jobs:
     steps:
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
-      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.14.2
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.16.0
         with:
           e2e-folder: cypress/e2e/v2/
           e2e-target: ${{ matrix.tests }}
@@ -178,7 +178,7 @@ jobs:
           body: |
             Tearing down the temporary RenkuLab deplyoment for this PR.
       - name: renku teardown
-        uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v1.14.2
+        uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v1.16.0
         env:
           HELM_RELEASE_REGEX: "^renku-ci-ui-${{ github.event.number }}$"
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
