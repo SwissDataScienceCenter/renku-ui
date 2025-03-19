@@ -30,7 +30,7 @@ import {
   PauseCircle,
   Trash,
 } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { generatePath, useNavigate, useParams } from "react-router";
 import {
   Button,

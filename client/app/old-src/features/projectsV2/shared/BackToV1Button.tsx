@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { BoxArrowInLeft } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 
 interface BackToV1ButtonProps {
   outline?: boolean;

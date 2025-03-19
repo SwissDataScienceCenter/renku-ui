@@ -19,7 +19,7 @@
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { Alert } from "reactstrap";
 
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";

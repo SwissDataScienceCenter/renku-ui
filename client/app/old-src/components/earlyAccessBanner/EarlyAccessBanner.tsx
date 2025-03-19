@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { useLocation } from "react-router";
 import { Alert, Container } from "reactstrap";
 import { Links } from "../../utils/constants/Docs.js";

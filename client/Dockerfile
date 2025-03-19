@@ -5,10 +5,10 @@ RUN apt-get update && apt-get upgrade --quiet --assume-yes
 WORKDIR /app
 
 #? Use only required files.
-# COPY package.json package-lock.json /app/
-# RUN npm ci
-COPY package.json /app/
-RUN npm i
+COPY package.json package-lock.json /app/
+RUN npm ci
+# COPY package.json /app/
+# RUN npm i
 
 COPY index.html tsconfig.json tsconfig.node.json vite.config.ts /app/
 COPY public /app/public
@@ -26,9 +26,38 @@ RUN npm run-script remix:build
 
 FROM node:22-alpine
 
+WORKDIR /app
+
 COPY --from=builder /app/build /app/build
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package.json /app/package.json
+
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+COPY scripts/generate_sitemap.sh /app/scripts/generate_sitemap.sh
+
+# Set up the config files written by docker-entrypoint
+USER root
+RUN touch /app/build/client/static/public/config.json
+RUN chmod a+r /app/build/client/static/public/config.json
+RUN chown node /app/build/client/static/public/config.json
+
+RUN touch /app/build/client/static/public/robots.txt
+RUN chmod a+r /app/build/client/static/public/robots.txt
+RUN chown node /app/build/client/static/public/robots.txt
+
+RUN touch /app/build/client/static/public/sitemap.xml
+RUN chmod a+r /app/build/client/static/public/sitemap.xml
+RUN chown node /app/build/client/static/public/sitemap.xml
+
+RUN touch /app/build/client/static/public/privacy-statement.md
+RUN chmod a+r /app/build/client/static/public/privacy-statement.md
+RUN chown node /app/build/client/static/public/privacy-statement.md
+
+RUN touch /app/build/client/static/public/terms-of-use.md
+RUN chmod a+r /app/build/client/static/public/terms-of-use.md
+RUN chown node /app/build/client/static/public/terms-of-use.md
+
+USER node
 
 ARG SHORT_SHA
 ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
@@ -38,33 +67,33 @@ CMD ["npm", "run-script", "remix:start", "/app/build/server/index.js"]
 
 # FROM nginxinc/nginx-unprivileged:1.27-alpine
 
-# COPY --from=builder /app/build /usr/share/nginx/html
-# COPY --from=builder /app/storybook-static /usr/share/nginx/html/storybook
+# COPY --from=builder /app/build /app/build/client/static/public
+# COPY --from=builder /app/storybook-static /app/build/client/static/public/storybook
 # COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 # COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 # COPY scripts/generate_sitemap.sh /app/scripts/generate_sitemap.sh
 
 # # Set up the config files written by docker-entrypoint
 # USER root
-# RUN touch /usr/share/nginx/html/config.json
-# RUN chmod a+r /usr/share/nginx/html/config.json
-# RUN chown nginx /usr/share/nginx/html/config.json
+# RUN touch /app/build/client/static/public/config.json
+# RUN chmod a+r /app/build/client/static/public/config.json
+# RUN chown nginx /app/build/client/static/public/config.json
 
-# RUN touch /usr/share/nginx/html/robots.txt
-# RUN chmod a+r /usr/share/nginx/html/robots.txt
-# RUN chown nginx /usr/share/nginx/html/robots.txt
+# RUN touch /app/build/client/static/public/robots.txt
+# RUN chmod a+r /app/build/client/static/public/robots.txt
+# RUN chown nginx /app/build/client/static/public/robots.txt
 
-# RUN touch /usr/share/nginx/html/sitemap.xml
-# RUN chmod a+r /usr/share/nginx/html/sitemap.xml
-# RUN chown nginx /usr/share/nginx/html/sitemap.xml
+# RUN touch /app/build/client/static/public/sitemap.xml
+# RUN chmod a+r /app/build/client/static/public/sitemap.xml
+# RUN chown nginx /app/build/client/static/public/sitemap.xml
 
-# RUN touch /usr/share/nginx/html/privacy-statement.md
-# RUN chmod a+r /usr/share/nginx/html/privacy-statement.md
-# RUN chown nginx /usr/share/nginx/html/privacy-statement.md
+# RUN touch /app/build/client/static/public/privacy-statement.md
+# RUN chmod a+r /app/build/client/static/public/privacy-statement.md
+# RUN chown nginx /app/build/client/static/public/privacy-statement.md
 
-# RUN touch /usr/share/nginx/html/terms-of-use.md
-# RUN chmod a+r /usr/share/nginx/html/terms-of-use.md
-# RUN chown nginx /usr/share/nginx/html/terms-of-use.md
+# RUN touch /app/build/client/static/public/terms-of-use.md
+# RUN chmod a+r /app/build/client/static/public/terms-of-use.md
+# RUN chown nginx /app/build/client/static/public/terms-of-use.md
 
 # USER nginx
 

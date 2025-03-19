@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
 import { Route, Routes, useLocation, useNavigate } from "react-router";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router";
 
 import "bootstrap";
 
@@ -26,7 +26,16 @@ import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
+let hasRendered = false;
+
 export default function appIndex() {
+  if (!hasRendered) {
+    appIndexInner();
+  }
+  hasRendered = true;
+}
+
+function appIndexInner() {
   const configFetch = fetch("/config.json");
 
   configFetch.then((valuesRead) => {
@@ -128,7 +137,6 @@ export default function appIndex() {
 }
 
 function LoginHandler() {
-  // const history = useHistory();
   const location = useLocation();
   const navigate = useNavigate();
 

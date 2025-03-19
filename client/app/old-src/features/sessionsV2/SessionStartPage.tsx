@@ -18,12 +18,12 @@
 
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
+import { Link } from "react-router";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
-import { Link } from "@remix-run/react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 
 import { ErrorAlert } from "../../components/Alert";
 import PageLoader from "../../components/PageLoader";

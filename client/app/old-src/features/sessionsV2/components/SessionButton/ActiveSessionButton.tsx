@@ -31,7 +31,7 @@ import {
   Trash,
   XLg,
 } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { useNavigate } from "react-router";
 import { SingleValue } from "react-select";
 import {

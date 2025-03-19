@@ -8,8 +8,6 @@
 
 import { useEffect, useState } from "react";
 
-// import render from "./index";
-
 // reloaded and `isHydrating` is reset to true.
 let isHydrating = true;
 
@@ -29,7 +27,6 @@ export default function AppRoot() {
 
 function AppRootInner() {
   useEffect(() => {
-    // render();
     import("./index").then(({ default: render }) => render());
   }, []);
   return null;

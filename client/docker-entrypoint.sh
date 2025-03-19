@@ -16,7 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export NGINX_PATH=/usr/share/nginx/html
+# export NGINX_PATH=/usr/share/nginx/html
+export NGINX_PATH=/app/build/client/static/public
 
 echo "Config file contains the following settings:"
 echo "==================================================="

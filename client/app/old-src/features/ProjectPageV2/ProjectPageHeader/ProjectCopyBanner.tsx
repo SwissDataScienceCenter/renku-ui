@@ -23,7 +23,7 @@ import {
   BoxArrowInRight,
   Diagram3Fill,
 } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { generatePath } from "react-router";
 
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";

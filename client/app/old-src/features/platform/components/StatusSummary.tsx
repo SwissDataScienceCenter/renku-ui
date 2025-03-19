@@ -28,7 +28,7 @@ import {
   WrenchAdjustableCircleFill,
   XCircleFill,
 } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { WarnAlert } from "../../../components/Alert";

@@ -24,7 +24,7 @@
  */
 
 import cx from "classnames";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { Route, Routes, useLocation } from "react-router";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";

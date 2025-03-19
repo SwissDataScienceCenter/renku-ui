@@ -44,7 +44,7 @@ import {
   People,
   XLg,
 } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import {
   faArrowRight,
   faCheck,

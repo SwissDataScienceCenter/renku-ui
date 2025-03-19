@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { generatePath } from "react-router";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";

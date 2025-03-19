@@ -22,7 +22,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { Search } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 
 import { InfoAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";

@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { generatePath } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 

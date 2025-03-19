@@ -24,7 +24,7 @@
  */
 
 import { ArrowLeft } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 
 interface GoBackProps {
   urlBack: string;

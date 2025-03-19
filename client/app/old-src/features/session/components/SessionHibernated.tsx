@@ -22,7 +22,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { useLocation, type Location } from "react-router";
 import { Alert, Button } from "reactstrap";
 

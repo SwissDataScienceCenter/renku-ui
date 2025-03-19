@@ -28,7 +28,7 @@ import {
   JournalAlbum,
   People,
 } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { generatePath } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 

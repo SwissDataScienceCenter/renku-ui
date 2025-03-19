@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EyeFill, EyeSlashFill, InfoCircleFill } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import {
   Button,
   Container,

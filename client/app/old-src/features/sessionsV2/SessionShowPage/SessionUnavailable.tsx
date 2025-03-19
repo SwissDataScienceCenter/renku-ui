@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { Alert } from "reactstrap";
 import { QuestionCircle } from "react-bootstrap-icons";
 import { generatePath, useParams } from "react-router";

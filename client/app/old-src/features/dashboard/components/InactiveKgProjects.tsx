@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 
 import { WarnAlert } from "../../../components/Alert";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";

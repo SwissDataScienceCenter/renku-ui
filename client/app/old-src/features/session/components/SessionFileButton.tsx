@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { LocationDescriptor } from "history";
 import { ReactNode, useRef } from "react";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { useLocation } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 

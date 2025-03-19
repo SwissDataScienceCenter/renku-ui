@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
 import { ArrowLeft, BoxArrowInRight } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { generatePath, useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
 

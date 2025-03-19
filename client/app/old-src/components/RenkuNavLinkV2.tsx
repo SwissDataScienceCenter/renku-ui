@@ -19,7 +19,7 @@
 import {
   NavLink as RRNavLink,
   type NavLinkProps as RRNavLinkProps,
-} from "@remix-run/react";
+} from "react-router";
 import cx from "classnames";
 import { RefAttributes, useMemo } from "react";
 import { matchPath, useLocation } from "react-router";

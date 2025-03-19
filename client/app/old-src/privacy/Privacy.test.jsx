@@ -25,7 +25,7 @@
 
 import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { act } from "react-test-renderer";
 import { describe, it } from "vitest";
 

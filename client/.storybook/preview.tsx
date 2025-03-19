@@ -1,7 +1,7 @@
 import { Preview } from "@storybook/react";
 import React from "react";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 import type { AppContextType } from "../app/old-src/utils/context/appContext";
 import AppContext from "../app/old-src/utils/context/appContext";

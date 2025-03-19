@@ -24,7 +24,7 @@
  */
 
 import { Component, Fragment } from "react";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import {
   Button,
   Form,

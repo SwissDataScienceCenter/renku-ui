@@ -5,7 +5,7 @@ import {
   Folder2Open,
   FolderFill,
 } from "react-bootstrap-icons";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { useNavigate } from "react-router";
 import { Button, ButtonGroup } from "reactstrap";
 

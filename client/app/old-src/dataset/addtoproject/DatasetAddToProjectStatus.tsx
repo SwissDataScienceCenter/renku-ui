@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
