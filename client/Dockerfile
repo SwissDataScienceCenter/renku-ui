@@ -7,8 +7,6 @@ WORKDIR /app
 #? Use only required files.
 COPY package.json package-lock.json /app/
 RUN npm ci
-# COPY package.json /app/
-# RUN npm i
 
 COPY index.html tsconfig.json tsconfig.node.json vite.config.ts /app/
 COPY public /app/public
@@ -16,7 +14,6 @@ COPY app /app/app/
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# RUN npm run-script build
 RUN npm run-script remix:build
 
 # TODO: make storybook work
@@ -37,7 +34,6 @@ COPY scripts/generate_sitemap.sh /app/scripts/generate_sitemap.sh
 
 # Set up the config files written by docker-entrypoint
 USER root
-#/app/build/client
 RUN touch /app/build/client/config.json
 RUN chmod a+r /app/build/client/config.json
 RUN chown node /app/build/client/config.json
@@ -63,7 +59,7 @@ USER node
 ARG SHORT_SHA
 ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
-ARG PORT="8080"
+ARG PORT="3000"
 ENV PORT=$PORT
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]

@@ -27,9 +27,15 @@ import {
 } from "@remix-run/react";
 import cx from "classnames";
 
+export const DEFAULT_META_TITLE: string =
+  "Reproducible Data Science | Open Research | Renku";
+
+export const DEFAULT_META_DESCRIPTION: string =
+  "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources.";
+
 export const DEFAULT_META: MetaDescriptor[] = [
   {
-    title: "Reproducible Data Science | Open Research | Renku",
+    title: DEFAULT_META_TITLE,
   },
   {
     name: "description",
@@ -38,12 +44,11 @@ export const DEFAULT_META: MetaDescriptor[] = [
   },
   {
     property: "og:title",
-    content: "Reproducible Data Science | Open Research | Renku",
+    content: DEFAULT_META_TITLE,
   },
   {
     property: "og:description",
-    content:
-      "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources.",
+    content: DEFAULT_META_DESCRIPTION,
   },
 ];
 

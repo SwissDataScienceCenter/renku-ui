@@ -20,7 +20,7 @@ import * as Sentry from "@sentry/react";
 import cx from "classnames";
 import { ReactNode, useCallback } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { StyleHandler } from "../index";
+import { StyleHandler } from "../oldIndex";
 import rkOopsImg from "../styles/assets/oops.svg";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";

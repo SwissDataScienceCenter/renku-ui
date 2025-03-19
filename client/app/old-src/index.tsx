@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from "react";
 
-// reloaded and `isHydrating` is reset to true.
+// See: https://remix.run/docs/en/main/guides/migrating-react-router-app#client-only-components
 let isHydrating = true;
 
 export default function AppRoot() {
@@ -27,7 +27,7 @@ export default function AppRoot() {
 
 function AppRootInner() {
   useEffect(() => {
-    import("./index").then(({ default: render }) => render());
+    import("./oldIndex").then(({ default: render }) => render());
   }, []);
   return null;
 }

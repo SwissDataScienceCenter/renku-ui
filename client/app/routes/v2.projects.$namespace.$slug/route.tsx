@@ -25,21 +25,20 @@ import {
 import { startCase } from "lodash-es";
 import { env } from "node:process";
 
+import { projectV2Api } from "~/old-src/features/projectsV2/api/projectV2.enhanced-api";
 import { type Project } from "~/old-src/features/projectsV2/api/projectV2.api";
-import App from "~/old-src/newIndex";
-import { DEFAULT_META } from "~/root";
+import App from "~/old-src/index";
+import { DEFAULT_META, DEFAULT_META_DESCRIPTION } from "~/root";
 
 export async function loader({
   params,
   request,
 }: LoaderFunctionArgs): Promise<ReturnType<LoaderFunction>> {
   const { namespace, slug } = params;
-  console.log({ namespace, slug });
-
   const cookie = request.headers.get("Cookie");
-  console.log({ cookie: cookie?.length });
 
-  const originUrl = new URL(request.url);
+  // const originUrl = new URL(request.url);
+  const originUrl = new URL("https://dev.renku.ch/");
   console.log({ originUrl: originUrl.href });
 
   console.log({ GATEWAY_URL: env["GATEWAY_URL"] });
@@ -56,6 +55,9 @@ export async function loader({
         ...(cookie ? { Cookie: cookie } : {}),
       },
     });
+    if (projectResponse.status >= 400) {
+      return json({ ok: false });
+    }
     const projectData = await projectResponse.json();
     return json({ ok: true, project: projectData });
   } catch {
@@ -70,21 +72,24 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
   const { name, visibility, description } = data.project as Project;
 
+  const metaTitle = `${name} | ${startCase(visibility)} project on Renku`;
+  const metaDescription = description || DEFAULT_META_DESCRIPTION;
+
   return [
     {
-      title: `${name} | ${startCase(visibility)} project on Renku`,
+      title: metaTitle,
     },
     {
       name: "description",
-      content: description,
+      content: metaDescription,
     },
     {
       property: "og:title",
-      content: name,
+      content: metaTitle,
     },
     {
       property: "og:description",
-      content: description,
+      content: metaDescription,
     },
   ];
 };
