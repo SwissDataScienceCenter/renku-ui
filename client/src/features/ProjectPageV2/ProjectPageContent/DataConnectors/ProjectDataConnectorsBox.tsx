@@ -61,9 +61,9 @@ export default function ProjectDataConnectorsBox({
     });
 
   const {
-    data: dataGetInaccessible,
-    error: errorGetInaccessible,
-    isLoading: isLoadingGetInaccessible,
+    data: inaccessibleDataConnectorsData,
+    error: inaccessibleDataConnectorsError,
+    isLoading: inaccessibleDataConnectorsIsLoading,
   } = useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery({
     projectId: project.id,
   });
@@ -177,7 +177,7 @@ function ProjectDataConnectorBoxHeader({
           <Badge>{accessibleConnectors}</Badge>
           {inaccessibleConnectors > 0 && (
             <>
-              &nbsp;
+              {" "}
               <MissingDataConnectorsBadge
                 inaccessibleConnectors={inaccessibleConnectors}
               />
@@ -278,13 +278,13 @@ function MissingDataConnectorsBadge({
     <>
       <Badge
         className={cx("rounded-pill", className)}
-        color="info"
+        color="primary"
         innerRef={ref}
       >
-        {inaccessibleConnectors} hidden
+        +{inaccessibleConnectors} hidden
       </Badge>
       <UncontrolledTooltip target={ref}>
-        {inaccessibleConnectors == 1 ? (
+        {inaccessibleConnectors === 1 ? (
           <>
             There is 1 data connector linked to this project but not visible to
             you.

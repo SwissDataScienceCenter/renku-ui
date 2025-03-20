@@ -192,10 +192,10 @@ export function DataConnectorNotVisibleToAllUsersBadge({
     <>
       <Badge
         className={cx(
-          "rounded-pill border bg-warning-subtle border-warning text-warning-emphasis",
+          "rounded-pill", "border", "bg-warning-subtle", "border-warning", "text-warning-emphasis",
           className
         )}
-        color="info"
+        color="primary"
         innerRef={ref}
       >
         Visibility warning

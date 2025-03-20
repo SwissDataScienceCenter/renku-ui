@@ -444,16 +444,16 @@ function DataConnectorViewMetadata({
         </div>
       </DataConnectorPropertyValue>
       <DataConnectorPropertyValue title="Visibility">
-        {dataConnector.visibility.toLowerCase() === "private" ? (
-          <div>
+        {dataConnector.visibility === "private" ? (
+          <>
             <Lock className={cx("bi", "me-1")} />
             Private
-          </div>
+          </>
         ) : (
-          <div>
+          <>
             <Globe2 className={cx("bi", "me-1")} />
             Public
-          </div>
+          </>
         )}
         {visibilityWarning && (
           <WarnAlert className="mt-2" timeout={0} dismissible={false}>
