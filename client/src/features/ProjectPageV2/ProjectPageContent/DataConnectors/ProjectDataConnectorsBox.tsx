@@ -47,6 +47,7 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../../proje
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
+import { ErrorAlert } from "../../../../components/Alert";
 
 interface DataConnectorListDisplayProps {
   project: Project;
@@ -68,16 +69,24 @@ export default function ProjectDataConnectorsBox({
     projectId: project.id,
   });
 
-  if (isLoading || isLoadingGetInaccessible)
+  if (isLoading || inaccessibleDataConnectorsIsLoading)
     return <DataConnectorLoadingBoxContent />;
 
-  if (error || data == null) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  if (error || inaccessibleDataConnectorsError) {
+    return (
+      <RtkOrNotebooksError
+        error={error || inaccessibleDataConnectorsError}
+        dismissible={false}
+      />
+    );
   }
 
-  if (errorGetInaccessible || dataGetInaccessible == null) {
+  if (data == null) {
     return (
-      <RtkOrNotebooksError error={errorGetInaccessible} dismissible={false} />
+      <ErrorAlert>
+        Data connectors could not be loaded from the API, please contact a Renku
+        administrator.
+      </ErrorAlert>
     );
   }
 
@@ -85,7 +94,9 @@ export default function ProjectDataConnectorsBox({
     <ProjectDataConnectorBoxContent
       data={data}
       project={project}
-      inaccessibleDataConnectors={dataGetInaccessible?.count}
+      inaccessibleDataConnectorsCount={
+        inaccessibleDataConnectorsData?.count || 0
+      }
     />
   );
 }
@@ -93,12 +104,12 @@ export default function ProjectDataConnectorsBox({
 interface ProjectDataConnectorBoxContentProps
   extends DataConnectorListDisplayProps {
   data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
-  inaccessibleDataConnectors?: number;
+  inaccessibleDataConnectorsCount: number;
 }
 function ProjectDataConnectorBoxContent({
   data,
   project,
-  inaccessibleDataConnectors,
+  inaccessibleDataConnectorsCount,
 }: ProjectDataConnectorBoxContentProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const toggleOpen = useCallback(() => {
@@ -110,8 +121,8 @@ function ProjectDataConnectorBoxContent({
         <ProjectDataConnectorBoxHeader
           projectId={project.id}
           toggleOpen={toggleOpen}
-          accessibleConnectors={data.length}
-          inaccessibleConnectors={inaccessibleDataConnectors || 0}
+          accessibleDataConnectorsCount={data.length}
+          inaccessibleDataConnectorsCount={inaccessibleDataConnectorsCount}
         />
         <CardBody>
           {data.length === 0 && (
@@ -148,15 +159,15 @@ function ProjectDataConnectorBoxContent({
 interface ProjectDataConnectorBoxHeaderProps {
   projectId: Project["id"];
   toggleOpen: () => void;
-  accessibleConnectors: number;
-  inaccessibleConnectors: number;
+  accessibleDataConnectorsCount: number;
+  inaccessibleDataConnectorsCount: number;
 }
 
 function ProjectDataConnectorBoxHeader({
   projectId,
   toggleOpen,
-  accessibleConnectors,
-  inaccessibleConnectors,
+  accessibleDataConnectorsCount,
+  inaccessibleDataConnectorsCount,
 }: ProjectDataConnectorBoxHeaderProps) {
   const permissions = useProjectPermissions({ projectId });
 
@@ -174,12 +185,12 @@ function ProjectDataConnectorBoxHeader({
             <Database className={cx("me-1", "bi")} />
             Data
           </h4>
-          <Badge>{accessibleConnectors}</Badge>
-          {inaccessibleConnectors > 0 && (
+          <Badge>{accessibleDataConnectorsCount}</Badge>
+          {inaccessibleDataConnectorsCount > 0 && (
             <>
               {" "}
               <MissingDataConnectorsBadge
-                inaccessibleConnectors={inaccessibleConnectors}
+                inaccessibleConnectors={inaccessibleDataConnectorsCount}
               />
             </>
           )}
@@ -252,11 +263,9 @@ function DataConnectorLinkDisplay({
     <DataConnectorBoxListDisplay
       dataConnector={dataConnector}
       dataConnectorLink={dataConnectorLink}
-      visibilityWarning={
+      dataConnectorPotentiallyInaccessible={
         projectPath != dataConnector.namespace &&
         dataConnector.visibility == "private"
-          ? "Some members of this project may not be able to access this data connector"
-          : undefined
       }
     />
   );
@@ -273,7 +282,8 @@ function MissingDataConnectorsBadge({
 }: MissingDataConnectorsBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  if (inaccessibleConnectors <= 0) return;
+  if (!inaccessibleConnectors) return null;
+  const singular = inaccessibleConnectors === 1;
   return (
     <>
       <Badge
@@ -284,17 +294,9 @@ function MissingDataConnectorsBadge({
         +{inaccessibleConnectors} hidden
       </Badge>
       <UncontrolledTooltip target={ref}>
-        {inaccessibleConnectors === 1 ? (
-          <>
-            There is 1 data connector linked to this project but not visible to
-            you.
-          </>
-        ) : (
-          <>
-            There are {{ inaccessibleConnectors }} data connectors linked to
-            this project but not visible to you.
-          </>
-        )}
+        There {singular ? "is" : "are"} {inaccessibleConnectors}
+        data connector{singular ? "" : "s"} linked to this project but not
+        visible to you.
       </UncontrolledTooltip>
     </>
   );

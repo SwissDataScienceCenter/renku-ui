@@ -37,18 +37,20 @@ import type {
 } from "../api/data-connectors.api";
 
 import DataConnectorView from "./DataConnectorView";
+import { isProjectNamespace } from "./dataConnector.utils";
+import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 
 interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
   dataConnectorLink?: DataConnectorToProjectLink;
   extendedPreview?: boolean;
-  visibilityWarning?: string;
+  dataConnectorPotentiallyInaccessible?: boolean;
 }
 export default function DataConnectorBoxListDisplay({
   dataConnector,
   dataConnectorLink,
   extendedPreview,
-  visibilityWarning,
+  dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorBoxListDisplayProps) {
   const {
     name,
@@ -110,7 +112,7 @@ export default function DataConnectorBoxListDisplay({
                 "align-items-center"
               )}
             >
-              {namespace.split("/").length >= 2 ? (
+              {isProjectNamespace(namespace) ? (
                 <Folder />
               ) : (
                 <UserAvatar namespace={namespace} size="sm" />
@@ -158,7 +160,7 @@ export default function DataConnectorBoxListDisplay({
                 enableTooltip
               />
             </div>
-            {visibilityWarning && (
+            {dataConnectorPotentiallyInaccessible && (
               <div>
                 <DataConnectorNotVisibleToAllUsersBadge />
               </div>
@@ -171,7 +173,9 @@ export default function DataConnectorBoxListDisplay({
         dataConnectorLink={dataConnectorLink}
         showView={showDetails}
         toggleView={toggleDetails}
-        visibilityWarning={visibilityWarning}
+        dataConnectorPotentiallyInaccessible={
+          dataConnectorPotentiallyInaccessible
+        }
       />
     </>
   );
@@ -184,7 +188,6 @@ interface DataConnectorNotVisibleToAllUsersBadgeProps {
 
 export function DataConnectorNotVisibleToAllUsersBadge({
   className,
-  warning,
 }: DataConnectorNotVisibleToAllUsersBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -192,7 +195,11 @@ export function DataConnectorNotVisibleToAllUsersBadge({
     <>
       <Badge
         className={cx(
-          "rounded-pill", "border", "bg-warning-subtle", "border-warning", "text-warning-emphasis",
+          "rounded-pill",
+          "border",
+          "bg-warning-subtle",
+          "border-warning",
+          "text-warning-emphasis",
           className
         )}
         color="primary"
@@ -200,11 +207,9 @@ export function DataConnectorNotVisibleToAllUsersBadge({
       >
         Visibility warning
       </Badge>
-      {warning && (
-        <UncontrolledTooltip target={ref} placement="bottom">
-          {warning}
-        </UncontrolledTooltip>
-      )}
+      <UncontrolledTooltip target={ref} placement="bottom">
+        {DATA_CONNECTORS_VISIBILITY_WARNING}
+      </UncontrolledTooltip>
     </>
   );
 }

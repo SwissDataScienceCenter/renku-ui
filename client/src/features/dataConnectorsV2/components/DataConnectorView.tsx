@@ -54,6 +54,8 @@ import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-c
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 import { WarnAlert } from "../../../components/Alert";
+import { isProjectNamespace } from "./dataConnector.utils";
+import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 
 const SECTION_CLASSES = [
   "border-top",
@@ -84,14 +86,14 @@ interface DataConnectorViewProps {
   dataConnectorLink?: DataConnectorToProjectLink;
   showView: boolean;
   toggleView: () => void;
-  visibilityWarning?: string;
+  dataConnectorPotentiallyInaccessible?: boolean;
 }
 export default function DataConnectorView({
   dataConnector,
   dataConnectorLink,
   showView,
   toggleView,
-  visibilityWarning,
+  dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorViewProps) {
   return (
     <Offcanvas
@@ -115,7 +117,9 @@ export default function DataConnectorView({
         />
         <DataConnectorViewMetadata
           dataConnector={dataConnector}
-          visibilityWarning={visibilityWarning}
+          dataConnectorPotentiallyInaccessible={
+            dataConnectorPotentiallyInaccessible
+          }
         />
         <DataConnectorViewConfiguration dataConnector={dataConnector} />
         <DataConnectorViewProjects dataConnector={dataConnector} />
@@ -341,12 +345,12 @@ function DataConnectorViewProjects({
 
 interface DataConnectorViewMetadataProps {
   dataConnector: DataConnectorRead;
-  visibilityWarning?: string;
+  dataConnectorPotentiallyInaccessible: boolean;
 }
 
 function DataConnectorViewMetadata({
   dataConnector,
-  visibilityWarning,
+  dataConnectorPotentiallyInaccessible,
 }: DataConnectorViewMetadataProps) {
   const storageDefinition = dataConnector.storage;
   const credentialFieldDefinitions = useMemo(
@@ -405,7 +409,7 @@ function DataConnectorViewMetadata({
       <DataConnectorPropertyValue title="Owner">
         <div className={cx("d-flex", "align-items-center")}>
           <div className="me-1">
-            {dataConnector.namespace.split("/").length >= 2 ? (
+            {isProjectNamespace(dataConnector.namespace) ? (
               <Folder />
             ) : (
               <UserAvatar namespace={dataConnector.namespace} />
@@ -413,7 +417,7 @@ function DataConnectorViewMetadata({
           </div>
           {namespaceUrl == null ? (
             <div className="me-1">
-              {dataConnector.namespace.split("/").length >= 2 ? "" : "@"}
+              {isProjectNamespace(dataConnector.namespace) ? "" : "@"}
               {dataConnector.namespace}
             </div>
           ) : (
@@ -455,9 +459,9 @@ function DataConnectorViewMetadata({
             Public
           </>
         )}
-        {visibilityWarning && (
+        {dataConnectorPotentiallyInaccessible && (
           <WarnAlert className="mt-2" timeout={0} dismissible={false}>
-            {visibilityWarning}
+            {DATA_CONNECTORS_VISIBILITY_WARNING}
           </WarnAlert>
         )}
       </DataConnectorPropertyValue>
