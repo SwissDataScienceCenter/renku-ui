@@ -50,7 +50,7 @@ const Links = {
   RENKU_2_MIGRATION_INFO:
     "https://renku.notion.site/How-to-migrate-a-Renku-1-0-project-to-Renku-2-0-1ac0df2efafc80a88e58e2b3db035110",
   RENKU_2_COMMUNITY_PORTAL:
-      "https://www.notion.so/renku/Renku-Community-Portal-2a154d7d30b24ab8a5968c60c2592d87",
+    "https://www.notion.so/renku/Renku-Community-Portal-2a154d7d30b24ab8a5968c60c2592d87",
   RENKU_2_DOCUMENTATION:
     "https://www.notion.so/renku/Documentation-db396cfc9a664cd2b161e4c6068a5ec9",
   RENKU_2_RESEARCH:
