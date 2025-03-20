@@ -63,7 +63,6 @@ export default function ProjectDataConnectorsBox({
 
   const {
     data: inaccessibleDataConnectorsData,
-    error: inaccessibleDataConnectorsError,
     isLoading: inaccessibleDataConnectorsIsLoading,
   } = useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery({
     projectId: project.id,
@@ -72,13 +71,8 @@ export default function ProjectDataConnectorsBox({
   if (isLoading || inaccessibleDataConnectorsIsLoading)
     return <DataConnectorLoadingBoxContent />;
 
-  if (error || inaccessibleDataConnectorsError) {
-    return (
-      <RtkOrNotebooksError
-        error={error || inaccessibleDataConnectorsError}
-        dismissible={false}
-      />
-    );
+  if (error) {
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
   if (data == null) {
