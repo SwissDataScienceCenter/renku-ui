@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Link, generatePath } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";

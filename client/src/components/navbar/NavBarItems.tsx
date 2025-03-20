@@ -22,8 +22,7 @@ import {
   PlusCircleFill,
   QuestionCircle,
 } from "react-bootstrap-icons";
-import { useLocation } from "react-router";
-import { Link } from "react-router-dom-v5-compat";
+import { Link, useLocation } from "react-router";
 import {
   DropdownItem,
   DropdownMenu,

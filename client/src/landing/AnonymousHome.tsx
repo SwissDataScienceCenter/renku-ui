@@ -27,7 +27,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useContext, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
@@ -93,15 +93,15 @@ type SearchInputFormFields = {
 };
 
 export function SearchInput() {
+  const navigate = useNavigate();
   const { handleSubmit, register } = useForm<SearchInputFormFields>({
     defaultValues: { phrase: "" },
   });
-  const history = useHistory();
   const onSubmit = (inputs: SearchInputFormFields) => {
     const searchState = { phrase: inputs.phrase };
     const searchString = stateToSearchString(searchState);
     const searchUrl = `${Url.get(Url.pages.search)}/?${searchString}`;
-    history.push(searchUrl);
+    navigate(searchUrl);
   };
   return (
     <div className="d-flex flex-nowrap w-100 mx-0">

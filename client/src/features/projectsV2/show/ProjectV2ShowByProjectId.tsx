@@ -17,11 +17,7 @@
  */
 
 import { useEffect } from "react";
-import {
-  generatePath,
-  useNavigate,
-  useParams,
-} from "react-router-dom-v5-compat";
+import { generatePath, useNavigate, useParams } from "react-router";
 
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";

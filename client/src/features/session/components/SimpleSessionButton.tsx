@@ -20,8 +20,9 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { MouseEvent, useCallback, useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { Button } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import { NotebooksHelper } from "../../../notebooks";
 import { Url } from "../../../utils/helpers/url";
@@ -115,7 +116,7 @@ function ResumeOrConnectButton({
   runningSession,
   fromLanding = false,
 }: ResumeOrConnectButtonProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const annotations = NotebooksHelper.cleanAnnotations(
     runningSession.annotations
@@ -147,12 +148,12 @@ function ResumeOrConnectButton({
   });
   useEffect(() => {
     if (isSuccessResumeSession && !isWaitingForResumedSession) {
-      history.push({ pathname: showSessionUrl });
+      navigate({ pathname: showSessionUrl });
     }
   }, [
-    history,
     isSuccessResumeSession,
     isWaitingForResumedSession,
+    navigate,
     showSessionUrl,
   ]);
 
@@ -185,7 +186,8 @@ function ResumeOrConnectButton({
   return (
     <Link
       className={className}
-      to={{ pathname: showSessionUrl, state: { fromLanding } }}
+      to={{ pathname: showSessionUrl }}
+      state={{ fromLanding }}
     >
       <div className="d-flex gap-2">
         <img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect

@@ -27,7 +27,7 @@ import {
   useNavigate,
   useParams,
   useSearchParams,
-} from "react-router-dom-v5-compat";
+} from "react-router";
 
 import { ErrorAlert } from "../../components/Alert";
 import PageLoader from "../../components/PageLoader";

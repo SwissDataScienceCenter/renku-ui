@@ -24,7 +24,7 @@ import {
   BoxArrowUpRight,
   WrenchAdjustableCircleFill,
 } from "react-bootstrap-icons";
-import { Link, useLocation } from "react-router-dom-v5-compat";
+import { Link, useLocation } from "react-router";
 import { Alert, Container } from "reactstrap";
 
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";

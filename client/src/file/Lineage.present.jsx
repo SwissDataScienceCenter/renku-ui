@@ -20,7 +20,7 @@ import * as d3 from "d3";
 import * as dagreD3 from "dagre-d3-es";
 import { Component } from "react";
 import { Download } from "react-bootstrap-icons";
-import { useNavigate } from "react-router-dom-v5-compat";
+import { useNavigate } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
 import { ExternalIconLink } from "../components/ExternalLinks";

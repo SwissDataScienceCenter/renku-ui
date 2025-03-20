@@ -28,12 +28,8 @@ import { LoginHelper, RenkuQueryParams } from "./Authentication.container";
 
 // Mock relevant react objects
 const location = { pathname: "", state: "", previous: "", search: "" };
-const history = {
-  location,
-  replace: () => {
-    // eslint-disable-line @typescript-eslint/no-empty-function
-  },
-};
+// eslint-disable-line @typescript-eslint/no-empty-function
+const navigate = () => {};
 const url = "https://fakedev.renku.ch/";
 delete window.location;
 window.location = { reload: vi.fn(), replace: vi.fn() };
@@ -64,20 +60,20 @@ describe("LoginHelper functions", () => {
   it("handleLoginParams", async () => {
     localStorage.clear();
 
-    LoginHelper.handleLoginParams(history);
+    LoginHelper.handleLoginParams(location, navigate);
     expect(localStorage.length).toBe(0);
     const loginUrl = new URL(url);
     loginUrl.searchParams.set(
       RenkuQueryParams.login,
       RenkuQueryParams.loginValue
     );
-    const loginHistory = {
-      ...history,
-      location: { ...location, search: loginUrl.href.replace(url, "") },
+    const loginLocation = {
+      ...location,
+      search: loginUrl.href.replace(url, ""),
     };
     const datePre = new Date().getTime();
 
-    LoginHelper.handleLoginParams(loginHistory);
+    LoginHelper.handleLoginParams(loginLocation, navigate);
     expect(localStorage.length).toBe(1);
     // ? Alternative to avoid using the localStorage function: localStorage.__STORE__[queryParams.login]
     const loginDate = parseInt(localStorage.getItem(queryParams.login));

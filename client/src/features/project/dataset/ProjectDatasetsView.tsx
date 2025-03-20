@@ -27,7 +27,7 @@ import {
   useLocation,
   useNavigate,
   useParams,
-} from "react-router-dom-v5-compat";
+} from "react-router";
 import { Alert, Button, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
