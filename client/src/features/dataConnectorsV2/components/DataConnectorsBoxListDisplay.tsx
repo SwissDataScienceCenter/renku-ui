@@ -153,6 +153,9 @@ export default function DataConnectorBoxListDisplay({
                   </div>
                 )}
                 {extendedPreview && readOnly}
+                {dataConnectorPotentiallyInaccessible && (
+                  <DataConnectorNotVisibleToAllUsersBadge />
+                )}
               </div>
               <TimeCaption
                 datetime={creationDate}
@@ -160,11 +163,6 @@ export default function DataConnectorBoxListDisplay({
                 enableTooltip
               />
             </div>
-            {dataConnectorPotentiallyInaccessible && (
-              <div>
-                <DataConnectorNotVisibleToAllUsersBadge />
-              </div>
-            )}
           </Col>
         </Row>
       </ListGroupItem>
