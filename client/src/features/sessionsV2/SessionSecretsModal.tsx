@@ -26,7 +26,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { generatePath, useNavigate } from "react-router-dom-v5-compat";
+import { generatePath, useNavigate } from "react-router";
 import {
   Button,
   ButtonGroup,

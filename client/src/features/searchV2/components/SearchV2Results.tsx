@@ -27,11 +27,7 @@ import {
   Person,
   Question,
 } from "react-bootstrap-icons";
-import {
-  Link,
-  generatePath,
-  useSearchParams,
-} from "react-router-dom-v5-compat";
+import { Link, generatePath, useSearchParams } from "react-router";
 import {
   Badge,
   Card,

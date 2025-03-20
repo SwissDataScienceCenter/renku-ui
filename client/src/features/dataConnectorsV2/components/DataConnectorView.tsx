@@ -25,7 +25,7 @@ import {
   Lock,
   PersonBadge,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Link, generatePath } from "react-router";
 import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Route, Routes } from "react-router-dom-v5-compat";
+import { Route, Routes } from "react-router";
 import { Col, Nav, NavItem, Row } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";

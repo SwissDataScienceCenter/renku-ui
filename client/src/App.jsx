@@ -26,9 +26,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Redirect, useLocation } from "react-router";
-import { Route, Switch } from "react-router-dom";
-import { CompatRoute } from "react-router-dom-v5-compat";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 
 import { LoginHelper } from "./authentication";
@@ -60,7 +58,6 @@ import LazyNewProject from "./project/new/LazyNewProject";
 import LazyStyleGuide from "./styleguide/LazyStyleGuide";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
-import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -96,108 +93,147 @@ function CentralContentContainer(props) {
         <Helmet>
           <title>Reproducible Data Science | Open Research | Renku</title>
         </Helmet>
-        <Switch>
-          <CompatRoute exact path="/">
-            {props.user.logged ? (
+        <Routes>
+          <Route
+            path="/"
+            element={
+              props.user.logged ? (
+                <ContainerWrap>
+                  <LazyDashboard />
+                </ContainerWrap>
+              ) : (
+                <div className="w-100">
+                  <LazyAnonymousHome />
+                </div>
+              )
+            }
+          />
+          <Route
+            path="/help/*"
+            element={
               <ContainerWrap>
-                <LazyDashboard />
+                <LazyHelp />
               </ContainerWrap>
-            ) : (
-              <div className="w-100">
-                <LazyAnonymousHome />
-              </div>
-            )}
-          </CompatRoute>
-          <CompatRoute path="/help">
-            <ContainerWrap>
-              <LazyHelp />
-            </ContainerWrap>
-          </CompatRoute>
-          <CompatRoute path="/search">
-            <ContainerWrap>
-              <LazySearchPage />
-            </ContainerWrap>
-          </CompatRoute>
-          <CompatRoute path="/inactive-kg-projects">
-            {props.user.logged ? (
+            }
+          />
+          <Route
+            path="/search"
+            element={
               <ContainerWrap>
-                <LazyInactiveKGProjectsPage />
+                <LazySearchPage />
               </ContainerWrap>
-            ) : (
-              <LazyNotFound />
-            )}
-          </CompatRoute>
+            }
+          />
+          <Route
+            path="/inactive-kg-projects"
+            element={
+              props.user.logged ? (
+                <ContainerWrap>
+                  <LazyInactiveKGProjectsPage />
+                </ContainerWrap>
+              ) : (
+                <LazyNotFound />
+              )
+            }
+          />
           {["/projects", "/projects/starred", "/projects/all"].map((path) => (
-            <CompatRoute key={path} exact path={path}>
-              <ContainerWrap>
-                <LazyProjectList />
-              </ContainerWrap>
-            </CompatRoute>
-          ))}
-          <CompatRoute exact path="/projects/new">
-            <ContainerWrap>
-              <LazyNewProject />
-            </ContainerWrap>
-          </CompatRoute>
-          <CompatRoute path="/projects">
-            <LazyProjectView />
-          </CompatRoute>
-          <Route exact path={Url.get(Url.pages.sessions)}>
-            {!user.logged ? <LazyAnonymousSessionsList /> : <Redirect to="/" />}
-          </Route>
-          <Route path="/datasets/:identifier/add">
-            <LazyDatasetAddToProject
-              insideProject={false}
-              model={props.model}
-            />
-          </Route>
-          <CompatRoute path="/datasets/:identifier">
-            <LazyShowDataset
-              insideProject={false}
-              client={props.client}
-              projectsUrl="/projects"
-              datasetCoordinator={
-                new DatasetCoordinator(
-                  props.client,
-                  props.model.subModel("dataset")
-                )
+            <Route
+              key={path}
+              path={path}
+              element={
+                <ContainerWrap>
+                  <LazyProjectList />
+                </ContainerWrap>
               }
-              logged={props.user.logged}
-              model={props.model}
             />
-          </CompatRoute>
-          <CompatRoute path="/datasets">
-            <Redirect to="/search?type=dataset" />
-          </CompatRoute>
-          <CompatRoute path="/notifications">
-            <ContainerWrap>
-              <LazyNotificationsPage />
-            </ContainerWrap>
-          </CompatRoute>
-          <CompatRoute path="/v2">
-            <LazyRootV2 />
-          </CompatRoute>
-          <CompatRoute path="/style-guide">
-            <ContainerWrap>
-              <LazyStyleGuide />
-            </ContainerWrap>
-          </CompatRoute>
-          {userInfo?.isLoggedIn && userInfo.is_admin && (
-            <CompatRoute path="/admin">
+          ))}
+          <Route
+            path="/projects/new"
+            element={
               <ContainerWrap>
-                <LazyAdminPage />
+                <LazyNewProject />
               </ContainerWrap>
-            </CompatRoute>
+            }
+          />
+          <Route path="/projects/*" element={<LazyProjectView />} />
+          <Route
+            path="/sessions"
+            element={
+              !user.logged ? (
+                <LazyAnonymousSessionsList />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
+          <Route
+            path="/datasets/:identifier/add"
+            element={
+              <LazyDatasetAddToProject
+                insideProject={false}
+                model={props.model}
+              />
+            }
+          />
+          <Route
+            path="/datasets/:identifier"
+            element={
+              <LazyShowDataset
+                insideProject={false}
+                client={props.client}
+                projectsUrl="/projects"
+                datasetCoordinator={
+                  new DatasetCoordinator(
+                    props.client,
+                    props.model.subModel("dataset")
+                  )
+                }
+                logged={props.user.logged}
+                model={props.model}
+              />
+            }
+          />
+          <Route
+            path="/datasets"
+            element={<Navigate to="/search?type=dataset" replace />}
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ContainerWrap>
+                <LazyNotificationsPage />
+              </ContainerWrap>
+            }
+          />
+          <Route path="/v2/*" element={<LazyRootV2 />} />
+          <Route
+            path="/style-guide"
+            element={
+              <ContainerWrap>
+                <LazyStyleGuide />
+              </ContainerWrap>
+            }
+          />
+          {userInfo?.isLoggedIn && userInfo.is_admin && (
+            <Route
+              path="/admin"
+              element={
+                <ContainerWrap>
+                  <LazyAdminPage />
+                </ContainerWrap>
+              }
+            />
           )}
-          <CompatRoute path="/secrets">
-            <ContainerWrap>
-              <LazySecrets />
-            </ContainerWrap>
-          </CompatRoute>
-          <Route path="/*">
-            <LazyNotFound />
-          </Route>
-        </Switch>
+          <Route
+            path="/secrets"
+            element={
+              <ContainerWrap>
+                <LazySecrets />
+              </ContainerWrap>
+            }
+          />
+          <Route path="*" element={<LazyNotFound />} />
+        </Routes>
       </AppContext.Provider>
     </div>
   );

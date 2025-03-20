@@ -24,18 +24,18 @@
  */
 
 import cx from "classnames";
-import { Link, Route, Switch, useLocation } from "react-router-dom";
+import { Link, Route, Routes, useLocation } from "react-router";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
-import { RenkuNavLink } from "../components/RenkuNavLink";
+import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
 import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../components/navbar/navbar.constans";
 import { parseChartVersion } from "../help/release.utils";
+import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 import { Links } from "../utils/constants/Docs";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../utils/helpers/url";
-import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 
 import "./NavBar.css";
 
@@ -62,25 +62,28 @@ function RenkuNavBarInner(props) {
   });
 
   return (
-    <Switch key="mainNav">
-      <Route path={sessionShowUrl} />
-      <Route path="/v2/" />
-      <Route>
-        {user.logged ? (
-          <LoggedInNavBar
-            model={props.model}
-            notifications={props.notifications}
-            params={props.params}
-          />
-        ) : (
-          <AnonymousNavBar
-            model={props.model}
-            notifications={props.notifications}
-            params={props.params}
-          />
-        )}
-      </Route>
-    </Switch>
+    <Routes key="mainNav">
+      <Route path={sessionShowUrl} element={null} />
+      <Route path={`${ABSOLUTE_ROUTES.v2.root}/*`} element={null} />
+      <Route
+        path="*"
+        element={
+          user.logged ? (
+            <LoggedInNavBar
+              model={props.model}
+              notifications={props.notifications}
+              params={props.params}
+            />
+          ) : (
+            <AnonymousNavBar
+              model={props.model}
+              notifications={props.notifications}
+              params={props.params}
+            />
+          )
+        }
+      />
+    </Routes>
   );
 }
 
@@ -99,10 +102,10 @@ function FooterNavbarAnonymousLinks() {
 function FooterNavbarLoggedInLinks({ privacyLink }) {
   const helpLocation = location.pathname.startsWith("/v2")
     ? ABSOLUTE_ROUTES.v2.help.root
-    : Url.pages.help;
+    : Url.pages.help.base;
   return (
     <>
-      <RenkuNavLink to={helpLocation} title="Help" />
+      <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
       {privacyLink}
       <ExternalDocsLink
         url={Links.DISCOURSE}
@@ -142,7 +145,7 @@ function FooterNavbarInner({ location, params }) {
 
   const privacyLink =
     params && params["PRIVACY_STATEMENT"] ? (
-      <RenkuNavLink to="/privacy" title="Privacy" />
+      <RenkuNavLinkV2 to="/privacy">Privacy</RenkuNavLinkV2>
     ) : null;
   const chartVersion = params && params["RENKU_CHART_VERSION"];
   const parsedChartVersion = chartVersion && parseChartVersion(chartVersion);
@@ -200,11 +203,14 @@ function FooterNavbarInner({ location, params }) {
   );
 
   return (
-    <Switch key="footerNav">
-      <Route path={sessionShowUrl} />
-      <Route path="/v2/projects/:namespace/:slug/sessions/show/:server" />
-      <Route>{footer}</Route>
-    </Switch>
+    <Routes key="footerNav">
+      <Route path={sessionShowUrl} element={null} />
+      <Route
+        path={ABSOLUTE_ROUTES.v2.projects.show.sessions.show}
+        element={null}
+      />
+      <Route path="*" element={footer} />
+    </Routes>
   );
 }
 

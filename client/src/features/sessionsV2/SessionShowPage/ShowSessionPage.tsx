@@ -30,12 +30,7 @@ import {
   PauseCircle,
   Trash,
 } from "react-bootstrap-icons";
-import {
-  Link,
-  generatePath,
-  useNavigate,
-  useParams,
-} from "react-router-dom-v5-compat";
+import { Link, generatePath, useNavigate, useParams } from "react-router";
 import {
   Button,
   Modal,

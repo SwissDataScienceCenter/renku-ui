@@ -2,8 +2,13 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
-import { Route, Switch, useHistory } from "react-router-dom";
-import { CompatRoute } from "react-router-dom-v5-compat";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router";
 
 import "bootstrap";
 
@@ -16,7 +21,6 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
-import Router from "./components/router/Router";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
@@ -104,7 +108,7 @@ configFetch.then((valuesRead) => {
     const VisibleApp = connect(mapStateToProps)(uiApplication);
     root.render(
       <Provider store={model.reduxStore}>
-        <Router>
+        <BrowserRouter>
           <AppErrorBoundary>
             <LoginHandler />
             <FeatureFlagHandler />
@@ -117,18 +121,20 @@ configFetch.then((valuesRead) => {
               statuspageId={statuspageId}
             />
           </AppErrorBoundary>
-        </Router>
+        </BrowserRouter>
       </Provider>
     );
   });
 });
 
 function LoginHandler() {
-  const history = useHistory();
+  // const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    LoginHelper.handleLoginParams(history);
-  }, [history]);
+    LoginHelper.handleLoginParams(location, navigate);
+  }, [location, navigate]);
 
   return null;
 }
@@ -140,17 +146,23 @@ function FeatureFlagHandler() {
 
 export function StyleHandler() {
   return (
-    <Switch>
-      <CompatRoute path="/v2">
-        <Helmet>
-          <style type="text/css">{v2Styles}</style>
-        </Helmet>
-      </CompatRoute>
-      <Route path="*">
-        <Helmet>
-          <style type="text/css">{v1Styles}</style>
-        </Helmet>
-      </Route>
-    </Switch>
+    <Routes>
+      <Route
+        path="/v2/*"
+        element={
+          <Helmet>
+            <style type="text/css">{v2Styles}</style>
+          </Helmet>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <Helmet>
+            <style type="text/css">{v1Styles}</style>
+          </Helmet>
+        }
+      />
+    </Routes>
   );
 }

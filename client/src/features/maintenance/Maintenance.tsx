@@ -19,8 +19,8 @@
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Col, Row } from "reactstrap";
+import { BrowserRouter } from "react-router";
 
-import Router from "../../components/router/Router";
 import { FooterNavbar } from "../../landing/NavBar";
 import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
 
@@ -34,7 +34,7 @@ function Maintenance({ info }: MaintenanceProps) {
       ? info
       : "Renku is undergoing maintenance. It should be available again soon. Please check back in a little while.";
   return (
-    <Router>
+    <BrowserRouter>
       <div className="min-vh-100 d-flex flex-column">
         <div className="flex-grow-1">
           <main role="main" className="container-fluid">
@@ -50,7 +50,7 @@ function Maintenance({ info }: MaintenanceProps) {
         </div>
         <FooterNavbar />
       </div>
-    </Router>
+    </BrowserRouter>
   );
 }
 
