@@ -166,6 +166,8 @@ function NamespaceSelector({
       options={namespaces}
       value={currentValue}
       unstyled
+      getOptionValue={(option) => option.path}
+      getOptionLabel={(option) => option.slug}
       onChange={onChange}
       classNames={selectClassNames}
       // see https://stackoverflow.com/a/63844955/5804638
