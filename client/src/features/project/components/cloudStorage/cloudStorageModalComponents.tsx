@@ -107,6 +107,7 @@ export interface AddCloudStorageBodyContentProps
   storageDetails: CloudStorageDetails;
   success: boolean;
   validationSucceeded: boolean;
+  projectId?: string;
 }
 export function AddCloudStorageBodyContent({
   addResultStorageName,
@@ -121,6 +122,7 @@ export function AddCloudStorageBodyContent({
   storageDetails,
   storageId,
   success,
+  projectId,
 }: AddCloudStorageBodyContentProps) {
   if (redraw) return <Loader />;
   if (success) {
@@ -143,6 +145,7 @@ export function AddCloudStorageBodyContent({
       state={state}
       storage={storageDetails}
       storageSecrets={[]}
+      projectId={projectId}
     />
   );
 }

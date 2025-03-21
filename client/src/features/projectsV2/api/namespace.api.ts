@@ -4,7 +4,11 @@ const injectedRtkApi = api.injectEndpoints({
     getGroups: build.query<GetGroupsApiResponse, GetGroupsApiArg>({
       query: (queryArg) => ({
         url: `/groups`,
-        params: { params: queryArg.params },
+        params: {
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+          direct_member: queryArg.directMember,
+        },
       }),
     }),
     postGroups: build.mutation<PostGroupsApiResponse, PostGroupsApiArg>({
@@ -75,7 +79,12 @@ const injectedRtkApi = api.injectEndpoints({
     getNamespaces: build.query<GetNamespacesApiResponse, GetNamespacesApiArg>({
       query: (queryArg) => ({
         url: `/namespaces`,
-        params: { params: queryArg.params },
+        params: {
+          page: queryArg.page,
+          per_page: queryArg.perPage,
+          minimum_role: queryArg.minimumRole,
+          kinds: queryArg.kinds,
+        },
       }),
     }),
     getNamespacesByNamespaceSlug: build.query<
@@ -91,8 +100,12 @@ export { injectedRtkApi as projectAndNamespaceApi };
 export type GetGroupsApiResponse =
   /** status 200 List of groups */ GroupResponseList;
 export type GetGroupsApiArg = {
-  /** query parameters */
-  params?: GroupsGetQuery;
+  /** the current page in paginated response */
+  page?: PaginationRequestPage;
+  /** the number of results per page in a paginated response */
+  perPage?: PaginationRequestPerPage;
+  /** A flag to filter for where the user is a direct member. */
+  directMember?: boolean;
 };
 export type PostGroupsApiResponse =
   /** status 201 The group was created */ GroupResponse;
@@ -141,8 +154,14 @@ export type GetGroupsByGroupSlugPermissionsApiArg = {
 export type GetNamespacesApiResponse =
   /** status 200 List of namespaces */ NamespaceResponseList;
 export type GetNamespacesApiArg = {
-  /** query parameters */
-  params?: NamespaceGetQuery;
+  /** the current page in paginated response */
+  page?: PaginationRequestPage;
+  /** the number of results per page in a paginated response */
+  perPage?: PaginationRequestPerPage;
+  /** The minimum role the user should have in the resources returned */
+  minimumRole?: GroupRole;
+  /** environment kinds query parameter */
+  kinds?: NamespaceGetQueryKind;
 };
 export type GetNamespacesByNamespaceSlugApiResponse =
   /** status 200 The namespace */ NamespaceResponse;
@@ -171,16 +190,8 @@ export type ErrorResponse = {
     message: string;
   };
 };
-export type PaginationRequest = {
-  /** Result's page number starting from 1 */
-  page?: number;
-  /** The number of results per page */
-  per_page?: number;
-};
-export type GroupsGetQuery = PaginationRequest & {
-  /** A flag to filter groups where the user is a direct member. */
-  direct_member?: boolean;
-};
+export type PaginationRequestPage = number;
+export type PaginationRequestPerPage = number;
 export type GroupPostRequest = {
   name: NamespaceName;
   slug: Slug;
@@ -215,7 +226,8 @@ export type GroupPermissions = {
   /** The user can manage group members */
   change_membership?: boolean;
 };
-export type NamespaceKind = "group" | "user";
+export type NamespaceKind = "group" | "user" | "project";
+export type OneOrTwoSlugs = string;
 export type NamespaceResponse = {
   id: Ulid;
   name?: NamespaceName;
@@ -223,12 +235,10 @@ export type NamespaceResponse = {
   creation_date?: CreationDate;
   created_by?: KeycloakId;
   namespace_kind: NamespaceKind;
+  path: OneOrTwoSlugs;
 };
 export type NamespaceResponseList = NamespaceResponse[];
-export type NamespaceGetQuery = PaginationRequest & {
-  /** A minimum role to filter results by. */
-  minimum_role?: GroupRole;
-};
+export type NamespaceGetQueryKind = NamespaceKind[];
 export const {
   useGetGroupsQuery,
   usePostGroupsMutation,

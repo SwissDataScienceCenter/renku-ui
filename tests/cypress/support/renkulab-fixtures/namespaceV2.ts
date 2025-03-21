@@ -84,6 +84,7 @@ function generateNamespaces(numberOfNamespaces: number, start: number) {
       id,
       name: `test ${id} group-v2`,
       slug,
+      path: slug,
       creation_date: "2023-11-15T09:55:59Z",
       created_by: "user1-uuid",
       namespace_kind: "group",

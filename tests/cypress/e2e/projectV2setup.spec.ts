@@ -197,7 +197,10 @@ describe("Set up data connectors", () => {
       .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .testCloudStorage({ success: false })
-      .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
+      .postDataConnector({
+        namespace: "user1-uuid/test-2-v2-project",
+        visibility: "public",
+      })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
@@ -245,7 +248,7 @@ describe("Set up data connectors", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
@@ -353,7 +356,10 @@ describe("Set up data connectors", () => {
       .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .testCloudStorage({ success: false })
-      .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
+      .postDataConnector({
+        namespace: "user1-uuid/test-2-v2-project",
+        visibility: "public",
+      })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -386,7 +392,7 @@ describe("Set up data connectors", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
