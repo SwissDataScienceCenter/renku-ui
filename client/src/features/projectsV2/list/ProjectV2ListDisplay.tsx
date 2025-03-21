@@ -19,17 +19,19 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { Folder, PlusLg } from "react-bootstrap-icons";
-import { Link, useSearchParams } from "react-router";
+import { Link } from "react-router";
 import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import useLocationSearchParams from "../../../utils/customHooks/useLocationSearchParams.hook";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { NamespaceKind } from "../api/namespace.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
+import { PROJECT_CREATION_HASH } from "../new/createProjectV2.constants";
 import ProjectShortHandDisplay from "../show/ProjectShortHandDisplay";
 
 const DEFAULT_PER_PAGE = 5;
@@ -57,7 +59,7 @@ export default function ProjectListDisplay({
     [perPage_]
   );
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useLocationSearchParams();
   const onPageChange = useCallback(
     (pageNumber: number) => {
       setSearchParams((prevParams) => {
@@ -221,7 +223,8 @@ function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
             "ms-auto",
             "my-auto"
           )}
-          to="/v2/projects/new"
+          data-cy="group-create-project-button"
+          to={{ hash: PROJECT_CREATION_HASH }}
         >
           <PlusLg className="bi" id="createPlus" />
         </Link>
@@ -245,7 +248,7 @@ function AddButtonForUserNamespace({ namespace }: { namespace: string }) {
           "ms-auto",
           "my-auto"
         )}
-        to="/v2/projects/new"
+        to={{ hash: PROJECT_CREATION_HASH }}
       >
         <PlusLg className="bi" id="createPlus" />
       </Link>

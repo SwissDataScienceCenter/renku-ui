@@ -483,3 +483,66 @@ describe("Work with group data connectors, missing permissions", () => {
     cy.getDataCy("data-connector-delete").should("not.exist");
   });
 });
+
+describe("Create projects in a group", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .listNamespaceV2()
+      .listGroupV2()
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .getGroupV2Permissions()
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" });
+    cy.visit("/v2");
+  });
+
+  it("defaults namespace to the group", () => {
+    fixtures.readGroupV2Namespace();
+    cy.contains("My groups").should("be.visible");
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+    cy.getDataCy("group-create-project-button").click();
+    cy.contains("Create a new project").should("be.visible");
+    cy.findReactSelectSelectedValue(
+      "project-creation-form-project-namespace-input",
+      "namespace-select"
+    )
+      .contains("test-2-group-v2")
+      .should("be.visible");
+  });
+
+  it("defaults namespace to the group when there are many groups", () => {
+    // This fails because the group falls outside the first batch of groups
+    fixtures
+      .listManyNamespaceV2()
+      .readGroupV2({ groupSlug: "test-20-group-v2" })
+      .readGroupV2Namespace({ groupSlug: "test-20-group-v2" })
+      .getGroupV2Permissions({ groupSlug: "test-20-group-v2" })
+      .listGroupV2Members({ groupSlug: "test-20-group-v2" })
+      .listProjectV2ByNamespace({ namespace: "test-20-group-v2" })
+      .listDataConnectors({ namespace: "test-20-group-v2" });
+    cy.visit("/v2/groups/test-20-group-v2");
+    cy.wait("@readGroupV2");
+    cy.getDataCy("group-create-project-button").click();
+    cy.contains("Create a new project").should("be.visible");
+    cy.findReactSelectSelectedValue(
+      "project-creation-form-project-namespace-input",
+      "namespace-select"
+    )
+      .contains("test-20-group-v2")
+      .should("be.visible");
+  });
+});

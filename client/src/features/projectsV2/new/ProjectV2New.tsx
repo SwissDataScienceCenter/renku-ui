@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { generatePath, useNavigate } from "react-router";
+import { generatePath, useMatch, useNavigate } from "react-router";
 import {
   Button,
   Form,
@@ -111,6 +111,7 @@ export default function ProjectV2New() {
 function ProjectV2CreationDetails() {
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
+  const groupMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.root);
 
   const [, setHash] = useLocationHash();
   const closeModal = useCallback(() => {
@@ -129,7 +130,7 @@ function ProjectV2CreationDetails() {
     defaultValues: {
       description: "",
       name: "",
-      namespace: "",
+      namespace: groupMatch?.params.slug ?? "",
       slug: "",
       visibility: "private",
     },
@@ -196,6 +197,7 @@ function ProjectV2CreationDetails() {
               <div className="mb-1">
                 <ProjectNamespaceFormField
                   control={control}
+                  ensureNamespace={groupMatch?.params.slug}
                   entityName={`${formId}-project`}
                   errors={errors}
                   name="namespace"
