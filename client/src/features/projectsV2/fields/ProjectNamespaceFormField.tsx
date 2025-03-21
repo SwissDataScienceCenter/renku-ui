@@ -257,7 +257,7 @@ export default function ProjectNamespaceFormField<T extends FieldValues>({
           required: true,
           maxLength: 99,
           pattern:
-            /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*(?<!\.git)(?<!\.atom)(?:[a-z0-9][a-z0-9\-_.]*)*$/,
+            /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*(?<!\.git)(?<!\.atom)(?:\/[a-z0-9][a-z0-9\-_.]*)?$/,
         }}
       />
       <div className="invalid-feedback">A project must belong to an owner.</div>
