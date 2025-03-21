@@ -174,19 +174,16 @@ function ProjectDataConnectorBoxHeader({
           "justify-content-between"
         )}
       >
-        <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("mb-0", "me-2")}>
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <h4 className="mb-0">
             <Database className={cx("me-1", "bi")} />
             Data
           </h4>
           <Badge>{accessibleDataConnectorsCount}</Badge>
           {inaccessibleDataConnectorsCount > 0 && (
-            <>
-              {" "}
-              <MissingDataConnectorsBadge
-                inaccessibleConnectors={inaccessibleDataConnectorsCount}
-              />
-            </>
+            <MissingDataConnectorsBadge
+              inaccessibleConnectors={inaccessibleDataConnectorsCount}
+            />
           )}
         </div>
         <div className="my-auto">

@@ -107,13 +107,13 @@ export default function DataConnectorBoxListDisplay({
               className={cx(
                 "d-flex",
                 "flex-row",
+                "gap-1",
                 "text-truncate",
-                "gap-2",
                 "align-items-center"
               )}
             >
               {isProjectNamespace(namespace) ? (
-                <Folder />
+                <Folder className="bi" />
               ) : (
                 <UserAvatar namespace={namespace} size="sm" />
               )}
@@ -128,7 +128,7 @@ export default function DataConnectorBoxListDisplay({
                 "align-items-center",
                 "d-flex",
                 "flex-wrap",
-                "gap-2",
+                "gap-1",
                 "justify-content-between"
               )}
             >
@@ -137,21 +137,23 @@ export default function DataConnectorBoxListDisplay({
                   "align-items-center",
                   "d-flex",
                   "flex-wrap",
-                  "gap-3",
+                  "gap-2",
                   "mt-auto"
                 )}
               >
-                {visibility.toLowerCase() === "private" ? (
-                  <div>
-                    <Lock className={cx("bi", "me-1")} />
-                    Private
-                  </div>
-                ) : (
-                  <div>
-                    <Globe2 className={cx("bi", "me-1")} />
-                    Public
-                  </div>
-                )}
+                <div>
+                  {visibility.toLowerCase() === "private" ? (
+                    <>
+                      <Lock className={cx("bi", "me-1")} />
+                      Private
+                    </>
+                  ) : (
+                    <>
+                      <Globe2 className={cx("bi", "me-1")} />
+                      Public
+                    </>
+                  )}
+                </div>
                 {extendedPreview && readOnly}
                 {dataConnectorPotentiallyInaccessible && (
                   <DataConnectorNotVisibleToAllUsersBadge />
