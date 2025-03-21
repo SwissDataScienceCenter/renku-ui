@@ -28,7 +28,7 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
-import { NamespaceKind } from "../api/namespace.enhanced-api";
+import { NamespaceKind } from "../api/namespace.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
 import ProjectShortHandDisplay from "../show/ProjectShortHandDisplay";
 
