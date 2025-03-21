@@ -28,7 +28,7 @@ describe("Secrets", () => {
       .userTest()
       .listSecrets({ secretsKind: "general" })
       .listSecrets({ secretsKind: "storage" });
-    cy.visit("/secrets");
+    cy.visit("/v1/secrets");
 
     cy.get("#new-secret-button").should("be.visible");
     cy.getDataCy("secrets-list").should("not.exist");
@@ -39,7 +39,7 @@ describe("Secrets", () => {
       .userNone()
       .listSecrets({ secretsKind: "general" })
       .listSecrets({ secretsKind: "storage" });
-    cy.visit("/secrets");
+    cy.visit("/v1/secrets");
 
     cy.getDataCy("secrets-list").should("not.exist");
     cy.getDataCy("secrets-page")
@@ -54,7 +54,7 @@ describe("Secrets", () => {
       .listSecrets({ numberOfSecrets: 0, secretsKind: "storage" })
       .listSecrets({ numberOfSecrets: 5, secretsKind: "general" })
       .newSecret();
-    cy.visit("/secrets");
+    cy.visit("/v1/secrets");
 
     cy.get("#new-secret-button").should("be.visible");
     cy.getDataCy("secrets-list").should("exist");
@@ -99,7 +99,7 @@ describe("Secrets", () => {
       .listSecrets({ secretsKind: "storage" })
       .listSecrets({ numberOfSecrets: 2, secretsKind: "general" })
       .editSecret();
-    cy.visit("/secrets");
+    cy.visit("/v1/secrets");
 
     cy.getDataCy("secrets-list").first().contains("secret_0").click();
     cy.getDataCy("secrets-list")
@@ -122,7 +122,7 @@ describe("Secrets", () => {
       .listSecrets({ secretsKind: "storage" })
       .listSecrets({ numberOfSecrets: 2, secretsKind: "general" })
       .deleteSecret();
-    cy.visit("/secrets");
+    cy.visit("/v1/secrets");
 
     cy.getDataCy("secrets-list").first().contains("secret_0").click();
     cy.getDataCy("secrets-list")

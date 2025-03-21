@@ -29,7 +29,7 @@ export default function WhoWeAre() {
   const contactEmail = RenkuContactEmail || "";
   return (
     <div id="rk-anon-home-who-we-are">
-      <div className="rk-anon-home-section-content">
+      <div className="container">
         <div id={styles.whoWeAreContainer}>
           <div className={styles.whoWeAreTitle}>
             <h2 className="text-rk-green">
@@ -54,7 +54,7 @@ export default function WhoWeAre() {
                 they need to work, collaborate and share their research.
               </p>
               <p>
-                Developed with <HeartFill className="text-rk-green" /> at ETH
+                Developed with <HeartFill className="text-primary" /> at ETH
                 Zurich and EPFL with contributions from our fantastic community.
               </p>
               <div className={styles.whoWeAreLinks}>
@@ -66,7 +66,7 @@ export default function WhoWeAre() {
                       "align-self-lg-center",
                       "gap-2"
                     )}
-                    color="rk-green"
+                    color="primary"
                     role="button"
                     id="Contact_us_btn"
                     url={`mailto:${contactEmail}`}
