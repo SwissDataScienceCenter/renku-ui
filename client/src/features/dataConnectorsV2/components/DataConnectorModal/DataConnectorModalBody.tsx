@@ -324,9 +324,10 @@ export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
                 inputId="namespace-input"
                 onChange={(e) => {
                   field.onChange(e);
-                  onFieldValueChange("namespace", e?.slug ?? "");
+                  onFieldValueChange("namespace", e?.path ?? "");
                 }}
-                project={project}
+                ensureNamespace={project?.namespace}
+                includeProjectNamespaces={true}
               />
             );
           }}
@@ -334,7 +335,7 @@ export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
             required: true,
             maxLength: 99,
             pattern:
-              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
+              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*(?<!\.git)(?<!\.atom)(?:[a-z0-9][a-z0-9\-_.]*)*$/,
           }}
         />
         <div className="invalid-feedback">

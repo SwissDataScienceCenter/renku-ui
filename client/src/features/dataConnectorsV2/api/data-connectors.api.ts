@@ -118,6 +118,22 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getProjectsByProjectIdDataConnectorLinks: build.query<
+      GetProjectsByProjectIdDataConnectorLinksApiResponse,
+      GetProjectsByProjectIdDataConnectorLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/data_connector_links`,
+      }),
+    }),
+    getProjectsByProjectIdInaccessibleDataConnectorLinks: build.query<
+      GetProjectsByProjectIdInaccessibleDataConnectorLinksApiResponse,
+      GetProjectsByProjectIdInaccessibleDataConnectorLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/inaccessible_data_connector_links`,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -206,6 +222,18 @@ export type DeleteDataConnectorsByDataConnectorIdSecretsApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
 };
+export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
+  /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
+export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
+  /** the ID of the project */
+  projectId: Ulid;
+};
+export type GetProjectsByProjectIdInaccessibleDataConnectorLinksApiResponse =
+  /** status 200 List of data connector to project links */ InaccessibleDataConnectorLinks;
+export type GetProjectsByProjectIdInaccessibleDataConnectorLinksApiArg = {
+  /** the ID of the project */
+  projectId: Ulid;
+};
 export type Ulid = string;
 export type DataConnectorName = string;
 export type Slug = string;
@@ -248,7 +276,17 @@ export type RCloneOption = {
   /** if true, only values from 'examples' can be used */
   exclusive?: boolean;
   /** data type of option value. RClone has more options but they map to the ones listed here. */
-  datatype?: "int" | "bool" | "string" | "Time";
+  type?:
+    | "int"
+    | "bool"
+    | "string"
+    | "Time"
+    | "Duration"
+    | "MultiEncoder"
+    | "SizeSuffix"
+    | "SpaceSepList"
+    | "CommaSepList"
+    | "Tristate";
 };
 export type CloudStorageCore = {
   storage_type: StorageType;
@@ -418,6 +456,10 @@ export type DataConnectorSecretPatch = {
   value: SecretValueNullable;
 };
 export type DataConnectorSecretPatchList = DataConnectorSecretPatch[];
+export type InaccessibleDataConnectorLinks = {
+  /** The number of data links the user does not have access to */
+  count?: number;
+};
 export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
@@ -432,4 +474,6 @@ export const {
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
 } = injectedRtkApi;

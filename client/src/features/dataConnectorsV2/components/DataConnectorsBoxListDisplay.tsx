@@ -17,9 +17,15 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
-import { EyeFill, Globe2, Lock, Pencil } from "react-bootstrap-icons";
-import { Col, ListGroupItem, Row } from "reactstrap";
+import { useCallback, useMemo, useRef } from "react";
+import { EyeFill, Globe2, Lock, Pencil, Folder } from "react-bootstrap-icons";
+import {
+  Col,
+  ListGroupItem,
+  Row,
+  UncontrolledTooltip,
+  Badge,
+} from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -31,16 +37,20 @@ import type {
 } from "../api/data-connectors.api";
 
 import DataConnectorView from "./DataConnectorView";
+import { isProjectNamespace } from "./dataConnector.utils";
+import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 
 interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
   dataConnectorLink?: DataConnectorToProjectLink;
   extendedPreview?: boolean;
+  dataConnectorPotentiallyInaccessible?: boolean;
 }
 export default function DataConnectorBoxListDisplay({
   dataConnector,
   dataConnectorLink,
   extendedPreview,
+  dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorBoxListDisplayProps) {
   const {
     name,
@@ -97,12 +107,16 @@ export default function DataConnectorBoxListDisplay({
               className={cx(
                 "d-flex",
                 "flex-row",
+                "gap-1",
                 "text-truncate",
-                "gap-2",
                 "align-items-center"
               )}
             >
-              <UserAvatar namespace={namespace} size="sm" />
+              {isProjectNamespace(namespace) ? (
+                <Folder className="bi" />
+              ) : (
+                <UserAvatar namespace={namespace} size="sm" />
+              )}
               <p className={cx("mb-0", "text-truncate", "text-muted")}>
                 {namespace}
               </p>
@@ -114,7 +128,7 @@ export default function DataConnectorBoxListDisplay({
                 "align-items-center",
                 "d-flex",
                 "flex-wrap",
-                "gap-2",
+                "gap-1",
                 "justify-content-between"
               )}
             >
@@ -123,22 +137,27 @@ export default function DataConnectorBoxListDisplay({
                   "align-items-center",
                   "d-flex",
                   "flex-wrap",
-                  "gap-3",
+                  "gap-2",
                   "mt-auto"
                 )}
               >
-                {visibility.toLowerCase() === "private" ? (
-                  <div>
-                    <Lock className={cx("bi", "me-1")} />
-                    Private
-                  </div>
-                ) : (
-                  <div>
-                    <Globe2 className={cx("bi", "me-1")} />
-                    Public
-                  </div>
-                )}
+                <div>
+                  {visibility.toLowerCase() === "private" ? (
+                    <>
+                      <Lock className={cx("bi", "me-1")} />
+                      Private
+                    </>
+                  ) : (
+                    <>
+                      <Globe2 className={cx("bi", "me-1")} />
+                      Public
+                    </>
+                  )}
+                </div>
                 {extendedPreview && readOnly}
+                {dataConnectorPotentiallyInaccessible && (
+                  <DataConnectorNotVisibleToAllUsersBadge />
+                )}
               </div>
               <TimeCaption
                 datetime={creationDate}
@@ -154,7 +173,43 @@ export default function DataConnectorBoxListDisplay({
         dataConnectorLink={dataConnectorLink}
         showView={showDetails}
         toggleView={toggleDetails}
+        dataConnectorPotentiallyInaccessible={
+          dataConnectorPotentiallyInaccessible
+        }
       />
+    </>
+  );
+}
+
+interface DataConnectorNotVisibleToAllUsersBadgeProps {
+  className?: string;
+  warning?: string;
+}
+
+export function DataConnectorNotVisibleToAllUsersBadge({
+  className,
+}: DataConnectorNotVisibleToAllUsersBadgeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  return (
+    <>
+      <Badge
+        className={cx(
+          "rounded-pill",
+          "border",
+          "bg-warning-subtle",
+          "border-warning",
+          "text-warning-emphasis",
+          className
+        )}
+        color="primary"
+        innerRef={ref}
+      >
+        Visibility warning
+      </Badge>
+      <UncontrolledTooltip target={ref} placement="bottom">
+        {DATA_CONNECTORS_VISIBILITY_WARNING}
+      </UncontrolledTooltip>
     </>
   );
 }

@@ -193,3 +193,7 @@ export function hasSchemaAccessMode(schema: CloudStorageSchema) {
     providers?.examples && STORAGES_WITH_ACCESS_MODE.includes(schema.prefix)
   );
 }
+
+export function isProjectNamespace(namespace: string): boolean {
+  return namespace.split("/").length >= 2;
+}
