@@ -21,6 +21,7 @@ import { PaginatedResponse } from "../../utils/types/pagination.types";
 
 export interface GitlabProjectResponse {
   id: number;
+  name: string;
   default_branch: string;
   http_url_to_repo: string;
   namespace: { full_path: string };
@@ -118,6 +119,12 @@ export type GitLabRepositoryCommitList =
 export interface GetRepositoryBranchParams {
   branch: string;
   projectId: string;
+}
+
+export interface GetProjectsParams {
+  page?: number;
+  perPage?: number;
+  membership: boolean;
 }
 
 export interface GetRepositoryBranchesParams {
