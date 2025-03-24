@@ -26,20 +26,20 @@
 import cx from "classnames";
 import { useContext } from "react";
 import { Link, Route, Routes, useLocation } from "react-router";
+import { ExternalDocsLink } from "../../../../components/ExternalLinks";
+import AnonymousNavBar from "../../../../components/navbar/AnonymousNavBar";
+import LoggedInNavBar from "../../../../components/navbar/LoggedInNavBar";
+import { RENKU_LOGO } from "../../../../components/navbar/navbar.constans";
+import RenkuNavLinkV2 from "../../../../components/RenkuNavLinkV2";
+import { parseChartVersion } from "../../../../help/release.utils";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import AppContext from "../../../../utils/context/appContext";
+import { Links } from "../../../../utils/constants/Docs";
+import useLegacySelector from "../../../rootV2/NavbarV2";
+import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
+import { Url } from "../../../../utils/helpers/url";
 
-import { ExternalDocsLink } from "../components/ExternalLinks";
-import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
-import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
-import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
-import { RENKU_LOGO } from "../components/navbar/navbar.constans";
-import NavbarV2 from "../features/rootV2/NavbarV2";
-import { parseChartVersion } from "../help/release.utils";
-import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
-import { Links } from "../utils/constants/Docs";
-import AppContext from "../utils/context/appContext";
-import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
-import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
-import { Url } from "../utils/helpers/url";
+import NavbarV2 from "../../../rootV2/NavbarV2";
 
 import "./NavBar.css";
 

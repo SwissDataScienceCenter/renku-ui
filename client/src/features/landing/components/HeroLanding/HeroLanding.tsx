@@ -1,5 +1,5 @@
 import cx from "classnames";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";

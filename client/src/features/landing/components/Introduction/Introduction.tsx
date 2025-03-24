@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import { Col, Container, Row } from "reactstrap";
 import { Links } from "../../../../utils/constants/Docs.js";
 import connectIcon from "../../assets/connectIcon.svg";
