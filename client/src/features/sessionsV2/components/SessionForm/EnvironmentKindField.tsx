@@ -73,7 +73,7 @@ export default function EnvironmentKindField({
               data-cy="environment-kind-custom"
               htmlFor="environment-kind-custom-radio"
             >
-              Custom Environment
+              Custom environment
             </label>
 
             {imageBuildersEnabled && (
