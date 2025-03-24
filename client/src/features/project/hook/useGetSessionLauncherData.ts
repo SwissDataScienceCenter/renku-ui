@@ -19,7 +19,6 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
 import useDefaultBranchOption from "../../session/hooks/options/useDefaultBranchOption.hook";
 import useDefaultCommitOption from "../../session/hooks/options/useDefaultCommitOption.hook";
@@ -34,16 +33,11 @@ import projectGitLabApi, {
 } from "../projectGitLab.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
 
-export function useGetSessionLauncherData() {
-  const defaultBranch = useLegacySelector<string>(
-    (state) => state.stateModel.project.metadata.defaultBranch
-  );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
-  const projectRepositoryUrl = useLegacySelector<string>(
-    (state) => state.stateModel.project.metadata.externalUrl
-  );
+export function useGetSessionLauncherData(
+  defaultBranch: string,
+  gitLabProjectId: number | null,
+  projectRepositoryUrl: string
+) {
   const { branch: currentBranch, commit } = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions
   );
