@@ -145,7 +145,6 @@ jobs:
   publish-images:
     needs: [test-client, test-server]
     runs-on: ubuntu-24.04
-    if: "startsWith(github.ref, 'refs/tags/')"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -160,8 +159,3 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
           PLATFORMS: "linux/amd64,linux/arm64"
-      - name: Update ui version
-        uses: SwissDataScienceCenter/renku-actions/update-component-version@v1.17.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
-          COMPONENT_NAME: renku-ui
