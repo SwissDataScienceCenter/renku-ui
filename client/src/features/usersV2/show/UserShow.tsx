@@ -20,11 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
 import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
-import {
-  generatePath,
-  useNavigate,
-  useParams,
-} from "react-router-dom-v5-compat";
+import { generatePath, useNavigate, useParams } from "react-router";
 import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

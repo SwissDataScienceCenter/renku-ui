@@ -18,7 +18,7 @@
 
 import { Fragment } from "react";
 
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import { Card, CardBody, CardHeader } from "reactstrap";
 import { TimeCaption } from "../components/TimeCaption";
 import Pagination from "../components/Pagination";

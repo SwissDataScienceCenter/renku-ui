@@ -17,7 +17,7 @@
  */
 import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom-v5-compat";
+import { useLocation, useNavigate } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants.ts";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";

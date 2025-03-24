@@ -18,7 +18,7 @@
 
 import { useCallback, useContext, useEffect } from "react";
 import { Balloon, Briefcase } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import { Button, Table } from "reactstrap";
 
 import { Loader } from "../../components/Loader";

@@ -21,7 +21,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { QuestionCircle } from "react-bootstrap-icons";
-import { generatePath, Link, useParams } from "react-router-dom-v5-compat";
+import { generatePath, Link, useParams } from "react-router";
 import { Alert, Button } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

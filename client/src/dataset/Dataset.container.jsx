@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom-v5-compat";
+import { useLocation, useParams } from "react-router";
 
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";

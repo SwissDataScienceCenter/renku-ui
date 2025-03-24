@@ -27,7 +27,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom-v5-compat";
+import { useLocation, useNavigate } from "react-router";
 import { Alert, Button, Col, UncontrolledAlert } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";

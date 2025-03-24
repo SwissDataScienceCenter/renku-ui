@@ -32,7 +32,7 @@ import {
   PlusSquare,
   Send,
 } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router";
 import {
   Badge,
   Card,
@@ -297,11 +297,9 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
 
 function GroupsDashboard() {
   const { data, error, isLoading } = useGetGroupsQuery({
-    params: {
-      page: 1,
-      per_page: 5,
-      direct_member: true,
-    },
+    page: 1,
+    perPage: 5,
+    directMember: true,
   });
   const hasGroups = data && data?.groups?.length > 0;
   return (

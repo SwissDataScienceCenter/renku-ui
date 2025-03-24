@@ -17,7 +17,7 @@
  */
 import cx from "classnames";
 import { Eye, Sliders } from "react-bootstrap-icons";
-import { generatePath } from "react-router-dom-v5-compat";
+import { generatePath } from "react-router";
 import { Nav, NavItem } from "reactstrap";
 
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";

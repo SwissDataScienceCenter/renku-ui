@@ -19,14 +19,14 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
 
 import StatusBanner from "../../features/platform/components/StatusBanner";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
 import type { AppParams } from "../../utils/context/appParams.types";
 import { Url } from "../../utils/helpers/url";
-import { RenkuNavLink } from "../RenkuNavLink";
+import RenkuNavLinkV2 from "../RenkuNavLinkV2";
 import {
   RenkuToolbarHelpMenu,
   RenkuToolbarItemUser,
@@ -82,20 +82,22 @@ export default function AnonymousNavBar({
               )}
             >
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
-                <RenkuNavLink
-                  to={Url.get(Url.pages.search)}
-                  title="Search"
+                <RenkuNavLinkV2
+                  className={cx("d-flex", "gap-2", "align-items-center")}
                   id="link-search"
-                  icon={<Search />}
-                  className="d-flex gap-2 align-items-center"
-                />
+                  to={Url.get(Url.pages.search)}
+                >
+                  <Search />
+                  Search
+                </RenkuNavLinkV2>
               </NavItem>
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
-                <RenkuNavLink
-                  to={Url.get(Url.pages.sessions)}
-                  title="Sessions"
+                <RenkuNavLinkV2
                   id="link-sessions"
-                />
+                  to={Url.get(Url.pages.sessions)}
+                >
+                  Sessions
+                </RenkuNavLinkV2>
               </NavItem>
               <NavItem className="nav-item col-auto ms-sm-auto">
                 <RenkuToolbarHelpMenu firstItem />

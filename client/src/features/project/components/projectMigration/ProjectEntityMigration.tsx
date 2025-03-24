@@ -21,7 +21,7 @@ import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { generatePath, Link } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router";
 import {
   Button,
   Form,

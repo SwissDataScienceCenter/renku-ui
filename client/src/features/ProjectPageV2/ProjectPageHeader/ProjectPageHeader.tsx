@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { generatePath } from "react-router-dom-v5-compat";
+import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { UnderlineArrowLink } from "../../../components/buttons/Button";

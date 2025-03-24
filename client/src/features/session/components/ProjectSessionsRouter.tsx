@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 
-import { Route, Switch } from "react-router";
+import { Route, Routes } from "react-router";
 import { Col } from "reactstrap";
 
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { Url } from "../../../utils/helpers/url";
 import ProjectSessionsList from "./ProjectSessionsList";
 import ShowSession from "./ShowSession";
 import StartNewSession from "./StartNewSession";
@@ -29,41 +28,19 @@ export default function ProjectSessionsRouter() {
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
-  const namespace = useLegacySelector<string>(
-    (state) => state.stateModel.project.metadata.namespace
-  );
-  const path = useLegacySelector<string>(
-    (state) => state.stateModel.project.metadata.path
-  );
-
-  const projectUrlData = {
-    namespace: "",
-    path: pathWithNamespace,
-  };
-  const sessionsListUrl = Url.get(Url.pages.project.session, projectUrlData);
-  const startSessionUrl = Url.get(
-    Url.pages.project.session.new,
-    projectUrlData
-  );
-  const sessionShowUrl = Url.get(Url.pages.project.session.show, {
-    namespace,
-    path,
-    server: ":server",
-  });
 
   return (
     <Col key="content" xs={12}>
-      <Switch>
-        <Route exact path={sessionsListUrl}>
-          <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
-        </Route>
-        <Route path={startSessionUrl}>
-          <StartNewSession />
-        </Route>
-        <Route path={sessionShowUrl}>
-          <ShowSession />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
+          }
+        />
+        <Route path="new" element={<StartNewSession />} />
+        <Route path="show/:server" element={<ShowSession />} />
+      </Routes>
     </Col>
   );
 }

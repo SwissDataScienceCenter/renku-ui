@@ -25,7 +25,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Redirect, useLocation } from "react-router";
+import { useLocation, useNavigate, type Location } from "react-router";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -159,7 +159,7 @@ function BackButton() {
   };
   const projectUrl = Url.get(Url.pages.project, projectUrlData);
 
-  const location = useLocation<LocationState | undefined>();
+  const location: Location<LocationState | undefined> = useLocation();
 
   const { from, filePath } = location.state ?? {};
   const searchParams = useMemo(
@@ -195,7 +195,8 @@ function SessionStarting() {
     (state) => state.stateModel.project.metadata.path
   );
 
-  const location = useLocation<LocationState | undefined>();
+  const location: Location<LocationState | undefined> = useLocation();
+  const navigate = useNavigate();
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
@@ -226,20 +227,38 @@ function SessionStarting() {
     }
   }, [dispatch, error]);
 
-  if (session != null) {
-    return (
-      <Redirect
-        to={{
+  useEffect(() => {
+    if (session != null) {
+      navigate(
+        {
           pathname: Url.get(Url.pages.project.session.show, {
             namespace,
             path,
             server: session.name,
           }),
+        },
+        {
           state: { redirectFromStartServer: true, fromLanding: fromLanding },
-        }}
-      />
-    );
-  }
+          replace: true,
+        }
+      );
+    }
+  }, [fromLanding, namespace, navigate, path, session]);
+
+  // if (session != null) {
+  //   return (
+  //     <Redirect
+  //       to={{
+  //         pathname: Url.get(Url.pages.project.session.show, {
+  //           namespace,
+  //           path,
+  //           server: session.name,
+  //         }),
+  //         state: { redirectFromStartServer: true, fromLanding: fromLanding },
+  //       }}
+  //     />
+  //   );
+  // }
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
