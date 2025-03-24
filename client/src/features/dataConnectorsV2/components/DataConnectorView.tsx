@@ -24,6 +24,7 @@ import {
   Key,
   Lock,
   PersonBadge,
+  Globe2,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
@@ -52,6 +53,9 @@ import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-c
 
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
+import { WarnAlert } from "../../../components/Alert";
+import { isProjectNamespace } from "./dataConnector.utils";
+import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 
 const SECTION_CLASSES = [
   "border-top",
@@ -82,12 +86,14 @@ interface DataConnectorViewProps {
   dataConnectorLink?: DataConnectorToProjectLink;
   showView: boolean;
   toggleView: () => void;
+  dataConnectorPotentiallyInaccessible?: boolean;
 }
 export default function DataConnectorView({
   dataConnector,
   dataConnectorLink,
   showView,
   toggleView,
+  dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorViewProps) {
   return (
     <Offcanvas
@@ -109,7 +115,12 @@ export default function DataConnectorView({
         <DataConnectorViewHeader
           {...{ dataConnector, dataConnectorLink, toggleView }}
         />
-        <DataConnectorViewMetadata dataConnector={dataConnector} />
+        <DataConnectorViewMetadata
+          dataConnector={dataConnector}
+          dataConnectorPotentiallyInaccessible={
+            dataConnectorPotentiallyInaccessible
+          }
+        />
         <DataConnectorViewConfiguration dataConnector={dataConnector} />
         <DataConnectorViewProjects dataConnector={dataConnector} />
         <DataConnectorViewAccess dataConnector={dataConnector} />
@@ -332,9 +343,15 @@ function DataConnectorViewProjects({
   );
 }
 
+interface DataConnectorViewMetadataProps {
+  dataConnector: DataConnectorRead;
+  dataConnectorPotentiallyInaccessible: boolean;
+}
+
 function DataConnectorViewMetadata({
   dataConnector,
-}: Pick<DataConnectorViewProps, "dataConnector">) {
+  dataConnectorPotentiallyInaccessible,
+}: DataConnectorViewMetadataProps) {
   const storageDefinition = dataConnector.storage;
   const credentialFieldDefinitions = useMemo(
     () =>
@@ -392,10 +409,17 @@ function DataConnectorViewMetadata({
       <DataConnectorPropertyValue title="Owner">
         <div className={cx("d-flex", "align-items-center")}>
           <div className="me-1">
-            <UserAvatar namespace={dataConnector.namespace} />{" "}
+            {isProjectNamespace(dataConnector.namespace) ? (
+              <Folder />
+            ) : (
+              <UserAvatar namespace={dataConnector.namespace} />
+            )}{" "}
           </div>
           {namespaceUrl == null ? (
-            <div className="me-1">@{dataConnector.namespace}</div>
+            <div className="me-1">
+              {isProjectNamespace(dataConnector.namespace) ? "" : "@"}
+              {dataConnector.namespace}
+            </div>
           ) : (
             <div>
               <Link className="me-1" to={namespaceUrl}>
@@ -422,6 +446,24 @@ function DataConnectorViewMetadata({
             )}
           </div>
         </div>
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue title="Visibility">
+        {dataConnector.visibility === "private" ? (
+          <>
+            <Lock className={cx("bi", "me-1")} />
+            Private
+          </>
+        ) : (
+          <>
+            <Globe2 className={cx("bi", "me-1")} />
+            Public
+          </>
+        )}
+        {dataConnectorPotentiallyInaccessible && (
+          <WarnAlert className="mt-2" timeout={0} dismissible={false}>
+            {DATA_CONNECTORS_VISIBILITY_WARNING}
+          </WarnAlert>
+        )}
       </DataConnectorPropertyValue>
       {nonRequiredCredentialConfigurationKeys.map((key) => {
         const title =

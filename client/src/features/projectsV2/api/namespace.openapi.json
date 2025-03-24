@@ -19,14 +19,13 @@
         "summary": "Get all groups",
         "parameters": [
           {
-            "in": "query",
-            "description": "query parameters",
-            "name": "params",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "$ref": "#/components/schemas/GroupsGetQuery"
-            }
+            "$ref": "#/components/parameters/PaginationRequestPage"
+          },
+          {
+            "$ref": "#/components/parameters/PaginationRequestPerPage"
+          },
+          {
+            "$ref": "#/components/parameters/OnlyDirectMember"
           }
         ],
         "responses": {
@@ -397,14 +396,16 @@
         "summary": "Get all namespaces",
         "parameters": [
           {
-            "in": "query",
-            "description": "query parameters",
-            "name": "params",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "$ref": "#/components/schemas/NamespaceGetQuery"
-            }
+            "$ref": "#/components/parameters/PaginationRequestPage"
+          },
+          {
+            "$ref": "#/components/parameters/PaginationRequestPerPage"
+          },
+          {
+            "$ref": "#/components/parameters/MinimumRole"
+          },
+          {
+            "$ref": "#/components/parameters/NamespaceKind"
           }
         ],
         "responses": {
@@ -590,8 +591,16 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
-        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*$",
         "example": "a-slug-example"
+      },
+      "OneOrTwoSlugs": {
+        "description": "A command-line/url friendly name for a single slug or two slugs separated by /",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*(?<!\\.git)(?<!\\.atom)(?:/[a-z0-9][a-z0-9\\-_.]*){0,1}$",
+        "example": "user1/project-1"
       },
       "CreationDate": {
         "description": "The date and time the resource was created (in UTC and ISO-8601 format)",
@@ -703,7 +712,7 @@
       "NamespaceKind": {
         "description": "Possible kinds of namespaces",
         "type": "string",
-        "enum": ["group", "user"]
+        "enum": ["group", "user", "project"]
       },
       "NamespaceResponseList": {
         "description": "A list of Renku namespaces",
@@ -733,16 +742,20 @@
           },
           "namespace_kind": {
             "$ref": "#/components/schemas/NamespaceKind"
+          },
+          "path": {
+            "$ref": "#/components/schemas/OneOrTwoSlugs"
           }
         },
-        "required": ["id", "namespace_kind", "slug"],
+        "required": ["id", "namespace_kind", "slug", "path"],
         "example": {
           "id": "01AN4Z79ZS5XN0F25N3DB94T4R",
           "name": "R-Project Group",
           "slug": "r-project",
           "created_by": "owner-keycloak-id",
           "creation_date": "2024-03-04T13:04:45Z",
-          "namespace_kind": "group"
+          "namespace_kind": "group",
+          "path": "r-project"
         }
       },
       "UserId": {
@@ -758,38 +771,14 @@
         "minLength": 1,
         "maxLength": 256
       },
-      "NamespaceGetQuery": {
-        "description": "Query params for namespace get request",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaginationRequest"
-          },
-          {
-            "properties": {
-              "minimum_role": {
-                "description": "A minimum role to filter results by.",
-                "$ref": "#/components/schemas/GroupRole"
-              }
-            }
-          }
-        ]
-      },
-      "GroupsGetQuery": {
-        "description": "Query params for namespace get request",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaginationRequest"
-          },
-          {
-            "properties": {
-              "direct_member": {
-                "description": "A flag to filter groups where the user is a direct member.",
-                "type": "boolean",
-                "default": false
-              }
-            }
-          }
-        ]
+      "NamespaceGetQueryKind": {
+        "type": "array",
+        "description": "Which namespace kinds to include in the response",
+        "items": {
+          "$ref": "#/components/schemas/NamespaceKind"
+        },
+        "default": ["user", "group"],
+        "minItems": 1
       },
       "GroupPermissions": {
         "description": "The set of permissions on a group",
@@ -809,24 +798,18 @@
           }
         }
       },
-      "PaginationRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "page": {
-            "description": "Result's page number starting from 1",
-            "type": "integer",
-            "minimum": 1,
-            "default": 1
-          },
-          "per_page": {
-            "description": "The number of results per page",
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100,
-            "default": 20
-          }
-        }
+      "PaginationRequestPage": {
+        "description": "Result's page number starting from 1",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1
+      },
+      "PaginationRequestPerPage": {
+        "description": "The number of results per page",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 20
       },
       "ErrorResponse": {
         "type": "object",
@@ -853,6 +836,59 @@
           }
         },
         "required": ["error"]
+      }
+    },
+    "parameters": {
+      "PaginationRequestPage": {
+        "in": "query",
+        "description": "the current page in paginated response",
+        "name": "page",
+        "style": "form",
+        "explode": true,
+        "schema": {
+          "$ref": "#/components/schemas/PaginationRequestPage"
+        }
+      },
+      "PaginationRequestPerPage": {
+        "in": "query",
+        "description": "the number of results per page in a paginated response",
+        "name": "per_page",
+        "style": "form",
+        "explode": true,
+        "schema": {
+          "$ref": "#/components/schemas/PaginationRequestPerPage"
+        }
+      },
+      "MinimumRole": {
+        "in": "query",
+        "description": "The minimum role the user should have in the resources returned",
+        "name": "minimum_role",
+        "style": "form",
+        "explode": true,
+        "schema": {
+          "$ref": "#/components/schemas/GroupRole"
+        }
+      },
+      "NamespaceKind": {
+        "in": "query",
+        "description": "environment kinds query parameter",
+        "name": "kinds",
+        "style": "form",
+        "explode": true,
+        "schema": {
+          "$ref": "#/components/schemas/NamespaceGetQueryKind"
+        }
+      },
+      "OnlyDirectMember": {
+        "in": "query",
+        "description": "A flag to filter for where the user is a direct member.",
+        "name": "direct_member",
+        "style": "form",
+        "explode": true,
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
       }
     },
     "responses": {
