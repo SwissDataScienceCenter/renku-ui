@@ -39,8 +39,12 @@ export type FaviconStatus =
   | "waiting"
   | "error"
   | "pause";
+
+export type DoiPage = "link" | "create" | "separate";
+
 interface Display {
   favicon: FaviconStatus;
+  doiPage: DoiPage;
   modals: {
     ssh: {
       show: boolean;

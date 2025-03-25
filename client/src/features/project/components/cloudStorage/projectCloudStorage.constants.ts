@@ -33,7 +33,7 @@ export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
 export const CLOUD_STORAGE_OVERRIDE = {
   storage: {
     azureblob: {
-      position: 2,
+      position: 3,
     },
     drive: {
       hide: true,
@@ -62,17 +62,21 @@ export const CLOUD_STORAGE_OVERRIDE = {
     webdav: {
       name: "WebDAV",
       description: "WebDAV compatible services",
-      position: 5,
+      position: 6,
     },
     polybox: {
       name: "PolyBox",
       description: "Online data storage service exclusively for ETH members",
-      position: 3,
+      position: 4,
     },
     switchDrive: {
       name: "SwitchDrive",
       description: "Cloud storage service for the Swiss university community",
-      position: 4,
+      position: 5,
+    },
+    doi: {
+      name: "DOI",
+      position: 2,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
@@ -246,6 +250,7 @@ export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
   "webdav",
   "azureblob",
   "sftp",
+  "doi",
 ];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {

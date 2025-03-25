@@ -20,9 +20,16 @@ import cx from "classnames";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
 import { useCallback, useEffect, useState } from "react";
-import { Database, NodePlus, PlusLg, XLg } from "react-bootstrap-icons";
+import {
+  Database,
+  Link45deg,
+  NodePlus,
+  PlusLg,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
+  Badge,
   Button,
   ButtonGroup,
   Form,
@@ -51,6 +58,7 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { usePostDataConnectorsMutation } from "../../../dataConnectorsV2/api/data-connectors.api";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -60,7 +68,7 @@ interface ProjectConnectDataConnectorsModalProps
   project: Project;
 }
 
-type ProjectConnectDataConnectorMode = "create" | "link";
+type ProjectConnectDataConnectorMode = "create" | "link" | "doi";
 
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
@@ -104,8 +112,17 @@ export default function ProjectConnectDataConnectorsModal({
             toggle,
           }}
         />
-      ) : (
+      ) : mode === "link" ? (
         <ProjectLinkDataConnectorBodyAndFooter
+          {...{
+            isOpen,
+            namespace,
+            project,
+            toggle,
+          }}
+        />
+      ) : (
+        <ProjectDoiDataConnectorBodyAndFooter
           {...{
             isOpen,
             namespace,
@@ -122,6 +139,7 @@ function ProjectConnectDataConnectorModalTitle() {
   const { flatDataConnector, cloudStorageState } = useAppSelector(
     (state) => state.dataConnectorFormSlice
   );
+  const doiPage = useAppSelector(({ display }) => display.doiPage);
 
   const title =
     cloudStorageState?.step > 1
@@ -133,6 +151,7 @@ function ProjectConnectDataConnectorModalTitle() {
     <>
       <Database className={cx("bi", "me-1")} />
       Link or create data connector {title.trim()}
+      <Badge color="info">{doiPage}</Badge>
     </>
   );
 }
@@ -144,6 +163,7 @@ function ProjectConnectDataConnectorModeSwitch({
   mode: ProjectConnectDataConnectorMode;
   setMode: (mode: ProjectConnectDataConnectorMode) => void;
 }) {
+  const doiPage = useAppSelector(({ display }) => display.doiPage);
   return (
     <ButtonGroup>
       <Input
@@ -182,6 +202,29 @@ function ProjectConnectDataConnectorModeSwitch({
         <PlusLg className={cx("bi", "me-1")} />
         Create a data connector
       </Label>
+
+      {doiPage === "separate" && (
+        <>
+          <Input
+            type="radio"
+            className="btn-check"
+            id="project-data-controller-mode-doi"
+            value="create"
+            checked={mode === "doi"}
+            onChange={() => {
+              setMode("doi");
+            }}
+          />
+          <Label
+            data-cy="project-data-controller-mode-doi"
+            for="project-data-controller-mode-doi"
+            className={cx("btn", "btn-outline-primary", "mb-0")}
+          >
+            <Link45deg className={cx("bi", "me-1")} />
+            Link a DOI
+          </Label>
+        </>
+      )}
     </ButtonGroup>
   );
 }
@@ -232,8 +275,62 @@ function ProjectLinkDataConnectorBodyAndFooter({
     },
   });
 
+  const doiPage = useAppSelector(({ display }) => display.doiPage);
+  const allowPaste = doiPage === "link";
+
+  const [createDataConnector, createResult] = usePostDataConnectorsMutation();
+  const [createProjectLink, createProjectLinkResult] =
+    usePostDataConnectorsByDataConnectorIdProjectLinksMutation();
+
+  const randomString = () => {
+    return Math.random().toString(20).substring(2, 8).toLowerCase();
+  };
+  useEffect(() => {
+    if (createResult.isSuccess) {
+      createProjectLink({
+        dataConnectorId: createResult.data.id,
+        dataConnectorToProjectLinkPost: {
+          project_id: project.id,
+        },
+      });
+    }
+  }, [
+    createResult.isSuccess,
+    createProjectLink,
+    project.id,
+    createResult.data,
+  ]);
+
+  useEffect(() => {
+    if (createProjectLinkResult.isSuccess) {
+      toggle();
+    }
+  }, [createProjectLinkResult.isSuccess, toggle]);
+
   const onSubmit = useCallback(
     async (values: DataConnectorLinkFormFields) => {
+      if (values.dataConnectorIdentifier.includes("zenodo.")) {
+        const localSlug = randomString();
+        createDataConnector({
+          dataConnectorPost: {
+            name: "DOI test",
+            namespace: `${project.namespace}/${project.slug}`,
+            slug: localSlug,
+            visibility: "public",
+            storage: {
+              configuration: {
+                type: "doi",
+                doi: "10.5281/zenodo.15081377",
+              },
+              readonly: true,
+              source_path: "/",
+              target_path: localSlug,
+            },
+          },
+        });
+        return;
+      }
+
       const [namespace, slug] = values.dataConnectorIdentifier.split("/");
       const dataConnectorPromise = dispatch(
         dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug.initiate(
@@ -257,7 +354,14 @@ function ProjectLinkDataConnectorBodyAndFooter({
         },
       });
     },
-    [dispatch, linkDataConnector, project.id]
+    [
+      dispatch,
+      linkDataConnector,
+      project.id,
+      project.namespace,
+      project.slug,
+      createDataConnector,
+    ]
   );
 
   useEffect(() => {
@@ -273,7 +377,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
       <ModalBody data-cy="data-connector-edit-body">
         <div className="mb-3">
           <Label className="form-label" for="data-connector-identifier">
-            Data connector identifier
+            Data connector identifier{allowPaste && " or DOI"}
           </Label>
           <Controller
             control={control}
@@ -285,19 +389,24 @@ function ProjectLinkDataConnectorBodyAndFooter({
                   errors.dataConnectorIdentifier && "is-invalid"
                 )}
                 id="data-connector-identifier"
-                placeholder="namespace/slug"
+                placeholder={"namespace/slug" + (allowPaste ? "/DOI" : "")}
                 type="text"
                 {...field}
               />
             )}
             rules={{
               required: true,
-              pattern: /^(.+)\/(.+)$/,
+              // pattern: /^(.+)\/(.+)$/,
             }}
           />
           <div className="form-text">
             Copy a data connector identifier from the data connector&apos;s side
             panel
+            {allowPaste && (
+              <span>
+                , or paste a DOI (E.G: <code>10.5281/zenodo.15081377</code>)
+              </span>
+            )}
           </div>
           <div className="invalid-feedback">
             {errors.dataConnectorIdentifier == null
@@ -317,7 +426,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
-        <Button color="outline-danger" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -333,6 +442,142 @@ function ProjectLinkDataConnectorBodyAndFooter({
             <NodePlus className={cx("bi", "me-1")} />
           )}
           Link data connector
+        </Button>
+      </ModalFooter>
+    </Form>
+  );
+}
+
+interface DataConnectorDoiFormFields {
+  doi: string;
+}
+
+function ProjectDoiDataConnectorBodyAndFooter({
+  project,
+  toggle,
+}: ProjectConnectDataConnectorsModalProps) {
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<DataConnectorDoiFormFields>({
+    defaultValues: {
+      doi: "",
+    },
+  });
+
+  const [createDataConnector, createResult] = usePostDataConnectorsMutation();
+  const [createProjectLink, createProjectLinkResult] =
+    usePostDataConnectorsByDataConnectorIdProjectLinksMutation();
+
+  const randomString = () => {
+    return Math.random().toString(20).substring(2, 8).toLowerCase();
+  };
+  const slug = randomString();
+
+  const onSubmit = () => {
+    createDataConnector({
+      dataConnectorPost: {
+        name: "DOI test",
+        namespace: `${project.namespace}/${project.slug}`,
+        slug,
+        visibility: "public",
+        storage: {
+          configuration: {
+            type: "doi",
+            doi: "10.5281/zenodo.15081377",
+          },
+          readonly: true,
+          source_path: "/",
+          target_path: slug,
+        },
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (createResult.isSuccess) {
+      createProjectLink({
+        dataConnectorId: createResult.data.id,
+        dataConnectorToProjectLinkPost: {
+          project_id: project.id,
+        },
+      });
+    }
+  }, [
+    createResult.isSuccess,
+    createProjectLink,
+    project.id,
+    createResult.data,
+  ]);
+
+  useEffect(() => {
+    if (createProjectLinkResult.isSuccess) {
+      toggle();
+    }
+  }, [createProjectLinkResult.isSuccess, toggle]);
+
+  return (
+    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <ModalBody data-cy="data-connector-edit-body">
+        <div className="mb-3">
+          <Label className="form-label" for="data-connector-identifier">
+            DOI identifier or URL
+          </Label>
+          <Controller
+            control={control}
+            name="doi"
+            render={({ field }) => (
+              <Input
+                className={cx("form-control", errors.doi && "is-invalid")}
+                id="doi"
+                placeholder="DOI"
+                type="text"
+                {...field}
+              />
+            )}
+            rules={{
+              required: true,
+              // pattern: /^(.+)\/(.+)$/,
+            }}
+          />
+          <div className="form-text">
+            Copy a DOI identifier (E.G. <code>10.5281/zenodo.15081377</code>) or
+            the full URL.
+          </div>
+          <div className="invalid-feedback">
+            {errors.doi == null
+              ? undefined
+              : errors.doi.message != null && errors.doi.message.length > 0
+              ? errors.doi.message
+              : "Please provide a DOI"}
+          </div>
+        </div>
+        {/* {isSuccess != null && !isSuccess && (
+          <RtkOrNotebooksError error={linkDataConnectorError} />
+        )}
+        {lookupDataConnectorError != null && (
+          <RtkOrNotebooksError error={lookupDataConnectorError} />
+        )} */}
+      </ModalBody>
+
+      <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
+        <Button color="outline-primary" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          data-cy="link-data-connector-button"
+          disabled={createResult.isLoading || createProjectLinkResult.isLoading}
+          type="submit"
+        >
+          {createResult.isLoading || createProjectLinkResult.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <Link45deg className={cx("bi", "me-1")} />
+          )}
+          Link DOI
         </Button>
       </ModalFooter>
     </Form>
