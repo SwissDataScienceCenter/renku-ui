@@ -73,13 +73,15 @@ const projectGitLabApi = createApi({
       },
     }),
     getAllProjects: builder.query<GitlabProjectResponse[], GetProjectsParams>({
-      query: ({ page, perPage, membership }) => {
+      query: ({ page, perPage, membership, search, min_access_level }) => {
         return {
           url: "",
           params: {
             ...(page ? { page: page } : {}),
             ...(perPage ? { per_page: perPage } : {}),
             ...(membership ? { membership: membership } : {}),
+            ...(search ? { search: search } : {}),
+            ...(min_access_level ? { min_access_level: min_access_level } : {}),
           },
         };
       },

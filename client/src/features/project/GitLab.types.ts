@@ -125,6 +125,8 @@ export interface GetProjectsParams {
   page?: number;
   perPage?: number;
   membership: boolean;
+  search?: string;
+  min_access_level?: 50;
 }
 
 export interface GetRepositoryBranchesParams {
