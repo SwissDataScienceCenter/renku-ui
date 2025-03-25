@@ -19,10 +19,17 @@
 import cx from "classnames";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { XLg, ArrowLeftShort } from "react-bootstrap-icons";
+import { XLg, Airplane, ArrowLeft } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, Link, useLocation } from "react-router";
-import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import {
+  Button,
+  Form,
+  InputGroup,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 import {
   ErrorAlert,
   InfoAlert,
@@ -153,25 +160,86 @@ export function ProjectEntityMigration({
 interface ProjectListProps {
   projects: GitlabProjectResponse[];
   onSelectProject: (project: GitlabProjectResponse) => void;
+  onSearch: (searchTerm: string) => void;
+  isLoading: boolean;
 }
 
-function ProjectList({ projects, onSelectProject }: ProjectListProps) {
+function ProjectList({
+  projects,
+  onSelectProject,
+  onSearch,
+  isLoading,
+}: ProjectListProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSearch(searchTerm);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onSearch(searchTerm);
+    }
+  };
+
+  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    onSearch(searchTerm);
+  };
+
   return (
-    <div className="list-group">
-      {projects.map((project) => (
-        <button
-          key={project.id}
-          className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-          onClick={() => onSelectProject(project)}
-        >
-          <div>
-            <h6 className="mb-0">{project.name}</h6>
-            <small className="text-muted">@{project.namespace.full_path}</small>
-          </div>
-          <VisibilityIcon visibility={project.visibility} />
-        </button>
-      ))}
-    </div>
+    <>
+      <div className="mb-3">
+        <Form noValidate onSubmit={handleSubmit}>
+          <InputGroup data-cy="search-bar-project-list">
+            <input
+              autoComplete="project-migration-search"
+              className="form-control"
+              data-cy="project-migration-search"
+              id="project-migration-search"
+              placeholder="Search project..."
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <Button
+              color="primary"
+              data-cy="project-migration-search-button"
+              id="project-migration-search-button"
+              type="submit"
+              onClick={handleSearchClick}
+            >
+              Search
+            </Button>
+          </InputGroup>
+        </Form>
+      </div>
+      {isLoading && (
+        <>
+          <Loader /> Loading projects...
+        </>
+      )}
+      <div className={cx("list-group")}>
+        {projects.map((project) => (
+          <button
+            key={project.id}
+            className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            onClick={() => onSelectProject(project)}
+          >
+            <div>
+              <h6 className="mb-0">{project.name}</h6>
+              <small className="text-muted">
+                @{project.namespace.full_path}
+              </small>
+            </div>
+            <VisibilityIcon visibility={project.visibility} />
+          </button>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -191,6 +259,7 @@ export function MigrationModal({
   const [step, setStep] = useState(projectMetadata ? 2 : 1);
   const [selectedProject, setSelectedProject] =
     useState<GitlabProjectResponse | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const {
     data: dataGitlabProjects,
     error: errorGitlabProjects,
@@ -199,8 +268,10 @@ export function MigrationModal({
   } = useGetAllProjectsQuery(
     {
       page: 1,
-      perPage: 100,
+      perPage: 15,
       membership: true,
+      search: searchTerm,
+      min_access_level: 50,
     },
     {
       skip: !!projectMetadata,
@@ -339,7 +410,7 @@ export function MigrationModal({
       setSelectedProject(project);
       reset({
         name: project.name,
-        namespace: project.namespace.full_path,
+        namespace: "",
         slug: project.path,
         visibility: project.visibility === "public" ? "public" : "private",
       });
@@ -383,6 +454,10 @@ export function MigrationModal({
     [isRenkuV1]
   );
 
+  const handleSearch = useCallback((search: string) => {
+    setSearchTerm(search);
+  }, []);
+
   return (
     <ScrollableModal
       backdrop="static"
@@ -390,31 +465,31 @@ export function MigrationModal({
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      className="bg-white"
     >
       <ModalHeader toggle={toggle}>
+        <Airplane className={cx("bi", "me-1")} />
         {step === 1
           ? "Select project to migrate"
           : "Migrate project to Renku 2.0"}
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className="p-4">
         <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkErrorAlert error={result.error} />}
           {step === 1 && !projectMetadata ? (
             <>
-              {isLoadingGitlabProjects ? (
-                <div className="py-2">
-                  <Loader inline size={16} /> Loading projects...
-                </div>
-              ) : errorGitlabProjects ? (
+              {errorGitlabProjects ? (
                 <ErrorAlert dismissible={false}>
                   Error loading projects. Please try again.
                 </ErrorAlert>
               ) : (
-                <ProjectList
-                  projects={dataGitlabProjects ?? []}
-                  onSelectProject={handleProjectSelect}
-                />
+                <div className="h-100">
+                  <ProjectList
+                    projects={dataGitlabProjects ?? []}
+                    onSelectProject={handleProjectSelect}
+                    onSearch={handleSearch}
+                    isLoading={isLoadingGitlabProjects}
+                  />
+                </div>
               )}
             </>
           ) : (
@@ -484,17 +559,24 @@ export function MigrationModal({
       <ModalFooter>
         {!result.data && (
           <>
-            <Button
-              color={buttonClasses.outline}
-              onClick={step === 1 ? toggle : handleBack}
-            >
-              {step === 1 ? (
-                <XLg className={cx("bi", "me-1")} />
-              ) : (
-                <ArrowLeftShort className={cx("bi", "me-1")} />
-              )}
-              {step === 1 ? "Cancel" : "Back"}
-            </Button>
+            {!projectMetadata && (
+              <Button
+                color={buttonClasses.outline}
+                onClick={step === 1 ? toggle : handleBack}
+              >
+                {step === 1 ? (
+                  <XLg className={cx("bi", "me-1")} />
+                ) : (
+                  <ArrowLeft className={cx("bi", "me-1")} />
+                )}
+                {step === 1 ? "Cancel" : "Back"}
+              </Button>
+            )}
+            {projectMetadata && (
+              <Button color={buttonClasses.outline} onClick={toggle}>
+                <XLg className={cx("bi", "me-1")} /> Cancel
+              </Button>
+            )}
             {step === 2 && (
               <Button
                 color={buttonClasses.primary}
