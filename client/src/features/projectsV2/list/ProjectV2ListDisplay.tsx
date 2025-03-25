@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { Folder, PlusLg } from "react-bootstrap-icons";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -210,6 +210,7 @@ function ProjectBoxHeader({
 
 function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
   const { permissions } = useGroupPermissions({ groupSlug: namespace });
+  const location = useLocation();
 
   return (
     <PermissionsGuard
@@ -224,7 +225,7 @@ function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
             "my-auto"
           )}
           data-cy="group-create-project-button"
-          to={{ hash: PROJECT_CREATION_HASH }}
+          to={{ hash: PROJECT_CREATION_HASH, search: location.search }}
         >
           <PlusLg className="bi" id="createPlus" />
         </Link>
@@ -237,6 +238,7 @@ function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
 
 function AddButtonForUserNamespace({ namespace }: { namespace: string }) {
   const { data: currentUser } = useGetUserQuery();
+  const location = useLocation();
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
@@ -248,7 +250,7 @@ function AddButtonForUserNamespace({ namespace }: { namespace: string }) {
           "ms-auto",
           "my-auto"
         )}
-        to={{ hash: PROJECT_CREATION_HASH }}
+        to={{ hash: PROJECT_CREATION_HASH, search: location.search }}
       >
         <PlusLg className="bi" id="createPlus" />
       </Link>
