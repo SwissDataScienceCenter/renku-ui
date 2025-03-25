@@ -112,6 +112,7 @@ function ProjectV2CreationDetails() {
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
   const groupMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.root);
+  const groupSettingsMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.settings);
 
   const [, setHash] = useLocationHash();
   const closeModal = useCallback(() => {
@@ -130,7 +131,8 @@ function ProjectV2CreationDetails() {
     defaultValues: {
       description: "",
       name: "",
-      namespace: groupMatch?.params.slug ?? "",
+      namespace:
+        groupMatch?.params.slug ?? groupSettingsMatch?.params.slug ?? "",
       slug: "",
       visibility: "private",
     },
