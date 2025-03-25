@@ -131,7 +131,7 @@ function ProjectConnectDataConnectorModalTitle() {
       : "";
   return (
     <>
-      <Database className={cx("bi", "me-1")} />
+      <Database className={cx("me-1", "bi")} />
       Link or create data connector {title.trim()}
     </>
   );
