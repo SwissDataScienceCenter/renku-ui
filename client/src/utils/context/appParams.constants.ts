@@ -39,14 +39,7 @@ const DEFAULT_HOMEPAGE: AppParams["HOMEPAGE"] = {
       contentMd: "# Welcome to RenkuLab",
     },
   },
-  datasetSlug: "",
   projectPath: "",
-  showcase: {
-    enabled: false,
-    description: "",
-    projects: [],
-    title: "",
-  },
   tutorialLink: Docs.READ_THE_DOCS_TUTORIALS_STARTING,
 };
 
