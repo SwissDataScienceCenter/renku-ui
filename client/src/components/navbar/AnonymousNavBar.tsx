@@ -23,7 +23,7 @@ import { Link } from "react-router";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
 
 import StatusBanner from "../../features/platform/components/StatusBanner";
-import { NavBarWarnings } from "../../landing/NavBarWarnings";
+import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import { Url } from "../../utils/helpers/url";
