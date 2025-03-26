@@ -49,6 +49,22 @@ const Links = {
   RENKU_2_LEARN_MORE: "https://blog.renkulab.io/early-access",
   RENKU_2_MIGRATION_INFO:
     "https://renku.notion.site/How-to-migrate-a-Renku-1-0-project-to-Renku-2-0-1ac0df2efafc80a88e58e2b3db035110",
+  RENKU_2_COMMUNITY_PORTAL:
+    "https://www.notion.so/renku/Renku-Community-Portal-2a154d7d30b24ab8a5968c60c2592d87",
+  RENKU_2_DOCUMENTATION:
+    "https://www.notion.so/renku/Documentation-db396cfc9a664cd2b161e4c6068a5ec9",
+  RENKU_2_RESEARCH:
+    "https://renku.notion.site/Renku-for-Data-Scientists-21d46b16e76e4bc484add8367c44f884",
+  RENKU_2_TEACHING:
+    "https://renku.notion.site/Renku-for-Teaching-1460df2efafc809cb134d2a4e32ed90e",
+  RENKU_2_EVENTS:
+    "https://renku.notion.site/Renku-for-Events-18c0df2efafc800bb26ae93333b4318d",
+  RENKU_2_QUICK_START_TUTORIAL:
+    "https://www.notion.so/renku/Quick-Start-tutorial-1460df2efafc80998204c1f61e333e63",
+  RENKU_2_GET_HELP:
+    "https://www.notion.so/renku/Get-help-1a2b4b7b0e4746769e246c0328d3d3ad",
+  RENKU_2_WHY_RENKU:
+    "https://renku.notion.site/Why-Renku-1900df2efafc80839b26cbad43f24778",
 };
 
 const GitlabLinks = {
