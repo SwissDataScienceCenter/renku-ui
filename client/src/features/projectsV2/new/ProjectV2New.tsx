@@ -113,6 +113,8 @@ function ProjectV2CreationDetails() {
   const navigate = useNavigate();
   const groupMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.root);
   const groupSettingsMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.settings);
+  const defaultNamespace =
+    groupMatch?.params.slug ?? groupSettingsMatch?.params.slug;
 
   const [, setHash] = useLocationHash();
   const closeModal = useCallback(() => {
@@ -131,8 +133,7 @@ function ProjectV2CreationDetails() {
     defaultValues: {
       description: "",
       name: "",
-      namespace:
-        groupMatch?.params.slug ?? groupSettingsMatch?.params.slug ?? "",
+      namespace: defaultNamespace ?? "",
       slug: "",
       visibility: "private",
     },
@@ -199,7 +200,7 @@ function ProjectV2CreationDetails() {
               <div className="mb-1">
                 <ProjectNamespaceFormField
                   control={control}
-                  ensureNamespace={groupMatch?.params.slug}
+                  ensureNamespace={defaultNamespace}
                   entityName={`${formId}-project`}
                   errors={errors}
                   name="namespace"

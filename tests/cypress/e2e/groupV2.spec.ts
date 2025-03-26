@@ -538,6 +538,8 @@ describe("Create projects in a group", () => {
     cy.wait("@readGroupV2");
     cy.getDataCy("group-create-project-button").click();
     cy.contains("Create a new project").should("be.visible");
+    cy.wait("@readGroupV2Namespace");
+    cy.wait("@listNamespaceV2");
     cy.findReactSelectSelectedValue(
       "project-creation-form-project-namespace-input",
       "namespace-select"
