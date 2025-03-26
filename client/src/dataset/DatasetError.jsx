@@ -33,7 +33,6 @@ function DatasetError({ fetchError, insideProject, logged }) {
   const textPost = "and try again.";
   const loginUrl = useLoginUrl();
 
-  // inside project case
   if (insideProject) {
     const title = `Error ${fetchError.code ? fetchError.code : "unknown"}`;
     let errorDetails = null;
