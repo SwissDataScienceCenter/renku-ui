@@ -17,11 +17,20 @@
  */
 
 import { useContext } from "react";
+import { generatePath } from "react-router";
+
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 
 export function useCustomHomePageProjectUrl(): string {
   const { params } = useContext(AppContext);
   const homePage = params?.["HOMEPAGE"] ?? DEFAULT_APP_PARAMS.HOMEPAGE;
-  return `/p/${homePage?.projectPath}`;
+  if (!homePage) return generatePath(ABSOLUTE_ROUTES.v2.root);
+  const [namespace, slug] = homePage.projectPath.split("/");
+  if (!namespace || !slug) return generatePath(ABSOLUTE_ROUTES.v2.root);
+  return generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace,
+    slug,
+  });
 }
