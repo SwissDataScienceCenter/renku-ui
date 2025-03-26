@@ -33,7 +33,7 @@ import {
 
 import { LoginHelper } from "../../authentication";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
-import AdminDropdownItem from "../../landing/AdminDropdownItem";
+import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem.tsx";
 import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";

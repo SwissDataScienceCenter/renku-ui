@@ -160,16 +160,22 @@ function FooterDashboard() {
 }
 
 interface FooterDashboardCardProps {
+  className?: string;
   children: ReactNode;
   url: string;
 }
-function FooterDashboardCard({ children, url }: FooterDashboardCardProps) {
+export function FooterDashboardCard({
+  className,
+  children,
+  url,
+}: FooterDashboardCardProps) {
   return (
-    <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
+    <Card className={cx(DashboardStyles.DashboardCard, "border-0", "h-100")}>
       <CardBody className={DashboardStyles.FooterCard}>
         <a
           target="_blank"
           className={cx(
+            className,
             "text-primary",
             "d-flex",
             "flex-column",
