@@ -50,6 +50,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import { ProjectMigrationBanner } from "../projectMigrationV2/ProjectMigrationBanner.tsx";
 import {
   GetGroupsApiResponse,
   GetProjectsApiResponse,
@@ -67,7 +68,6 @@ import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
 import DashboardStyles from "./DashboardV2.module.scss";
-import { ProjectEntityMigration } from "./ProjectMigration.tsx";
 
 export default function DashboardV2() {
   const userLogged = useLegacySelector<boolean>(
@@ -100,8 +100,8 @@ export default function DashboardV2() {
               className={cx("d-flex", "flex-column", "gap-4")}
             >
               <SessionsDashboard />
-              <ProjectEntityMigration />
               <ProjectsDashboard />
+              <ProjectMigrationBanner />
               <FooterDashboard />
             </Col>
           </Row>
