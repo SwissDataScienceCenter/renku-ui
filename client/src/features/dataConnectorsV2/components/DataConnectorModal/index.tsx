@@ -72,7 +72,7 @@ export function DataConnectorModalBodyAndFooter({
     if (dataConnector == null) {
       flattened = {
         ...flattened,
-        namespace,
+        namespace: project ? `${project.namespace}/${project.slug}` : namespace,
         visibility: project?.visibility ?? "private",
       };
     }
@@ -91,7 +91,7 @@ export function DataConnectorModalBodyAndFooter({
         schemata: schemata ?? [],
       })
     );
-  }, [dataConnector, dispatch, namespace, project?.visibility, schemata]);
+  }, [dataConnector, dispatch, namespace, project, schemata]);
 
   // Visual elements
   return (
@@ -102,7 +102,10 @@ export function DataConnectorModalBodyAndFooter({
         ) : schemaQueryResult.error ? (
           <RtkOrNotebooksError error={schemaQueryResult.error} />
         ) : (
-          <DataConnectorModalBody storageSecrets={connectorSecrets ?? []} />
+          <DataConnectorModalBody
+            storageSecrets={connectorSecrets ?? []}
+            project={project}
+          />
         )}
       </ModalBody>
 
