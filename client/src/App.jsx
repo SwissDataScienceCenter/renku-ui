@@ -77,7 +77,7 @@ function CentralContentContainer({ user }) {
       </Helmet>
       <Routes>
         <Route
-          path="/"
+          index
           element={
             user.logged ? (
               <ContainerWrap fullSize={true}>
@@ -132,7 +132,7 @@ function CentralContentContainer({ user }) {
             }
           />
         )}
-        <Route path="/*" element={<LazyRootV2 />} />
+        <Route path="*" element={<LazyRootV2 />} />
       </Routes>
     </div>
   );
