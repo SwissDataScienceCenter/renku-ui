@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import ReactPagination from "react-js-pagination";
+import { PaginationItem, PaginationLink } from "reactstrap";
 
 interface PaginationProps {
   className?: string;
@@ -47,18 +47,12 @@ export default function Pagination({
 
   return (
     <div className={cx("d-flex", "align-items-center", "flex-column")}>
-      <ReactPagination
+      <CustomPagination
         activePage={currentPage}
-        itemsCountPerPage={perPage}
-        totalItemsCount={totalItems}
-        onChange={onPageChange}
         innerClass={className}
-        // Some defaults for the styling
-        itemClass="page-item"
-        linkClass="page-link"
-        activeClass="page-item active"
-        hideFirstLastPages={false}
-        hideDisabled
+        itemsCountPerPage={perPage}
+        onChange={onPageChange}
+        totalItemsCount={totalItems}
       />
       {showDescription && totalInPage && (
         <ExtraInfoPagination
@@ -69,6 +63,133 @@ export default function Pagination({
         />
       )}
     </div>
+  );
+}
+
+interface CustomPaginationProps {
+  activePage: number;
+  innerClass?: string;
+  itemsCountPerPage: number;
+  maxPages?: number;
+  onChange: (pageNumber: number) => void;
+  totalItemsCount: number;
+}
+
+function CustomPagination({
+  activePage,
+  innerClass,
+  itemsCountPerPage,
+  onChange,
+  maxPages = 5,
+  totalItemsCount,
+}: CustomPaginationProps) {
+  if (itemsCountPerPage === 0 || totalItemsCount === 0 || maxPages <= 0) {
+    return null;
+  }
+  const totalPages = Math.ceil(totalItemsCount / itemsCountPerPage);
+  if (totalPages <= 1) {
+    return null;
+  }
+
+  const half = Math.floor(maxPages / 2);
+  const start = Math.max(1, activePage - half);
+  const end = Math.min(totalPages, start + maxPages - 1);
+  const startPage =
+    end === totalPages ? Math.max(1, totalPages - maxPages + 1) : start;
+
+  const pages = [];
+
+  // First page button: only show if the first page is not already shown
+  if (startPage !== 1) {
+    pages.push(
+      <PaginationElement
+        ariaLabel="first page"
+        content="⟪"
+        onClick={() => onChange(1)}
+        key="first"
+      />
+    );
+  }
+
+  // Previous page button: only show if there's a previous page
+  if (activePage > 1) {
+    pages.push(
+      <PaginationElement
+        ariaLabel="previous page"
+        content="⟨"
+        onClick={() => onChange(activePage - 1)}
+        key="prev"
+      />
+    );
+  }
+
+  // Page number buttons
+  for (let pageNumber = startPage; pageNumber <= end; pageNumber++) {
+    pages.push(
+      <PaginationElement
+        ariaLabel={`page ${pageNumber.toString()} of ${totalPages}`}
+        content={pageNumber}
+        onClick={() => onChange(pageNumber)}
+        extraClass={pageNumber === activePage ? "active" : ""}
+        key={pageNumber}
+      />
+    );
+  }
+
+  // Next page button: only show if there's a next page
+  if (activePage < totalPages) {
+    pages.push(
+      <PaginationElement
+        ariaLabel="next page"
+        content="⟩"
+        onClick={() => onChange(activePage + 1)}
+        key="next"
+      />
+    );
+  }
+
+  // Last page button: show it if the last page is not already included in the loop
+  if (end !== totalPages) {
+    pages.push(
+      <PaginationElement
+        ariaLabel="last page"
+        content="⟫"
+        onClick={() => onChange(totalPages)}
+        key="last"
+      />
+    );
+  }
+
+  return <ul className={cx(innerClass)}>{pages}</ul>;
+}
+
+interface PaginationElementProps {
+  ariaLabel?: string;
+  content: React.ReactNode;
+  extraClass?: string;
+  key: string | number;
+  onClick: () => void;
+}
+function PaginationElement({
+  ariaLabel = "",
+  content,
+  extraClass = "",
+  key,
+  onClick,
+}: PaginationElementProps) {
+  return (
+    <PaginationItem key={key} className={extraClass}>
+      <PaginationLink
+        aria-label={ariaLabel}
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          onClick();
+        }}
+      >
+        {content}
+      </PaginationLink>
+    </PaginationItem>
   );
 }
 
