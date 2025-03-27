@@ -1,0 +1,7 @@
+.ProjectMigrationBanner {
+  background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+
+  &:hover {
+    background-color: var(--bs-primary-bg-subtle) !important;
+  }
+}

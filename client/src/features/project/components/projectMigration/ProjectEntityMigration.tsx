@@ -16,42 +16,27 @@
  * limitations under the License.
  */
 
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { XLg, Airplane, ArrowLeft } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, Link, useLocation } from "react-router";
-import {
-  Button,
-  Form,
-  InputGroup,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
-import {
-  ErrorAlert,
-  InfoAlert,
-  SuccessAlert,
-  WarnAlert,
-} from "../../../../components/Alert";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { ErrorAlert, SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import { Links } from "../../../../utils/constants/Docs.js";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { toHumanDateTime } from "../../../../utils/helpers/DateTimeUtils";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import {
   RepositoriesList,
-  useGetRenkuV1ProjectsByV1IdMigrationsQuery,
   usePostRenkuV1ProjectsByV1IdMigrationsMutation,
 } from "../../../projectsV2/api/projectV2.api";
 import { GitlabProjectResponse } from "../../GitLab.types";
 import { useGetSessionLauncherData } from "../../hook/useGetSessionLauncherData";
-import { useGetAllProjectsQuery } from "../../projectGitLab.api";
 import {
   ProjectMetadata,
   ProjectMigrationForm,
@@ -62,186 +47,7 @@ import {
 } from "./ProjectMigrationDetails";
 import { ProjectMigrationFormInputs } from "./ProjectMigrationForm";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
-import VisibilityIcon from "../../../../components/entities/VisibilityIcon";
-
-interface ProjectEntityMigrationProps {
-  projectId: number;
-  description?: { isLoading?: boolean; unavailable?: string; value: string };
-  tagList: string[];
-}
-export function ProjectEntityMigration({
-  projectId,
-  description,
-  tagList,
-}: ProjectEntityMigrationProps) {
-  const [isOpenModal, setIsOpenModal] = useState(false);
-
-  const {
-    data: projectMigration,
-    isFetching: isFetchingMigrations,
-    isLoading: isLoadingMigrations,
-    refetch: refetchMigrations,
-  } = useGetRenkuV1ProjectsByV1IdMigrationsQuery({ v1Id: projectId });
-
-  const linkToProject = useMemo(() => {
-    return projectMigration
-      ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: projectMigration.namespace,
-          slug: projectMigration.slug,
-        })
-      : "";
-  }, [projectMigration]);
-
-  const projectMetadata = useLegacySelector<ProjectMetadata>(
-    (state) => state.stateModel.project.metadata
-  );
-
-  useEffect(() => {
-    if (!isOpenModal) {
-      refetchMigrations();
-    }
-  }, [isOpenModal, refetchMigrations]);
-
-  const toggle = useCallback(() => {
-    setIsOpenModal((open) => !open);
-  }, []);
-
-  if (isFetchingMigrations || isLoadingMigrations) return <Loader />;
-
-  if (projectMigration)
-    return (
-      <InfoAlert dismissible={false} timeout={0}>
-        <p>
-          This project has been migrated to a newer version of Renku, Renku 2.0
-        </p>
-        <div className={cx("d-flex", "flex-row", "gap-2")}>
-          <Link className={cx("btn", "btn-sm", "btn-info")} to={linkToProject}>
-            Go to the 2.0 version of the project
-          </Link>
-          <ExternalLink
-            role="button"
-            showLinkIcon={true}
-            title="Learn more"
-            color="outline-info"
-            url={Links.RENKU_2_LEARN_MORE}
-          />
-        </div>
-      </InfoAlert>
-    );
-
-  return (
-    <>
-      <WarnAlert>
-        <p>This project can be migrated to Renku 2.0</p>
-        <div className={cx("d-flex", "flex-row", "gap-2")}>
-          <Button size="sm" color="warning" onClick={toggle}>
-            Migrate this project to Renku 2.0
-          </Button>
-          <ExternalLink
-            role="button"
-            showLinkIcon={true}
-            title="Learn more"
-            color="outline-warning"
-            url={Links.RENKU_2_MIGRATION_INFO}
-          />
-        </div>
-      </WarnAlert>
-      <MigrationModal
-        isOpen={isOpenModal}
-        toggle={toggle}
-        description={description?.isLoading ? undefined : description?.value}
-        tagList={tagList}
-        projectMetadata={projectMetadata}
-      />
-    </>
-  );
-}
-
-interface ProjectListProps {
-  projects: GitlabProjectResponse[];
-  onSelectProject: (project: GitlabProjectResponse) => void;
-  onSearch: (searchTerm: string) => void;
-  isLoading: boolean;
-}
-
-function ProjectList({
-  projects,
-  onSelectProject,
-  onSearch,
-  isLoading,
-}: ProjectListProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onSearch(searchTerm);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      onSearch(searchTerm);
-    }
-  };
-
-  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    onSearch(searchTerm);
-  };
-
-  return (
-    <>
-      <div className="mb-3">
-        <Form noValidate onSubmit={handleSubmit}>
-          <InputGroup data-cy="search-bar-project-list">
-            <input
-              autoComplete="project-migration-search"
-              className="form-control"
-              data-cy="project-migration-search"
-              id="project-migration-search"
-              placeholder="Search project..."
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-            <Button
-              color="primary"
-              data-cy="project-migration-search-button"
-              id="project-migration-search-button"
-              type="submit"
-              onClick={handleSearchClick}
-            >
-              Search
-            </Button>
-          </InputGroup>
-        </Form>
-      </div>
-      {isLoading && (
-        <>
-          <Loader /> Loading projects...
-        </>
-      )}
-      <div className={cx("list-group")}>
-        {projects.map((project) => (
-          <button
-            key={project.id}
-            className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-            onClick={() => onSelectProject(project)}
-          >
-            <div>
-              <h6 className="mb-0">{project.name}</h6>
-              <small className="text-muted">
-                @{project.namespace.full_path}
-              </small>
-            </div>
-            <VisibilityIcon visibility={project.visibility} />
-          </button>
-        ))}
-      </div>
-    </>
-  );
-}
+import { GitlabProjectList } from "../../../projectMigrationV2/GitlabProjectList.js";
 
 export function MigrationModal({
   isOpen,
@@ -249,34 +55,27 @@ export function MigrationModal({
   projectMetadata,
   description,
   tagList,
+  setSearchTerm,
+  dataGitlabProjects,
+  errorGitlabProjects,
+  isLoadingGitlabProjects,
+  refetchGitlabProjects,
 }: {
   isOpen: boolean;
   toggle: () => void;
   projectMetadata?: ProjectMetadata;
   description?: string;
   tagList?: string[];
+  setSearchTerm?: (term: string) => void;
+  searchTerm?: string;
+  dataGitlabProjects?: GitlabProjectResponse[] | undefined;
+  errorGitlabProjects?: FetchBaseQueryError | SerializedError | undefined;
+  isLoadingGitlabProjects?: boolean;
+  refetchGitlabProjects?: () => void;
 }) {
   const [step, setStep] = useState(projectMetadata ? 2 : 1);
   const [selectedProject, setSelectedProject] =
     useState<GitlabProjectResponse | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const {
-    data: dataGitlabProjects,
-    error: errorGitlabProjects,
-    isLoading: isLoadingGitlabProjects,
-    refetch: refetchGitlabProjects,
-  } = useGetAllProjectsQuery(
-    {
-      page: 1,
-      perPage: 15,
-      membership: true,
-      search: searchTerm,
-      min_access_level: 50,
-    },
-    {
-      skip: !!projectMetadata,
-    }
-  );
 
   const {
     control,
@@ -442,9 +241,16 @@ export function MigrationModal({
         visibility:
           projectMetadata?.visibility === "public" ? "public" : "private",
       });
-      if (!projectMetadata) refetchGitlabProjects();
+      if (!projectMetadata && dataGitlabProjects && refetchGitlabProjects)
+        refetchGitlabProjects();
     }
-  }, [isOpen, refetchGitlabProjects, reset, projectMetadata]);
+  }, [
+    isOpen,
+    dataGitlabProjects,
+    refetchGitlabProjects,
+    reset,
+    projectMetadata,
+  ]);
 
   const buttonClasses = useMemo(
     () => ({
@@ -454,9 +260,12 @@ export function MigrationModal({
     [isRenkuV1]
   );
 
-  const handleSearch = useCallback((search: string) => {
-    setSearchTerm(search);
-  }, []);
+  const handleSearch = useCallback(
+    (search: string) => {
+      if (setSearchTerm) setSearchTerm(search);
+    },
+    [setSearchTerm]
+  );
 
   return (
     <ScrollableModal
@@ -473,27 +282,27 @@ export function MigrationModal({
           : "Migrate project to Renku 2.0"}
       </ModalHeader>
       <ModalBody className="p-4">
-        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-          {result.error && <RtkErrorAlert error={result.error} />}
-          {step === 1 && !projectMetadata ? (
-            <>
-              {errorGitlabProjects ? (
-                <ErrorAlert dismissible={false}>
-                  Error loading projects. Please try again.
-                </ErrorAlert>
-              ) : (
-                <div className="h-100">
-                  <ProjectList
-                    projects={dataGitlabProjects ?? []}
-                    onSelectProject={handleProjectSelect}
-                    onSearch={handleSearch}
-                    isLoading={isLoadingGitlabProjects}
-                  />
-                </div>
-              )}
-            </>
-          ) : (
-            <>
+        {result.error && <RtkErrorAlert error={result.error} />}
+        {step === 1 && !projectMetadata ? (
+          <>
+            {errorGitlabProjects ? (
+              <ErrorAlert dismissible={false}>
+                Error loading projects. Please try again.
+              </ErrorAlert>
+            ) : (
+              <div className="h-100">
+                <GitlabProjectList
+                  projects={dataGitlabProjects ?? []}
+                  onSelectProject={handleProjectSelect}
+                  onSearch={handleSearch}
+                  isLoading={isLoadingGitlabProjects ?? false}
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <Form noValidate onSubmit={handleSubmit(onSubmit)}>
               {!result.data && (
                 <ProjectMigrationFormInputs
                   errors={errors}
@@ -528,33 +337,31 @@ export function MigrationModal({
                   <DetailsNotIncludedInMigration />
                 </>
               )}
-              {result?.data && (
-                <SuccessAlert dismissible={false} timeout={0}>
-                  <p>
-                    This project has been successfully migrated to Renku 2.0
-                  </p>
-                  <Link
-                    className={cx("btn", "btn-sm", "btn-success", "text-white")}
-                    to={linkToProject}
-                  >
-                    Go to the 2.0 version of the project
-                  </Link>
-                </SuccessAlert>
-              )}
-              {!containerImage && !isFetchingData && (
-                <ErrorAlert dismissible={false}>
-                  Container image not available, it does not exist or is
-                  currently building.
-                </ErrorAlert>
-              )}
-              {!isProjectSupported && !isFetchingData && (
-                <ErrorAlert dismissible={false}>
-                  Please update this project before migrating it to Renku 2.0.
-                </ErrorAlert>
-              )}
-            </>
-          )}
-        </Form>
+            </Form>
+            {result?.data && (
+              <SuccessAlert dismissible={false} timeout={0}>
+                <p>This project has been successfully migrated to Renku 2.0</p>
+                <Link
+                  className={cx("btn", "btn-sm", "btn-success", "text-white")}
+                  to={linkToProject}
+                >
+                  Go to the 2.0 version of the project
+                </Link>
+              </SuccessAlert>
+            )}
+            {!containerImage && !isFetchingData && (
+              <ErrorAlert dismissible={false}>
+                Container image not available, it does not exist or is currently
+                building.
+              </ErrorAlert>
+            )}
+            {!isProjectSupported && !isFetchingData && (
+              <ErrorAlert dismissible={false}>
+                Please update this project before migrating it to Renku 2.0.
+              </ErrorAlert>
+            )}
+          </>
+        )}
       </ModalBody>
       <ModalFooter>
         {!result.data && (
