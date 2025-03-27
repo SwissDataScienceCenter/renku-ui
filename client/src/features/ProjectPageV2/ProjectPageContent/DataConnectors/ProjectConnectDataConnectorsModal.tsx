@@ -166,28 +166,6 @@ function ProjectConnectDataConnectorModeSwitch({
   const doiPage = useAppSelector(({ display }) => display.doiPage);
   return (
     <ButtonGroup>
-      {doiPage === "separate" && (
-        <>
-          <Input
-            type="radio"
-            className="btn-check"
-            id="project-data-controller-mode-doi"
-            value="create"
-            checked={mode === "doi"}
-            onChange={() => {
-              setMode("doi");
-            }}
-          />
-          <Label
-            data-cy="project-data-controller-mode-doi"
-            for="project-data-controller-mode-doi"
-            className={cx("btn", "btn-outline-primary", "mb-0")}
-          >
-            <Link45deg className={cx("bi", "me-1")} />
-            Link a DOI
-          </Label>
-        </>
-      )}
       <Input
         type="radio"
         className="btn-check"
@@ -224,6 +202,29 @@ function ProjectConnectDataConnectorModeSwitch({
         <PlusLg className={cx("bi", "me-1")} />
         Create a data connector
       </Label>
+
+      {doiPage === "separate" && (
+        <>
+          <Input
+            type="radio"
+            className="btn-check"
+            id="project-data-controller-mode-doi"
+            value="create"
+            checked={mode === "doi"}
+            onChange={() => {
+              setMode("doi");
+            }}
+          />
+          <Label
+            data-cy="project-data-controller-mode-doi"
+            for="project-data-controller-mode-doi"
+            className={cx("btn", "btn-outline-primary", "mb-0")}
+          >
+            <Link45deg className={cx("bi", "me-1")} />
+            Link a DOI
+          </Label>
+        </>
+      )}
     </ButtonGroup>
   );
 }

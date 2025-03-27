@@ -52,7 +52,7 @@ export const CLOUD_STORAGE_OVERRIDE = {
     s3: {
       description:
         "Amazon S3 Compliant Storage Providers including AWS, CloudFlare, DigitalOcean and many others",
-      position: 1,
+      position: 2,
       providers: {
         AWS: {
           position: 1,
@@ -76,7 +76,7 @@ export const CLOUD_STORAGE_OVERRIDE = {
     },
     doi: {
       name: "DOI",
-      position: 2,
+      position: 1,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
