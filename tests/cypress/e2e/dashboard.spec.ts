@@ -198,14 +198,14 @@ describe("dashboard", () => {
         queryUrl:
           "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Florenzo.cavazzi.tech%2Freadme-file-dev&branch=master",
       });
-    cy.visit("projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
+    cy.visit("/projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
     cy.wait("@getFirstProject");
 
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
     cy.wait("@getSessions");
     cy.getDataCy("session-container").should("be.visible");
-    cy.getDataCy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
+    cy.visit("/v1");
     cy.wait("@getLastVisitedProjects");
     cy.getDataCy("container-session").should("have.length", 3);
     cy.getDataCy("container-session")
@@ -295,7 +295,7 @@ describe("dashboard message", () => {
     cy.getDataCy("dashboard-message").should("not.exist");
   });
 
-  it("displays a non-dissmissible success message with a read more section", () => {
+  it("displays a non-dismissible success message with a read more section", () => {
     fixtures.configWithDashboardMessage({
       fixture: NON_DISMISSIBLE_READ_MORE_SUCCESS_MESSAGE_FIXTURE,
     });
