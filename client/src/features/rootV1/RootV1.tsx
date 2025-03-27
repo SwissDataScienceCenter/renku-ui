@@ -31,16 +31,12 @@ import LazyInactiveKGProjectsPage from "../inactiveKgProjects/LazyInactiveKGProj
 import LazySearchPage from "../kgSearch/LazySearchPage";
 import LazySecrets from "../secrets/LazySecrets";
 import LazyAnonymousSessionsList from "../session/components/LazyAnonymousSessionsList";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 
 import ProjectRootV1 from "./ProjectRootV1";
 
-export default function RootV1({
-  user,
-}: {
-  user: {
-    logged: boolean;
-  };
-}) {
+export default function RootV1() {
+  const user = useLegacySelector((state) => state.stateModel.user);
   return (
     <div className="w-100">
       {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
