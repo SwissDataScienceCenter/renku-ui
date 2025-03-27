@@ -75,7 +75,6 @@
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.45.2",
     "react-ipynb-renderer": "^2.2.4",
-    "react-js-pagination": "^3.0.3",
     "react-katex": "^3.0.1",
     "react-markdown": "^8.0.7",
     "react-masonry-css": "^1.0.16",
