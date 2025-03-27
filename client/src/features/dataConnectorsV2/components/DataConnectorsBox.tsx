@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
+import { useSearchParams } from "react-router";
 import {
   Badge,
   Button,
@@ -31,7 +32,6 @@ import {
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import useLocationSearchParams from "../../../utils/customHooks/useLocationSearchParams.hook";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { NamespaceKind } from "../../projectsV2/api/namespace.api";
@@ -115,7 +115,7 @@ export default function DataConnectorsBox({
     [perPage_]
   );
 
-  const [searchParams, setSearchParams] = useLocationSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const onPageChange = useCallback(
     (pageNumber: number) => {
       setSearchParams((prevParams) => {
