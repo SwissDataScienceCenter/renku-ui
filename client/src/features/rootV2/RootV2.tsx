@@ -47,7 +47,6 @@ import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
-import NavbarV2 from "./NavbarV2";
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -73,7 +72,6 @@ export default function RootV2() {
 
   return (
     <div className="w-100">
-      <NavbarV2 />
       <ProjectV2New />
       <GroupNew />
 
