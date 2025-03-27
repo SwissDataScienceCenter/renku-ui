@@ -22,16 +22,10 @@ import PageLoader from "../../components/PageLoader";
 
 const RootV1 = lazy(() => import("./RootV1"));
 
-export default function LazyRootV1({
-  user,
-}: {
-  user: {
-    logged: boolean;
-  };
-}) {
+export default function LazyRootV1() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <RootV1 user={user} />
+      <RootV1 />
     </Suspense>
   );
 }
