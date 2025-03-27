@@ -18,10 +18,17 @@
 
 export const ABSOLUTE_ROUTES = {
   root: "/",
-  datasets: "/datasets",
-  projects: "/projects",
+  datasets: {
+    root: "/datasets",
+    splat: "/datasets/*",
+  },
+  projects: {
+    root: "/projects",
+    splat: "/projects/*",
+  },
   v1: {
     root: "/v1",
+    splat: "/v1/*",
     inactiveKGProjects: "/v1/inactive-kg-projects",
     search: "/v1/search",
     projects: {
