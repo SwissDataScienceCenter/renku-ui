@@ -67,6 +67,7 @@ import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
 import DashboardStyles from "./DashboardV2.module.scss";
+import { ProjectEntityMigration } from "./ProjectMigration.tsx";
 
 export default function DashboardV2() {
   const userLogged = useLegacySelector<boolean>(
@@ -99,6 +100,7 @@ export default function DashboardV2() {
               className={cx("d-flex", "flex-column", "gap-4")}
             >
               <SessionsDashboard />
+              <ProjectEntityMigration />
               <ProjectsDashboard />
               <FooterDashboard />
             </Col>
