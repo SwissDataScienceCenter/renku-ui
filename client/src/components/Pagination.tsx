@@ -54,9 +54,9 @@ export default function Pagination({
         onChange={onPageChange}
         innerClass={className}
         // Some defaults for the styling
-        itemClass={"page-item"}
-        linkClass={"page-link"}
-        activeClass={"page-item active"}
+        itemClass="page-item"
+        linkClass="page-link"
+        activeClass="page-item active"
         hideFirstLastPages={false}
         hideDisabled
       />
