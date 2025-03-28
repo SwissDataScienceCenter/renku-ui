@@ -1,5 +1,6 @@
 import cx from "classnames";
 import { useState } from "react";
+import { Folder } from "react-bootstrap-icons";
 import { Button, Form, InputGroup } from "reactstrap";
 import VisibilityIcon from "../../components/entities/VisibilityIcon";
 import { Loader } from "../../components/Loader";
@@ -78,7 +79,9 @@ export function GitlabProjectList({
             onClick={() => onSelectProject(project)}
           >
             <div>
-              <h6 className="mb-0">{project.name}</h6>
+              <h6 className={cx("mb-0", "fw-bold")}>
+                <Folder className={cx("bi", "me-1")} /> {project.name}
+              </h6>
               <small className="text-muted">
                 @{project.namespace.full_path}
               </small>
