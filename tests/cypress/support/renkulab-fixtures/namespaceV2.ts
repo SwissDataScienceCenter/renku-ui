@@ -137,9 +137,9 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
     listManyGroupV2(args?: ListManyGroupArgs) {
       const { numberOfGroups = 50, name = "listGroupV2" } = args ?? {};
       cy.intercept("GET", `/ui-server/api/data/groups?*`, (req) => {
-        const page = +req.query["page"] ?? 1;
+        const page = +req.query["page"] || 1;
         // TODO the request parameter is per_page, the result is per-page. These should be the same.
-        const perPage = +req.query["per_page"] ?? 20;
+        const perPage = +req.query["per_page"] || 20;
         const totalPages = Math.ceil(numberOfGroups / perPage);
         const start = (page - 1) * perPage;
         const numToGen = Math.min(
@@ -307,6 +307,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         const namespace = {
           ...namespace_,
           slug: groupSlug,
+          path: groupSlug,
         };
         cy.intercept("GET", `/ui-server/api/data/namespaces/${groupSlug}`, {
           body: namespace,
