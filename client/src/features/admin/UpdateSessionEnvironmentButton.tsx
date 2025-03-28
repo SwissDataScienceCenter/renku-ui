@@ -114,6 +114,7 @@ function UpdateSessionEnvironmentModal({
           gid: data.gid ?? undefined,
           command: commandParsed.data,
           args: argsParsed.data,
+          strip_prefix_path: data.strip_prefix_path,
         });
     },
     [environment.id, updateSessionEnvironment]

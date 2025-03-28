@@ -95,6 +95,7 @@ function AddSessionEnvironmentModal({
           gid: data.gid ?? undefined,
           command: commandParsed.data,
           args: argsParsed.data,
+          strip_prefix_path: data.strip_prefix_path,
         });
     },
     [addSessionEnvironment]

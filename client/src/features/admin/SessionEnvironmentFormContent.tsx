@@ -35,6 +35,7 @@ export interface SessionEnvironmentForm {
   mount_directory: string;
   command: string;
   args: string;
+  strip_prefix_path: boolean;
 }
 
 interface SessionEnvironmentFormContentProps {
