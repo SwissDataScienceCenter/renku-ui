@@ -25,6 +25,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Input,
   ListGroup,
   UncontrolledTooltip,
 } from "reactstrap";
@@ -48,6 +49,10 @@ import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
 import { ErrorAlert } from "../../../../components/Alert";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import { setDoiPage } from "../../../display/displaySlice";
+import { DoiPage } from "../../../display/display.types";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 
 interface DataConnectorListDisplayProps {
   project: Project;
@@ -165,6 +170,11 @@ function ProjectDataConnectorBoxHeader({
 }: ProjectDataConnectorBoxHeaderProps) {
   const permissions = useProjectPermissions({ projectId });
 
+  const dispatch = useAppDispatch();
+  const setDoi = (event: React.ChangeEvent<HTMLInputElement>) =>
+    dispatch(setDoiPage(event.target.value as DoiPage));
+  const doiPage = useAppSelector(({ display }) => display.doiPage);
+
   return (
     <CardHeader>
       <div
@@ -186,7 +196,19 @@ function ProjectDataConnectorBoxHeader({
             />
           )}
         </div>
-        <div className="my-auto">
+        <div className={cx("d-flex", "gap-2", "my-auto")}>
+          <Input
+            className="border-info bg-info-subtle"
+            type="select"
+            name="doi-type"
+            id="doi-type"
+            onChange={setDoi}
+            value={doiPage}
+          >
+            <option value="create">Create</option>
+            <option value="link">Link</option>
+            <option value="separate">Separate</option>
+          </Input>
           <PermissionsGuard
             disabled={null}
             enabled={
