@@ -307,9 +307,8 @@ function MissingDataConnectorsBadge({
         +{inaccessibleConnectors} hidden
       </Badge>
       <UncontrolledTooltip target={ref}>
-        There {singular ? "is" : "are"} {inaccessibleConnectors}
-        data connector{singular ? "" : "s"} linked to this project but not
-        visible to you.
+        There {singular ? "is" : "are"} {inaccessibleConnectors} data connector
+        {singular ? "" : "s"} linked to this project but not visible to you.
       </UncontrolledTooltip>
     </>
   );
