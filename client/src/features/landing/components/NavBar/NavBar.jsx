@@ -29,7 +29,7 @@ import { Link, Route, Routes, useLocation } from "react-router";
 import { ExternalDocsLink } from "../../../../components/ExternalLinks";
 import AnonymousNavBar from "../../../../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../../../../components/navbar/LoggedInNavBar";
-import { RENKU_LOGO } from "../../../../components/navbar/navbar.constans";
+import { RENKU_LOGO } from "../../../../components/navbar/navbar.constants";
 import RenkuNavLinkV2 from "../../../../components/RenkuNavLinkV2";
 import { parseChartVersion } from "../../../../help/release.utils";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
@@ -46,7 +46,7 @@ import "./NavBar.css";
 function RenkuNavBar({ user }) {
   const location = useLocation();
 
-  if (!user.logged && location.pathname === Url.get(Url.pages.landing)) {
+  if (!user?.logged && location.pathname === Url.get(Url.pages.landing)) {
     return null;
   }
 
@@ -57,23 +57,28 @@ function RenkuNavBarInner({ user }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
-  const sessionShowUrl = Url.get(Url.pages.project.session.show, {
-    namespace: projectMetadata["namespace"],
-    path: projectMetadata["path"],
-    server: ":server",
-  });
+  const sessionShowUrl =
+    projectMetadata == null
+      ? null
+      : Url.get(Url.pages.project.session.show, {
+          namespace: projectMetadata["namespace"],
+          path: projectMetadata["path"],
+          server: ":server",
+        });
 
   return (
     <Routes key="mainNav">
       <Route path={sessionShowUrl} element={null} />
-      <Route path={`${ABSOLUTE_ROUTES.v2.root}/*`} element={null} />
-      <Route path="/v1/" element={null} />
-      <Route path="/projects/">
-        {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
-      </Route>
-      <Route path="/datasets/">
-        {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
-      </Route>
+      <Route path={ABSOLUTE_ROUTES.v1.root} element={null} />
+      <Route path={ABSOLUTE_ROUTES.v1.splat} element={null} />
+      <Route
+        path={ABSOLUTE_ROUTES.projects.splat}
+        element={!user?.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
+      />
+      <Route
+        path={ABSOLUTE_ROUTES.datasets.splat}
+        element={!user?.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
+      />
       <Route path="*" element={<NavbarV2 />} />
     </Routes>
   );
@@ -92,9 +97,10 @@ function FooterNavbarAnonymousLinks() {
 }
 
 function FooterNavbarLoggedInLinks({ privacyLink }) {
-  const helpLocation = location.pathname.startsWith("/v2")
-    ? ABSOLUTE_ROUTES.v2.help.root
-    : Url.pages.help.base;
+  const location = useLocation();
+  const helpLocation = isRenkuLegacy(location.pathname)
+    ? ABSOLUTE_ROUTES.v1.help.root
+    : ABSOLUTE_ROUTES.v2.help.root;
   return (
     <>
       <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
@@ -119,21 +125,23 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
 }
 
 function FooterNavbar() {
-  const location = useLocation();
-
-  return <FooterNavbarInner location={location} />;
+  return <FooterNavbarInner />;
 }
 
-function FooterNavbarInner({ location }) {
+function FooterNavbarInner() {
+  const location = useLocation();
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
   const user = useLegacySelector((state) => state.stateModel.user);
-  const sessionShowUrl = Url.get(Url.pages.project.session.show, {
-    namespace: projectMetadata["namespace"],
-    path: projectMetadata["path"],
-    server: ":server",
-  });
+  const sessionShowUrl =
+    projectMetadata == null
+      ? null
+      : Url.get(Url.pages.project.session.show, {
+          namespace: projectMetadata["namespace"],
+          path: projectMetadata["path"],
+          server: ":server",
+        });
   const { params } = useContext(AppContext);
 
   const privacyLink =
@@ -184,11 +192,14 @@ function FooterNavbarInner({ location }) {
         </div>
         <div className={cx("d-lg-flex", "d-none", "navbar-nav")}>
           <div className={cx("d-flex", "flex-row", "gap-3", "ms-auto")}>
-            {!user.logged &&
+            {!user?.logged &&
             location.pathname === Url.get(Url.pages.landing) ? (
               <FooterNavbarAnonymousLinks />
             ) : (
-              <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
+              <FooterNavbarLoggedInLinks
+                location={location}
+                privacyLink={privacyLink}
+              />
             )}
           </div>
         </div>
