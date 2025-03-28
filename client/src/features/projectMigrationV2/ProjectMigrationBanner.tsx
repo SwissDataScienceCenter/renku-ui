@@ -4,7 +4,7 @@ import { Airplane } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 import { useGetAllProjectsQuery } from "../project/projectGitLab.api.ts";
 import style from "./ProjectMigrationBanner.module.scss";
-import { MigrationModal } from "../project/components/projectMigration/ProjectEntityMigration.tsx";
+import { MigrationModal } from "../project/components/projectMigration/ProjectMigration.tsx";
 
 export function ProjectMigrationBanner() {
   const [isOpenModal, setIsOpenModal] = useState(false);

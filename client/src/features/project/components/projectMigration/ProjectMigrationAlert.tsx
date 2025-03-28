@@ -9,7 +9,7 @@ import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants.ts";
 import { Links } from "../../../../utils/constants/Docs.js";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook.ts";
 import { useGetRenkuV1ProjectsByV1IdMigrationsQuery } from "../../../projectsV2/api/projectV2.api.ts";
-import { MigrationModal } from "./ProjectEntityMigration.tsx";
+import { MigrationModal } from "./ProjectMigration.tsx";
 import { ProjectMetadata } from "./ProjectMigration.types.ts";
 
 interface ProjectMigrationAlertProps {
