@@ -82,7 +82,7 @@ interface PaginationNavProps {
 
 const PaginationNav = memo(function PaginationNav({
   activePage,
-  ariaLabel = "Page navigation",
+  ariaLabel = "page navigation",
   innerClassName,
   itemsCountPerPage,
   onChange,
@@ -135,10 +135,10 @@ const PaginationNav = memo(function PaginationNav({
   for (let pageNumber = startPage; pageNumber <= end; pageNumber++) {
     pages.push(
       <PaginationElement
-        ariaLabel={`page ${pageNumber.toString()} of ${totalPages}`}
+        ariaLabel={`page ${pageNumber} of ${totalPages}`}
         onClick={() => onChange(pageNumber)}
-        className={pageNumber === activePage ? "active" : ""}
-        key={pageNumber}
+        className={cx(pageNumber === activePage && "active")}
+        key={`page-${pageNumber}`}
       >
         {pageNumber}
       </PaginationElement>
@@ -180,14 +180,14 @@ const PaginationNav = memo(function PaginationNav({
 
 interface PaginationElementProps {
   ariaLabel?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   onClick: () => void;
 }
 function PaginationElement({
-  ariaLabel = "",
+  ariaLabel,
   children,
-  className = "",
+  className,
   onClick,
 }: PaginationElementProps) {
   return (
