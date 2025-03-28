@@ -32,7 +32,7 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -105,10 +105,40 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     </div>
   );
 
-  const errorAlert = error && <RtkErrorAlert error={error} />;
-
   const totalSessions =
     (launchers ? launchers?.length : 0) + orphanSessions.length;
+
+  const cardBody = error ? (
+    <RtkOrNotebooksError error={error} />
+  ) : (
+    <>
+      <p className="text-body-secondary">
+        {totalSessions > 0
+          ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
+          : "Define interactive environments in which to do your work and share it  with others."}
+      </p>
+      {loading}
+      {totalSessions > 0 && !isLoading && (
+        <ListGroup flush>
+          {launchers?.map((launcher) => (
+            <SessionItemDisplay
+              key={`launcher-${launcher.id}`}
+              launcher={launcher}
+              project={project}
+            />
+          ))}
+          {orphanSessions?.map((session) => (
+            <OrphanSession
+              key={`orphan-${session.name}`}
+              session={session}
+              project={project}
+            />
+          ))}
+        </ListGroup>
+      )}
+    </>
+  );
+
   return (
     <Card data-cy="sessions-box">
       <CardHeader
@@ -123,7 +153,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
             <PlayCircle className={cx("me-1", "bi")} />
             Sessions
           </h4>
-          <Badge>{totalSessions}</Badge>
+          {totalSessions && <Badge>{totalSessions}</Badge>}
         </div>
         <PermissionsGuard
           disabled={null}
@@ -139,33 +169,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
           userPermissions={permissions}
         />
       </CardHeader>
-      <CardBody>
-        {errorAlert}
-        <p className="text-body-secondary">
-          {totalSessions > 0
-            ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
-            : "Define interactive environments in which to do your work and share it  with others."}
-        </p>
-        {loading}
-        {totalSessions > 0 && !isLoading && (
-          <ListGroup flush>
-            {launchers?.map((launcher) => (
-              <SessionItemDisplay
-                key={`launcher-${launcher.id}`}
-                launcher={launcher}
-                project={project}
-              />
-            ))}
-            {orphanSessions?.map((session) => (
-              <OrphanSession
-                key={`orphan-${session.name}`}
-                session={session}
-                project={project}
-              />
-            ))}
-          </ListGroup>
-        )}
-      </CardBody>
+      <CardBody>{cardBody}</CardBody>
     </Card>
   );
 }
