@@ -17,9 +17,11 @@
  */
 
 import cx from "classnames";
+import { memo } from "react";
 import { PaginationItem, PaginationLink } from "reactstrap";
 
 interface PaginationProps {
+  ariaLabel?: string;
   className?: string;
   currentPage: number;
   onPageChange: (pageNumber: number) => void;
@@ -30,6 +32,7 @@ interface PaginationProps {
 }
 
 export default function Pagination({
+  ariaLabel,
   className: className_,
   currentPage,
   onPageChange,
@@ -47,9 +50,10 @@ export default function Pagination({
 
   return (
     <div className={cx("d-flex", "align-items-center", "flex-column")}>
-      <CustomPagination
+      <PaginationNav
         activePage={currentPage}
-        innerClass={className}
+        ariaLabel={ariaLabel}
+        innerClassName={className}
         itemsCountPerPage={perPage}
         onChange={onPageChange}
         totalItemsCount={totalItems}
@@ -66,23 +70,25 @@ export default function Pagination({
   );
 }
 
-interface CustomPaginationProps {
+interface PaginationNavProps {
   activePage: number;
-  innerClass?: string;
+  ariaLabel?: string;
+  innerClassName?: string;
   itemsCountPerPage: number;
   maxPages?: number;
   onChange: (pageNumber: number) => void;
   totalItemsCount: number;
 }
 
-function CustomPagination({
+const PaginationNav = memo(function PaginationNav({
   activePage,
-  innerClass,
+  ariaLabel = "Page navigation",
+  innerClassName,
   itemsCountPerPage,
   onChange,
   maxPages = 5,
   totalItemsCount,
-}: CustomPaginationProps) {
+}: PaginationNavProps) {
   if (itemsCountPerPage === 0 || totalItemsCount === 0 || maxPages <= 0) {
     return null;
   }
@@ -104,10 +110,11 @@ function CustomPagination({
     pages.push(
       <PaginationElement
         ariaLabel="first page"
-        content="⟪"
         onClick={() => onChange(1)}
         key="first"
-      />
+      >
+        ⟪
+      </PaginationElement>
     );
   }
 
@@ -116,10 +123,11 @@ function CustomPagination({
     pages.push(
       <PaginationElement
         ariaLabel="previous page"
-        content="⟨"
         onClick={() => onChange(activePage - 1)}
         key="prev"
-      />
+      >
+        ⟨
+      </PaginationElement>
     );
   }
 
@@ -128,11 +136,12 @@ function CustomPagination({
     pages.push(
       <PaginationElement
         ariaLabel={`page ${pageNumber.toString()} of ${totalPages}`}
-        content={pageNumber}
         onClick={() => onChange(pageNumber)}
-        extraClass={pageNumber === activePage ? "active" : ""}
+        className={pageNumber === activePage ? "active" : ""}
         key={pageNumber}
-      />
+      >
+        {pageNumber}
+      </PaginationElement>
     );
   }
 
@@ -141,10 +150,11 @@ function CustomPagination({
     pages.push(
       <PaginationElement
         ariaLabel="next page"
-        content="⟩"
         onClick={() => onChange(activePage + 1)}
         key="next"
-      />
+      >
+        ⟩
+      </PaginationElement>
     );
   }
 
@@ -153,41 +163,45 @@ function CustomPagination({
     pages.push(
       <PaginationElement
         ariaLabel="last page"
-        content="⟫"
         onClick={() => onChange(totalPages)}
         key="last"
-      />
+      >
+        ⟫
+      </PaginationElement>
     );
   }
 
-  return <ul className={cx(innerClass)}>{pages}</ul>;
-}
+  return (
+    <nav aria-label={ariaLabel}>
+      <ul className={innerClassName}>{pages}</ul>
+    </nav>
+  );
+});
 
 interface PaginationElementProps {
   ariaLabel?: string;
-  content: React.ReactNode;
-  extraClass?: string;
-  key: string | number;
+  children: React.ReactNode;
+  className?: string;
   onClick: () => void;
 }
 function PaginationElement({
   ariaLabel = "",
-  content,
-  extraClass = "",
-  key,
+  children,
+  className = "",
   onClick,
 }: PaginationElementProps) {
   return (
-    <PaginationItem key={key} className={extraClass}>
+    <PaginationItem className={className}>
       <PaginationLink
         aria-label={ariaLabel}
         href="#"
+        // This should be converted to use Link and allow for smooth navigation
         onClick={(e) => {
           e.preventDefault();
           onClick();
         }}
       >
-        {content}
+        {children}
       </PaginationLink>
     </PaginationItem>
   );
