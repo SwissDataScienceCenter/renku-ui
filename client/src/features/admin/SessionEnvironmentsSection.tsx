@@ -118,6 +118,7 @@ function SessionEnvironmentDisplay({
     mount_directory,
     command,
     args,
+    strip_prefix_path,
   } = environment;
 
   return (
@@ -166,6 +167,9 @@ function SessionEnvironmentDisplay({
           </CardText>
           <CardText className="mb-0">
             Args: <EnvironmentCode value={args ? safeStringify(args) : "-"} />
+          </CardText>
+          <CardText className="mb-0">
+            Strip prefix path: {strip_prefix_path ? "Yes" : "No"}
           </CardText>
           <CardText>
             <TimeCaption

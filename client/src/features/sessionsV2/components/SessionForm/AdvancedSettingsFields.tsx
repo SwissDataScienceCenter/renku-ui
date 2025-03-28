@@ -73,7 +73,7 @@ function FormField<T extends FieldValues>({
       </Label>
       <MoreInfo>
         <LazyRenkuMarkdown markdownText={info} />
-      </MoreInfo>
+      </MoreInfo>{" "}
       <Controller
         control={control}
         name={name}
@@ -282,6 +282,18 @@ export function AdvancedSettingsFields<
             info={ENVIRONMENT_VALUES_DESCRIPTION.args}
             errors={errors}
             helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className={cx("col-12")}>
+          <FormField<T>
+            control={control}
+            name={"stripPrefixPath" as Path<T>}
+            label="Strip session URL path prefix"
+            info={ENVIRONMENT_VALUES_DESCRIPTION.stripPrefixPath}
+            errors={errors}
+            type="checkbox"
           />
         </div>
       </div>

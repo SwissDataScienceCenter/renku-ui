@@ -193,6 +193,10 @@ function CustomImageEnvironmentValues({
         label="Args"
         value={safeStringify(environment.args)}
       />
+      <EnvironmentRowWithLabel
+        label="Strip session URL path prefix"
+        value={environment.strip_prefix_path ?? false ? "Yes" : "No"}
+      />
     </>
   );
 }
