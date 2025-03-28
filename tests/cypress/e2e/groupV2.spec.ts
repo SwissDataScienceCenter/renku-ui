@@ -138,6 +138,19 @@ describe("Edit v2 group", () => {
     cy.contains("public-storage").should("be.visible");
   });
 
+  it("shows a group by old URL", () => {
+    fixtures
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" });
+    cy.visit("/v2/groups/test-2-group-v2");
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+    cy.contains("public-storage").should("be.visible");
+  });
+
   it("allows editing group metadata", () => {
     fixtures
       .readGroupV2()
