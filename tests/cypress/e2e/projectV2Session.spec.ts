@@ -962,3 +962,87 @@ describe("launch sessions with secrets", () => {
     cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
 });
+
+describe("view autostart link", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .projects()
+      .readGroupV2Namespace({ groupSlug: "user1-uuid" })
+      .landingUserProjects()
+      .readProjectV2()
+      .readProjectV2WithoutDocumentation()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .resourcePoolsTest()
+      .getResourceClass()
+      .listProjectV2Members()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+      })
+      .sessionServersEmptyV2()
+      .sessionImage()
+      .newLauncher()
+      .environments()
+      .sessionSecretSlots({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("use autostart link", () => {
+    fixtures.testCloudStorage().listProjectDataConnectors().getDataConnector({
+      fixture: "dataConnector/data-connector-public.json",
+    });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("session-name").should("contain.text", "Session-custom");
+        cy.getDataCy("session-status").should("contain.text", "Not Running");
+        cy.getDataCy("start-session-button").should("contain.text", "Launch");
+      });
+    cy.getDataCy("session-name").click();
+    cy.get("code")
+      .contains("01HYJE99XEKWNKPYN8WRB6QA8Z/start")
+      .should("be.visible");
+
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        const csConfig = req.body.cloudstorage;
+        expect(csConfig.length).equal(1);
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.visit(
+      "/v2/projects/user1-uuid/test-2-v2-project/sessions/01HYJE99XEKWNKPYN8WRB6QA8Z/start"
+    );
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.wait("@getSessionImage");
+    cy.wait("@createSession");
+    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+  });
+});
