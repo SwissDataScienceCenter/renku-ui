@@ -524,6 +524,24 @@ describe("Create projects in a group", () => {
       .should("be.visible");
   });
 
+  it("defaults namespace to the group on settings page", () => {
+    fixtures.readGroupV2Namespace();
+    cy.contains("My groups").should("be.visible");
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+    cy.getDataCy("nav-link-settings").should("be.visible").click();
+    cy.getDataCy("navbar-new-entity").click();
+    cy.getDataCy("navbar-project-new").click();
+    cy.contains("Create a new project").should("be.visible");
+    cy.findReactSelectSelectedValue(
+      "project-creation-form-project-namespace-input",
+      "namespace-select"
+    )
+      .contains("test-2-group-v2")
+      .should("be.visible");
+  });
+
   it("defaults namespace to the group when there are many groups", () => {
     // This fails because the group falls outside the first batch of groups
     fixtures

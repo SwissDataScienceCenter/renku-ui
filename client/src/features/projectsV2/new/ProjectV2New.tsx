@@ -111,11 +111,8 @@ export default function ProjectV2New() {
 function ProjectV2CreationDetails() {
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
-  const groupMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.root);
-  const groupSettingsMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.settings);
-  const defaultNamespace =
-    groupMatch?.params.slug ?? groupSettingsMatch?.params.slug;
-
+  const groupMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.splat);
+  const defaultNamespace = groupMatch?.params.slug;
   const [, setHash] = useLocationHash();
   const closeModal = useCallback(() => {
     setHash();
