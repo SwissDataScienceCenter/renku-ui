@@ -115,6 +115,7 @@ const PaginationNav = memo(function PaginationNav({
   if (startPage !== 1) {
     pages.push(
       <PaginationElement
+        linkClassName="px-2"
         ariaLabel="first page"
         onClick={() => onChange(1)}
         key="first"
@@ -128,6 +129,7 @@ const PaginationNav = memo(function PaginationNav({
   if (activePage > 1) {
     pages.push(
       <PaginationElement
+        linkClassName="px-2"
         ariaLabel="previous page"
         onClick={() => onChange(activePage - 1)}
         key="prev"
@@ -155,6 +157,7 @@ const PaginationNav = memo(function PaginationNav({
   if (activePage < totalPages) {
     pages.push(
       <PaginationElement
+        linkClassName="px-2"
         ariaLabel="next page"
         onClick={() => onChange(activePage + 1)}
         key="next"
@@ -168,6 +171,7 @@ const PaginationNav = memo(function PaginationNav({
   if (end !== totalPages) {
     pages.push(
       <PaginationElement
+        linkClassName="px-2"
         ariaLabel="last page"
         onClick={() => onChange(totalPages)}
         key="last"
@@ -188,18 +192,21 @@ interface PaginationElementProps {
   ariaLabel?: string;
   children?: React.ReactNode;
   className?: string;
+  linkClassName?: string;
   onClick: () => void;
 }
 function PaginationElement({
   ariaLabel,
   children,
   className,
+  linkClassName,
   onClick,
 }: PaginationElementProps) {
   return (
     <PaginationItem className={className}>
       <PaginationLink
         aria-label={ariaLabel}
+        className={linkClassName}
         href="#"
         // This should be converted to use Link and allow for smooth navigation
         onClick={(e) => {
