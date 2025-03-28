@@ -18,6 +18,12 @@
 
 import cx from "classnames";
 import { memo } from "react";
+import {
+  ChevronDoubleLeft,
+  ChevronDoubleRight,
+  ChevronLeft,
+  ChevronRight,
+} from "react-bootstrap-icons";
 import { PaginationItem, PaginationLink } from "reactstrap";
 
 interface PaginationProps {
@@ -113,7 +119,7 @@ const PaginationNav = memo(function PaginationNav({
         onClick={() => onChange(1)}
         key="first"
       >
-        ⟪
+        <ChevronDoubleLeft className="bi" />
       </PaginationElement>
     );
   }
@@ -126,7 +132,7 @@ const PaginationNav = memo(function PaginationNav({
         onClick={() => onChange(activePage - 1)}
         key="prev"
       >
-        ⟨
+        <ChevronLeft className="bi" />
       </PaginationElement>
     );
   }
@@ -153,7 +159,7 @@ const PaginationNav = memo(function PaginationNav({
         onClick={() => onChange(activePage + 1)}
         key="next"
       >
-        ⟩
+        <ChevronRight className="bi" />
       </PaginationElement>
     );
   }
@@ -166,7 +172,7 @@ const PaginationNav = memo(function PaginationNav({
         onClick={() => onChange(totalPages)}
         key="last"
       >
-        ⟫
+        <ChevronDoubleRight className="bi" />
       </PaginationElement>
     );
   }
