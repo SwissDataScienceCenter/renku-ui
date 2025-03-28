@@ -24,7 +24,7 @@ import { Col, ListGroup, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
@@ -82,8 +82,8 @@ function ErrorState({
 }) {
   return (
     <div>
-      <p className="mb-0">Cannot show sessions.</p>
-      <RtkErrorAlert error={error} />
+      <p>Cannot show sessions.</p>
+      <RtkOrNotebooksError error={error} />
     </div>
   );
 }
