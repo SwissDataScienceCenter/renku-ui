@@ -28,7 +28,7 @@ export interface AddSessionEnvironmentParams {
   port?: number;
   command?: string[] | null;
   args?: string[] | null;
-  strip_prefix_path: boolean;
+  strip_path_prefix: boolean;
 }
 
 export interface UpdateSessionEnvironmentParams {
@@ -44,7 +44,7 @@ export interface UpdateSessionEnvironmentParams {
   port?: number;
   command?: string[] | null;
   args?: string[] | null;
-  strip_prefix_path: boolean;
+  strip_path_prefix: boolean;
 }
 
 export interface DeleteSessionEnvironmentParams {
