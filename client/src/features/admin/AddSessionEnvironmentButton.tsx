@@ -94,7 +94,7 @@ function AddSessionEnvironmentModal({
             name: data.name,
             port: data.port ?? undefined,
             uid: data.uid ?? undefined,
-            strip_prefix_path: data.strip_prefix_path,
+            strip_path_prefix: data.strip_patch_prefix,
             working_directory: data.working_directory?.trim() || undefined,
             ...(commandParsed.data ? { command: commandParsed.data } : {}),
             ...(argsParsed.data ? { args: argsParsed.data } : {}),

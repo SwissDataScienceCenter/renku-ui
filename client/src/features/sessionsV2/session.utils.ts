@@ -108,7 +108,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     repository,
     uid,
     working_directory,
-    stripPrefixPath,
+    stripPathPrefix,
   } = data;
 
   if (environmentSelect === "global") {
@@ -151,7 +151,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
       gid,
       command: commandFormatted.data ?? undefined,
       args: argsFormatted.data ?? undefined,
-      strip_prefix_path: stripPrefixPath ?? false,
+      strip_path_prefix: stripPathPrefix ?? false,
     },
   };
 }

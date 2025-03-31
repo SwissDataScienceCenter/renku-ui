@@ -289,9 +289,9 @@ export function AdvancedSettingsFields<
         <div className={cx("col-12")}>
           <FormField<T>
             control={control}
-            name={"stripPrefixPath" as Path<T>}
+            name={"stripPathPrefix" as Path<T>}
             label="Strip session URL path prefix"
-            info={ENVIRONMENT_VALUES_DESCRIPTION.stripPrefixPath}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.stripPathPrefix}
             errors={errors}
             type="checkbox"
           />
