@@ -1,16 +1,22 @@
 import cx from "classnames";
 import { useState } from "react";
-import { Folder } from "react-bootstrap-icons";
+import { Check, Folder } from "react-bootstrap-icons";
 import { Button, Form, InputGroup } from "reactstrap";
 import VisibilityIcon from "../../components/entities/VisibilityIcon";
 import { Loader } from "../../components/Loader";
-import { GitlabProjectResponse } from "../project/GitLab.types";
+import Pagination from "../../components/Pagination.tsx";
+import { GitlabProjectsToMigrate } from "./ProjectMigration.types.ts";
 
 interface GitlabProjectListProps {
-  projects: GitlabProjectResponse[];
-  onSelectProject: (project: GitlabProjectResponse) => void;
+  projects: GitlabProjectsToMigrate[];
+  onSelectProject: (project: GitlabProjectsToMigrate) => void;
   onSearch: (searchTerm: string) => void;
   isLoading: boolean;
+  searchTerm?: string;
+  page: number;
+  perPage: number;
+  totalResult: number;
+  onPageChange?: (page: number) => void;
 }
 
 export function GitlabProjectList({
@@ -18,6 +24,10 @@ export function GitlabProjectList({
   onSelectProject,
   onSearch,
   isLoading,
+  page,
+  perPage,
+  totalResult,
+  onPageChange,
 }: GitlabProjectListProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -38,9 +48,15 @@ export function GitlabProjectList({
     onSearch(searchTerm);
   };
 
+  const notFoundProjects = projects.length === 0 && (
+    <small className="text-muted">
+      Not found projects {searchTerm && `with name ${searchTerm}`} to migrate{" "}
+    </small>
+  );
+
   return (
-    <>
-      <div className="mb-3">
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <div>
         <Form noValidate onSubmit={handleSubmit}>
           <InputGroup data-cy="search-bar-project-list">
             <input
@@ -71,16 +87,39 @@ export function GitlabProjectList({
           <Loader /> Loading projects...
         </>
       )}
+      {notFoundProjects}
       <div className={cx("list-group")}>
         {projects.map((project) => (
           <button
             key={project.id}
-            className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            className={cx(
+              "list-group-item",
+              "list-group-item-action",
+              "d-flex",
+              "justify-content-between",
+              "align-items-center"
+            )}
+            disabled={project.alreadyMigrated}
             onClick={() => onSelectProject(project)}
           >
             <div>
               <h6 className={cx("mb-0", "fw-bold")}>
                 <Folder className={cx("bi", "me-1")} /> {project.name}
+                {project.alreadyMigrated && (
+                  <span
+                    className={cx(
+                      "border",
+                      "border-success",
+                      "bg-success-subtle",
+                      "text-success-emphasis",
+                      "badge bg-secondary",
+                      "rounded-pill",
+                      "ms-3"
+                    )}
+                  >
+                    <Check /> Already migrated
+                  </span>
+                )}
               </h6>
               <small className="text-muted">
                 @{project.namespace.full_path}
@@ -90,6 +129,15 @@ export function GitlabProjectList({
           </button>
         ))}
       </div>
-    </>
+      {onPageChange && (
+        <Pagination
+          currentPage={page}
+          perPage={perPage}
+          totalItems={totalResult ?? 0}
+          onPageChange={onPageChange}
+          showDescription={true}
+        />
+      )}
+    </div>
   );
 }

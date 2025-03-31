@@ -23,7 +23,7 @@ import { useLocation } from "react-router";
 import { Button, ModalFooter } from "reactstrap";
 import { Loader } from "../../../../components/Loader.tsx";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2.ts";
-import { GitlabProjectResponse } from "../../GitLab.types.ts";
+import { GitlabProjectsToMigrate } from "../../../projectMigrationV2/ProjectMigration.types.ts";
 
 interface ProjectMigrationFooterProps {
   isReadyMigrationResult: boolean;
@@ -31,7 +31,7 @@ interface ProjectMigrationFooterProps {
   isLoadingSessionValues: boolean;
   step: number;
   setStep: (step: number) => void;
-  setSelectedProject: (project: GitlabProjectResponse | null) => void;
+  setSelectedProject: (project: GitlabProjectsToMigrate | null) => void;
   hasGitlabProjectList: boolean;
   toggle: () => void;
 }

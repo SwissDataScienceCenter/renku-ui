@@ -47,6 +47,7 @@ import {
   RetryPipelineParams,
   RunPipelineParams,
   GetProjectsParams,
+  GitLabProjectList,
 } from "./GitLab.types";
 import { ProjectConfig } from "./project.types";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
@@ -72,7 +73,7 @@ const projectGitLabApi = createApi({
         };
       },
     }),
-    getAllProjects: builder.query<GitlabProjectResponse[], GetProjectsParams>({
+    getAllProjects: builder.query<GitLabProjectList, GetProjectsParams>({
       query: ({ page, perPage, membership, search, min_access_level }) => {
         return {
           url: "",
@@ -83,6 +84,13 @@ const projectGitLabApi = createApi({
             ...(search ? { search: search } : {}),
             ...(min_access_level ? { min_access_level: min_access_level } : {}),
           },
+        };
+      },
+      transformResponse: (response: GitlabProjectResponse[], meta) => {
+        const pagination = processPaginationHeaders(meta?.response?.headers);
+        return {
+          data: response,
+          pagination,
         };
       },
     }),

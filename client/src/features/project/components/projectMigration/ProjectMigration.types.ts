@@ -40,7 +40,7 @@ export interface ProjectMigrationForm {
   codeRepositories: RepositoriesList;
   containerImage: ContainerImage;
   session_launcher_name: SessionName;
-  defaultUrl: DefaultUrl & any;
+  defaultUrl: DefaultUrl;
   resourceClassId: ResourceClassId;
 }
 
