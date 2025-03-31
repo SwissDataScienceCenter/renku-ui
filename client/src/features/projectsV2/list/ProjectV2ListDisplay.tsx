@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { Folder, PlusLg } from "react-bootstrap-icons";
-import { Link, useSearchParams } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -30,6 +30,7 @@ import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { NamespaceKind } from "../api/namespace.api";
 import { useGetProjectsQuery } from "../api/projectV2.enhanced-api";
+import { PROJECT_CREATION_HASH } from "../new/createProjectV2.constants";
 import ProjectShortHandDisplay from "../show/ProjectShortHandDisplay";
 
 const DEFAULT_PER_PAGE = 5;
@@ -151,15 +152,11 @@ export default function ProjectListDisplay({
                 </ListGroup>
               </div>
               <Pagination
+                className="mt-3"
                 currentPage={data.page}
+                onPageChange={onPageChange}
                 perPage={perPage}
                 totalItems={data.total}
-                onPageChange={onPageChange}
-                className={cx(
-                  "d-flex",
-                  "justify-content-center",
-                  "rk-search-pagination"
-                )}
               />
             </>
           )}
@@ -208,6 +205,7 @@ function ProjectBoxHeader({
 
 function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
   const { permissions } = useGroupPermissions({ groupSlug: namespace });
+  const location = useLocation();
 
   return (
     <PermissionsGuard
@@ -221,7 +219,8 @@ function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
             "ms-auto",
             "my-auto"
           )}
-          to="/v2/projects/new"
+          data-cy="group-create-project-button"
+          to={{ hash: PROJECT_CREATION_HASH, search: location.search }}
         >
           <PlusLg className="bi" id="createPlus" />
         </Link>
@@ -234,6 +233,7 @@ function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
 
 function AddButtonForUserNamespace({ namespace }: { namespace: string }) {
   const { data: currentUser } = useGetUserQuery();
+  const location = useLocation();
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
@@ -245,7 +245,7 @@ function AddButtonForUserNamespace({ namespace }: { namespace: string }) {
           "ms-auto",
           "my-auto"
         )}
-        to="/v2/projects/new"
+        to={{ hash: PROJECT_CREATION_HASH, search: location.search }}
       >
         <PlusLg className="bi" id="createPlus" />
       </Link>

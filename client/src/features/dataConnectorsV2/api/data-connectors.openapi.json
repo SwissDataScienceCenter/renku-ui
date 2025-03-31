@@ -473,6 +473,70 @@
         },
         "tags": ["data_connectors"]
       }
+    },
+    "/projects/{project_id}/data_connector_links": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the project"
+        }
+      ],
+      "get": {
+        "summary": "Get all links from data connectors to a given project",
+        "responses": {
+          "200": {
+            "description": "List of data connector to project links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnectorToProjectLinksList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
+    "/projects/{project_id}/inaccessible_data_connector_links": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the project"
+        }
+      ],
+      "get": {
+        "summary": "Get the number of links that the user does not have access to in a project",
+        "responses": {
+          "200": {
+            "description": "List of data connector to project links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InaccessibleDataConnectorLinks"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
     }
   },
   "components": {
@@ -902,10 +966,21 @@
             "type": "boolean",
             "description": "if true, only values from 'examples' can be used"
           },
-          "datatype": {
+          "type": {
             "type": "string",
             "description": "data type of option value. RClone has more options but they map to the ones listed here.",
-            "enum": ["int", "bool", "string", "Time"]
+            "enum": [
+              "int",
+              "bool",
+              "string",
+              "Time",
+              "Duration",
+              "MultiEncoder",
+              "SizeSuffix",
+              "SpaceSepList",
+              "CommaSepList",
+              "Tristate"
+            ]
           }
         }
       },
@@ -921,8 +996,16 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
-        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*$",
         "example": "a-slug-example"
+      },
+      "OneOrTwoSlugs": {
+        "description": "A command-line/url friendly name for a single slug or two slugs separated by /",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*(?<!\\.git)(?<!\\.atom)(?:/[a-z0-9][a-z0-9\\-_.]*){0,1}$",
+        "example": "user1/project-1"
       },
       "CreationDate": {
         "description": "The date and time the resource was created (in UTC and ISO-8601 format)",
@@ -1073,6 +1156,17 @@
           }
         },
         "required": ["error"]
+      },
+      "InaccessibleDataConnectorLinks": {
+        "description": "Information about inaccessible data connector links",
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The number of data links the user does not have access to"
+          }
+        }
       }
     },
     "responses": {

@@ -84,7 +84,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
 
   return (
     <>
-      {accessLevel >= ACCESS_LEVELS.OWNER && visibility === "public" && (
+      {accessLevel >= ACCESS_LEVELS.OWNER && (
         <ProjectEntityMigration
           projectId={projectId}
           description={descriptionKg}

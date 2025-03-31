@@ -29,6 +29,7 @@ export const ABSOLUTE_ROUTES = {
       show: {
         root: "/v2/groups/:slug",
         settings: "/v2/groups/:slug/settings",
+        splat: "/v2/groups/:slug/*",
       },
     },
     projects: {
