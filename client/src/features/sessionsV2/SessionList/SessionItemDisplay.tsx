@@ -63,7 +63,14 @@ export function SessionItemDisplay({
 
   return (
     <>
-      {filteredSessions?.length > 0 ? (
+      <SessionItem
+        key={`session-item-${launcher.id}`}
+        launcher={launcher}
+        name={name}
+        project={project}
+        toggleSessionDetails={toggleSessionView}
+      />
+      {filteredSessions?.length > 0 &&
         filteredSessions.map((session) => (
           <SessionItem
             key={`session-item-${session.name}`}
@@ -73,16 +80,7 @@ export function SessionItemDisplay({
             session={session}
             toggleSessionDetails={toggleSessionView}
           />
-        ))
-      ) : (
-        <SessionItem
-          key={`session-item-${launcher.id}`}
-          launcher={launcher}
-          name={name}
-          project={project}
-          toggleSessionDetails={toggleSessionView}
-        />
-      )}
+        ))}
       <SessionView
         id={launcherHash}
         launcher={launcher}
