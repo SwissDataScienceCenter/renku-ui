@@ -27,11 +27,12 @@ import { ModalBody, ModalHeader } from "reactstrap";
 import { ErrorAlert, SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import { GitlabProjectsToMigrate } from "../../../projectMigrationV2/ProjectMigration.types.ts";
+import { DEFAULT_PER_PAGE_PROJECT_MIGRATION } from "../../../projectMigrationV2/ProjectMigrationBanner.tsx";
 import {
   ProjectMigrationPost,
   usePostRenkuV1ProjectsByV1IdMigrationsMutation,
 } from "../../../projectsV2/api/projectV2.api";
-import { GitlabProjectResponse } from "../../GitLab.types";
 import {
   ProjectMetadata,
   ProjectMigrationForm,
@@ -51,6 +52,11 @@ export function MigrationModal({
   dataGitlabProjects,
   errorGitlabProjects,
   isLoadingGitlabProjects,
+  searchTerm,
+  page,
+  perPage,
+  totalResult,
+  onPageChange,
 }: {
   isOpen: boolean;
   toggle: () => void;
@@ -59,13 +65,17 @@ export function MigrationModal({
   tagList?: string[];
   setSearchTerm?: (term: string) => void;
   searchTerm?: string;
-  dataGitlabProjects?: GitlabProjectResponse[] | undefined;
+  dataGitlabProjects?: GitlabProjectsToMigrate[] | undefined;
   errorGitlabProjects?: FetchBaseQueryError | SerializedError | undefined;
   isLoadingGitlabProjects?: boolean;
+  page?: number;
+  perPage?: number;
+  totalResult?: number;
+  onPageChange?: (page: number) => void;
 }) {
   const [step, setStep] = useState(projectMetadata ? 2 : 1);
   const [selectedProject, setSelectedProject] =
-    useState<GitlabProjectResponse | null>(null);
+    useState<GitlabProjectsToMigrate | null>(null);
 
   const {
     control,
@@ -105,7 +115,7 @@ export function MigrationModal({
   }, [result.data]);
 
   const handleProjectSelect = useCallback(
-    (project: GitlabProjectResponse) => {
+    (project: GitlabProjectsToMigrate) => {
       setSelectedProject(project);
       reset({
         name: project.name,
@@ -197,6 +207,11 @@ export function MigrationModal({
                   onSelectProject={handleProjectSelect}
                   onSearch={handleSearch}
                   isLoading={isLoadingGitlabProjects ?? false}
+                  searchTerm={searchTerm}
+                  page={page ?? 1}
+                  perPage={perPage ?? DEFAULT_PER_PAGE_PROJECT_MIGRATION}
+                  totalResult={totalResult ?? 0}
+                  onPageChange={onPageChange}
                 />
               </div>
             )}

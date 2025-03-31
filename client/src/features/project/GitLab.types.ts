@@ -30,7 +30,7 @@ export interface GitlabProjectResponse {
   visibility: Visibilities;
   created_at: string;
 }
-
+export type GitLabProjectList = PaginatedResponse<GitlabProjectResponse>;
 // GitLab Pipelines API
 
 export interface GitLabPipeline {
