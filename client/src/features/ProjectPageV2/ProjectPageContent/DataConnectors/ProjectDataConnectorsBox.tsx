@@ -198,16 +198,16 @@ function ProjectDataConnectorBoxHeader({
         </div>
         <div className={cx("d-flex", "gap-2", "my-auto")}>
           <Input
-            className="border-info bg-info-subtle"
+            className="border-primary"
             type="select"
             name="doi-type"
             id="doi-type"
             onChange={setDoi}
             value={doiPage}
           >
-            <option value="create">Create</option>
-            <option value="link">Link</option>
-            <option value="separate">Separate</option>
+            <option value="create">Option C</option>
+            <option value="link">Option L</option>
+            <option value="separate">Option S</option>
           </Input>
           <PermissionsGuard
             disabled={null}
