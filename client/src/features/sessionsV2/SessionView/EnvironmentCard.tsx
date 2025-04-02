@@ -28,6 +28,7 @@ import {
   useState,
 } from "react";
 import {
+  BootstrapReboot,
   BoxArrowUpRight,
   Bricks,
   CircleFill,
@@ -35,6 +36,7 @@ import {
   FileEarmarkText,
   Globe2,
   Link45deg,
+  XCircle,
   XLg,
   XOctagon,
 } from "react-bootstrap-icons";
@@ -58,6 +60,7 @@ import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { Loader } from "../../../components/Loader";
 import { type ILogs, EnvironmentLogsPresent } from "../../../components/Logs";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
+import { TimeCaption } from "../../../components/TimeCaption.tsx";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
@@ -70,6 +73,7 @@ import type {
   SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
 import {
+  CreationDate,
   sessionLaunchersV2Api,
   useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
@@ -440,7 +444,7 @@ interface BuildStatusBadgeProps {
   status: Build["status"];
 }
 
-function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
+export function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
   const badgeIcon =
     status === "in_progress" ? (
       <Loader className="me-1" inline size={12} />
@@ -450,12 +454,12 @@ function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
 
   const badgeText =
     status === "in_progress"
-      ? "In progress"
+      ? "Build in progress"
       : status === "cancelled"
-      ? "Cancelled"
+      ? "Build cancelled"
       : status === "succeeded"
-      ? "Succeeded"
-      : "Failed";
+      ? "Build succeeded"
+      : "Build failed";
 
   const badgeColorClasses =
     status === "in_progress"
@@ -472,11 +476,55 @@ function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
   );
 }
 
+interface BuildStatusDescriptionProps {
+  status?: Build["status"];
+  createdAt?: Build["created_at"];
+  completedAt?: CreationDate;
+}
+export function BuildStatusDescription({
+  status,
+  createdAt,
+  completedAt,
+}: BuildStatusDescriptionProps) {
+  if (!status) return null;
+
+  const startTimeText = (
+    <TimeCaption datetime={createdAt} enableTooltip noCaption />
+  );
+
+  const completedTimeText = completedAt && (
+    <TimeCaption datetime={completedAt} enableTooltip noCaption />
+  );
+
+  return status === "succeeded" ? (
+    <div
+      className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
+    >
+      <Clock size="16" className="flex-shrink-0" />
+      <span>Last successfully build {completedTimeText}</span>
+    </div>
+  ) : status === "in_progress" ? (
+    <div
+      className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
+    >
+      <Clock size="16" className="flex-shrink-0" />
+      <span>Building since {startTimeText}</span>
+    </div>
+  ) : status === "failed" ? (
+    <div
+      className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
+    >
+      <XCircle size="16" className="flex-shrink-0" />
+      <span>Build failed {startTimeText}</span>
+    </div>
+  ) : null;
+}
+
 interface BuildActionsProps {
   launcher: SessionLauncher;
 }
 
-function BuildActions({ launcher }: BuildActionsProps) {
+export function BuildActions({ launcher }: BuildActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
 
@@ -533,7 +581,11 @@ function BuildActions({ launcher }: BuildActionsProps) {
       onClick={triggerBuild}
       size="sm"
     >
-      <Bricks className={cx("bi", "me-1")} />
+      {isReady ? (
+        <BootstrapReboot className={cx("bi", "me-1")} />
+      ) : (
+        <Bricks className={cx("bi", "me-1")} />
+      )}
       {isReady ? "Rebuild" : "Build"}
     </Button>
   );
@@ -543,6 +595,7 @@ function BuildActions({ launcher }: BuildActionsProps) {
       <ButtonWithMenuV2
         color="outline-primary"
         default={defaultAction}
+        preventPropagation
         size="sm"
       >
         <DropdownItem

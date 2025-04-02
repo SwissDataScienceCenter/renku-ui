@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useMemo } from "react";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
@@ -23,8 +24,10 @@ import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
 import { SessionView } from "../SessionView/SessionView";
-import SessionItem from "./SessionItem";
+import SessionItem, { SessionDisplay } from "./SessionItem";
+import { Card } from "reactstrap";
 
+import styles from "./SessionItemDisplay.module.scss";
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;
   project: Project;
@@ -49,6 +52,7 @@ export function SessionItemDisplay({
   }, [launcherHash, setHash]);
 
   const { data: sessions } = useGetSessionsQueryV2();
+
   const filteredSessions = useMemo(
     () =>
       sessions != null
@@ -62,25 +66,38 @@ export function SessionItemDisplay({
   );
 
   return (
-    <>
+    <Card
+      action
+      className={cx(
+        styles.SessionLauncherCard,
+        "mt-2",
+        "cursor-pointer",
+        "shadow-none",
+        "rounded-0"
+      )}
+      data-cy="session-launcher-item"
+      onClick={toggleSessionView}
+    >
       <SessionItem
         key={`session-item-${launcher.id}`}
         launcher={launcher}
         name={name}
         project={project}
         toggleSessionDetails={toggleSessionView}
-      />
-      {filteredSessions?.length > 0 &&
-        filteredSessions.map((session) => (
-          <SessionItem
-            key={`session-item-${session.name}`}
-            launcher={launcher}
-            name={name}
-            project={project}
-            session={session}
-            toggleSessionDetails={toggleSessionView}
-          />
-        ))}
+        hasSession={filteredSessions.length > 0}
+      >
+        {filteredSessions?.length > 0 &&
+          filteredSessions.map((session) => (
+            <SessionDisplay
+              key={`session-item-${session.name}`}
+              launcher={launcher}
+              name={name}
+              project={project}
+              session={session}
+              toggleSessionDetails={toggleSessionView}
+            />
+          ))}
+      </SessionItem>
       <SessionView
         id={launcherHash}
         launcher={launcher}
@@ -89,6 +106,6 @@ export function SessionItemDisplay({
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
       />
-    </>
+    </Card>
   );
 }

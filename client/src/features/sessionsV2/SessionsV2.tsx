@@ -119,7 +119,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       </p>
       {loading}
       {totalSessions > 0 && !isLoading && (
-        <ListGroup flush>
+        <div className="d-flex flex-column gap-2 mx-3 mb-3">
           {launchers?.map((launcher) => (
             <SessionItemDisplay
               key={`launcher-${launcher.id}`}
@@ -134,7 +134,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
               project={project}
             />
           ))}
-        </ListGroup>
+        </div>
       )}
     </>
   );
