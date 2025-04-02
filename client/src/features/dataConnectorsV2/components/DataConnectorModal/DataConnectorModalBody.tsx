@@ -268,6 +268,11 @@ export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
     (o) => flatDataConnector.options && flatDataConnector.options[o.name]
   );
 
+  const ensureNamespace =
+    project?.namespace && project.slug
+      ? `${project.namespace}/${project.slug}`
+      : undefined;
+
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
       <h5>Final details</h5>
@@ -326,7 +331,7 @@ export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
                   field.onChange(e);
                   onFieldValueChange("namespace", e?.path ?? "");
                 }}
-                ensureNamespace={project?.namespace}
+                ensureNamespace={ensureNamespace}
                 includeProjectNamespaces={true}
               />
             );

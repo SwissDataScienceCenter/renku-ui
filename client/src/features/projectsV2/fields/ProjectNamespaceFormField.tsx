@@ -305,9 +305,6 @@ export function ProjectNamespaceControl({
   } = useGetNamespacesByNamespaceSlugQuery(
     ensureNamespace ? { namespaceSlug: ensureNamespace } : skipToken
   );
-  useEffect(() => {
-    console.log({ ensureNamespace });
-  }, [ensureNamespace]);
 
   const [
     { data: allNamespaces, fetchedPages, hasMore, currentRequestId },
