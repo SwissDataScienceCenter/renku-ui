@@ -183,7 +183,7 @@ type DataConnectorMountFormFields =
   | "mountPoint"
   | "readOnly"
   | "saveCredentials";
-export function DataConnectorMount({}: AddOrEditDataConnectorProps) {
+export function DataConnectorMount(_: AddOrEditDataConnectorProps) {
   const dispatch = useAppDispatch();
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
     (state) => state.dataConnectorFormSlice
