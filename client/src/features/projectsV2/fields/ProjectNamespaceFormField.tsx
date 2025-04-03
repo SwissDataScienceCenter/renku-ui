@@ -373,10 +373,17 @@ export function ProjectNamespaceControl({
     const hasMore =
       namespacesPageResult.currentData.totalPages >
       namespacesPageResult.currentData.page;
-    const namespacesAvailable = [
-      ...allNamespaces,
-      ...namespacesPageResult.currentData.namespaces,
-    ];
+    const seen = new Set<string>(allNamespaces.map(({ path }) => path));
+    const filteredNewNamespaces =
+      namespacesPageResult.currentData.namespaces.filter(({ path }) => {
+        if (seen.has(path)) {
+          return false;
+        }
+        seen.add(path);
+        return true;
+      });
+    const namespacesAvailable = [...allNamespaces, ...filteredNewNamespaces];
+
     setState({
       data: namespacesAvailable,
       fetchedPages: namespacesPageResult.currentData.page ?? 0,
