@@ -194,6 +194,8 @@ export const {
   usePostUserPreferencesPinnedProjectsMutation: usePostPinnedProjectMutation,
   useDeleteUserPreferencesPinnedProjectsMutation:
     useDeletePinnedProjectsMutation,
+  usePostUserPreferencesDismissProjectMigrationBannerMutation:
+    usePostUserPreferencesDismissProjectMigrationBannerMutation,
 } = usersApi;
 
 export type * from "./users.generated-api";
