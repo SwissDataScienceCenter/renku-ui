@@ -377,7 +377,8 @@ function ProjectLinkDataConnectorBodyAndFooter({
       <ModalBody data-cy="data-connector-edit-body">
         <div className="mb-3">
           <Label className="form-label" for="data-connector-identifier">
-            Data connector identifier{allowPaste && " or DOI"}
+            {allowPaste && "Renku "}Data connector identifier
+            {allowPaste && " or DOI"}
           </Label>
           <Controller
             control={control}
@@ -389,7 +390,9 @@ function ProjectLinkDataConnectorBodyAndFooter({
                   errors.dataConnectorIdentifier && "is-invalid"
                 )}
                 id="data-connector-identifier"
-                placeholder={"namespace/slug" + (allowPaste ? " or DOI" : "")}
+                placeholder={
+                  allowPaste ? "Renku namespace/slug or DOI" : "namespace/slug"
+                }
                 type="text"
                 {...field}
               />
@@ -400,8 +403,8 @@ function ProjectLinkDataConnectorBodyAndFooter({
             }}
           />
           <div className="form-text">
-            Copy a data connector identifier from the data connector&apos;s side
-            panel
+            Copy a {allowPaste && "Renku "}data connector identifier from the
+            data connector&apos;s side panel
             {allowPaste && (
               <span>
                 , or paste a DOI (E.G: <code>10.5281/zenodo.15081377</code>)
