@@ -884,6 +884,9 @@
           },
           "disk_storage": {
             "$ref": "#/components/schemas/DiskStorage"
+          },
+          "env_variables": {
+            "$ref": "#/components/schemas/EnvVariables"
           }
         },
         "required": [
@@ -914,6 +917,9 @@
           },
           "disk_storage": {
             "$ref": "#/components/schemas/DiskStorage"
+          },
+          "env_variables": {
+            "$ref": "#/components/schemas/EnvVariables"
           },
           "environment": {
             "oneOf": [
@@ -951,6 +957,9 @@
           },
           "disk_storage": {
             "$ref": "#/components/schemas/DiskStoragePatch"
+          },
+          "env_variables": {
+            "$ref": "#/components/schemas/EnvVariables"
           },
           "environment": {
             "oneOf": [
@@ -1317,6 +1326,18 @@
         "type": "string",
         "enum": ["in_progress", "succeeded", "failed", "cancelled"],
         "example": "succeeded"
+      },
+      "EnvVariables": {
+        "description": "Environment variables for the session pod",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string",
+          "default": {}
+        },
+        "example": {
+          "MY_VAR": "value 1",
+          "VAR2": null
+        }
       },
       "ErrorReason": {
         "description": "The reason why a container image build did not succeed, if available.",
