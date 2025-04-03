@@ -26,7 +26,8 @@ import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 export function useCustomHomePageProjectUrl(): string {
   const { params } = useContext(AppContext);
   const homePage = params?.["HOMEPAGE"] ?? DEFAULT_APP_PARAMS.HOMEPAGE;
-  if (!homePage) return generatePath(ABSOLUTE_ROUTES.v2.root);
+  if (!homePage || !homePage.projectPath)
+    return generatePath(ABSOLUTE_ROUTES.v2.root);
   const [namespace, slug] = homePage.projectPath.split("/");
   if (!namespace || !slug) return generatePath(ABSOLUTE_ROUTES.v2.root);
   return generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
