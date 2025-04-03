@@ -207,8 +207,8 @@ function SessionStartLink({
     }
   );
   const { params } = useContext(AppContext);
-  const baseUrl = params?.BASE_URL ?? window.location.origin;
-  const url = `${baseUrl}${startPath}`;
+  const baseUrl = params?.BASE_URL ?? window.location.href;
+  const url = new URL(startPath, baseUrl);
   return (
     <div className="mb-2">
       <h4 className="my-auto">
@@ -216,7 +216,7 @@ function SessionStartLink({
         Session Launch Link
       </h4>
       <p className="mb-2">A session launch link leads directly to a session.</p>
-      <CommandCopy command={url} noMargin />
+      <CommandCopy command={url.toString()} noMargin />
     </div>
   );
 }
