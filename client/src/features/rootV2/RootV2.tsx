@@ -18,7 +18,14 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router";
+import {
+  Navigate,
+  Route,
+  Routes,
+  generatePath,
+  useMatch,
+  useNavigate,
+} from "react-router";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
@@ -47,6 +54,39 @@ import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
+
+function BetaV2Redirect() {
+  const navigate = useNavigate();
+  const betaProjectsMatch = useMatch(ABSOLUTE_ROUTES.v2.projects.beta.splat);
+  const betaGroupsMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.beta.splat);
+
+  useEffect(() => {
+    if (
+      betaProjectsMatch?.params.namespace != null &&
+      betaProjectsMatch?.params.slug != null
+    ) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: betaProjectsMatch.params.namespace,
+          slug: betaProjectsMatch.params.slug,
+        }),
+        { replace: true }
+      );
+    }
+  }, [navigate, betaProjectsMatch?.params]);
+
+  useEffect(() => {
+    if (betaGroupsMatch?.params.slug != null) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: betaGroupsMatch.params.slug,
+        }),
+        { replace: true }
+      );
+    }
+  }, [navigate, betaGroupsMatch?.params]);
+  return <Navigate to={generatePath(ABSOLUTE_ROUTES.v2.root)} replace={true} />;
+}
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -84,6 +124,10 @@ export default function RootV2() {
                 <LazyDashboardV2 />
               </ContainerWrap>
             }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v2.betaRoot}
+            element={<BetaV2Redirect />}
           />
           <Route
             path={RELATIVE_ROUTES.v2.user}
