@@ -59,6 +59,7 @@ export const ABSOLUTE_ROUTES = {
         settings: "/g/:slug/settings",
         splat: "/g/:slug/*",
       },
+      beta: { splat: "/v2/groups/:slug/*" },
     },
     help: {
       root: "/help",
@@ -79,6 +80,7 @@ export const ABSOLUTE_ROUTES = {
         },
       },
       showById: "/p/:id",
+      beta: { splat: "/v2/projects/:namespace/:slug/*" },
     },
     search: "/search",
     secrets: "/secrets",
@@ -111,6 +113,7 @@ export const RELATIVE_ROUTES = {
   },
   v2: {
     root: "/*",
+    betaRoot: "/v2/*",
     integrations: "integrations",
     groups: {
       root: "g/*",

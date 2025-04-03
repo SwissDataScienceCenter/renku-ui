@@ -142,6 +142,11 @@ describe("Navigate to project", () => {
     cy.location("pathname").should("contain", "/user1-uuid/test-2-v2-project");
   });
 
+  it("shows projects by old URL", () => {
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.contains("test 2 v2-project").should("be.visible");
+  });
+
   it("shows project members", () => {
     fixtures.listProjectV2Members().readProjectV2();
     cy.visit("/p/user1-uuid/test-2-v2-project");
