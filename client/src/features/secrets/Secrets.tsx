@@ -24,7 +24,6 @@ import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { User } from "../../model/renkuModels.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import WipBadge from "../projectsV2/shared/WipBadge";
 
 import GeneralSecretNew from "./GeneralSecretNew";
 import SecretsList from "./SecretsList";
@@ -87,10 +86,7 @@ export default function Secrets() {
       <Row>
         <Col>
           <div className={cx("d-flex", "mb-2")}>
-            <h2 className={cx("mb-0", "me-2")}>User Secrets</h2>
-            <div className="my-auto">
-              <WipBadge tooltip="This feature is under development and certain pieces may not work correctly." />
-            </div>
+            <h2 className="mb-0">User Secrets</h2>
           </div>
           <div>
             {!user.logged ? (

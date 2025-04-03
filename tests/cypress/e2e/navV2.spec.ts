@@ -18,7 +18,7 @@
 
 import fixtures from "../support/renkulab-fixtures";
 
-describe("View v2 landing page", () => {
+describe("View v2 nav bar", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     cy.visit("/");
@@ -43,5 +43,16 @@ describe("View v2 landing page", () => {
     cy.getDataCy("navbar-project-new").click();
     cy.getDataCy("new-project-modal").should("be.visible");
     cy.contains("Create a new project").should("be.visible");
+  });
+});
+
+describe("View v1 nav bar", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    cy.visit("/v1");
+  });
+
+  it("check for legacy information", () => {
+    cy.get(".badge.bg-warning").contains("Legacy").should("be.visible");
   });
 });
