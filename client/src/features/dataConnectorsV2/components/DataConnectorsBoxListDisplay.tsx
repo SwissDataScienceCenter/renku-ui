@@ -18,7 +18,14 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, useRef } from "react";
-import { EyeFill, Globe2, Lock, Pencil, Folder } from "react-bootstrap-icons";
+import {
+  EyeFill,
+  Globe2,
+  Lock,
+  Pencil,
+  Folder,
+  Link45deg,
+} from "react-bootstrap-icons";
 import {
   Col,
   ListGroupItem,
@@ -112,13 +119,15 @@ export default function DataConnectorBoxListDisplay({
                 "align-items-center"
               )}
             >
-              {isProjectNamespace(namespace) ? (
+              {name.includes("DOI test") ? (
+                <Link45deg className="bi" />
+              ) : isProjectNamespace(namespace) ? (
                 <Folder className="bi" />
               ) : (
                 <UserAvatar namespace={namespace} size="sm" />
               )}
               <p className={cx("mb-0", "text-truncate", "text-muted")}>
-                {namespace}
+                {name.includes("DOI test") ? "DOI - Zenodo" : namespace}
               </p>
             </div>
             {description && <ClampedParagraph>{description}</ClampedParagraph>}

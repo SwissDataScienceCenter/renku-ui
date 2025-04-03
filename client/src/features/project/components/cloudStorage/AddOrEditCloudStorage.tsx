@@ -72,6 +72,7 @@ import {
 } from "./projectCloudStorage.types";
 
 import styles from "./CloudStorage.module.scss";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook.ts";
 
 interface AddOrEditCloudStorageProps {
   schema: CloudStorageSchema[];
@@ -641,6 +642,8 @@ export function AddStorageType({
   setStorage,
   isV2,
 }: AddStorageStepProps) {
+  const doiPage = useAppSelector(({ display }) => display.doiPage);
+
   const providerRef: RefObject<HTMLDivElement> = useRef(null);
   const scrollToProvider = () => {
     setTimeout(() => {
@@ -649,10 +652,18 @@ export function AddStorageType({
     }, 100);
   };
 
-  const availableSchema = useMemo(
-    () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
-    [schema, state.showAllSchema, storage.schema]
-  );
+  const availableSchema = useMemo(() => {
+    const schemaList = getSchemaStorage(
+      schema,
+      !state.showAllSchema,
+      storage.schema
+    );
+    if (doiPage !== "create") {
+      return schemaList.filter((s) => s.name.toLowerCase() !== "doi");
+    }
+    return schemaList;
+  }, [schema, state.showAllSchema, storage.schema, doiPage]);
+
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
     if (state.showAllSchema) setState({ showAllSchema: false });

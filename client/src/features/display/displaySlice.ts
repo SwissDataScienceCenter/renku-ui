@@ -19,6 +19,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   Display,
+  DoiPage,
   FaviconStatus,
   ProjectConfig,
   SessionConfig,
@@ -26,6 +27,7 @@ import {
 
 const initialState: Display = {
   favicon: "general",
+  doiPage: "link",
   modals: {
     ssh: {
       show: false,
@@ -81,6 +83,10 @@ export const displaySlice = createSlice({
       };
     },
 
+    setDoiPage: (state, action: PayloadAction<DoiPage>) => {
+      state.doiPage = action.payload;
+    },
+
     reset: () => initialState,
   },
 });
@@ -93,4 +99,5 @@ export const {
   reset,
   resetFavicon,
   setFavicon,
+  setDoiPage,
 } = displaySlice.actions;
