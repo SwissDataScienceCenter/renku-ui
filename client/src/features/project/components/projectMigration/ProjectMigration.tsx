@@ -20,7 +20,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Airplane } from "react-bootstrap-icons";
+import { BoxArrowInUp } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, Link } from "react-router";
 import { ModalBody, ModalHeader } from "reactstrap";
@@ -187,7 +187,7 @@ export function MigrationModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>
-        <Airplane className={cx("bi", "me-1")} />
+        <BoxArrowInUp className={cx("bi", "me-1")} />
         {step === 1
           ? "Select project to migrate"
           : "Migrate project to Renku 2.0"}
