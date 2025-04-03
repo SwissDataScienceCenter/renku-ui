@@ -884,6 +884,9 @@
           },
           "disk_storage": {
             "$ref": "#/components/schemas/DiskStorage"
+          },
+          "env_variables": {
+            "$ref": "#/components/schemas/EnvVariables"
           }
         },
         "required": [
@@ -914,6 +917,9 @@
           },
           "disk_storage": {
             "$ref": "#/components/schemas/DiskStorage"
+          },
+          "env_variables": {
+            "$ref": "#/components/schemas/EnvVariables"
           },
           "environment": {
             "oneOf": [
@@ -951,6 +957,9 @@
           },
           "disk_storage": {
             "$ref": "#/components/schemas/DiskStoragePatch"
+          },
+          "env_variables": {
+            "$ref": "#/components/schemas/EnvVariables"
           },
           "environment": {
             "oneOf": [
@@ -1317,6 +1326,31 @@
         "type": "string",
         "enum": ["in_progress", "succeeded", "failed", "cancelled"],
         "example": "succeeded"
+      },
+      "EnvVariables": {
+        "description": "Environment variables for the session pod",
+        "type": "array",
+        "maxItems": 32,
+        "items": {
+          "$ref": "#/components/schemas/EnvVar"
+        }
+      },
+      "EnvVar": {
+        "description": "An environment variable for the session pod",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+            "example": "MY_VAR"
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": ["name"]
       },
       "ErrorReason": {
         "description": "The reason why a container image build did not succeed, if available.",
