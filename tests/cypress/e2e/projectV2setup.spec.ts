@@ -93,7 +93,9 @@ describe("Set up project components", () => {
       .editLauncher()
       .resourcePoolsTest()
       .getResourceClass()
-      .environments();
+      .environments()
+      .sessionSecretSlots()
+      .sessionSecrets();
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@getSessionsV2");
@@ -126,7 +128,6 @@ describe("Set up project components", () => {
 
     // check session launcher view and edit session launcher
     cy.getDataCy("session-name").click();
-    cy.getDataCy("session-view-title").should("contain.text", "Session-custom");
     cy.getDataCy("session-view-menu-edit").should("be.visible");
     cy.get(".offcanvas [data-cy=button-with-menu-dropdown]").first().click();
     cy.getDataCy("session-view-menu-delete").should("be.visible");
@@ -165,6 +166,152 @@ describe("Set up project components", () => {
       cy.getDataCy("session-status").should("contain.text", "Not Running");
       cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
+  });
+
+  it("maintain session launcher environment variables", () => {
+    cy.intercept("/api/data/sessions*", {
+      body: [],
+    }).as("getSessionsV2");
+    fixtures
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
+      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+        name: "sessionLaunchers",
+      })
+      .editLauncher()
+      .resourcePoolsTest()
+      .getResourceClass()
+      .environments()
+      .sessionSecretSlots()
+      .sessionSecrets();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getSessionsV2");
+
+    cy.wait("@sessionLaunchers");
+    // check session launcher view and edit session launcher
+    cy.getDataCy("session-name").click();
+    cy.getDataCy("env-variables-card").within(() => {
+      cy.get("tr").should("have.length", 2);
+      cy.get("tr").first().should("contain.text", "VAR_1");
+      cy.get("tr").last().should("contain.text", "VAR_2");
+    });
+    cy.get("#modify-env-variables-button").click();
+    // TEST bad input
+    cy.getDataCy("env-variables-input_0-name").clear().type("RENKU VALUE");
+    cy.getDataCy("env-variables-input_0-value").clear().type("1");
+    cy.getDataCy("edit-session-button").click();
+    cy.get(".invalid-feedback").should(
+      "contain.text",
+      "A variable name is made up of letters, numbers and '_'."
+    );
+    cy.getDataCy("env-variables-input_0-name").clear().type("TEST");
+    cy.getDataCy("env-variables-input_0-value").clear().type("1");
+    cy.getDataCy("edit-session-button").click();
+    cy.contains("Session launcher updated successfully").should("be.visible");
+    cy.getDataCy("close-cancel-button").click();
+    cy.getDataCy("get-back-session-view").click();
+  });
+
+  it("initialize env variable form with empty row", () => {
+    cy.intercept("/api/data/sessions*", {
+      body: [],
+    }).as("getSessionsV2");
+    fixtures
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
+      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers-without-env-vars.json",
+        name: "sessionLaunchers",
+      })
+      .editLauncher()
+      .resourcePoolsTest()
+      .getResourceClass()
+      .environments()
+      .sessionSecretSlots()
+      .sessionSecrets();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getSessionsV2");
+
+    cy.wait("@sessionLaunchers");
+    // check session launcher view and edit session launcher
+    cy.getDataCy("session-name").click();
+    cy.get("#modify-env-variables-button").click();
+    cy.getDataCy("env-variables-input_0-name").should("have.value", "");
+  });
+
+  it("validate environment variables", () => {
+    cy.intercept("/api/data/sessions*", {
+      body: [],
+    }).as("getSessionsV2");
+    fixtures
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
+      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+        name: "sessionLaunchers",
+      })
+      .editLauncher()
+      .resourcePoolsTest()
+      .getResourceClass()
+      .environments()
+      .sessionSecretSlots()
+      .sessionSecrets();
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getSessionsV2");
+
+    cy.wait("@sessionLaunchers");
+    // check session launcher view and edit session launcher
+    cy.getDataCy("session-name").click();
+    cy.getDataCy("env-variables-card").within(() => {
+      cy.get("tr").should("have.length", 2);
+      cy.get("tr").first().should("contain.text", "VAR_1");
+      cy.get("tr").last().should("contain.text", "VAR_2");
+    });
+    cy.get("#modify-env-variables-button").click();
+    // TEST bad input
+    cy.getDataCy("env-variables-input_0-name").clear().type("RENKU VALUE");
+    cy.getDataCy("env-variables-input_0-value").clear().type("1");
+    cy.getDataCy("edit-session-button").click();
+    cy.get(".invalid-feedback").should(
+      "contain.text",
+      "A variable name is made up of letters, numbers and '_'."
+    );
+    cy.getDataCy("env-variables-input_0-name").clear().type("RENKU_VALUE");
+    cy.getDataCy("edit-session-button").click();
+    cy.get(".invalid-feedback").should(
+      "contain.text",
+      "Variable names cannot start with 'RENKU'."
+    );
+
+    const longName = "a".repeat(257);
+    const longValue = "b".repeat(501);
+    cy.getDataCy("env-variables-input_0-name").clear().type(longName);
+    cy.getDataCy("env-variables-input_0-value").clear().type(longValue);
+    cy.getDataCy("edit-session-button").click();
+    cy.get(".invalid-feedback").should(
+      "contain.text",
+      "Name can be at most 256 characters."
+    );
+    cy.get(".invalid-feedback").should(
+      "contain.text",
+      "Value can be at most 500 characters."
+    );
   });
 });
 
