@@ -152,15 +152,11 @@ export default function ProjectListDisplay({
                 </ListGroup>
               </div>
               <Pagination
+                className="mt-3"
                 currentPage={data.page}
+                onPageChange={onPageChange}
                 perPage={perPage}
                 totalItems={data.total}
-                onPageChange={onPageChange}
-                className={cx(
-                  "d-flex",
-                  "justify-content-center",
-                  "rk-search-pagination"
-                )}
               />
             </>
           )}
