@@ -253,6 +253,57 @@
         "tags": ["data_connectors"]
       }
     },
+    "/namespaces/{namespace}/projects/{project}/data_connectors/{slug}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "namespace",
+          "required": true,
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "path",
+          "name": "project",
+          "required": true,
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "path",
+          "name": "slug",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "summary": "Get a data connector that is owned by a namespace by its slug",
+        "responses": {
+          "200": {
+            "description": "The data connector",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
     "/data_connectors/{data_connector_id}/permissions": {
       "parameters": [
         {
