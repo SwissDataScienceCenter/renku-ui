@@ -31,7 +31,8 @@
     "generate-api:searchV2": "rtk-query-codegen-openapi src/features/searchV2/api/searchV2.api-config.ts",
     "generate-api:sessionLaunchersV2": "rtk-query-codegen-openapi src/features/sessionsV2/api/sessionLaunchersV2.api-config.ts",
     "generate-api:sessionsV2": "rtk-query-codegen-openapi src/features/sessionsV2/api/sessionsV2.api-config.ts",
-    "generate-api:users": "rtk-query-codegen-openapi src/features/usersV2/api/users.api-config.ts"
+    "generate-api:users": "rtk-query-codegen-openapi src/features/usersV2/api/users.api-config.ts",
+    "update-api:users": "node scripts/update_api_spec.js users"
   },
   "type": "module",
   "dependencies": {
@@ -151,12 +152,12 @@
     "pretty-quick": "^3.3.1",
     "react-test-renderer": "^18.2.0",
     "storybook": "^8.6.4",
-    "ts-node": "^10.9.2",
     "typescript": "^5.3.2",
     "vite": "^6.2.4",
     "vite-bundle-visualizer": "^1.2.1",
     "vitest": "^3.0.8",
-    "wait-on": "^8.0.3"
+    "wait-on": "^8.0.3",
+    "yaml": "^2.7.1"
   },
   "overrides": {
     "addon-redux": {
