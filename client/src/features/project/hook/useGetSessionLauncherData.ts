@@ -70,17 +70,18 @@ export function useGetSessionLauncherData(
 
   const isSupported = coreSupportComputed && backendAvailable;
 
-  const { data: projectConfig } = useGetConfigQuery(
-    backendAvailable && coreSupportComputed && currentBranch && commit
-      ? {
-          apiVersion,
-          metadataVersion,
-          projectRepositoryUrl,
-          branch: currentBranch,
-          commit,
-        }
-      : skipToken
-  );
+  const { data: projectConfig, isLoading: isLoadingProjectConfig } =
+    useGetConfigQuery(
+      backendAvailable && coreSupportComputed && currentBranch && commit
+        ? {
+            apiVersion,
+            metadataVersion,
+            projectRepositoryUrl,
+            branch: currentBranch,
+            commit,
+          }
+        : skipToken
+    );
 
   const [projectMetadata, projectMetadataStatus] = useProjectMetadataMutation();
 
@@ -175,7 +176,9 @@ export function useGetSessionLauncherData(
       registryTagIsFetching ||
       backendAvailable === undefined ||
       coreSupportComputed === undefined ||
-      resourcePoolsIsFetching,
+      resourcePoolsIsFetching ||
+      isLoadingProjectConfig ||
+      projectConfig == undefined,
     error: renkuRegistryError || renkuRegistryTagError,
     projectConfig,
     commits,
