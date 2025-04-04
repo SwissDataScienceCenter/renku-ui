@@ -17,9 +17,7 @@
  */
 
 import cx from "classnames";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { SerializedError } from "@reduxjs/toolkit";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Database, NodePlus, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -38,16 +36,16 @@ import { Loader } from "../../../../components/Loader";
 import ModalHeader from "../../../../components/modal/ModalHeader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import {
   dataConnectorsApi,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "../../../dataConnectorsV2/components/DataConnectorModal/index";
-import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -214,9 +212,22 @@ function ProjectLinkDataConnectorBodyAndFooter({
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
   const dispatch = useAppDispatch();
-  const [lookupDataConnectorError, setLookupDataConnectorError] = useState<
-    FetchBaseQueryError | SerializedError | undefined
-  >(undefined);
+
+  const [fetchTwoPartsSlug, twoPartsSlugQuery] =
+    dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug.useLazyQuery();
+  const [fetchThreePartsSlug, threePartsSlugQuery] =
+    dataConnectorsApi.endpoints.getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug.useLazyQuery();
+  const [requestId, setRequestId] = useState<string>("");
+  const currentQuery = useMemo(
+    () =>
+      twoPartsSlugQuery.requestId === requestId
+        ? twoPartsSlugQuery
+        : threePartsSlugQuery.requestId === requestId
+        ? threePartsSlugQuery
+        : undefined,
+    [requestId, threePartsSlugQuery, twoPartsSlugQuery]
+  );
+
   const [
     linkDataConnector,
     { error: linkDataConnectorError, isLoading, isSuccess },
@@ -233,47 +244,39 @@ function ProjectLinkDataConnectorBodyAndFooter({
   });
 
   const onSubmit = useCallback(
-    async (values: DataConnectorLinkFormFields) => {
-      const slugs = values.dataConnectorIdentifier.split("/");
-      if (slugs.length < 2 || slugs.length > 3) {
-        setLookupDataConnectorError({
-          status: "CUSTOM_ERROR",
-          error:
-            "Got an unexpected number of segments in the data connector identifier, 2 or 3 are accepted.",
-        });
-        return false;
-      }
-      const dataConnectorPromise =
-        slugs.length == 2
-          ? dispatch(
-              dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug.initiate(
-                { namespace: slugs[0], slug: slugs[1] }
-              )
-            )
-          : dispatch(
-              dataConnectorsApi.endpoints.getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug.initiate(
-                { namespace: slugs[0], project: slugs[1], slug: slugs[2] }
-              )
-            );
-      const {
-        data: dataConnector,
-        isSuccess,
-        error,
-      } = await dataConnectorPromise;
-      dataConnectorPromise.unsubscribe();
-      if (!isSuccess || dataConnector == null) {
-        setLookupDataConnectorError(error);
-        return false;
-      }
-      linkDataConnector({
-        dataConnectorId: dataConnector.id,
-        dataConnectorToProjectLinkPost: {
-          project_id: project.id,
-        },
-      });
+    (values: DataConnectorLinkFormFields) => {
+      const [namespace, project, slug] = values.dataConnectorIdentifier.split(
+        "/",
+        3
+      );
+      const { requestId } =
+        slug == null
+          ? fetchTwoPartsSlug({
+              namespace: namespace,
+              slug: project,
+            })
+          : fetchThreePartsSlug({
+              namespace: namespace,
+              project: project,
+              slug: slug,
+            });
+      setRequestId(requestId);
     },
-    [dispatch, linkDataConnector, project.id]
+    [fetchThreePartsSlug, fetchTwoPartsSlug]
   );
+
+  useEffect(() => {
+    const dataConnector = currentQuery?.currentData;
+    if (dataConnector == null) {
+      return;
+    }
+    linkDataConnector({
+      dataConnectorId: dataConnector.id,
+      dataConnectorToProjectLinkPost: {
+        project_id: project.id,
+      },
+    });
+  }, [currentQuery?.currentData, linkDataConnector, project.id]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -282,6 +285,8 @@ function ProjectLinkDataConnectorBodyAndFooter({
       toggle();
     }
   }, [dispatch, isSuccess, reset, toggle]);
+
+  const error = currentQuery?.error ?? linkDataConnectorError;
 
   return (
     <Form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -324,12 +329,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
               : "Please provide an identifier for the data connector"}
           </div>
         </div>
-        {isSuccess != null && !isSuccess && (
-          <RtkOrNotebooksError error={linkDataConnectorError} />
-        )}
-        {lookupDataConnectorError != null && (
-          <RtkOrNotebooksError error={lookupDataConnectorError} />
-        )}
+        {error != null && <RtkOrNotebooksError error={error} />}
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
