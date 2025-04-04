@@ -29,6 +29,7 @@ interface StartSessionButtonProps {
   slug: string;
   launcherId: string;
   disabled?: boolean;
+  useOldImage?: boolean;
 }
 
 export default function StartSessionButton({
@@ -36,6 +37,7 @@ export default function StartSessionButton({
   namespace,
   slug,
   disabled,
+  useOldImage,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
@@ -89,6 +91,11 @@ export default function StartSessionButton({
       {disabled && (
         <UncontrolledTooltip target={`launch-btn-${launcherId}`}>
           Cannot launch more than 1 session per session launcher.
+        </UncontrolledTooltip>
+      )}
+      {useOldImage && (
+        <UncontrolledTooltip target={`launch-btn-${launcherId}`}>
+          Launch session using an older image
         </UncontrolledTooltip>
       )}
     </div>

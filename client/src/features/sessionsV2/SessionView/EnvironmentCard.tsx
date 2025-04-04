@@ -43,6 +43,7 @@ import {
 import {
   Badge,
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   Col,
@@ -501,7 +502,7 @@ export function BuildStatusDescription({
       className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
     >
       <Clock size="16" className="flex-shrink-0" />
-      <span>Last successfully build {completedTimeText}</span>
+      <span>Last successful build {completedTimeText}</span>
     </div>
   ) : status === "in_progress" ? (
     <div
@@ -617,6 +618,129 @@ export function BuildActions({ launcher }: BuildActionsProps) {
         enabled={
           <>
             {buttonGroup}
+            <BuildActionFailedModal
+              error={postResult.error}
+              reset={postResult.reset}
+              title="Error: could not rebuild session image"
+            />
+            <BuildActionFailedModal
+              error={patchResult.error}
+              reset={patchResult.reset}
+              title="Error: could not cancel image build"
+            />
+            <BuildLogsModal
+              builds={builds}
+              isOpen={isLogsOpen}
+              toggle={toggleLogs}
+            />
+          </>
+        }
+        requestedPermission="write"
+        userPermissions={permissions}
+      />
+    </>
+  );
+}
+
+export function BuildActionsCard({ launcher }: BuildActionsProps) {
+  const { project_id: projectId } = launcher;
+  const permissions = useProjectPermissions({ projectId });
+
+  const [isLogsOpen, setIsLogsOpen] = useState(false);
+  const toggleLogs = useCallback(() => {
+    setIsLogsOpen((open) => !open);
+  }, []);
+
+  const { data: builds } = useGetBuildsQuery(
+    launcher.environment.environment_image_source === "build"
+      ? { environmentId: launcher.environment.id }
+      : skipToken
+  );
+  const inProgressBuild = useMemo(
+    () => builds?.find(({ status }) => status === "in_progress"),
+    [builds]
+  );
+  const hasInProgressBuild = !!inProgressBuild;
+
+  const isReady =
+    launcher.environment.container_image !== "image:unknown-at-the-moment";
+
+  const [postBuild, postResult] = usePostBuildMutation();
+  const triggerBuild = useCallback(() => {
+    postBuild({ environmentId: launcher.environment.id });
+  }, [launcher.environment.id, postBuild]);
+
+  const [patchBuild, patchResult] = usePatchBuildMutation();
+  const onCancelBuild = useCallback(() => {
+    if (inProgressBuild != null) {
+      patchBuild({
+        buildId: inProgressBuild?.id,
+        buildPatch: { status: "cancelled" },
+      });
+    }
+  }, [inProgressBuild, patchBuild]);
+
+  const onClickFix = (e: React.MouseEvent) => e.stopPropagation();
+
+  const buttons = hasInProgressBuild ? (
+    <ButtonGroup onClick={onClickFix}>
+      <Button
+        className="text-nowrap"
+        color="outline-primary"
+        data-cy="session-view-menu-show-logs"
+        onClick={toggleLogs}
+        size="sm"
+      >
+        <FileEarmarkText className={cx("bi", "me-1")} />
+        Show logs
+      </Button>
+      <Button
+        className="text-nowrap"
+        color="primary"
+        data-cy="session-view-menu-cancel-build"
+        onClick={onCancelBuild}
+        size="sm"
+      >
+        <XOctagon className={cx("bi", "me-1")} />
+        Cancel build
+      </Button>
+    </ButtonGroup>
+  ) : (
+    <ButtonGroup onClick={onClickFix}>
+      <Button
+        className="text-nowrap"
+        color="outline-primary"
+        data-cy="session-view-menu-show-logs"
+        onClick={toggleLogs}
+        size="sm"
+      >
+        <FileEarmarkText className={cx("bi", "me-1")} />
+        Show logs
+      </Button>
+      <Button
+        className="text-nowrap"
+        color="primary"
+        data-cy="session-view-menu-rebuild"
+        onClick={triggerBuild}
+        size="sm"
+      >
+        {isReady ? (
+          <BootstrapReboot className={cx("bi", "me-1")} />
+        ) : (
+          <Bricks className={cx("bi", "me-1")} />
+        )}
+        {isReady ? "Rebuild" : "Build"}
+      </Button>
+    </ButtonGroup>
+  );
+
+  return (
+    <>
+      <PermissionsGuard
+        disabled={null}
+        enabled={
+          <>
+            {buttons}
             <BuildActionFailedModal
               error={postResult.error}
               reset={postResult.reset}

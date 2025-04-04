@@ -41,7 +41,7 @@ import {
 import { SessionV2 } from "../sessionsV2.types";
 import { Loader } from "../../../components/Loader.tsx";
 import {
-  BuildActions,
+  BuildActionsCard,
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../SessionView/EnvironmentCard.tsx";
@@ -93,14 +93,14 @@ export default function SessionItem({
   );
 
   const buildActions = imageBuildersEnabled && isBuildEnvironment && (
-    <BuildActions launcher={launcher} />
+    <BuildActionsCard launcher={launcher} />
   );
 
   return (
     <>
       <CardHeader className={cx(children && "border-bottom", "pb-3")}>
         <Row className="g-2">
-          <Col className={cx("align-items-center")} xs={12} md={8} lg={9}>
+          <Col className={cx("align-items-center")} xs={12} md={6} lg={8}>
             <Row className="g-2 mb-0">
               <Col
                 xs={12}
@@ -163,12 +163,14 @@ export default function SessionItem({
                       </SessionBadge>
                     ) : isBuildEnvironment &&
                       lastBuild?.status !== "succeeded" &&
+                      lastBuild?.status !== "in_progress" &&
                       lastSuccessfulBuild ? (
                       <SessionBadge
                         className={cx("border-warning", "bg-warning-subtle")}
                       >
                         <span className="text-warning-emphasis">
-                          Available old image
+                          <CircleFill className={cx("me-1", "bi")} />
+                          Build failed
                         </span>
                       </SessionBadge>
                     ) : isBuildEnvironment && lastBuild ? (
@@ -208,21 +210,48 @@ export default function SessionItem({
               </>
             )}
           </Col>
-          <Col className={cx("ms-md-auto")} xs="auto">
-            <div className="my-sm-auto">
-              {isBuildEnvironment &&
-              lastBuild?.status !== "succeeded" &&
-              !lastSuccessfulBuild ? (
-                buildActions
-              ) : launcher != null ? (
+          <Col className={cx("ms-md-auto")} xs={12} md="auto">
+            {isBuildEnvironment &&
+            lastBuild?.status !== "succeeded" &&
+            !lastSuccessfulBuild ? (
+              <div className={cx("d-flex", "flex-column", "align-items-end")}>
+                {buildActions}
+              </div>
+            ) : launcher != null ? (
+              <div
+                className={cx(
+                  "d-flex",
+                  "flex-column",
+                  "align-items-end",
+                  "gap-2"
+                )}
+              >
                 <StartSessionButton
                   launcherId={launcher.id}
                   namespace={project.namespace}
                   slug={project.slug}
                   disabled={hasSession}
+                  useOldImage={
+                    isBuildEnvironment &&
+                    lastBuild?.status !== "succeeded" &&
+                    !!lastSuccessfulBuild
+                  }
                 />
-              ) : null}
-            </div>
+                {isBuildEnvironment &&
+                  lastBuild?.status !== "succeeded" &&
+                  lastSuccessfulBuild && (
+                    <BuildStatusDescription
+                      status={lastSuccessfulBuild?.status}
+                      createdAt={lastSuccessfulBuild?.created_at}
+                      completedAt={
+                        lastSuccessfulBuild?.status === "succeeded"
+                          ? lastSuccessfulBuild?.result?.completed_at
+                          : undefined
+                      }
+                    />
+                  )}
+              </div>
+            ) : null}
           </Col>
         </Row>
       </CardHeader>
