@@ -41,7 +41,6 @@ import {
   dataConnectorsApi,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "../../../dataConnectorsV2/components/DataConnectorModal/index";
@@ -49,6 +48,8 @@ import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnecto
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
+
+import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
