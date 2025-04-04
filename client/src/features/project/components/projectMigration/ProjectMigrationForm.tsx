@@ -110,8 +110,8 @@ export function MigrationForm({
   }, [containerImage, setValue]);
 
   useEffect(() => {
-    if (setValue) {
-      setValue("defaultUrl", projectConfig?.config?.sessions?.defaultUrl ?? "");
+    if (setValue && projectConfig?.config?.sessions?.defaultUrl) {
+      setValue("defaultUrl", projectConfig?.config?.sessions?.defaultUrl);
     }
   }, [projectConfig?.config?.sessions?.defaultUrl, setValue]);
 

@@ -254,7 +254,7 @@ export function MigrationModal({
       <ProjectMigrationFooter
         isReadyMigrationResult={!!result.data}
         isLoadingMigration={result.isLoading}
-        isLoadingSessionValues={!containerImage && !defaultUrl}
+        isLoadingSessionValues={!containerImage || !defaultUrl}
         step={step}
         setStep={setStep}
         setSelectedProject={setSelectedProject}

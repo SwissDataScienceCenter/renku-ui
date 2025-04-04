@@ -1,6 +1,6 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState, useEffect } from "react";
-import { BoxArrowInUp, XLg, XSquare } from "react-bootstrap-icons";
+import { BoxArrowInUp, XLg } from "react-bootstrap-icons";
 import { useSearchParams } from "react-router";
 import {
   Alert,
@@ -205,7 +205,6 @@ function DismissMigrationConfirmationModal({
   return (
     <Modal isOpen={isOpen} centered size="lg" toggle={toggle}>
       <ModalHeader toggle={toggle} className="text-danger">
-        <XSquare className={cx("bi", "me-1")} />
         Are you sure?
       </ModalHeader>
       <ModalBody className="p-4">
