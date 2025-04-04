@@ -183,7 +183,7 @@ type DataConnectorMountFormFields =
   | "mountPoint"
   | "readOnly"
   | "saveCredentials";
-export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
+export function DataConnectorMount() {
   const dispatch = useAppDispatch();
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -326,7 +326,7 @@ export function DataConnectorMount({ project }: AddOrEditDataConnectorProps) {
                   field.onChange(e);
                   onFieldValueChange("namespace", e?.path ?? "");
                 }}
-                ensureNamespace={project?.namespace}
+                ensureNamespace={flatDataConnector.namespace}
                 includeProjectNamespaces={true}
               />
             );
