@@ -17,6 +17,10 @@
       "port": 8080,
       "environment_kind": "CUSTOM"
     },
-    "resource_class_id": 2
+    "resource_class_id": 2,
+    "env_variables": {
+      "VAR_1": "value1",
+      "VAR_2": "value2"
+    }
   }
 ]

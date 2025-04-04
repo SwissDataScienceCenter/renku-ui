@@ -1022,6 +1022,7 @@ describe("view autostart link", () => {
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
     cy.getDataCy("session-name").click();
+    cy.contains("Session Launch Link").scrollIntoView();
     cy.get("code")
       .contains("01HYJE99XEKWNKPYN8WRB6QA8Z/start")
       .should("be.visible");
