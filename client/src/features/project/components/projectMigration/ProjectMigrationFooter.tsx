@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { ArrowLeft, XLg } from "react-bootstrap-icons";
+import { ArrowLeft, BoxArrowInUp, XLg } from "react-bootstrap-icons";
 import { useLocation } from "react-router";
 import { Button, ModalFooter } from "reactstrap";
 import { Loader } from "../../../../components/Loader.tsx";
@@ -84,7 +84,10 @@ export function ProjectMigrationFooter({
               {isLoadingMigration ? (
                 <Loader className="me-1" inline size={16} />
               ) : (
-                "Migrate project to Renku 2.0"
+                <>
+                  <BoxArrowInUp className={cx("bi", "me-1")} />
+                  Migrate project to Renku 2.0
+                </>
               )}
             </Button>
           )}

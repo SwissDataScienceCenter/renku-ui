@@ -204,16 +204,19 @@ function DismissMigrationConfirmationModal({
   const isLoadingDismissMigration = false;
   return (
     <Modal isOpen={isOpen} centered size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>
+      <ModalHeader toggle={toggle} className="text-danger">
         <XSquare className={cx("bi", "me-1")} />
-        Dismiss project migration banner
+        Are you sure?
       </ModalHeader>
       <ModalBody className="p-4">
         {!result && (
           <p>
-            Are you sure you want to hide this banner? It won&apos;t display on
-            the dashboard anymore, but you will still be able to migrate your
-            project from the Renku legacy project page.
+            Are you sure you want to hide this banner?{" "}
+            <span className="fw-bold">
+              It won&apos;t display on the dashboard anymore
+            </span>
+            , but you will still be able to migrate your project from the Renku
+            legacy project page.
           </p>
         )}
         {result?.dismiss_project_migration_banner && (
@@ -223,14 +226,14 @@ function DismissMigrationConfirmationModal({
       <ModalFooter>
         {!result && (
           <>
-            <Button color="outline-primary" onClick={toggle}>
+            <Button color="outline-danger" onClick={toggle}>
               <XLg className={cx("bi", "me-1")} /> Cancel
             </Button>
-            <Button color="primary" onClick={onDismissBanner}>
+            <Button color="danger" onClick={onDismissBanner}>
               {isLoadingDismissMigration ? (
                 <Loader className="me-1" inline size={16} />
               ) : (
-                "Dismiss project migration banner"
+                "Yes, dismiss banner"
               )}
             </Button>
           </>
