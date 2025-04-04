@@ -100,7 +100,7 @@ export default function SessionItem({
     <>
       <CardHeader className={cx(children && "border-bottom", "pb-3")}>
         <Row className="g-2">
-          <Col className={cx("align-items-center")} xs={12} md={6} lg={8}>
+          <Col className={cx("align-items-center")} xs={12} lg={7} xl={8}>
             <Row className="g-2 mb-0">
               <Col
                 xs={12}

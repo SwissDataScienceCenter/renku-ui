@@ -88,16 +88,15 @@ export default function StartSessionButton({
       >
         {customizeLaunch}
       </ButtonWithMenuV2>
-      {disabled && (
+      {disabled ? (
         <UncontrolledTooltip target={`launch-btn-${launcherId}`}>
           Cannot launch more than 1 session per session launcher.
         </UncontrolledTooltip>
-      )}
-      {useOldImage && (
+      ) : useOldImage ? (
         <UncontrolledTooltip target={`launch-btn-${launcherId}`}>
           Launch session using an older image
         </UncontrolledTooltip>
-      )}
+      ) : null}
     </div>
   );
 }
