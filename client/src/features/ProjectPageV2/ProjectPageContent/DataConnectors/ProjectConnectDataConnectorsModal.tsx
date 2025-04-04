@@ -234,12 +234,27 @@ function ProjectLinkDataConnectorBodyAndFooter({
 
   const onSubmit = useCallback(
     async (values: DataConnectorLinkFormFields) => {
-      const [namespace, slug] = values.dataConnectorIdentifier.split("/");
-      const dataConnectorPromise = dispatch(
-        dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug.initiate(
-          { namespace, slug }
-        )
-      );
+      const slugs = values.dataConnectorIdentifier.split("/");
+      if (slugs.length < 2 || slugs.length > 3) {
+        setLookupDataConnectorError({
+          status: "CUSTOM_ERROR",
+          error:
+            "Got an unexpected number of segments in the data connector identifier, 2 or 3 are accepted.",
+        });
+        return false;
+      }
+      const dataConnectorPromise =
+        slugs.length == 2
+          ? dispatch(
+              dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug.initiate(
+                { namespace: slugs[0], slug: slugs[1] }
+              )
+            )
+          : dispatch(
+              dataConnectorsApi.endpoints.getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug.initiate(
+                { namespace: slugs[0], project: slugs[1], slug: slugs[2] }
+              )
+            );
       const {
         data: dataConnector,
         isSuccess,
@@ -292,7 +307,8 @@ function ProjectLinkDataConnectorBodyAndFooter({
             )}
             rules={{
               required: true,
-              pattern: /^(.+)\/(.+)$/,
+              pattern:
+                /(?:^[a-zA-Z0-9\-_.]+\/[a-zA-Z0-9\-_.]+$)|(?:^[a-zA-Z0-9\-_.]+\/[a-zA-Z0-9\-_.]+\/[a-zA-Z0-9\-_.]+$)/,
             }}
           />
           <div className="form-text">
