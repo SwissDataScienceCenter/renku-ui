@@ -1,0 +1,21 @@
+.SessionLauncherCard {
+  &:hover {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 10px -1px,
+      rgba(0, 0, 0, 0.3) 0px 1px 3px -1px !important;
+  }
+}
+.SessionSuccessBg {
+  background-color: rgb(224, 237, 207, 0.4);
+}
+.SessionDangerBg {
+  background-color: rgb(248, 215, 218, 0.4);
+}
+.SessionWarningBg {
+  background-color: rgb(255, 243, 205, 0.35);
+}
+.SessionLightBg {
+  background-color: rgb(248, 249, 250);
+}
+.SessionLine {
+  left: 20px;
+}

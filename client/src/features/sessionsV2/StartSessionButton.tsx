@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { PlayCircle } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
+import { UncontrolledTooltip } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -27,12 +28,16 @@ interface StartSessionButtonProps {
   namespace: string;
   slug: string;
   launcherId: string;
+  disabled?: boolean;
+  useOldImage?: boolean;
 }
 
 export default function StartSessionButton({
   launcherId,
   namespace,
   slug,
+  disabled,
+  useOldImage,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
@@ -42,10 +47,14 @@ export default function StartSessionButton({
       slug,
     }
   );
-
   const defaultAction = (
     <Link
-      className={cx("btn", "btn-sm", "btn-primary")}
+      className={cx(
+        "btn",
+        "btn-sm",
+        disabled ? "btn-outline-primary" : "btn-primary",
+        disabled && "disabled"
+      )}
       to={startUrl}
       data-cy="start-session-button"
     >
@@ -69,13 +78,25 @@ export default function StartSessionButton({
   );
 
   return (
-    <ButtonWithMenuV2
-      color="primary"
-      default={defaultAction}
-      preventPropagation
-      size="sm"
-    >
-      {customizeLaunch}
-    </ButtonWithMenuV2>
+    <div id={`launch-btn-${launcherId}`}>
+      <ButtonWithMenuV2
+        color={disabled ? "outline-primary" : "primary"}
+        default={defaultAction}
+        preventPropagation
+        size="sm"
+        disabled={disabled}
+      >
+        {customizeLaunch}
+      </ButtonWithMenuV2>
+      {disabled ? (
+        <UncontrolledTooltip target={`launch-btn-${launcherId}`}>
+          Cannot launch more than 1 session per session launcher.
+        </UncontrolledTooltip>
+      ) : useOldImage ? (
+        <UncontrolledTooltip target={`launch-btn-${launcherId}`}>
+          Launch session using an older image
+        </UncontrolledTooltip>
+      ) : null}
+    </div>
   );
 }

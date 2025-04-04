@@ -19,7 +19,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode } from "react";
-import { CircleFill, Clock } from "react-bootstrap-icons";
+import { CircleFill, Clock, Hourglass } from "react-bootstrap-icons";
 import {
   Badge,
   PopoverBody,
@@ -33,7 +33,11 @@ import { PrettySessionErrorMessage } from "../../../session/components/status/Se
 import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
-
+import linePlaying from "../../../../styles/assets/linePlaying.png";
+import lineFailed from "../../../../styles/assets/lineFailed.png";
+import linePaused from "../../../../styles/assets/linePaused.png";
+import lineStopped from "../../../../styles/assets/lineStopped.png";
+import lineBlock from "../../../../styles/assets/lineBlock.png";
 export function SessionBadge({
   children,
   className,
@@ -47,6 +51,7 @@ export function SessionBadge({
     </Badge>
   );
 }
+
 interface ActiveSessionV2Props {
   session: SessionV2;
 }
@@ -108,6 +113,127 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
         <CircleFill className={cx("bi", "me-1", "text-warning")} />
         <span className="text-warning">Unknown status</span>
       </SessionBadge>
+    );
+
+  return (
+    <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
+      {badge}
+    </div>
+  );
+}
+
+interface SessionStatusStyles {
+  textColor: string;
+  bgColor: string;
+  borderColor: string;
+  sessionLine: string;
+}
+
+export function getSessionStatusStyles(session: {
+  status: { state: string };
+  image?: string;
+}): SessionStatusStyles {
+  const { status, image } = session;
+  const state = status.state;
+
+  // Default styles for unknown status
+  let styles: SessionStatusStyles = {
+    textColor: "text-warning",
+    bgColor: "warning",
+    borderColor: "border-warning",
+    sessionLine: lineBlock,
+  };
+
+  switch (state) {
+    case "running":
+      if (!image) {
+        styles = {
+          textColor: "text-warning-emphasis",
+          bgColor: "warning",
+          borderColor: "border-warning",
+          sessionLine: linePlaying,
+        };
+      } else {
+        styles = {
+          textColor: "text-success-emphasis",
+          bgColor: "success",
+          borderColor: "border-success",
+          sessionLine: linePlaying,
+        };
+      }
+      break;
+
+    case "starting":
+      styles = {
+        textColor: "text-warning-emphasis",
+        bgColor: "warning",
+        borderColor: "border-warning",
+        sessionLine: linePlaying,
+      };
+      break;
+    case "stopping":
+      styles = {
+        textColor: "text-warning-emphasis",
+        bgColor: "warning",
+        borderColor: "border-warning",
+        sessionLine: lineStopped,
+      };
+      break;
+
+    case "hibernated":
+      styles = {
+        textColor: "text-dark-emphasis",
+        bgColor: "light",
+        borderColor: "border-dark-subtle",
+        sessionLine: linePaused,
+      };
+      break;
+
+    case "failed":
+      styles = {
+        textColor: "text-danger-emphasis",
+        bgColor: "danger",
+        borderColor: "border-danger",
+        sessionLine: lineFailed,
+      };
+      break;
+  }
+
+  return styles;
+}
+export function SessionStatusV2LabelAlt({ session }: ActiveSessionV2Props) {
+  const { status, image } = session;
+  const state = status.state;
+
+  const badge =
+    state === "running" && !image ? (
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className="text-warning-emphasis">Running Session</span>
+      </div>
+    ) : state === "running" ? (
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className="text-success-emphasis">Running Session</span>
+      </div>
+    ) : state === "starting" ? (
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className="text-warning-emphasis">Starting Session</span>
+      </div>
+    ) : state === "stopping" ? (
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className="text-warning-emphasis">Shutting down session</span>
+      </div>
+    ) : state === "hibernated" ? (
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className="text-dark-emphasis">Paused Session</span>
+      </div>
+    ) : state === "failed" ? (
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className="text-danger-emphasis">Error in Session</span>
+      </div>
+    ) : (
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className="text-warning">Unknown status</span>
+      </div>
     );
 
   return (
@@ -231,7 +357,7 @@ function SessionStatusV2Text({
     <>Shutting down session...</>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Hourglass size="16" className="flex-shrink-0" />
       <span>
         Session will be deleted in{" "}
         <TimeCaption
