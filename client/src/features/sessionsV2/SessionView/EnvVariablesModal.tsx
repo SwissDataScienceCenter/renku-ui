@@ -142,8 +142,8 @@ export default function EnvVariablesModal({
   });
   const onSubmit = useCallback(
     (data: EnvVariablesForm) => {
-      const { env_variables } = getPatchFromForm(data);
-      if (env_variables)
+      const { error, env_variables } = getPatchFromForm(data);
+      if (error == null)
         updateSessionLauncher({
           launcherId: launcher.id,
           sessionLauncherPatch: {
