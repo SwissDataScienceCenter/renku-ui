@@ -27,7 +27,6 @@ import {
   CardBody,
   CardHeader,
   DropdownItem,
-  ListGroup,
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
