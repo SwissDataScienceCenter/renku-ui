@@ -28,7 +28,7 @@ import {
   useProjectMetadataQuery,
 } from "../projectKg.api";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
-import { ProjectEntityMigration } from "./projectMigration/ProjectEntityMigration";
+import { ProjectMigrationAlert } from "./projectMigration/ProjectMigrationAlert";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   defaultBranch: string;
@@ -85,7 +85,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
   return (
     <>
       {accessLevel >= ACCESS_LEVELS.OWNER && (
-        <ProjectEntityMigration
+        <ProjectMigrationAlert
           projectId={projectId}
           description={descriptionKg}
           tagList={projectMetadataQuery.data?.keywords ?? []}
