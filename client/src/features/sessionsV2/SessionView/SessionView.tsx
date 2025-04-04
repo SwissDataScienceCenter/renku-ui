@@ -196,7 +196,7 @@ function getSessionColor(state: string) {
     : "dark";
 }
 
-function SessionStartLink({
+function SessionLaunchLink({
   launcher,
   project,
 }: Required<Pick<SessionViewProps, "launcher" | "project">>) {
@@ -387,11 +387,6 @@ export function SessionView({
           </div>
           {launcher && (
             <div>
-              <SessionStartLink launcher={launcher} project={project} />
-            </div>
-          )}
-          {launcher && (
-            <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
                 <h4 className="my-auto">Session Environment</h4>
                 <PermissionsGuard
@@ -556,7 +551,11 @@ export function SessionView({
           </div>
 
           <SessionViewSessionSecrets />
-
+          {launcher && (
+            <div>
+              <SessionLaunchLink launcher={launcher} project={project} />
+            </div>
+          )}
           {launcher && (
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
