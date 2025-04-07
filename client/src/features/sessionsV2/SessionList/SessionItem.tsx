@@ -57,7 +57,7 @@ interface SessionItemProps {
   children?: ReactNode;
   hasSession?: boolean;
 }
-export default function SessionItem({
+export default function SessionLauncherItem({
   launcher,
   name,
   project,

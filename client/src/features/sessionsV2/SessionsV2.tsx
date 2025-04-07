@@ -39,7 +39,7 @@ import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
-import SessionItem from "./SessionList/SessionItem";
+import SessionLauncherItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
@@ -270,7 +270,7 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
 
   return (
     <>
-      <SessionItem
+      <SessionLauncherItem
         project={project}
         session={session}
         toggleSessionDetails={toggleSessionView}

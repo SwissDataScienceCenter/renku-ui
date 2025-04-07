@@ -24,7 +24,8 @@ import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
 import { SessionView } from "../SessionView/SessionView";
-import SessionItem, { SessionDisplay } from "./SessionItem";
+import SessionLauncherItem from "./SessionItem";
+import { SessionDisplay } from "./SessionItem";
 import { Card } from "reactstrap";
 
 import styles from "./SessionItemDisplay.module.scss";
@@ -78,7 +79,7 @@ export function SessionItemDisplay({
       data-cy="session-launcher-item"
       onClick={toggleSessionView}
     >
-      <SessionItem
+      <SessionLauncherItem
         key={`session-item-${launcher.id}`}
         launcher={launcher}
         name={name}
@@ -97,7 +98,7 @@ export function SessionItemDisplay({
               toggleSessionDetails={toggleSessionView}
             />
           ))}
-      </SessionItem>
+      </SessionLauncherItem>
       <SessionView
         id={launcherHash}
         launcher={launcher}

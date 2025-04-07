@@ -927,31 +927,50 @@ export function ActiveSessionButtonAlt({
         )}
       </Button>
     ) : failedScheduling ? (
-      <Button
-        color="primary"
-        className={buttonClassName}
-        data-cy="modify-session-button"
-        onClick={toggleModifySession}
-      >
-        <Tools className={cx("bi", "me-1")} />
-        Modify
-      </Button>
+      <>
+        <Button
+          color="outline-primary"
+          data-cy={"show-logs-session-button"}
+          onClick={onToggleLogs}
+        >
+          <FileEarmarkText className={cx("bi", "me-1")} />
+          Get logs
+        </Button>
+        <Button
+          color="primary"
+          className={buttonClassName}
+          data-cy="modify-session-button"
+          onClick={toggleModifySession}
+        >
+          <Tools className={cx("bi", "me-1")} />
+          Modify
+        </Button>
+      </>
     ) : (
-      <Button
-        color="primary"
-        className={buttonClassName}
-        data-cy={logged ? "pause-session-button" : "delete-session-button"}
-        onClick={logged ? onHibernateSession : onStopSession}
-      >
-        {logged ? (
-          <span className="align-self-start">
-            <PauseCircle className={cx("bi", "me-1")} />
-          </span>
-        ) : (
-          <Trash className={cx("bi", "me-1")} />
-        )}
-        {logged ? "Pause" : "Delete"}
-      </Button>
+      <>
+        <Button
+          color="outline-primary"
+          data-cy={"show-logs-session-button"}
+          onClick={onToggleLogs}
+        >
+          <FileEarmarkText className={cx("bi", "me-1")} />
+          Get logs
+        </Button>
+        <Button
+          color="primary"
+          data-cy={logged ? "pause-session-button" : "delete-session-button"}
+          onClick={logged ? onHibernateSession : onStopSession}
+        >
+          {logged ? (
+            <span className="align-self-start">
+              <PauseCircle className={cx("bi", "me-1")} />
+            </span>
+          ) : (
+            <Trash className={cx("bi", "me-1")} />
+          )}
+          {logged ? "Pause" : "Delete"}
+        </Button>
+      </>
     );
 
   const hibernateAction = status !== "stopping" &&
@@ -1000,6 +1019,7 @@ export function ActiveSessionButtonAlt({
     </DropdownItem>
   );
 
+  // const logsAction = status !== "hibernated" && status !== "failed" && (
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
       <FileEarmarkText className={cx("bi", "me-1")} />
@@ -1009,10 +1029,6 @@ export function ActiveSessionButtonAlt({
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2")}>
-      {/*{openButton}*/}
-      {/*{pauseButton}*/}
-      {/*{logsButton}*/}
-      {/*{dropdownButton}*/}
       <ButtonWithMenuV2
         className={cx(className)}
         color={"primary"}
