@@ -34,7 +34,6 @@ interface StartSessionButtonProps {
   otherActions?: ReactNode;
   isDisabledDropdownToggle?: boolean;
 }
-
 export default function StartSessionButton({
   launcherId,
   namespace,
