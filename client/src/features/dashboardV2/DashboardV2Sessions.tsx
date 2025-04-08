@@ -26,10 +26,9 @@ import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
-import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
+import { ActiveSessionButtonAlt } from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Description,
   SessionStatusV2Label,
@@ -114,9 +113,6 @@ interface DashboardSessionProps {
   session: SessionV2;
 }
 function DashboardSession({ session }: DashboardSessionProps) {
-  const displayModal = useAppSelector(
-    ({ display }) => display.modals.sessionLogs
-  );
   const { project_id: projectId, launcher_id: launcherId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
     projectId ? { projectId } : skipToken
@@ -203,13 +199,13 @@ function DashboardSession({ session }: DashboardSessionProps) {
       </Link>
       {/* NOTE: The session actions button is visually placed within the link card, but its DOM tree is kept separate. */}
       <div className={cx(styles.sessionButton, "position-absolute")}>
-        <ActiveSessionButton
+        <ActiveSessionButtonAlt
           className="my-auto"
           session={session}
           showSessionUrl={showSessionUrl}
         />
       </div>
-      <EnvironmentLogsV2 name={displayModal.targetServer} />
+      <EnvironmentLogsV2 name={session.name} />
     </div>
   );
 }

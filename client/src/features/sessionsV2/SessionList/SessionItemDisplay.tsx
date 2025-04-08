@@ -25,10 +25,10 @@ import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherItem from "./SessionItem";
-import { SessionDisplay } from "./SessionItem";
 import { Card } from "reactstrap";
 
 import styles from "./SessionItemDisplay.module.scss";
+import EnvironmentLogsV2 from "../../../components/LogsV2";
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;
   project: Project;
@@ -67,38 +67,7 @@ export function SessionItemDisplay({
   );
 
   return (
-    <Card
-      action
-      className={cx(
-        styles.SessionLauncherCard,
-        "mt-2",
-        "cursor-pointer",
-        "shadow-none",
-        "rounded-0"
-      )}
-      data-cy="session-launcher-item"
-      onClick={toggleSessionView}
-    >
-      <SessionLauncherItem
-        key={`session-item-${launcher.id}`}
-        launcher={launcher}
-        name={name}
-        project={project}
-        toggleSessionDetails={toggleSessionView}
-        hasSession={filteredSessions.length > 0}
-      >
-        {filteredSessions?.length > 0 &&
-          filteredSessions.map((session) => (
-            <SessionDisplay
-              key={`session-item-${session.name}`}
-              launcher={launcher}
-              name={name}
-              project={project}
-              session={session}
-              toggleSessionDetails={toggleSessionView}
-            />
-          ))}
-      </SessionLauncherItem>
+    <>
       <SessionView
         id={launcherHash}
         launcher={launcher}
@@ -107,6 +76,35 @@ export function SessionItemDisplay({
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
       />
-    </Card>
+      {filteredSessions &&
+        filteredSessions?.length > 0 &&
+        filteredSessions.map((session) => (
+          <EnvironmentLogsV2
+            name={session.name}
+            key={`session-logs-${session.name}`}
+          />
+        ))}
+      <Card
+        action
+        className={cx(
+          styles.SessionLauncherCard,
+          "mt-2",
+          "cursor-pointer",
+          "shadow-none",
+          "rounded-0"
+        )}
+        data-cy="session-launcher-item"
+        onClick={toggleSessionView}
+      >
+        <SessionLauncherItem
+          key={`session-item-${launcher.id}`}
+          launcher={launcher}
+          name={name}
+          project={project}
+          hasSession={filteredSessions.length > 0}
+          sessions={filteredSessions}
+        />
+      </Card>
+    </>
   );
 }

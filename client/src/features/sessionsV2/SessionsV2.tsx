@@ -270,11 +270,7 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
 
   return (
     <>
-      <SessionLauncherItem
-        project={project}
-        session={session}
-        toggleSessionDetails={toggleSessionView}
-      />
+      <SessionLauncherItem project={project} sessions={[session]} />
       <SessionView
         id={sessionHash}
         sessions={[session]}

@@ -61,7 +61,7 @@ import { SessionRowResourceRequests } from "../../session/components/SessionsLis
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import { ActiveSessionButtonAlt } from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
@@ -123,7 +123,7 @@ function SessionCard({
       contentDescription={<SessionStatusV2Description session={session} />}
       contentLabel={<SessionStatusV2Label session={session} />}
       contentSession={
-        <ActiveSessionButton
+        <ActiveSessionButtonAlt
           session={session}
           showSessionUrl={getShowSessionUrlByProject(project, session.name)}
         />

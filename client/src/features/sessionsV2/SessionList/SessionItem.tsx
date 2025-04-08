@@ -52,8 +52,7 @@ interface SessionItemProps {
   launcher?: SessionLauncher;
   name?: string;
   project: Project;
-  session?: SessionV2;
-  toggleSessionDetails: () => void;
+  sessions?: SessionV2[];
   children?: ReactNode;
   hasSession?: boolean;
 }
@@ -63,6 +62,7 @@ export default function SessionLauncherItem({
   project,
   children,
   hasSession,
+  sessions,
 }: SessionItemProps) {
   const environment = launcher?.environment;
   const { params } = useContext(AppContext);
@@ -255,16 +255,28 @@ export default function SessionLauncherItem({
           </Col>
         </Row>
       </CardHeader>
-      {children && <CardBody className="p-0">{children}</CardBody>}
+      {hasSession && (
+        <CardBody className="p-0">
+          {sessions &&
+            sessions?.length > 0 &&
+            sessions.map((session) => (
+              <SessionInnerCard
+                key={`session-item-${session.name}`}
+                project={project}
+                session={session}
+              />
+            ))}
+        </CardBody>
+      )}
     </>
   );
 }
 
-export function SessionDisplay({
-  project,
-  session,
-  toggleSessionDetails,
-}: SessionItemProps) {
+interface SessionInnerCardProps {
+  project: Project;
+  session?: SessionV2;
+}
+export function SessionInnerCard({ project, session }: SessionInnerCardProps) {
   if (!session) return null;
 
   const stylesPerSession = getSessionStatusStyles(session);
@@ -324,7 +336,6 @@ export function SessionDisplay({
                   project,
                   session.name
                 )}
-                toggleSessionDetails={toggleSessionDetails}
               />
             </div>
           </Col>
