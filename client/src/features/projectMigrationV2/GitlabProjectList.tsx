@@ -131,13 +131,19 @@ export function GitlabProjectList({
         ))}
       </div>
       {onPageChange && (
-        <Pagination
-          currentPage={page}
-          perPage={perPage}
-          totalItems={totalResult ?? 0}
-          onPageChange={onPageChange}
-          showDescription={true}
-        />
+        <>
+          <Pagination
+            currentPage={page}
+            perPage={perPage}
+            totalItems={totalResult ?? 0}
+            onPageChange={onPageChange}
+            showDescription={true}
+          />
+          <span className={cx("text-sm", "text-gray-700")}>
+            {page * perPage + 1} – {Math.min((page + 1) * perPage, totalResult)}{" "}
+            of {totalResult}
+          </span>
+        </>
       )}
     </div>
   );
