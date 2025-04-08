@@ -23,7 +23,7 @@ import { GitlabProjectsToMigrate } from "./ProjectMigration.types.ts";
 import style from "./ProjectMigrationBanner.module.scss";
 import { MigrationModal } from "../project/components/projectMigration/ProjectMigration.tsx";
 
-export const DEFAULT_PER_PAGE_PROJECT_MIGRATION = 10;
+export const DEFAULT_PER_PAGE_PROJECT_MIGRATION = 5;
 
 export function ProjectMigrationBanner() {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -162,7 +162,7 @@ export function ProjectMigrationBanner() {
             Looking for your Renku Legacy projects?
           </p>
           <Button size="sm" color="outline-primary" onClick={toggle}>
-            <BoxArrowInUp className={cx("bi", "me-1")} /> Migrate from Renku
+            <BoxArrowInUp size={20} className={cx("me-1")} /> Migrate from Renku
             Legacy
           </Button>
         </div>

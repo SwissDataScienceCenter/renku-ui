@@ -29,10 +29,8 @@ import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { GitlabProjectsToMigrate } from "../../../projectMigrationV2/ProjectMigration.types.ts";
 import { DEFAULT_PER_PAGE_PROJECT_MIGRATION } from "../../../projectMigrationV2/ProjectMigrationBanner.tsx";
-import {
-  ProjectMigrationPost,
-  usePostRenkuV1ProjectsByV1IdMigrationsMutation,
-} from "../../../projectsV2/api/projectV2.api";
+import { ProjectMigrationPost } from "../../../projectsV2/api/projectV2.api";
+import { usePostRenkuV1ProjectsByV1IdMigrationsMutation } from "../../../projectsV2/api/projectV2.enhanced-api.ts";
 import {
   ProjectMetadata,
   ProjectMigrationForm,
