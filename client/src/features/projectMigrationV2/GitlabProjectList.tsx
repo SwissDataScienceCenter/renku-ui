@@ -1,6 +1,6 @@
 import cx from "classnames";
 import { useState } from "react";
-import { Check, Folder } from "react-bootstrap-icons";
+import { CheckCircle, Folder } from "react-bootstrap-icons";
 import { Button, Form, InputGroup } from "reactstrap";
 import VisibilityIcon from "../../components/entities/VisibilityIcon";
 import { Loader } from "../../components/Loader";
@@ -112,12 +112,13 @@ export function GitlabProjectList({
                       "border-success",
                       "bg-success-subtle",
                       "text-success-emphasis",
-                      "badge bg-secondary",
+                      "badge",
                       "rounded-pill",
                       "ms-3"
                     )}
                   >
-                    <Check /> Already migrated
+                    <CheckCircle className={cx("bi", "me-1")} /> Already
+                    migrated
                   </span>
                 )}
               </h6>
