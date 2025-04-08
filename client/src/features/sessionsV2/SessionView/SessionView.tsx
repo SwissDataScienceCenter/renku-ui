@@ -228,6 +228,8 @@ interface SessionViewProps {
   project: Project;
   sessions?: SessionV2[];
   toggle: () => void;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
 }
 export function SessionView({
   id,
@@ -236,6 +238,8 @@ export function SessionView({
   toggle: setToggleSessionView,
   isOpen: toggleSessionView,
   project,
+  toggleDelete,
+  toggleUpdate,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
@@ -270,7 +274,11 @@ export function SessionView({
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";
   const launcherMenu = launcher && (
-    <SessionV2Actions launcher={launcher} sessionsLength={totalSession} />
+    <SessionV2Actions
+      launcher={launcher}
+      toggleDelete={toggleDelete ?? undefined}
+      toggleUpdate={toggleUpdate ?? undefined}
+    />
   );
   const description =
     launcher && launcher.description ? (

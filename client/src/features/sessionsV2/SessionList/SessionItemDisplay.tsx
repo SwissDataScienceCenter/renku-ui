@@ -17,12 +17,14 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
+import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal.tsx";
+import DeleteSessionV2Modal from "../DeleteSessionLauncherModal.tsx";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherItem from "./SessionItem";
 import { Card } from "reactstrap";
@@ -38,6 +40,15 @@ export function SessionItemDisplay({
   project,
 }: SessionLauncherDisplayProps) {
   const { name } = launcher;
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  const toggleUpdate = useCallback(() => {
+    setIsUpdateOpen((open) => !open);
+  }, []);
+  const toggleDelete = useCallback(() => {
+    setIsDeleteOpen((open) => !open);
+  }, []);
 
   const [hash, setHash] = useLocationHash();
   const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
@@ -86,6 +97,8 @@ export function SessionItemDisplay({
           name={name}
           project={project}
           sessions={filteredSessions}
+          toggleUpdate={toggleUpdate}
+          toggleDelete={toggleDelete}
         />
       </Card>
       <SessionView
@@ -95,6 +108,8 @@ export function SessionItemDisplay({
         sessions={filteredSessions}
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
+        toggleUpdate={toggleUpdate}
+        toggleDelete={toggleDelete}
       />
       {filteredSessions &&
         filteredSessions?.length > 0 &&
@@ -104,6 +119,21 @@ export function SessionItemDisplay({
             key={`session-logs-${session.name}`}
           />
         ))}
+      {launcher && (
+        <UpdateSessionLauncherModal
+          isOpen={isUpdateOpen}
+          launcher={launcher}
+          toggle={toggleUpdate}
+        />
+      )}
+      {launcher && (
+        <DeleteSessionV2Modal
+          isOpen={isDeleteOpen}
+          launcher={launcher}
+          toggle={toggleDelete}
+          sessionsLength={filteredSessions?.length}
+        />
+      )}
     </>
   );
 }

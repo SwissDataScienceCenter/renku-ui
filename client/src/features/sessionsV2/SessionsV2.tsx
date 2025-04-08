@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
 import { generatePath } from "react-router";
 import {
@@ -39,7 +39,6 @@ import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
-import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import SessionLauncherItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import styles from "./SessionList/SessionItemDisplay.module.scss";
@@ -47,7 +46,6 @@ import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
-import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
 import { SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
@@ -177,26 +175,18 @@ export default function SessionsV2({ project }: SessionsV2Props) {
 
 interface SessionV2ActionsProps {
   launcher: SessionLauncher;
-  sessionsLength: number;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
 }
 export function SessionV2Actions({
   launcher,
-  sessionsLength,
+  toggleDelete,
+  toggleUpdate,
 }: SessionV2ActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
 
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-  const toggleUpdate = useCallback(() => {
-    setIsUpdateOpen((open) => !open);
-  }, []);
-  const toggleDelete = useCallback(() => {
-    setIsDeleteOpen((open) => !open);
-  }, []);
-
-  const defaultAction = (
+  const defaultAction = toggleUpdate && (
     <Button
       className="text-nowrap"
       color="outline-primary"
@@ -209,42 +199,33 @@ export function SessionV2Actions({
     </Button>
   );
   return (
-    <>
-      <PermissionsGuard
-        disabled={null}
-        enabled={
-          <>
-            <ButtonWithMenuV2
-              color="outline-primary"
-              default={defaultAction}
-              preventPropagation
-              size="sm"
-            >
-              <DropdownItem
-                data-cy="session-view-menu-delete"
-                onClick={toggleDelete}
+    toggleDelete && (
+      <>
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <>
+              <ButtonWithMenuV2
+                color="outline-primary"
+                default={defaultAction}
+                preventPropagation
+                size="sm"
               >
-                <Trash className={cx("bi", "me-1")} />
-                Delete
-              </DropdownItem>
-            </ButtonWithMenuV2>
-            <UpdateSessionLauncherModal
-              isOpen={isUpdateOpen}
-              launcher={launcher}
-              toggle={toggleUpdate}
-            />
-            <DeleteSessionV2Modal
-              isOpen={isDeleteOpen}
-              launcher={launcher}
-              toggle={toggleDelete}
-              sessionsLength={sessionsLength}
-            />
-          </>
-        }
-        requestedPermission="write"
-        userPermissions={permissions}
-      />
-    </>
+                <DropdownItem
+                  data-cy="session-view-menu-delete"
+                  onClick={toggleDelete}
+                >
+                  <Trash className={cx("bi", "me-1")} />
+                  Delete
+                </DropdownItem>
+              </ButtonWithMenuV2>
+            </>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+      </>
+    )
   );
 }
 

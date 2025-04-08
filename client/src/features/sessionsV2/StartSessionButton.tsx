@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { ReactNode } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
@@ -30,6 +31,8 @@ interface StartSessionButtonProps {
   launcherId: string;
   disabled?: boolean;
   useOldImage?: boolean;
+  otherActions?: ReactNode;
+  isDisabledDropdownToggle?: boolean;
 }
 
 export default function StartSessionButton({
@@ -38,6 +41,8 @@ export default function StartSessionButton({
   slug,
   disabled,
   useOldImage,
+  otherActions,
+  isDisabledDropdownToggle,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
@@ -65,7 +70,7 @@ export default function StartSessionButton({
 
   const customizeLaunch = (
     <Link
-      className="dropdown-item"
+      className={cx("dropdown-item", disabled && "disabled")}
       to={{
         pathname: startUrl,
         search: new URLSearchParams({ custom: "1" }).toString(),
@@ -85,8 +90,10 @@ export default function StartSessionButton({
         preventPropagation
         size="sm"
         disabled={disabled}
+        isDisabledDropdownToggle={isDisabledDropdownToggle}
       >
         {customizeLaunch}
+        {otherActions}
       </ButtonWithMenuV2>
       {disabled ? (
         <UncontrolledTooltip target={`launch-btn-${launcherId}`}>

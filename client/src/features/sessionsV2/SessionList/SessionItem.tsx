@@ -18,11 +18,20 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useContext } from "react";
-import { Boxes, CircleFill, Globe2, Link45deg } from "react-bootstrap-icons";
-import { CardBody, CardHeader, Col, Row } from "reactstrap";
+import {
+  Boxes,
+  CircleFill,
+  Globe2,
+  Link45deg,
+  Pencil,
+  Trash,
+} from "react-bootstrap-icons";
+import { CardBody, CardHeader, Col, DropdownItem, Row } from "reactstrap";
 
 import AppContext from "../../../utils/context/appContext.ts";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants.ts";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard.tsx";
+import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook.ts";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import {
   sessionLaunchersV2Api,
@@ -54,6 +63,8 @@ interface SessionItemProps {
   project: Project;
   sessions?: SessionV2[];
   children?: ReactNode;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
 }
 export default function SessionLauncherItem({
   launcher,
@@ -61,6 +72,8 @@ export default function SessionLauncherItem({
   project,
   children,
   sessions,
+  toggleDelete,
+  toggleUpdate,
 }: SessionItemProps) {
   const environment = launcher?.environment;
   const { params } = useContext(AppContext);
@@ -80,7 +93,7 @@ export default function SessionLauncherItem({
   const lastSuccessfulBuild = builds?.find(
     (build) => build.status === "succeeded" && build.id !== lastBuild?.id
   );
-  const hasSession = sessions?.length;
+  const hasSession = !!sessions?.length;
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
     isBuildEnvironment && lastBuild?.status === "in_progress"
@@ -93,6 +106,14 @@ export default function SessionLauncherItem({
 
   const buildActions = imageBuildersEnabled && isBuildEnvironment && (
     <BuildActionsCard launcher={launcher} />
+  );
+
+  const otherActionsLauncher = launcher && toggleUpdate && toggleDelete && (
+    <SessionLauncherDropdownActions
+      launcher={launcher}
+      toggleDelete={toggleDelete}
+      toggleUpdate={toggleUpdate}
+    />
   );
 
   return (
@@ -227,12 +248,14 @@ export default function SessionLauncherItem({
                   launcherId={launcher.id}
                   namespace={project.namespace}
                   slug={project.slug}
-                  disabled={!!hasSession}
+                  disabled={hasSession}
                   useOldImage={
                     isBuildEnvironment &&
                     lastBuild?.status !== "succeeded" &&
                     !!lastSuccessfulBuild
                   }
+                  otherActions={otherActionsLauncher}
+                  isDisabledDropdownToggle={!otherActionsLauncher}
                 />
                 {isBuildEnvironment &&
                   lastBuild?.status !== "succeeded" &&
@@ -339,5 +362,48 @@ export function SessionInnerCard({ project, session }: SessionInnerCardProps) {
         </Row>
       </div>
     </div>
+  );
+}
+
+interface SessionLauncherDropdownActionsProps {
+  launcher: SessionLauncher;
+  toggleUpdate: () => void;
+  toggleDelete: () => void;
+}
+export function SessionLauncherDropdownActions({
+  launcher,
+  toggleDelete,
+  toggleUpdate,
+}: SessionLauncherDropdownActionsProps) {
+  const { project_id: projectId } = launcher;
+  const permissions = useProjectPermissions({ projectId });
+
+  return (
+    <>
+      <PermissionsGuard
+        disabled={null}
+        enabled={
+          <>
+            <DropdownItem
+              data-cy="session-launcher-menu-edit"
+              onClick={toggleUpdate}
+            >
+              <Pencil className={cx("bi", "me-1")} />
+              Edit launcher
+            </DropdownItem>
+            <DropdownItem divider />
+            <DropdownItem
+              data-cy="session-launcher-menu-delete"
+              onClick={toggleDelete}
+            >
+              <Trash className={cx("bi", "me-1")} />
+              Delete launcher
+            </DropdownItem>
+          </>
+        }
+        requestedPermission="write"
+        userPermissions={permissions}
+      />
+    </>
   );
 }
