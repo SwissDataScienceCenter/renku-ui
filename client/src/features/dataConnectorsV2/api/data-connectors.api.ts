@@ -56,6 +56,14 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/namespaces/${queryArg["namespace"]}/data_connectors/${queryArg.slug}`,
       }),
     }),
+    getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug: build.query<
+      GetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugApiResponse,
+      GetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.project}/data_connectors/${queryArg.slug}`,
+      }),
+    }),
     getDataConnectorsByDataConnectorIdPermissions: build.query<
       GetDataConnectorsByDataConnectorIdPermissionsApiResponse,
       GetDataConnectorsByDataConnectorIdPermissionsApiArg
@@ -176,6 +184,14 @@ export type GetNamespacesByNamespaceDataConnectorsAndSlugApiArg = {
   namespace: string;
   slug: string;
 };
+export type GetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugApiResponse =
+  /** status 200 The data connector */ DataConnectorRead;
+export type GetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugApiArg =
+  {
+    namespace: string;
+    project: string;
+    slug: string;
+  };
 export type GetDataConnectorsByDataConnectorIdPermissionsApiResponse =
   /** status 200 The set of permissions. */ DataConnectorPermissions;
 export type GetDataConnectorsByDataConnectorIdPermissionsApiArg = {
@@ -467,6 +483,7 @@ export const {
   usePatchDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugQuery,
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
