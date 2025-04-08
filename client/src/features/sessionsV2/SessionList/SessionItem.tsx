@@ -54,14 +54,12 @@ interface SessionItemProps {
   project: Project;
   sessions?: SessionV2[];
   children?: ReactNode;
-  hasSession?: boolean;
 }
 export default function SessionLauncherItem({
   launcher,
   name,
   project,
   children,
-  hasSession,
   sessions,
 }: SessionItemProps) {
   const environment = launcher?.environment;
@@ -82,6 +80,7 @@ export default function SessionLauncherItem({
   const lastSuccessfulBuild = builds?.find(
     (build) => build.status === "succeeded" && build.id !== lastBuild?.id
   );
+  const hasSession = sessions?.length;
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
     isBuildEnvironment && lastBuild?.status === "in_progress"
@@ -120,12 +119,12 @@ export default function SessionLauncherItem({
                     <Boxes size={16} className="me-2" />
                     Code based environment
                   </span>
-                ) : (
+                ) : environment?.environment_kind === "CUSTOM" ? (
                   <span className="small text-muted me-3">
                     <Link45deg size={16} className="me-2" />
                     Custom image environment
                   </span>
-                )}
+                ) : null}
               </Col>
             </Row>
             <Row className={cx("g-2", isBuildEnvironment && "mb-2")}>
@@ -137,9 +136,7 @@ export default function SessionLauncherItem({
                   {name ? (
                     name
                   ) : (
-                    <span className="fst-italic">
-                      Not found Session Launcher (Orphan session)
-                    </span>
+                    <span className="fst-italic">Orphan session</span>
                   )}
                 </span>
               </Col>
@@ -230,7 +227,7 @@ export default function SessionLauncherItem({
                   launcherId={launcher.id}
                   namespace={project.namespace}
                   slug={project.slug}
-                  disabled={hasSession}
+                  disabled={!!hasSession}
                   useOldImage={
                     isBuildEnvironment &&
                     lastBuild?.status !== "succeeded" &&
@@ -297,7 +294,7 @@ export function SessionInnerCard({ project, session }: SessionInnerCardProps) {
         className={cx("position-absolute", styles.SessionLine)}
         alt="Session line indicator"
       />
-      <div className={cx("ms-4", "px-3", "pt-3")}>
+      <div className={cx("ms-5", "px-3", "pt-3")}>
         <Row className="g-2">
           <Col xs={12} xl="auto">
             <Row className="g-2">

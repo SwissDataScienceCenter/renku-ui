@@ -502,7 +502,7 @@ export function BuildStatusDescription({
       className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
     >
       <Clock size="16" className="flex-shrink-0" />
-      <span>Last successful build {completedTimeText}</span>
+      <span>Last successfully built {completedTimeText}</span>
     </div>
   ) : status === "in_progress" ? (
     <div
@@ -545,9 +545,6 @@ export function BuildActions({ launcher }: BuildActionsProps) {
   );
   const hasInProgressBuild = !!inProgressBuild;
 
-  const isReady =
-    launcher.environment.container_image !== "image:unknown-at-the-moment";
-
   const [postBuild, postResult] = usePostBuildMutation();
   const triggerBuild = useCallback(() => {
     postBuild({ environmentId: launcher.environment.id });
@@ -582,12 +579,8 @@ export function BuildActions({ launcher }: BuildActionsProps) {
       onClick={triggerBuild}
       size="sm"
     >
-      {isReady ? (
-        <BootstrapReboot className={cx("bi", "me-1")} />
-      ) : (
-        <Bricks className={cx("bi", "me-1")} />
-      )}
-      {isReady ? "Rebuild" : "Build"}
+      <BootstrapReboot className={cx("bi", "me-1")} />
+      {"Rebuild"}
     </Button>
   );
 
@@ -661,10 +654,6 @@ export function BuildActionsCard({ launcher }: BuildActionsProps) {
     [builds]
   );
   const hasInProgressBuild = !!inProgressBuild;
-
-  const isReady =
-    launcher.environment.container_image !== "image:unknown-at-the-moment";
-
   const [postBuild, postResult] = usePostBuildMutation();
   const triggerBuild = useCallback(() => {
     postBuild({ environmentId: launcher.environment.id });
@@ -724,12 +713,8 @@ export function BuildActionsCard({ launcher }: BuildActionsProps) {
         onClick={triggerBuild}
         size="sm"
       >
-        {isReady ? (
-          <BootstrapReboot className={cx("bi", "me-1")} />
-        ) : (
-          <Bricks className={cx("bi", "me-1")} />
-        )}
-        {isReady ? "Rebuild" : "Build"}
+        <BootstrapReboot className={cx("bi", "me-1")} />
+        {"Rebuild"}
       </Button>
     </ButtonGroup>
   );

@@ -84,7 +84,7 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
           className={cx("me-1", "text-warning-emphasis")}
           inline
         />
-        <span className="text-warning-emphasis">Starting Session</span>
+        <span className="text-warning-emphasis">Launching Session</span>
       </SessionBadge>
     ) : state === "stopping" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
@@ -208,15 +208,15 @@ export function SessionStatusV2LabelAlt({ session }: ActiveSessionV2Props) {
   const badge =
     state === "running" && !image ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning-emphasis">Running Session</span>
+        <span className="text-warning-emphasis">My Running Session</span>
       </div>
     ) : state === "running" ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-success-emphasis">Running Session</span>
+        <span className="text-success-emphasis">My Running Session</span>
       </div>
     ) : state === "starting" ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning-emphasis">Starting Session</span>
+        <span className="text-warning-emphasis">Launching Session</span>
       </div>
     ) : state === "stopping" ? (
       <div className={cx("fs-6", "fw-bold")}>
@@ -351,7 +351,7 @@ function SessionStatusV2Text({
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
-      <span>Created {startTimeText}</span>
+      <span>Launching since {startTimeText}</span>
     </div>
   ) : state === "stopping" ? (
     <>Shutting down session...</>

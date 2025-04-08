@@ -68,22 +68,6 @@ export function SessionItemDisplay({
 
   return (
     <>
-      <SessionView
-        id={launcherHash}
-        launcher={launcher}
-        project={project}
-        sessions={filteredSessions}
-        toggle={toggleSessionView}
-        isOpen={isSessionViewOpen}
-      />
-      {filteredSessions &&
-        filteredSessions?.length > 0 &&
-        filteredSessions.map((session) => (
-          <EnvironmentLogsV2
-            name={session.name}
-            key={`session-logs-${session.name}`}
-          />
-        ))}
       <Card
         action
         className={cx(
@@ -101,10 +85,25 @@ export function SessionItemDisplay({
           launcher={launcher}
           name={name}
           project={project}
-          hasSession={filteredSessions.length > 0}
           sessions={filteredSessions}
         />
       </Card>
+      <SessionView
+        id={launcherHash}
+        launcher={launcher}
+        project={project}
+        sessions={filteredSessions}
+        toggle={toggleSessionView}
+        isOpen={isSessionViewOpen}
+      />
+      {filteredSessions &&
+        filteredSessions?.length > 0 &&
+        filteredSessions.map((session) => (
+          <EnvironmentLogsV2
+            name={session.name}
+            key={`session-logs-${session.name}`}
+          />
+        ))}
     </>
   );
 }

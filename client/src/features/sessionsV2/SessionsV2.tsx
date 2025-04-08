@@ -32,6 +32,7 @@ import {
 import { Loader } from "../../components/Loader";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import EnvironmentLogsV2 from "../../components/LogsV2.tsx";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -41,6 +42,7 @@ import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
 import SessionLauncherItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
+import styles from "./SessionList/SessionItemDisplay.module.scss";
 import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
@@ -270,13 +272,30 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
 
   return (
     <>
-      <SessionLauncherItem project={project} sessions={[session]} />
+      <Card
+        action
+        className={cx(
+          styles.SessionLauncherCard,
+          "mt-2",
+          "cursor-pointer",
+          "shadow-none",
+          "rounded-0"
+        )}
+        data-cy="session-launcher-item"
+        onClick={toggleSessionView}
+      >
+        <SessionLauncherItem project={project} sessions={[session]} />
+      </Card>
       <SessionView
         id={sessionHash}
         sessions={[session]}
         project={project}
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
+      />
+      <EnvironmentLogsV2
+        name={session.name}
+        key={`session-logs-${session.name}`}
       />
     </>
   );
