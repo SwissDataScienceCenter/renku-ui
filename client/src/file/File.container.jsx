@@ -30,9 +30,9 @@ class JupyterNotebookContainer extends Component {
 
     return (
       <StyledNotebook
-        fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, "")}
         notebook={this.props.notebook}
         client={this.props.client}
+        fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, "")}
       />
     );
   }
