@@ -18,10 +18,10 @@
 
 import React, { Component } from "react";
 
-import { API_ERRORS } from "../api-client";
 import { ShareLinkSessionIcon } from "../components/shareLinkSession/ShareLinkSession";
 import SessionFileButton from "../features/session/components/SessionFileButton";
 import { ShowFile as ShowFilePresent, StyledNotebook } from "./File.present";
+import { API_ERRORS } from "../api-client";
 
 class JupyterNotebookContainer extends Component {
   render() {
