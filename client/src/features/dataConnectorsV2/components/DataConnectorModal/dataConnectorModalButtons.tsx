@@ -249,7 +249,7 @@ export function DataConnectorConnectionTestResult() {
       data-cy="cloud-storage-connection-success"
     >
       <SuccessAlert timeout={0}>
-        <p className="p-0">The connection to the storage works correctly.</p>
+        <p className="mb-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     </div>
   );
