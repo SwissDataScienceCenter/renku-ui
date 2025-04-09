@@ -180,6 +180,24 @@ export default function EditLauncherFormContent({
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <EnvironmentKindField control={control} />
+
+      {environmentSelect === "global" && renderEnvironmentList()}
+      {environmentSelect === "custom + image" &&
+        renderCustomEnvironmentFields()}
+      {environmentSelect === "custom + build" && (
+        <BuilderEnvironmentFields control={control} isEdit />
+      )}
+    </div>
+  );
+}
+
+export function EditLauncherFormMetadata({
+  control,
+  errors,
+}: EditLauncherFormContentProps) {
+  return (
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
       <div>
         <Label className="form-label" for="addSessionLauncherName">
           Session launcher name
@@ -219,14 +237,6 @@ export default function EditLauncherFormContent({
           )}
         />
       </div>
-      <EnvironmentKindField control={control} />
-
-      {environmentSelect === "global" && renderEnvironmentList()}
-      {environmentSelect === "custom + image" &&
-        renderCustomEnvironmentFields()}
-      {environmentSelect === "custom + build" && (
-        <BuilderEnvironmentFields control={control} isEdit />
-      )}
     </div>
   );
 }

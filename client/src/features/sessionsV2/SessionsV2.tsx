@@ -39,6 +39,7 @@ import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
+import { IconByLauncherEnvironment } from "./components/SessionForm/SessionEnvironmentItem.tsx";
 import SessionLauncherItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import styles from "./SessionList/SessionItemDisplay.module.scss";
@@ -177,11 +178,13 @@ interface SessionV2ActionsProps {
   launcher: SessionLauncher;
   toggleUpdate?: () => void;
   toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
 }
 export function SessionV2Actions({
   launcher,
   toggleDelete,
   toggleUpdate,
+  toggleUpdateEnvironment,
 }: SessionV2ActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
@@ -195,7 +198,7 @@ export function SessionV2Actions({
       size="sm"
     >
       <Pencil className={cx("bi", "me-1")} />
-      Edit
+      Edit launcher
     </Button>
   );
   return (
@@ -213,10 +216,18 @@ export function SessionV2Actions({
               >
                 <DropdownItem
                   data-cy="session-view-menu-delete"
+                  onClick={toggleUpdateEnvironment}
+                >
+                  <IconByLauncherEnvironment launcher={launcher} />
+                  Edit environment
+                </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem
+                  data-cy="session-view-menu-delete"
                   onClick={toggleDelete}
                 >
                   <Trash className={cx("bi", "me-1")} />
-                  Delete
+                  Delete launcher
                 </DropdownItem>
               </ButtonWithMenuV2>
             </>

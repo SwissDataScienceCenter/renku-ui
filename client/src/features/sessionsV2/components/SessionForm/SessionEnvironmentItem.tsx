@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Globe2 } from "react-bootstrap-icons";
+import { Boxes, Globe2, Link45deg } from "react-bootstrap-icons";
 import {
   Control,
   Controller,
@@ -33,6 +33,7 @@ import {
   ResourcePool,
 } from "../../../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+import { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import type { Environment as SessionEnvironment } from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 
@@ -129,4 +130,19 @@ export function SessionEnvironmentItem({
       </div>
     </ListGroupItem>
   );
+}
+
+export function IconByLauncherEnvironment({
+  launcher,
+}: {
+  launcher: SessionLauncher;
+}) {
+  const currentEnvironment = launcher.environment;
+  return currentEnvironment?.environment_kind === "GLOBAL" ? (
+    <Globe2 size={16} className="me-2" />
+  ) : currentEnvironment?.environment_image_source === "build" ? (
+    <Boxes size={16} className="me-2" />
+  ) : currentEnvironment?.environment_kind === "CUSTOM" ? (
+    <Link45deg size={16} className="me-2" />
+  ) : null;
 }

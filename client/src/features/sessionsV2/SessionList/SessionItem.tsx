@@ -37,6 +37,7 @@ import {
   sessionLaunchersV2Api,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
 } from "../api/sessionLaunchersV2.api";
+import { IconByLauncherEnvironment } from "../components/SessionForm/SessionEnvironmentItem.tsx";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
@@ -65,6 +66,7 @@ interface SessionItemProps {
   children?: ReactNode;
   toggleUpdate?: () => void;
   toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
 }
 export default function SessionLauncherItem({
   launcher,
@@ -74,6 +76,7 @@ export default function SessionLauncherItem({
   sessions,
   toggleDelete,
   toggleUpdate,
+  toggleUpdateEnvironment,
 }: SessionItemProps) {
   const environment = launcher?.environment;
   const { params } = useContext(AppContext);
@@ -108,13 +111,17 @@ export default function SessionLauncherItem({
     <BuildActionsCard launcher={launcher} />
   );
 
-  const otherActionsLauncher = launcher && toggleUpdate && toggleDelete && (
-    <SessionLauncherDropdownActions
-      launcher={launcher}
-      toggleDelete={toggleDelete}
-      toggleUpdate={toggleUpdate}
-    />
-  );
+  const otherActionsLauncher = launcher &&
+    toggleUpdate &&
+    toggleDelete &&
+    toggleUpdateEnvironment && (
+      <SessionLauncherDropdownActions
+        launcher={launcher}
+        toggleDelete={toggleDelete}
+        toggleUpdate={toggleUpdate}
+        toggleUpdateEnvironment={toggleUpdateEnvironment}
+      />
+    );
 
   return (
     <>
@@ -369,11 +376,13 @@ interface SessionLauncherDropdownActionsProps {
   launcher: SessionLauncher;
   toggleUpdate: () => void;
   toggleDelete: () => void;
+  toggleUpdateEnvironment: () => void;
 }
 export function SessionLauncherDropdownActions({
   launcher,
   toggleDelete,
   toggleUpdate,
+  toggleUpdateEnvironment,
 }: SessionLauncherDropdownActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
@@ -384,6 +393,13 @@ export function SessionLauncherDropdownActions({
         disabled={null}
         enabled={
           <>
+            <DropdownItem
+              data-cy="session-launcher-menu-edit-env"
+              onClick={toggleUpdateEnvironment}
+            >
+              <IconByLauncherEnvironment launcher={launcher} />
+              Edit environment
+            </DropdownItem>
             <DropdownItem
               data-cy="session-launcher-menu-edit"
               onClick={toggleUpdate}

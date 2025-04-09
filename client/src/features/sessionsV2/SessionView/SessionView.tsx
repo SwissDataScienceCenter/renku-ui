@@ -58,12 +58,12 @@ import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
+import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { ActiveSessionButtonAlt } from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
-import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
   SessionBadge,
   SessionStatusV2Description,
@@ -230,6 +230,7 @@ interface SessionViewProps {
   toggle: () => void;
   toggleUpdate?: () => void;
   toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
 }
 export function SessionView({
   id,
@@ -240,6 +241,7 @@ export function SessionView({
   project,
   toggleDelete,
   toggleUpdate,
+  toggleUpdateEnvironment,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
@@ -278,6 +280,7 @@ export function SessionView({
       launcher={launcher}
       toggleDelete={toggleDelete ?? undefined}
       toggleUpdate={toggleUpdate ?? undefined}
+      toggleUpdateEnvironment={toggleUpdateEnvironment ?? undefined}
     />
   );
   const description =
@@ -419,7 +422,7 @@ export function SessionView({
                 />
               </div>
               <EnvironmentCard launcher={launcher} />
-              <UpdateSessionLauncherModal
+              <UpdateSessionLauncherEnvironmentModal
                 isOpen={isUpdateOpen}
                 launcher={launcher}
                 toggle={toggle}

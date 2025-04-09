@@ -23,8 +23,10 @@ import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
-import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal.tsx";
-import DeleteSessionV2Modal from "../DeleteSessionLauncherModal.tsx";
+import UpdateSessionLauncherEnvironmentModal, {
+  UpdateSessionLauncherMetadataModal,
+} from "../components/SessionModals/UpdateSessionLauncherModal";
+import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherItem from "./SessionItem";
 import { Card } from "reactstrap";
@@ -40,11 +42,15 @@ export function SessionItemDisplay({
   project,
 }: SessionLauncherDisplayProps) {
   const { name } = launcher;
+  const [isUpdateEnvironmentOpen, setIsUpdateEnvironmentOpen] = useState(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
+  }, []);
+  const toggleUpdateEnvironment = useCallback(() => {
+    setIsUpdateEnvironmentOpen((open) => !open);
   }, []);
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
@@ -98,6 +104,7 @@ export function SessionItemDisplay({
           project={project}
           sessions={filteredSessions}
           toggleUpdate={toggleUpdate}
+          toggleUpdateEnvironment={toggleUpdateEnvironment}
           toggleDelete={toggleDelete}
         />
       </Card>
@@ -110,6 +117,7 @@ export function SessionItemDisplay({
         isOpen={isSessionViewOpen}
         toggleUpdate={toggleUpdate}
         toggleDelete={toggleDelete}
+        toggleUpdateEnvironment={toggleUpdateEnvironment}
       />
       {filteredSessions &&
         filteredSessions?.length > 0 &&
@@ -120,7 +128,14 @@ export function SessionItemDisplay({
           />
         ))}
       {launcher && (
-        <UpdateSessionLauncherModal
+        <UpdateSessionLauncherEnvironmentModal
+          isOpen={isUpdateEnvironmentOpen}
+          launcher={launcher}
+          toggle={toggleUpdateEnvironment}
+        />
+      )}
+      {launcher && (
+        <UpdateSessionLauncherMetadataModal
           isOpen={isUpdateOpen}
           launcher={launcher}
           toggle={toggleUpdate}
