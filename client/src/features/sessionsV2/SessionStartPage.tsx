@@ -179,7 +179,7 @@ function SaveCloudStorage({
         description="Saving credentials..."
         type={ProgressType.Determinate}
         style={ProgressStyle.Light}
-        title={`Starting session ${launcher.name}`}
+        title={`Launching session ${launcher.name}`}
         status={steps}
       />
     </div>
@@ -278,7 +278,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
           description="Preparing to start session"
           type={ProgressType.Determinate}
           style={ProgressStyle.Light}
-          title={`Starting session ${launcher.name}`}
+          title={`Launching session ${launcher.name}`}
           status={steps}
         />
       </div>
@@ -394,7 +394,7 @@ function StartSessionWithCloudStorageModal({
           description="Preparing to start session"
           type={ProgressType.Determinate}
           style={ProgressStyle.Light}
-          title={`Starting session ${launcher.name}`}
+          title={`Launching session ${launcher.name}`}
           status={steps}
         />
         <DataConnectorSecretsModal
@@ -555,7 +555,7 @@ function StartSessionFromLauncher({
         description="Preparing to start session"
         type={ProgressType.Determinate}
         style={ProgressStyle.Light}
-        title={`Starting session ${launcher.name}`}
+        title={`Launching session ${launcher.name}`}
         status={steps}
       />
       <SelectResourceClassModal
@@ -648,7 +648,7 @@ function StartSessionWithSessionSecretsModal({
           description="Preparing to start session"
           type={ProgressType.Determinate}
           style={ProgressStyle.Light}
-          title={`Starting session ${launcher.name}`}
+          title={`Launching session ${launcher.name}`}
           status={steps}
         />
         <SessionSecretsModal
