@@ -56,6 +56,10 @@ export function GitlabProjectList({
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <p className="mb-0">
+        Here is the list of all your projects found in Renku Legacy. Please
+        select the one you would like to migrate to Renku 2.0.
+      </p>
       <div>
         <Form noValidate onSubmit={handleSubmit}>
           <InputGroup data-cy="search-bar-project-list">
@@ -138,11 +142,8 @@ export function GitlabProjectList({
             totalItems={totalResult ?? 0}
             onPageChange={onPageChange}
             showDescription={true}
+            totalInPage={projects.length ?? 0}
           />
-          <span className={cx("text-sm", "text-gray-700")}>
-            {page * perPage + 1} – {Math.min((page + 1) * perPage, totalResult)}{" "}
-            of {totalResult}
-          </span>
         </>
       )}
     </div>

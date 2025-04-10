@@ -137,8 +137,9 @@ export function MigrationModal({
         visibility:
           projectMetadata?.visibility === "public" ? "public" : "private",
       });
+      if (result) result.reset();
     }
-  }, [isOpen, dataGitlabProjects, reset, projectMetadata]);
+  }, [isOpen, dataGitlabProjects, reset, projectMetadata, result]);
 
   const handleSearch = useCallback(
     (search: string) => {
