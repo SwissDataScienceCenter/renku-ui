@@ -851,6 +851,7 @@ function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
       logs={logs}
       name={name}
       title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
+      defaultTab="step-build-and-push"
     />
   );
 }
