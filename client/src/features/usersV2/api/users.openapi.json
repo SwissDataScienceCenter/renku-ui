@@ -745,7 +745,7 @@
         "description": "The slug used to identify a project",
         "minLength": 3,
         "example": "user/my-project",
-        "pattern": "[a-zA-Z0-9_.-/]"
+        "pattern": "^[a-zA-Z0-9]+([_.\\-/][a-zA-Z0-9]+)*[_.\\-/]?[a-zA-Z0-9]$"
       },
       "AddPinnedProject": {
         "type": "object",
