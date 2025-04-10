@@ -164,6 +164,9 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
     deleteUserPreferencesPinnedProjects: {
       invalidatesTags: ["UserPreferences"],
     },
+    postUserPreferencesDismissProjectMigrationBanner: {
+      invalidatesTags: ["UserPreferences"],
+    },
   },
 });
 
