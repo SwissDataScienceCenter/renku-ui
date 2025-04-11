@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
 import { generatePath } from "react-router";
 import {
@@ -27,26 +27,26 @@ import {
   CardBody,
   CardHeader,
   DropdownItem,
-  ListGroup,
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import EnvironmentLogsV2 from "../../components/LogsV2.tsx";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
-import DeleteSessionV2Modal from "./DeleteSessionLauncherModal";
-import SessionItem from "./SessionList/SessionItem";
+import { IconByLauncherEnvironment } from "./components/SessionForm/SessionEnvironmentItem.tsx";
+import SessionLauncherItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
+import styles from "./SessionList/SessionItemDisplay.module.scss";
 import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
-import UpdateSessionLauncherModal from "./components/SessionModals/UpdateSessionLauncherModal";
 import { SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
@@ -119,7 +119,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       </p>
       {loading}
       {totalSessions > 0 && !isLoading && (
-        <ListGroup flush>
+        <div className="d-flex flex-column gap-2 mx-3 mb-3">
           {launchers?.map((launcher) => (
             <SessionItemDisplay
               key={`launcher-${launcher.id}`}
@@ -134,7 +134,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
               project={project}
             />
           ))}
-        </ListGroup>
+        </div>
       )}
     </>
   );
@@ -176,26 +176,20 @@ export default function SessionsV2({ project }: SessionsV2Props) {
 
 interface SessionV2ActionsProps {
   launcher: SessionLauncher;
-  sessionsLength: number;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
 }
 export function SessionV2Actions({
   launcher,
-  sessionsLength,
+  toggleDelete,
+  toggleUpdate,
+  toggleUpdateEnvironment,
 }: SessionV2ActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
 
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-  const toggleUpdate = useCallback(() => {
-    setIsUpdateOpen((open) => !open);
-  }, []);
-  const toggleDelete = useCallback(() => {
-    setIsDeleteOpen((open) => !open);
-  }, []);
-
-  const defaultAction = (
+  const defaultAction = toggleUpdate && (
     <Button
       className="text-nowrap"
       color="outline-primary"
@@ -204,46 +198,45 @@ export function SessionV2Actions({
       size="sm"
     >
       <Pencil className={cx("bi", "me-1")} />
-      Edit
+      Edit launcher
     </Button>
   );
   return (
-    <>
-      <PermissionsGuard
-        disabled={null}
-        enabled={
-          <>
-            <ButtonWithMenuV2
-              color="outline-primary"
-              default={defaultAction}
-              preventPropagation
-              size="sm"
-            >
-              <DropdownItem
-                data-cy="session-view-menu-delete"
-                onClick={toggleDelete}
+    toggleDelete && (
+      <>
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <>
+              <ButtonWithMenuV2
+                color="outline-primary"
+                default={defaultAction}
+                preventPropagation
+                size="sm"
               >
-                <Trash className={cx("bi", "me-1")} />
-                Delete
-              </DropdownItem>
-            </ButtonWithMenuV2>
-            <UpdateSessionLauncherModal
-              isOpen={isUpdateOpen}
-              launcher={launcher}
-              toggle={toggleUpdate}
-            />
-            <DeleteSessionV2Modal
-              isOpen={isDeleteOpen}
-              launcher={launcher}
-              toggle={toggleDelete}
-              sessionsLength={sessionsLength}
-            />
-          </>
-        }
-        requestedPermission="write"
-        userPermissions={permissions}
-      />
-    </>
+                <DropdownItem
+                  data-cy="session-view-menu-delete"
+                  onClick={toggleUpdateEnvironment}
+                >
+                  <IconByLauncherEnvironment launcher={launcher} />
+                  Edit environment
+                </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem
+                  data-cy="session-view-menu-delete"
+                  onClick={toggleDelete}
+                >
+                  <Trash className={cx("bi", "me-1")} />
+                  Delete launcher
+                </DropdownItem>
+              </ButtonWithMenuV2>
+            </>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+      </>
+    )
   );
 }
 
@@ -271,17 +264,30 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
 
   return (
     <>
-      <SessionItem
-        project={project}
-        session={session}
-        toggleSessionDetails={toggleSessionView}
-      />
+      <Card
+        action
+        className={cx(
+          styles.SessionLauncherCard,
+          "mt-2",
+          "cursor-pointer",
+          "shadow-none",
+          "rounded-0"
+        )}
+        data-cy="session-launcher-item"
+        onClick={toggleSessionView}
+      >
+        <SessionLauncherItem project={project} sessions={[session]} />
+      </Card>
       <SessionView
         id={sessionHash}
         sessions={[session]}
         project={project}
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
+      />
+      <EnvironmentLogsV2
+        name={session.name}
+        key={`session-logs-${session.name}`}
       />
     </>
   );
