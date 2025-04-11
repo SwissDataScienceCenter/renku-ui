@@ -58,12 +58,12 @@ import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
+import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import { ActiveSessionButtonAlt } from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
-import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
   SessionBadge,
   SessionStatusV2Description,
@@ -123,7 +123,7 @@ function SessionCard({
       contentDescription={<SessionStatusV2Description session={session} />}
       contentLabel={<SessionStatusV2Label session={session} />}
       contentSession={
-        <ActiveSessionButton
+        <ActiveSessionButtonAlt
           session={session}
           showSessionUrl={getShowSessionUrlByProject(project, session.name)}
         />
@@ -228,6 +228,9 @@ interface SessionViewProps {
   project: Project;
   sessions?: SessionV2[];
   toggle: () => void;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
 }
 export function SessionView({
   id,
@@ -236,6 +239,9 @@ export function SessionView({
   toggle: setToggleSessionView,
   isOpen: toggleSessionView,
   project,
+  toggleDelete,
+  toggleUpdate,
+  toggleUpdateEnvironment,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
@@ -270,7 +276,12 @@ export function SessionView({
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";
   const launcherMenu = launcher && (
-    <SessionV2Actions launcher={launcher} sessionsLength={totalSession} />
+    <SessionV2Actions
+      launcher={launcher}
+      toggleDelete={toggleDelete ?? undefined}
+      toggleUpdate={toggleUpdate ?? undefined}
+      toggleUpdateEnvironment={toggleUpdateEnvironment ?? undefined}
+    />
   );
   const description =
     launcher && launcher.description ? (
@@ -411,7 +422,7 @@ export function SessionView({
                 />
               </div>
               <EnvironmentCard launcher={launcher} />
-              <UpdateSessionLauncherModal
+              <UpdateSessionLauncherEnvironmentModal
                 isOpen={isUpdateOpen}
                 launcher={launcher}
                 toggle={toggle}

@@ -54,7 +54,7 @@
           },
           {
             "status": "failed",
-            "step": "Starting session"
+            "step": "Launching session"
           }
         ],
         "message": "Could not start pod",

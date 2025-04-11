@@ -16,15 +16,23 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo } from "react";
+import cx from "classnames";
+import { useCallback, useMemo, useState } from "react";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
+import UpdateSessionLauncherEnvironmentModal, {
+  UpdateSessionLauncherMetadataModal,
+} from "../components/SessionModals/UpdateSessionLauncherModal";
+import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
 import { SessionView } from "../SessionView/SessionView";
-import SessionItem from "./SessionItem";
+import SessionLauncherItem from "./SessionItem";
+import { Card } from "reactstrap";
 
+import styles from "./SessionItemDisplay.module.scss";
+import EnvironmentLogsV2 from "../../../components/LogsV2";
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;
   project: Project;
@@ -34,6 +42,19 @@ export function SessionItemDisplay({
   project,
 }: SessionLauncherDisplayProps) {
   const { name } = launcher;
+  const [isUpdateEnvironmentOpen, setIsUpdateEnvironmentOpen] = useState(false);
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  const toggleUpdate = useCallback(() => {
+    setIsUpdateOpen((open) => !open);
+  }, []);
+  const toggleUpdateEnvironment = useCallback(() => {
+    setIsUpdateEnvironmentOpen((open) => !open);
+  }, []);
+  const toggleDelete = useCallback(() => {
+    setIsDeleteOpen((open) => !open);
+  }, []);
 
   const [hash, setHash] = useLocationHash();
   const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
@@ -49,6 +70,7 @@ export function SessionItemDisplay({
   }, [launcherHash, setHash]);
 
   const { data: sessions } = useGetSessionsQueryV2();
+
   const filteredSessions = useMemo(
     () =>
       sessions != null
@@ -63,26 +85,29 @@ export function SessionItemDisplay({
 
   return (
     <>
-      {filteredSessions?.length > 0 ? (
-        filteredSessions.map((session) => (
-          <SessionItem
-            key={`session-item-${session.name}`}
-            launcher={launcher}
-            name={name}
-            project={project}
-            session={session}
-            toggleSessionDetails={toggleSessionView}
-          />
-        ))
-      ) : (
-        <SessionItem
+      <Card
+        action
+        className={cx(
+          styles.SessionLauncherCard,
+          "mt-2",
+          "cursor-pointer",
+          "shadow-none",
+          "rounded-0"
+        )}
+        data-cy="session-launcher-item"
+        onClick={toggleSessionView}
+      >
+        <SessionLauncherItem
           key={`session-item-${launcher.id}`}
           launcher={launcher}
           name={name}
           project={project}
-          toggleSessionDetails={toggleSessionView}
+          sessions={filteredSessions}
+          toggleUpdate={toggleUpdate}
+          toggleUpdateEnvironment={toggleUpdateEnvironment}
+          toggleDelete={toggleDelete}
         />
-      )}
+      </Card>
       <SessionView
         id={launcherHash}
         launcher={launcher}
@@ -90,7 +115,40 @@ export function SessionItemDisplay({
         sessions={filteredSessions}
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
+        toggleUpdate={toggleUpdate}
+        toggleDelete={toggleDelete}
+        toggleUpdateEnvironment={toggleUpdateEnvironment}
       />
+      {filteredSessions &&
+        filteredSessions?.length > 0 &&
+        filteredSessions.map((session) => (
+          <EnvironmentLogsV2
+            name={session.name}
+            key={`session-logs-${session.name}`}
+          />
+        ))}
+      {launcher && (
+        <UpdateSessionLauncherEnvironmentModal
+          isOpen={isUpdateEnvironmentOpen}
+          launcher={launcher}
+          toggle={toggleUpdateEnvironment}
+        />
+      )}
+      {launcher && (
+        <UpdateSessionLauncherMetadataModal
+          isOpen={isUpdateOpen}
+          launcher={launcher}
+          toggle={toggleUpdate}
+        />
+      )}
+      {launcher && (
+        <DeleteSessionV2Modal
+          isOpen={isDeleteOpen}
+          launcher={launcher}
+          toggle={toggleDelete}
+          sessionsLength={filteredSessions?.length}
+        />
+      )}
     </>
   );
 }
