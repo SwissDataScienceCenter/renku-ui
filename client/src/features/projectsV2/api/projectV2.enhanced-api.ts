@@ -345,6 +345,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjectsByProjectIdCopies: {
       invalidatesTags: ["Project"],
     },
+    postRenkuV1ProjectsByV1IdMigrations: {
+      invalidatesTags: ["Project"],
+    },
   },
 });
 
@@ -374,6 +377,7 @@ export const {
   usePatchProjectsByProjectIdMembersMutation,
   usePostProjectsMutation,
   usePostProjectsByProjectIdCopiesMutation,
+  usePostRenkuV1ProjectsByV1IdMigrationsMutation,
 
   // project session secret hooks
   useGetProjectsByProjectIdSessionSecretSlotsQuery,

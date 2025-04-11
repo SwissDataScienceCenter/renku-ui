@@ -46,6 +46,8 @@ import {
   GitlabProjectResponse,
   RetryPipelineParams,
   RunPipelineParams,
+  GetProjectsParams,
+  GitLabProjectList,
 } from "./GitLab.types";
 import { ProjectConfig } from "./project.types";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
@@ -68,6 +70,27 @@ const projectGitLabApi = createApi({
       query: (projectPath: string) => {
         return {
           url: `${encodeURIComponent(projectPath)}`,
+        };
+      },
+    }),
+    getAllProjects: builder.query<GitLabProjectList, GetProjectsParams>({
+      query: ({ page, perPage, membership, search, min_access_level }) => {
+        return {
+          url: "",
+          params: {
+            ...(page ? { page: page } : {}),
+            ...(perPage ? { per_page: perPage } : {}),
+            ...(membership ? { membership: membership } : {}),
+            ...(search ? { search: search } : {}),
+            ...(min_access_level ? { min_access_level: min_access_level } : {}),
+          },
+        };
+      },
+      transformResponse: (response: GitlabProjectResponse[], meta) => {
+        const pagination = processPaginationHeaders(meta?.response?.headers);
+        return {
+          data: response,
+          pagination,
         };
       },
     }),
@@ -465,4 +488,5 @@ export const {
   useGetRepositoryCommitsQuery,
   useGetAllRepositoryCommitsQuery,
   useRefetchCommitsMutation,
+  useGetAllProjectsQuery,
 } = projectGitLabApi;
