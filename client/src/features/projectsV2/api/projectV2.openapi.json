@@ -316,6 +316,37 @@
         "tags": ["projects"]
       }
     },
+    "/renku_v1_projects/migrations": {
+      "get": {
+        "summary": "Return list of projects migrated from v1",
+        "responses": {
+          "200": {
+            "description": "List of project migrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectMigrationList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No exist project migration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects_migrations"]
+      }
+    },
     "/namespaces/{namespace}/projects/{slug}": {
       "get": {
         "summary": "Get a project by namespace and project slug",
@@ -1532,6 +1563,14 @@
             }
           }
         ]
+      },
+      "ProjectMigrationList": {
+        "description": "A list of project migrations",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ProjectMigrationInfo"
+        },
+        "minItems": 0
       },
       "ProjectMigrationInfo": {
         "description": "Information if a project is a migrated project",
