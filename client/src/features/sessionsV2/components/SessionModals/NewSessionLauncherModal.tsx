@@ -86,6 +86,7 @@ export default function NewSessionLauncherModal({
   const watchEnvironmentCustomImage = watch("container_image");
   const watchEnvironmentSelect = watch("environmentSelect");
   const watchCodeRepository = watch("repository");
+  const watchBuilderVariant = watch("builder_variant");
 
   const isEnvironmentDefined = useMemo(() => {
     return (
@@ -159,6 +160,12 @@ export default function NewSessionLauncherModal({
       setValue("name", environmentSelected?.name ?? "");
     }
   }, [watchEnvironmentId, setValue, environments, trigger]);
+
+  useEffect(() => {
+    if (watchEnvironmentSelect === "custom + build" && watchBuilderVariant) {
+      setValue("name", `Code-based ${watchBuilderVariant}`);
+    }
+  }, [watchEnvironmentSelect, watchBuilderVariant, setValue]);
 
   useEffect(() => {
     if (environments == null) {
