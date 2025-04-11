@@ -325,6 +325,11 @@ export type EnvironmentGetInLauncher =
   | EnvironmentWithBuildGet;
 export type ResourceClassId = number | null;
 export type DiskStorage = number;
+export type EnvVar = {
+  name: string;
+  value?: string;
+};
+export type EnvVariables = EnvVar[];
 export type SessionLauncher = {
   id: Ulid;
   project_id: Ulid;
@@ -334,6 +339,7 @@ export type SessionLauncher = {
   environment: EnvironmentGetInLauncher;
   resource_class_id: ResourceClassId;
   disk_storage?: DiskStorage;
+  env_variables?: EnvVariables;
 };
 export type SessionLaunchersList = SessionLauncher[];
 export type EnvironmentPostInLauncherHelper = EnvironmentPost & {
@@ -355,6 +361,7 @@ export type SessionLauncherPost = {
   description?: Description;
   resource_class_id?: ResourceClassId;
   disk_storage?: DiskStorage;
+  env_variables?: EnvVariables;
   environment: EnvironmentPostInLauncher | EnvironmentIdOnlyPost;
 };
 export type DiskStoragePatch = number | null;
@@ -379,6 +386,7 @@ export type SessionLauncherPatch = {
   description?: Description;
   resource_class_id?: ResourceClassId;
   disk_storage?: DiskStoragePatch;
+  env_variables?: EnvVariables;
   environment?: EnvironmentPatchInLauncher | EnvironmentIdOnlyPatch;
 };
 export type ErrorReason = string;
