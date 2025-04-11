@@ -35,7 +35,6 @@ import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProj
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import LazyShowDataset from "./dataset/LazyShowDataset";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
-import LazyDashboardV2 from "./features/dashboardV2/LazyDashboardV2";
 import { Favicon } from "./features/favicon/Favicon";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV1 from "./features/rootV1/LazyRootV1";
@@ -46,12 +45,10 @@ import {
   FooterNavbar,
   RenkuNavBar,
 } from "./features/landing/components/NavBar/NavBar";
-import LazyNotFound from "./not-found/LazyNotFound";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
-import LazyProjectList from "./project/list/LazyProjectList";
-import LazyNewProject from "./project/new/LazyNewProject";
+import { ABSOLUTE_ROUTES } from "./routing/routes.constants";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
@@ -80,36 +77,17 @@ function CentralContentContainer({ user }) {
       </Helmet>
       <Routes>
         <Route
-          path="/"
+          index
           element={
             user.logged ? (
               <ContainerWrap fullSize={true}>
-                <LazyDashboardV2 />
+                <LazyRootV2 />
               </ContainerWrap>
             ) : (
               <div className="w-100">
                 <LazyAnonymousHome />
               </div>
             )
-          }
-        />
-        {["/projects", "/projects/starred", "/projects/all"].map((path) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              <ContainerWrap>
-                <LazyProjectList />
-              </ContainerWrap>
-            }
-          />
-        ))}
-        <Route
-          path="/projects/new"
-          element={
-            <ContainerWrap>
-              <LazyNewProject />
-            </ContainerWrap>
           }
         />
         <Route path="/projects/*" element={<LazyProjectView />} />
@@ -136,10 +114,14 @@ function CentralContentContainer({ user }) {
         />
         <Route
           path="/datasets"
-          element={<Navigate to="/search?type=dataset" replace />}
+          element={
+            <Navigate
+              to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`}
+              replace
+            />
+          }
         />
         <Route path="/v1/*" element={<LazyRootV1 />} />
-        <Route path="/v2/*" element={<LazyRootV2 />} />
         {userInfo?.isLoggedIn && userInfo.is_admin && (
           <Route
             path="/admin"
@@ -150,7 +132,7 @@ function CentralContentContainer({ user }) {
             }
           />
         )}
-        <Route path="*" element={<LazyNotFound />} />
+        <Route path="*" element={<LazyRootV2 />} />
       </Routes>
     </div>
   );
