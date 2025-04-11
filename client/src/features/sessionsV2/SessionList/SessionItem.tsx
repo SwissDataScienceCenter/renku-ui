@@ -131,7 +131,7 @@ export default function SessionLauncherItem({
             <Row className="g-2 mb-0">
               <Col
                 xs={12}
-                xl={3}
+                xl={4}
                 className={cx("d-inline-block", "link-primary", "text-body")}
               >
                 <span className="small text-muted me-3">Session Launcher</span>
@@ -172,7 +172,7 @@ export default function SessionLauncherItem({
             {isBuildEnvironment && (
               <>
                 <Row className="g-2">
-                  <Col xs={12} xl={3}>
+                  <Col xs={12} xl={4}>
                     {isBuildEnvironment && isLoading ? (
                       <SessionBadge
                         className={cx("border-warning", "bg-warning-subtle")}
@@ -184,18 +184,6 @@ export default function SessionLauncherItem({
                         />
                         <span className="text-warning-emphasis">
                           Loading build status
-                        </span>
-                      </SessionBadge>
-                    ) : isBuildEnvironment &&
-                      lastBuild?.status !== "succeeded" &&
-                      lastBuild?.status !== "in_progress" &&
-                      lastSuccessfulBuild ? (
-                      <SessionBadge
-                        className={cx("border-warning", "bg-warning-subtle")}
-                      >
-                        <span className="text-warning-emphasis">
-                          <CircleFill className={cx("me-1", "bi")} />
-                          Build failed
                         </span>
                       </SessionBadge>
                     ) : isBuildEnvironment && lastBuild ? (
@@ -252,7 +240,7 @@ export default function SessionLauncherItem({
                 )}
               >
                 <StartSessionButton
-                  launcherId={launcher.id}
+                  launcher={launcher}
                   namespace={project.namespace}
                   slug={project.slug}
                   disabled={hasSession}
@@ -268,6 +256,7 @@ export default function SessionLauncherItem({
                   lastBuild?.status !== "succeeded" &&
                   lastSuccessfulBuild && (
                     <BuildStatusDescription
+                      isOldImage={true}
                       status={lastSuccessfulBuild?.status}
                       createdAt={lastSuccessfulBuild?.created_at}
                       completedAt={

@@ -33,6 +33,7 @@ import {
   Bricks,
   CircleFill,
   Clock,
+  ExclamationTriangleFill,
   FileEarmarkText,
   Globe2,
   Link45deg,
@@ -481,11 +482,13 @@ interface BuildStatusDescriptionProps {
   status?: Build["status"];
   createdAt?: Build["created_at"];
   completedAt?: CreationDate;
+  isOldImage?: boolean;
 }
 export function BuildStatusDescription({
   status,
   createdAt,
   completedAt,
+  isOldImage,
 }: BuildStatusDescriptionProps) {
   if (!status) return null;
 
@@ -497,7 +500,17 @@ export function BuildStatusDescription({
     <TimeCaption datetime={completedAt} enableTooltip noCaption />
   );
 
-  return status === "succeeded" ? (
+  return status === "succeeded" && isOldImage ? (
+    <div className={cx("d-flex", "gap-2", "time-caption")}>
+      <ExclamationTriangleFill
+        size="16"
+        className={cx("flex-shrink-0", "text-warning-emphasis")}
+      />
+      <span className="text-warning-emphasis">
+        Last successfully built {completedTimeText}
+      </span>
+    </div>
+  ) : status === "succeeded" ? (
     <div
       className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
     >
@@ -523,6 +536,7 @@ export function BuildStatusDescription({
 
 interface BuildActionsProps {
   launcher: SessionLauncher;
+  isMainButton?: boolean;
 }
 
 export function BuildActions({ launcher }: BuildActionsProps) {
@@ -635,7 +649,10 @@ export function BuildActions({ launcher }: BuildActionsProps) {
   );
 }
 
-export function BuildActionsCard({ launcher }: BuildActionsProps) {
+export function BuildActionsCard({
+  launcher,
+  isMainButton = true,
+}: BuildActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
 
@@ -669,10 +686,12 @@ export function BuildActionsCard({ launcher }: BuildActionsProps) {
     }
   }, [inProgressBuild, patchBuild]);
 
+  if (launcher.environment.environment_image_source !== "build") return null;
+
   const onClickFix = (e: React.MouseEvent) => e.stopPropagation();
 
   const buttons = hasInProgressBuild ? (
-    <ButtonGroup onClick={onClickFix}>
+    <>
       <Button
         className="text-nowrap"
         color="outline-primary"
@@ -681,11 +700,11 @@ export function BuildActionsCard({ launcher }: BuildActionsProps) {
         size="sm"
       >
         <FileEarmarkText className={cx("bi", "me-1")} />
-        Show logs
+        Logs
       </Button>
       <Button
         className="text-nowrap"
-        color="primary"
+        color={isMainButton ? "primary" : "outline-primary"}
         data-cy="session-view-menu-cancel-build"
         onClick={onCancelBuild}
         size="sm"
@@ -693,9 +712,9 @@ export function BuildActionsCard({ launcher }: BuildActionsProps) {
         <XOctagon className={cx("bi", "me-1")} />
         Cancel build
       </Button>
-    </ButtonGroup>
+    </>
   ) : (
-    <ButtonGroup onClick={onClickFix}>
+    <>
       <Button
         className="text-nowrap"
         color="outline-primary"
@@ -704,11 +723,11 @@ export function BuildActionsCard({ launcher }: BuildActionsProps) {
         size="sm"
       >
         <FileEarmarkText className={cx("bi", "me-1")} />
-        Show logs
+        Logs
       </Button>
       <Button
         className="text-nowrap"
-        color="primary"
+        color={isMainButton ? "primary" : "outline-primary"}
         data-cy="session-view-menu-rebuild"
         onClick={triggerBuild}
         size="sm"
@@ -716,7 +735,13 @@ export function BuildActionsCard({ launcher }: BuildActionsProps) {
         <BootstrapReboot className={cx("bi", "me-1")} />
         {"Rebuild"}
       </Button>
-    </ButtonGroup>
+    </>
+  );
+
+  const groupButtons = isMainButton ? (
+    <ButtonGroup onClick={onClickFix}>{buttons}</ButtonGroup>
+  ) : (
+    buttons
   );
 
   return (
@@ -725,7 +750,7 @@ export function BuildActionsCard({ launcher }: BuildActionsProps) {
         disabled={null}
         enabled={
           <>
-            {buttons}
+            {groupButtons}
             <BuildActionFailedModal
               error={postResult.error}
               reset={postResult.reset}

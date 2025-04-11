@@ -170,7 +170,7 @@ function SessionCardNotRunning({
       contentSession={
         <div className="my-auto">
           <StartSessionButton
-            launcherId={launcher.id}
+            launcher={launcher}
             namespace={project.namespace}
             slug={project.slug}
           />

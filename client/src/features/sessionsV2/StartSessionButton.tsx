@@ -20,15 +20,17 @@ import cx from "classnames";
 import { ReactNode } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
-import { UncontrolledTooltip } from "reactstrap";
+import { ButtonGroup, UncontrolledTooltip } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api.ts";
+import { BuildActionsCard } from "./SessionView/EnvironmentCard.tsx";
 
 interface StartSessionButtonProps {
   namespace: string;
   slug: string;
-  launcherId: string;
+  launcher: SessionLauncher;
   disabled?: boolean;
   useOldImage?: boolean;
   otherActions?: ReactNode;
@@ -36,7 +38,7 @@ interface StartSessionButtonProps {
 }
 
 export default function StartSessionButton({
-  launcherId,
+  launcher,
   namespace,
   slug,
   disabled,
@@ -47,25 +49,41 @@ export default function StartSessionButton({
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
-      launcherId,
+      launcherId: launcher.id,
       namespace,
       slug,
     }
   );
-  const defaultAction = (
-    <Link
-      className={cx(
-        "btn",
-        "btn-sm",
-        disabled ? "btn-outline-primary" : "btn-primary",
-        disabled && "disabled"
-      )}
-      to={startUrl}
-      data-cy="start-session-button"
-    >
-      <PlayCircle className={cx("bi", "me-1")} />
-      Launch
-    </Link>
+  const onClickFix = (e: React.MouseEvent) => e.stopPropagation();
+  const buildActions = useOldImage && (
+    <BuildActionsCard launcher={launcher} isMainButton={false} />
+  );
+  const launchAction = (
+    <span id={`launch-btn-${launcher.id}`}>
+      <Link
+        className={cx(
+          "btn",
+          "btn-sm",
+          disabled ? "btn-outline-primary" : "btn-primary",
+          disabled && "disabled",
+          buildActions ? "rounded-0" : "rounded-end-0"
+        )}
+        to={startUrl}
+        data-cy="start-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        Launch
+      </Link>
+    </span>
+  );
+
+  const defaultAction = buildActions ? (
+    <ButtonGroup onClick={onClickFix}>
+      {buildActions}
+      {launchAction}
+    </ButtonGroup>
+  ) : (
+    launchAction
   );
 
   const customizeLaunch = (
@@ -83,7 +101,7 @@ export default function StartSessionButton({
   );
 
   return (
-    <div id={`launch-btn-${launcherId}`}>
+    <>
       <ButtonWithMenuV2
         color={disabled ? "outline-primary" : "primary"}
         default={defaultAction}
@@ -96,14 +114,14 @@ export default function StartSessionButton({
         {otherActions}
       </ButtonWithMenuV2>
       {disabled ? (
-        <UncontrolledTooltip target={`launch-btn-${launcherId}`}>
+        <UncontrolledTooltip target={`launch-btn-${launcher.id}`}>
           Cannot launch more than 1 session per session launcher.
         </UncontrolledTooltip>
       ) : useOldImage ? (
-        <UncontrolledTooltip target={`launch-btn-${launcherId}`}>
+        <UncontrolledTooltip target={`launch-btn-${launcher.id}`}>
           Launch session using an older image
         </UncontrolledTooltip>
       ) : null}
-    </div>
+    </>
   );
 }
