@@ -51,7 +51,6 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import SessionUnavailable from "../../session/components/SessionUnavailable";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
@@ -61,6 +60,7 @@ import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
+import SessionUnavailable from "./SessionUnavailable";
 
 import styles from "../../session/components/ShowSession.module.scss";
 
