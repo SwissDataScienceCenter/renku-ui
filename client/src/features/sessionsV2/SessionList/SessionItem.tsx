@@ -35,7 +35,6 @@ import {
   LauncherEnvironmentIcon,
 } from "../components/SessionForm/LauncherEnvironmentIcon";
 import { getShowSessionUrlByProject } from "../SessionsV2";
-import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { ActiveSessionButtonAlt } from "../components/SessionButton/ActiveSessionButton";
 import {
@@ -47,10 +46,10 @@ import {
 import { SessionV2 } from "../sessionsV2.types";
 import { Loader } from "../../../components/Loader";
 import {
-  BuildActionsCard,
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../SessionView/EnvironmentCard";
+import { SessionLauncherButtons } from "../StartSessionButton";
 
 import styles from "./SessionItemDisplay.module.scss";
 
@@ -101,10 +100,6 @@ export default function SessionLauncherItem({
     {
       pollingInterval: 1_000,
     }
-  );
-
-  const buildActions = imageBuildersEnabled && isBuildEnvironment && (
-    <BuildActionsCard launcher={launcher} />
   );
 
   const otherActionsLauncher = launcher &&
@@ -224,13 +219,7 @@ export default function SessionLauncherItem({
             )}
           </Col>
           <Col className={cx("ms-md-auto")} xs={12} md="auto">
-            {isBuildEnvironment &&
-            lastBuild?.status !== "succeeded" &&
-            !lastSuccessfulBuild ? (
-              <div className={cx("d-flex", "flex-column", "align-items-end")}>
-                {buildActions}
-              </div>
-            ) : launcher != null ? (
+            {launcher != null && (
               <div
                 className={cx(
                   "d-flex",
@@ -239,18 +228,18 @@ export default function SessionLauncherItem({
                   "gap-2"
                 )}
               >
-                <StartSessionButton
+                <SessionLauncherButtons
                   launcher={launcher}
                   namespace={project.namespace}
                   slug={project.slug}
-                  disabled={hasSession}
+                  hasSession={hasSession}
+                  lastBuild={lastBuild}
                   useOldImage={
                     isBuildEnvironment &&
                     lastBuild?.status !== "succeeded" &&
                     !!lastSuccessfulBuild
                   }
                   otherActions={otherActionsLauncher}
-                  isDisabledDropdownToggle={!otherActionsLauncher}
                 />
                 {isBuildEnvironment &&
                   lastBuild?.status !== "succeeded" &&
@@ -267,7 +256,7 @@ export default function SessionLauncherItem({
                     />
                   )}
               </div>
-            ) : null}
+            )}
           </Col>
         </Row>
       </CardHeader>

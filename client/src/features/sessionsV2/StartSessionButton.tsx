@@ -24,8 +24,11 @@ import { ButtonGroup, UncontrolledTooltip } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api.ts";
-import { BuildActionsCard } from "./SessionView/EnvironmentCard.tsx";
+import {
+  Build,
+  SessionLauncher,
+} from "./api/sessionLaunchersV2.generated-api.ts";
+import { BuildActionsLauncher } from "./SessionView/EnvironmentCard.tsx";
 
 interface StartSessionButtonProps {
   namespace: string;
@@ -41,10 +44,6 @@ export default function StartSessionButton({
   launcher,
   namespace,
   slug,
-  disabled,
-  useOldImage,
-  otherActions,
-  isDisabledDropdownToggle,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
@@ -54,18 +53,98 @@ export default function StartSessionButton({
       slug,
     }
   );
-  const onClickFix = (e: React.MouseEvent) => e.stopPropagation();
-  const buildActions = useOldImage && (
-    <BuildActionsCard launcher={launcher} isMainButton={false} />
-  );
   const launchAction = (
+    <span id={`launch-btn-${launcher.id}`}>
+      <Link
+        className={cx("btn", "btn-sm", "btn-primary", "rounded-end-0")}
+        to={startUrl}
+        data-cy="start-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        Launch
+      </Link>
+    </span>
+  );
+
+  const customizeLaunch = (
+    <Link
+      className={cx("dropdown-item")}
+      to={{
+        pathname: startUrl,
+        search: new URLSearchParams({ custom: "1" }).toString(),
+      }}
+      data-cy="start-custom-session-button"
+    >
+      <PlayCircle className={cx("bi", "me-1")} />
+      Custom launch
+    </Link>
+  );
+
+  return (
+    <>
+      <ButtonWithMenuV2
+        color={"primary"}
+        default={launchAction}
+        preventPropagation
+        size="sm"
+      >
+        {customizeLaunch}
+      </ButtonWithMenuV2>
+    </>
+  );
+}
+
+interface SessionLauncherButtonsProps {
+  namespace: string;
+  slug: string;
+  launcher: SessionLauncher;
+  hasSession?: boolean;
+  useOldImage?: boolean;
+  otherActions?: ReactNode;
+  lastBuild?: Build;
+}
+export function SessionLauncherButtons({
+  launcher,
+  namespace,
+  slug,
+  hasSession,
+  useOldImage,
+  otherActions,
+  lastBuild,
+}: SessionLauncherButtonsProps) {
+  const environment = launcher?.environment;
+  const isBuildEnvironment =
+    environment && environment.environment_image_source === "build";
+  const startUrl = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
+    {
+      launcherId: launcher.id,
+      namespace,
+      slug,
+    }
+  );
+  const onClickFix = (e: React.MouseEvent) => e.stopPropagation();
+  const displayLaunchSession =
+    !isBuildEnvironment ||
+    (isBuildEnvironment && lastBuild?.status === "succeeded") ||
+    useOldImage;
+
+  const buildActions = isBuildEnvironment &&
+    (useOldImage || lastBuild?.status !== "succeeded") && (
+      <BuildActionsLauncher
+        launcher={launcher}
+        isMainButton={!displayLaunchSession}
+      />
+    );
+
+  const launchAction = displayLaunchSession && (
     <span id={`launch-btn-${launcher.id}`}>
       <Link
         className={cx(
           "btn",
           "btn-sm",
-          disabled ? "btn-outline-primary" : "btn-primary",
-          disabled && "disabled",
+          hasSession ? "btn-outline-primary" : "btn-primary",
+          hasSession && "disabled",
           buildActions ? "rounded-0" : "rounded-end-0"
         )}
         to={startUrl}
@@ -86,9 +165,9 @@ export default function StartSessionButton({
     launchAction
   );
 
-  const customizeLaunch = (
+  const customizeLaunch = displayLaunchSession && (
     <Link
-      className={cx("dropdown-item", disabled && "disabled")}
+      className={cx("dropdown-item", hasSession && "disabled")}
       to={{
         pathname: startUrl,
         search: new URLSearchParams({ custom: "1" }).toString(),
@@ -103,17 +182,17 @@ export default function StartSessionButton({
   return (
     <>
       <ButtonWithMenuV2
-        color={disabled ? "outline-primary" : "primary"}
+        color={hasSession ? "outline-primary" : "primary"}
         default={defaultAction}
         preventPropagation
         size="sm"
-        disabled={disabled}
-        isDisabledDropdownToggle={isDisabledDropdownToggle}
+        disabled={hasSession}
+        isDisabledDropdownToggle={false}
       >
         {customizeLaunch}
         {otherActions}
       </ButtonWithMenuV2>
-      {disabled ? (
+      {hasSession && displayLaunchSession ? (
         <UncontrolledTooltip target={`launch-btn-${launcher.id}`}>
           Cannot launch more than 1 session per session launcher.
         </UncontrolledTooltip>

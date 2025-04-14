@@ -535,6 +535,7 @@ export function BuildStatusDescription({
 interface BuildActionsProps {
   launcher: SessionLauncher;
   isMainButton?: boolean;
+  otherActions?: ReactNode;
 }
 
 export function BuildActions({ launcher }: BuildActionsProps) {
@@ -647,7 +648,7 @@ export function BuildActions({ launcher }: BuildActionsProps) {
   );
 }
 
-export function BuildActionsCard({
+export function BuildActionsLauncher({
   launcher,
   isMainButton = true,
 }: BuildActionsProps) {
@@ -669,6 +670,7 @@ export function BuildActionsCard({
     [builds]
   );
   const hasInProgressBuild = !!inProgressBuild;
+
   const [postBuild, postResult] = usePostBuildMutation();
   const triggerBuild = useCallback(() => {
     postBuild({ environmentId: launcher.environment.id });
@@ -701,8 +703,8 @@ export function BuildActionsCard({
         Logs
       </Button>
       <Button
-        className="text-nowrap"
-        color={isMainButton ? "primary" : "outline-primary"}
+        className={cx("text-nowrap", "rounded-end-0")}
+        color={"outline-primary"}
         data-cy="session-view-menu-cancel-build"
         onClick={onCancelBuild}
         size="sm"
@@ -724,7 +726,7 @@ export function BuildActionsCard({
         Logs
       </Button>
       <Button
-        className="text-nowrap"
+        className={cx("text-nowrap", "rounded-end-0")}
         color={isMainButton ? "primary" : "outline-primary"}
         data-cy="session-view-menu-rebuild"
         onClick={triggerBuild}
