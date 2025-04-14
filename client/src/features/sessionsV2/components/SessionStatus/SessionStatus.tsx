@@ -208,27 +208,27 @@ export function SessionStatusV2LabelAlt({ session }: ActiveSessionV2Props) {
   const badge =
     state === "running" && !image ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning-emphasis">My Running Session</span>
+        <span className="text-warning-emphasis">My running session</span>
       </div>
     ) : state === "running" ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-success-emphasis">My Running Session</span>
+        <span className="text-success-emphasis">My running session</span>
       </div>
     ) : state === "starting" ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning-emphasis">Launching Session</span>
+        <span className="text-warning-emphasis">Launching my session</span>
       </div>
     ) : state === "stopping" ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning-emphasis">Shutting down session</span>
+        <span className="text-warning-emphasis">Shutting down my session</span>
       </div>
     ) : state === "hibernated" ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-dark-emphasis">Paused Session</span>
+        <span className="text-dark-emphasis">My paused session</span>
       </div>
     ) : state === "failed" ? (
       <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-danger-emphasis">Error in Session</span>
+        <span className="text-danger-emphasis">Error in my session</span>
       </div>
     ) : (
       <div className={cx("fs-6", "fw-bold")}>
