@@ -39,7 +39,6 @@ import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
-import { IconByLauncherEnvironment } from "./components/SessionForm/SessionEnvironmentItem.tsx";
 import SessionLauncherItem from "./SessionList/SessionItem";
 import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
 import styles from "./SessionList/SessionItemDisplay.module.scss";
@@ -51,6 +50,7 @@ import { SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
+import { LauncherEnvironmentIcon } from "./components/SessionForm/LauncherEnvironmentIcon";
 
 export function getShowSessionUrlByProject(
   project: Project,
@@ -218,7 +218,7 @@ export function SessionV2Actions({
                   data-cy="session-view-menu-delete"
                   onClick={toggleUpdateEnvironment}
                 >
-                  <IconByLauncherEnvironment launcher={launcher} />
+                  <LauncherEnvironmentIcon launcher={launcher} />
                   Edit environment
                 </DropdownItem>
                 <DropdownItem divider />

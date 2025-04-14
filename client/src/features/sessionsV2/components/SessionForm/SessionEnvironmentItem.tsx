@@ -17,7 +17,6 @@
  */
 
 import cx from "classnames";
-import { Boxes, Globe2, Link45deg } from "react-bootstrap-icons";
 import {
   Control,
   Controller,
@@ -33,9 +32,9 @@ import {
   ResourcePool,
 } from "../../../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
-import { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import type { Environment as SessionEnvironment } from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import { EnvironmentIcon } from "./LauncherEnvironmentIcon";
 
 interface SessionEnvironmentItemProps {
   environment: SessionEnvironment;
@@ -114,7 +113,7 @@ export function SessionEnvironmentItem({
         >
           <h5>{name}</h5>
           <p className="mb-2">
-            <Globe2 className={cx("bi", "me-1")} />
+            <EnvironmentIcon type="global" className="me-1" />
             Global environment
           </p>
           {description ? <p className="mb-2">{description}</p> : null}
@@ -130,19 +129,4 @@ export function SessionEnvironmentItem({
       </div>
     </ListGroupItem>
   );
-}
-
-export function IconByLauncherEnvironment({
-  launcher,
-}: {
-  launcher: SessionLauncher;
-}) {
-  const currentEnvironment = launcher.environment;
-  return currentEnvironment?.environment_kind === "GLOBAL" ? (
-    <Globe2 size={16} className="me-2" />
-  ) : currentEnvironment?.environment_image_source === "build" ? (
-    <Boxes size={16} className="me-2" />
-  ) : currentEnvironment?.environment_kind === "CUSTOM" ? (
-    <Link45deg size={16} className="me-2" />
-  ) : null;
 }

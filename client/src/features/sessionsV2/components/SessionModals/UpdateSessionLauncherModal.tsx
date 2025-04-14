@@ -45,7 +45,7 @@ import { SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent, {
   EditLauncherFormMetadata,
 } from "../SessionForm/EditLauncherFormContent";
-import { IconByLauncherEnvironment } from "../SessionForm/SessionEnvironmentItem.tsx";
+import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
 
 interface UpdateSessionLauncherModalProps {
   isOpen: boolean;
@@ -123,7 +123,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
       scrollable
     >
       <ModalHeader toggle={toggle}>
-        <IconByLauncherEnvironment launcher={launcher} /> Edit environment{" "}
+        <EnvironmentIcon type="default" size={20} /> Edit environment{" "}
         {launcher.name}
       </ModalHeader>
       <ModalBody>

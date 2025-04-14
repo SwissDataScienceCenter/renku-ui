@@ -18,26 +18,22 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useContext } from "react";
-import {
-  Boxes,
-  CircleFill,
-  Globe2,
-  Link45deg,
-  Pencil,
-  Trash,
-} from "react-bootstrap-icons";
+import { CircleFill, Pencil, Trash } from "react-bootstrap-icons";
 import { CardBody, CardHeader, Col, DropdownItem, Row } from "reactstrap";
 
-import AppContext from "../../../utils/context/appContext.ts";
-import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants.ts";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard.tsx";
-import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook.ts";
+import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import {
   sessionLaunchersV2Api,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
 } from "../api/sessionLaunchersV2.api";
-import { IconByLauncherEnvironment } from "../components/SessionForm/SessionEnvironmentItem.tsx";
+import {
+  EnvironmentIcon,
+  LauncherEnvironmentIcon,
+} from "../components/SessionForm/LauncherEnvironmentIcon";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
@@ -49,12 +45,12 @@ import {
   SessionStatusV2LabelAlt,
 } from "../components/SessionStatus/SessionStatus";
 import { SessionV2 } from "../sessionsV2.types";
-import { Loader } from "../../../components/Loader.tsx";
+import { Loader } from "../../../components/Loader";
 import {
   BuildActionsCard,
   BuildStatusBadge,
   BuildStatusDescription,
-} from "../SessionView/EnvironmentCard.tsx";
+} from "../SessionView/EnvironmentCard";
 
 import styles from "./SessionItemDisplay.module.scss";
 
@@ -139,17 +135,21 @@ export default function SessionLauncherItem({
               <Col xs={12} xl="auto">
                 {environment?.environment_kind === "GLOBAL" ? (
                   <span className="small text-muted me-3">
-                    <Globe2 size={16} className="me-2" />
+                    <EnvironmentIcon type="global" className="me-2" />
                     Global environment
                   </span>
                 ) : environment?.environment_image_source === "build" ? (
                   <span className="small text-muted me-3">
-                    <Boxes size={16} className="me-2" />
+                    <EnvironmentIcon
+                      type="codeBased"
+                      size={16}
+                      className="me-2"
+                    />
                     Code based environment
                   </span>
                 ) : environment?.environment_kind === "CUSTOM" ? (
                   <span className="small text-muted me-3">
-                    <Link45deg size={16} className="me-2" />
+                    <EnvironmentIcon type="custom" size={16} className="me-2" />
                     Custom image environment
                   </span>
                 ) : null}
@@ -386,7 +386,7 @@ export function SessionLauncherDropdownActions({
               data-cy="session-launcher-menu-edit-env"
               onClick={toggleUpdateEnvironment}
             >
-              <IconByLauncherEnvironment launcher={launcher} />
+              <LauncherEnvironmentIcon launcher={launcher} />
               Edit environment
             </DropdownItem>
             <DropdownItem
