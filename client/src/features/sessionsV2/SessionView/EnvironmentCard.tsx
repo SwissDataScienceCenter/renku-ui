@@ -257,6 +257,9 @@ function CustomBuildEnvironmentValues({
   );
 
   const lastBuild = builds?.at(0);
+  const lastSuccessfulBuild = builds?.find(
+    (build) => build.status === "succeeded" && build.id !== lastBuild?.id
+  );
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
     lastBuild?.status === "in_progress"
@@ -292,7 +295,23 @@ function CustomBuildEnvironmentValues({
         {environment.container_image === BUILDER_IMAGE_NOT_READY_VALUE ? (
           <NotReadyStatusBadge />
         ) : (
-          <ReadyStatusBadge />
+          <>
+            <ReadyStatusBadge />
+            {lastSuccessfulBuild && (
+              <BuildStatusDescription
+                isOldImage={
+                  lastBuild?.status !== "succeeded" && !!lastSuccessfulBuild
+                }
+                status={lastSuccessfulBuild?.status}
+                createdAt={lastSuccessfulBuild?.created_at}
+                completedAt={
+                  lastSuccessfulBuild?.status === "succeeded"
+                    ? lastSuccessfulBuild?.result?.completed_at
+                    : undefined
+                }
+              />
+            )}
+          </>
         )}
       </EnvironmentRow>
       {!imageBuildersEnabled && (

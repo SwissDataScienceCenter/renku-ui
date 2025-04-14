@@ -639,14 +639,16 @@ function RepositoryView({
               <div className={cx("float-end", "mt-1", "ms-1")}>
                 <CodeRepositoryActions project={project} url={repositoryUrl} />
               </div>
-              <h2
-                className={cx("m-0", "text-break")}
-                data-cy="data-source-title"
-              >
-                {title}
-              </h2>
+              <div className={cx("d-flex", "flex-column")}>
+                <span className="small text-muted me-3">Code repository</span>
+                <h2
+                  className={cx("m-0", "text-break")}
+                  data-cy="data-source-title"
+                >
+                  {title}
+                </h2>
+              </div>
             </div>
-            <p className={cx("fst-italic", "m-0")}>Code repository</p>
           </div>
 
           <div className={cx("d-flex", "flex-column", "gap-3")}>

@@ -353,16 +353,18 @@ export function SessionView({
               <div className={cx("float-end", "mt-1", "ms-1")}>
                 {launcherMenu}
               </div>
-              <h2
-                className={cx("m-0", "text-break")}
-                data-cy="session-view-title"
-              >
-                {title}
-              </h2>
+              <div className={cx("d-flex", "flex-column")}>
+                <span className="small text-muted me-3">
+                  {launcher ? "Session launcher" : "Session without launcher"}
+                </span>
+                <h2
+                  className={cx("m-0", "text-break")}
+                  data-cy="session-view-title"
+                >
+                  {title}
+                </h2>
+              </div>
             </div>
-            <p className={cx("fst-italic", "m-0")}>
-              {launcher ? "Session launcher" : "Session without launcher"}
-            </p>
           </div>
           {description && <p className="m-0">{description}</p>}
 
