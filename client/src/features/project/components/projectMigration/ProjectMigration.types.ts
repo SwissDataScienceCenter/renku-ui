@@ -17,17 +17,31 @@
  */
 
 import {
+  ContainerImage,
+  DefaultUrl,
+  KeywordsList,
   LegacySlug,
   ProjectName,
+  RepositoriesList,
+  ResourceClassId,
+  SessionName,
   Slug,
   Visibility,
 } from "../../../projectsV2/api/projectV2.api";
 
 export interface ProjectMigrationForm {
+  v1Id: number;
   name: ProjectName;
   namespace: Slug;
   slug: LegacySlug;
   visibility: Visibility;
+  description: string;
+  keywords: KeywordsList;
+  codeRepositories: RepositoriesList;
+  containerImage: ContainerImage;
+  session_launcher_name: SessionName;
+  defaultUrl: DefaultUrl;
+  resourceClassId: ResourceClassId;
 }
 
 export interface ProjectMetadata {
