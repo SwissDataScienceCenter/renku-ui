@@ -163,7 +163,13 @@ export default function NewSessionLauncherModal({
 
   useEffect(() => {
     if (watchEnvironmentSelect === "custom + build" && watchBuilderVariant) {
-      setValue("name", `Code-based ${watchBuilderVariant}`);
+      setValue(
+        "name",
+        `${
+          watchBuilderVariant.charAt(0).toUpperCase() +
+          watchBuilderVariant.slice(1)
+        } environment`
+      );
     }
   }, [watchEnvironmentSelect, watchBuilderVariant, setValue]);
 
