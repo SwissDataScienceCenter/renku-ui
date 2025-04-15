@@ -4,21 +4,3 @@
     font-weight: 600;
   }
 }
-
-.LogTabs {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow-y: hidden;
-}
-
-.LogTabsNav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.LogTabsContent {
-  flex: 1;
-  overflow-y: auto;
-}

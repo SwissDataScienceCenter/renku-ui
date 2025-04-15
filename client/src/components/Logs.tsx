@@ -124,7 +124,10 @@ const LogTabs = ({
 
   return (
     <>
-      <Nav tabs className={cx("mb-2", styles.LogTabsNav)}>
+      <Nav
+        tabs
+        className={cx("mb-2", "position-sticky", "top-0", "z-index-100")}
+      >
         {Object.keys(data).map((tab) => {
           return (
             <NavItem key={tab} data-cy="log-tab" role="button">
@@ -140,7 +143,10 @@ const LogTabs = ({
           );
         })}
       </Nav>
-      <TabContent activeTab={activeTab} className={styles.LogTabsContent}>
+      <TabContent
+        activeTab={activeTab}
+        className={cx("flex-1", "overflow-y-auto")}
+      >
         {Object.keys(data).map((tab) => {
           return (
             <TabPane key={`log_${tab}`} tabId={tab}>
