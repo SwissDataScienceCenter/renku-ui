@@ -62,7 +62,7 @@ EOT
 
 USER nginx
 
-HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /var/run/nginx.pid
+HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /tmp/nginx.pid
 
 ARG SHORT_SHA
 ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
