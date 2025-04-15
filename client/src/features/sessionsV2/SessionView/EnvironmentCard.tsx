@@ -41,7 +41,6 @@ import {
 import {
   Badge,
   Button,
-  ButtonGroup,
   Card,
   CardBody,
   Col,
@@ -551,7 +550,7 @@ export function BuildStatusDescription({
   ) : null;
 }
 
-interface BuildActionsProps {
+export interface BuildActionsProps {
   launcher: SessionLauncher;
   isMainButton?: boolean;
   otherActions?: ReactNode;
@@ -667,140 +666,13 @@ export function BuildActions({ launcher }: BuildActionsProps) {
   );
 }
 
-export function BuildActionsLauncher({
-  launcher,
-  isMainButton = true,
-}: BuildActionsProps) {
-  const { project_id: projectId } = launcher;
-  const permissions = useProjectPermissions({ projectId });
-
-  const [isLogsOpen, setIsLogsOpen] = useState(false);
-  const toggleLogs = useCallback(() => {
-    setIsLogsOpen((open) => !open);
-  }, []);
-
-  const { data: builds } = useGetBuildsQuery(
-    launcher.environment.environment_image_source === "build"
-      ? { environmentId: launcher.environment.id }
-      : skipToken
-  );
-  const inProgressBuild = useMemo(
-    () => builds?.find(({ status }) => status === "in_progress"),
-    [builds]
-  );
-  const hasInProgressBuild = !!inProgressBuild;
-
-  const [postBuild, postResult] = usePostBuildMutation();
-  const triggerBuild = useCallback(() => {
-    postBuild({ environmentId: launcher.environment.id });
-  }, [launcher.environment.id, postBuild]);
-
-  const [patchBuild, patchResult] = usePatchBuildMutation();
-  const onCancelBuild = useCallback(() => {
-    if (inProgressBuild != null) {
-      patchBuild({
-        buildId: inProgressBuild?.id,
-        buildPatch: { status: "cancelled" },
-      });
-    }
-  }, [inProgressBuild, patchBuild]);
-
-  if (launcher.environment.environment_image_source !== "build") return null;
-
-  const onClickFix = (e: React.MouseEvent) => e.stopPropagation();
-
-  const buttons = hasInProgressBuild ? (
-    <>
-      <Button
-        className="text-nowrap"
-        color="outline-primary"
-        data-cy="session-view-menu-show-logs"
-        onClick={toggleLogs}
-        size="sm"
-      >
-        <FileEarmarkText className={cx("bi", "me-1")} />
-        Logs
-      </Button>
-      <Button
-        className={cx("text-nowrap", "rounded-end-0")}
-        color={"outline-primary"}
-        data-cy="session-view-menu-cancel-build"
-        onClick={onCancelBuild}
-        size="sm"
-      >
-        <XOctagon className={cx("bi", "me-1")} />
-        Cancel build
-      </Button>
-    </>
-  ) : (
-    <>
-      <Button
-        className="text-nowrap"
-        color="outline-primary"
-        data-cy="session-view-menu-show-logs"
-        onClick={toggleLogs}
-        size="sm"
-      >
-        <FileEarmarkText className={cx("bi", "me-1")} />
-        Logs
-      </Button>
-      <Button
-        className={cx("text-nowrap", "rounded-end-0")}
-        color={isMainButton ? "primary" : "outline-primary"}
-        data-cy="session-view-menu-rebuild"
-        onClick={triggerBuild}
-        size="sm"
-      >
-        <BootstrapReboot className={cx("bi", "me-1")} />
-        {"Rebuild"}
-      </Button>
-    </>
-  );
-
-  const groupButtons = isMainButton ? (
-    <ButtonGroup onClick={onClickFix}>{buttons}</ButtonGroup>
-  ) : (
-    buttons
-  );
-
-  return (
-    <>
-      <PermissionsGuard
-        disabled={null}
-        enabled={
-          <>
-            {groupButtons}
-            <BuildActionFailedModal
-              error={postResult.error}
-              reset={postResult.reset}
-              title="Error: could not rebuild session image"
-            />
-            <BuildActionFailedModal
-              error={patchResult.error}
-              reset={patchResult.reset}
-              title="Error: could not cancel image build"
-            />
-            <BuildLogsModal
-              builds={builds}
-              isOpen={isLogsOpen}
-              toggle={toggleLogs}
-            />
-          </>
-        }
-        requestedPermission="write"
-        userPermissions={permissions}
-      />
-    </>
-  );
-}
-
 interface BuildActionFailedModalProps {
   error: FetchBaseQueryError | SerializedError | undefined;
   reset: () => void;
   title: ReactNode;
 }
 
-function BuildActionFailedModal({
+export function BuildActionFailedModal({
   error,
   reset,
   title,
@@ -833,7 +705,11 @@ interface BuildLogsModalProps {
   toggle: () => void;
 }
 
-function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
+export function BuildLogsModal({
+  builds,
+  isOpen,
+  toggle,
+}: BuildLogsModalProps) {
   const lastBuild = builds?.at(0);
   const name = lastBuild?.id ?? "build_logs";
   const inProgressBuild = useMemo(

@@ -42,10 +42,10 @@ import {
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../SessionView/EnvironmentCard";
-import { SessionLauncherButtons } from "../StartSessionButton";
+import SessionCard from "./SessionCard";
 
 import styles from "./Session.module.scss";
-import SessionCard from "./SessionCard";
+import { SessionLauncherButtons } from "../components/SessionLauncherButtons.tsx";
 
 interface SessionLauncherCardProps {
   launcher?: SessionLauncher;
