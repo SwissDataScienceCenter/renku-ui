@@ -27,12 +27,14 @@ import UpdateSessionLauncherEnvironmentModal, {
   UpdateSessionLauncherMetadataModal,
 } from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
+import SessionStartLinkModal from "../SessionView/SessionStartLinkModal.tsx";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherItem from "./SessionItem";
 import { Card } from "reactstrap";
+import EnvironmentLogsV2 from "../../../components/LogsV2";
 
 import styles from "./SessionItemDisplay.module.scss";
-import EnvironmentLogsV2 from "../../../components/LogsV2";
+
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;
   project: Project;
@@ -45,6 +47,7 @@ export function SessionItemDisplay({
   const [isUpdateEnvironmentOpen, setIsUpdateEnvironmentOpen] = useState(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isShareLinkOpen, setIsShareLinkOpen] = useState(false);
 
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
@@ -54,6 +57,9 @@ export function SessionItemDisplay({
   }, []);
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
+  }, []);
+  const toggleShareLink = useCallback(() => {
+    setIsShareLinkOpen((open) => !open);
   }, []);
 
   const [hash, setHash] = useLocationHash();
@@ -106,6 +112,7 @@ export function SessionItemDisplay({
           toggleUpdate={toggleUpdate}
           toggleUpdateEnvironment={toggleUpdateEnvironment}
           toggleDelete={toggleDelete}
+          toggleShareLink={toggleShareLink}
         />
       </Card>
       <SessionView
@@ -147,6 +154,14 @@ export function SessionItemDisplay({
           launcher={launcher}
           toggle={toggleDelete}
           sessionsLength={filteredSessions?.length}
+        />
+      )}
+      {launcher && (
+        <SessionStartLinkModal
+          isOpen={isShareLinkOpen}
+          launcher={launcher}
+          toggle={toggleShareLink}
+          project={project}
         />
       )}
     </>

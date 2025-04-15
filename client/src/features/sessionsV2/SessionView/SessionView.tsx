@@ -17,7 +17,7 @@
  */
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   CircleFill,
   Clock,
@@ -27,7 +27,6 @@ import {
   Pencil,
   Link45deg,
 } from "react-bootstrap-icons";
-import { generatePath } from "react-router";
 import {
   Badge,
   Button,
@@ -44,8 +43,6 @@ import {
 
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import AppContext from "../../../utils/context/appContext";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -73,6 +70,7 @@ import {
 import { DEFAULT_URL } from "../session.constants";
 import { SessionV2 } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
+import useSessionStartLink from "./useSessionStartLink.hook.ts";
 
 interface SessionCardContentProps {
   color: string;
@@ -194,21 +192,11 @@ function getSessionColor(state: string) {
     : "dark";
 }
 
-function SessionStartLink({
+export function SessionStartLink({
   launcher,
   project,
 }: Required<Pick<SessionViewProps, "launcher" | "project">>) {
-  const startPath = generatePath(
-    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
-    {
-      launcherId: launcher.id,
-      namespace: project.namespace,
-      slug: project.slug,
-    }
-  );
-  const { params } = useContext(AppContext);
-  const baseUrl = params?.BASE_URL ?? window.location.href;
-  const url = new URL(startPath, baseUrl);
+  const { url } = useSessionStartLink({ launcher, project });
   return (
     <div className="mb-2">
       <h4 className="my-auto">

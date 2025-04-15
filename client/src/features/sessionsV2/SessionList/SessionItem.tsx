@@ -18,7 +18,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useContext } from "react";
-import { CircleFill, Pencil, Trash } from "react-bootstrap-icons";
+import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
 import { CardBody, CardHeader, Col, DropdownItem, Row } from "reactstrap";
 
 import AppContext from "../../../utils/context/appContext";
@@ -62,6 +62,7 @@ interface SessionItemProps {
   toggleUpdate?: () => void;
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
+  toggleShareLink?: () => void;
 }
 export default function SessionLauncherItem({
   launcher,
@@ -72,6 +73,7 @@ export default function SessionLauncherItem({
   toggleDelete,
   toggleUpdate,
   toggleUpdateEnvironment,
+  toggleShareLink,
 }: SessionItemProps) {
   const environment = launcher?.environment;
   const { params } = useContext(AppContext);
@@ -105,12 +107,15 @@ export default function SessionLauncherItem({
   const otherActionsLauncher = launcher &&
     toggleUpdate &&
     toggleDelete &&
+    toggleShareLink &&
     toggleUpdateEnvironment && (
       <SessionLauncherDropdownActions
+        project={project}
         launcher={launcher}
         toggleDelete={toggleDelete}
         toggleUpdate={toggleUpdate}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
+        toggleShareLink={toggleShareLink}
       />
     );
 
@@ -355,12 +360,15 @@ interface SessionLauncherDropdownActionsProps {
   toggleUpdate: () => void;
   toggleDelete: () => void;
   toggleUpdateEnvironment: () => void;
+  toggleShareLink: () => void;
+  project: Project;
 }
 export function SessionLauncherDropdownActions({
   launcher,
   toggleDelete,
   toggleUpdate,
   toggleUpdateEnvironment,
+  toggleShareLink,
 }: SessionLauncherDropdownActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
@@ -384,6 +392,13 @@ export function SessionLauncherDropdownActions({
             >
               <Pencil className={cx("bi", "me-1")} />
               Edit launcher
+            </DropdownItem>
+            <DropdownItem
+              data-cy="session-launcher-menu-share-link"
+              onClick={toggleShareLink}
+            >
+              <Link45deg className={cx("bi", "me-1")} />
+              Session launcher share link
             </DropdownItem>
             <DropdownItem divider />
             <DropdownItem
