@@ -36,7 +36,7 @@ export default function BackToV1Button({
         outline ? `btn-outline-${color}` : `btn-${color}`,
         "text-decoration-none"
       )}
-      to="/"
+      to="/v1"
     >
       <BoxArrowInLeft className="bi" /> Back to <b>Renku 1.0</b>
     </Link>
