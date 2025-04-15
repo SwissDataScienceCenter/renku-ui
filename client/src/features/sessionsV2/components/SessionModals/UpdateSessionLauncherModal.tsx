@@ -28,18 +28,20 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
-  getFormattedEnvironmentValues,
+  useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
+  usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation,
+} from "../../api/sessionLaunchersV2.api";
+import {
+  getFormattedEnvironmentValuesForEdit,
   getLauncherDefaultValues,
 } from "../../session.utils";
-import {
-  useGetSessionEnvironmentsQuery,
-  useUpdateSessionLauncherMutation,
-} from "../../sessionsV2.api";
-import { SessionLauncher, SessionLauncherForm } from "../../sessionsV2.types";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 
 interface UpdateSessionLauncherModalProps {
@@ -53,7 +55,7 @@ export default function UpdateSessionLauncherModal({
   launcher,
   toggle,
 }: UpdateSessionLauncherModalProps) {
-  const { data: environments } = useGetSessionEnvironmentsQuery();
+  const { data: environments } = useGetSessionEnvironmentsQuery({});
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
@@ -73,13 +75,15 @@ export default function UpdateSessionLauncherModal({
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
       const { description, name } = data;
-      const environment = getFormattedEnvironmentValues(data);
+      const environment = getFormattedEnvironmentValuesForEdit(data);
       if (environment.success && environment.data)
         updateSessionLauncher({
           launcherId: launcher.id,
-          name,
-          description: description?.trim() || undefined,
-          environment: environment.data,
+          sessionLauncherPatch: {
+            name,
+            description: description?.trim() || undefined,
+            environment: environment.data,
+          },
         });
     },
     [launcher.id, updateSessionLauncher]
@@ -90,7 +94,7 @@ export default function UpdateSessionLauncherModal({
       return;
     }
     if (environments.length == 0) {
-      setValue("environment_kind", "CUSTOM");
+      setValue("environmentSelect", "custom + image");
     }
   }, [environments, setValue]);
 
@@ -130,7 +134,6 @@ export default function UpdateSessionLauncherModal({
               watch={watch}
               touchedFields={touchedFields}
               environmentId={launcher.environment?.id}
-              setValue={setValue}
             />
           </Form>
         )}

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,19 +16,11 @@
  * limitations under the License.
  */
 
-import { ReactNode } from "react";
-import { MemoryRouter as BaseRouter } from "react-router-dom";
-import { CompatRouter } from "react-router-dom-v5-compat";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-interface RouterProps {
-  children?: ReactNode;
-}
-
-/** Temporary router while routing is being upgraded from react-router@v5 to v6. Used for tests. */
-export default function MemoryRouter({ children }: RouterProps) {
-  return (
-    <BaseRouter>
-      <CompatRouter>{children}</CompatRouter>
-    </BaseRouter>
-  );
-}
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const sessionsV2EmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "sessionsV2Api",
+});

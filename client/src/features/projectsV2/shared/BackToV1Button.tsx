@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { BoxArrowInLeft } from "react-bootstrap-icons";
-import { Link } from "react-router-dom-v5-compat";
+import { Link } from "react-router";
 
 interface BackToV1ButtonProps {
   outline?: boolean;

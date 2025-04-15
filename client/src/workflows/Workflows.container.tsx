@@ -17,7 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 import { StateModelProject } from "../features/project/project.types";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
@@ -71,8 +71,8 @@ function WorkflowsList({
   repositoryUrl,
 }: WorkflowsListProps) {
   // Get the workflow id from the query parameters
-  const { id }: Record<string, string> = useParams();
-  const selected = id;
+  const { workflowId } = useParams<"workflowId">();
+  const selected = workflowId ?? "";
 
   const { defaultBranch } = useLegacySelector<StateModelProject["metadata"]>(
     (state) => state.stateModel.project.metadata

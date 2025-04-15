@@ -57,7 +57,7 @@ describe("Set up project components", () => {
     cy.getDataCy("add-code-repository").click();
 
     cy.getDataCy("project-add-repository-url").type(
-      "gitlab.dev.renku.ch/url-repo"
+      "https://gitlab.dev.renku.ch/url-repo.git"
     );
     cy.getDataCy("add-code-repository-modal-button").click();
 
@@ -106,7 +106,7 @@ describe("Set up project components", () => {
       name: "session-launchers-custom",
     });
     const customImage = "renku/renkulab-py:latest";
-    cy.getDataCy("existing-custom-button").click();
+    cy.getDataCy("environment-kind-custom").click();
     cy.getDataCy("custom-image-input")
       .clear()
       .type(customImage, { delay: 0 })
@@ -132,7 +132,7 @@ describe("Set up project components", () => {
     cy.getDataCy("session-view-menu-delete").should("be.visible");
     cy.getDataCy("session-view-menu-edit").should("be.visible").click();
     cy.getDataCy("edit-session-name").clear().type("Session custom");
-    cy.getDataCy("existing-custom-button").should("be.visible");
+    cy.getDataCy("environment-kind-custom").should("be.visible");
     cy.getDataCy("edit-session-button").click();
     cy.wait("@editLauncher");
     cy.getDataCy("close-cancel-button").click();
@@ -152,7 +152,7 @@ describe("Set up project components", () => {
       fixture: "projectV2/session-launchers-global.json",
       name: "session-launchers-global",
     });
-    cy.getDataCy("existing-global-button").click();
+    cy.getDataCy("environment-kind-global").click();
     cy.getDataCy("global-environment-item").first().click();
     cy.getDataCy("next-session-button").click();
     cy.getDataCy("add-session-button").click();
@@ -197,7 +197,10 @@ describe("Set up data connectors", () => {
       .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .testCloudStorage({ success: false })
-      .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
+      .postDataConnector({
+        namespace: "user1-uuid/test-2-v2-project",
+        visibility: "public",
+      })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
@@ -245,7 +248,7 @@ describe("Set up data connectors", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
@@ -353,7 +356,10 @@ describe("Set up data connectors", () => {
       .getDataConnector()
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .testCloudStorage({ success: false })
-      .postDataConnector({ namespace: "user1-uuid", visibility: "public" })
+      .postDataConnector({
+        namespace: "user1-uuid/test-2-v2-project",
+        visibility: "public",
+      })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -386,7 +392,7 @@ describe("Set up data connectors", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",

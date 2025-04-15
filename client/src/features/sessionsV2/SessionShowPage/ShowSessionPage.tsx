@@ -30,12 +30,7 @@ import {
   PauseCircle,
   Trash,
 } from "react-bootstrap-icons";
-import {
-  Link,
-  generatePath,
-  useNavigate,
-  useParams,
-} from "react-router-dom-v5-compat";
+import { Link, generatePath, useNavigate, useParams } from "react-router";
 import {
   Button,
   Modal,
@@ -43,6 +38,7 @@ import {
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import EnvironmentLogsV2 from "../../../components/LogsV2";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -55,19 +51,18 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import SessionUnavailable from "../../session/components/SessionUnavailable";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import styles from "../../session/components/ShowSession.module.scss";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
+import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "../api/sessionLaunchersV2.api";
+import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { getSessionFavicon } from "../session.utils";
-import {
-  useGetProjectSessionLaunchersQuery,
-  useGetSessionsQuery,
-} from "../sessionsV2.api";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
+import SessionUnavailable from "./SessionUnavailable";
+
+import styles from "../../session/components/ShowSession.module.scss";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -440,18 +435,20 @@ function SessionDetails({
               </Link>
             </p>
           </div>
-          <div>
-            <p className="mb-0">
-              <Clock className={cx("bi", "me-2")} />
-              <span className="fw-bold">
-                <TimeCaption
-                  prefix="Launched"
-                  datetime={session.started}
-                  className={cx("fs-6")}
-                />
-              </span>
-            </p>
-          </div>
+          {session.started && (
+            <div>
+              <p className="mb-0">
+                <Clock className={cx("bi", "me-2")} />
+                <span className="fw-bold">
+                  <TimeCaption
+                    prefix="Launched"
+                    datetime={session.started}
+                    className={cx("fs-6")}
+                  />
+                </span>
+              </p>
+            </div>
+          )}
           <div
             className={cx(
               "d-block",

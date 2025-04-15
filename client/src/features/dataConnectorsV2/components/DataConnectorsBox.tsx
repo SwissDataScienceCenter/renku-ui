@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router-dom-v5-compat";
+import { useSearchParams } from "react-router";
 import {
   Badge,
   Button,
@@ -230,15 +230,11 @@ function DataConnectorBoxContent({
             </ListGroup>
           )}
           <Pagination
+            className="mt-3"
             currentPage={data.page}
+            onPageChange={onPageChange}
             perPage={perPage}
             totalItems={data.total}
-            onPageChange={onPageChange}
-            className={cx(
-              "d-flex",
-              "justify-content-center",
-              "rk-search-pagination"
-            )}
           />
         </CardBody>
       </Card>
@@ -332,7 +328,7 @@ function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
     <PermissionsGuard
       disabled={<p>This group has no visible data connectors.</p>}
       enabled={
-        <p>
+        <p className="text-body-secondary">
           Add published datasets from data repositories, and connect to cloud
           storage to read and write custom data.
         </p>
@@ -348,7 +344,7 @@ function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
-      <p>
+      <p className="text-body-secondary">
         Add published datasets from data repositories, and connect to cloud
         storage to read and write custom data.
       </p>

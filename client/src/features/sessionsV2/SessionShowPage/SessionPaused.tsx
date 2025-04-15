@@ -21,7 +21,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { QuestionCircle } from "react-bootstrap-icons";
-import { generatePath, Link, useParams } from "react-router-dom-v5-compat";
+import { generatePath, Link, useParams } from "react-router";
 import { Alert, Button } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -29,7 +29,7 @@ import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.consta
 import type { NotificationsManager } from "../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
-import { usePatchSessionMutation } from "../sessionsV2.api";
+import { usePatchSessionsBySessionIdMutation as usePatchSessionMutation } from "../api/sessionsV2.api";
 import type { SessionV2 } from "../sessionsV2.types";
 
 interface SessionPausedProps {
@@ -46,7 +46,10 @@ export default function SessionPaused({ session }: SessionPausedProps) {
   const [isResuming, setIsResuming] = useState(false);
 
   const onResumeSession = useCallback(() => {
-    patchSession({ session_id: sessionName, state: "running" });
+    patchSession({
+      sessionId: sessionName,
+      sessionPatchRequest: { state: "running" },
+    });
     setIsResuming(true);
   }, [patchSession, sessionName]);
 

@@ -18,7 +18,7 @@
 import { faInfoCircle, faLink } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import {
   Button,
   Col,
@@ -270,7 +270,7 @@ const ShareLinkSessionOpenFileModal = ({
 }: ShareLinkSessionOpenFileModalProps) => {
   const [url, setUrl] = useState("");
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const data = {
@@ -289,11 +289,10 @@ const ShareLinkSessionOpenFileModal = ({
   const goToSpecifyCommit = () => {
     const search = new URLSearchParams({ filePath, showCreateLink: "1" });
     const state = { from: location.pathname };
-    history.push({
-      pathname: launchNotebookUrl,
-      search: search.toString(),
-      state,
-    });
+    navigate(
+      { pathname: launchNotebookUrl, search: search.toString() },
+      { state }
+    );
   };
 
   const markdown = `[![launch - renku](${Url.get(

@@ -18,7 +18,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { Lock, NodeMinus, Pencil, Trash, XLg } from "react-bootstrap-icons";
-import { matchPath, useLocation } from "react-router-dom-v5-compat";
+import { matchPath, useLocation } from "react-router";
 import {
   Button,
   Col,

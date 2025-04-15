@@ -244,21 +244,19 @@ function ProjectPageSettingsMembersList({
 
   return (
     <>
-      <ListGroup>
-        {members.map((member, idx) => {
-          return (
-            <ProjectPageSettingsMembersListItem
-              index={idx}
-              key={member.id}
-              member={member}
-              members={members}
-              numberOfOwners={numberOfOwners}
-              projectId={projectId}
-              onEdit={onEdit(member)}
-              onRemove={onRemove(member)}
-            />
-          );
-        })}
+      <ListGroup flush>
+        {members.map((member, idx) => (
+          <ProjectPageSettingsMembersListItem
+            index={idx}
+            key={member.id}
+            member={member}
+            members={members}
+            numberOfOwners={numberOfOwners}
+            projectId={projectId}
+            onEdit={onEdit(member)}
+            onRemove={onRemove(member)}
+          />
+        ))}
       </ListGroup>
       <EditProjectMemberModal
         isOpen={isEditMemberModalOpen}
@@ -318,7 +316,7 @@ export default function ProjectPageSettingsMembers({
   return (
     <Card id="members">
       <CardHeader>
-        <div className={cx("d-flex", "gap-2")}>
+        <div className={cx("d-flex", "gap-2", "justify-content-between")}>
           <h4 className="m-0">
             <PersonGear className={cx("me-1", "bi")} />
             Project Members

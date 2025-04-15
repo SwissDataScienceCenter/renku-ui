@@ -28,13 +28,13 @@ import {
   CardHeader,
   Form,
   ModalBody,
-  ModalHeader,
   ModalFooter,
 } from "reactstrap";
 import { useForm } from "react-hook-form";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ModalHeader from "../../../../components/modal/ModalHeader";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 
@@ -45,8 +45,8 @@ import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/pro
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 import DocumentationInput from "./DocumentationInput";
-import styles from "./Documentation.module.scss";
 import { ExternalLink } from "../../../../components/ExternalLinks";
+import styles from "./Documentation.module.scss";
 
 // Taken from src/features/projectsV2/api/projectV2.openapi.json
 const DESCRIPTION_MAX_LENGTH = 5000;
@@ -106,7 +106,7 @@ export default function Documentation({ project }: DocumentationProps) {
             {project.documentation ? (
               <LazyRenkuMarkdown markdownText={project.documentation} />
             ) : (
-              <p className={cx("m-0", "text-muted", "fst-italic")}>
+              <p className={cx("m-0", "text-body-secondary")}>
                 Describe your project, so others can understand what it does and
                 how to use it.
               </p>
@@ -207,12 +207,17 @@ function DocumentationModal({
       size="lg"
       toggle={safeToggle}
     >
-      <ModalHeader toggle={toggle} data-cy="project-documentation-modal-header">
-        <div>
-          <FileEarmarkText className={cx("me-1", "bi")} />
-          Documentation
-        </div>
-      </ModalHeader>
+      <ModalHeader
+        modalTitle={
+          <>
+            <FileEarmarkText className={cx("me-1", "bi")} />
+            Documentation
+          </>
+        }
+        toggle={toggle}
+        data-cy="project-documentation-modal-header"
+      />
+
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalBody
           data-cy="project-documentation-modal-body"

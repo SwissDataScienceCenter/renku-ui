@@ -82,7 +82,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
       </CardHeader>
       <CardBody>
         {totalRepositories === 0 ? (
-          <p className="m-0">
+          <p className={cx("m-0", "text-body-secondary")}>
             Connect code repositories to save and share code.
           </p>
         ) : (

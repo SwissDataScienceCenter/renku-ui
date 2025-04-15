@@ -19,16 +19,16 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { Link, generatePath } from "react-router-dom-v5-compat";
+import { Link, generatePath } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useGetProjectSessionLauncherQuery } from "../../features/sessionsV2/sessionsV2.api";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Description,
@@ -82,15 +82,15 @@ function ErrorState({
 }) {
   return (
     <div>
-      <p className="mb-0">Cannot show sessions.</p>
-      <RtkErrorAlert error={error} />
+      <p>Cannot show sessions.</p>
+      <RtkOrNotebooksError error={error} />
     </div>
   );
 }
 
 function NoSessionsState() {
   return (
-    <p className="mb-0">
+    <p className={cx("mb-0", "text-body-secondary")}>
       No running sessions. Create or explore projects to launch a session.
     </p>
   );
@@ -122,7 +122,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
     projectId ? { projectId } : skipToken
   );
   const { data: launcher } = useGetProjectSessionLauncherQuery(
-    launcherId ? { id: launcherId } : skipToken
+    launcherId ? { launcherId } : skipToken
   );
 
   const projectUrl = project
@@ -202,7 +202,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
         </Row>
       </Link>
       {/* NOTE: The session actions button is visually placed within the link card, but its DOM tree is kept separate. */}
-      <div className={cx(styles.sessionButton, "position-absolute", "z-1")}>
+      <div className={cx(styles.sessionButton, "position-absolute")}>
         <ActiveSessionButton
           className="my-auto"
           session={session}

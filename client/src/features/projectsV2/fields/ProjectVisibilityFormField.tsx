@@ -22,16 +22,22 @@ import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
 import { Globe, Lock } from "react-bootstrap-icons";
+import { useLocation } from "react-router";
 import { ButtonGroup, Input, Label } from "reactstrap";
+import { isRenkuLegacy } from "../../../utils/helpers/HelperFunctionsV2";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 
+import styles from "./RenkuV1FormFields.module.scss";
 export default function ProjectVisibilityFormField<T extends FieldValues>({
   control,
+  formId,
   name,
 }: GenericProjectFormFieldProps<T>) {
+  const location = useLocation();
+  const isRenkuV1 = isRenkuLegacy(location.pathname);
   return (
     <div>
-      <Label className="form-label" for="project-visibility">
+      <Label className="form-label" for={`${formId}-project-visibility`}>
         Visibility
       </Label>
       <div data-cy="project-visibility-controller">
@@ -40,12 +46,15 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
           name={name}
           render={({ field }) => (
             <>
-              <ButtonGroup id="project-visibility">
+              <ButtonGroup id={`${formId}-project-visibility`}>
                 <Input
                   aria-describedby="projectVisibilityHelp"
                   type="radio"
-                  className="btn-check"
-                  id="project-visibility-public"
+                  className={cx(
+                    isRenkuV1 && styles.RenkuV1btnCheck,
+                    "btn-check"
+                  )}
+                  id={`${formId}-project-visibility-public`}
                   value="public"
                   checked={field.value === "public"}
                   onChange={(e) => {
@@ -53,9 +62,13 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   }}
                 />
                 <Label
-                  className={cx("btn", "btn-outline-primary", "mb-0")}
+                  className={cx(
+                    "btn",
+                    isRenkuV1 ? "btn-outline-rk-green" : "btn-outline-primary",
+                    "mb-0"
+                  )}
                   data-cy="project-visibility-public"
-                  for="project-visibility-public"
+                  for={`${formId}-project-visibility-public`}
                 >
                   <Globe className={cx("bi", "me-1")} />
                   Public
@@ -63,8 +76,11 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 <Input
                   aria-describedby="projectVisibilityHelp"
                   type="radio"
-                  className="btn-check"
-                  id="project-visibility-private"
+                  className={cx(
+                    isRenkuV1 && styles.RenkuV1btnCheck,
+                    "btn-check"
+                  )}
+                  id={`${formId}-project-visibility-private`}
                   value="private"
                   checked={field.value === "private"}
                   onChange={(e) => {
@@ -72,16 +88,20 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   }}
                 />
                 <Label
-                  className={cx("btn", "btn-outline-primary", "mb-0")}
+                  className={cx(
+                    "btn",
+                    isRenkuV1 ? "btn-outline-rk-green" : "btn-outline-primary",
+                    "mb-0"
+                  )}
                   data-cy="project-visibility-private"
-                  for="project-visibility-private"
+                  for={`${formId}-project-visibility-private`}
                 >
                   <Lock className={cx("bi", "me-1")} />
                   Private
                 </Label>
               </ButtonGroup>
               <div
-                id="project-visibility-help"
+                id={`${formId}-project-visibility-help`}
                 className={cx("form-text", "text-muted")}
               >
                 {field.value === "public"

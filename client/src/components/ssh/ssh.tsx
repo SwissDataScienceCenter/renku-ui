@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { DropdownItem, Modal, ModalBody, ModalHeader } from "reactstrap";
 
 import {

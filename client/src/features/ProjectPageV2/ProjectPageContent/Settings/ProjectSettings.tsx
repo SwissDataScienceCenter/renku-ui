@@ -19,11 +19,7 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import {
-  generatePath,
-  useLocation,
-  useNavigate,
-} from "react-router-dom-v5-compat";
+import { generatePath, useLocation, useNavigate } from "react-router";
 import {
   Button,
   Card,
@@ -205,8 +201,10 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const { notifications } = useContext(AppContext);
   const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
-  const [updateProject, { isLoading, error, isSuccess, data: updatedProject }] =
-    usePatchProjectsByProjectIdMutation();
+  const [
+    updateProject,
+    { isLoading, error, isSuccess, data: updatedProject, reset: resetPatch },
+  ] = usePatchProjectsByProjectIdMutation();
 
   const isUpdating = isLoading;
 
@@ -245,17 +243,20 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
         slug: project.slug,
       });
       navigate(projectUrl);
+      resetPatch();
     }
   }, [
-    isSuccess,
-    redirectAfterUpdate,
-    navigate,
-    project.slug,
-    currentNamespace,
     currentName,
+    currentNamespace,
+    isSuccess,
+    navigate,
     notifications,
+    project.slug,
+    redirectAfterUpdate,
+    resetPatch,
   ]);
 
+  const formId = "project-settings-form";
   return (
     <div>
       {error && <RtkErrorAlert error={error} />}
@@ -267,6 +268,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
 
       <Form
         className={cx("d-flex", "flex-column", "gap-3")}
+        id={formId}
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -275,6 +277,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectNameFormField
               name="name"
+              formId={formId}
               control={control}
               errors={errors}
             />
@@ -291,7 +294,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
             <ProjectNamespaceFormField
               name="namespace"
               control={control}
-              entityName="project"
+              entityName={`${formId}-project`}
               ensureNamespace={project.namespace}
               errors={errors}
             />
@@ -318,6 +321,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectVisibilityFormField
               name="visibility"
+              formId={formId}
               control={control}
               errors={errors}
             />
@@ -335,6 +339,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectDescriptionFormField
               name="description"
+              formId={formId}
               control={control}
               errors={errors}
             />

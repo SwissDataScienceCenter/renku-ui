@@ -27,7 +27,8 @@ import {
   useNavigate,
   useParams,
   useSearchParams,
-} from "react-router-dom-v5-compat";
+} from "react-router";
+
 import { ErrorAlert } from "../../components/Alert";
 import PageLoader from "../../components/PageLoader";
 import {
@@ -57,13 +58,13 @@ import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/a
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SessionSecretsModal from "./SessionSecretsModal";
-import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
-  useGetDockerImageQuery,
-  useGetProjectSessionLaunchersQuery,
-  useLaunchSessionMutation,
-} from "./sessionsV2.api";
-import { SessionLauncher } from "./sessionsV2.types";
+  useGetSessionsImagesQuery as useGetDockerImageQuery,
+  usePostSessionsMutation as useLaunchSessionMutation,
+} from "./api/sessionsV2.api";
+import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
   SessionStartDataConnectorConfiguration,
@@ -224,7 +225,9 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   // Request session
   useEffect(() => {
     if (isLoadingStartSession || session != null || isError) return;
-    startSessionV2(launcherToStart);
+    startSessionV2({
+      sessionPostRequest: launcherToStart,
+    });
     dispatch(setFavicon("waiting"));
   }, [
     isLoadingStartSession,
@@ -453,7 +456,7 @@ function StartSessionFromLauncher({
     isError: isErrorDockerImageStatus,
     error: errorDockerImageStatus,
   } = useGetDockerImageQuery(
-    containerImage ? { image_url: containerImage } : skipToken
+    containerImage ? { imageUrl: containerImage } : skipToken
   );
 
   const needsCredentials = startSessionOptionsV2.cloudStorage?.some(

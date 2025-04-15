@@ -17,6 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { ACCESS_LEVELS } from "../../../api-client";
 
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
@@ -27,15 +28,24 @@ import {
   useProjectMetadataQuery,
 } from "../projectKg.api";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
+import { ProjectEntityMigration } from "./projectMigration/ProjectEntityMigration";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   defaultBranch: string;
   projectId: number;
+  accessLevel: number;
 };
 
 export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
-  const { defaultBranch, devAccess, fullPath, gitUrl, projectId, visibility } =
-    props;
+  const {
+    defaultBranch,
+    devAccess,
+    fullPath,
+    gitUrl,
+    projectId,
+    visibility,
+    accessLevel,
+  } = props;
 
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(
     fullPath && projectId ? projectId : skipToken
@@ -73,13 +83,22 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
   );
 
   return (
-    <EntityHeader
-      {...props}
-      description={descriptionKg}
-      statusButton={statusButton}
-      visibility={projectMetadataQuery.data?.visibility || visibility}
-      tagList={projectMetadataQuery.data?.keywords ?? []}
-      imageUrl={entityImage}
-    />
+    <>
+      {accessLevel >= ACCESS_LEVELS.OWNER && (
+        <ProjectEntityMigration
+          projectId={projectId}
+          description={descriptionKg}
+          tagList={projectMetadataQuery.data?.keywords ?? []}
+        />
+      )}
+      <EntityHeader
+        {...props}
+        description={descriptionKg}
+        statusButton={statusButton}
+        visibility={projectMetadataQuery.data?.visibility || visibility}
+        tagList={projectMetadataQuery.data?.keywords ?? []}
+        imageUrl={entityImage}
+      />
+    </>
   );
 }

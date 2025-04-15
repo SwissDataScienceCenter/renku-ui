@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode } from "react";
 import Media from "react-media";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EnvironmentLogs } from "../../../components/Logs";
@@ -316,10 +316,10 @@ function SessionRowProject({ annotations }: SessionRowProjectProps) {
 export interface SessionLauncherResources {
   poolName?: string;
   name?: string;
-  cpu: number;
-  memory: number;
-  gpu: number;
-  storage: number;
+  cpu?: number;
+  memory?: number;
+  gpu?: number;
+  storage?: number;
 }
 interface SessionRowResourceRequestsProps {
   resourceRequests: Session["resources"]["requests"] | SessionLauncherResources;

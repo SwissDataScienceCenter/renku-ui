@@ -87,7 +87,7 @@ export default function GroupSettingsMembers({
   return (
     <>
       <CardHeader>
-        <div className={cx("d-flex", "gap-2")}>
+        <div className={cx("d-flex", "gap-2", "justify-content-between")}>
           <h4>
             <PersonGear className={cx("me-1", "bi")} />
             Group Members
@@ -164,7 +164,7 @@ function GroupSettingsMembersList({
 
   return (
     <>
-      <ListGroup>
+      <ListGroup flush>
         {members.map((member, idx) => (
           <GroupMemberItem
             key={member.id}

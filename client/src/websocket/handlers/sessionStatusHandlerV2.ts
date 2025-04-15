@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import sessionsV2Api from "../../features/sessionsV2/sessionsV2.api";
+import { sessionsV2Api } from "../../features/sessionsV2/api/sessionsV2.api";
 import { StateModel } from "../../model";
 
 function handleSessionsStatusV2(

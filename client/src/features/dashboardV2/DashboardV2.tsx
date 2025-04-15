@@ -32,7 +32,7 @@ import {
   PlusSquare,
   Send,
 } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router";
 import {
   Badge,
   Card,
@@ -61,7 +61,7 @@ import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import SearchV2Bar from "../searchV2/components/SearchV2Bar";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/sessionsV2.api";
+import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
 import { useGetUserQuery } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
@@ -259,7 +259,7 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
       <RtkOrNotebooksError error={error} />
     </div>
   ) : !hasProjects ? (
-    <div>
+    <div className="text-body-secondary">
       Collaborate on projects with anyone, with data, code, and compute together
       in one place.
     </div>
@@ -297,11 +297,9 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
 
 function GroupsDashboard() {
   const { data, error, isLoading } = useGetGroupsQuery({
-    params: {
-      page: 1,
-      per_page: 5,
-      direct_member: true,
-    },
+    page: 1,
+    perPage: 5,
+    directMember: true,
   });
   const hasGroups = data && data?.groups?.length > 0;
   return (
@@ -491,7 +489,9 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
       <RtkOrNotebooksError error={error} />
     </div>
   ) : !hasGroups ? (
-    <div>Share and organize projects & data with your team.</div>
+    <div className="text-body-secondary">
+      Share and organize projects & data with your team.
+    </div>
   ) : null;
 
   const groupFooter = hasGroups ? (

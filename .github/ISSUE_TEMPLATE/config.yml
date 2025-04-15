@@ -1,11 +1,15 @@
 # Ref: https://help.github.com/en/github/building-a-strong-community/configuring-issue-templates-for-your-repository#configuring-the-template-chooser
 blank_issues_enabled: false
 contact_links:
-- name: '💬 Discussions'
-  url: https://renku.discourse.group/
-  about: |
-    Ask questions about using Renku, its features and roadmap, or get support and give feedback.
-- name: '💬 Gitter'
-  url: https://gitter.im/SwissDataScienceCenter/renku
-  about: |
-    Chat with the community and maintainers about both the usage of and development of the project.
+  - name: "Report a UI bug 🐛"
+    url: https://github.com/SwissDataScienceCenter/renku-ui/discussions/new?category=bugs
+    about: |
+      If you have found a bug, please report it in the Discussions section. A maintainer will later create an issue or update existing ones.
+  - name: "Suggest new ideas 💡"
+    url: https://github.com/SwissDataScienceCenter/renku-ui/discussions/new?category=ideas
+    about: |
+      If you have an idea for a new feature or improvement, please share it in the Discussions section.
+  - name: "Renku discussions 💬"
+    url: https://renku.discourse.group/
+    about: |
+      Do you have questions about Renku? You can start a discussion in our forum.

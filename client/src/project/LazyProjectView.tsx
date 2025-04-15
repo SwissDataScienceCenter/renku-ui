@@ -16,17 +16,15 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import PageLoader from "../components/PageLoader";
 
 const ProjectView = lazy(() => import("./ProjectV2"));
 
-export default function LazyProjectView(
-  props: ComponentProps<typeof ProjectView>
-) {
+export default function LazyProjectView() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <ProjectView {...props} />
+      <ProjectView />
     </Suspense>
   );
 }

@@ -1,7 +1,7 @@
 import { Preview } from "@storybook/react";
 import React from "react";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 import type { AppContextType } from "../src/utils/context/appContext";
 import AppContext from "../src/utils/context/appContext";
@@ -29,6 +29,7 @@ export const decorators = [
       model: undefined,
       notifications: undefined,
       params: { ...DEFAULT_APP_PARAMS },
+      webSocket: undefined,
     };
     return (
       <MemoryRouter initialEntries={["/"]}>

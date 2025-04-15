@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,19 +16,31 @@
  * limitations under the License.
  */
 
-import { ReactNode } from "react";
-import { BrowserRouter } from "react-router-dom";
-import { CompatRouter } from "react-router-dom-v5-compat";
+import {
+  LegacySlug,
+  ProjectName,
+  Slug,
+  Visibility,
+} from "../../../projectsV2/api/projectV2.api";
 
-interface RouterProps {
-  children?: ReactNode;
+export interface ProjectMigrationForm {
+  name: ProjectName;
+  namespace: Slug;
+  slug: LegacySlug;
+  visibility: Visibility;
 }
 
-/** Temporary router while routing is being upgraded from react-router@v5 to v6 */
-export default function Router({ children }: RouterProps) {
-  return (
-    <BrowserRouter>
-      <CompatRouter>{children}</CompatRouter>
-    </BrowserRouter>
-  );
+export interface ProjectMetadata {
+  accessLevel: number;
+  defaultBranch: string;
+  externalUrl: string;
+  httpUrl: string;
+  id: string;
+  namespace: string;
+  path: string;
+  pathWithNamespace: string;
+  visibility: string;
+  description: string;
+  title: string;
+  tagList: string[];
 }

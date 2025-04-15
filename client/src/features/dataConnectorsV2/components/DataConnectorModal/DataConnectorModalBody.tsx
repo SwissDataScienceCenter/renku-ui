@@ -47,15 +47,18 @@ import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
 import DataConnectorModalResult from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
+import type { Project } from "../../../projectsV2/api/projectV2.api";
 
 interface AddOrEditDataConnectorProps {
   storageSecrets: DataConnectorSecret[];
+  project?: Project;
 }
 
 type DataConnectorModalBodyProps = AddOrEditDataConnectorProps;
 
 export default function DataConnectorModalBody({
   storageSecrets,
+  project,
 }: DataConnectorModalBodyProps) {
   const { flatDataConnector, schemata, success } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -71,18 +74,22 @@ export default function DataConnectorModalBody({
   return (
     <>
       {!flatDataConnector.dataConnectorId && (
-        <p>
+        <p className="text-body-secondary">
           Add published datasets from data repositories for use in your project.
           Or, connect to cloud storage to read and write custom data.
         </p>
       )}
-      <AddOrEditDataConnector storageSecrets={storageSecrets} />
+      <AddOrEditDataConnector
+        storageSecrets={storageSecrets}
+        project={project}
+      />
     </>
   );
 }
 
 function AddOrEditDataConnector({
   storageSecrets,
+  project,
 }: AddOrEditDataConnectorProps) {
   const { cloudStorageState, flatDataConnector, schemata, validationResult } =
     useAppSelector((state) => state.dataConnectorFormSlice);
@@ -150,7 +157,10 @@ function AddOrEditDataConnector({
             setState={setState}
           />
         </div>
-        <DataConnectorContentByStep storageSecrets={storageSecrets} />
+        <DataConnectorContentByStep
+          storageSecrets={storageSecrets}
+          project={project}
+        />
       </>
     );
   return <p>Error - not implemented yet</p>;
@@ -314,8 +324,10 @@ export function DataConnectorMount() {
                 inputId="namespace-input"
                 onChange={(e) => {
                   field.onChange(e);
-                  onFieldValueChange("namespace", e?.slug ?? "");
+                  onFieldValueChange("namespace", e?.path ?? "");
                 }}
+                ensureNamespace={flatDataConnector.namespace}
+                includeProjectNamespaces={true}
               />
             );
           }}
@@ -323,7 +335,7 @@ export function DataConnectorMount() {
             required: true,
             maxLength: 99,
             pattern:
-              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-zA-Z0-9][a-zA-Z0-9\-_.]*$/,
+              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*(?<!\.git)(?<!\.atom)(?:\/[a-z0-9][a-z0-9\-_.]*)?$/,
           }}
         />
         <div className="invalid-feedback">

@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { CheckLg, People, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { generatePath, useNavigate } from "react-router-dom-v5-compat";
+import { generatePath, useNavigate } from "react-router";
 import {
   Button,
   Form,
@@ -28,11 +28,11 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
-  ModalHeader,
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ModalHeader from "../../../components/modal/ModalHeader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
@@ -70,10 +70,15 @@ export default function GroupNew() {
         unmountOnClose={true}
         toggle={toggleModal}
       >
-        <ModalHeader tag="div" toggle={toggleModal}>
-          <h2>
-            <People className="bi" /> Create a new group
-          </h2>
+        <ModalHeader
+          toggle={toggleModal}
+          modalTitle={
+            <>
+              <People className="bi" />
+              Create a new group
+            </>
+          }
+        >
           <p className={cx("fs-6", "fw-normal", "mb-0")}>
             Groups let you group together related projects and control who can
             access them.

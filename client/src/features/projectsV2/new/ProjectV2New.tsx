@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { generatePath, useNavigate } from "react-router-dom-v5-compat";
+import { generatePath, useMatch, useNavigate } from "react-router";
 import {
   Button,
   Form,
@@ -29,12 +29,12 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
-  ModalHeader,
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import ModalHeader from "../../../components/modal/ModalHeader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
@@ -73,10 +73,15 @@ export default function ProjectV2New() {
         unmountOnClose={true}
         toggle={toggleModal}
       >
-        <ModalHeader tag="div" toggle={toggleModal}>
-          <h2>
-            <Folder className="bi" /> Create a new project
-          </h2>
+        <ModalHeader
+          toggle={toggleModal}
+          modalTitle={
+            <>
+              <Folder className="bi" />
+              Create a new project
+            </>
+          }
+        >
           <p className={cx("fs-6", "fw-normal", "mb-0")}>
             A Renku project groups together data, code, and compute resources
             for you and your collaborators.
@@ -106,7 +111,8 @@ export default function ProjectV2New() {
 function ProjectV2CreationDetails() {
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
-
+  const groupMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.splat);
+  const defaultNamespace = groupMatch?.params.slug;
   const [, setHash] = useLocationHash();
   const closeModal = useCallback(() => {
     setHash();
@@ -124,7 +130,7 @@ function ProjectV2CreationDetails() {
     defaultValues: {
       description: "",
       name: "",
-      namespace: "",
+      namespace: defaultNamespace ?? "",
       slug: "",
       visibility: "private",
     },
@@ -168,12 +174,14 @@ function ProjectV2CreationDetails() {
 
   const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
 
+  const formId = "project-creation-form";
+
   return (
     <>
       <ModalBody>
         <Form
           data-cy="project-creation-form"
-          id="project-creation-form"
+          id={formId}
           onSubmit={handleSubmit(onSubmit)}
         >
           <FormGroup className="d-inline" disabled={result.isLoading}>
@@ -182,13 +190,15 @@ function ProjectV2CreationDetails() {
               <ProjectNameFormField
                 control={control}
                 errors={errors}
+                formId={formId}
                 name="name"
               />
 
               <div className="mb-1">
                 <ProjectNamespaceFormField
                   control={control}
-                  entityName="project"
+                  ensureNamespace={defaultNamespace}
+                  entityName={`${formId}-project`}
                   errors={errors}
                   name="namespace"
                 />
@@ -209,6 +219,7 @@ function ProjectV2CreationDetails() {
 
               <div className="mb-1">
                 <ProjectVisibilityFormField
+                  formId={formId}
                   name="visibility"
                   control={control}
                   errors={errors}
@@ -218,6 +229,7 @@ function ProjectV2CreationDetails() {
               <ProjectDescriptionFormField
                 control={control}
                 errors={errors}
+                formId={formId}
                 name="description"
               />
 

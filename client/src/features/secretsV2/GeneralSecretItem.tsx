@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { generatePath, Link } from "react-router-dom-v5-compat";
+import { generatePath, Link } from "react-router";
 import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
 import { Folder, ShieldLock } from "react-bootstrap-icons";

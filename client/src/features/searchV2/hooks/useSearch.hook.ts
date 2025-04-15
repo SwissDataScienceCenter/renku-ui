@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom-v5-compat";
+import { useSearchParams } from "react-router";
 
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";

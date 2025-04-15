@@ -35,6 +35,7 @@ import faviconWaitingICO from "../../styles/assets/favicon/FaviconWaiting.ico";
 import faviconWaitingSVG from "../../styles/assets/favicon/FaviconWaiting.svg";
 import faviconWaiting16px from "../../styles/assets/favicon/FaviconWaiting16px.png";
 import faviconWaiting32px from "../../styles/assets/favicon/FaviconWaiting32px.png";
+import { BuilderSelectorOption } from "./sessionsV2.types";
 
 export const DEFAULT_URL = "/";
 export const DEFAULT_PORT = 8888;
@@ -87,3 +88,32 @@ Default: \`1000\`.`,
 
 export const CONTAINER_IMAGE_PATTERN =
   /^[a-z0-9]+((\.|_|__|-+)[a-z0-9]+)*(\/[a-z0-9]+((\.|_|__|-+)[a-z0-9]+)*)*(:[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}|@sha256:[a-fA-F0-9]{64}){0,1}$/;
+
+export const BUILDER_IMAGE_NOT_READY_VALUE = "image:unknown-at-the-moment";
+
+export const BUILDER_TYPES = [
+  {
+    value: "python",
+    label: "Python",
+    description: (
+      <>
+        Create a Python environment from an <code>environment.yml</code> file.
+        This file must be at the root of the repository. See the documentation
+        for examples.
+      </>
+    ),
+  },
+] as readonly BuilderSelectorOption[];
+
+export const BUILDER_FRONTENDS = [
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "vscodium",
+    label: "VSCodium",
+    description: "A freely-licensed version Microsoft’s editor VS Code.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
+] as readonly BuilderSelectorOption[];
+
+export const IMAGE_BUILD_DOCS =
+  "https://renku.notion.site/How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234";

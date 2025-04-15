@@ -7,6 +7,7 @@ import type {
 export interface GenericProjectFormFieldProps<T extends FieldValues>
   extends UseControllerProps<T> {
   errors: FieldErrors<T>;
+  formId: string;
   helpText?: React.ReactNode;
 }
 
@@ -25,7 +26,7 @@ export interface SlugFormFieldProps<T extends FieldValues>
 }
 
 export interface SlugPreviewFormFieldProps<T extends FieldValues>
-  extends GenericProjectFormFieldProps<T> {
+  extends Omit<GenericProjectFormFieldProps<T>, "formId"> {
   compact?: boolean;
   resetFunction?: () => void;
   url: string;

@@ -1,4 +1,4 @@
-FROM node:20.11.0 AS builder
+FROM node:22 AS builder
 
 RUN apt-get update && apt-get upgrade --quiet --assume-yes
 

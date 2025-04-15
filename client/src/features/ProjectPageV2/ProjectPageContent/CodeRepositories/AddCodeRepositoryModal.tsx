@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { CodeSquare, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -37,6 +37,12 @@ import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import {
+  detectSSHRepository,
+  validateCodeRepository,
+  validateNoDuplicatesInCodeRepositories,
+} from "./repositories.utils";
+import { WarnAlert } from "../../../../components/Alert";
 
 interface AddCodeRepositoryForm {
   repositoryUrl: string;
@@ -52,12 +58,12 @@ export default function AddCodeRepositoryModal({
   toggleModal,
   isOpen,
 }: AddCodeRepositoryModalProps) {
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<AddCodeRepositoryForm>();
+  const { control, handleSubmit, reset, setError, watch } =
+    useForm<AddCodeRepositoryForm>({
+      defaultValues: {
+        repositoryUrl: "",
+      },
+    });
 
   const [updateProject, result] = usePatchProjectsByProjectIdMutation();
   const onSubmit = useCallback(
@@ -66,13 +72,19 @@ export default function AddCodeRepositoryModal({
         ? [...project.repositories]
         : [];
       repositories.push(data.repositoryUrl);
+      const validationResult =
+        validateNoDuplicatesInCodeRepositories(repositories);
+      if (typeof validationResult === "string") {
+        setError("repositoryUrl", { message: validationResult });
+        return;
+      }
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
         projectPatch: { repositories },
       });
     },
-    [project.etag, project.id, project.repositories, updateProject]
+    [project.etag, project.id, project.repositories, setError, updateProject]
   );
 
   useEffect(() => {
@@ -88,6 +100,8 @@ export default function AddCodeRepositoryModal({
     }
   }, [isOpen, reset, result]);
 
+  const watchRepositoryUrl = watch("repositoryUrl");
+
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -100,7 +114,7 @@ export default function AddCodeRepositoryModal({
           <p>Specify a code repository by its URL.</p>
           <Row>
             <Col>
-              <FormGroup className="field-group">
+              <FormGroup className="field-group" noMargin>
                 <Label for={`project-${project.id}-add-repository-url`}>
                   Repository URL
                   <span className="required-label">*</span>
@@ -108,24 +122,30 @@ export default function AddCodeRepositoryModal({
                 <Controller
                   control={control}
                   name="repositoryUrl"
-                  render={({ field }) => (
-                    <Input
-                      className={cx(
-                        "form-control",
-                        errors.repositoryUrl && "is-invalid"
-                      )}
-                      id={`project-${project.id}-add-repository-url`}
-                      data-cy="project-add-repository-url"
-                      type="text"
-                      placeholder="https://github.com/my-org/my-repository.git"
-                      {...field}
-                    />
+                  render={({
+                    field: { ref, ...rest },
+                    fieldState: { error },
+                  }) => (
+                    <>
+                      <Input
+                        className={cx("form-control", error && "is-invalid")}
+                        data-cy="project-add-repository-url"
+                        id={`project-${project.id}-add-repository-url`}
+                        innerRef={ref}
+                        placeholder="https://github.com/my-org/my-repository.git"
+                        type="text"
+                        {...rest}
+                      />
+                      <div className="invalid-feedback">
+                        {error?.message
+                          ? error.message
+                          : "Please provide a valid URL."}
+                      </div>
+                    </>
                   )}
-                  rules={{ required: true }}
+                  rules={{ required: true, validate: validateCodeRepository }}
                 />
-                <div className="invalid-feedback">
-                  Please provide a valid URL.
-                </div>
+                <SshRepositoryUrlWarning repositoryUrl={watchRepositoryUrl} />
               </FormGroup>
             </Col>
           </Row>
@@ -156,5 +176,29 @@ export default function AddCodeRepositoryModal({
         </ModalFooter>
       </Form>
     </Modal>
+  );
+}
+
+interface SshRepositoryUrlWarningProps {
+  repositoryUrl: string;
+}
+
+export function SshRepositoryUrlWarning({
+  repositoryUrl,
+}: SshRepositoryUrlWarningProps) {
+  const isSsh = useMemo(
+    () => detectSSHRepository(repositoryUrl),
+    [repositoryUrl]
+  );
+
+  if (!isSsh) {
+    return null;
+  }
+
+  return (
+    <WarnAlert className={cx("mt-3", "mb-0")} dismissible={false}>
+      It looks like you are trying to use a <code>git+ssh</code> URL. RenkuLab
+      only supports HTTP(S) for repositories at the moment.
+    </WarnAlert>
   );
 }

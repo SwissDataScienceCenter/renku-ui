@@ -13,9 +13,12 @@ on:
           - minor
           - patch
 
+permissions:
+  contents: read
+
 jobs:
   create-release-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,7 +31,7 @@ jobs:
       - name: Set up node
         uses: actions/setup-node@v4
         with:
-          node-version: "20.11.0"
+          node-version: "22"
       - name: Get old version
         id: get_old_version
         run: |

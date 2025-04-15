@@ -17,9 +17,17 @@
  */
 
 import cx from "classnames";
-import ReactPagination from "react-js-pagination";
+import { memo } from "react";
+import {
+  ChevronDoubleLeft,
+  ChevronDoubleRight,
+  ChevronLeft,
+  ChevronRight,
+} from "react-bootstrap-icons";
+import { PaginationItem, PaginationLink } from "reactstrap";
 
 interface PaginationProps {
+  ariaLabel?: string;
   className?: string;
   currentPage: number;
   onPageChange: (pageNumber: number) => void;
@@ -30,6 +38,7 @@ interface PaginationProps {
 }
 
 export default function Pagination({
+  ariaLabel,
   className: className_,
   currentPage,
   onPageChange,
@@ -47,18 +56,13 @@ export default function Pagination({
 
   return (
     <div className={cx("d-flex", "align-items-center", "flex-column")}>
-      <ReactPagination
+      <PaginationNav
         activePage={currentPage}
+        ariaLabel={ariaLabel}
+        innerClassName={className}
         itemsCountPerPage={perPage}
-        totalItemsCount={totalItems}
         onChange={onPageChange}
-        innerClass={className}
-        // Some defaults for the styling
-        itemClass={"page-item"}
-        linkClass={"page-link"}
-        activeClass={"page-item active"}
-        hideFirstLastPages={false}
-        hideDisabled
+        totalItemsCount={totalItems}
       />
       {showDescription && totalInPage && (
         <ExtraInfoPagination
@@ -69,6 +73,150 @@ export default function Pagination({
         />
       )}
     </div>
+  );
+}
+
+interface PaginationNavProps {
+  activePage: number;
+  ariaLabel?: string;
+  innerClassName?: string;
+  itemsCountPerPage: number;
+  maxPages?: number;
+  onChange: (pageNumber: number) => void;
+  totalItemsCount: number;
+}
+
+const PaginationNav = memo(function PaginationNav({
+  activePage,
+  ariaLabel = "page navigation",
+  innerClassName,
+  itemsCountPerPage,
+  onChange,
+  maxPages = 5,
+  totalItemsCount,
+}: PaginationNavProps) {
+  if (itemsCountPerPage === 0 || totalItemsCount === 0 || maxPages <= 0) {
+    return null;
+  }
+  const totalPages = Math.ceil(totalItemsCount / itemsCountPerPage);
+  if (totalPages <= 1) {
+    return null;
+  }
+
+  const half = Math.floor(maxPages / 2);
+  const start = Math.max(1, activePage - half);
+  const end = Math.min(totalPages, start + maxPages - 1);
+  const startPage =
+    end === totalPages ? Math.max(1, totalPages - maxPages + 1) : start;
+
+  const pages = [];
+
+  // First page button: only show if the first page is not already shown
+  if (startPage !== 1) {
+    pages.push(
+      <PaginationElement
+        linkClassName="px-2"
+        ariaLabel="first page"
+        onClick={() => onChange(1)}
+        key="first"
+      >
+        <ChevronDoubleLeft className="bi" />
+      </PaginationElement>
+    );
+  }
+
+  // Previous page button: only show if there's a previous page
+  if (activePage > 1) {
+    pages.push(
+      <PaginationElement
+        linkClassName="px-2"
+        ariaLabel="previous page"
+        onClick={() => onChange(activePage - 1)}
+        key="prev"
+      >
+        <ChevronLeft className="bi" />
+      </PaginationElement>
+    );
+  }
+
+  // Page number buttons
+  for (let pageNumber = startPage; pageNumber <= end; pageNumber++) {
+    pages.push(
+      <PaginationElement
+        ariaLabel={`page ${pageNumber} of ${totalPages}`}
+        onClick={() => onChange(pageNumber)}
+        className={cx(pageNumber === activePage && "active")}
+        key={`page-${pageNumber}`}
+      >
+        {pageNumber}
+      </PaginationElement>
+    );
+  }
+
+  // Next page button: only show if there's a next page
+  if (activePage < totalPages) {
+    pages.push(
+      <PaginationElement
+        linkClassName="px-2"
+        ariaLabel="next page"
+        onClick={() => onChange(activePage + 1)}
+        key="next"
+      >
+        <ChevronRight className="bi" />
+      </PaginationElement>
+    );
+  }
+
+  // Last page button: show it if the last page is not already included in the loop
+  if (end !== totalPages) {
+    pages.push(
+      <PaginationElement
+        linkClassName="px-2"
+        ariaLabel="last page"
+        onClick={() => onChange(totalPages)}
+        key="last"
+      >
+        <ChevronDoubleRight className="bi" />
+      </PaginationElement>
+    );
+  }
+
+  return (
+    <nav aria-label={ariaLabel}>
+      <ul className={innerClassName}>{pages}</ul>
+    </nav>
+  );
+});
+
+interface PaginationElementProps {
+  ariaLabel?: string;
+  children?: React.ReactNode;
+  className?: string;
+  linkClassName?: string;
+  onClick: () => void;
+}
+function PaginationElement({
+  ariaLabel,
+  children,
+  className,
+  linkClassName,
+  onClick,
+}: PaginationElementProps) {
+  return (
+    <PaginationItem className={className}>
+      <PaginationLink
+        aria-label={ariaLabel}
+        className={linkClassName}
+        href="#"
+        // This should be converted to use Link and allow for smooth navigation
+        onClick={(e) => {
+          e.preventDefault();
+          onClick();
+        }}
+      >
+        {children}
+      </PaginationLink>
+    </PaginationItem>
   );
 }
 

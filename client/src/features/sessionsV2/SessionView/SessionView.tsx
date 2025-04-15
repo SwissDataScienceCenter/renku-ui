@@ -17,7 +17,7 @@
  */
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useContext, useMemo, useState } from "react";
 import {
   CircleFill,
   Clock,
@@ -25,7 +25,9 @@ import {
   ExclamationTriangleFill,
   FileCode,
   Pencil,
+  Link45deg,
 } from "react-bootstrap-icons";
+import { generatePath } from "react-router";
 import {
   Badge,
   Button,
@@ -39,8 +41,11 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import AppContext from "../../../utils/context/appContext";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -55,6 +60,7 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projects
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
+import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
@@ -65,7 +71,7 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
-import { SessionLauncher, SessionV2 } from "../sessionsV2.types";
+import { SessionV2 } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
 
 interface SessionCardContentProps {
@@ -186,6 +192,33 @@ function getSessionColor(state: string) {
     : state === "failed"
     ? "danger"
     : "dark";
+}
+
+function SessionStartLink({
+  launcher,
+  project,
+}: Required<Pick<SessionViewProps, "launcher" | "project">>) {
+  const startPath = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
+    {
+      launcherId: launcher.id,
+      namespace: project.namespace,
+      slug: project.slug,
+    }
+  );
+  const { params } = useContext(AppContext);
+  const baseUrl = params?.BASE_URL ?? window.location.href;
+  const url = new URL(startPath, baseUrl);
+  return (
+    <div className="mb-2">
+      <h4 className="my-auto">
+        <Link45deg className={cx("bi", "me-1")} />
+        Session Launch Link
+      </h4>
+      <p className="mb-2">A session launch link leads directly to a session.</p>
+      <CommandCopy command={url.toString()} noMargin />
+    </div>
+  );
 }
 
 interface SessionViewProps {
@@ -346,6 +379,11 @@ export function SessionView({
               </div>
             )}
           </div>
+          {launcher && (
+            <div>
+              <SessionStartLink launcher={launcher} project={project} />
+            </div>
+          )}
           {launcher && (
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>

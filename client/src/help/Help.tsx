@@ -27,7 +27,7 @@ import { faDiscourse, faGitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import { Github } from "react-bootstrap-icons";
-import { Route, Routes } from "react-router-dom-v5-compat";
+import { Route, Routes } from "react-router";
 import { Col, Nav, NavItem, Row } from "reactstrap";
 
 import {
@@ -56,29 +56,29 @@ function HelpNav({ statuspageId }: HelpNavProps) {
   return (
     <Nav pills className={"nav-pills-underline"}>
       <NavItem>
-        <RenkuNavLinkV2 end to=".">
+        <RenkuNavLinkV2 end to="/help">
           Getting Help
         </RenkuNavLinkV2>
       </NavItem>
       <NavItem>
-        <RenkuNavLinkV2 to="docs">Documentation</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to="/help/docs">Documentation</RenkuNavLinkV2>
       </NavItem>
       {isStatusConfigured(statuspageId) && (
         <NavItem>
-          <RenkuNavLinkV2 to="status">Status</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to="/help/status">Status</RenkuNavLinkV2>
         </NavItem>
       )}
       <NavItem>
-        <RenkuNavLinkV2 to="release">Release Information</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to="/help/release">Release Information</RenkuNavLinkV2>
       </NavItem>
       {termsConfigured && (
         <NavItem>
-          <RenkuNavLinkV2 to="tos">Terms of Use</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to="/help/tos">Terms of Use</RenkuNavLinkV2>
         </NavItem>
       )}
       {privacyPolicyConfigured && (
         <NavItem>
-          <RenkuNavLinkV2 to="privacy">Privacy Policy</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to="/help/privacy">Privacy Policy</RenkuNavLinkV2>
         </NavItem>
       )}
     </Nav>
