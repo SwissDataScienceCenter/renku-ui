@@ -546,3 +546,60 @@ describe("Dashboard pins", () => {
       );
   });
 });
+
+describe("announce v2 banner", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest().userPreferences();
+  });
+
+  it("v2 banner should be visible on the v1 dashboard", () => {
+    fixtures
+      .projects()
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .noActiveProjects()
+      .sessionServersEmpty();
+
+    cy.visit("/v1");
+    cy.wait("@getUser");
+    cy.wait("@getDataServiceUser");
+    cy.wait("@getEntities");
+    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getNoActiveProjects");
+
+    cy.getDataCy("announce-v2-banner").should("be.visible");
+
+    // TODO -- go to search, banner should not be visible there
+  });
+
+  it("v2 banner should not be visible outside the v1 dashboard", () => {
+    fixtures
+      .projects()
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .noActiveProjects()
+      .sessionServersEmpty();
+
+    cy.visit("/v1/search");
+    cy.wait("@getUser");
+    cy.wait("@getDataServiceUser");
+    cy.wait("@getEntities");
+
+    cy.getDataCy("announce-v2-banner").should("not.exist");
+  });
+});
+
+describe("anonymous dashboard", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userNone();
+  });
+
+  it("user should be prompted to log in", () => {
+    cy.visit("/v1");
+    cy.contains("to view the Renku legacy dashboard").should("be.visible");
+  });
+});

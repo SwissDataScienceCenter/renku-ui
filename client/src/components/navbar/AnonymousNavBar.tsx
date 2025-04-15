@@ -20,14 +20,22 @@ import cx from "classnames";
 import { useCallback, useContext, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
-import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
+import {
+  Badge,
+  Collapse,
+  Nav,
+  NavItem,
+  Navbar,
+  NavbarToggler,
+} from "reactstrap";
 
 import StatusBanner from "../../features/platform/components/StatusBanner";
+import LearnAboutV2Button from "../../features/projectsV2/shared/LearnAboutV2Button";
 import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
-import { Url } from "../../utils/helpers/url";
 import RenkuNavLinkV2 from "../RenkuNavLinkV2";
+import AnnounceV2Banner from "./AnnounceV2Banner";
 import {
   RenkuToolbarHelpMenu,
   RenkuToolbarItemUser,
@@ -67,11 +75,15 @@ export default function AnonymousNavBar() {
         >
           <Link
             id="link-home"
-            to={Url.get(Url.pages.landing)}
+            to={ABSOLUTE_ROUTES.v1.root}
             className="navbar-brand me-2 pb-0 pt-0"
           >
             <img src={RENKU_LOGO} alt="Renku" height="50" className="d-block" />
           </Link>
+          <Badge color="warning" className="mx-2">
+            Legacy
+          </Badge>
+          <LearnAboutV2Button outline />
           <NavbarToggler onClick={onToggle} className="border-0">
             <List className="bi text-rk-white" />
           </NavbarToggler>
@@ -121,6 +133,7 @@ export default function AnonymousNavBar() {
           </Collapse>
         </Navbar>
       </header>
+      <AnnounceV2Banner />
       <StatusBanner params={params} />
       <NavBarWarnings model={model} uiShortSha={uiShortSha} />
     </>
