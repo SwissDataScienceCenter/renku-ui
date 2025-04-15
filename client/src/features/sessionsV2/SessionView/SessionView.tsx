@@ -192,7 +192,7 @@ function getSessionColor(state: string) {
     : "dark";
 }
 
-export function SessionStartLink({
+function SessionStartLink({
   launcher,
   project,
 }: Required<Pick<SessionViewProps, "launcher" | "project">>) {
@@ -342,7 +342,7 @@ export function SessionView({
                 {launcherMenu}
               </div>
               <div className={cx("d-flex", "flex-column")}>
-                <span className="small text-muted me-3">
+                <span className={cx("small", "text-muted", "me-3")}>
                   {launcher ? "Session launcher" : "Session without launcher"}
                 </span>
                 <h2

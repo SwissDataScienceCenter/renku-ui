@@ -17,10 +17,10 @@
  */
 import { useContext } from "react";
 import { generatePath } from "react-router";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants.ts";
-import AppContext from "../../../utils/context/appContext.ts";
-import { Project } from "../../projectsV2/api/projectV2.api.ts";
-import { SessionLauncher } from "../api/sessionLaunchersV2.generated-api.ts";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import AppContext from "../../../utils/context/appContext";
+import { Project } from "../../projectsV2/api/projectV2.api";
+import { SessionLauncher } from "../api/sessionLaunchersV2.generated-api";
 
 export default function useSessionStartLink({
   launcher,
