@@ -36,7 +36,7 @@ import {
 } from "../components/SessionForm/LauncherEnvironmentIcon";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import { ActiveSessionButtonAlt } from "../components/SessionButton/ActiveSessionButton";
+import { ActiveSessionButton } from "../components/SessionButton/ActiveSessionButton";
 import {
   getSessionStatusStyles,
   SessionBadge,
@@ -353,7 +353,7 @@ export function SessionInnerCard({ project, session }: SessionInnerCardProps) {
             className={cx("d-flex", "ms-md-auto", "justify-content-end")}
           >
             <div>
-              <ActiveSessionButtonAlt
+              <ActiveSessionButton
                 session={session}
                 showSessionUrl={getShowSessionUrlByProject(
                   project,

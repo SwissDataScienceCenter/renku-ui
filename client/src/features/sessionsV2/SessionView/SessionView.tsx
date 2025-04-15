@@ -59,7 +59,7 @@ import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/U
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import { ActiveSessionButtonAlt } from "../components/SessionButton/ActiveSessionButton";
+import { ActiveSessionButton } from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import {
   SessionBadge,
@@ -70,7 +70,7 @@ import {
 import { DEFAULT_URL } from "../session.constants";
 import { SessionV2 } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
-import useSessionStartLink from "./useSessionStartLink.hook.ts";
+import useSessionStartLink from "./useSessionStartLink.hook";
 
 interface SessionCardContentProps {
   color: string;
@@ -121,7 +121,7 @@ function SessionCard({
       contentDescription={<SessionStatusV2Description session={session} />}
       contentLabel={<SessionStatusV2Label session={session} />}
       contentSession={
-        <ActiveSessionButtonAlt
+        <ActiveSessionButton
           session={session}
           showSessionUrl={getShowSessionUrlByProject(project, session.name)}
         />

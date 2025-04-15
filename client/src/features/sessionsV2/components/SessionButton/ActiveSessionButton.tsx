@@ -81,273 +81,7 @@ interface ActiveSessionButtonProps {
   toggleSessionDetails?: () => void;
 }
 
-interface ConfirmDeleteModalProps {
-  isOpen: boolean;
-  isStopping: boolean;
-  onStopSession: () => void;
-  sessionName: string;
-  status: SessionStatusState;
-  toggleModal: () => void;
-}
-
-function ConfirmDeleteModal({
-  isOpen,
-  isStopping,
-  onStopSession,
-  toggleModal,
-}: ConfirmDeleteModalProps) {
-  const onClick = useCallback(() => {
-    onStopSession();
-    toggleModal();
-  }, [onStopSession, toggleModal]);
-
-  return (
-    <Modal size="lg" centered isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader className="text-danger" toggle={toggleModal}>
-        Shut Down Session
-      </ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col>
-            <p className="mb-1">
-              Are you sure you want to shut down this session?
-            </p>
-            <p className="fw-bold">
-              Shutting down a session will permanently remove any unsaved work.
-            </p>
-          </Col>
-        </Row>
-      </ModalBody>
-      <ModalFooter>
-        <Button
-          color="outline-danger"
-          disabled={isStopping}
-          onClick={toggleModal}
-        >
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
-        </Button>
-        <Button
-          color="danger"
-          data-cy="delete-session-modal-button"
-          disabled={isStopping}
-          type="submit"
-          onClick={onClick}
-        >
-          <Trash className={cx("bi", "me-1")} /> Shut down this session
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
-
-interface ModifySessionModalProps {
-  isOpen: boolean;
-  onModifySession: (sessionClass: number, resumeSession: boolean) => void;
-  resources: SessionResources;
-  status: SessionStatus;
-  toggleModal: () => void;
-  resource_class_id: number;
-}
-
-function ModifySessionModal({
-  isOpen,
-  onModifySession,
-  resources,
-  status,
-  toggleModal,
-  resource_class_id,
-}: ModifySessionModalProps) {
-  return (
-    <Modal
-      centered
-      fullscreen="lg"
-      isOpen={isOpen}
-      size="lg"
-      toggle={toggleModal}
-    >
-      <ModalHeader toggle={toggleModal}>Modify Session Resources</ModalHeader>
-      <ModifySessionModalContent
-        onModifySession={onModifySession}
-        resources={resources}
-        status={status}
-        toggleModal={toggleModal}
-        resource_class_id={resource_class_id}
-      />
-    </Modal>
-  );
-}
-
-interface ModifySessionModalContentProps {
-  onModifySession: (sessionClass: number, resumeSession: boolean) => void;
-  resources: SessionResources;
-  status: SessionStatus;
-  toggleModal: () => void;
-  resource_class_id: number;
-}
-
-function ModifySessionModalContent({
-  onModifySession,
-  resources,
-  status,
-  toggleModal,
-  resource_class_id,
-}: ModifySessionModalContentProps) {
-  const { state } = status;
-
-  const {
-    data: resourcePools,
-    isLoading,
-    isError,
-  } = useGetResourcePoolsQuery({});
-
-  const [currentSessionClass, setCurrentSessionClass] = useState<
-    ResourceClass | undefined
-  >(undefined);
-
-  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
-    if (newValue) {
-      setCurrentSessionClass(newValue);
-    }
-  }, []);
-
-  const onClick = useCallback(
-    ({ resumeSession }: { resumeSession: boolean }) => {
-      return function modifySession() {
-        if (!currentSessionClass) {
-          return;
-        }
-        onModifySession(currentSessionClass.id, resumeSession);
-        toggleModal();
-      };
-    },
-    [currentSessionClass, onModifySession, toggleModal]
-  );
-
-  useEffect(() => {
-    const currentSessionClass = resourcePools
-      ?.flatMap((pool) => pool.classes)
-      .find((c) => c.id == resource_class_id);
-    setCurrentSessionClass(currentSessionClass);
-  }, [resource_class_id, resourcePools]);
-
-  const message =
-    state === "failed" ? (
-      <>
-        <WarnAlert dismissible={false}>
-          This session cannot be started or resumed at the moment.
-        </WarnAlert>
-        <p>
-          You can try to modify the session class and attempt to resume the
-          session.
-        </p>
-      </>
-    ) : (
-      <p>You can modify the session class before resuming this session.</p>
-    );
-
-  const selector = isLoading ? (
-    <FetchingResourcePools />
-  ) : !resourcePools || resourcePools.length == 0 || isError ? (
-    <ErrorOrNotAvailableResourcePools />
-  ) : (
-    <SessionClassSelectorV2
-      resourcePools={resourcePools}
-      currentSessionClass={currentSessionClass}
-      onChange={onChange}
-    />
-  );
-
-  return (
-    <>
-      <ModalBody className="py-0">
-        <Row>
-          <Col>
-            {message}
-            <p>
-              <span className={cx("fw-bold", "me-3")}>Current resources:</span>
-              <span>
-                <SessionRowResourceRequests
-                  resourceRequests={resources?.requests}
-                />
-              </span>
-            </p>
-            <div className="field-group">{selector}</div>
-          </Col>
-        </Row>
-      </ModalBody>
-      <ModalFooter>
-        {state === "hibernated" && (
-          <Button
-            disabled={
-              isLoading ||
-              !resourcePools ||
-              resourcePools.length == 0 ||
-              isError ||
-              currentSessionClass == null ||
-              resource_class_id === currentSessionClass?.id
-            }
-            onClick={onClick({ resumeSession: true })}
-            type="submit"
-          >
-            <PlayFill className={cx("bi", "me-1")} />
-            Modify and resume session
-          </Button>
-        )}
-        <Button
-          className={cx(state === "hibernated" && "btn-outline-rk-green")}
-          disabled={
-            isLoading ||
-            !resourcePools ||
-            resourcePools.length == 0 ||
-            isError ||
-            currentSessionClass == null ||
-            (resource_class_id != null &&
-              resource_class_id === currentSessionClass?.id)
-          }
-          onClick={onClick({ resumeSession: false })}
-          type="submit"
-        >
-          <CheckLg className={cx("bi", "me-1")} />
-          Modify session
-        </Button>
-        <Button className="btn-outline-rk-green" onClick={toggleModal}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
-        </Button>
-      </ModalFooter>
-    </>
-  );
-}
-
-function addErrorNotification({
-  error,
-  notifications,
-  title,
-}: {
-  error: FetchBaseQueryError | SerializedError;
-  notifications: NotificationsManager;
-  title: string;
-}) {
-  const message =
-    "message" in error && error.message != null
-      ? error.message
-      : "error" in error && error.error != null
-      ? error.error
-      : "Unknown error";
-  notifications.addError(
-    NOTIFICATION_TOPICS.SESSION_START,
-    title,
-    undefined,
-    undefined,
-    undefined,
-    `Error message: "${message}"`
-  );
-}
-
-// new alternative buttons
-
-export function ActiveSessionButtonAlt({
+export function ActiveSessionButton({
   session,
   showSessionUrl,
   className,
@@ -720,5 +454,269 @@ export function ActiveSessionButtonAlt({
         resource_class_id={session.resource_class_id}
       />
     </div>
+  );
+}
+
+interface ConfirmDeleteModalProps {
+  isOpen: boolean;
+  isStopping: boolean;
+  onStopSession: () => void;
+  sessionName: string;
+  status: SessionStatusState;
+  toggleModal: () => void;
+}
+
+function ConfirmDeleteModal({
+  isOpen,
+  isStopping,
+  onStopSession,
+  toggleModal,
+}: ConfirmDeleteModalProps) {
+  const onClick = useCallback(() => {
+    onStopSession();
+    toggleModal();
+  }, [onStopSession, toggleModal]);
+
+  return (
+    <Modal size="lg" centered isOpen={isOpen} toggle={toggleModal}>
+      <ModalHeader className="text-danger" toggle={toggleModal}>
+        Shut Down Session
+      </ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p className="mb-1">
+              Are you sure you want to shut down this session?
+            </p>
+            <p className="fw-bold">
+              Shutting down a session will permanently remove any unsaved work.
+            </p>
+          </Col>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          color="outline-danger"
+          disabled={isStopping}
+          onClick={toggleModal}
+        >
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="danger"
+          data-cy="delete-session-modal-button"
+          disabled={isStopping}
+          type="submit"
+          onClick={onClick}
+        >
+          <Trash className={cx("bi", "me-1")} /> Shut down this session
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+interface ModifySessionModalProps {
+  isOpen: boolean;
+  onModifySession: (sessionClass: number, resumeSession: boolean) => void;
+  resources: SessionResources;
+  status: SessionStatus;
+  toggleModal: () => void;
+  resource_class_id: number;
+}
+
+function ModifySessionModal({
+  isOpen,
+  onModifySession,
+  resources,
+  status,
+  toggleModal,
+  resource_class_id,
+}: ModifySessionModalProps) {
+  return (
+    <Modal
+      centered
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggleModal}
+    >
+      <ModalHeader toggle={toggleModal}>Modify Session Resources</ModalHeader>
+      <ModifySessionModalContent
+        onModifySession={onModifySession}
+        resources={resources}
+        status={status}
+        toggleModal={toggleModal}
+        resource_class_id={resource_class_id}
+      />
+    </Modal>
+  );
+}
+
+interface ModifySessionModalContentProps {
+  onModifySession: (sessionClass: number, resumeSession: boolean) => void;
+  resources: SessionResources;
+  status: SessionStatus;
+  toggleModal: () => void;
+  resource_class_id: number;
+}
+
+function ModifySessionModalContent({
+  onModifySession,
+  resources,
+  status,
+  toggleModal,
+  resource_class_id,
+}: ModifySessionModalContentProps) {
+  const { state } = status;
+
+  const {
+    data: resourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery({});
+
+  const [currentSessionClass, setCurrentSessionClass] = useState<
+    ResourceClass | undefined
+  >(undefined);
+
+  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
+    if (newValue) {
+      setCurrentSessionClass(newValue);
+    }
+  }, []);
+
+  const onClick = useCallback(
+    ({ resumeSession }: { resumeSession: boolean }) => {
+      return function modifySession() {
+        if (!currentSessionClass) {
+          return;
+        }
+        onModifySession(currentSessionClass.id, resumeSession);
+        toggleModal();
+      };
+    },
+    [currentSessionClass, onModifySession, toggleModal]
+  );
+
+  useEffect(() => {
+    const currentSessionClass = resourcePools
+      ?.flatMap((pool) => pool.classes)
+      .find((c) => c.id == resource_class_id);
+    setCurrentSessionClass(currentSessionClass);
+  }, [resource_class_id, resourcePools]);
+
+  const message =
+    state === "failed" ? (
+      <>
+        <WarnAlert dismissible={false}>
+          This session cannot be started or resumed at the moment.
+        </WarnAlert>
+        <p>
+          You can try to modify the session class and attempt to resume the
+          session.
+        </p>
+      </>
+    ) : (
+      <p>You can modify the session class before resuming this session.</p>
+    );
+
+  const selector = isLoading ? (
+    <FetchingResourcePools />
+  ) : !resourcePools || resourcePools.length == 0 || isError ? (
+    <ErrorOrNotAvailableResourcePools />
+  ) : (
+    <SessionClassSelectorV2
+      resourcePools={resourcePools}
+      currentSessionClass={currentSessionClass}
+      onChange={onChange}
+    />
+  );
+
+  return (
+    <>
+      <ModalBody className="py-0">
+        <Row>
+          <Col>
+            {message}
+            <p>
+              <span className={cx("fw-bold", "me-3")}>Current resources:</span>
+              <span>
+                <SessionRowResourceRequests
+                  resourceRequests={resources?.requests}
+                />
+              </span>
+            </p>
+            <div className="field-group">{selector}</div>
+          </Col>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        {state === "hibernated" && (
+          <Button
+            disabled={
+              isLoading ||
+              !resourcePools ||
+              resourcePools.length == 0 ||
+              isError ||
+              currentSessionClass == null ||
+              resource_class_id === currentSessionClass?.id
+            }
+            onClick={onClick({ resumeSession: true })}
+            type="submit"
+          >
+            <PlayFill className={cx("bi", "me-1")} />
+            Modify and resume session
+          </Button>
+        )}
+        <Button
+          className={cx(state === "hibernated" && "btn-outline-rk-green")}
+          disabled={
+            isLoading ||
+            !resourcePools ||
+            resourcePools.length == 0 ||
+            isError ||
+            currentSessionClass == null ||
+            (resource_class_id != null &&
+              resource_class_id === currentSessionClass?.id)
+          }
+          onClick={onClick({ resumeSession: false })}
+          type="submit"
+        >
+          <CheckLg className={cx("bi", "me-1")} />
+          Modify session
+        </Button>
+        <Button className="btn-outline-rk-green" onClick={toggleModal}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+      </ModalFooter>
+    </>
+  );
+}
+
+function addErrorNotification({
+  error,
+  notifications,
+  title,
+}: {
+  error: FetchBaseQueryError | SerializedError;
+  notifications: NotificationsManager;
+  title: string;
+}) {
+  const message =
+    "message" in error && error.message != null
+      ? error.message
+      : "error" in error && error.error != null
+      ? error.error
+      : "Unknown error";
+  notifications.addError(
+    NOTIFICATION_TOPICS.SESSION_START,
+    title,
+    undefined,
+    undefined,
+    undefined,
+    `Error message: "${message}"`
   );
 }

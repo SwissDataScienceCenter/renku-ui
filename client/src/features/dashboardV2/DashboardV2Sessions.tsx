@@ -28,7 +28,7 @@ import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
-import { ActiveSessionButtonAlt } from "../sessionsV2/components/SessionButton/ActiveSessionButton";
+import { ActiveSessionButton } from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Description,
   SessionStatusV2Label,
@@ -199,7 +199,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
       </Link>
       {/* NOTE: The session actions button is visually placed within the link card, but its DOM tree is kept separate. */}
       <div className={cx(styles.sessionButton, "position-absolute")}>
-        <ActiveSessionButtonAlt
+        <ActiveSessionButton
           className="my-auto"
           session={session}
           showSessionUrl={showSessionUrl}
