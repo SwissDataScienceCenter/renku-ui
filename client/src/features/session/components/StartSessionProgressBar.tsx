@@ -40,7 +40,7 @@ export default function StartSessionProgressBar({
   toggleLogs,
 }: StartSessionProgressBarProps) {
   const statusData = getStatusData(session?.status);
-  const title = "Starting Session";
+  const title = "Launching Session";
   const logButton = (
     <Button className="mt-3" color="primary" onClick={toggleLogs}>
       Open Logs
@@ -80,7 +80,7 @@ export function StartSessionProgressBarV2({
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
       <div data-cy="session-status-starting">
-        <h4 className="fw-bold">Starting Session</h4>
+        <h4 className="fw-bold">Launching Session</h4>
         <p className="pb-2">Starting the containers for your session</p>
         <div className={cx("d-flex", "gap-3")}>
           <Loader inline={true} size={24} />

@@ -28,13 +28,13 @@ import {
   useState,
 } from "react";
 import {
+  BootstrapReboot,
   BoxArrowUpRight,
-  Bricks,
   CircleFill,
   Clock,
+  ExclamationTriangleFill,
   FileEarmarkText,
-  Globe2,
-  Link45deg,
+  XCircle,
   XLg,
   XOctagon,
 } from "react-bootstrap-icons";
@@ -58,6 +58,7 @@ import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { Loader } from "../../../components/Loader";
 import { type ILogs, EnvironmentLogsPresent } from "../../../components/Logs";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
+import { TimeCaption } from "../../../components/TimeCaption.tsx";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
@@ -70,12 +71,14 @@ import type {
   SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
 import {
+  CreationDate,
   sessionLaunchersV2Api,
   useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "../api/sessionLaunchersV2.api";
+import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon.tsx";
 import {
   BUILDER_IMAGE_NOT_READY_VALUE,
   IMAGE_BUILD_DOCS,
@@ -127,18 +130,18 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
             <EnvironmentRow>
               {environment.environment_kind === "GLOBAL" ? (
                 <>
-                  <Globe2 size={24} />
+                  <EnvironmentIcon type="global" />
                   Global environment
                 </>
               ) : environment.environment_image_source === "build" ? (
                 <>
-                  <Bricks size={24} />
-                  Built by RenkuLab
+                  <EnvironmentIcon type="codeBased" size={16} />
+                  Code based environment
                 </>
               ) : (
                 <>
-                  <Link45deg size={24} />
-                  Custom image
+                  <EnvironmentIcon type="custom" size={16} />
+                  Custom image environment
                 </>
               )}
             </EnvironmentRow>
@@ -253,6 +256,9 @@ function CustomBuildEnvironmentValues({
   );
 
   const lastBuild = builds?.at(0);
+  const lastSuccessfulBuild = builds?.find(
+    (build) => build.status === "succeeded" && build.id !== lastBuild?.id
+  );
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
     lastBuild?.status === "in_progress"
@@ -288,7 +294,23 @@ function CustomBuildEnvironmentValues({
         {environment.container_image === BUILDER_IMAGE_NOT_READY_VALUE ? (
           <NotReadyStatusBadge />
         ) : (
-          <ReadyStatusBadge />
+          <>
+            <ReadyStatusBadge />
+            {lastSuccessfulBuild && (
+              <BuildStatusDescription
+                isOldImage={
+                  lastBuild?.status !== "succeeded" && !!lastSuccessfulBuild
+                }
+                status={lastSuccessfulBuild?.status}
+                createdAt={lastSuccessfulBuild?.created_at}
+                completedAt={
+                  lastSuccessfulBuild?.status === "succeeded"
+                    ? lastSuccessfulBuild?.result?.completed_at
+                    : undefined
+                }
+              />
+            )}
+          </>
         )}
       </EnvironmentRow>
       {!imageBuildersEnabled && (
@@ -440,7 +462,7 @@ interface BuildStatusBadgeProps {
   status: Build["status"];
 }
 
-function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
+export function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
   const badgeIcon =
     status === "in_progress" ? (
       <Loader className="me-1" inline size={12} />
@@ -450,12 +472,12 @@ function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
 
   const badgeText =
     status === "in_progress"
-      ? "In progress"
+      ? "Build in progress"
       : status === "cancelled"
-      ? "Cancelled"
+      ? "Build cancelled"
       : status === "succeeded"
-      ? "Succeeded"
-      : "Failed";
+      ? "Build succeeded"
+      : "Build failed";
 
   const badgeColorClasses =
     status === "in_progress"
@@ -472,11 +494,69 @@ function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
   );
 }
 
-interface BuildActionsProps {
-  launcher: SessionLauncher;
+interface BuildStatusDescriptionProps {
+  status?: Build["status"];
+  createdAt?: Build["created_at"];
+  completedAt?: CreationDate;
+  isOldImage?: boolean;
+}
+export function BuildStatusDescription({
+  status,
+  createdAt,
+  completedAt,
+  isOldImage,
+}: BuildStatusDescriptionProps) {
+  if (!status) return null;
+
+  const startTimeText = (
+    <TimeCaption datetime={createdAt} enableTooltip noCaption />
+  );
+
+  const completedTimeText = completedAt && (
+    <TimeCaption datetime={completedAt} enableTooltip noCaption />
+  );
+
+  return status === "succeeded" && isOldImage ? (
+    <div className={cx("d-flex", "gap-2", "time-caption")}>
+      <ExclamationTriangleFill
+        size="16"
+        className={cx("flex-shrink-0", "text-warning-emphasis")}
+      />
+      <span className="text-warning-emphasis">
+        Last successfully built {completedTimeText}
+      </span>
+    </div>
+  ) : status === "succeeded" ? (
+    <div
+      className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
+    >
+      <Clock size="16" className="flex-shrink-0" />
+      <span>Last successfully built {completedTimeText}</span>
+    </div>
+  ) : status === "in_progress" ? (
+    <div
+      className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
+    >
+      <Clock size="16" className="flex-shrink-0" />
+      <span>Building since {startTimeText}</span>
+    </div>
+  ) : status === "failed" ? (
+    <div
+      className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
+    >
+      <XCircle size="16" className="flex-shrink-0" />
+      <span>Build failed {startTimeText}</span>
+    </div>
+  ) : null;
 }
 
-function BuildActions({ launcher }: BuildActionsProps) {
+export interface BuildActionsProps {
+  launcher: SessionLauncher;
+  isMainButton?: boolean;
+  otherActions?: ReactNode;
+}
+
+export function BuildActions({ launcher }: BuildActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
 
@@ -495,9 +575,6 @@ function BuildActions({ launcher }: BuildActionsProps) {
     [builds]
   );
   const hasInProgressBuild = !!inProgressBuild;
-
-  const isReady =
-    launcher.environment.container_image !== "image:unknown-at-the-moment";
 
   const [postBuild, postResult] = usePostBuildMutation();
   const triggerBuild = useCallback(() => {
@@ -533,8 +610,8 @@ function BuildActions({ launcher }: BuildActionsProps) {
       onClick={triggerBuild}
       size="sm"
     >
-      <Bricks className={cx("bi", "me-1")} />
-      {isReady ? "Rebuild" : "Build"}
+      <BootstrapReboot className={cx("bi", "me-1")} />
+      {"Rebuild"}
     </Button>
   );
 
@@ -543,6 +620,7 @@ function BuildActions({ launcher }: BuildActionsProps) {
       <ButtonWithMenuV2
         color="outline-primary"
         default={defaultAction}
+        preventPropagation
         size="sm"
       >
         <DropdownItem
@@ -594,7 +672,7 @@ interface BuildActionFailedModalProps {
   title: ReactNode;
 }
 
-function BuildActionFailedModal({
+export function BuildActionFailedModal({
   error,
   reset,
   title,
@@ -627,7 +705,11 @@ interface BuildLogsModalProps {
   toggle: () => void;
 }
 
-function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
+export function BuildLogsModal({
+  builds,
+  isOpen,
+  toggle,
+}: BuildLogsModalProps) {
   const lastBuild = builds?.at(0);
   const name = lastBuild?.id ?? "build_logs";
   const inProgressBuild = useMemo(
@@ -689,6 +771,7 @@ function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
       logs={logs}
       name={name}
       title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
+      defaultTab="step-build-and-push"
     />
   );
 }
