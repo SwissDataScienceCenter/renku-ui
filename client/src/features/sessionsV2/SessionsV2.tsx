@@ -39,9 +39,8 @@ import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
-import SessionLauncherItem from "./SessionList/SessionItem";
-import { SessionItemDisplay } from "./SessionList/SessionItemDisplay";
-import styles from "./SessionList/SessionItemDisplay.module.scss";
+import SessionLauncherCard from "./SessionList/SessionLauncherCard";
+import { SessionLauncherDisplay } from "./SessionList/SessionLauncherDisplay";
 import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
@@ -121,7 +120,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       {totalSessions > 0 && !isLoading && (
         <div className="d-flex flex-column gap-2 mx-3 mb-3">
           {launchers?.map((launcher) => (
-            <SessionItemDisplay
+            <SessionLauncherDisplay
               key={`launcher-${launcher.id}`}
               launcher={launcher}
               project={project}
@@ -264,20 +263,11 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
 
   return (
     <>
-      <Card
-        action
-        className={cx(
-          styles.SessionLauncherCard,
-          "mt-2",
-          "cursor-pointer",
-          "shadow-none",
-          "rounded-0"
-        )}
-        data-cy="session-launcher-item"
-        onClick={toggleSessionView}
-      >
-        <SessionLauncherItem project={project} sessions={[session]} />
-      </Card>
+      <SessionLauncherCard
+        project={project}
+        sessions={[session]}
+        toggleSessionView={toggleSessionView}
+      />
       <SessionView
         id={sessionHash}
         sessions={[session]}

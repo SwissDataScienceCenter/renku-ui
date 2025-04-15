@@ -19,7 +19,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext } from "react";
 import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
-import { CardBody, Col, DropdownItem, Row } from "reactstrap";
+import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -34,15 +34,8 @@ import {
   EnvironmentIcon,
   LauncherEnvironmentIcon,
 } from "../components/SessionForm/LauncherEnvironmentIcon";
-import { getShowSessionUrlByProject } from "../SessionsV2";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import { ActiveSessionButton } from "../components/SessionButton/ActiveSessionButton";
-import {
-  getSessionStatusStyles,
-  SessionBadge,
-  SessionStatusV2Description,
-  SessionStatusV2LabelAlt,
-} from "../components/SessionStatus/SessionStatus";
+import { SessionBadge } from "../components/SessionStatus/SessionStatus";
 import { SessionV2 } from "../sessionsV2.types";
 import { Loader } from "../../../components/Loader";
 import {
@@ -51,9 +44,10 @@ import {
 } from "../SessionView/EnvironmentCard";
 import { SessionLauncherButtons } from "../StartSessionButton";
 
-import styles from "./SessionItemDisplay.module.scss";
+import styles from "./Session.module.scss";
+import SessionCard from "./SessionCard";
 
-interface SessionItemProps {
+interface SessionLauncherCardProps {
   launcher?: SessionLauncher;
   name?: string;
   project: Project;
@@ -62,8 +56,9 @@ interface SessionItemProps {
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
   toggleShareLink?: () => void;
+  toggleSessionView?: () => void;
 }
-export default function SessionLauncherItem({
+export default function SessionLauncherCard({
   launcher,
   name,
   project,
@@ -71,8 +66,9 @@ export default function SessionLauncherItem({
   toggleDelete,
   toggleUpdate,
   toggleUpdateEnvironment,
+  toggleSessionView,
   toggleShareLink,
-}: SessionItemProps) {
+}: SessionLauncherCardProps) {
   const environment = launcher?.environment;
   const { params } = useContext(AppContext);
   const imageBuildersEnabled =
@@ -102,7 +98,7 @@ export default function SessionLauncherItem({
     }
   );
 
-  const otherActionsLauncher = launcher &&
+  const otherLauncherActions = launcher &&
     toggleUpdate &&
     toggleDelete &&
     toggleShareLink &&
@@ -118,29 +114,40 @@ export default function SessionLauncherItem({
     );
 
   return (
-    <>
+    <Card
+      action
+      className={cx(
+        styles.SessionLauncherCard,
+        "mt-2",
+        "cursor-pointer",
+        "shadow-none",
+        "rounded-0"
+      )}
+      data-cy="session-launcher-item"
+      onClick={toggleSessionView}
+    >
       <CardBody className={cx("p-0")}>
         <div className={cx(hasSession && "border-bottom", "p-3")}>
           <Row className="g-2">
             <Col className={cx("align-items-center")} xs={12} lg={5} xl={7}>
-              <Row className="g-2 mb-0">
+              <Row className={cx("g-2", "mb-0")}>
                 <Col
                   xs={12}
                   xl={4}
                   className={cx("d-inline-block", "link-primary", "text-body")}
                 >
-                  <span className="small text-muted me-3">
+                  <span className={cx("small", "text-muted", "me-3")}>
                     Session Launcher
                   </span>
                 </Col>
                 <Col xs={12} xl="auto">
                   {environment?.environment_kind === "GLOBAL" ? (
-                    <span className="small text-muted me-3">
+                    <span className={cx("small", "text-muted", "me-3")}>
                       <EnvironmentIcon type="global" className="me-2" />
                       Global environment
                     </span>
                   ) : environment?.environment_image_source === "build" ? (
-                    <span className="small text-muted me-3">
+                    <span className={cx("small", "text-muted", "me-3")}>
                       <EnvironmentIcon
                         type="codeBased"
                         size={16}
@@ -149,7 +156,7 @@ export default function SessionLauncherItem({
                       Code based environment
                     </span>
                   ) : environment?.environment_kind === "CUSTOM" ? (
-                    <span className="small text-muted me-3">
+                    <span className={cx("small", "text-muted", "me-3")}>
                       <EnvironmentIcon
                         type="custom"
                         size={16}
@@ -165,7 +172,10 @@ export default function SessionLauncherItem({
                   xs={12}
                   className={cx("d-inline-block", "link-primary", "text-body")}
                 >
-                  <span className="fw-bold fs-5" data-cy="session-name">
+                  <span
+                    className={cx("fw-bold", "fs-5")}
+                    data-cy="session-name"
+                  >
                     {name ? (
                       name
                     ) : (
@@ -252,7 +262,7 @@ export default function SessionLauncherItem({
                       lastBuild?.status !== "succeeded" &&
                       !!lastSuccessfulBuild
                     }
-                    otherActions={otherActionsLauncher}
+                    otherActions={otherLauncherActions}
                   />
                   {isBuildEnvironment &&
                     lastBuild?.status !== "succeeded" &&
@@ -278,7 +288,7 @@ export default function SessionLauncherItem({
             {sessions &&
               sessions?.length > 0 &&
               sessions.map((session) => (
-                <SessionInnerCard
+                <SessionCard
                   key={`session-item-${session.name}`}
                   project={project}
                   session={session}
@@ -287,84 +297,7 @@ export default function SessionLauncherItem({
           </div>
         )}
       </CardBody>
-    </>
-  );
-}
-
-interface SessionInnerCardProps {
-  project: Project;
-  session?: SessionV2;
-}
-export function SessionInnerCard({ project, session }: SessionInnerCardProps) {
-  if (!session) return null;
-
-  const stylesPerSession = getSessionStatusStyles(session);
-
-  const bgClass =
-    stylesPerSession.bgColor === "warning"
-      ? styles.SessionWarningBg
-      : stylesPerSession.bgColor === "success"
-      ? styles.SessionSuccessBg
-      : stylesPerSession.bgColor === "danger"
-      ? styles.SessionDangerBg
-      : styles.SessionLightBg;
-
-  return (
-    <div data-cy="session-item" className={cx(bgClass, "p-0", "pb-3")}>
-      <img
-        src={stylesPerSession.sessionLine}
-        className={cx("position-absolute", styles.SessionLine)}
-        alt="Session line indicator"
-      />
-      <div className={cx("ms-5", "px-3", "pt-3")}>
-        <Row className="g-2">
-          <Col xs={12} xl="auto">
-            <Row className="g-2">
-              <Col
-                xs={12}
-                xl={12}
-                className={cx(
-                  "d-inline-block",
-                  "link-primary",
-                  "text-body",
-                  "mt-1"
-                )}
-              >
-                <span className="small text-muted me-3">Session</span>
-              </Col>
-              <Col
-                className={cx("align-items-center", "mt-0", "gap-2")}
-                xs="auto"
-                xl="auto"
-              >
-                <SessionStatusV2LabelAlt session={session} />
-              </Col>
-              <Col xs="auto" className="mt-0 ms-3 d-flex">
-                <SessionStatusV2Description
-                  session={session}
-                  showInfoDetails={false}
-                />
-              </Col>
-            </Row>
-          </Col>
-          <Col
-            xs={12}
-            xl="auto"
-            className={cx("d-flex", "ms-md-auto", "justify-content-end")}
-          >
-            <div>
-              <ActiveSessionButton
-                session={session}
-                showSessionUrl={getShowSessionUrlByProject(
-                  project,
-                  session.name
-                )}
-              />
-            </div>
-          </Col>
-        </Row>
-      </div>
-    </div>
+    </Card>
   );
 }
 
@@ -376,7 +309,7 @@ interface SessionLauncherDropdownActionsProps {
   toggleShareLink: () => void;
   project: Project;
 }
-export function SessionLauncherDropdownActions({
+function SessionLauncherDropdownActions({
   launcher,
   toggleDelete,
   toggleUpdate,

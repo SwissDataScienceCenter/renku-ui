@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
@@ -27,19 +26,16 @@ import UpdateSessionLauncherEnvironmentModal, {
   UpdateSessionLauncherMetadataModal,
 } from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
-import SessionStartLinkModal from "../SessionView/SessionStartLinkModal.tsx";
+import SessionStartLinkModal from "../SessionView/SessionStartLinkModal";
 import { SessionView } from "../SessionView/SessionView";
-import SessionLauncherItem from "./SessionItem";
-import { Card } from "reactstrap";
+import SessionLauncherCard from "./SessionLauncherCard";
 import EnvironmentLogsV2 from "../../../components/LogsV2";
-
-import styles from "./SessionItemDisplay.module.scss";
 
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;
   project: Project;
 }
-export function SessionItemDisplay({
+export function SessionLauncherDisplay({
   launcher,
   project,
 }: SessionLauncherDisplayProps) {
@@ -91,30 +87,18 @@ export function SessionItemDisplay({
 
   return (
     <>
-      <Card
-        action
-        className={cx(
-          styles.SessionLauncherCard,
-          "mt-2",
-          "cursor-pointer",
-          "shadow-none",
-          "rounded-0"
-        )}
-        data-cy="session-launcher-item"
-        onClick={toggleSessionView}
-      >
-        <SessionLauncherItem
-          key={`session-item-${launcher.id}`}
-          launcher={launcher}
-          name={name}
-          project={project}
-          sessions={filteredSessions}
-          toggleUpdate={toggleUpdate}
-          toggleUpdateEnvironment={toggleUpdateEnvironment}
-          toggleDelete={toggleDelete}
-          toggleShareLink={toggleShareLink}
-        />
-      </Card>
+      <SessionLauncherCard
+        key={`session-item-${launcher.id}`}
+        launcher={launcher}
+        name={name}
+        project={project}
+        sessions={filteredSessions}
+        toggleUpdate={toggleUpdate}
+        toggleUpdateEnvironment={toggleUpdateEnvironment}
+        toggleDelete={toggleDelete}
+        toggleShareLink={toggleShareLink}
+        toggleSessionView={toggleSessionView}
+      />
       <SessionView
         id={launcherHash}
         launcher={launcher}
@@ -135,34 +119,30 @@ export function SessionItemDisplay({
           />
         ))}
       {launcher && (
-        <UpdateSessionLauncherEnvironmentModal
-          isOpen={isUpdateEnvironmentOpen}
-          launcher={launcher}
-          toggle={toggleUpdateEnvironment}
-        />
-      )}
-      {launcher && (
-        <UpdateSessionLauncherMetadataModal
-          isOpen={isUpdateOpen}
-          launcher={launcher}
-          toggle={toggleUpdate}
-        />
-      )}
-      {launcher && (
-        <DeleteSessionV2Modal
-          isOpen={isDeleteOpen}
-          launcher={launcher}
-          toggle={toggleDelete}
-          sessionsLength={filteredSessions?.length}
-        />
-      )}
-      {launcher && (
-        <SessionStartLinkModal
-          isOpen={isShareLinkOpen}
-          launcher={launcher}
-          toggle={toggleShareLink}
-          project={project}
-        />
+        <>
+          <UpdateSessionLauncherEnvironmentModal
+            isOpen={isUpdateEnvironmentOpen}
+            launcher={launcher}
+            toggle={toggleUpdateEnvironment}
+          />
+          <UpdateSessionLauncherMetadataModal
+            isOpen={isUpdateOpen}
+            launcher={launcher}
+            toggle={toggleUpdate}
+          />
+          <DeleteSessionV2Modal
+            isOpen={isDeleteOpen}
+            launcher={launcher}
+            toggle={toggleDelete}
+            sessionsLength={filteredSessions?.length}
+          />
+          <SessionStartLinkModal
+            isOpen={isShareLinkOpen}
+            launcher={launcher}
+            toggle={toggleShareLink}
+            project={project}
+          />
+        </>
       )}
     </>
   );
