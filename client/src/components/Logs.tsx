@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { createRef, ReactNode, useEffect } from "react";
+import React, { createRef, ReactNode, useEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -84,11 +84,9 @@ const LogTabs = ({
   logs: Record<string, string>;
   defaultTab?: string;
 }) => {
-  const [activeTab, setActiveTab] = React.useState<string | undefined>(
-    defaultTab
-  );
-  const [data, setData] = React.useState<Record<string, string> | null>(null);
-  const tabContentRef = createRef<HTMLDivElement>();
+  const [activeTab, setActiveTab] = useState<string | undefined>(defaultTab);
+  const [data, setData] = useState<Record<string, string> | null>(null);
+  const activeTabPaneRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
     if (logs) {
@@ -105,11 +103,15 @@ const LogTabs = ({
   }, [logs, activeTab]);
 
   useEffect(() => {
-    if (tabContentRef.current && activeTab === defaultTab) {
-      tabContentRef.current.scrollTop =
-        tabContentRef.current.scrollHeight - tabContentRef.current.offsetHeight;
+    if (activeTabPaneRef.current && activeTab === defaultTab) {
+      requestAnimationFrame(() => {
+        const preElement = activeTabPaneRef.current?.querySelector("pre");
+        if (preElement) {
+          preElement.scrollTop = preElement.scrollHeight;
+        }
+      });
     }
-  }, [activeTab, defaultTab, tabContentRef]);
+  }, [activeTab, defaultTab, data, activeTabPaneRef]);
 
   const getTitle = (name: string) => {
     return name
@@ -142,10 +144,14 @@ const LogTabs = ({
         {Object.keys(data).map((tab) => {
           return (
             <TabPane key={`log_${tab}`} tabId={tab}>
-              <div className="d-flex flex-column">
+              <div
+                className="d-flex flex-column"
+                ref={tab === activeTab ? activeTabPaneRef : null}
+              >
                 <pre
-                  className="overflow-hidden"
-                  style={{ whiteSpace: "pre-line" }}
+                  className="overflow-auto"
+                  // eslint-disable-next-line spellcheck/spell-checker
+                  style={{ whiteSpace: "pre-line", maxHeight: "60vh" }}
                 >
                   {data[tab]}
                 </pre>
