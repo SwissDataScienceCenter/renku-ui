@@ -62,7 +62,7 @@ interface ActiveSessionTitleV2Props {
   session: SessionV2;
   launcher?: SessionLauncher;
 }
-export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
+export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
   const { status, image } = session;
   const state = status.state;
 
@@ -201,7 +201,7 @@ export function getSessionStatusStyles(session: {
 
   return styles;
 }
-export function SessionStatusV2LabelAlt({ session }: ActiveSessionV2Props) {
+export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
   const { status, image } = session;
   const state = status.state;
 

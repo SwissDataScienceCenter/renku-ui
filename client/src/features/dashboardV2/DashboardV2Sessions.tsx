@@ -31,7 +31,7 @@ import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncher
 import { ActiveSessionButton } from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Description,
-  SessionStatusV2Label,
+  SessionStatusV2Badge,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
 
@@ -182,7 +182,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
                 </h6>
               </Col>
               <Col xs={12} xl="auto" className="mt-1">
-                <SessionStatusV2Label session={session} />
+                <SessionStatusV2Badge session={session} />
               </Col>
             </Row>
           </Col>

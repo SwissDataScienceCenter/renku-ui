@@ -23,7 +23,7 @@ import { ActiveSessionButton } from "../components/SessionButton/ActiveSessionBu
 import {
   getSessionStatusStyles,
   SessionStatusV2Description,
-  SessionStatusV2LabelAlt,
+  SessionStatusV2Label,
 } from "../components/SessionStatus/SessionStatus";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
@@ -77,7 +77,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                 xs="auto"
                 xl="auto"
               >
-                <SessionStatusV2LabelAlt session={session} />
+                <SessionStatusV2Label session={session} />
               </Col>
               <Col xs="auto" className={cx("mt-0", "ms-3", "d-flex")}>
                 <SessionStatusV2Description

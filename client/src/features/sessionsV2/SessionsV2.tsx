@@ -32,7 +32,7 @@ import {
 import { Loader } from "../../components/Loader";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import EnvironmentLogsV2 from "../../components/LogsV2.tsx";
+import EnvironmentLogsV2 from "../../components/LogsV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -118,7 +118,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       </p>
       {loading}
       {totalSessions > 0 && !isLoading && (
-        <div className="d-flex flex-column gap-2 mx-3 mb-3">
+        <div className={cx("d-flex", "flex-column", "gap-2", "mx-3", "mb-3")}>
           {launchers?.map((launcher) => (
             <SessionLauncherDisplay
               key={`launcher-${launcher.id}`}
@@ -201,7 +201,8 @@ export function SessionV2Actions({
     </Button>
   );
   return (
-    toggleDelete && (
+    toggleDelete &&
+    toggleUpdateEnvironment && (
       <>
         <PermissionsGuard
           disabled={null}

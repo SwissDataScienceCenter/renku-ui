@@ -64,7 +64,7 @@ import { ModifyResourcesLauncherModal } from "../components/SessionModals/Modify
 import {
   SessionBadge,
   SessionStatusV2Description,
-  SessionStatusV2Label,
+  SessionStatusV2Badge,
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
@@ -119,7 +119,7 @@ function SessionCard({
     <SessionCardContent
       color={getSessionColor(session.status.state)}
       contentDescription={<SessionStatusV2Description session={session} />}
-      contentLabel={<SessionStatusV2Label session={session} />}
+      contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
         <ActiveSessionButton
           session={session}
