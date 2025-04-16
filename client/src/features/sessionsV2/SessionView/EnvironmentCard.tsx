@@ -627,7 +627,11 @@ interface BuildLogsModalProps {
   toggle: () => void;
 }
 
-function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
+export function BuildLogsModal({
+  builds,
+  isOpen,
+  toggle,
+}: BuildLogsModalProps) {
   const lastBuild = builds?.at(0);
   const name = lastBuild?.id ?? "build_logs";
   const inProgressBuild = useMemo(
@@ -689,6 +693,7 @@ function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
       logs={logs}
       name={name}
       title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
+      defaultTab="step-build-and-push"
     />
   );
 }
