@@ -215,7 +215,7 @@ export function SessionV2Actions({
                 size="sm"
               >
                 <DropdownItem
-                  data-cy="session-view-menu-delete"
+                  data-cy="session-view-menu-update-environment"
                   onClick={toggleUpdateEnvironment}
                 >
                   <LauncherEnvironmentIcon launcher={launcher} />
