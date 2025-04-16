@@ -42,6 +42,7 @@ import {
   getLauncherDefaultValues,
 } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
 import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 
 interface UpdateSessionLauncherModalProps {
@@ -120,7 +121,8 @@ export default function UpdateSessionLauncherModal({
       scrollable
     >
       <ModalHeader toggle={toggle}>
-        Edit session launcher {launcher.name}
+        <EnvironmentIcon type="default" size={20} /> Edit environment{" "}
+        {launcher.name}
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (

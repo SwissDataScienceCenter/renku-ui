@@ -153,7 +153,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
             <PlayCircle className={cx("me-1", "bi")} />
             Sessions
           </h4>
-          {totalSessions && <Badge>{totalSessions}</Badge>}
+          <Badge>{totalSessions ?? 0}</Badge>
         </div>
         <PermissionsGuard
           disabled={null}

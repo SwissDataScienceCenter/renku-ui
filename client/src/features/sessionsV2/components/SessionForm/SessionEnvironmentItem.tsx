@@ -17,7 +17,6 @@
  */
 
 import cx from "classnames";
-import { Globe2 } from "react-bootstrap-icons";
 import {
   Control,
   Controller,
@@ -35,6 +34,7 @@ import {
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import type { Environment as SessionEnvironment } from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import { EnvironmentIcon } from "./LauncherEnvironmentIcon";
 
 interface SessionEnvironmentItemProps {
   environment: SessionEnvironment;
@@ -113,7 +113,7 @@ export function SessionEnvironmentItem({
         >
           <h5>{name}</h5>
           <p className="mb-2">
-            <Globe2 className={cx("bi", "me-1")} />
+            <EnvironmentIcon type="global" className="me-1" />
             Global environment
           </p>
           {description ? <p className="mb-2">{description}</p> : null}

@@ -19,7 +19,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode } from "react";
-import { CircleFill, Clock } from "react-bootstrap-icons";
+import { CircleFill, Clock, Hourglass } from "react-bootstrap-icons";
 import {
   Badge,
   PopoverBody,
@@ -79,7 +79,7 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
           className={cx("me-1", "text-warning-emphasis")}
           inline
         />
-        <span className="text-warning-emphasis">Starting Session</span>
+        <span className="text-warning-emphasis">Launching Session</span>
       </SessionBadge>
     ) : state === "stopping" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
@@ -225,13 +225,13 @@ function SessionStatusV2Text({
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
-      <span>Created {startTimeText}</span>
+      <span>Launching since {startTimeText}</span>
     </div>
   ) : state === "stopping" ? (
     <>Shutting down session...</>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Hourglass size="16" className="flex-shrink-0" />
       <span>
         Session will be deleted in{" "}
         <TimeCaption

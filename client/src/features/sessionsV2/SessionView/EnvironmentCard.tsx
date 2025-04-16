@@ -33,8 +33,6 @@ import {
   CircleFill,
   Clock,
   FileEarmarkText,
-  Globe2,
-  Link45deg,
   XLg,
   XOctagon,
 } from "react-bootstrap-icons";
@@ -76,6 +74,7 @@ import {
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "../api/sessionLaunchersV2.api";
+import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import {
   BUILDER_IMAGE_NOT_READY_VALUE,
   IMAGE_BUILD_DOCS,
@@ -127,18 +126,18 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
             <EnvironmentRow>
               {environment.environment_kind === "GLOBAL" ? (
                 <>
-                  <Globe2 size={24} />
+                  <EnvironmentIcon type="global" />
                   Global environment
                 </>
               ) : environment.environment_image_source === "build" ? (
                 <>
-                  <Bricks size={24} />
-                  Built by RenkuLab
+                  <EnvironmentIcon type="codeBased" size={16} />
+                  Code based environment
                 </>
               ) : (
                 <>
-                  <Link45deg size={24} />
-                  Custom image
+                  <EnvironmentIcon type="custom" size={16} />
+                  Custom image environment
                 </>
               )}
             </EnvironmentRow>
@@ -627,7 +626,11 @@ interface BuildLogsModalProps {
   toggle: () => void;
 }
 
-function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
+export function BuildLogsModal({
+  builds,
+  isOpen,
+  toggle,
+}: BuildLogsModalProps) {
   const lastBuild = builds?.at(0);
   const name = lastBuild?.id ?? "build_logs";
   const inProgressBuild = useMemo(
@@ -689,6 +692,7 @@ function BuildLogsModal({ builds, isOpen, toggle }: BuildLogsModalProps) {
       logs={logs}
       name={name}
       title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
+      defaultTab="step-build-and-push"
     />
   );
 }
