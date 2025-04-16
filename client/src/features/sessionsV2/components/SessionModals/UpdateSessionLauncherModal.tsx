@@ -41,11 +41,10 @@ import {
   getFormattedEnvironmentValuesForEdit,
   getLauncherDefaultValues,
 } from "../../session.utils";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent, {
   EditLauncherFormMetadata,
 } from "../SessionForm/EditLauncherFormContent";
-import { SessionLauncherForm } from "../../sessionsV2.types";
-import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
 
 export interface UpdateSessionLauncherModalProps {
