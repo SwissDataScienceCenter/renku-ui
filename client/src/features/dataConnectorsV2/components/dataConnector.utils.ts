@@ -28,9 +28,11 @@ import type {
 import { findSensitive } from "../../project/utils/projectCloudStorage.utils";
 import type {
   CloudStorageCorePost,
+  DataConnector,
   DataConnectorPost,
   DataConnectorRead,
 } from "../api/data-connectors.api";
+import { DataConnectorScope } from "../dataConnectors.types";
 import type { DataConnectorConfiguration } from "./useDataConnectorConfiguration.hook";
 
 // This contains the information in a DataConnector, but it is flattened
@@ -192,6 +194,18 @@ export function hasSchemaAccessMode(schema: CloudStorageSchema) {
   );
 }
 
-export function isProjectNamespace(namespace: string): boolean {
-  return namespace.split("/").length >= 2;
+export function getDataConnectorScope(namespace?: string): DataConnectorScope {
+  if (!namespace) return "global";
+  if (namespace.split("/").length >= 2) return "project";
+  return "namespace";
+}
+
+export function getDataConnectorSource(dataConnector: DataConnector): string {
+  const scope = getDataConnectorScope(dataConnector.namespace);
+  if (scope === "global") {
+    return dataConnector.storage.configuration["doi"]
+      ? (dataConnector.storage.configuration["doi"] as string)
+      : "unknown";
+  }
+  return dataConnector.namespace;
 }

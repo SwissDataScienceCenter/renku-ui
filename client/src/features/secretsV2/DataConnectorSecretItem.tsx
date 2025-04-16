@@ -227,7 +227,7 @@ function DataConnectorSecretUsedForItem({
           <div
             className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
           >
-            <UserAvatar namespace={dataConnector.namespace} />
+            <UserAvatar namespace={dataConnector.namespace ?? ""} />
             <span>{namespaceName}</span>
           </div>
         </div>
