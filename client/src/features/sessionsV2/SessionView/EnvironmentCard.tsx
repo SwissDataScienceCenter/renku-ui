@@ -29,6 +29,7 @@ import {
 } from "react";
 import {
   BoxArrowUpRight,
+  Bricks,
   CircleFill,
   Clock,
   FileEarmarkText,
@@ -73,7 +74,7 @@ import {
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "../api/sessionLaunchersV2.api";
-import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon.tsx";
+import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import {
   BUILDER_IMAGE_NOT_READY_VALUE,
   IMAGE_BUILD_DOCS,
