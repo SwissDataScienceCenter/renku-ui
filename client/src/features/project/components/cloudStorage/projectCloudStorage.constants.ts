@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 
+// import {
+//   AddCloudStorageState,
+//   CloudStorageDetails,
+//   CloudStorageOverride,
+//   CloudStorageSchemaOptions,
+// } from "./projectCloudStorage.types";
 import {
   AddCloudStorageState,
   CloudStorageDetails,
-  CloudStorageOverride,
-  CloudStorageSchemaOptions,
+  CloudStorageSchemaOption,
 } from "./projectCloudStorage.types";
 
 export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
@@ -172,7 +177,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     user: { friendlyName: "Username" },
     vendor: { advanced: true },
   },
-} as Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>;
+} as Record<string, Record<string, Partial<CloudStorageSchemaOption>>>;
 
 export const CLOUD_OPTIONS_PROVIDER_OVERRIDE = {
   polybox: {
@@ -209,7 +214,7 @@ export const CLOUD_OPTIONS_PROVIDER_OVERRIDE = {
   },
 } as Record<
   string,
-  Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>
+  Record<string, Record<string, Partial<CloudStorageSchemaOption>>>
 >;
 
 export const CLOUD_STORAGE_MOUNT_PATH_HELP = {

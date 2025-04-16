@@ -50,7 +50,7 @@ import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import type { RCloneOption } from "../dataConnectorsV2/api/data-connectors.api";
 import { validationParametersFromDataConnectorConfiguration } from "../dataConnectorsV2/components/dataConnector.utils";
 import { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
-import { useTestCloudStorageConnectionMutation } from "../project/components/cloudStorage/projectCloudStorage.api";
+import { usePostStorageSchemaTestConnectionMutation } from "../project/components/cloudStorage/api/projectCloudStorage.api";
 import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../project/components/cloudStorage/projectCloudStorage.constants";
 import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
@@ -197,7 +197,7 @@ export default function DataConnectorSecretsModal({
   const { control, handleSubmit, reset: resetForm } = useForm();
 
   const [validateCloudStorageConnection, validationResult] =
-    useTestCloudStorageConnectionMutation();
+    usePostStorageSchemaTestConnectionMutation();
 
   const onNext = useCallback(
     (csConfigs: DataConnectorConfiguration[]) => {
@@ -332,7 +332,9 @@ interface CredentialsButtonsProps
   context: NonNullable<DataConnectorSecretsModalProps["context"]>;
   hasSavedCredentials: boolean;
   onSkip: () => void;
-  validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
+  validationResult: ReturnType<
+    typeof usePostStorageSchemaTestConnectionMutation
+  >[1];
 }
 
 function CredentialsButtons({

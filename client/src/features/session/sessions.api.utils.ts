@@ -16,12 +16,15 @@
  * limitations under the License.
  */
 
-import { SessionCloudStorage } from "./startSessionOptions.types";
+// import {
+// SessionCloudStorage,
+// CloudStorageWithIdRead,
+// } from "./startSessionOptions.types";
 import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types.ts";
 import { CloudStorageWithIdRead } from "../projectsV2/api/storagesV2.api.ts";
 
 export function convertCloudStorageForSessionApi(
-  cloudStorage: SessionCloudStorage | CloudStorageWithIdRead
+  cloudStorage: /*SessionCloudStorage | */ CloudStorageWithIdRead
 ): {
   readonly: boolean;
   configuration: CloudStorageDetailsOptions;
@@ -42,7 +45,7 @@ export function convertCloudStorageForSessionApi(
 }
 
 export function convertCloudStorageForSessionV2Api(
-  cloudStorage: SessionCloudStorage | CloudStorageWithIdRead
+  cloudStorage: /*SessionCloudStorage |*/ CloudStorageWithIdRead
 ): {
   storage_id: string;
   configuration: CloudStorageDetailsOptions;

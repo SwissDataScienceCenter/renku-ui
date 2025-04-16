@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { PostStorageSchemaTestConnection } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   STORAGES_WITH_ACCESS_MODE,
@@ -23,11 +24,8 @@ import {
 import type {
   CloudStorageDetailsOptions,
   CloudStorageSchema,
-  TestCloudStorageConnectionParams,
 } from "../../project/components/cloudStorage/projectCloudStorage.types";
-
 import { findSensitive } from "../../project/utils/projectCloudStorage.utils";
-
 import type {
   CloudStorageCorePost,
   DataConnectorPost,
@@ -164,7 +162,7 @@ export function validationParametersFromDataConnectorConfiguration(
   config: DataConnectorConfiguration
 ) {
   const dataConnector = _dataConnectorFromConfig(config);
-  const validateParameters: TestCloudStorageConnectionParams = {
+  const validateParameters: PostStorageSchemaTestConnection = {
     configuration: dataConnector.configuration,
     source_path: dataConnector.source_path,
   };
@@ -188,9 +186,10 @@ function _dataConnectorFromConfig(config: DataConnectorConfiguration) {
 }
 
 export function hasSchemaAccessMode(schema: CloudStorageSchema) {
-  const providers = schema?.options.find((o) => o.name === "provider");
+  const providers = schema.options?.find((o) => o.name === "provider");
   return (
-    providers?.examples && STORAGES_WITH_ACCESS_MODE.includes(schema.prefix)
+    providers?.examples &&
+    STORAGES_WITH_ACCESS_MODE.includes(schema.prefix ?? "")
   );
 }
 

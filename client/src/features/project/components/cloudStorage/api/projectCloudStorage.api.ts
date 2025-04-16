@@ -16,8 +16,28 @@
  * limitations under the License.
  */
 
-import { projectCloudStorageGeneratedApi } from "./projectCloudStorage.generated-api";
+import {
+  type PostStorageSchemaTestConnectionApiArg,
+  projectCloudStorageGeneratedApi,
+} from "./projectCloudStorage.generated-api";
 
-export const {} = projectCloudStorageGeneratedApi;
+export type PostStorageSchemaTestConnection =
+  PostStorageSchemaTestConnectionApiArg["body"];
 
-export type * from "./projectCloudStorage.api";
+const projectCloudStorageApi = projectCloudStorageGeneratedApi;
+
+export const {
+  usePostStorageSchemaTestConnectionMutation,
+  useGetStorageSchemaQuery,
+
+  //   useGetStorageByStorageIdQuery,
+  //   usePutStorageByStorageIdMutation,
+  //   usePatchStorageByStorageIdMutation,
+  //   useDeleteStorageByStorageIdMutation,
+  //   useGetStorageQuery,
+  //   usePostStorageMutation,
+  //   usePostStorageSchemaValidateMutation,
+  //   usePostStorageSchemaObscureMutation,
+} = projectCloudStorageApi;
+
+export type * from "./projectCloudStorage.generated-api";

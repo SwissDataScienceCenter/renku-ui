@@ -68,7 +68,7 @@ import {
   AddCloudStorageState,
   CloudStorageDetails,
   CloudStorageSchema,
-  CloudStorageSchemaOptions,
+  CloudStorageSchemaOption,
 } from "./projectCloudStorage.types";
 
 import styles from "./CloudStorage.module.scss";
@@ -367,7 +367,7 @@ interface CheckboxOptionItemProps {
   control: Control<FieldValues, void>;
   defaultValue: boolean | undefined;
   onFieldValueChange: (option: string, value: boolean) => void;
-  option: CloudStorageSchemaOptions;
+  option: CloudStorageSchemaOption;
 }
 function CheckboxOptionItem({
   control,
@@ -404,7 +404,7 @@ interface PasswordOptionItemProps {
   defaultValue: string | undefined;
   isV2?: boolean;
   onFieldValueChange: (option: string, value: string) => void;
-  option: CloudStorageSchemaOptions;
+  option: CloudStorageSchemaOption;
   storageSecrets: CloudStorageSecretGet[];
 }
 function PasswordOptionItem({
@@ -559,7 +559,7 @@ interface InputOptionItemProps {
   defaultValue: string | number | undefined;
   inputType: "dropdown" | "number" | "text";
   onFieldValueChange: (option: string, value: string | number) => void;
-  option: CloudStorageSchemaOptions;
+  option: CloudStorageSchemaOption;
 }
 function InputOptionItem({
   control,
