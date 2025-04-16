@@ -17,17 +17,16 @@
  */
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   CircleFill,
   Clock,
   Database,
   ExclamationTriangleFill,
   FileCode,
-  Pencil,
   Link45deg,
+  Pencil,
 } from "react-bootstrap-icons";
-import { generatePath } from "react-router";
 import {
   Badge,
   Button,
@@ -44,8 +43,6 @@ import {
 
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import AppContext from "../../../utils/context/appContext";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -61,18 +58,19 @@ import { SessionRowResourceRequests } from "../../session/components/SessionsLis
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import { ActiveSessionButton } from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
-import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
+import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
   SessionBadge,
+  SessionStatusV2Badge,
   SessionStatusV2Description,
-  SessionStatusV2Label,
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
 import { SessionV2 } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
+import useSessionStartLink from "./useSessionStartLink.hook";
 import EnvVariablesCard from "./EnvVariablesCard";
 import EnvVariablesModal from "./EnvVariablesModal";
 
@@ -123,7 +121,7 @@ function SessionCard({
     <SessionCardContent
       color={getSessionColor(session.status.state)}
       contentDescription={<SessionStatusV2Description session={session} />}
-      contentLabel={<SessionStatusV2Label session={session} />}
+      contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
         <ActiveSessionButton
           session={session}
@@ -172,7 +170,7 @@ function SessionCardNotRunning({
       contentSession={
         <div className="my-auto">
           <StartSessionButton
-            launcherId={launcher.id}
+            launcher={launcher}
             namespace={project.namespace}
             slug={project.slug}
           />
@@ -200,17 +198,7 @@ function SessionLaunchLink({
   launcher,
   project,
 }: Required<Pick<SessionViewProps, "launcher" | "project">>) {
-  const startPath = generatePath(
-    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
-    {
-      launcherId: launcher.id,
-      namespace: project.namespace,
-      slug: project.slug,
-    }
-  );
-  const { params } = useContext(AppContext);
-  const baseUrl = params?.BASE_URL ?? window.location.href;
-  const url = new URL(startPath, baseUrl);
+  const { url } = useSessionStartLink({ launcher, project });
   return (
     <div className="mb-2">
       <h4 className="my-auto">
@@ -230,6 +218,9 @@ interface SessionViewProps {
   project: Project;
   sessions?: SessionV2[];
   toggle: () => void;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
 }
 export function SessionView({
   id,
@@ -238,6 +229,9 @@ export function SessionView({
   toggle: setToggleSessionView,
   isOpen: toggleSessionView,
   project,
+  toggleDelete,
+  toggleUpdate,
+  toggleUpdateEnvironment,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
@@ -276,7 +270,12 @@ export function SessionView({
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";
   const launcherMenu = launcher && (
-    <SessionV2Actions launcher={launcher} sessionsLength={totalSession} />
+    <SessionV2Actions
+      launcher={launcher}
+      toggleDelete={toggleDelete ?? undefined}
+      toggleUpdate={toggleUpdate ?? undefined}
+      toggleUpdateEnvironment={toggleUpdateEnvironment ?? undefined}
+    />
   );
   const description =
     launcher && launcher.description ? (
@@ -348,16 +347,18 @@ export function SessionView({
               <div className={cx("float-end", "mt-1", "ms-1")}>
                 {launcherMenu}
               </div>
-              <h2
-                className={cx("m-0", "text-break")}
-                data-cy="session-view-title"
-              >
-                {title}
-              </h2>
+              <div className={cx("d-flex", "flex-column")}>
+                <span className={cx("small", "text-muted", "me-3")}>
+                  {launcher ? "Session launcher" : "Session without launcher"}
+                </span>
+                <h2
+                  className={cx("m-0", "text-break")}
+                  data-cy="session-view-title"
+                >
+                  {title}
+                </h2>
+              </div>
             </div>
-            <p className={cx("fst-italic", "m-0")}>
-              {launcher ? "Session launcher" : "Session without launcher"}
-            </p>
           </div>
           {description && <p className="m-0">{description}</p>}
 
@@ -412,7 +413,7 @@ export function SessionView({
                 />
               </div>
               <EnvironmentCard launcher={launcher} />
-              <UpdateSessionLauncherModal
+              <UpdateSessionLauncherEnvironmentModal
                 isOpen={isUpdateOpen}
                 launcher={launcher}
                 toggle={toggle}
