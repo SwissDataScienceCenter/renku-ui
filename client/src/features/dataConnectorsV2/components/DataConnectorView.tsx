@@ -491,6 +491,13 @@ function DataConnectorViewMetadata({
           </WarnAlert>
         )}
       </DataConnectorPropertyValue>
+
+      {dataConnector.description && (
+        <DataConnectorPropertyValue title="Description">
+          <p className="mb-0">{dataConnector.description}</p>
+        </DataConnectorPropertyValue>
+      )}
+
       {nonRequiredCredentialConfigurationKeys.map((key) => {
         const title =
           key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
