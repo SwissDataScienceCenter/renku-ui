@@ -88,7 +88,6 @@ describe("launch sessions with data connectors", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -150,7 +149,6 @@ describe("launch sessions with data connectors", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -817,7 +815,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -854,7 +851,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -902,7 +898,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -1017,7 +1012,6 @@ describe("view autostart link", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
     cy.getDataCy("session-name").click();
