@@ -23,7 +23,7 @@ import { Project } from "../../projectsV2/api/projectV2.api";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import { ActiveSessionButton } from "../components/SessionButton/ActiveSessionButton";
 import {
   SessionBadge,
   SessionStatusV2Description,
@@ -114,7 +114,7 @@ export default function SessionItem({
               />
             ) : launcher != null ? (
               <StartSessionButton
-                launcherId={launcher.id}
+                launcher={launcher}
                 namespace={project.namespace}
                 slug={project.slug}
               />
