@@ -62,7 +62,7 @@ export default function StartSessionButton({
 
   const customizeLaunch = (
     <Link
-      className="dropdown-item"
+      className={cx("dropdown-item")}
       to={{
         pathname: startUrl,
         search: new URLSearchParams({ custom: "1" }).toString(),
