@@ -33,11 +33,7 @@ import { PrettySessionErrorMessage } from "../../../session/components/status/Se
 import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
-import linePlaying from "../../../../styles/assets/linePlaying.png";
-import lineFailed from "../../../../styles/assets/lineFailed.png";
-import linePaused from "../../../../styles/assets/linePaused.png";
-import lineStopped from "../../../../styles/assets/lineStopped.png";
-import lineBlock from "../../../../styles/assets/lineBlock.png";
+import { SESSION_STATES, SESSION_STYLES } from "../../SessionStyles.constants";
 export function SessionBadge({
   children,
   className,
@@ -135,112 +131,49 @@ export function getSessionStatusStyles(session: {
   const { status, image } = session;
   const state = status.state;
 
-  // Default styles for unknown status
-  let styles: SessionStatusStyles = {
-    textColor: "text-warning",
-    bgColor: "warning",
-    borderColor: "border-warning",
-    sessionLine: lineBlock,
-  };
-
-  switch (state) {
-    case "running":
-      if (!image) {
-        styles = {
-          textColor: "text-warning-emphasis",
-          bgColor: "warning",
-          borderColor: "border-warning",
-          sessionLine: linePlaying,
-        };
-      } else {
-        styles = {
-          textColor: "text-success-emphasis",
-          bgColor: "success",
-          borderColor: "border-success",
-          sessionLine: linePlaying,
-        };
-      }
-      break;
-
-    case "starting":
-      styles = {
-        textColor: "text-warning-emphasis",
-        bgColor: "warning",
-        borderColor: "border-warning",
-        sessionLine: linePlaying,
-      };
-      break;
-    case "stopping":
-      styles = {
-        textColor: "text-warning-emphasis",
-        bgColor: "warning",
-        borderColor: "border-warning",
-        sessionLine: lineStopped,
-      };
-      break;
-
-    case "hibernated":
-      styles = {
-        textColor: "text-dark-emphasis",
-        bgColor: "light",
-        borderColor: "border-dark-subtle",
-        sessionLine: linePaused,
-      };
-      break;
-
-    case "failed":
-      styles = {
-        textColor: "text-danger-emphasis",
-        bgColor: "danger",
-        borderColor: "border-danger",
-        sessionLine: lineFailed,
-      };
-      break;
+  if (state === SESSION_STATES.RUNNING) {
+    return image ? SESSION_STYLES.SUCCESS : SESSION_STYLES.WARNING;
   }
 
-  return styles;
+  const stateStyleMap: Record<string, SessionStatusStyles> = {
+    [SESSION_STATES.STARTING]: SESSION_STYLES.WARNING,
+    [SESSION_STATES.STOPPING]: SESSION_STYLES.STOPPING,
+    [SESSION_STATES.HIBERNATED]: SESSION_STYLES.HIBERNATED,
+    [SESSION_STATES.FAILED]: SESSION_STYLES.FAILED,
+  };
+
+  return stateStyleMap[state] ?? SESSION_STYLES.DEFAULT;
 }
+
 export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
   const { status, image } = session;
-  const state = status.state;
+  const styles = getSessionStatusStyles({ status, image });
 
-  const badge =
-    state === "running" && !image ? (
-      <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning-emphasis">My running session</span>
-      </div>
-    ) : state === "running" ? (
-      <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-success-emphasis">My running session</span>
-      </div>
-    ) : state === "starting" ? (
-      <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning-emphasis">Launching my session</span>
-      </div>
-    ) : state === "stopping" ? (
-      <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning-emphasis">Shutting down my session</span>
-      </div>
-    ) : state === "hibernated" ? (
-      <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-dark-emphasis">My paused session</span>
-      </div>
-    ) : state === "failed" ? (
-      <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-danger-emphasis">Error in my session</span>
-      </div>
-    ) : (
-      <div className={cx("fs-6", "fw-bold")}>
-        <span className="text-warning">Unknown status</span>
-      </div>
-    );
+  const getStatusMessage = (
+    state: "running" | "starting" | "stopping" | "failed" | "hibernated"
+  ) => {
+    const messages = {
+      [SESSION_STATES.RUNNING]: "My running session",
+      [SESSION_STATES.STARTING]: "Launching my session",
+      [SESSION_STATES.STOPPING]: "Shutting down my session",
+      [SESSION_STATES.HIBERNATED]: "My paused session",
+      [SESSION_STATES.FAILED]: "Error in my session",
+      default: "Unknown status",
+    };
+    return messages[state] ?? messages.default;
+  };
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
-      {badge}
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className={styles.textColor}>
+          {getStatusMessage(status.state)}
+        </span>
+      </div>
     </div>
   );
 }
+
 export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
