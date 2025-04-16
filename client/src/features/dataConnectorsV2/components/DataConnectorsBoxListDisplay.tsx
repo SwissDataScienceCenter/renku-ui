@@ -143,7 +143,11 @@ export default function DataConnectorBoxListDisplay({
                 {dataConnectorSource}
               </p>
             </div>
-            {description && <ClampedParagraph>{description}</ClampedParagraph>}
+            {description && (
+              <ClampedParagraph className="mb-2" lines={2}>
+                {description}
+              </ClampedParagraph>
+            )}
             {extendedPreview && <div className="text-muted">{type}</div>}
             <div
               className={cx(
