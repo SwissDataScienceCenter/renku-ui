@@ -19,7 +19,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode } from "react";
-import { CircleFill, Clock } from "react-bootstrap-icons";
+import { CircleFill, Clock, Hourglass } from "react-bootstrap-icons";
 import {
   Badge,
   PopoverBody,
