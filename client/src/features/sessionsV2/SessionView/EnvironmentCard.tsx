@@ -30,7 +30,6 @@ import {
 import {
   BootstrapReboot,
   BoxArrowUpRight,
-  Bricks,
   CircleFill,
   Clock,
   ExclamationTriangleFill,
