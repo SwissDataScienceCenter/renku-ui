@@ -252,7 +252,7 @@ export type GetProjectsByProjectIdInaccessibleDataConnectorLinksApiArg = {
 };
 export type Ulid = string;
 export type DataConnectorName = string;
-export type Slug = string;
+export type SlugResponse = string;
 export type StorageType = string;
 export type StorageTypeRead = string;
 export type RCloneConfig = {
@@ -302,7 +302,9 @@ export type RCloneOption = {
     | "SizeSuffix"
     | "SpaceSepList"
     | "CommaSepList"
-    | "Tristate";
+    | "Tristate"
+    | "Encoding"
+    | "Bits";
 };
 export type CloudStorageCore = {
   storage_type: StorageType;
@@ -330,8 +332,8 @@ export type KeywordsList = Keyword[];
 export type DataConnector = {
   id: Ulid;
   name: DataConnectorName;
-  namespace: Slug;
-  slug: Slug;
+  namespace: SlugResponse;
+  slug: SlugResponse;
   storage: CloudStorageCore;
   creation_date: CreationDate;
   created_by: UserId;
@@ -343,8 +345,8 @@ export type DataConnector = {
 export type DataConnectorRead = {
   id: Ulid;
   name: DataConnectorName;
-  namespace: Slug;
-  slug: Slug;
+  namespace: SlugResponse;
+  slug: SlugResponse;
   storage: CloudStorageCoreRead;
   creation_date: CreationDate;
   created_by: UserId;
@@ -372,6 +374,8 @@ export type DataConnectorsGetQuery = PaginationRequest & {
   /** A namespace, used as a filter. */
   namespace?: string;
 };
+export type OneOrTwoSlugs = string;
+export type Slug = string;
 export type CloudStorageCorePost = {
   storage_type?: StorageType;
   configuration: RCloneConfig;
@@ -393,7 +397,7 @@ export type CloudStorageUrlV2 = {
 };
 export type DataConnectorPost = {
   name: DataConnectorName;
-  namespace: Slug;
+  namespace: OneOrTwoSlugs;
   slug?: Slug;
   storage: CloudStorageCorePost | CloudStorageUrlV2;
   visibility?: Visibility;
@@ -402,7 +406,7 @@ export type DataConnectorPost = {
 };
 export type DataConnectorPostRead = {
   name: DataConnectorName;
-  namespace: Slug;
+  namespace: OneOrTwoSlugs;
   slug?: Slug;
   storage: CloudStorageCorePostRead | CloudStorageUrlV2;
   visibility?: Visibility;
@@ -425,7 +429,7 @@ export type CloudStorageCorePatchRead = {
 };
 export type DataConnectorPatch = {
   name?: DataConnectorName;
-  namespace?: Slug;
+  namespace?: OneOrTwoSlugs;
   slug?: Slug;
   storage?: CloudStorageCorePatch;
   visibility?: Visibility;
@@ -434,7 +438,7 @@ export type DataConnectorPatch = {
 };
 export type DataConnectorPatchRead = {
   name?: DataConnectorName;
-  namespace?: Slug;
+  namespace?: OneOrTwoSlugs;
   slug?: Slug;
   storage?: CloudStorageCorePatchRead;
   visibility?: Visibility;

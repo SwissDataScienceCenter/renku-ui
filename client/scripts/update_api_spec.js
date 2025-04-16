@@ -24,13 +24,51 @@ import { parseDocument } from "yaml";
 
 const GH_BASE_URL = "https://raw.githubusercontent.com";
 const DATA_SERVICES_REPO = "SwissDataScienceCenter/renku-data-services";
-const DATA_SERVICES_RELEASE = "v0.37.1";
+// const DATA_SERVICES_RELEASE = "v0.37.1";
+const DATA_SERVICES_RELEASE = "leafty/update-rclone-1-69";
 
 async function main() {
   argv.forEach((arg) => {
-    if (arg.trim() === "users") {
+    if (arg.trim() === "dataConnectors") {
+      updateDataConnectorsApi();
+    } else if (arg.trim() === "users") {
       updateUsersApi();
     }
+  });
+}
+
+async function updateDataConnectorsApi() {
+  const API_SPEC_FILE =
+    "components/renku_data_services/data_connectors/api.spec.yaml";
+  const DEST_FILE =
+    "src/features/dataConnectorsV2/api/data-connectors.openapi.json";
+
+  console.log(
+    `Updating "${DEST_FILE}" with spec file from release ${DATA_SERVICES_RELEASE}...`
+  );
+
+  const fileUrl = new URL(
+    join(DATA_SERVICES_REPO, DATA_SERVICES_RELEASE, API_SPEC_FILE),
+    GH_BASE_URL
+  );
+  const res = await fetch(fileUrl);
+  if (res.status >= 400) {
+    throw new Error(`could not retrieve ${fileUrl}`);
+  }
+  const apiSpec = await res.text();
+  const parsedSpec = parseDocument(apiSpec);
+
+  const fh = await open(DEST_FILE, "w", 0o622);
+  fh.writeFile(JSON.stringify(parsedSpec, null, 2));
+
+  await new Promise((resolve, reject) => {
+    const cp = exec(["npx", "prettier", "-w", DEST_FILE].join(" "));
+    cp.on("error", (error) =>
+      reject(new Error("failed to run prettier", { cause: error }))
+    );
+    cp.on("exit", (code) => {
+      code == 0 ? resolve() : reject(new Error("failed to run prettier"));
+    });
   });
 }
 
