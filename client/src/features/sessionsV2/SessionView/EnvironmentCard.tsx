@@ -29,6 +29,7 @@ import {
 } from "react";
 import {
   BoxArrowUpRight,
+  Bricks,
   CircleFill,
   Clock,
   FileEarmarkText,
