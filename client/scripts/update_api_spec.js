@@ -31,6 +31,8 @@ async function main() {
   argv.forEach((arg) => {
     if (arg.trim() === "dataConnectors") {
       updateDataConnectorsApi();
+    } else if (arg.trim() === "projectCloudStorage") {
+      updateProjectCloudStorageApi();
     } else if (arg.trim() === "users") {
       updateUsersApi();
     }
@@ -38,43 +40,30 @@ async function main() {
 }
 
 async function updateDataConnectorsApi() {
-  const API_SPEC_FILE =
-    "components/renku_data_services/data_connectors/api.spec.yaml";
-  const DEST_FILE =
-    "src/features/dataConnectorsV2/api/data-connectors.openapi.json";
+  updateApiFiles({
+    specFile: "components/renku_data_services/data_connectors/api.spec.yaml",
+    destFile: "src/features/dataConnectorsV2/api/data-connectors.openapi.json",
+  });
+}
 
-  console.log(
-    `Updating "${DEST_FILE}" with spec file from release ${DATA_SERVICES_RELEASE}...`
-  );
-
-  const fileUrl = new URL(
-    join(DATA_SERVICES_REPO, DATA_SERVICES_RELEASE, API_SPEC_FILE),
-    GH_BASE_URL
-  );
-  const res = await fetch(fileUrl);
-  if (res.status >= 400) {
-    throw new Error(`could not retrieve ${fileUrl}`);
-  }
-  const apiSpec = await res.text();
-  const parsedSpec = parseDocument(apiSpec);
-
-  const fh = await open(DEST_FILE, "w", 0o622);
-  fh.writeFile(JSON.stringify(parsedSpec, null, 2));
-
-  await new Promise((resolve, reject) => {
-    const cp = exec(["npx", "prettier", "-w", DEST_FILE].join(" "));
-    cp.on("error", (error) =>
-      reject(new Error("failed to run prettier", { cause: error }))
-    );
-    cp.on("exit", (code) => {
-      code == 0 ? resolve() : reject(new Error("failed to run prettier"));
-    });
+async function updateProjectCloudStorageApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/storage/api.spec.yaml",
+    destFile:
+      "src/features/project/components/cloudStorage/api/projectCloudStorage.openapi.json",
   });
 }
 
 async function updateUsersApi() {
-  const API_SPEC_FILE = "components/renku_data_services/users/api.spec.yaml";
-  const DEST_FILE = "src/features/usersV2/api/users.openapi.json";
+  updateApiFiles({
+    specFile: "components/renku_data_services/users/api.spec.yaml",
+    destFile: "src/features/usersV2/api/users.openapi.json",
+  });
+}
+
+async function updateApiFiles({ specFile, destFile }) {
+  const API_SPEC_FILE = specFile;
+  const DEST_FILE = destFile;
 
   console.log(
     `Updating "${DEST_FILE}" with spec file from release ${DATA_SERVICES_RELEASE}...`
