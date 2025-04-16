@@ -29,12 +29,9 @@ import {
 } from "react";
 import {
   BoxArrowUpRight,
-  Bricks,
   CircleFill,
   Clock,
   FileEarmarkText,
-  Globe2,
-  Link45deg,
   XLg,
   XOctagon,
 } from "react-bootstrap-icons";
@@ -76,6 +73,7 @@ import {
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "../api/sessionLaunchersV2.api";
+import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon.tsx";
 import {
   BUILDER_IMAGE_NOT_READY_VALUE,
   IMAGE_BUILD_DOCS,
@@ -127,18 +125,18 @@ export function EnvironmentCard({ launcher }: { launcher: SessionLauncher }) {
             <EnvironmentRow>
               {environment.environment_kind === "GLOBAL" ? (
                 <>
-                  <Globe2 size={24} />
+                  <EnvironmentIcon type="global" />
                   Global environment
                 </>
               ) : environment.environment_image_source === "build" ? (
                 <>
-                  <Bricks size={24} />
-                  Built by RenkuLab
+                  <EnvironmentIcon type="codeBased" size={16} />
+                  Code based environment
                 </>
               ) : (
                 <>
-                  <Link45deg size={24} />
-                  Custom image
+                  <EnvironmentIcon type="custom" size={16} />
+                  Custom image environment
                 </>
               )}
             </EnvironmentRow>
