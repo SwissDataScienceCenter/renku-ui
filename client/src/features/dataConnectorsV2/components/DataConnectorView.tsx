@@ -25,6 +25,7 @@ import {
   Lock,
   PersonBadge,
   Globe2,
+  BoxArrowUpRight,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
@@ -54,8 +55,9 @@ import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-c
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 import { WarnAlert } from "../../../components/Alert";
-import { isProjectNamespace } from "./dataConnector.utils";
+import { getDataConnectorScope } from "./dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 const SECTION_CLASSES = [
   "border-top",
@@ -370,83 +372,107 @@ function DataConnectorViewMetadata({
     storageDefinition.configuration
   ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
   const { data: namespace, isLoading: isLoadingNamespace } =
-    useGetNamespacesByNamespaceSlugQuery({
-      namespaceSlug: dataConnector.namespace,
-    });
+    useGetNamespacesByNamespaceSlugQuery(
+      dataConnector.namespace
+        ? {
+            namespaceSlug: dataConnector.namespace,
+          }
+        : skipToken
+    );
+
+  const scope = useMemo(
+    () => getDataConnectorScope(dataConnector.namespace),
+    [dataConnector.namespace]
+  );
 
   const namespaceUrl = useMemo(
     () =>
-      namespace == null
+      scope === "global" || !namespace
         ? null
-        : namespace.namespace_kind == "user"
+        : scope === "project"
+        ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+            namespace: dataConnector.namespace.split("/")[0],
+            slug: dataConnector.namespace.split("/")[1],
+          })
+        : namespace.namespace_kind === "user"
         ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
             username: dataConnector.namespace,
           })
         : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
             slug: dataConnector.namespace,
           }),
-    [namespace, dataConnector.namespace]
+    [dataConnector.namespace, namespace, scope]
   );
-  const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
-    storageDefinition.storage_type
+
+  const hasAccessMode = useMemo(
+    () => STORAGES_WITH_ACCESS_MODE.includes(storageDefinition.storage_type),
+    [storageDefinition.storage_type]
+  );
+
+  const identifier = useMemo(
+    () =>
+      scope === "global"
+        ? `${dataConnector.slug}`
+        : `${dataConnector.namespace}/${dataConnector.slug}`,
+    [dataConnector.namespace, dataConnector.slug, scope]
   );
 
   return (
     <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
       <DataConnectorPropertyValue title="Identifier">
         <div className={cx("d-flex", "justify-content-between", "mx-0")}>
-          <div>
-            {dataConnector.namespace}/{dataConnector.slug}
-          </div>
+          <div>{identifier}</div>
           <div>
             <Clipboard
-              className={cx("border-0", "btn", "ms-1", "p-0")}
-              clipboardText={`${dataConnector.namespace}/${dataConnector.slug}`}
-            ></Clipboard>
+              className={cx("border-0", "btn", "ms-1", "p-0", "shadow-none")}
+              clipboardText={identifier}
+            />
           </div>
         </div>
       </DataConnectorPropertyValue>
+
       <DataConnectorPropertyValue title="Owner">
-        <div className={cx("d-flex", "align-items-center")}>
-          <div className="me-1">
-            {isProjectNamespace(dataConnector.namespace) ? (
-              <Folder />
-            ) : (
-              <UserAvatar namespace={dataConnector.namespace} />
-            )}{" "}
-          </div>
-          {namespaceUrl == null ? (
-            <div className="me-1">
-              {isProjectNamespace(dataConnector.namespace) ? "" : "@"}
-              {dataConnector.namespace}
-            </div>
+        <div className={cx("align-items-center", "d-flex", "gap-1")}>
+          {scope === "global" ? (
+            <>
+              <BoxArrowUpRight className={cx("bi", "flex-shrink-0")} />
+              <a
+                href={`https://doi.org/${dataConnector.storage.configuration["doi"]}`}
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                DOI:{dataConnector.storage.configuration["doi"] as string}
+              </a>
+            </>
+          ) : scope === "project" ? (
+            <>
+              <Folder className={cx("bi", "flex-shrink-0")} />
+              <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
+            </>
           ) : (
-            <div>
-              <Link className="me-1" to={namespaceUrl}>
-                @{dataConnector.namespace}
-              </Link>
-            </div>
+            <>
+              <UserAvatar namespace={dataConnector.namespace} />
+              <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
+              {isLoadingNamespace ? (
+                <Loader inline size={16} />
+              ) : namespace?.namespace_kind === "user" ? (
+                <EntityPill
+                  entityType="User"
+                  size="sm"
+                  tooltipPlacement="bottom"
+                />
+              ) : namespace?.namespace_kind === "group" ? (
+                <EntityPill
+                  entityType="Group"
+                  size="sm"
+                  tooltipPlacement="bottom"
+                />
+              ) : null}
+            </>
           )}
-          <div>
-            {isLoadingNamespace ? (
-              <Loader inline size={16} />
-            ) : namespace == null ? null : namespace.namespace_kind ==
-              "user" ? (
-              <EntityPill
-                entityType="User"
-                size="sm"
-                tooltipPlacement="bottom"
-              />
-            ) : (
-              <EntityPill
-                entityType="Group"
-                size="sm"
-                tooltipPlacement="bottom"
-              />
-            )}
-          </div>
         </div>
       </DataConnectorPropertyValue>
+
       <DataConnectorPropertyValue title="Visibility">
         {dataConnector.visibility === "private" ? (
           <>

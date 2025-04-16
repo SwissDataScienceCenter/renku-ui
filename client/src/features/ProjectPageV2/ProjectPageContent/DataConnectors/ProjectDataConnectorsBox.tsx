@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
 import {
   Badge,
@@ -28,14 +28,11 @@ import {
   ListGroup,
   UncontrolledTooltip,
 } from "reactstrap";
-
+import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-
-import {
-  useGetDataConnectorsByDataConnectorIdQuery,
-  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
-} from "../../../dataConnectorsV2/api/data-connectors.api";
+import { useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery } from "../../../dataConnectorsV2/api/data-connectors.api";
+import { useGetDataConnectorsByDataConnectorIdQuery } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import DataConnectorBoxListDisplay from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
@@ -45,10 +42,7 @@ import type {
 } from "../../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
-import { ErrorAlert } from "../../../../components/Alert";
-
 interface DataConnectorListDisplayProps {
   project: Project;
 }
