@@ -207,5 +207,5 @@ export function getDataConnectorSource(dataConnector: DataConnector): string {
       ? (dataConnector.storage.configuration["doi"] as string)
       : "unknown";
   }
-  return dataConnector.namespace;
+  return dataConnector.namespace as string;
 }
