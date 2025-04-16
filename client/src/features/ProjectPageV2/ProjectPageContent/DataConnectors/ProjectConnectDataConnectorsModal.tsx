@@ -18,7 +18,13 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Database, NodePlus, PlusLg, XLg } from "react-bootstrap-icons";
+import {
+  Database,
+  Link45deg,
+  NodePlus,
+  PlusLg,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -30,26 +36,23 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
-
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import ModalHeader from "../../../../components/modal/ModalHeader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import {
   dataConnectorsApi,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
+  usePostDataConnectorsGlobalMutation,
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "../../../dataConnectorsV2/components/DataConnectorModal/index";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
-
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
-
-import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -59,7 +62,7 @@ interface ProjectConnectDataConnectorsModalProps
   project: Project;
 }
 
-type ProjectConnectDataConnectorMode = "create" | "link";
+type ProjectConnectDataConnectorMode = "create" | "link" | "doi";
 
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
@@ -103,8 +106,17 @@ export default function ProjectConnectDataConnectorsModal({
             toggle,
           }}
         />
-      ) : (
+      ) : mode === "link" ? (
         <ProjectLinkDataConnectorBodyAndFooter
+          {...{
+            isOpen,
+            namespace,
+            project,
+            toggle,
+          }}
+        />
+      ) : (
+        <ProjectDoiDataConnectorBodyAndFooter
           {...{
             isOpen,
             namespace,
@@ -131,6 +143,7 @@ function ProjectConnectDataConnectorModalTitle() {
   return (
     <>
       <Database className={cx("bi", "me-1")} />
+      {/* // ! TODO: adjust this */}
       Link or create data connector {title.trim()}
     </>
   );
@@ -163,6 +176,32 @@ function ProjectConnectDataConnectorModeSwitch({
         <NodePlus className={cx("bi", "me-1")} />
         Link a data connector
       </Label>
+
+      <Input
+        type="radio"
+        className="btn-check"
+        id="project-data-controller-mode-doi"
+        value="link"
+        checked={mode === "doi"}
+        onChange={() => {
+          setMode("doi");
+        }}
+      />
+      <Label
+        data-cy="project-data-controller-mode-doi"
+        for="project-data-controller-mode-doi"
+        className={cx(
+          "btn",
+          "btn-outline-primary",
+          "mb-0",
+          "border-end-0",
+          "border-start-0"
+        )}
+      >
+        <Link45deg className={cx("bi", "me-1")} />
+        Import DOI
+      </Label>
+
       <Input
         type="radio"
         className="btn-check"
@@ -334,7 +373,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
-        <Button color="outline-danger" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -350,6 +389,148 @@ function ProjectLinkDataConnectorBodyAndFooter({
             <NodePlus className={cx("bi", "me-1")} />
           )}
           Link data connector
+        </Button>
+      </ModalFooter>
+    </Form>
+  );
+}
+
+interface DataConnectorDoiFormFields {
+  doi: string;
+}
+
+function ProjectDoiDataConnectorBodyAndFooter({
+  project,
+  toggle,
+}: ProjectConnectDataConnectorsModalProps) {
+  const dispatch = useAppDispatch();
+
+  const [
+    postDataConnector,
+    {
+      data: postDataConnectorData,
+      error: postDataConnectorError,
+      isLoading: postDataConnectorLoading,
+      isSuccess: postDataConnectorSuccess,
+    },
+  ] = usePostDataConnectorsGlobalMutation();
+
+  const [
+    linkDataConnector,
+    {
+      error: linkDataConnectorError,
+      isLoading: linkDataConnectorLoading,
+      isSuccess: linkDataConnectorSuccess,
+    },
+  ] = usePostDataConnectorsByDataConnectorIdProjectLinksMutation();
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<DataConnectorDoiFormFields>({
+    defaultValues: {
+      doi: "",
+    },
+  });
+
+  const error = postDataConnectorError ?? linkDataConnectorError;
+  const isLoading = postDataConnectorLoading || linkDataConnectorLoading;
+
+  const onSubmit = useCallback(
+    (values: DataConnectorDoiFormFields) => {
+      postDataConnector({
+        globalDataConnectorPost: {
+          storage: {
+            configuration: {
+              type: "doi",
+              doi: values.doi,
+            },
+            source_path: "/",
+            target_path: "/",
+            readonly: true,
+          },
+        },
+      });
+    },
+    [postDataConnector]
+  );
+
+  // Link the data connector to the project if creation was successful
+  useEffect(() => {
+    if (postDataConnectorSuccess && postDataConnectorData) {
+      linkDataConnector({
+        dataConnectorId: postDataConnectorData.id,
+        dataConnectorToProjectLinkPost: {
+          project_id: project.id,
+        },
+      });
+    }
+  }, [
+    linkDataConnector,
+    postDataConnectorData,
+    postDataConnectorSuccess,
+    project.id,
+  ]);
+
+  // Close the modal and reset the Form if linking was successful
+  useEffect(() => {
+    if (linkDataConnectorSuccess) {
+      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
+      reset();
+      toggle();
+    }
+  }, [dispatch, linkDataConnectorSuccess, reset, toggle]);
+
+  return (
+    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <ModalBody data-cy="data-connector-edit-body">
+        <div className="mb-3">
+          <Label className="form-label" for="data-connector-identifier">
+            DOI
+          </Label>
+          <Controller
+            control={control}
+            name="doi"
+            render={({ field }) => (
+              <Input
+                className={cx("form-control", errors.doi && "is-invalid")}
+                id="doi"
+                placeholder="DOI"
+                type="text"
+                {...field}
+              />
+            )}
+            rules={{
+              required: true,
+            }}
+          />
+          <div className="form-text">
+            Copy a DOI identifier (E.G. <code>10.5281/zenodo.15081377</code>).
+          </div>
+          <div className="invalid-feedback">Please provide an DOI</div>
+        </div>
+        {error !== null && <RtkOrNotebooksError error={error} />}
+      </ModalBody>
+
+      <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
+        <Button color="outline-primary" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          data-cy="doi-data-connector-button"
+          disabled={isLoading}
+          type="submit"
+        >
+          {isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <Link45deg className={cx("bi", "me-1")} />
+          )}
+          Import DOI as data connector
         </Button>
       </ModalFooter>
     </Form>
