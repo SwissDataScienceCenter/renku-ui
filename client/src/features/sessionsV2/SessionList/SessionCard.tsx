@@ -38,21 +38,27 @@ export default function SessionCard({ project, session }: SessionCardProps) {
 
   const stylesPerSession = getSessionStatusStyles(session);
 
-  const bgClass =
-    stylesPerSession.bgColor === "warning"
-      ? styles.SessionWarningBg
-      : stylesPerSession.bgColor === "success"
-      ? styles.SessionSuccessBg
-      : stylesPerSession.bgColor === "danger"
-      ? styles.SessionDangerBg
-      : styles.SessionLightBg;
-
+  const bgColorMap = {
+    warning: styles.SessionWarningBg,
+    success: styles.SessionSuccessBg,
+    danger: styles.SessionDangerBg,
+    default: styles.SessionLightBg,
+  };
   return (
-    <div data-cy="session-item" className={cx(bgClass, "p-0", "pb-3")}>
+    <div
+      data-cy="session-item"
+      className={cx(
+        bgColorMap[stylesPerSession.bgColor as keyof typeof bgColorMap] ??
+          bgColorMap.default,
+        "p-0",
+        "pb-3"
+      )}
+    >
       <img
         src={stylesPerSession.sessionLine}
         className={cx("position-absolute", styles.SessionLine)}
         alt="Session line indicator"
+        loading="lazy"
       />
       <div className={cx("ms-5", "px-3", "pt-3")}>
         <Row className="g-2">
