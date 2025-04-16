@@ -387,7 +387,7 @@ function DataConnectorViewMetadata({
 
   const namespaceUrl = useMemo(
     () =>
-      scope === "global" || !namespace
+      scope === "global" || !namespace || !dataConnector.namespace
         ? null
         : scope === "project"
         ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
@@ -451,7 +451,7 @@ function DataConnectorViewMetadata({
             </>
           ) : (
             <>
-              <UserAvatar namespace={dataConnector.namespace} />
+              <UserAvatar namespace={dataConnector.namespace as string} />
               <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
               {isLoadingNamespace ? (
                 <Loader inline size={16} />

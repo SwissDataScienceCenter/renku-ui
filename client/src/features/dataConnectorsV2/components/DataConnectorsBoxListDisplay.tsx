@@ -107,7 +107,7 @@ export default function DataConnectorBoxListDisplay({
       return <Folder className="bi" />;
     }
     if (scope === "namespace") {
-      return <UserAvatar namespace={namespace} size="sm" />;
+      return <UserAvatar namespace={namespace as string} size="sm" />;
     }
     return <BoxArrowUpRight className="bi" />;
   }, [namespace]);
