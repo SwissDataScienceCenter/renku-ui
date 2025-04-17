@@ -208,6 +208,28 @@ export default function DataConnectorBoxListDisplay({
   );
 }
 
+export function DataConnectorBoxListDisplayPlaceholder() {
+  return (
+    <ListGroupItem data-cy="data-connector-box-placeholder">
+      <Row>
+        <Col className={cx("d-flex", "flex-column")}>
+          <h5 className="mb-0">
+            <span className={cx("bg-secondary", "col-8", "placeholder")}></span>
+          </h5>
+          <p className="mb-0">
+            <span className={cx("bg-secondary", "col-5", "placeholder")}></span>
+          </p>
+          <p className="mb-0">
+            <span className={cx("bg-secondary", "col-4", "placeholder")}></span>
+            <span className={cx("bg-white", "col-5", "placeholder")}></span>
+            <span className={cx("bg-secondary", "col-3", "placeholder")}></span>
+          </p>
+        </Col>
+      </Row>
+    </ListGroupItem>
+  );
+}
+
 interface DataConnectorNotVisibleToAllUsersBadgeProps {
   className?: string;
   warning?: string;

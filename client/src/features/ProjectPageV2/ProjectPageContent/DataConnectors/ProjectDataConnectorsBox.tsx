@@ -33,7 +33,9 @@ import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery } from "../../../dataConnectorsV2/api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdQuery } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import DataConnectorBoxListDisplay from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
+import DataConnectorBoxListDisplay, {
+  DataConnectorBoxListDisplayPlaceholder,
+} from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   DataConnectorToProjectLink,
@@ -242,7 +244,9 @@ function DataConnectorLinkDisplay({
     useGetDataConnectorsByDataConnectorIdQuery({
       dataConnectorId: data_connector_id,
     });
-  if (isLoading) return <Loader size={16} inline />;
+  if (isLoading) {
+    return <DataConnectorBoxListDisplayPlaceholder />;
+  }
   if (!dataConnector) return null;
   return (
     <DataConnectorBoxListDisplay
