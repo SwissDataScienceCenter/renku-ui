@@ -391,8 +391,13 @@ function DataConnectorActionsInner({
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
   const onDelete = useCallback(() => {
     setIsDeleteOpen(false);
+    toggleView();
+  }, [toggleView]);
+  const onUnlink = useCallback(() => {
+    setIsUnlinkOpen(false);
     toggleView();
   }, [toggleView]);
   const toggleCredentials = useCallback(() => {
@@ -403,6 +408,9 @@ function DataConnectorActionsInner({
   }, []);
   const toggleEdit = useCallback(() => {
     setIsEditOpen((open) => !open);
+  }, []);
+  const toggleUnlink = useCallback(() => {
+    setIsUnlinkOpen((open) => !open);
   }, []);
 
   const actions = [
@@ -522,11 +530,11 @@ function DataConnectorActionsInner({
         <DataConnectorRemoveUnlinkModal
           dataConnector={dataConnector}
           dataConnectorLink={dataConnectorLink}
-          isOpen={isDeleteOpen}
-          onDelete={onDelete}
+          isOpen={isUnlinkOpen}
+          onDelete={onUnlink}
           projectNamespace={namespace!}
           projectSlug={slug!}
-          toggleModal={toggleDelete}
+          toggleModal={toggleUnlink}
         />
       )}
     </>
