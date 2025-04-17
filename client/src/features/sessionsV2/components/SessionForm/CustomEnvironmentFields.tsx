@@ -17,11 +17,12 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
 import { Controller } from "react-hook-form";
-import { Collapse, Input, Label } from "reactstrap";
+import { Input, Label } from "reactstrap";
+import { InfoAlert } from "../../../../components/Alert.jsx";
+import { ExternalLink } from "../../../../components/ExternalLinks.tsx";
+import { Links } from "../../../../utils/constants/Docs.js";
 
-import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
@@ -33,14 +34,7 @@ export function CustomEnvironmentFields({
   errors,
 }: EnvironmentFieldsProps) {
   const watchEnvironmentSelect = watch("environmentSelect");
-  const [isAdvancedSettingOpen, setIsAdvancedSettingsOpen] = useState(false);
-  const toggleIsOpen = useCallback(
-    () =>
-      setIsAdvancedSettingsOpen(
-        (isAdvancedSettingOpen) => !isAdvancedSettingOpen
-      ),
-    []
-  );
+
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <p className={cx("mb-0")}>
@@ -86,32 +80,24 @@ export function CustomEnvironmentFields({
         </div>
       </div>
 
-      <div>
-        <button
-          className={cx(
-            "align-items-center",
-            "bg-transparent",
-            "border-0",
-            "d-flex",
-            "fw-bold",
-            "gap-1",
-            "p-0",
-            "w-100"
-          )}
-          data-cy="environment-advanced-settings-toggle"
-          onClick={toggleIsOpen}
-        >
-          Advanced settings{" "}
-          <ChevronFlippedIcon flipped={isAdvancedSettingOpen} />
-        </button>
-      </div>
+      <div className={cx("fw-bold", "w-100")}>Advanced settings</div>
 
-      <Collapse isOpen={isAdvancedSettingOpen}>
-        <AdvancedSettingsFields<SessionLauncherForm>
-          control={control}
-          errors={errors}
-        />
-      </Collapse>
+      <InfoAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          Please see the{" "}
+          <ExternalLink
+            role="text"
+            url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
+            title="documentation"
+          />{" "}
+          for how to complete this form to make your image run on Renkulab.
+        </p>
+      </InfoAlert>
+
+      <AdvancedSettingsFields<SessionLauncherForm>
+        control={control}
+        errors={errors}
+      />
     </div>
   );
 }
