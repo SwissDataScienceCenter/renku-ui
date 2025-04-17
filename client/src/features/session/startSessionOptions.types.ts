@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { CloudStorageGetRead } from "../project/components/cloudStorage/api/projectCloudStorage.api";
+import { CloudStorageWithId } from "../project/components/cloudStorage/api/projectCloudStorage.api";
 // import { CloudStorageConfiguration } from "../project/components/cloudStorage/projectCloudStorage.types";
 
 export interface StartSessionOptions {
@@ -35,10 +35,15 @@ export interface StartSessionOptions {
   storage: number;
 }
 
-export interface SessionCloudStorage
-  extends CloudStorageGetRead /*extends CloudStorageConfiguration*/ {
+export interface SessionCloudStorage extends CloudStorageWithId {
+  // Pick<
+  //   CloudStorageGet,
+  //   "sensitive_fields"
+  // >
+  /*extends CloudStorageConfiguration*/
   active: boolean;
   sensitive_fields?: { name: string; help: string; value: string }[];
+  // sensitive_fields?: { name: string; help: string; value: string }[];
 }
 
 // ? See: ./components/options/SessionProjectDockerImage.md

@@ -17,27 +17,80 @@
  */
 
 import {
-  type PostStorageSchemaTestConnectionApiArg,
   projectCloudStorageGeneratedApi,
+  type GetStorageApiArg,
+  type GetStorageApiResponse,
 } from "./projectCloudStorage.generated-api";
 
-export type PostStorageSchemaTestConnection =
-  PostStorageSchemaTestConnectionApiArg["body"];
+// Fixes some API endpoints
+const withFixedEndpoints = projectCloudStorageGeneratedApi.injectEndpoints({
+  overrideExisting: true,
+  endpoints: (build) => ({
+    getStorage: build.query<GetStorageApiResponse, GetStorageApiArg>({
+      query: ({ storageParams }) => ({
+        url: "/storage",
+        params: storageParams,
+      }),
+    }),
+  }),
+});
 
-const projectCloudStorageApi = projectCloudStorageGeneratedApi;
+// Adds tag handling for cache management
+const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
+  addTagTypes: ["CloudStorage", "CloudStorageSchema"],
+  endpoints: {
+    getStorageByStorageId: {
+      providesTags: (result) =>
+        result
+          ? [
+              { id: result.storage.storage_id, type: "CloudStorage" },
+              "CloudStorage",
+            ]
+          : ["CloudStorage"],
+    },
+    putStorageByStorageId: {
+      invalidatesTags: (result) =>
+        result
+          ? [{ id: result.storage.storage_id, type: "CloudStorage" }]
+          : ["CloudStorage"],
+    },
+    patchStorageByStorageId: {
+      invalidatesTags: (result) =>
+        result
+          ? [{ id: result.storage.storage_id, type: "CloudStorage" }]
+          : ["CloudStorage"],
+    },
+    deleteStorageByStorageId: {
+      invalidatesTags: ["CloudStorage"],
+    },
+    getStorage: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ storage }) => ({
+                id: storage.storage_id,
+                type: "CloudStorage" as const,
+              })),
+              "CloudStorage",
+            ]
+          : ["CloudStorage"],
+    },
+    postStorage: {
+      invalidatesTags: ["CloudStorage"],
+    },
+    getStorageSchema: {
+      providesTags: ["CloudStorageSchema"],
+    },
+  },
+});
 
 export const {
-  usePostStorageSchemaTestConnectionMutation,
+  useDeleteStorageByStorageIdMutation,
+  useGetStorageQuery,
   useGetStorageSchemaQuery,
-
-  //   useGetStorageByStorageIdQuery,
-  //   usePutStorageByStorageIdMutation,
-  //   usePatchStorageByStorageIdMutation,
-  //   useDeleteStorageByStorageIdMutation,
-  //   useGetStorageQuery,
-  //   usePostStorageMutation,
-  //   usePostStorageSchemaValidateMutation,
-  //   usePostStorageSchemaObscureMutation,
+  usePatchStorageByStorageIdMutation,
+  usePostStorageMutation,
+  usePostStorageSchemaTestConnectionMutation,
 } = projectCloudStorageApi;
 
 export type * from "./projectCloudStorage.generated-api";

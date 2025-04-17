@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { PostStorageSchemaTestConnection } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
+// import { PostStorageSchemaTestConnectionParams } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
+import type { PostStorageSchemaTestConnectionApiArg } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   STORAGES_WITH_ACCESS_MODE,
@@ -160,9 +161,9 @@ export function dataConnectorToFlattened(
 
 export function validationParametersFromDataConnectorConfiguration(
   config: DataConnectorConfiguration
-) {
+): PostStorageSchemaTestConnectionApiArg["body"] {
   const dataConnector = _dataConnectorFromConfig(config);
-  const validateParameters: PostStorageSchemaTestConnection = {
+  const validateParameters: PostStorageSchemaTestConnectionApiArg["body"] = {
     configuration: dataConnector.configuration,
     source_path: dataConnector.source_path,
   };
@@ -188,8 +189,7 @@ function _dataConnectorFromConfig(config: DataConnectorConfiguration) {
 export function hasSchemaAccessMode(schema: CloudStorageSchema) {
   const providers = schema.options?.find((o) => o.name === "provider");
   return (
-    providers?.examples &&
-    STORAGES_WITH_ACCESS_MODE.includes(schema.prefix ?? "")
+    providers?.examples && STORAGES_WITH_ACCESS_MODE.includes(schema.prefix)
   );
 }
 

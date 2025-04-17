@@ -35,7 +35,7 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 
 import {
-  PostStorageSchemaTestConnection,
+  type PostStorageSchemaTestConnectionApiArg,
   usePostStorageSchemaTestConnectionMutation,
 } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
@@ -291,7 +291,7 @@ function TestConnectionAndContinueButtons({
   }, [dispatch, isActionOngoing, validationResult, validationResultIsCurrent]);
 
   const validateConnection = useCallback(() => {
-    const validateParameters: PostStorageSchemaTestConnection = {
+    const validateParameters: PostStorageSchemaTestConnectionApiArg["body"] = {
       configuration: {
         type: flatDataConnector.schema ?? null,
       },

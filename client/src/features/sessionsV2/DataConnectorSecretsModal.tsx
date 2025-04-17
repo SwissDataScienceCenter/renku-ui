@@ -47,7 +47,6 @@ import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 
-import type { RCloneOption } from "../dataConnectorsV2/api/data-connectors.api";
 import { validationParametersFromDataConnectorConfiguration } from "../dataConnectorsV2/components/dataConnector.utils";
 import { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { usePostStorageSchemaTestConnectionMutation } from "../project/components/cloudStorage/api/projectCloudStorage.api";
@@ -251,7 +250,7 @@ export default function DataConnectorSecretsModal({
 
       const validateParameters =
         validationParametersFromDataConnectorConfiguration(config);
-      validateCloudStorageConnection(validateParameters);
+      validateCloudStorageConnection({ body: validateParameters });
 
       const newCloudStorageConfigs = [...dataConnectorConfigs];
       newCloudStorageConfigs[index] = config;
@@ -513,7 +512,7 @@ function SensitiveFieldWidget({
           control={control}
           defaultValue={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
           friendlyName={field.friendlyName}
-          option={field}
+          name={field.name}
           showPasswordInitially={true}
         />
       );
@@ -527,7 +526,7 @@ function SensitiveFieldWidget({
       control={control}
       defaultValue={defaultValue}
       friendlyName={field.friendlyName}
-      option={field}
+      name={field.name}
     />
   );
 }
@@ -536,7 +535,8 @@ interface SensitiveFieldInputProps {
   control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   friendlyName: string;
   defaultValue: string | undefined;
-  option: RCloneOption;
+  // option: RCloneOption;
+  name: string;
   showPasswordInitially?: boolean;
 }
 
@@ -544,7 +544,8 @@ function SensitiveFieldInput({
   control,
   defaultValue,
   friendlyName,
-  option,
+  // option,
+  name,
   showPasswordInitially = false,
 }: SensitiveFieldInputProps) {
   const [showPassword, setShowPassword] = useState(showPasswordInitially);
@@ -552,25 +553,25 @@ function SensitiveFieldInput({
     setShowPassword((showPassword) => !showPassword);
   }, []);
 
-  const tooltipContainerId = `option-is-secret-${option.name}`;
+  const tooltipContainerId = `option-is-secret-${name}`;
   return (
     <div className="mb-3">
-      <Label htmlFor={option.name}>
-        {friendlyName ?? option.name}
+      <Label htmlFor={name}>
+        {friendlyName ?? name}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
         </div>
       </Label>
 
       <Controller
-        name={option.name ?? ""}
+        name={name}
         control={control}
         defaultValue={defaultValue}
         render={({ field, fieldState }) => (
           <>
             <InputGroup className={cx(fieldState.error && "is-invalid")}>
               <Input
-                id={option.name}
+                id={name}
                 type={showPassword ? "text" : "password"}
                 className={cx(
                   "form-control",
@@ -583,7 +584,7 @@ function SensitiveFieldInput({
               />
               <Button
                 className="rounded-end"
-                id={`show-password-${option.name}`}
+                id={`show-password-${name}`}
                 onClick={() => toggleShowPassword()}
               >
                 {showPassword ? (
@@ -593,7 +594,7 @@ function SensitiveFieldInput({
                 )}
                 <UncontrolledTooltip
                   placement="top"
-                  target={`show-password-${option.name}`}
+                  target={`show-password-${name}`}
                 >
                   Hide/show sensitive data
                 </UncontrolledTooltip>
@@ -609,9 +610,7 @@ function SensitiveFieldInput({
           },
         }}
       />
-      <div className="invalid-feedback">
-        Please provide a value for {option.name}
-      </div>
+      <div className="invalid-feedback">Please provide a value for {name}</div>
     </div>
   );
 }

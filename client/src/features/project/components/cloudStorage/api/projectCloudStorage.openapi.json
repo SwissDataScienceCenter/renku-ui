@@ -561,7 +561,8 @@
               "$ref": "#/components/schemas/RCloneOption"
             }
           }
-        }
+        },
+        "required": ["name", "description", "prefix", "options"]
       },
       "RCloneOption": {
         "type": "object",
@@ -622,7 +623,8 @@
                   "type": "string",
                   "description": "The provider this value is applicable for. Empty if valid for all providers."
                 }
-              }
+              },
+              "required": ["value", "help"]
             }
           },
           "required": {
@@ -663,7 +665,19 @@
               "Bits"
             ]
           }
-        }
+        },
+        "required": [
+          "name",
+          "help",
+          "default",
+          "default_str",
+          "required",
+          "ispassword",
+          "sensitive",
+          "advanced",
+          "exclusive",
+          "type"
+        ]
       },
       "Ulid": {
         "description": "ULID identifier",

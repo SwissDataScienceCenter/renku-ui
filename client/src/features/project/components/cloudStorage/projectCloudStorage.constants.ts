@@ -16,15 +16,10 @@
  * limitations under the License.
  */
 
-// import {
-//   AddCloudStorageState,
-//   CloudStorageDetails,
-//   CloudStorageOverride,
-//   CloudStorageSchemaOptions,
-// } from "./projectCloudStorage.types";
-import {
+import type {
   AddCloudStorageState,
   CloudStorageDetails,
+  CloudStorageOverride,
   CloudStorageSchemaOption,
 } from "./projectCloudStorage.types";
 
