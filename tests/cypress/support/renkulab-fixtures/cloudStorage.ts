@@ -83,7 +83,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         name = "getCloudStorage",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/data/storage*", response).as(name);
+      cy.intercept("GET", "/api/data/storage*", response).as(name);
       return this;
     }
 
@@ -93,7 +93,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         name = "getCloudStorage",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/data/storage", response).as(name);
+      cy.intercept("GET", "/api/data/storage", response).as(name);
       return this;
     }
 
@@ -143,7 +143,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         name = "postCloudStorage",
       } = args ?? {};
       const response = { fixture, statusCode: 201 };
-      cy.intercept("POST", "/ui-server/api/data/storage*", response).as(name);
+      cy.intercept("POST", "/api/data/storage*", response).as(name);
       return this;
     }
 
