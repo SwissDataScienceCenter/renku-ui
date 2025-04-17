@@ -441,7 +441,7 @@ function DataConnectorViewMetadata({
                 rel="noreferrer noopener"
                 target="_blank"
               >
-                DOI:{dataConnector.storage.configuration["doi"] as string}
+                doi:{dataConnector.storage.configuration["doi"] as string}
               </a>
             </>
           ) : scope === "project" ? (
