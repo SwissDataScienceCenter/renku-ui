@@ -388,6 +388,8 @@ function DataConnectorActionsInner({
     dataConnectorLink == null
       ? "delete"
       : "unlink";
+  const requiresCredentials =
+    dataConnector.storage.sensitive_fields?.length > 0;
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -428,16 +430,20 @@ function DataConnectorActionsInner({
           },
         ]
       : []),
-    {
-      key: "data-connector-credentials",
-      onClick: toggleCredentials,
-      content: (
-        <>
-          <Lock className={cx("bi", "me-1")} />
-          Credentials
-        </>
-      ),
-    },
+    ...(requiresCredentials
+      ? [
+          {
+            key: "data-connector-credentials",
+            onClick: toggleCredentials,
+            content: (
+              <>
+                <Lock className={cx("bi", "me-1")} />
+                Credentials
+              </>
+            ),
+          },
+        ]
+      : []),
     ...(permissions.delete && removeMode === "delete"
       ? [
           {
