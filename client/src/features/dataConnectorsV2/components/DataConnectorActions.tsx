@@ -292,7 +292,7 @@ function DataConnectorRemoveUnlinkModal({
               <Col>
                 <PermissionsGuard
                   disabled={
-                    <p>
+                    <p className="mb-0">
                       You do not have the required permissions to unlink this
                       data connector.
                     </p>
@@ -307,7 +307,7 @@ function DataConnectorRemoveUnlinkModal({
                         </strong>
                         ?
                       </p>
-                      <p>
+                      <p className="mb-0">
                         The data from the data connector will no longer be
                         available in sessions.
                       </p>
@@ -357,7 +357,6 @@ function DataConnectorRemoveUnlinkModal({
           </ModalFooter>
         </>
       )}
-      ;
     </Modal>
   );
 }
