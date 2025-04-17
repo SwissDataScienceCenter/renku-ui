@@ -28,7 +28,6 @@ import {
   CardHeader,
   ListGroup,
 } from "reactstrap";
-
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
@@ -40,9 +39,10 @@ import {
   useGetDataConnectorsQuery,
   type GetDataConnectorsApiResponse,
 } from "../api/data-connectors.enhanced-api";
-
 import DataConnectorModal from "./DataConnectorModal";
-import DataConnectorBoxListDisplay from "./DataConnectorsBoxListDisplay";
+import DataConnectorBoxListDisplay, {
+  DataConnectorBoxListDisplayPlaceholder,
+} from "./DataConnectorsBoxListDisplay";
 
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_PAGE_PARAM = "page";
@@ -176,6 +176,7 @@ export default function DataConnectorsBox({
   return (
     <DataConnectorBoxContent
       data={data}
+      isLoading={isLoading}
       namespace={ns ?? ""}
       namespaceKind={namespaceKind}
       onPageChange={onPageChange}
@@ -186,6 +187,7 @@ export default function DataConnectorsBox({
 
 interface DataConnectorBoxContentProps {
   data: GetDataConnectorsApiResponse;
+  isLoading: boolean;
   namespace: string;
   namespaceKind: NamespaceKind;
   onPageChange: (pageNumber: number) => void;
@@ -193,6 +195,7 @@ interface DataConnectorBoxContentProps {
 }
 function DataConnectorBoxContent({
   data,
+  isLoading,
   namespace,
   namespaceKind,
   onPageChange,
@@ -220,13 +223,17 @@ function DataConnectorBoxContent({
           )}
           {data.total > 0 && (
             <ListGroup flush>
-              {data.dataConnectors?.map((dc) => (
-                <DataConnectorBoxListDisplay
-                  key={dc.id}
-                  dataConnector={dc}
-                  extendedPreview={true}
-                />
-              ))}
+              {data.dataConnectors?.map((dc) =>
+                isLoading ? (
+                  <DataConnectorBoxListDisplayPlaceholder key={dc.id} />
+                ) : (
+                  <DataConnectorBoxListDisplay
+                    key={dc.id}
+                    dataConnector={dc}
+                    extendedPreview={true}
+                  />
+                )
+              )}
             </ListGroup>
           )}
           <Pagination

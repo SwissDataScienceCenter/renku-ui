@@ -106,10 +106,7 @@ export default function DataConnectorCredentialsModal({
           This data connector does not require any credentials.
         </ModalBody>
         <ModalFooter>
-          <Button
-            className="btn-outline-rk-green"
-            onClick={() => setOpen(false)}
-          >
+          <Button color="primary" onClick={() => setOpen(false)}>
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
@@ -139,10 +136,7 @@ export default function DataConnectorCredentialsModal({
           <RtkErrorAlert error={error} />
         </ModalBody>
         <ModalFooter>
-          <Button
-            className="btn-outline-rk-green"
-            onClick={() => setOpen(false)}
-          >
+          <Button color="primary" onClick={() => setOpen(false)}>
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>

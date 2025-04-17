@@ -1,8 +1,5 @@
-import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
-
-import { dataConnectorsApi as api } from "./data-connectors.api";
-
+import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import type {
   GetDataConnectorsApiArg,
   GetDataConnectorsApiResponse as GetDataConnectorsApiResponseOrig,
@@ -11,6 +8,7 @@ import type {
   GetDataConnectorsByDataConnectorIdSecretsApiArg,
   GetDataConnectorsByDataConnectorIdSecretsApiResponse,
 } from "./data-connectors.api";
+import { dataConnectorsApi as api } from "./data-connectors.api";
 
 export interface GetDataConnectorsApiResponse
   extends AbstractKgPaginatedResponse {
@@ -166,6 +164,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postDataConnectorsByDataConnectorIdProjectLinks: {
       invalidatesTags: ["DataConnectorsProjectLinks"],
     },
+    postDataConnectorsGlobal: {
+      invalidatesTags: ["DataConnectors"],
+    },
   },
 });
 
@@ -187,5 +188,6 @@ export const {
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsMutation,
+  usePostDataConnectorsGlobalMutation,
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
 } = enhancedApi;
