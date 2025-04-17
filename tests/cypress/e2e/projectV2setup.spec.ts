@@ -320,7 +320,7 @@ describe("Set up data connectors", () => {
       .parent()
       .find("[data-cy=button-with-menu-dropdown]")
       .click();
-    cy.getDataCy("data-connector-delete").should("be.visible").click();
+    cy.getDataCy("data-connector-unlink").should("be.visible").click();
     cy.wait("@getProjectV2Permissions");
     cy.contains("Are you sure you want to unlink the data connector").should(
       "be.visible"
@@ -346,7 +346,7 @@ describe("Set up data connectors", () => {
 
     cy.contains("example storage").should("be.visible").click();
     cy.getDataCy("data-connector-credentials").should("be.visible");
-    cy.getDataCy("data-connector-delete").should("not.exist");
+    cy.getDataCy("data-connector-unlink").should("not.exist");
   });
 
   it("should clear state after a data connector has been created", () => {

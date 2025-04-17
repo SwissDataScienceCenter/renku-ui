@@ -96,11 +96,11 @@ function DataConnectorRemoveDeleteModal({
   );
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && isOpen) {
       dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       onDelete();
     }
-  }, [dispatch, isSuccess, onDelete]);
+  }, [dispatch, isOpen, isSuccess, onDelete]);
   const onDeleteDataCollector = useCallback(() => {
     deleteDataConnector({
       dataConnectorId: dataConnector.id,
@@ -258,11 +258,11 @@ function DataConnectorRemoveUnlinkModal({
   const linkId = dataConnectorLink.id;
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && isOpen) {
       dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       onDelete();
     }
-  }, [dispatch, isSuccess, onDelete]);
+  }, [dispatch, isOpen, isSuccess, onDelete]);
 
   const onDeleteDataCollector = useCallback(() => {
     if (!linkId) return;
@@ -395,12 +395,12 @@ function DataConnectorActionsInner({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
   const onDelete = useCallback(() => {
-    setIsDeleteOpen(false);
     toggleView();
+    setIsDeleteOpen(false);
   }, [toggleView]);
   const onUnlink = useCallback(() => {
-    setIsUnlinkOpen(false);
     toggleView();
+    setIsUnlinkOpen(false);
   }, [toggleView]);
   const toggleCredentials = useCallback(() => {
     setCredentialsOpen((open) => !open);
@@ -461,8 +461,8 @@ function DataConnectorActionsInner({
     ...(projectPermissions.write && removeMode === "unlink"
       ? [
           {
-            key: "data-connector-delete",
-            onClick: toggleDelete,
+            key: "data-connector-unlink",
+            onClick: toggleUnlink,
             content: (
               <>
                 <NodeMinus className={cx("bi", "me-1")} />
