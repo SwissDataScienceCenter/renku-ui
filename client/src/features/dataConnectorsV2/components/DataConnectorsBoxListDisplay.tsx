@@ -49,6 +49,7 @@ import {
   getDataConnectorSource,
 } from "./dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
+import { convert } from "html-to-text";
 
 interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
@@ -145,7 +146,7 @@ export default function DataConnectorBoxListDisplay({
             </div>
             {description && (
               <ClampedParagraph className="mb-2" lines={2}>
-                {description}
+                {convert(description)}
               </ClampedParagraph>
             )}
             {extendedPreview && <div className="text-muted">{type}</div>}
