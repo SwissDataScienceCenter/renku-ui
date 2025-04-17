@@ -22,6 +22,7 @@ import { ButtonGroup } from "reactstrap";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import { EnvironmentIcon } from "./LauncherEnvironmentIcon.tsx";
 
 interface EnvironmentKindFieldProps {
   control: Control<SessionLauncherForm>;
@@ -51,11 +52,28 @@ export default function EnvironmentKindField({
               onBlur={field.onBlur}
             />
             <label
-              className={cx("btn", "btn-outline-primary")}
+              className={cx(
+                "btn",
+                "btn-outline-primary",
+                "p-4",
+                "d-flex",
+                "justify-content-center"
+              )}
               data-cy="environment-kind-global"
               htmlFor="environment-kind-global-radio"
+              style={{ width: "33.3%" }}
             >
-              Global environment
+              <div className={cx("d-flex", "flex-column", "gap-2")}>
+                <div
+                  className={cx("d-flex", "flex-row", "gap-3", "text-start")}
+                >
+                  <EnvironmentIcon type="global" size={30} />
+                  <span className="fw-bold">Global environment</span>
+                </div>
+                <p className={cx("mb-0", "small", "text-start")}>
+                  Get started quickly with a pre-built environment.
+                </p>
+              </div>
             </label>
 
             <input
@@ -69,11 +87,28 @@ export default function EnvironmentKindField({
               onBlur={field.onBlur}
             />
             <label
-              className={cx("btn", "btn-outline-primary")}
+              className={cx(
+                "btn",
+                "btn-outline-primary",
+                "p-4",
+                "d-flex",
+                "justify-content-center"
+              )}
               data-cy="environment-kind-custom"
               htmlFor="environment-kind-custom-radio"
+              style={{ width: "33.3%" }}
             >
-              Custom environment
+              <div className={cx("d-flex", "flex-column", "gap-2")}>
+                <div
+                  className={cx("d-flex", "flex-row", "gap-3", "text-start")}
+                >
+                  <EnvironmentIcon type="custom" size={30} />
+                  <span className="fw-bold">Custom environment</span>
+                </div>
+                <p className={cx("mb-0", "small", "text-start")}>
+                  Run a Renku session from a docker image.
+                </p>
+              </div>
             </label>
 
             {imageBuildersEnabled && (
@@ -89,10 +124,33 @@ export default function EnvironmentKindField({
                   onBlur={field.onBlur}
                 />
                 <label
-                  className={cx("btn", "btn-outline-primary")}
+                  className={cx(
+                    "btn",
+                    "btn-outline-primary",
+                    "p-4",
+                    "d-flex",
+                    "justify-content-center"
+                  )}
                   htmlFor="environment-kind-builder-radio"
+                  style={{ width: "33.3%" }}
                 >
-                  Create from code
+                  <div className={cx("d-flex", "flex-column", "gap-2")}>
+                    <div
+                      className={cx(
+                        "d-flex",
+                        "flex-row",
+                        "gap-3",
+                        "text-start"
+                      )}
+                    >
+                      <EnvironmentIcon type="codeBased" size={30} />
+                      <span className="fw-bold">Create from code</span>
+                    </div>
+                    <p className={cx("mb-0", "small", "text-start")}>
+                      Customize your session with a requirements.txt or similar
+                      file.
+                    </p>
+                  </div>
                 </label>
               </>
             )}
