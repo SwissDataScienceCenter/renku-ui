@@ -26,7 +26,7 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 
-import { useGetCloudStorageSchemaQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import { useGetStorageSchemaQuery } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_TOTAL_STEPS,
   EMPTY_CLOUD_STORAGE_STATE,
@@ -56,7 +56,7 @@ export function DataConnectorModalBodyAndFooter({
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
   // Fetch available schema when users open the modal
-  const schemaQueryResult = useGetCloudStorageSchemaQuery(
+  const schemaQueryResult = useGetStorageSchemaQuery(
     isOpen ? undefined : skipToken
   );
   const dispatch = useAppDispatch();

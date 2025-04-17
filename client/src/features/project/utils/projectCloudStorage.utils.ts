@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import {
+import type {
   RCloneConfig,
   RCloneOption,
 } from "../../dataConnectorsV2/api/data-connectors.api";
-import { hasSchemaAccessMode } from "../../dataConnectorsV2/components/dataConnector.utils.ts";
-import { CloudStorageGetRead } from "../../projectsV2/api/storagesV2.api";
-import { SessionCloudStorageV2 } from "../../sessionsV2/sessionsV2.types.ts";
+import { hasSchemaAccessMode } from "../../dataConnectorsV2/components/dataConnector.utils";
+import type { SessionCloudStorageV2 } from "../../sessionsV2/sessionsV2.types";
+import type { CloudStorageGet } from "../components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_OPTIONS_PROVIDER_OVERRIDE,
@@ -34,15 +34,14 @@ import {
   EMPTY_CLOUD_STORAGE_DETAILS,
   STORAGES_WITH_ACCESS_MODE,
 } from "../components/cloudStorage/projectCloudStorage.constants";
-import {
-  CloudStorage,
-  CloudStorageConfiguration,
+import type {
   CloudStorageCredential,
   CloudStorageDetails,
   CloudStorageOptionTypes,
+  CloudStorageSchemaOption,
   CloudStorageProvider,
   CloudStorageSchema,
-  CloudStorageSchemaOptions,
+  CloudStorage,
 } from "../components/cloudStorage/projectCloudStorage.types";
 
 import { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
@@ -55,10 +54,10 @@ export interface CloudStorageOptions extends RCloneOption {
 
 type SensitiveFields =
   | CloudStorage["sensitive_fields"]
-  | CloudStorageGetRead["sensitive_fields"];
+  | CloudStorageGet["sensitive_fields"];
 type StorageConfiguration =
   | CloudStorage["storage"]["configuration"]
-  | CloudStorageGetRead["storage"]["configuration"];
+  | CloudStorageGet["storage"]["configuration"];
 type StorageAndSensitiveFieldsDefinition = {
   storage: { configuration: StorageConfiguration };
   sensitive_fields?: SensitiveFields;
@@ -110,9 +109,7 @@ export function getCredentialFieldDefinitions<
 >(
   storageDefinition: T
 ):
-  | (T extends CloudStorageGetRead
-      ? CloudStorageOptions
-      : CloudStorageCredential)[]
+  | (T extends CloudStorageGet ? CloudStorageOptions : CloudStorageCredential)[]
   | undefined {
   const { storage, sensitive_fields } = storageDefinition;
   const { configuration } = storage;
@@ -122,13 +119,13 @@ export function getCredentialFieldDefinitions<
     requiredCredential: providedSensitiveFields.includes(field?.name || ""),
   }));
   if (result == null) return result;
-  return result as (T extends CloudStorageGetRead
+  return result as (T extends CloudStorageGet
     ? CloudStorageOptions
     : CloudStorageCredential)[];
 }
 
 export function getProvidedSensitiveFields(
-  configuration: CloudStorageConfiguration["configuration"] | RCloneConfig
+  configuration: RCloneConfig
 ): string[] {
   return Object.entries(configuration)
     .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
@@ -188,15 +185,12 @@ export function getSchemaProviders(
   if (!hasProviders && !hasAccessMode) return;
 
   if (hasAccessMode)
-    return providers?.examples.map(
-      (a) =>
-        ({
-          name: a.value,
-          description: a.help,
-          position: undefined,
-          friendlyName: a.value.charAt(0).toUpperCase() + a.value.slice(1),
-        } as CloudStorageProvider)
-    );
+    return providers?.examples?.map<CloudStorageProvider>((a) => ({
+      name: a.value,
+      help: a.help,
+      position: undefined,
+      friendlyName: a.value.charAt(0).toUpperCase() + a.value.slice(1),
+    }));
 
   const providerOverrides = Object.keys(
     CLOUD_STORAGE_OVERRIDE.storage
@@ -204,32 +198,36 @@ export function getSchemaProviders(
     ? CLOUD_STORAGE_OVERRIDE.storage[targetSchema].providers
     : undefined;
 
-  const finalProviders = providers?.examples.reduce<
-    CloudStorageProvider[] | undefined
-  >((current, e) => {
-    if (
-      shortList &&
-      CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetSchema] &&
-      !CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetSchema].includes(e.value) &&
-      e.value !== currentProvider
-    )
+  const finalProviders = providers?.examples?.reduce<CloudStorageProvider[]>(
+    (current, e) => {
+      if (
+        shortList &&
+        CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetSchema] &&
+        !CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetSchema].includes(e.value) &&
+        e.value !== currentProvider
+      )
+        return current;
+      if (
+        providerOverrides &&
+        Object.keys(providerOverrides).includes(e.value)
+      ) {
+        const override = providerOverrides[e.value];
+        current.push({
+          name: override.name ?? e.value,
+          help: override.help ?? e.help,
+          position: override.position ?? undefined,
+        });
+      } else {
+        current.push({
+          name: e.value,
+          help: e.help,
+          position: undefined,
+        });
+      }
       return current;
-    if (providerOverrides && Object.keys(providerOverrides).includes(e.value)) {
-      const override = providerOverrides[e.value];
-      (current as CloudStorageProvider[]).push({
-        name: override.name ?? e.value,
-        description: override.description ?? e.help,
-        position: override.position ?? undefined,
-      });
-    } else {
-      (current as CloudStorageProvider[]).push({
-        name: e.value,
-        description: e.help,
-        position: undefined,
-      });
-    }
-    return current;
-  }, []);
+    },
+    []
+  );
 
   if (!finalProviders) return;
   return finalProviders.sort(
@@ -248,7 +246,7 @@ export function getSchemaOptions(
   targetSchema?: string,
   targetProvider?: string,
   flags = { override: true, convertType: true, filterHidden: true }
-): CloudStorageSchemaOptions[] | undefined {
+): CloudStorageSchemaOption[] | undefined {
   if (!targetSchema) return;
   const storage = schema.find((s) => s.prefix === targetSchema);
   if (!storage) return;
@@ -288,7 +286,7 @@ export function getSourcePathHint(
 }
 
 export function getCurrentStorageDetails(
-  existingCloudStorage?: CloudStorage | CloudStorageGetRead | null
+  existingCloudStorage?: CloudStorage | CloudStorageGet | null
 ): CloudStorageDetails {
   if (!existingCloudStorage) {
     return EMPTY_CLOUD_STORAGE_DETAILS;
@@ -365,10 +363,10 @@ export function storageDefinitionFromConfig(
 }
 
 function overrideOptions(
-  options: CloudStorageSchemaOptions[],
+  options: CloudStorageSchemaOption[],
   targetSchema: string,
   targetProvider?: string
-): CloudStorageSchemaOptions[] {
+): CloudStorageSchemaOption[] {
   return options.map((option) => {
     const schemaOverrides =
       CLOUD_OPTIONS_OVERRIDE[targetSchema]?.[option.name] || {};
@@ -384,7 +382,7 @@ function overrideOptions(
 }
 
 function filterOption(
-  option: CloudStorageSchemaOptions,
+  option: CloudStorageSchemaOption,
   shortList: boolean,
   targetProvider?: string,
   filterHidden = true
@@ -400,7 +398,7 @@ function filterOption(
   return true;
 }
 
-function shouldHideOption(option: CloudStorageSchemaOptions): boolean {
+function shouldHideOption(option: CloudStorageSchemaOption): boolean {
   return !(
     option.hide === 0 ||
     option.hide === false ||
@@ -419,9 +417,9 @@ function filterByProvider(provider: string, targetProvider?: string): boolean {
 }
 
 function convertOptions(
-  options: CloudStorageSchemaOptions[],
+  options: CloudStorageSchemaOption[],
   targetProvider?: string
-): CloudStorageSchemaOptions[] {
+): CloudStorageSchemaOption[] {
   return options.map((option) => {
     const convertedOption = { ...option };
 
@@ -445,7 +443,7 @@ function convertOptions(
 }
 
 function inferOptionType(
-  option: CloudStorageSchemaOptions
+  option: CloudStorageSchemaOption
 ): CloudStorageOptionTypes {
   const optionType = option.type.toString().toLowerCase();
   if (option.ispassword || option.sensitive) return "secret";
@@ -462,11 +460,11 @@ function inferOptionType(
 }
 
 function convertDefaultValue(
-  option: CloudStorageSchemaOptions,
+  option: CloudStorageSchemaOption,
   type: string
 ): undefined | string | number | boolean {
   try {
-    const value = option.default ?? option.value;
+    const value = option.default;
     if (value === undefined || value === "[object Object]") return undefined;
 
     if (type === "number") return parseFloat(value.toString());
@@ -491,8 +489,8 @@ function filterExample(
 }
 
 function sortOptionsByPosition(
-  options: CloudStorageSchemaOptions[]
-): CloudStorageSchemaOptions[] {
+  options: CloudStorageSchemaOption[]
+): CloudStorageSchemaOption[] {
   return options.sort((a, b) => {
     const positionA = a.position ?? Infinity; // Default to Infinity if "position" is undefined
     const positionB = b.position ?? Infinity;

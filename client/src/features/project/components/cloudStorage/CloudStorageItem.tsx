@@ -42,15 +42,13 @@ import {
 import { Loader } from "../../../../components/Loader";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { StateModelProject } from "../../project.types";
-import { useDeleteCloudStorageMutation } from "./projectCloudStorage.api";
-import {
-  CloudStorage,
-  CloudStorageConfiguration,
-} from "./projectCloudStorage.types";
 import { getCredentialFieldDefinitions } from "../../utils/projectCloudStorage.utils";
 import AddOrEditCloudStorageButton from "./AddOrEditCloudStorageButton";
+import {
+  type CloudStorageWithId,
+  useDeleteStorageByStorageIdMutation,
+} from "./api/projectCloudStorage.api";
+import type { CloudStorage } from "./projectCloudStorage.types";
 
 interface CloudStorageItemProps {
   children?: React.ReactNode;
@@ -353,7 +351,7 @@ function DeleteCloudStorageButton({
 
 interface DeleteCloudStorageModalProps {
   isOpen: boolean;
-  storage: CloudStorageConfiguration;
+  storage: CloudStorageWithId;
   toggle: () => void;
 }
 
@@ -364,17 +362,12 @@ function DeleteCloudStorageModal({
 }: DeleteCloudStorageModalProps) {
   const { name, storage_id } = storage;
 
-  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
-    (state) => state.stateModel.project.metadata.id
-  );
-
-  const [deleteCloudStorage, result] = useDeleteCloudStorageMutation();
+  const [deleteCloudStorage, result] = useDeleteStorageByStorageIdMutation();
   const onDelete = useCallback(() => {
     deleteCloudStorage({
-      project_id: `${projectId}`,
-      storage_id,
+      storageId: storage_id,
     });
-  }, [deleteCloudStorage, projectId, storage_id]);
+  }, [deleteCloudStorage, storage_id]);
 
   useEffect(() => {
     if (result.isSuccess || result.isError) {

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,18 +16,11 @@
  * limitations under the License.
  */
 
-// Run `npm run generate-api:data-connectors` to generate the API
-import type { ConfigFile } from "@rtk-query/codegen-openapi";
-import path from "path";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
-const config: ConfigFile = {
-  // Configure to inject endpoints into the dataConnectorsApi
-  apiFile: "./data-connectors.empty-api.ts",
-  apiImport: "dataConnectorsEmptyApi",
-  outputFile: "./data-connectors.api.ts",
-  exportName: "dataConnectorsApi",
-  hooks: true,
-  schemaFile: path.join(__dirname, "data-connectors.openapi.json"),
-};
-
-export default config;
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const projectCloudStorageEmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "projectCloudStorageApi",
+});

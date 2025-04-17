@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { CloudStorageConfiguration } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type { CloudStorageWithId } from "../project/components/cloudStorage/api/projectCloudStorage.api";
 
 export interface StartSessionOptions {
   branch: string;
@@ -34,7 +34,7 @@ export interface StartSessionOptions {
   storage: number;
 }
 
-export interface SessionCloudStorage extends CloudStorageConfiguration {
+export interface SessionCloudStorage extends CloudStorageWithId {
   active: boolean;
   sensitive_fields?: { name: string; help: string; value: string }[];
 }

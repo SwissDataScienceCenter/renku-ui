@@ -33,13 +33,13 @@ import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
-import { useTestCloudStorageConnectionMutation } from "./projectCloudStorage.api";
+import { usePostStorageSchemaTestConnectionMutation } from "./api/projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "./projectCloudStorage.constants";
 import {
   AddCloudStorageState,
+  AuxiliaryCommandStatus,
   CloudStorageDetails,
   CloudStorageSchema,
-  AuxiliaryCommandStatus,
 } from "./projectCloudStorage.types";
 
 import { SerializedError } from "@reduxjs/toolkit";
@@ -47,7 +47,9 @@ import { SerializedError } from "@reduxjs/toolkit";
 interface AddCloudStorageForwardBackButtonProps {
   setStateSafe: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
-  validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
+  validationResult: ReturnType<
+    typeof usePostStorageSchemaTestConnectionMutation
+  >[1];
 }
 
 interface AddCloudStorageBackButtonProps
@@ -286,7 +288,9 @@ export function AddCloudStorageContinueButton({
 }
 
 interface AddCloudStorageConnectionTestResultProps {
-  validationResult: ReturnType<typeof useTestCloudStorageConnectionMutation>[1];
+  validationResult: ReturnType<
+    typeof usePostStorageSchemaTestConnectionMutation
+  >[1];
 }
 
 export function AddCloudStorageConnectionTestResult({

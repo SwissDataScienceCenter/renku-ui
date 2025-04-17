@@ -8,9 +8,6 @@
   "servers": [
     {
       "url": "/api/data"
-    },
-    {
-      "url": "/ui-server/api/data"
     }
   ],
   "paths": {
@@ -259,19 +256,25 @@
           "in": "path",
           "name": "namespace",
           "required": true,
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         },
         {
           "in": "path",
           "name": "project",
           "required": true,
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         },
         {
           "in": "path",
           "name": "slug",
           "required": true,
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         }
       ],
       "get": {
@@ -611,10 +614,10 @@
             "$ref": "#/components/schemas/DataConnectorName"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "slug": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "storage": {
             "$ref": "#/components/schemas/CloudStorageCore"
@@ -659,7 +662,7 @@
             "$ref": "#/components/schemas/DataConnectorName"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/OneOrTwoSlugs"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -696,7 +699,7 @@
             "$ref": "#/components/schemas/DataConnectorName"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/OneOrTwoSlugs"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -933,7 +936,8 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 5000,
-        "nullable": true
+        "nullable": true,
+        "example": "My secret value"
       },
       "RCloneOption": {
         "type": "object",
@@ -994,7 +998,8 @@
                   "type": "string",
                   "description": "The provider this value is applicable for. Empty if valid for all providers."
                 }
-              }
+              },
+              "required": ["value", "help"]
             }
           },
           "required": {
@@ -1030,10 +1035,24 @@
               "SizeSuffix",
               "SpaceSepList",
               "CommaSepList",
-              "Tristate"
+              "Tristate",
+              "Encoding",
+              "Bits"
             ]
           }
-        }
+        },
+        "required": [
+          "name",
+          "help",
+          "default",
+          "default_str",
+          "required",
+          "ispassword",
+          "sensitive",
+          "advanced",
+          "exclusive",
+          "type"
+        ]
       },
       "Ulid": {
         "description": "ULID identifier",
@@ -1048,6 +1067,12 @@
         "minLength": 1,
         "maxLength": 99,
         "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*$",
+        "example": "a-slug-example"
+      },
+      "SlugResponse": {
+        "description": "A command-line/url friendly name for a namespace",
+        "type": "string",
+        "minLength": 1,
         "example": "a-slug-example"
       },
       "OneOrTwoSlugs": {

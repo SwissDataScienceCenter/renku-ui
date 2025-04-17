@@ -25,7 +25,7 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import { useGetStorageQuery } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import {
   useGetAllRepositoryBranchesQuery,
@@ -175,11 +175,11 @@ function useAutostartSessionOptions(): void {
   const { data: notebooksVersion, isFetching: notebooksVersionIsFetching } =
     useGetNotebooksVersionQuery();
   const { data: storageForProject, isFetching: storageIsFetching } =
-    useGetCloudStorageForProjectQuery(
+    useGetStorageQuery(
       gitLabProjectId &&
         notebooksVersion &&
         notebooksVersion.cloudStorageEnabled
-        ? { project_id: `${gitLabProjectId}` }
+        ? { storageParams: { project_id: `${gitLabProjectId}` } }
         : skipToken
     );
 

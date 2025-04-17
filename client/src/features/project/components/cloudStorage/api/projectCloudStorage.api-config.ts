@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,18 +16,18 @@
  * limitations under the License.
  */
 
-// Run `npm run generate-api:data-connectors` to generate the API
+// Run `npm run generate-api:???` to generate the API
 import type { ConfigFile } from "@rtk-query/codegen-openapi";
 import path from "path";
 
 const config: ConfigFile = {
   // Configure to inject endpoints into the dataConnectorsApi
-  apiFile: "./data-connectors.empty-api.ts",
-  apiImport: "dataConnectorsEmptyApi",
-  outputFile: "./data-connectors.api.ts",
-  exportName: "dataConnectorsApi",
+  apiFile: "./projectCloudStorage.empty-api.ts",
+  apiImport: "projectCloudStorageEmptyApi",
+  outputFile: "./projectCloudStorage.generated-api.ts",
+  exportName: "projectCloudStorageGeneratedApi",
   hooks: true,
-  schemaFile: path.join(__dirname, "data-connectors.openapi.json"),
+  schemaFile: path.join(__dirname, "projectCloudStorage.openapi.json"),
 };
 
 export default config;
