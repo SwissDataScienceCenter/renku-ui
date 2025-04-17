@@ -125,7 +125,7 @@ export function getCredentialFieldDefinitions<
 }
 
 export function getProvidedSensitiveFields(
-  configuration: /* CloudStorageConfiguration["configuration"] |*/ RCloneConfig
+  configuration: RCloneConfig
 ): string[] {
   return Object.entries(configuration)
     .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)

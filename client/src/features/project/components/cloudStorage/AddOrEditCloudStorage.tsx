@@ -79,7 +79,7 @@ interface AddOrEditCloudStorageProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
-  storageSecrets: DataConnectorSecret[]; // CloudStorageSecretGet[];
+  storageSecrets: DataConnectorSecret[];
   projectId?: string;
 }
 
@@ -171,7 +171,7 @@ export interface AddStorageStepProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
-  storageSecrets: DataConnectorSecret[]; //CloudStorageSecretGet[];
+  storageSecrets: DataConnectorSecret[];
   isV2?: boolean;
   validationSucceeded: boolean;
   projectId?: string;
@@ -405,7 +405,7 @@ interface PasswordOptionItemProps {
   isV2?: boolean;
   onFieldValueChange: (option: string, value: string) => void;
   option: CloudStorageSchemaOption;
-  storageSecrets: DataConnectorSecret[]; //CloudStorageSecretGet[];
+  storageSecrets: DataConnectorSecret[];
 }
 function PasswordOptionItem({
   control,

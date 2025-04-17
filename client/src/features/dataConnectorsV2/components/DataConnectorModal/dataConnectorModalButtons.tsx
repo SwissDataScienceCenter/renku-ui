@@ -314,22 +314,21 @@ function TestConnectionAndContinueButtons({
     dispatch(
       dataConnectorFormSlice.actions.setActionOngoing({ isActionOngoing: true })
     );
-    validateCloudStorageConnection(
-      // validateParameters
-      { body: validateParameters }
-    ).then((result) => {
-      const validationResult =
-        "data" in result
-          ? { isSuccess: true, isError: false, error: null }
-          : { isSuccess: false, isError: true, error: result.error };
+    validateCloudStorageConnection({ body: validateParameters }).then(
+      (result) => {
+        const validationResult =
+          "data" in result
+            ? { isSuccess: true, isError: false, error: null }
+            : { isSuccess: false, isError: true, error: result.error };
 
-      dispatch(
-        dataConnectorFormSlice.actions.setValidationResult({
-          validationResult,
-          isActionOngoing: false,
-        })
-      );
-    });
+        dispatch(
+          dataConnectorFormSlice.actions.setValidationResult({
+            validationResult,
+            isActionOngoing: false,
+          })
+        );
+      }
+    );
   }, [dispatch, flatDataConnector, validateCloudStorageConnection]);
   const buttonTestId = `${testId}-button`;
   const divTestId = `${testId}-div`;

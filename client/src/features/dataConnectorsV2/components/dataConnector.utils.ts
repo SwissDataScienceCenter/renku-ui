@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-// import { PostStorageSchemaTestConnectionParams } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
 import type { PostStorageSchemaTestConnectionApiArg } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,

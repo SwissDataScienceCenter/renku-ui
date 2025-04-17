@@ -236,17 +236,14 @@ export default function CloudStorageModal({
   }, [storageDetails, validateCloudStorageConnection]);
 
   const addOrEditStorage = useCallback(() => {
-    const storageParameters: PostStorageApiArg["body"] =
-      /* | CloudStorageUrl*/
-      /*| CloudStoragePatch */ /*: PostStorageParams | CloudStorage*/ {
-        name: storageDetails.name ?? "",
-        readonly: storageDetails.readOnly ?? true,
-        project_id: `${projectId}`,
-        source_path: storageDetails.sourcePath ?? "/",
-        target_path: storageDetails.mountPoint as string,
-        configuration: { type: storageDetails.schema ?? null },
-        // private: false,
-      };
+    const storageParameters: PostStorageApiArg["body"] = {
+      name: storageDetails.name ?? "",
+      readonly: storageDetails.readOnly ?? true,
+      project_id: `${projectId}`,
+      source_path: storageDetails.sourcePath ?? "/",
+      target_path: storageDetails.mountPoint as string,
+      configuration: { type: storageDetails.schema ?? null },
+    };
     // Add provider when required
     if (storageDetails.provider) {
       storageParameters.configuration = {
@@ -259,7 +256,7 @@ export default function CloudStorageModal({
       storageDetails.options &&
       Object.keys(storageDetails.options).length > 0
     ) {
-      const allOptions = storageDetails.options; // as CloudStorageDetailsOptions;
+      const allOptions = storageDetails.options;
       const sensitiveFields = schema
         ? findSensitive(schema.find((s) => s.prefix === storageDetails.schema))
         : currentStorage?.sensitive_fields
@@ -286,28 +283,18 @@ export default function CloudStorageModal({
     // We manually set success only when we get an ID back. That's just to sho a success message
     if (storageId) {
       // v1
-      // const storageParametersWithId: UpdateCloudStorageParams = {
-      //   ...storageParameters,
-      //   storage_id: storageId as string,
-      // };
-      modifyCloudStorageForProject(
-        {
-          storageId: storageId,
-          body: storageParameters,
-        }
-        // storageParametersWithId
-      ).then((result) => {
+      modifyCloudStorageForProject({
+        storageId: storageId,
+        body: storageParameters,
+      }).then((result) => {
         if ("data" in result && result.data.storage.storage_id) {
           setSuccess(true);
         }
       });
     } else {
-      addCloudStorageForProject(
-        {
-          body: storageParameters,
-        }
-        // storageParameters
-      ).then((result) => {
+      addCloudStorageForProject({
+        body: storageParameters,
+      }).then((result) => {
         if ("data" in result && result.data.storage.storage_id) {
           setSuccess(true);
         }

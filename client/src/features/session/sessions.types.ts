@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-// import { CloudStorageWithIdRead } from "../projectsV2/api/storagesV2.api.ts";
 import type { CloudStorageWithId } from "../project/components/cloudStorage/api/projectCloudStorage.api";
 import type { SessionCloudStorage } from "./startSessionOptions.types";
 

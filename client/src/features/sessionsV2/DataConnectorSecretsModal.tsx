@@ -535,7 +535,6 @@ interface SensitiveFieldInputProps {
   control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   friendlyName: string;
   defaultValue: string | undefined;
-  // option: RCloneOption;
   name: string;
   showPasswordInitially?: boolean;
 }
@@ -544,7 +543,6 @@ function SensitiveFieldInput({
   control,
   defaultValue,
   friendlyName,
-  // option,
   name,
   showPasswordInitially = false,
 }: SensitiveFieldInputProps) {

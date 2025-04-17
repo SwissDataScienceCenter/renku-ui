@@ -22,33 +22,11 @@ import type {
   CloudStorageGet,
 } from "./api/projectCloudStorage.api";
 
-// import { DataServicesError } from "../../../dataServices/dataServices.types";
-
-// export interface CloudStorage {
-//   storage: CloudStorageConfiguration;
-//   sensitive_fields?: CloudStorageSensitiveFieldDefinition[];
-// }
 export interface CloudStorage
   extends Omit<CloudStorageGet, "sensitive_fields"> {
   sensitive_fields?: { name: string; help: string }[];
 }
 
-// export interface CloudStorageConfiguration {
-//   configuration: CloudStorageDetailsOptions;
-//   name: string;
-//   private: boolean;
-//   project_id: string;
-//   readonly: boolean;
-//   source_path: string;
-//   storage_id: string;
-//   storage_type: string; // This is duplicated in configuration.type
-//   target_path: string;
-// }
-
-// export interface CloudStorageSensitiveFieldDefinition {
-//   help: string;
-//   name: string;
-// }
 export type CloudStorageSensitiveFieldDefinition = Pick<
   RCloneOption,
   "name" | "help"
@@ -59,82 +37,17 @@ export interface CloudStorageCredential
   requiredCredential: boolean;
 }
 
-// export interface GetCloudStorageForProjectParams {
-//   project_id: string;
-// }
-
-// export interface AddCloudStorageForProjectParams {
-//   configuration?: CloudStorageDetailsOptions;
-//   name: string;
-//   private: boolean;
-//   project_id: string;
-//   readonly: boolean;
-//   source_path: string;
-//   target_path: string;
-// }
-
-// export interface UpdateCloudStorageParams {
-//   configuration?: CloudStorageDetailsOptions;
-//   name?: string;
-//   project_id: string;
-//   readonly?: boolean;
-//   storage_id: string;
-//   source_path?: string;
-//   target_path?: string;
-// }
-
-// export interface DeleteCloudStorageParams {
-//   project_id: string;
-//   storage_id: string;
-// }
-
-// export interface ValidateCloudStorageConfigurationParams {
-//   configuration: Record<string, string | undefined>;
-// }
-
 export type CloudStorageOptionTypes =
   | "string"
   | "boolean"
   | "number"
   | "secret";
 
-// export type CloudStorageSchemaOptionExample = {
-//   value: string; // ? Potential value for the option
-//   help: string; // ? Help text for the _value_
-//   provider: string; // ? empty for "all providers"
-//   friendlyName?: string;
-// };
 type RCloneOptionExample = Exclude<RCloneOption["examples"], undefined>[0];
 export interface CloudStorageSchemaOptionExample extends RCloneOptionExample {
-  // value: string; // ? Potential value for the option
-  // help: string; // ? Help text for the _value_
-  // provider: string; // ? empty for "all providers"
   friendlyName?: string;
 }
 
-// export interface CloudStorageSchemaOptions {
-//   name: string;
-//   help: string;
-//   provider: string;
-//   default: number | string | boolean;
-//   default_str: string;
-//   value: null | number | string | boolean;
-//   examples: CloudStorageSchemaOptionExample[];
-//   required: boolean;
-//   ispassword: boolean; // eslint-disable-line spellcheck/spell-checker
-//   sensitive: boolean;
-//   advanced: boolean; // ? Only shown when advanced options are enabled
-//   exclusive: boolean; // ? Only one of the examples can be used when this is true
-//   datatype: string;
-//   type: string;
-//   hide: boolean | number;
-//   convertedType?: CloudStorageOptionTypes;
-//   convertedDefault?: number | string | boolean;
-//   convertedHide?: boolean;
-//   filteredExamples: CloudStorageSchemaOptionExample[];
-//   friendlyName?: string;
-//   position?: number;
-// }
 export interface CloudStorageSchemaOption extends RCloneOption {
   examples?: CloudStorageSchemaOptionExample[];
   datatype?: string;
@@ -147,14 +60,6 @@ export interface CloudStorageSchemaOption extends RCloneOption {
   position?: number;
 }
 
-// export interface CloudStorageSchema {
-//   name: string;
-//   description: string;
-//   hide?: boolean;
-//   prefix: string; // ? weird naming; it's the machine readable name
-//   position?: number;
-//   options: CloudStorageSchemaOptions[];
-// }
 export interface CloudStorageSchema extends RCloneEntry {
   hide?: boolean;
   position?: number;
@@ -165,12 +70,6 @@ export interface CloudStorageOverride extends CloudStorageSchema {
   providers: Record<string, Partial<CloudStorageProvider>>;
 }
 
-// export interface CloudStorageProvider {
-//   name: string;
-//   description: string;
-//   position?: number;
-//   friendlyName?: string;
-// }
 export interface CloudStorageProvider
   extends Pick<RCloneOption, "name" | "help"> {
   position?: number;
@@ -204,10 +103,3 @@ export type CloudStorageDetails = {
 };
 
 export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
-
-// export interface TestCloudStorageConnectionParams {
-//   configuration: CloudStorageDetailsOptions;
-//   source_path: string;
-// }
-
-// export type TestCloudStorageConnectionResponse = DataServicesError | void;
