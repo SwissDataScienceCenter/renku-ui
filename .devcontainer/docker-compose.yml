@@ -1,0 +1,9 @@
+services:
+  repo:
+    image: "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm"
+    volumes:
+      - ../:/workspace:cached
+      - .npm:/home/node/.npm:delegated
+    entrypoint: sleep infinity
+    environment:
+      VITE_HOST: "0.0.0.0"
