@@ -9,9 +9,7 @@
   "postCreateCommand": "npm update --global npm && npm install && npm --prefix ./client install && npm --prefix ./server install && npm --prefix ./tests install",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "esbenp.prettier-vscode"
-      ]
+      "extensions": ["esbenp.prettier-vscode"]
     }
   }
 }
