@@ -88,7 +88,7 @@ export type AddCloudStorageState = {
 
 export type CloudStorageDetailsOptions = Record<
   string,
-  string | number | boolean | object | null /*| undefined*/
+  string | number | boolean | object | null
 >;
 
 export type CloudStorageDetails = {
