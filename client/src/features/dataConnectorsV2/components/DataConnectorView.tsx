@@ -28,7 +28,12 @@ import {
   BoxArrowUpRight,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
-import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
+import {
+  Badge,
+  Offcanvas,
+  OffcanvasBody,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
@@ -524,6 +529,18 @@ function DataConnectorViewMetadata({
           </WarnAlert>
         )}
       </DataConnectorPropertyValue>
+
+      {dataConnector.keywords && (
+        <DataConnectorPropertyValue title="Keywords">
+          <div className={cx("d-flex", "flex-wrap", "gap-1", "my-1")}>
+            {dataConnector.keywords.map((keyword, index) => (
+              <Badge color="secondary" key={index}>
+                {keyword}
+              </Badge>
+            ))}
+          </div>
+        </DataConnectorPropertyValue>
+      )}
 
       {dataConnector.description && (
         <DataConnectorPropertyValue title="Description">
