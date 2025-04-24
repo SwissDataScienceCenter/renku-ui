@@ -193,24 +193,15 @@ function SaveCloudStorage({
   );
 }
 
-function envVariableOverrides(
-  envVariables: StartSessionFromLauncherProps["launcher"]["env_variables"],
-  searchParams: URLSearchParams
-) {
-  if (envVariables == null) return [];
-  const envVariableNames = envVariables.map((env) => env.name);
-  const envVariableOverrides = envVariableNames.map((name) => {
-    const value = searchParams.get(name);
-    if (value == null) return null;
-    return {
+function envVariableOverrides(searchParams: URLSearchParams) {
+  const overrides = [];
+  for (const [name, value] of searchParams) {
+    overrides.push({
       name,
       value,
-    };
-  });
-  return envVariableOverrides.filter((env) => env != null) as {
-    name: string;
-    value: string;
-  }[];
+    });
+  }
+  return overrides;
 }
 
 function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
@@ -235,13 +226,9 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       cloudstorage: startSessionOptionsV2.cloudStorage
         ?.filter(({ active }) => active)
         .map((cs) => storageDefinitionFromConfig(cs)),
-      env_variable_overrides: envVariableOverrides(
-        launcher.env_variables,
-        searchParams
-      ),
+      env_variable_overrides: envVariableOverrides(searchParams),
     };
   }, [
-    launcher.env_variables,
     launcher.id,
     startSessionOptionsV2.storage,
     startSessionOptionsV2.sessionClass,
