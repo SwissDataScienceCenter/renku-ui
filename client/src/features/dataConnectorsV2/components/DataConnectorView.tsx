@@ -308,11 +308,10 @@ function DataConnectorViewProjects({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-projects-section"
     >
-      <div>
-        <h4>
-          <Folder className={cx("bi", "me-1")} /> Projects
-        </h4>
-      </div>
+      <h4>
+        <Folder className={cx("bi", "me-1")} />
+        Projects
+      </h4>
       <div>
         {isLoading && <p>Retrieving projects...</p>}
         {!isLoading && projects.length === 0 && <p>None</p>}
@@ -330,11 +329,11 @@ function DataConnectorViewProjects({
               );
               return (
                 <tr key={project.id}>
-                  <th scope="row">
+                  <td scope="row">
                     <Link to={projectUrl}>
                       {project.namespace}/{project.slug}
                     </Link>
-                  </th>
+                  </td>
                   <td>{project.description}</td>
                 </tr>
               );
