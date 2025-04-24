@@ -58,6 +58,7 @@ import { WarnAlert } from "../../../components/Alert";
 import { getDataConnectorScope } from "./dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import { skipToken } from "@reduxjs/toolkit/query";
+import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 
 const SECTION_CLASSES = [
   "border-top",
@@ -431,47 +432,80 @@ function DataConnectorViewMetadata({
         </div>
       </DataConnectorPropertyValue>
 
-      <DataConnectorPropertyValue title="Owner">
-        <div className={cx("align-items-center", "d-flex", "gap-1")}>
-          {scope === "global" ? (
-            <>
+      {scope === "global" ? (
+        <>
+          <DataConnectorPropertyValue title="Source">
+            <div className={cx("align-items-center", "d-flex", "gap-1")}>
               <BoxArrowUpRight className={cx("bi", "flex-shrink-0")} />
+              DOI provider
+            </div>
+          </DataConnectorPropertyValue>
+
+          <DataConnectorPropertyValue title="DOI">
+            <div
+              className={cx(
+                "align-items-center",
+                "d-flex",
+                "gap-1",
+                "justify-content-between"
+              )}
+            >
               <a
                 href={`https://doi.org/${dataConnector.storage.configuration["doi"]}`}
                 rel="noreferrer noopener"
                 target="_blank"
               >
-                doi:{dataConnector.storage.configuration["doi"] as string}
+                {dataConnector.storage.configuration["doi"] as string}
               </a>
-            </>
-          ) : scope === "project" ? (
-            <>
-              <Folder className={cx("bi", "flex-shrink-0")} />
-              <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
-            </>
-          ) : (
-            <>
-              <UserAvatar namespace={dataConnector.namespace as string} />
-              <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
-              {isLoadingNamespace ? (
-                <Loader inline size={16} />
-              ) : namespace?.namespace_kind === "user" ? (
-                <EntityPill
-                  entityType="User"
-                  size="sm"
-                  tooltipPlacement="bottom"
+              <div>
+                <Clipboard
+                  className={cx(
+                    "border-0",
+                    "btn",
+                    "ms-1",
+                    "p-0",
+                    "shadow-none"
+                  )}
+                  clipboardText={
+                    dataConnector.storage.configuration["doi"] as string
+                  }
                 />
-              ) : namespace?.namespace_kind === "group" ? (
-                <EntityPill
-                  entityType="Group"
-                  size="sm"
-                  tooltipPlacement="bottom"
-                />
-              ) : null}
-            </>
-          )}
-        </div>
-      </DataConnectorPropertyValue>
+              </div>
+            </div>
+          </DataConnectorPropertyValue>
+        </>
+      ) : (
+        <DataConnectorPropertyValue title="Owner">
+          <div className={cx("align-items-center", "d-flex", "gap-1")}>
+            {scope === "project" ? (
+              <>
+                <Folder className={cx("bi", "flex-shrink-0")} />
+                <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
+              </>
+            ) : (
+              <>
+                <UserAvatar namespace={dataConnector.namespace as string} />
+                <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
+                {isLoadingNamespace ? (
+                  <Loader inline size={16} />
+                ) : namespace?.namespace_kind === "user" ? (
+                  <EntityPill
+                    entityType="User"
+                    size="sm"
+                    tooltipPlacement="bottom"
+                  />
+                ) : namespace?.namespace_kind === "group" ? (
+                  <EntityPill
+                    entityType="Group"
+                    size="sm"
+                    tooltipPlacement="bottom"
+                  />
+                ) : null}
+              </>
+            )}
+          </div>
+        </DataConnectorPropertyValue>
+      )}
 
       <DataConnectorPropertyValue title="Visibility">
         {dataConnector.visibility === "private" ? (
@@ -494,20 +528,21 @@ function DataConnectorViewMetadata({
 
       {dataConnector.description && (
         <DataConnectorPropertyValue title="Description">
-          <div className="mb-0">{dataConnector.description}</div>
+          <LazyRenkuMarkdown markdownText={dataConnector.description} />
         </DataConnectorPropertyValue>
       )}
 
-      {nonRequiredCredentialConfigurationKeys.map((key) => {
-        const title =
-          key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
-        const value = storageDefinition.configuration[key]?.toString() ?? "";
-        return (
-          <DataConnectorPropertyValue key={key} title={title}>
-            {value}
-          </DataConnectorPropertyValue>
-        );
-      })}
+      {scope !== "global" &&
+        nonRequiredCredentialConfigurationKeys.map((key) => {
+          const title =
+            key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
+          const value = storageDefinition.configuration[key]?.toString() ?? "";
+          return (
+            <DataConnectorPropertyValue key={key} title={title}>
+              {value}
+            </DataConnectorPropertyValue>
+          );
+        })}
     </section>
   );
 }
