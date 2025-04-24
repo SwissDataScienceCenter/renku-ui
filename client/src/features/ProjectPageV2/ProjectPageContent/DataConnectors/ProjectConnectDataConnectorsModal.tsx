@@ -199,7 +199,7 @@ function ProjectConnectDataConnectorModeSwitch({
         )}
       >
         <Link45deg className={cx("bi", "me-1")} />
-        Import DOI
+        Import data by DOI
       </Label>
 
       <Input
@@ -331,6 +331,10 @@ function ProjectLinkDataConnectorBodyAndFooter({
   return (
     <Form noValidate onSubmit={handleSubmit(onSubmit)}>
       <ModalBody data-cy="data-connector-edit-body">
+        <p className="text-body-secondary">
+          Link an existing data connector to this project. Permission
+          restrictions might apply to users accessing the project.
+        </p>
         <div className="mb-3">
           <Label className="form-label" for="data-connector-identifier">
             Data connector identifier
@@ -357,8 +361,8 @@ function ProjectLinkDataConnectorBodyAndFooter({
             }}
           />
           <div className="form-text">
-            Copy a data connector identifier from the data connector&apos;s side
-            panel
+            Paste a data connector identifier. You can find it on the the data
+            connector&apos;s side panel
           </div>
           <div className="invalid-feedback">
             {errors.dataConnectorIdentifier == null
@@ -486,6 +490,9 @@ function ProjectDoiDataConnectorBodyAndFooter({
   return (
     <Form noValidate onSubmit={handleSubmit(onSubmit)}>
       <ModalBody data-cy="data-connector-edit-body">
+        <p className="text-body-secondary">
+          Connect to data on Zenodo, Dataverse, and similar data repositories.
+        </p>
         <div className="mb-3">
           <Label className="form-label" for="data-connector-identifier">
             DOI
@@ -497,7 +504,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
               <Input
                 className={cx("form-control", errors.doi && "is-invalid")}
                 id="doi"
-                placeholder="DOI"
+                placeholder="DOI identifier"
                 type="text"
                 {...field}
               />
@@ -507,7 +514,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
             }}
           />
           <div className="form-text">
-            Copy a DOI identifier (E.G. <code>10.5281/zenodo.3832045</code>).
+            Paste a DOI identifier (E.G. <code>10.5281/zenodo.3831980</code>).
           </div>
           <div className="invalid-feedback">Please provide an DOI</div>
         </div>
