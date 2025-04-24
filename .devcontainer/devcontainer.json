@@ -5,11 +5,17 @@
   "containerUser": "root",
   "workspaceFolder": "/workspace",
   "shutdownAction": "stopCompose",
-  "features": {},
-  "postCreateCommand": "npm update --global npm && npm install && npm --prefix ./client install && npm --prefix ./server install && npm --prefix ./tests install",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/apt-packages:1": {
+      "packages": "libgtk2.0-0,libgtk-3-0,libgbm-dev,libnotify-dev,libnss3,libxss1,libasound2,libxtst6,xauth,xvfb"
+    }
+  },
+  "postCreateCommand": "npm update --global npm && npm install && npm --prefix ./client install && npm --prefix ./server install && npm --prefix ./tests install && npx --prefix ./tests cypress install",
   "customizations": {
     "vscode": {
-      "extensions": ["esbenp.prettier-vscode"]
+      "extensions": [
+        "esbenp.prettier-vscode"
+      ]
     }
   }
 }
