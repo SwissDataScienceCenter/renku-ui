@@ -507,7 +507,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
             }}
           />
           <div className="form-text">
-            Copy a DOI identifier (E.G. <code>10.5281/zenodo.15081377</code>).
+            Copy a DOI identifier (E.G. <code>10.5281/zenodo.3832045</code>).
           </div>
           <div className="invalid-feedback">Please provide an DOI</div>
         </div>
