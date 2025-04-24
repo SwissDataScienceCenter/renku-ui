@@ -34,7 +34,6 @@ import {
   Badge,
 } from "reactstrap";
 
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { TimeCaption } from "../../../components/TimeCaption";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
@@ -49,7 +48,6 @@ import {
   getDataConnectorSource,
 } from "./dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
-import { convert } from "html-to-text";
 
 interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
@@ -65,7 +63,6 @@ export default function DataConnectorBoxListDisplay({
 }: DataConnectorBoxListDisplayProps) {
   const {
     name,
-    description,
     visibility,
     creation_date: creationDate,
     storage,
@@ -144,11 +141,6 @@ export default function DataConnectorBoxListDisplay({
                 {dataConnectorSource}
               </p>
             </div>
-            {description && (
-              <ClampedParagraph className="mb-2" lines={2}>
-                {convert(description)}
-              </ClampedParagraph>
-            )}
             {extendedPreview && <div className="text-muted">{type}</div>}
             <div
               className={cx(

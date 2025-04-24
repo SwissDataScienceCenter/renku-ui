@@ -29,7 +29,6 @@ import {
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
-import { convert } from "html-to-text";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
@@ -495,7 +494,7 @@ function DataConnectorViewMetadata({
 
       {dataConnector.description && (
         <DataConnectorPropertyValue title="Description">
-          <div className="mb-0">{convert(dataConnector.description)}</div>
+          <div className="mb-0">{dataConnector.description}</div>
         </DataConnectorPropertyValue>
       )}
 
