@@ -1,4 +1,5 @@
-import { CloudStorageSchema } from "../components/cloudStorage/projectCloudStorage.types.ts";
+import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
+import type { CloudStorageSchema } from "../components/cloudStorage/projectCloudStorage.types";
 import {
   getSchemaOptions,
   storageDefinitionFromConfig,
@@ -6,7 +7,7 @@ import {
 
 describe("storageDefinitionFromConfig", () => {
   it("should return the correct storage definition", () => {
-    const config = {
+    const config: SessionStartDataConnectorConfiguration = {
       active: true,
       dataConnector: {
         id: "ULID-1",
@@ -33,9 +34,11 @@ describe("storageDefinitionFromConfig", () => {
               default: "",
               default_str: "",
               required: false,
+              ispassword: false,
               sensitive: true,
               advanced: false,
               exclusive: false,
+              type: "string",
             },
             {
               name: "secret_access_key",
@@ -44,9 +47,11 @@ describe("storageDefinitionFromConfig", () => {
               default: "",
               default_str: "",
               required: false,
+              ispassword: false,
               sensitive: true,
               advanced: false,
               exclusive: false,
+              type: "string",
             },
           ],
         },
@@ -60,13 +65,11 @@ describe("storageDefinitionFromConfig", () => {
           friendlyName: "Access Key ID",
           help: "AWS Access Key ID.\n\nLeave blank for anonymous access or runtime credentials.",
           name: "access_key_id",
-          value: "",
         },
         {
           friendlyName: "Secret Access Key (password)",
           help: "AWS Secret Access Key (password).\n\nLeave blank for anonymous access or runtime credentials.",
           name: "secret_access_key",
-          value: "",
         },
       ],
       sensitiveFieldValues: {
@@ -111,7 +114,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: false,
             exclusive: false,
             type: "string",
-            value: "",
             examples: [],
             ispassword: false,
             datatype: "string",
@@ -129,7 +131,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: false,
             exclusive: false,
             type: "string",
-            value: "",
             examples: [],
             ispassword: false,
             datatype: "string",
@@ -147,7 +148,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: false,
             exclusive: false,
             type: "string",
-            value: "",
             examples: [],
             ispassword: true,
             datatype: "string",
@@ -165,7 +165,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: false,
             exclusive: false,
             type: "string",
-            value: "",
             examples: [],
             ispassword: false,
             datatype: "string",
@@ -183,7 +182,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: true,
             exclusive: false,
             type: "string",
-            value: "",
             examples: [],
             ispassword: false,
             datatype: "string",
@@ -201,7 +199,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: true,
             exclusive: false,
             type: "string",
-            value: "",
             examples: [],
             ispassword: false,
             datatype: "string",
@@ -219,7 +216,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: true,
             exclusive: false,
             type: "CommaSepList",
-            value: "",
             examples: [],
             ispassword: false,
             datatype: "string",
@@ -237,7 +233,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: true,
             exclusive: false,
             type: "Duration",
-            value: "",
             examples: [],
             ispassword: false,
             datatype: "string",
@@ -267,7 +262,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: false,
             exclusive: true,
             type: "string",
-            value: "",
             ispassword: false,
             datatype: "string",
             hide: false,
@@ -284,7 +278,6 @@ describe("storageDefinitionFromConfig", () => {
             advanced: false,
             exclusive: false,
             type: "string",
-            value: "",
             examples: [],
             ispassword: false,
             datatype: "string",

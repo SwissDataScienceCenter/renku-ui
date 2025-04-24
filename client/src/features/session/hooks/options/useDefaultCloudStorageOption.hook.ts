@@ -23,11 +23,11 @@ import { NotebooksVersion } from "../../../versions/versions.types";
 import { setError } from "../../startSession.slice";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import { setCloudStorage } from "../../startSessionOptionsSlice";
-import { CloudStorage } from "../../../project/components/cloudStorage/projectCloudStorage.types";
+import type { CloudStorageGet } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 
 interface UseDefaultCloudStorageOptionArgs {
   notebooksVersion: NotebooksVersion | undefined;
-  storageForProject: CloudStorage[] | undefined;
+  storageForProject: CloudStorageGet[] | undefined;
 }
 
 export default function useDefaultCloudStorageOption({
@@ -68,7 +68,7 @@ export default function useDefaultCloudStorageOption({
 }
 
 function getInitialCloudStorageItem(): (
-  storageDefinition: CloudStorage
+  storageDefinition: CloudStorageGet
 ) => SessionCloudStorage {
   return ({ storage, sensitive_fields }) => ({
     active: true,

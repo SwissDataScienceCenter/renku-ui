@@ -21,10 +21,10 @@ import { useCallback, useState } from "react";
 import { PencilSquare, PlusLg } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
-import { CloudStorage } from "./projectCloudStorage.types";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { StateModelProject } from "../../project.types";
 import AddCloudStorageModal from "./CloudStorageModal";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook.ts";
-import { StateModelProject } from "../../project.types.ts";
+import type { CloudStorage } from "./projectCloudStorage.types";
 
 interface AddOrEditCloudStorageButtonProps {
   currentStorage?: CloudStorage | null;

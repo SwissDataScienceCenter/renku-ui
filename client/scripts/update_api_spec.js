@@ -24,19 +24,45 @@ import { parseDocument } from "yaml";
 
 const GH_BASE_URL = "https://raw.githubusercontent.com";
 const DATA_SERVICES_REPO = "SwissDataScienceCenter/renku-data-services";
-const DATA_SERVICES_RELEASE = "v0.37.1";
+const DATA_SERVICES_RELEASE = "main";
 
 async function main() {
   argv.forEach((arg) => {
-    if (arg.trim() === "users") {
+    if (arg.trim() === "dataConnectors") {
+      updateDataConnectorsApi();
+    } else if (arg.trim() === "projectCloudStorage") {
+      updateProjectCloudStorageApi();
+    } else if (arg.trim() === "users") {
       updateUsersApi();
     }
   });
 }
 
+async function updateDataConnectorsApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/data_connectors/api.spec.yaml",
+    destFile: "src/features/dataConnectorsV2/api/data-connectors.openapi.json",
+  });
+}
+
+async function updateProjectCloudStorageApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/storage/api.spec.yaml",
+    destFile:
+      "src/features/project/components/cloudStorage/api/projectCloudStorage.openapi.json",
+  });
+}
+
 async function updateUsersApi() {
-  const API_SPEC_FILE = "components/renku_data_services/users/api.spec.yaml";
-  const DEST_FILE = "src/features/usersV2/api/users.openapi.json";
+  updateApiFiles({
+    specFile: "components/renku_data_services/users/api.spec.yaml",
+    destFile: "src/features/usersV2/api/users.openapi.json",
+  });
+}
+
+async function updateApiFiles({ specFile, destFile }) {
+  const API_SPEC_FILE = specFile;
+  const DEST_FILE = destFile;
 
   console.log(
     `Updating "${DEST_FILE}" with spec file from release ${DATA_SERVICES_RELEASE}...`

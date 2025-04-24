@@ -45,7 +45,7 @@ import {
 
 import { WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
-import type { CloudStorageSecretGet } from "../../../../features/projectsV2/api/storagesV2.api";
+import type { DataConnectorSecret } from "../../../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils.ts";
 import {
   convertFromAdvancedConfig,
@@ -68,7 +68,7 @@ import {
   AddCloudStorageState,
   CloudStorageDetails,
   CloudStorageSchema,
-  CloudStorageSchemaOptions,
+  CloudStorageSchemaOption,
 } from "./projectCloudStorage.types";
 
 import styles from "./CloudStorage.module.scss";
@@ -79,7 +79,7 @@ interface AddOrEditCloudStorageProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
-  storageSecrets: CloudStorageSecretGet[];
+  storageSecrets: DataConnectorSecret[];
   projectId?: string;
 }
 
@@ -171,7 +171,7 @@ export interface AddStorageStepProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
   state: AddCloudStorageState;
   storage: CloudStorageDetails;
-  storageSecrets: CloudStorageSecretGet[];
+  storageSecrets: DataConnectorSecret[];
   isV2?: boolean;
   validationSucceeded: boolean;
   projectId?: string;
@@ -367,7 +367,7 @@ interface CheckboxOptionItemProps {
   control: Control<FieldValues, void>;
   defaultValue: boolean | undefined;
   onFieldValueChange: (option: string, value: boolean) => void;
-  option: CloudStorageSchemaOptions;
+  option: CloudStorageSchemaOption;
 }
 function CheckboxOptionItem({
   control,
@@ -404,8 +404,8 @@ interface PasswordOptionItemProps {
   defaultValue: string | undefined;
   isV2?: boolean;
   onFieldValueChange: (option: string, value: string) => void;
-  option: CloudStorageSchemaOptions;
-  storageSecrets: CloudStorageSecretGet[];
+  option: CloudStorageSchemaOption;
+  storageSecrets: DataConnectorSecret[];
 }
 function PasswordOptionItem({
   control,
@@ -559,7 +559,7 @@ interface InputOptionItemProps {
   defaultValue: string | number | undefined;
   inputType: "dropdown" | "number" | "text";
   onFieldValueChange: (option: string, value: string | number) => void;
-  option: CloudStorageSchemaOptions;
+  option: CloudStorageSchemaOption;
 }
 function InputOptionItem({
   control,
@@ -574,9 +574,10 @@ function InputOptionItem({
 
   const inputName =
     inputType !== "dropdown" &&
-    option.filteredExamples?.length > 0 &&
-    option.filteredExamples[0]?.friendlyName
-      ? option.filteredExamples[0]?.friendlyName
+    option.filteredExamples &&
+    option.filteredExamples.length > 0 &&
+    option.filteredExamples[0].friendlyName
+      ? option.filteredExamples[0].friendlyName
       : option.friendlyName ?? option.name;
   return (
     <>
@@ -598,7 +599,7 @@ function InputOptionItem({
                   option.convertedDefault &&
                   option.convertedDefault?.toString() !== "[object Object]"
                     ? option.convertedDefault?.toString()
-                    : inputType === "dropdown"
+                    : inputType === "dropdown" && option.filteredExamples
                     ? option.filteredExamples[0].value
                     : ""
                 }
@@ -613,7 +614,7 @@ function InputOptionItem({
                 }}
                 {...additionalProps}
               />
-              {inputType === "dropdown" && option.filteredExamples.length && (
+              {inputType === "dropdown" && option.filteredExamples?.length && (
                 <datalist id={`${option.name}__list`}>
                   {option.filteredExamples?.map((e) => (
                     <option
@@ -778,7 +779,7 @@ export function AddStorageType({
             <p className="mb-0">
               <b>{p.friendlyName ?? p.name}</b>
               <br />
-              <small>{p.description}</small>
+              <small>{p.help}</small>
             </p>
           </ListGroupItem>
         );
@@ -892,7 +893,7 @@ export function AddStorageOptions({
         ? "checkbox"
         : o.convertedType === "number"
         ? "number"
-        : o.filteredExamples?.length >= 1
+        : o.filteredExamples && o.filteredExamples.length >= 1
         ? "dropdown"
         : "text";
 

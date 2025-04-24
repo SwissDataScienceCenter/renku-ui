@@ -23,17 +23,19 @@ import { Col, Container, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/renkuModels.types";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
 import { NotebooksVersion } from "../../versions/versions.types";
 import { StateModelProject } from "../project.types";
-import { useGetCloudStorageForProjectQuery } from "./cloudStorage/projectCloudStorage.api";
-import { CloudStorage } from "./cloudStorage/projectCloudStorage.types";
 import AddOrEditCloudStorageButton from "./cloudStorage/AddOrEditCloudStorageButton";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import CloudStorageItem from "./cloudStorage/CloudStorageItem";
+import {
+  useGetStorageQuery,
+  type CloudStorageGet,
+} from "./cloudStorage/api/projectCloudStorage.api";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useLegacySelector<User["logged"]>(
@@ -50,8 +52,8 @@ export default function ProjectSettingsCloudStorage() {
     error: storageError,
     isFetching: storageIsFetching,
     isLoading: storageIsLoading,
-  } = useGetCloudStorageForProjectQuery({
-    project_id: `${projectId}`,
+  } = useGetStorageQuery({
+    storageParams: { project_id: `${projectId}` },
   });
   const {
     data: notebooksVersion,
@@ -167,7 +169,7 @@ function CloudStorageSupportNotice({
 
 interface CloudStorageListProps {
   devAccess: boolean;
-  storageForProject: CloudStorage[];
+  storageForProject: CloudStorageGet[];
 }
 
 function CloudStorageList({
