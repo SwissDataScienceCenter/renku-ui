@@ -209,3 +209,65 @@ export function getDataConnectorSource(dataConnector: DataConnector): string {
   }
   return dataConnector.namespace as string;
 }
+
+// // Resolve a DOI to a URL
+// // Reference: https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation
+// func resolveDoiURL(ctx context.Context, srv *rest.Client, pacer *fs.Pacer, opt *Options) (doiURL *url.URL, err error) {
+// 	var result api.DoiResolverResponse
+// 	params := url.Values{}
+// 	params.Add("index", "1")
+// 	opts := rest.Opts{
+// 		Method:     "GET",
+// 		RootURL:    doiResolverAPIURL,
+// 		Path:       "/handles/" + opt.Doi,
+// 		Parameters: params,
+// 	}
+// 	err = pacer.Call(func() (bool, error) {
+// 		res, err := srv.CallJSON(ctx, &opts, nil, &result)
+// 		return shouldRetry(ctx, res, err)
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	if result.ResponseCode != 1 {
+// 		return nil, fmt.Errorf("could not resolve DOI (error code %d)", result.ResponseCode)
+// 	}
+// 	resolvedURLStr := ""
+// 	for _, value := range result.Values {
+// 		if value.Type == "URL" && value.Data.Format == "string" {
+// 			valueStr, ok := value.Data.Value.(string)
+// 			if !ok {
+// 				return nil, fmt.Errorf("could not resolve DOI (incorrect response format)")
+// 			}
+// 			resolvedURLStr = valueStr
+// 		}
+// 	}
+// 	resolvedURL, err := url.Parse(resolvedURLStr)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return resolvedURL, nil
+// }
+
+/** Parse the input string as a DOI
+ *
+ * Examples:
+ * - 10.1000/182 -> 10.1000/182
+ * - https://doi.org/10.1000/182 -> 10.1000/182
+ * - doi:10.1000/182 -> 10.1000/182
+ */
+function parseDoi(doi: string): string {
+  try {
+    const doiURL = new URL(doi);
+    if (doiURL.protocol.toLowerCase() === "doi:") {
+      return doi.slice("doi:".length).replace(/^([/])*/, "");
+    }
+    if (doiURL.hostname.toLowerCase().endsWith("doi.org")) {
+      return doiURL.pathname.replace(/^([/])*/, "");
+    }
+  } catch {
+    return doi;
+  }
+  return doi;
+}

@@ -1,0 +1,146 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "DOI Resolver API",
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "url": "https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation"
+  },
+  "servers": [
+    {
+      "url": "https://doi.org/api"
+    }
+  ],
+  "paths": {
+    "/handles/{doi}": {
+      "parameters": [
+        {
+          "name": "doi",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/DOI"
+          },
+          "description": "the DOI"
+        },
+        {
+          "name": "index",
+          "in": "query",
+          "schema": {
+            "type": "integer"
+          },
+          "description": "index of interest"
+        }
+      ],
+      "get": {
+        "summary": "Resolve a DOI",
+        "responses": {
+          "200": {
+            "description": "The handle response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandleResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DOI": {
+        "description": "A Digital Object Identifier",
+        "type": "string"
+      },
+      "HandleResponse": {
+        "description": "The response to resolving a handle",
+        "type": "object",
+        "properties": {
+          "responseCode": {
+            "type": "integer"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "values": {
+            "$ref": "#/components/schemas/HandleResponseValues"
+          }
+        }
+      },
+      "HandleResponseValues": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/HandleResponseValue"
+        }
+      },
+      "HandleResponseValue": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "example": 1
+          },
+          "type": {
+            "type": "string",
+            "example": "URL"
+          },
+          "data": {
+            "$ref": "#/components/schemas/HandleResponseValueData"
+          },
+          "ttl": {
+            "type": "integer",
+            "example": 86400
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "HandleResponseValueData": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}
