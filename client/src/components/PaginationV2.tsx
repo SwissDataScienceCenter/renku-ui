@@ -24,7 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "react-bootstrap-icons";
-import { PaginationItem, PaginationLink } from "reactstrap";
+import { PaginationItem } from "reactstrap";
 
 interface PaginationProps {
   ariaLabel?: string;
@@ -196,11 +196,11 @@ interface PaginationElementProps {
   onClick: () => void;
 }
 function PaginationElement({
-  ariaLabel,
-  children,
+  // ariaLabel,
+  // linkClassName,
+  // onClick,
   className,
-  linkClassName,
-  onClick,
+  children,
 }: PaginationElementProps) {
   return (
     <PaginationItem className={className}>
