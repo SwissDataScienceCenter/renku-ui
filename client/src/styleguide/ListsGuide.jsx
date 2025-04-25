@@ -125,7 +125,7 @@ function PaginationGuide() {
         currentPage={2}
         perPage={10}
         totalItems={100}
-        onPageChange={onPageChange}
+        pageQueryParam="page"
         className="d-flex justify-content-center rk-search-pagination"
       />
     </Fragment>

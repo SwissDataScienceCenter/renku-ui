@@ -40,7 +40,7 @@ import {
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { Loader } from "../../../components/Loader";
-import Pagination from "../../../components/PaginationV2";
+import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";

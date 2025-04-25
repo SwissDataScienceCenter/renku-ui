@@ -17,21 +17,20 @@
  */
 
 import cx from "classnames";
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import {
   ChevronDoubleLeft,
   ChevronDoubleRight,
   ChevronLeft,
   ChevronRight,
 } from "react-bootstrap-icons";
-import { Link, useLocation, type To } from "react-router";
 import { PaginationItem, PaginationLink } from "reactstrap";
 
 interface PaginationProps {
   ariaLabel?: string;
   className?: string;
   currentPage: number;
-  pageQueryParam: string;
+  onPageChange: (pageNumber: number) => void;
   perPage: number;
   showDescription?: boolean;
   totalInPage?: number;
@@ -42,7 +41,7 @@ export default function Pagination({
   ariaLabel,
   className: className_,
   currentPage,
-  pageQueryParam,
+  onPageChange,
   perPage,
   showDescription,
   totalInPage,
@@ -62,7 +61,7 @@ export default function Pagination({
         ariaLabel={ariaLabel}
         innerClassName={className}
         itemsCountPerPage={perPage}
-        pageQueryParam={pageQueryParam}
+        onChange={onPageChange}
         totalItemsCount={totalItems}
       />
       {showDescription && totalInPage && (
@@ -83,7 +82,7 @@ interface PaginationNavProps {
   innerClassName?: string;
   itemsCountPerPage: number;
   maxPages?: number;
-  pageQueryParam: string;
+  onChange: (pageNumber: number) => void;
   totalItemsCount: number;
 }
 
@@ -92,26 +91,10 @@ const PaginationNav = memo(function PaginationNav({
   ariaLabel = "page navigation",
   innerClassName,
   itemsCountPerPage,
-  pageQueryParam,
+  onChange,
   maxPages = 5,
   totalItemsCount,
 }: PaginationNavProps) {
-  const { hash, pathname, search } = useLocation();
-
-  const getPageLink = useCallback(
-    (page: number) => {
-      const newSearch = new URLSearchParams(search);
-      newSearch.set(pageQueryParam, `${page}`);
-      const to: To = {
-        hash: hash,
-        pathname: pathname,
-        search: newSearch.toString(),
-      };
-      return to;
-    },
-    [hash, pageQueryParam, pathname, search]
-  );
-
   if (itemsCountPerPage === 0 || totalItemsCount === 0 || maxPages <= 0) {
     return null;
   }
@@ -134,7 +117,7 @@ const PaginationNav = memo(function PaginationNav({
       <PaginationElement
         linkClassName="px-2"
         ariaLabel="first page"
-        to={getPageLink(1)}
+        onClick={() => onChange(1)}
         key="first"
       >
         <ChevronDoubleLeft className="bi" />
@@ -148,7 +131,7 @@ const PaginationNav = memo(function PaginationNav({
       <PaginationElement
         linkClassName="px-2"
         ariaLabel="previous page"
-        to={getPageLink(activePage - 1)}
+        onClick={() => onChange(activePage - 1)}
         key="prev"
       >
         <ChevronLeft className="bi" />
@@ -161,7 +144,7 @@ const PaginationNav = memo(function PaginationNav({
     pages.push(
       <PaginationElement
         ariaLabel={`page ${pageNumber} of ${totalPages}`}
-        to={getPageLink(pageNumber)}
+        onClick={() => onChange(pageNumber)}
         className={cx(pageNumber === activePage && "active")}
         key={`page-${pageNumber}`}
       >
@@ -176,7 +159,7 @@ const PaginationNav = memo(function PaginationNav({
       <PaginationElement
         linkClassName="px-2"
         ariaLabel="next page"
-        to={getPageLink(activePage + 1)}
+        onClick={() => onChange(activePage + 1)}
         key="next"
       >
         <ChevronRight className="bi" />
@@ -190,7 +173,7 @@ const PaginationNav = memo(function PaginationNav({
       <PaginationElement
         linkClassName="px-2"
         ariaLabel="last page"
-        to={getPageLink(totalPages)}
+        onClick={() => onChange(totalPages)}
         key="last"
       >
         <ChevronDoubleRight className="bi" />
@@ -210,22 +193,26 @@ interface PaginationElementProps {
   children?: React.ReactNode;
   className?: string;
   linkClassName?: string;
-  to: To;
+  onClick: () => void;
 }
 function PaginationElement({
   ariaLabel,
-  linkClassName,
-  className,
   children,
-  to,
+  className,
+  linkClassName,
+  onClick,
 }: PaginationElementProps) {
   return (
     <PaginationItem className={className}>
       <PaginationLink
-        tag={Link}
-        to={to}
         aria-label={ariaLabel}
         className={linkClassName}
+        href="#"
+        // This should be converted to use Link and allow for smooth navigation
+        onClick={(e) => {
+          e.preventDefault();
+          onClick();
+        }}
       >
         {children}
       </PaginationLink>

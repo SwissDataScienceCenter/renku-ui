@@ -207,7 +207,7 @@ function CentralContentContainer(props) {
           />
           <Route path="/v2/*" element={<LazyRootV2 />} />
           <Route
-            path="/style-guide"
+            path="/style-guide/*"
             element={
               <ContainerWrap>
                 <LazyStyleGuide />

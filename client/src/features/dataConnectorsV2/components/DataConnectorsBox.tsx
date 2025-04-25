@@ -116,19 +116,6 @@ export default function DataConnectorsBox({
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const onPageChange = useCallback(
-    (pageNumber: number) => {
-      setSearchParams((prevParams) => {
-        if (pageNumber == 1) {
-          prevParams.delete(pageParam);
-        } else {
-          prevParams.set(pageParam, `${pageNumber}`);
-        }
-        return prevParams;
-      });
-    },
-    [pageParam, setSearchParams]
-  );
 
   const page = useMemo(() => {
     const pageRaw = searchParams.get(pageParam);
@@ -178,7 +165,7 @@ export default function DataConnectorsBox({
       data={data}
       namespace={ns ?? ""}
       namespaceKind={namespaceKind}
-      onPageChange={onPageChange}
+      pageParam={pageParam}
       perPage={perPage}
     />
   );
@@ -188,14 +175,14 @@ interface DataConnectorBoxContentProps {
   data: GetDataConnectorsApiResponse;
   namespace: string;
   namespaceKind: NamespaceKind;
-  onPageChange: (pageNumber: number) => void;
+  pageParam: string;
   perPage: number;
 }
 function DataConnectorBoxContent({
   data,
   namespace,
   namespaceKind,
-  onPageChange,
+  pageParam,
   perPage,
 }: DataConnectorBoxContentProps) {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -232,7 +219,7 @@ function DataConnectorBoxContent({
           <Pagination
             className="mt-3"
             currentPage={data.page}
-            onPageChange={onPageChange}
+            pageQueryParam={pageParam}
             perPage={perPage}
             totalItems={data.total}
           />
