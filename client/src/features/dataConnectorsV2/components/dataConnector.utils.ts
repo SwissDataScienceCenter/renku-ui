@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useMemo } from "react";
 import type { PostStorageSchemaTestConnectionApiArg } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -32,6 +34,7 @@ import type {
   DataConnectorPost,
   DataConnectorRead,
 } from "../api/data-connectors.api";
+import { useGetHandlesByDoiQuery } from "../api/doiResolver.api";
 import { DataConnectorScope } from "../dataConnectors.types";
 import type { DataConnectorConfiguration } from "./useDataConnectorConfiguration.hook";
 
@@ -200,55 +203,56 @@ export function getDataConnectorScope(namespace?: string): DataConnectorScope {
   return "namespace";
 }
 
-export function getDataConnectorSource(dataConnector: DataConnector): string {
-  const scope = getDataConnectorScope(dataConnector.namespace);
-  if (scope === "global") {
-    return dataConnector.storage.configuration["doi"]
-      ? (dataConnector.storage.configuration["doi"] as string)
-      : "unknown";
-  }
-  return dataConnector.namespace as string;
+export function useGetDataConnectorSource(dataConnector: DataConnector) {
+  const scope = useMemo(
+    () => getDataConnectorScope(dataConnector.namespace),
+    [dataConnector.namespace]
+  );
+
+  const { currentData: resolverResponse, isSuccess } = useGetHandlesByDoiQuery(
+    scope === "global" &&
+      typeof dataConnector.storage.configuration["doi"] === "string"
+      ? { doi: parseDoi(dataConnector.storage.configuration["doi"]), index: 1 }
+      : skipToken
+  );
+  const source = useMemo(() => {
+    if (
+      scope !== "global" ||
+      typeof dataConnector.storage.configuration["doi"] !== "string"
+    ) {
+      return "unknown";
+    }
+
+    if (
+      !isSuccess ||
+      resolverResponse == null ||
+      resolverResponse.responseCode !== 1
+    ) {
+      return dataConnector.storage.configuration["doi"];
+    }
+
+    const value = resolverResponse.values?.find(
+      ({ index, type: type_, data }) =>
+        index === 1 &&
+        type_ === "URL" &&
+        data?.format === "string" &&
+        typeof data.value === "string"
+    );
+    if (!value) {
+      return dataConnector.storage.configuration["doi"];
+    }
+
+    const doiURL = `${value?.data?.value}`;
+    try {
+      const parsed = new URL(doiURL);
+      return parsed.hostname;
+    } catch {
+      return dataConnector.storage.configuration["doi"];
+    }
+  }, [dataConnector.storage.configuration, isSuccess, resolverResponse, scope]);
+
+  return source;
 }
-
-// // Resolve a DOI to a URL
-// // Reference: https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation
-// func resolveDoiURL(ctx context.Context, srv *rest.Client, pacer *fs.Pacer, opt *Options) (doiURL *url.URL, err error) {
-// 	var result api.DoiResolverResponse
-// 	params := url.Values{}
-// 	params.Add("index", "1")
-// 	opts := rest.Opts{
-// 		Method:     "GET",
-// 		RootURL:    doiResolverAPIURL,
-// 		Path:       "/handles/" + opt.Doi,
-// 		Parameters: params,
-// 	}
-// 	err = pacer.Call(func() (bool, error) {
-// 		res, err := srv.CallJSON(ctx, &opts, nil, &result)
-// 		return shouldRetry(ctx, res, err)
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	if result.ResponseCode != 1 {
-// 		return nil, fmt.Errorf("could not resolve DOI (error code %d)", result.ResponseCode)
-// 	}
-// 	resolvedURLStr := ""
-// 	for _, value := range result.Values {
-// 		if value.Type == "URL" && value.Data.Format == "string" {
-// 			valueStr, ok := value.Data.Value.(string)
-// 			if !ok {
-// 				return nil, fmt.Errorf("could not resolve DOI (incorrect response format)")
-// 			}
-// 			resolvedURLStr = valueStr
-// 		}
-// 	}
-// 	resolvedURL, err := url.Parse(resolvedURLStr)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return resolvedURL, nil
-// }
 
 /** Parse the input string as a DOI
  *
