@@ -66,6 +66,7 @@ import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "../feature-flags/featureFlags.slice";
+import { doiResolverEmptyApi as doiResolverApi } from "../../features/dataConnectorsV2/api/doiResolver.empty-api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -93,6 +94,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
+    [doiResolverApi.reducerPath]: doiResolverApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
@@ -131,6 +133,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(dataConnectorsApi.middleware)
         // this is causing some problems, and I do not know why
         .concat(datasetsCoreApi.middleware)
+        .concat(doiResolverApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(platformApi.middleware)
