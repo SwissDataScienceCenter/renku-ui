@@ -49,7 +49,7 @@ export default function SessionStartLinkModal({
     >
       <ModalHeader toggle={toggle}>
         <Link45deg className={cx("bi", "me-1")} />
-        Session launcher share link
+        Share session launch link
       </ModalHeader>
       <ModalBody>
         <p className="mb-2">

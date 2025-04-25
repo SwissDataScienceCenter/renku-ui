@@ -76,41 +76,6 @@ export default function EnvironmentKindField({
               </div>
             </label>
 
-            <input
-              type="radio"
-              className="btn-check"
-              name={field.name}
-              autoComplete="off"
-              checked={field.value === "custom + image"}
-              id="environment-kind-custom-radio"
-              onChange={() => field.onChange("custom + image")}
-              onBlur={field.onBlur}
-            />
-            <label
-              className={cx(
-                "btn",
-                "btn-outline-primary",
-                "p-4",
-                "d-flex",
-                "justify-content-center"
-              )}
-              data-cy="environment-kind-custom"
-              htmlFor="environment-kind-custom-radio"
-              style={{ width: "33.3%" }}
-            >
-              <div className={cx("d-flex", "flex-column", "gap-2")}>
-                <div
-                  className={cx("d-flex", "flex-row", "gap-3", "text-start")}
-                >
-                  <EnvironmentIcon type="custom" size={30} />
-                  <span className="fw-bold">Custom environment</span>
-                </div>
-                <p className={cx("mb-0", "small", "text-start")}>
-                  Run a Renku session from a docker image.
-                </p>
-              </div>
-            </label>
-
             {imageBuildersEnabled && (
               <>
                 <input
@@ -154,6 +119,41 @@ export default function EnvironmentKindField({
                 </label>
               </>
             )}
+
+            <input
+              type="radio"
+              className="btn-check"
+              name={field.name}
+              autoComplete="off"
+              checked={field.value === "custom + image"}
+              id="environment-kind-custom-radio"
+              onChange={() => field.onChange("custom + image")}
+              onBlur={field.onBlur}
+            />
+            <label
+              className={cx(
+                "btn",
+                "btn-outline-primary",
+                "p-4",
+                "d-flex",
+                "justify-content-center"
+              )}
+              data-cy="environment-kind-custom"
+              htmlFor="environment-kind-custom-radio"
+              style={{ width: "33.3%" }}
+            >
+              <div className={cx("d-flex", "flex-column", "gap-2")}>
+                <div
+                  className={cx("d-flex", "flex-row", "gap-3", "text-start")}
+                >
+                  <EnvironmentIcon type="custom" size={30} />
+                  <span className="fw-bold">External environment</span>
+                </div>
+                <p className={cx("mb-0", "small", "text-start")}>
+                  Run a session from a preexisting docker image.
+                </p>
+              </div>
+            </label>
           </ButtonGroup>
         </div>
       )}
