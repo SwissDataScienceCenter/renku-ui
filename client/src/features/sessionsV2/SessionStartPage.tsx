@@ -193,17 +193,6 @@ function SaveCloudStorage({
   );
 }
 
-function envVariableOverrides(searchParams: URLSearchParams) {
-  const overrides = [];
-  for (const [name, value] of searchParams) {
-    overrides.push({
-      name,
-      value,
-    });
-  }
-  return overrides;
-}
-
 function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
   const [searchParams] = useSearchParams();
@@ -226,7 +215,10 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       cloudstorage: startSessionOptionsV2.cloudStorage
         ?.filter(({ active }) => active)
         .map((cs) => storageDefinitionFromConfig(cs)),
-      env_variable_overrides: envVariableOverrides(searchParams),
+      env_variable_overrides: Array.from(searchParams).map(([name, value]) => ({
+        name,
+        value,
+      })),
     };
   }, [
     launcher.id,
