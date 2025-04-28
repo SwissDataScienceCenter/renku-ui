@@ -23,22 +23,12 @@
  *  New project test code.
  */
 
-import { createMemoryHistory } from "history";
 import { describe, expect, it } from "vitest";
 
 import { btoaUTF8 } from "../../utils/helpers/Encoding";
 import { getDataFromParams } from "./ProjectNew.container";
 import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { checkTitleDuplicates, validateTitle } from "./index";
-
-const fakeHistory = createMemoryHistory({
-  initialEntries: ["/"],
-  initialIndex: 0,
-});
-fakeHistory.push({
-  pathname: "/projects",
-  search: "?page=1",
-});
 
 describe("helper functions", () => {
   it("validateTitle", () => {
