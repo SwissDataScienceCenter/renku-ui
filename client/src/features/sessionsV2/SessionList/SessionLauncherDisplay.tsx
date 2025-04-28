@@ -24,7 +24,7 @@ import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
-import SessionStartLinkModal from "../SessionView/SessionStartLinkModal";
+import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherCard from "./SessionLauncherCard";
 import EnvironmentLogsV2 from "../../../components/LogsV2";
@@ -135,12 +135,11 @@ export function SessionLauncherDisplay({
             toggle={toggleDelete}
             sessionsLength={filteredSessions?.length}
           />
-          <SessionStartLinkModal
+          <SessionLaunchLinkModal
             isOpen={isShareLinkOpen}
-            launcherId={launcher.id}
+            launcher={launcher}
+            project={project}
             toggle={toggleShareLink}
-            namespace={project.namespace}
-            slug={project.slug}
           />
         </>
       )}

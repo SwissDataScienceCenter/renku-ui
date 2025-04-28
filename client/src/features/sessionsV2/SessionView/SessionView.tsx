@@ -25,7 +25,6 @@ import {
   Database,
   ExclamationTriangleFill,
   FileCode,
-  Link45deg,
   Pencil,
 } from "react-bootstrap-icons";
 import {
@@ -71,7 +70,6 @@ import {
 import { DEFAULT_URL } from "../session.constants";
 import { SessionV2 } from "../sessionsV2.types";
 import EnvironmentCard from "./EnvironmentCard";
-import useSessionStartLink from "./useSessionStartLink.hook";
 import EnvVariablesCard from "./EnvVariablesCard";
 import EnvVariablesModal from "./EnvVariablesModal";
 
@@ -193,27 +191,6 @@ function getSessionColor(state: string) {
     : state === "failed"
     ? "danger"
     : "dark";
-}
-
-function SessionLaunchLink({
-  launcher,
-  project,
-}: Required<Pick<SessionViewProps, "launcher" | "project">>) {
-  const { url } = useSessionStartLink({
-    launcherId: launcher.id,
-    namespace: project.namespace,
-    slug: project.slug,
-  });
-  return (
-    <div className="mb-2">
-      <h4 className="my-auto">
-        <Link45deg className={cx("bi", "me-1")} />
-        Session Launch Link
-      </h4>
-      <p className="mb-2">A session launch link leads directly to a session.</p>
-      <CommandCopy command={url.toString()} noMargin />
-    </div>
-  );
 }
 
 interface SessionViewProps {
@@ -557,11 +534,6 @@ export function SessionView({
           </div>
 
           <SessionViewSessionSecrets />
-          {launcher && (
-            <div>
-              <SessionLaunchLink launcher={launcher} project={project} />
-            </div>
-          )}
           {launcher && (
             <div>
               <div
