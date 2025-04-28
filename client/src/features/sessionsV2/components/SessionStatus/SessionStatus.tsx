@@ -120,6 +120,7 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
 interface SessionStatusStyles {
   textColor: string;
   bgColor: string;
+  bgOpacity: number;
   borderColor: string;
   sessionLine: string;
 }

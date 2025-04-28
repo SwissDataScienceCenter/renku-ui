@@ -38,18 +38,12 @@ export default function SessionCard({ project, session }: SessionCardProps) {
 
   const stylesPerSession = getSessionStatusStyles(session);
 
-  const bgColorMap = {
-    warning: styles.SessionWarningBg,
-    success: styles.SessionSuccessBg,
-    danger: styles.SessionDangerBg,
-    default: styles.SessionLightBg,
-  };
   return (
     <div
       data-cy="session-item"
       className={cx(
-        bgColorMap[stylesPerSession.bgColor as keyof typeof bgColorMap] ??
-          bgColorMap.default,
+        `bg-${stylesPerSession.bgColor}`,
+        `bg-opacity-${stylesPerSession.bgOpacity}`,
         "p-0",
         "pb-3"
       )}
