@@ -975,7 +975,6 @@ function ProjectView(props) {
                 {...props}
                 apiVersion={apiVersion}
                 metadataVersion={metadataVersion}
-                basePath={settingsUrl}
               />
             }
           />

@@ -57,7 +57,7 @@ interface ProjectSettingsGeneralProps {
   };
   [key: string]: unknown;
   settingsReadOnly: boolean;
-  basePath: string;
+  baseUrl: string;
 }
 export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
   const isMaintainer = props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER;
