@@ -963,9 +963,10 @@ describe("view autostart link", () => {
       .config()
       .versions()
       .userTest()
+      .listNamespaceV2()
       .dataServicesUser({
         response: {
-          id: "user1-uuid",
+          id: "0945f006-e117-49b7-8966-4c0842146313",
           username: "user-1",
           email: "user1@email.com",
         },
@@ -974,10 +975,13 @@ describe("view autostart link", () => {
       .readGroupV2Namespace({ groupSlug: "user1-uuid" })
       .landingUserProjects()
       .readProjectV2()
-      .readProjectV2WithoutDocumentation()
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .resourcePoolsTest()
       .getResourceClass()
+      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
       .listProjectV2Members()
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
@@ -1007,18 +1011,12 @@ describe("view autostart link", () => {
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
 
-    // ensure the session launcher is there
+    // check session launcher view and edit session launcher
     cy.getDataCy("session-launcher-item")
-      .first()
-      .within(() => {
-        cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("start-session-button").should("contain.text", "Launch");
-      });
-    cy.getDataCy("session-name").click();
-    cy.contains("Session Launch Link").scrollIntoView();
-    cy.get("code")
-      .contains("01HYJE99XEKWNKPYN8WRB6QA8Z/start")
-      .should("be.visible");
+      .find('[data-cy="button-with-menu-dropdown"]')
+      .click();
+    cy.getDataCy("session-launcher-menu-share-link").click();
+    cy.contains("Copy Launch Link").should("be.visible");
 
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
