@@ -97,7 +97,7 @@ function SessionCardContent({
           <Col xs="auto" className="d-flex">
             {contentLabel}
           </Col>
-          <Col xs="auto" className={cx("d-flex", "ms-sm-auto")}>
+          <Col xs="auto" className={cx("d-flex", "ms-auto")}>
             {contentSession}
           </Col>
           <Col xs={12} className={cx("d-flex", "align-items-center")}>

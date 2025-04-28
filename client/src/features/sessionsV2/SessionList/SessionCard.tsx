@@ -80,12 +80,15 @@ export default function SessionCard({ project, session }: SessionCardProps) {
               </Col>
               <Col
                 className={cx("align-items-center", "mt-0", "gap-2")}
-                xs="auto"
+                xs="12"
                 xl="auto"
               >
                 <SessionStatusV2Label session={session} />
               </Col>
-              <Col xs="auto" className={cx("mt-0", "ms-3", "d-flex")}>
+              <Col
+                xs="auto"
+                className={cx("mt-0", "ms-0", "ms-xl-3", "d-flex")}
+              >
                 <SessionStatusV2Description
                   session={session}
                   showInfoDetails={false}
