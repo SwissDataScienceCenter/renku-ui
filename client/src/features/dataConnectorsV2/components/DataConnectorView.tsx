@@ -429,7 +429,7 @@ function DataConnectorViewMetadata({
           )}
           <div>
             {isLoadingNamespace ? (
-              <Loader inline size={16} />
+              <Loader inline size={18} />
             ) : namespace == null ? null : namespace.namespace_kind ==
               "user" ? (
               <EntityPill
