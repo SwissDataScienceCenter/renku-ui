@@ -273,7 +273,8 @@ function parseDoi(doi: string): string {
     if (doiURL.protocol.toLowerCase() === "doi:") {
       return doi.slice("doi:".length).replace(/^([/])*/, "");
     }
-    if (["doi.org", "www.doi.org"].includes(doiURL.hostname.toLowerCase())) {
+    const hostname = doiURL.hostname.toLowerCase();
+    if (hostname === "doi.org" || hostname.endsWith(".doi.org")) {
       return doiURL.pathname.replace(/^([/])*/, "");
     }
   } catch {
