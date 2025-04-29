@@ -33,6 +33,7 @@ import adminSessionsApi from "../../features/admin/adminSessions.api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import { doiResolverEmptyApi as doiResolverApi } from "../../features/dataConnectorsV2/api/doiResolver.empty-api";
 import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataConnectors.slice";
 import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
@@ -93,6 +94,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
+    [doiResolverApi.reducerPath]: doiResolverApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
@@ -131,6 +133,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(dataConnectorsApi.middleware)
         // this is causing some problems, and I do not know why
         .concat(datasetsCoreApi.middleware)
+        .concat(doiResolverApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(platformApi.middleware)
