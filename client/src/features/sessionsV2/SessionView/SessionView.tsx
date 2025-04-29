@@ -73,6 +73,8 @@ import {
 import { DEFAULT_URL } from "../session.constants";
 import { SessionV2 } from "../sessionsV2.types";
 import { EnvironmentCard } from "./EnvironmentCard";
+import EnvVariablesCard from "./EnvVariablesCard";
+import EnvVariablesModal from "./EnvVariablesModal";
 
 interface SessionCardContentProps {
   color: string;
@@ -194,7 +196,7 @@ function getSessionColor(state: string) {
     : "dark";
 }
 
-function SessionStartLink({
+function SessionLaunchLink({
   launcher,
   project,
 }: Required<Pick<SessionViewProps, "launcher" | "project">>) {
@@ -239,11 +241,15 @@ export function SessionView({
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
+  const [isEnvVariablesModalOpen, setEnvVariablesModalOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsUpdateOpen((open) => !open);
   }, []);
   const toggleModifyResources = useCallback(() => {
     setModifyResourcesOpen((open) => !open);
+  }, []);
+  const toggleEnvVariables = useCallback(() => {
+    setEnvVariablesModalOpen((open) => !open);
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
@@ -379,11 +385,6 @@ export function SessionView({
               </div>
             )}
           </div>
-          {launcher && (
-            <div>
-              <SessionStartLink launcher={launcher} project={project} />
-            </div>
-          )}
           {launcher && (
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
@@ -550,6 +551,48 @@ export function SessionView({
           </div>
 
           <SessionViewSessionSecrets />
+          {launcher && (
+            <div>
+              <SessionLaunchLink launcher={launcher} project={project} />
+            </div>
+          )}
+          {launcher && (
+            <div>
+              <div className={cx("d-flex", "justify-content-between", "mb-2")}>
+                <h4 className="my-auto">Environment Variables</h4>
+                <PermissionsGuard
+                  disabled={null}
+                  enabled={
+                    <>
+                      <Button
+                        color="outline-primary"
+                        id="modify-env-variables-button"
+                        onClick={toggleEnvVariables}
+                        size="sm"
+                        tabIndex={0}
+                      >
+                        <Pencil className="bi" />
+                      </Button>
+                      <UncontrolledTooltip target="modify-env-variables-button">
+                        Modify environment variables
+                      </UncontrolledTooltip>
+                    </>
+                  }
+                  requestedPermission="write"
+                  userPermissions={permissions}
+                />
+              </div>
+              <p className="mb-2">
+                Environment variables pass information into the session.
+              </p>
+              <EnvVariablesCard launcher={launcher} />
+              <EnvVariablesModal
+                isOpen={isEnvVariablesModalOpen}
+                launcher={launcher}
+                toggle={toggleEnvVariables}
+              />
+            </div>
+          )}
         </div>
       </OffcanvasBody>
     </Offcanvas>

@@ -195,6 +195,7 @@ function SaveCloudStorage({
 
 function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   const [steps, setSteps] = useState<StepsProgressBar[]>([]);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const startSessionOptionsV2 = useAppSelector(
@@ -214,12 +215,17 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       cloudstorage: startSessionOptionsV2.cloudStorage
         ?.filter(({ active }) => active)
         .map((cs) => storageDefinitionFromConfig(cs)),
+      env_variable_overrides: Array.from(searchParams).map(([name, value]) => ({
+        name,
+        value,
+      })),
     };
   }, [
     launcher.id,
     startSessionOptionsV2.storage,
     startSessionOptionsV2.sessionClass,
     startSessionOptionsV2.cloudStorage,
+    searchParams,
   ]);
 
   // Request session

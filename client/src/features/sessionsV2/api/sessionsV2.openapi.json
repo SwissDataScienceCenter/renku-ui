@@ -620,6 +620,30 @@
         "required": ["anonymous", "registered"],
         "type": "object"
       },
+      "EnvVariableOverrides": {
+        "description": "Environment variable overrides for the session pod",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EnvVarOverride"
+        }
+      },
+      "EnvVarOverride": {
+        "description": "Override an env variable defined in the session launcher",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+            "example": "MY_VAR"
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": ["name", "value"]
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -1211,6 +1235,9 @@
           },
           "cloudstorage": {
             "$ref": "#/components/schemas/SessionCloudStoragePostList"
+          },
+          "env_variable_overrides": {
+            "$ref": "#/components/schemas/EnvVariableOverrides"
           }
         },
         "required": ["launcher_id"],

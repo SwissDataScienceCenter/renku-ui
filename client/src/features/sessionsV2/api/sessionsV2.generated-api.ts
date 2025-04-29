@@ -427,12 +427,18 @@ export type SessionCloudStoragePost = {
   storage_id: Ulid & any;
 };
 export type SessionCloudStoragePostList = SessionCloudStoragePost[];
+export type EnvVarOverride = {
+  name: string;
+  value: string;
+};
+export type EnvVariableOverrides = EnvVarOverride[];
 export type SessionPostRequest = {
   launcher_id: Ulid;
   /** The size of disk storage for the session, in gigabytes */
   disk_storage?: number;
   resource_class_id?: number | null;
   cloudstorage?: SessionCloudStoragePostList;
+  env_variable_overrides?: EnvVariableOverrides;
 };
 export type SessionListResponse = SessionResponse[];
 export type SessionPatchRequest = {
