@@ -28,7 +28,7 @@ import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
-import { ActiveSessionButton } from "../sessionsV2/components/SessionButton/ActiveSessionButton";
+import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
   SessionStatusV2Badge,
   SessionStatusV2Description,
