@@ -524,7 +524,9 @@ function ProjectDoiDataConnectorBodyAndFooter({
           <div className="form-text">
             Paste a DOI identifier (E.G. <code>10.5281/zenodo.3831980</code>).
           </div>
-          <div className="invalid-feedback">Please provide an DOI</div>
+          <div className="invalid-feedback">
+            Please provide a DOI identifier
+          </div>
         </div>
         {error !== null && <RtkOrNotebooksError error={error} />}
       </ModalBody>

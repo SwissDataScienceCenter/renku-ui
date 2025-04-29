@@ -41,6 +41,10 @@ interface DataConnectorIdentifierArgs extends SimpleFixture {
   slug?: string;
 }
 
+interface GlobalDataConnectorIdentifierArgs extends SimpleFixture {
+  slug?: string;
+}
+
 interface DeleteDataConnectorProjectLinkArgs extends DataConnectorIdArgs {
   linkId?: string;
   projectId?: string;
@@ -218,6 +222,25 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         `/ui-server/api/data/namespaces/${namespace}/data_connectors/${slug}`,
         response
       ).as(name);
+      return this;
+    }
+
+    getDataConnectorByGlobalSlug(args?: GlobalDataConnectorIdentifierArgs) {
+      const {
+        fixture = "dataConnector/data-connector-global.json",
+        name = "getDataConnectorByGlobalSlug",
+        slug = "ULID-DOI-1",
+      } = args ?? {};
+      cy.fixture(fixture).then((body) => {
+        // eslint-disable-next-line max-nested-callbacks
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/data_connectors/global/${slug}`,
+          (req) => {
+            req.reply({ body });
+          }
+        ).as(name);
+      });
       return this;
     }
 
@@ -433,6 +456,23 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
               statusCode: 201,
               delay: 1000,
             });
+          }
+        ).as(name);
+      });
+      return this;
+    }
+
+    postGlobalDataConnector(args?: SimpleFixture) {
+      const {
+        fixture = "dataConnector/data-connector-global.json",
+        name = "postGlobalDataConnector",
+      } = args ?? {};
+      cy.fixture(fixture).then((dataConnector) => {
+        cy.intercept(
+          "POST",
+          "/ui-server/api/data/data_connectors/global",
+          (req) => {
+            req.reply({ body: dataConnector, statusCode: 201, delay: 1000 });
           }
         ).as(name);
       });

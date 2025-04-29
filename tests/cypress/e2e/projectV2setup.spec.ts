@@ -405,12 +405,49 @@ describe("Set up data connectors", () => {
     cy.wait("@listProjectDataConnectors");
   });
 
+  it("creates and link global data connector", () => {
+    fixtures
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .testCloudStorage({ success: false })
+      .postGlobalDataConnector()
+      .postDataConnectorProjectLink({ dataConnectorId: "ULID-DOI-1" });
+
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@listProjectDataConnectors");
+
+    // Open modal
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("project-data-controller-mode-doi").click();
+
+    // Check validation is working
+    cy.getDataCy("doi-data-connector-button").click();
+    cy.getDataCy("project-data-connector-connect-modal")
+      .find(".invalid-feedback")
+      .should("exist");
+
+    // Add DOI
+    cy.get("#doi").type("10.1234/zenodo.123456");
+    cy.getDataCy("doi-data-connector-button").click();
+    cy.getDataCy("project-data-connector-connect-modal").should("be.visible");
+    cy.wait("@postGlobalDataConnector");
+    cy.get("[data-cy=project-data-connector-connect-modal]").should(
+      "not.exist"
+    );
+  });
+
   it("link a data connector", () => {
     fixtures
       .readProjectV2WithoutDocumentation({
         fixture: "projectV2/read-projectV2-empty.json",
       })
       .listProjectDataConnectors()
+      .getDataConnector()
       .getDataConnectorByNamespaceAndSlug()
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-1" });
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
@@ -421,6 +458,28 @@ describe("Set up data connectors", () => {
     cy.getDataCy("add-data-connector").should("be.visible").click();
     cy.getDataCy("project-data-controller-mode-link").click();
     cy.get("#data-connector-identifier").type("user1-uuid/example-storage");
+    cy.getDataCy("link-data-connector-button").click();
+    cy.wait("@postDataConnectorProjectLink");
+    cy.wait("@listProjectDataConnectors");
+  });
+
+  it("link a global data connector", () => {
+    fixtures
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .getDataConnectorByGlobalSlug()
+      .postDataConnectorProjectLink({ dataConnectorId: "ULID-DOI-1" });
+    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@listProjectDataConnectors");
+
+    // add data connector
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("project-data-controller-mode-link").click();
+    cy.get("#data-connector-identifier").type("ULID-DOI-1");
     cy.getDataCy("link-data-connector-button").click();
     cy.wait("@postDataConnectorProjectLink");
     cy.wait("@listProjectDataConnectors");
