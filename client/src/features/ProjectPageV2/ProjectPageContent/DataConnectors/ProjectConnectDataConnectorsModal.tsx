@@ -253,19 +253,24 @@ function ProjectLinkDataConnectorBodyAndFooter({
 }: ProjectConnectDataConnectorsModalProps) {
   const dispatch = useAppDispatch();
 
+  const [fetchOnePartSlug, onePartSlugQuery] =
+    dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug.useLazyQuery();
   const [fetchTwoPartsSlug, twoPartsSlugQuery] =
     dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug.useLazyQuery();
   const [fetchThreePartsSlug, threePartsSlugQuery] =
     dataConnectorsApi.endpoints.getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug.useLazyQuery();
+
   const [requestId, setRequestId] = useState<string>("");
   const currentQuery = useMemo(
     () =>
-      twoPartsSlugQuery.requestId === requestId
+      onePartSlugQuery.requestId === requestId
+        ? onePartSlugQuery
+        : twoPartsSlugQuery.requestId === requestId
         ? twoPartsSlugQuery
         : threePartsSlugQuery.requestId === requestId
         ? threePartsSlugQuery
         : undefined,
-    [requestId, threePartsSlugQuery, twoPartsSlugQuery]
+    [requestId, onePartSlugQuery, twoPartsSlugQuery, threePartsSlugQuery]
   );
 
   const [
@@ -285,24 +290,28 @@ function ProjectLinkDataConnectorBodyAndFooter({
 
   const onSubmit = useCallback(
     (values: DataConnectorLinkFormFields) => {
-      const [namespace, project, slug] = values.dataConnectorIdentifier.split(
+      const [part1, part2, part3] = values.dataConnectorIdentifier.split(
         "/",
         3
       );
       const { requestId } =
-        slug == null
+        part2 == null
+          ? fetchOnePartSlug({
+              slug: part1,
+            })
+          : part3 == null
           ? fetchTwoPartsSlug({
-              namespace: namespace,
-              slug: project,
+              namespace: part1,
+              slug: part2,
             })
           : fetchThreePartsSlug({
-              namespace: namespace,
-              project: project,
-              slug: slug,
+              namespace: part1,
+              project: part2,
+              slug: part3,
             });
       setRequestId(requestId);
     },
-    [fetchThreePartsSlug, fetchTwoPartsSlug]
+    [fetchOnePartSlug, fetchThreePartsSlug, fetchTwoPartsSlug]
   );
 
   useEffect(() => {
@@ -356,8 +365,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
             )}
             rules={{
               required: true,
-              pattern:
-                /(?:^[a-zA-Z0-9\-_.]+\/[a-zA-Z0-9\-_.]+$)|(?:^[a-zA-Z0-9\-_.]+\/[a-zA-Z0-9\-_.]+\/[a-zA-Z0-9\-_.]+$)/,
+              pattern: /^[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+){0,2}$/,
             }}
           />
           <div className="form-text">
