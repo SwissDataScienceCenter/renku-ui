@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useMemo } from "react";
 import type { PostStorageSchemaTestConnectionApiArg } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -32,6 +34,7 @@ import type {
   DataConnectorPost,
   DataConnectorRead,
 } from "../api/data-connectors.api";
+import { useGetHandlesByDoiQuery } from "../api/doiResolver.api";
 import { DataConnectorScope } from "../dataConnectors.types";
 import type { DataConnectorConfiguration } from "./useDataConnectorConfiguration.hook";
 
@@ -200,12 +203,75 @@ export function getDataConnectorScope(namespace?: string): DataConnectorScope {
   return "namespace";
 }
 
-export function getDataConnectorSource(dataConnector: DataConnector): string {
-  const scope = getDataConnectorScope(dataConnector.namespace);
-  if (scope === "global") {
-    return dataConnector.storage.configuration["doi"]
-      ? (dataConnector.storage.configuration["doi"] as string)
-      : "unknown";
+export function useGetDataConnectorSource(dataConnector: DataConnector) {
+  const scope = useMemo(
+    () => getDataConnectorScope(dataConnector.namespace),
+    [dataConnector.namespace]
+  );
+
+  const { currentData: resolverResponse, isSuccess } = useGetHandlesByDoiQuery(
+    scope === "global" &&
+      typeof dataConnector.storage.configuration["doi"] === "string"
+      ? { doi: parseDoi(dataConnector.storage.configuration["doi"]), index: 1 }
+      : skipToken
+  );
+  const source = useMemo(() => {
+    if (
+      scope !== "global" ||
+      typeof dataConnector.storage.configuration["doi"] !== "string"
+    ) {
+      return "unknown";
+    }
+
+    if (
+      !isSuccess ||
+      resolverResponse == null ||
+      resolverResponse.responseCode !== 1
+    ) {
+      return dataConnector.storage.configuration["doi"];
+    }
+
+    const value = resolverResponse.values?.find(
+      ({ index, type: type_, data }) =>
+        index === 1 &&
+        type_ === "URL" &&
+        data?.format === "string" &&
+        typeof data.value === "string"
+    );
+    if (!value) {
+      return dataConnector.storage.configuration["doi"];
+    }
+
+    const doiURL = `${value?.data?.value}`;
+    try {
+      const parsed = new URL(doiURL);
+      return parsed.hostname;
+    } catch {
+      return dataConnector.storage.configuration["doi"];
+    }
+  }, [dataConnector.storage.configuration, isSuccess, resolverResponse, scope]);
+
+  return source;
+}
+
+/** Parse the input string as a DOI
+ *
+ * Examples:
+ * - 10.1000/182 -> 10.1000/182
+ * - https://doi.org/10.1000/182 -> 10.1000/182
+ * - doi:10.1000/182 -> 10.1000/182
+ */
+function parseDoi(doi: string): string {
+  try {
+    const doiURL = new URL(doi);
+    if (doiURL.protocol.toLowerCase() === "doi:") {
+      return doi.slice("doi:".length).replace(/^([/])*/, "");
+    }
+    if (doiURL.hostname.toLowerCase().endsWith("doi.org")) {
+      return doiURL.pathname.replace(/^([/])*/, "");
+    }
+  } catch {
+    return doi;
   }
-  return dataConnector.namespace as string;
+  return doi;
 }

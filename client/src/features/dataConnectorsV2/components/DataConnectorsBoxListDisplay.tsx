@@ -19,19 +19,19 @@
 import cx from "classnames";
 import { useCallback, useMemo, useRef } from "react";
 import {
+  BoxArrowUpRight,
   EyeFill,
+  Folder,
   Globe2,
   Lock,
   Pencil,
-  Folder,
-  BoxArrowUpRight,
 } from "react-bootstrap-icons";
 import {
+  Badge,
   Col,
   ListGroupItem,
   Row,
   UncontrolledTooltip,
-  Badge,
 } from "reactstrap";
 
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -42,12 +42,12 @@ import type {
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 
-import DataConnectorView from "./DataConnectorView";
+import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
-  getDataConnectorSource,
+  useGetDataConnectorSource,
 } from "./dataConnector.utils";
-import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
+import DataConnectorView from "./DataConnectorView";
 
 interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
@@ -110,10 +110,7 @@ export default function DataConnectorBoxListDisplay({
     return <BoxArrowUpRight className="bi" />;
   }, [namespace]);
 
-  const dataConnectorSource = useMemo(
-    () => getDataConnectorSource(dataConnector),
-    [dataConnector]
-  );
+  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
 
   return (
     <>

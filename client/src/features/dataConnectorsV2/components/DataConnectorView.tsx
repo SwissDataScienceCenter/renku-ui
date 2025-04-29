@@ -60,7 +60,10 @@ import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-c
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 import { WarnAlert } from "../../../components/Alert";
-import { getDataConnectorScope } from "./dataConnector.utils";
+import {
+  getDataConnectorScope,
+  useGetDataConnectorSource,
+} from "./dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import { skipToken } from "@reduxjs/toolkit/query";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
@@ -422,6 +425,8 @@ function DataConnectorViewMetadata({
     [dataConnector.namespace, dataConnector.slug, scope]
   );
 
+  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
+
   return (
     <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
       <DataConnectorPropertyValue title="Identifier">
@@ -441,7 +446,7 @@ function DataConnectorViewMetadata({
           <DataConnectorPropertyValue title="Source">
             <div className={cx("align-items-center", "d-flex", "gap-1")}>
               <BoxArrowUpRight className={cx("bi", "flex-shrink-0")} />
-              DOI provider
+              DOI from {dataConnectorSource}
             </div>
           </DataConnectorPropertyValue>
 
