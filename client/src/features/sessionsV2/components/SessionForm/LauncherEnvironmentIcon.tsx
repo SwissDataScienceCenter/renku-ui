@@ -39,7 +39,7 @@ interface SvgIconProps {
   style?: CSSProperties;
 }
 
-export function CustomIconSvg({ className, style }: SvgIconProps) {
+function CustomIconSvg({ className, style }: SvgIconProps) {
   return (
     <svg
       aria-hidden
@@ -75,7 +75,7 @@ export function CustomIconSvg({ className, style }: SvgIconProps) {
   );
 }
 
-export function GlobalIconSvg({ className, style }: SvgIconProps) {
+function GlobalIconSvg({ className, style }: SvgIconProps) {
   return (
     <svg
       aria-hidden
@@ -107,7 +107,7 @@ export function GlobalIconSvg({ className, style }: SvgIconProps) {
   );
 }
 
-export function CodeBasedIconSvg({ className, style }: SvgIconProps) {
+function CodeBasedIconSvg({ className, style }: SvgIconProps) {
   return (
     <svg
       aria-hidden
@@ -139,7 +139,7 @@ export function CodeBasedIconSvg({ className, style }: SvgIconProps) {
   );
 }
 
-export function EnvironmentIconSvg({ className, style }: SvgIconProps) {
+function EnvironmentIconSvg({ className, style }: SvgIconProps) {
   return (
     <svg
       aria-hidden
