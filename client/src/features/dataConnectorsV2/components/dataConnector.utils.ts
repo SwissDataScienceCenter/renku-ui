@@ -220,7 +220,7 @@ export function useGetDataConnectorSource(dataConnector: DataConnector) {
       scope !== "global" ||
       typeof dataConnector.storage.configuration["doi"] !== "string"
     ) {
-      return "unknown";
+      return dataConnector.namespace || "unknown";
     }
 
     if (
@@ -249,7 +249,13 @@ export function useGetDataConnectorSource(dataConnector: DataConnector) {
     } catch {
       return dataConnector.storage.configuration["doi"];
     }
-  }, [dataConnector.storage.configuration, isSuccess, resolverResponse, scope]);
+  }, [
+    dataConnector.namespace,
+    dataConnector.storage.configuration,
+    isSuccess,
+    resolverResponse,
+    scope,
+  ]);
 
   return source;
 }
