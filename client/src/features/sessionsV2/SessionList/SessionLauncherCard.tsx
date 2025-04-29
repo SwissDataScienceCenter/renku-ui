@@ -42,7 +42,7 @@ import { SessionV2 } from "../sessionsV2.types";
 import {
   BuildStatusBadge,
   BuildStatusDescription,
-} from "../SessionView/EnvironmentCard";
+} from "../components/BuildStatusComponents";
 import SessionCard from "./SessionCard";
 
 import styles from "./Session.module.scss";

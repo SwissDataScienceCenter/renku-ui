@@ -58,7 +58,7 @@ import { SessionRowResourceRequests } from "../../session/components/SessionsLis
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import { ActiveSessionButton } from "../components/SessionButton/ActiveSessionButton";
+import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
@@ -69,7 +69,7 @@ import {
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
 import { SessionV2 } from "../sessionsV2.types";
-import { EnvironmentCard } from "./EnvironmentCard";
+import EnvironmentCard from "./EnvironmentCard";
 import useSessionStartLink from "./useSessionStartLink.hook";
 import EnvVariablesCard from "./EnvVariablesCard";
 import EnvVariablesModal from "./EnvVariablesModal";

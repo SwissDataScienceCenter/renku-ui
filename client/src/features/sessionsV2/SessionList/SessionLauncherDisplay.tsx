@@ -22,14 +22,13 @@ import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
-import UpdateSessionLauncherEnvironmentModal, {
-  UpdateSessionLauncherMetadataModal,
-} from "../components/SessionModals/UpdateSessionLauncherModal";
+import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
 import SessionStartLinkModal from "../SessionView/SessionStartLinkModal";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherCard from "./SessionLauncherCard";
 import EnvironmentLogsV2 from "../../../components/LogsV2";
+import UpdateSessionLauncherMetadataModal from "../components/SessionModals/UpdateSessionLauncherMetadataModal";
 
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;

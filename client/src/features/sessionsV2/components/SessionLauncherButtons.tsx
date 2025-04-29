@@ -26,7 +26,7 @@ import {
   Build,
   SessionLauncher,
 } from "../api/sessionLaunchersV2.generated-api";
-import { BuildLauncherButtons } from "./BuildLauncherButtons";
+import BuildLauncherButtons from "./BuildLauncherButtons";
 
 interface SessionLauncherButtonsProps {
   namespace: string;

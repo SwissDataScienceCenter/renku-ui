@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { ActiveSessionButton } from "../components/SessionButton/ActiveSessionButton";
+import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
   getSessionStatusStyles,
   SessionStatusV2Description,

@@ -645,7 +645,7 @@ function RepositoryView({
                 </span>
                 <h2
                   className={cx("m-0", "text-break")}
-                  data-cy="data-source-title"
+                  data-cy="code-repository-title"
                 >
                   {title}
                 </h2>

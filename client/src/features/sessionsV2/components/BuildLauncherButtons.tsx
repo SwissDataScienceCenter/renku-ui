@@ -35,9 +35,9 @@ import {
   BuildActionFailedModal,
   BuildActionsProps,
   BuildLogsModal,
-} from "../SessionView/EnvironmentCard";
+} from "./BuildStatusComponents";
 
-export function BuildLauncherButtons({
+export default function BuildLauncherButtons({
   launcher,
   isMainButton = true,
 }: BuildActionsProps) {

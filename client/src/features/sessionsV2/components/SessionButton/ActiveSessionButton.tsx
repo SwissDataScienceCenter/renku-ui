@@ -81,7 +81,7 @@ interface ActiveSessionButtonProps {
   toggleSessionDetails?: () => void;
 }
 
-export function ActiveSessionButton({
+export default function ActiveSessionButton({
   session,
   showSessionUrl,
   className,
@@ -323,7 +323,7 @@ export function ActiveSessionButton({
       <>
         <Button
           color="outline-primary"
-          data-cy={"show-logs-session-button"}
+          data-cy="show-logs-session-button"
           onClick={onToggleLogs}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
