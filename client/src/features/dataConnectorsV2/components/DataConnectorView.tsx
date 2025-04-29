@@ -530,7 +530,7 @@ function DataConnectorViewMetadata({
         )}
       </DataConnectorPropertyValue>
 
-      {dataConnector.keywords && (
+      {dataConnector.keywords && dataConnector.keywords.length > 0 && (
         <DataConnectorPropertyValue title="Keywords">
           <div className={cx("d-flex", "flex-wrap", "gap-1", "my-1")}>
             {dataConnector.keywords.map((keyword, index) => (
