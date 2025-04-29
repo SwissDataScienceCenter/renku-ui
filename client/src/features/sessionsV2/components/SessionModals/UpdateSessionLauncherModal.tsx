@@ -45,7 +45,6 @@ import EditLauncherFormContent, {
   EditLauncherFormMetadata,
 } from "../SessionForm/EditLauncherFormContent";
 import { SessionLauncherForm } from "../../sessionsV2.types";
-import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
 import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 
