@@ -17,9 +17,8 @@
  */
 
 import cx from "classnames";
-import { LocationDescriptor } from "history";
 import { ReactNode, useRef } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, type To } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -135,7 +134,7 @@ export default function SessionFileButton({
 
 interface SessionFileButtonComponentProps {
   hasOrangeAccent?: boolean;
-  target: LocationDescriptor;
+  target: To;
   tooltip: ReactNode;
 }
 
