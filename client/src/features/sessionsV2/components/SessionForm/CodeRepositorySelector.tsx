@@ -160,7 +160,7 @@ function CodeRepositorySelect({
       inputId="builder-environment-code-repository-select-input"
       name={name}
       isClearable={false}
-      isSearchable
+      isSearchable={false}
       options={options}
       getOptionLabel={(option) => option.repositoryUrl}
       getOptionValue={(option) => option.repositoryUrl}

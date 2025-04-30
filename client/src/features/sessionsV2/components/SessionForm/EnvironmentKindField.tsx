@@ -70,7 +70,7 @@ export default function EnvironmentKindField({
                   <EnvironmentIcon type="global" size={30} />
                   <span className="fw-bold">Global environment</span>
                 </div>
-                <p className={cx("mb-0", "small", "text-start")}>
+                <p className={cx("mb-0", "text-start")}>
                   Get started quickly with a pre-built environment.
                 </p>
               </div>
@@ -111,7 +111,7 @@ export default function EnvironmentKindField({
                       <EnvironmentIcon type="codeBased" size={30} />
                       <span className="fw-bold">Create from code</span>
                     </div>
-                    <p className={cx("mb-0", "small", "text-start")}>
+                    <p className={cx("mb-0", "text-start")}>
                       Customize your session with a requirements.txt or similar
                       file.
                     </p>
@@ -149,7 +149,7 @@ export default function EnvironmentKindField({
                   <EnvironmentIcon type="custom" size={30} />
                   <span className="fw-bold">External environment</span>
                 </div>
-                <p className={cx("mb-0", "small", "text-start")}>
+                <p className={cx("mb-0", "text-start")}>
                   Run a session from a preexisting docker image.
                 </p>
               </div>
