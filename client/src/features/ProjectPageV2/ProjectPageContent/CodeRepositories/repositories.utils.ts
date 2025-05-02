@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import { useMemo } from "react";
+import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils.ts";
+
 /**
  * Validates the URL of a code repository. Note that RenkuLab only supports HTTP(S) at the moment.
  */
@@ -66,4 +69,16 @@ export function detectSSHRepository(repositoryURL: string): boolean {
   // This matches URLs like "git@github.com:SwissDataScienceCenter/renku-ui.git"
   const gitUrlRegex = /git@(?:.)+:/;
   return cleaned.match(gitUrlRegex) != null;
+}
+
+export function getRepositoryName(repositoryURL: string): string {
+  const canonicalUrlStr = useMemo(
+    () => `${repositoryURL.replace(/.git$/i, "")}`,
+    [repositoryURL]
+  );
+  const canonicalUrl = useMemo(
+    () => safeNewUrl(canonicalUrlStr),
+    [canonicalUrlStr]
+  );
+  return canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
 }
