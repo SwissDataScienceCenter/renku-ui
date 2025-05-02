@@ -198,7 +198,11 @@ function SessionLaunchLink({
   launcher,
   project,
 }: Required<Pick<SessionViewProps, "launcher" | "project">>) {
-  const { url } = useSessionStartLink({ launcher, project });
+  const { url } = useSessionStartLink({
+    launcherId: launcher.id,
+    namespace: project.namespace,
+    slug: project.slug,
+  });
   return (
     <div className="mb-2">
       <h4 className="my-auto">

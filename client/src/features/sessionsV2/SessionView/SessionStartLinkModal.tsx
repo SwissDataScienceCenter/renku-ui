@@ -20,24 +20,25 @@ import cx from "classnames";
 import { Link45deg, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
-import { Project } from "../../projectsV2/api/projectV2.api";
-import { SessionLauncher } from "../api/sessionLaunchersV2.generated-api";
+import { Ulid } from "../api/sessionLaunchersV2.generated-api";
 import useSessionStartLink from "./useSessionStartLink.hook";
 
 interface SessionStartLinkModalProps {
   isOpen: boolean;
-  launcher: SessionLauncher;
-  project: Project;
+  launcherId: Ulid;
+  namespace: string;
+  slug: string;
   toggle: () => void;
 }
 
 export default function SessionStartLinkModal({
   isOpen,
-  launcher,
+  launcherId,
   toggle,
-  project,
+  namespace,
+  slug,
 }: SessionStartLinkModalProps) {
-  const { url } = useSessionStartLink({ launcher, project });
+  const { url } = useSessionStartLink({ launcherId, namespace, slug });
   return (
     <Modal
       backdrop="static"
@@ -54,7 +55,7 @@ export default function SessionStartLinkModal({
       <ModalBody>
         <p className="mb-2">
           Launching a session from this link creates a new, independent session
-          with the same setup. It`&apos;s not a live share or collaborative
+          with the same setup. It&apos;s not a live share or collaborative
           environment.
         </p>
         <CommandCopy command={url.toString()} noMargin />

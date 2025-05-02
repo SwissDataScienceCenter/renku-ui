@@ -19,22 +19,23 @@ import { useContext } from "react";
 import { generatePath } from "react-router";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
-import { Project } from "../../projectsV2/api/projectV2.api";
-import { SessionLauncher } from "../api/sessionLaunchersV2.generated-api";
+import { Ulid } from "../api/sessionLaunchersV2.generated-api";
 
 export default function useSessionStartLink({
-  launcher,
-  project,
+  launcherId,
+  namespace,
+  slug,
 }: {
-  launcher: SessionLauncher;
-  project: Project;
+  launcherId: Ulid;
+  namespace: string;
+  slug: string;
 }) {
   const startPath = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
-      launcherId: launcher.id,
-      namespace: project.namespace,
-      slug: project.slug,
+      launcherId: launcherId,
+      namespace: namespace,
+      slug: slug,
     }
   );
   const { params } = useContext(AppContext);
