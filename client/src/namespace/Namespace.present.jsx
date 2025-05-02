@@ -23,23 +23,13 @@
  *  Namespace presentational components.
  */
 
-import { createMemoryHistory } from "history";
+import cx from "classnames";
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
-import cx from "classnames";
 
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import NotFound from "../not-found/NotFound";
-
-const fakeHistory = createMemoryHistory({
-  initialEntries: ["/"],
-  initialIndex: 0,
-});
-fakeHistory.push({
-  pathname: "/projects",
-  search: "?page=1",
-});
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;

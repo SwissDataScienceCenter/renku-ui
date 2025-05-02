@@ -23,7 +23,6 @@
  *  Tests for privacy
  */
 
-import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router";
 import { act } from "react-test-renderer";
@@ -31,15 +30,6 @@ import { describe, it } from "vitest";
 
 import Cookie from "./Cookie";
 import RoutedContent from "./RoutedContent";
-
-const fakeHistory = createMemoryHistory({
-  initialEntries: ["/"],
-  initialIndex: 0,
-});
-fakeHistory.push({
-  pathname: "/projects",
-  search: "?page=1",
-});
 
 function getParams(statement = false, content = false, layout = false) {
   let params = {};
@@ -65,7 +55,7 @@ describe("rendering", () => {
       await act(async () => {
         root.render(
           <MemoryRouter>
-            <RoutedContent history={fakeHistory} content={content} />
+            <RoutedContent content={content} />
           </MemoryRouter>
         );
       });
@@ -82,7 +72,7 @@ describe("rendering", () => {
         await act(async () => {
           root.render(
             <MemoryRouter>
-              <Cookie history={fakeHistory} params={params} />
+              <Cookie params={params} />
             </MemoryRouter>
           );
         });
