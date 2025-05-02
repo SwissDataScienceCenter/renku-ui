@@ -123,6 +123,7 @@ interface SessionStatusStyles {
   bgOpacity: number;
   borderColor: string;
   sessionLine: string;
+  sessionIcon: string;
 }
 
 export function getSessionStatusStyles(session: {
@@ -156,7 +157,7 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
     const messages = {
       [SESSION_STATES.RUNNING]: "My running session",
       [SESSION_STATES.STARTING]: "Launching my session",
-      [SESSION_STATES.STOPPING]: "Shutting down my session",
+      [SESSION_STATES.STOPPING]: "Shutting down my session...",
       [SESSION_STATES.HIBERNATED]: "My paused session",
       [SESSION_STATES.FAILED]: "Error in my session",
       default: "Unknown status",
@@ -286,8 +287,6 @@ function SessionStatusV2Text({
       <Clock size="16" className="flex-shrink-0" />
       <span>Launching since {startTimeText}</span>
     </div>
-  ) : state === "stopping" ? (
-    <>Shutting down session...</>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Hourglass size="16" className="flex-shrink-0" />

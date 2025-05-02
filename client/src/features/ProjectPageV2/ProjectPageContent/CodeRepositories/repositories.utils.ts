@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useMemo } from "react";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils.ts";
 
 /**
@@ -72,13 +71,7 @@ export function detectSSHRepository(repositoryURL: string): boolean {
 }
 
 export function getRepositoryName(repositoryURL: string): string {
-  const canonicalUrlStr = useMemo(
-    () => `${repositoryURL.replace(/.git$/i, "")}`,
-    [repositoryURL]
-  );
-  const canonicalUrl = useMemo(
-    () => safeNewUrl(canonicalUrlStr),
-    [canonicalUrlStr]
-  );
+  const canonicalUrlStr = `${repositoryURL.replace(/.git$/i, "")}`;
+  const canonicalUrl = safeNewUrl(canonicalUrlStr);
   return canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
 }

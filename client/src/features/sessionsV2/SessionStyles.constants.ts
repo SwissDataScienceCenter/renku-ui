@@ -22,6 +22,12 @@ import linePaused from "../../styles/assets/linePaused.svg";
 import lineStopped from "../../styles/assets/lineStopped.svg";
 import lineBlock from "../../styles/assets/lineBlock.svg";
 
+import playingIcon from "../../styles/assets/playing.svg";
+import failedIcon from "../../styles/assets/failed.svg";
+import pausedIcon from "../../styles/assets/paused.svg";
+import stoppedIcon from "../../styles/assets/stopped.svg";
+import blockIcon from "../../styles/assets/block.svg";
+
 export const SESSION_STATES = {
   RUNNING: "running",
   STARTING: "starting",
@@ -37,6 +43,7 @@ export const SESSION_STYLES = {
     bgOpacity: 10,
     borderColor: "border-warning",
     sessionLine: linePlaying,
+    sessionIcon: playingIcon,
   },
   SUCCESS: {
     textColor: "text-success-emphasis",
@@ -44,6 +51,7 @@ export const SESSION_STYLES = {
     bgOpacity: 10,
     borderColor: "border-success",
     sessionLine: linePlaying,
+    sessionIcon: playingIcon,
   },
   HIBERNATED: {
     textColor: "text-dark-emphasis",
@@ -51,6 +59,7 @@ export const SESSION_STYLES = {
     bgOpacity: 100,
     borderColor: "border-dark-subtle",
     sessionLine: linePaused,
+    sessionIcon: pausedIcon,
   },
   FAILED: {
     textColor: "text-danger-emphasis",
@@ -58,6 +67,7 @@ export const SESSION_STYLES = {
     bgOpacity: 10,
     borderColor: "border-danger",
     sessionLine: lineFailed,
+    sessionIcon: failedIcon,
   },
   STOPPING: {
     textColor: "text-warning-emphasis",
@@ -65,6 +75,7 @@ export const SESSION_STYLES = {
     bgOpacity: 10,
     borderColor: "border-warning",
     sessionLine: lineStopped,
+    sessionIcon: stoppedIcon,
   },
   DEFAULT: {
     textColor: "text-warning",
@@ -72,5 +83,6 @@ export const SESSION_STYLES = {
     bgOpacity: 10,
     borderColor: "border-warning",
     sessionLine: lineBlock,
+    sessionIcon: blockIcon,
   },
 } as const;
