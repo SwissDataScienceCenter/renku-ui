@@ -118,7 +118,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       </p>
       {loading}
       {totalSessions > 0 && !isLoading && (
-        <div className={cx("d-flex", "flex-column", "gap-2", "mx-3", "mb-3")}>
+        <div className={cx("d-flex", "flex-column", "gap-2")}>
           {launchers?.map((launcher) => (
             <SessionLauncherDisplay
               key={`launcher-${launcher.id}`}

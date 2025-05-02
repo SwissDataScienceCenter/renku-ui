@@ -329,7 +329,10 @@ function SessionLauncherDropdownActions({
               data-cy="session-launcher-menu-edit-env"
               onClick={toggleUpdateEnvironment}
             >
-              <LauncherEnvironmentIcon launcher={launcher} />
+              <LauncherEnvironmentIcon
+                className={cx("me-1")}
+                launcher={launcher}
+              />
               Edit environment
             </DropdownItem>
             <DropdownItem
