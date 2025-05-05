@@ -114,7 +114,7 @@ export default function SessionItem({
               />
             ) : launcher != null ? (
               <StartSessionButton
-                launcherId={launcher.id}
+                launcher={launcher}
                 namespace={project.namespace}
                 slug={project.slug}
               />

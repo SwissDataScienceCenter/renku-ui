@@ -26,13 +26,12 @@ import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
+  SessionStatusV2Badge,
   SessionStatusV2Description,
-  SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
 
@@ -114,9 +113,6 @@ interface DashboardSessionProps {
   session: SessionV2;
 }
 function DashboardSession({ session }: DashboardSessionProps) {
-  const displayModal = useAppSelector(
-    ({ display }) => display.modals.sessionLogs
-  );
   const { project_id: projectId, launcher_id: launcherId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
     projectId ? { projectId } : skipToken
@@ -186,7 +182,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
                 </h6>
               </Col>
               <Col xs={12} xl="auto" className="mt-1">
-                <SessionStatusV2Label session={session} />
+                <SessionStatusV2Badge session={session} />
               </Col>
             </Row>
           </Col>
@@ -209,7 +205,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
           showSessionUrl={showSessionUrl}
         />
       </div>
-      <EnvironmentLogsV2 name={displayModal.targetServer} />
+      <EnvironmentLogsV2 name={session.name} />
     </div>
   );
 }
