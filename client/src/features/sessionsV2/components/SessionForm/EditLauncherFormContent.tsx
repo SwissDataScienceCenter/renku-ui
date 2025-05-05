@@ -26,10 +26,10 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 import { Input, Label, ListGroup } from "reactstrap";
-import { InfoAlert } from "../../../../components/Alert.jsx";
+import { InfoAlert } from "../../../../components/Alert";
 
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks.tsx";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { Links } from "../../../../utils/constants/Docs.js";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";

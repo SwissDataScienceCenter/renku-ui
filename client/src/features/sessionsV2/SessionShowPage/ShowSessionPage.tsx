@@ -59,7 +59,7 @@ import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionL
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
-import SessionStartLinkModal from "../SessionView/SessionStartLinkModal.tsx";
+import SessionStartLinkModal from "../SessionView/SessionStartLinkModal";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
@@ -558,7 +558,7 @@ function ShareSessionLinkButton({
         innerRef={ref}
         onClick={toggleShareLink}
       >
-        <Link45deg className={cx("bi")} />
+        <Link45deg className="bi" />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>

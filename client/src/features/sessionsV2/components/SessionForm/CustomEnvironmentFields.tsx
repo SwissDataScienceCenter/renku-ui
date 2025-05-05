@@ -19,9 +19,9 @@
 import cx from "classnames";
 import { Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
-import { InfoAlert } from "../../../../components/Alert.jsx";
-import { ExternalLink } from "../../../../components/ExternalLinks.tsx";
-import { Links } from "../../../../utils/constants/Docs.js";
+import { InfoAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import { Links } from "../../../../utils/constants/Docs";
 
 import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";

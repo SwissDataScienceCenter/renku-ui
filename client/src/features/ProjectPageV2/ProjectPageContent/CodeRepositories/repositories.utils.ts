@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils.ts";
+import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 /**
  * Validates the URL of a code repository. Note that RenkuLab only supports HTTP(S) at the moment.

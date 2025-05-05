@@ -22,7 +22,7 @@ import { ButtonGroup } from "reactstrap";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
-import { EnvironmentIcon } from "./LauncherEnvironmentIcon.tsx";
+import { EnvironmentIcon } from "./LauncherEnvironmentIcon";
 
 interface EnvironmentKindFieldProps {
   control: Control<SessionLauncherForm>;
