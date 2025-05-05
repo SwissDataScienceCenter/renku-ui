@@ -21,12 +21,12 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import {
+  ArrowRightCircle,
   BoxArrowUpRight,
   CheckLg,
   FileEarmarkText,
   PauseCircle,
   PlayFill,
-  Plugin,
   Tools,
   Trash,
   XLg,
@@ -46,14 +46,12 @@ import {
 
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
-import EnvironmentLogsV2 from "../../../../components/LogsV2";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { User } from "../../../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import AppContext from "../../../../utils/context/appContext";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
@@ -80,12 +78,13 @@ interface ActiveSessionButtonProps {
   className?: string;
   session: SessionV2;
   showSessionUrl: string;
+  toggleSessionDetails?: () => void;
 }
 
 export default function ActiveSessionButton({
-  className,
   session,
   showSessionUrl,
+  className,
 }: ActiveSessionButtonProps) {
   const { notifications } = useContext(AppContext);
 
@@ -99,10 +98,6 @@ export default function ActiveSessionButton({
   const onToggleLogs = useCallback(() => {
     dispatch(toggleSessionLogsModal({ targetServer: session.name }));
   }, [dispatch, session.name]);
-
-  const displayModal = useAppSelector(
-    ({ display }) => display.modals.sessionLogs
-  );
 
   // Handle resuming session
   const [isResuming, setIsResuming] = useState(false);
@@ -255,7 +250,8 @@ export default function ActiveSessionButton({
     "btn-icon-text",
     "start-session-button",
     "py-1",
-    "px-2"
+    "px-2",
+    "btn-outline-primary"
   );
 
   const defaultAction =
@@ -269,15 +265,41 @@ export default function ActiveSessionButton({
         <Loader className="me-1" inline size={16} />
         Pausing
       </Button>
-    ) : status === "starting" || status === "running" ? (
+    ) : status === "starting" ? (
       <Link
         className={cx("btn", "btn-primary")}
         data-cy="open-session"
         to={showSessionUrl}
       >
-        <Plugin className={cx("bi", "me-1")} />
+        <ArrowRightCircle className={cx("bi", "me-1")} />
         Open
       </Link>
+    ) : status === "running" ? (
+      <>
+        <Button
+          color="outline-primary"
+          className={buttonClassName}
+          data-cy={logged ? "pause-session-button" : "delete-session-button"}
+          onClick={logged ? onHibernateSession : onStopSession}
+        >
+          {logged ? (
+            <span className="align-self-start">
+              <PauseCircle className={cx("bi", "me-1")} />
+            </span>
+          ) : (
+            <Trash className={cx("bi", "me-1")} />
+          )}
+          {logged ? "Pause" : "Delete"}
+        </Button>
+        <Link
+          className={cx("btn", "btn-primary")}
+          data-cy="open-session"
+          to={showSessionUrl}
+        >
+          <ArrowRightCircle className={cx("bi", "me-1")} />
+          Open
+        </Link>
+      </>
     ) : status === "hibernated" ? (
       <Button
         color="primary"
@@ -298,31 +320,50 @@ export default function ActiveSessionButton({
         )}
       </Button>
     ) : failedScheduling ? (
-      <Button
-        color="primary"
-        className={buttonClassName}
-        data-cy="modify-session-button"
-        onClick={toggleModifySession}
-      >
-        <Tools className={cx("bi", "me-1")} />
-        Modify
-      </Button>
+      <>
+        <Button
+          color="outline-primary"
+          data-cy="show-logs-session-button"
+          onClick={onToggleLogs}
+        >
+          <FileEarmarkText className={cx("bi", "me-1")} />
+          Get logs
+        </Button>
+        <Button
+          color="primary"
+          className={buttonClassName}
+          data-cy="modify-session-button"
+          onClick={toggleModifySession}
+        >
+          <Tools className={cx("bi", "me-1")} />
+          Modify
+        </Button>
+      </>
     ) : (
-      <Button
-        color="primary"
-        className={buttonClassName}
-        data-cy={logged ? "pause-session-button" : "delete-session-button"}
-        onClick={logged ? onHibernateSession : onStopSession}
-      >
-        {logged ? (
-          <span className="align-self-start">
-            <PauseCircle className={cx("bi", "me-1")} />
-          </span>
-        ) : (
-          <Trash className={cx("bi", "me-1")} />
-        )}
-        {logged ? "Pause" : "Delete"}
-      </Button>
+      <>
+        <Button
+          color="outline-primary"
+          data-cy={"show-logs-session-button"}
+          onClick={onToggleLogs}
+        >
+          <FileEarmarkText className={cx("bi", "me-1")} />
+          Get logs
+        </Button>
+        <Button
+          color="primary"
+          data-cy={logged ? "pause-session-button" : "delete-session-button"}
+          onClick={logged ? onHibernateSession : onStopSession}
+        >
+          {logged ? (
+            <span className="align-self-start">
+              <PauseCircle className={cx("bi", "me-1")} />
+            </span>
+          ) : (
+            <Trash className={cx("bi", "me-1")} />
+          )}
+          {logged ? "Pause" : "Delete"}
+        </Button>
+      </>
     );
 
   const hibernateAction = status !== "stopping" &&
@@ -379,22 +420,22 @@ export default function ActiveSessionButton({
   );
 
   return (
-    <ButtonWithMenuV2
-      className={cx(className)}
-      color="primary"
-      default={defaultAction}
-      preventPropagation
-      size="sm"
-    >
-      {hibernateAction}
-      {deleteAction}
-      {modifyAction}
-      {(hibernateAction || deleteAction || modifyAction) &&
-        (openInNewTabAction || logsAction) && <DropdownItem divider />}
+    <div className={cx("d-flex", "flex-row", "gap-2")}>
+      <ButtonWithMenuV2
+        className={cx(className)}
+        color={"primary"}
+        default={defaultAction}
+        preventPropagation
+        size="sm"
+      >
+        {deleteAction}
+        {modifyAction}
+        {(hibernateAction || deleteAction || modifyAction) &&
+          (openInNewTabAction || logsAction) && <DropdownItem divider />}
 
-      {openInNewTabAction}
-      {logsAction}
-
+        {openInNewTabAction}
+        {logsAction}
+      </ButtonWithMenuV2>
       <ConfirmDeleteModal
         isOpen={showModalStopSession}
         isStopping={isStopping}
@@ -411,8 +452,7 @@ export default function ActiveSessionButton({
         toggleModal={toggleModifySession}
         resource_class_id={session.resource_class_id}
       />
-      <EnvironmentLogsV2 name={displayModal.targetServer} />
-    </ButtonWithMenuV2>
+    </div>
   );
 }
 

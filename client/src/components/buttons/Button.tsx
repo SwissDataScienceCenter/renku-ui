@@ -130,6 +130,7 @@ interface ButtonWithMenuV2Props {
   id?: string;
   preventPropagation?: boolean;
   size?: string;
+  isDisabledDropdownToggle?: boolean;
 }
 export const ButtonWithMenuV2 = SplitButtonWithMenu;
 
@@ -143,6 +144,7 @@ export function SplitButtonWithMenu({
   id,
   preventPropagation,
   size,
+  isDisabledDropdownToggle,
 }: ButtonWithMenuV2Props) {
   // ! Temporary workaround to quickly implement a design solution -- to be removed ASAP #3250
   const additionalProps = preventPropagation
@@ -166,7 +168,7 @@ export function SplitButtonWithMenu({
         data-bs-toggle="dropdown"
         color={color ?? "primary"}
         data-cy="button-with-menu-dropdown"
-        disabled={disabled}
+        disabled={isDisabledDropdownToggle ?? disabled}
       />
       <DropdownMenu end>{children}</DropdownMenu>
     </UncontrolledDropdown>
