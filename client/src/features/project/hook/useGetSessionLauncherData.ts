@@ -18,15 +18,16 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
+
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
 import useDefaultBranchOption from "../../session/hooks/options/useDefaultBranchOption.hook";
 import useDefaultCommitOption from "../../session/hooks/options/useDefaultCommitOption.hook";
 import {
+  projectCoreApi,
   ProjectMetadataParams,
   useGetConfigQuery,
-  useProjectMetadataMutation,
 } from "../projectCoreApi";
 import projectGitLabApi, {
   useGetAllRepositoryBranchesQuery,
@@ -88,7 +89,8 @@ export function useGetSessionLauncherData() {
       : skipToken
   );
 
-  const [projectMetadata, projectMetadataStatus] = useProjectMetadataMutation();
+  const [projectMetadata, projectMetadataStatus] =
+    projectCoreApi.endpoints.projectMetadata.useLazyQuery();
 
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
@@ -117,7 +119,7 @@ export function useGetSessionLauncherData() {
         metadataVersion,
         apiVersion,
       };
-      projectMetadata(params);
+      projectMetadata(params, /*preferCacheValue=*/ true);
     }
   }, [
     projectRepositoryUrl,

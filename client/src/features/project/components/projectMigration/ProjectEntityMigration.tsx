@@ -43,11 +43,11 @@ import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { Links } from "../../../../utils/constants/Docs.js";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { toHumanDateTime } from "../../../../utils/helpers/DateTimeUtils";
+import type { RepositoriesList } from "../../../projectsV2/api/projectV2.api";
 import {
-  RepositoriesList,
   useGetRenkuV1ProjectsByV1IdMigrationsQuery,
   usePostRenkuV1ProjectsByV1IdMigrationsMutation,
-} from "../../../projectsV2/api/projectV2.api";
+} from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionLauncherData } from "../../hook/useGetSessionLauncherData";
 import {
   ProjectMetadata,
