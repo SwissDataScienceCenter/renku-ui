@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { Col, ListGroup, ListGroupItem, Row } from "reactstrap";
 
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
@@ -38,10 +39,12 @@ export default function EnvVariablesCard({
       {envVariables.map(({ name, value }) => (
         <ListGroupItem key={`env-var-${name}`}>
           <Row>
-            <Col xs={6} className="fw-bold">
+            <Col xs={6} className={cx("fw-bold", "text-break")}>
               {name}
             </Col>
-            <Col xs={6}>{value ?? ""}</Col>
+            <Col xs={6} className="text-break">
+              {value ?? ""}
+            </Col>
           </Row>
         </ListGroupItem>
       ))}
