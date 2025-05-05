@@ -19,6 +19,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
+  Braces,
   CircleFill,
   Clock,
   Database,
@@ -559,8 +560,18 @@ export function SessionView({
           )}
           {launcher && (
             <div>
-              <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-                <h4 className="my-auto">Environment Variables</h4>
+              <div
+                className={cx(
+                  "d-flex",
+                  "align-items-center",
+                  "justify-content-between",
+                  "mb-2"
+                )}
+              >
+                <h4 className={cx("mb-0", "me-2")}>
+                  <Braces className={cx("me-1", "bi")} />
+                  Environment Variables
+                </h4>
                 <PermissionsGuard
                   disabled={null}
                   enabled={
