@@ -111,7 +111,6 @@ describe("launch sessions with data connectors", () => {
     });
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
-    cy.wait("@getSessionImage");
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
@@ -1042,7 +1041,6 @@ describe("view autostart link", () => {
     );
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
-    cy.wait("@getSessionImage");
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
