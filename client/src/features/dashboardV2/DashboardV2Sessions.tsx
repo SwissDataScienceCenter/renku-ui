@@ -208,7 +208,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
                 alt="Session icon indicator"
                 loading="lazy"
               />
-              <SessionStatusV2Label session={session} />
+              <SessionStatusV2Label session={session} variant="list" />
             </div>
             <SessionStatusV2Description session={session} />
           </Col>

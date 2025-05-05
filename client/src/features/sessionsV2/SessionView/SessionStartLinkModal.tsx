@@ -54,9 +54,11 @@ export default function SessionStartLinkModal({
       </ModalHeader>
       <ModalBody>
         <p className="mb-2">
-          Launching a session from this link creates a new, independent session
-          with the same setup. It&apos;s not a live share or collaborative
-          environment.
+          Share a link that directly launches a new session from this launcher.
+        </p>
+        <p className="mb-2">
+          Please note that this link will launch a fresh session from this
+          launcher, and does not share an existing session.
         </p>
         <CommandCopy command={url.toString()} noMargin />
       </ModalBody>

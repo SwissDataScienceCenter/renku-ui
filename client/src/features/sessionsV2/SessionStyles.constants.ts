@@ -38,7 +38,8 @@ export const SESSION_STATES = {
 
 export const SESSION_STYLES = {
   WARNING: {
-    textColor: "text-warning-emphasis",
+    textColorCard: "text-warning-emphasis",
+    textColorList: "text-warning-emphasis",
     bgColor: "warning",
     bgOpacity: 10,
     borderColor: "border-warning",
@@ -46,7 +47,8 @@ export const SESSION_STYLES = {
     sessionIcon: playingIcon,
   },
   SUCCESS: {
-    textColor: "text-success-emphasis",
+    textColorCard: "text-success-emphasis",
+    textColorList: "text-primary",
     bgColor: "success",
     bgOpacity: 10,
     borderColor: "border-success",
@@ -54,7 +56,8 @@ export const SESSION_STYLES = {
     sessionIcon: playingIcon,
   },
   HIBERNATED: {
-    textColor: "text-dark-emphasis",
+    textColorCard: "text-dark-emphasis",
+    textColorList: "text-dark-emphasis",
     bgColor: "light",
     bgOpacity: 100,
     borderColor: "border-dark-subtle",
@@ -62,7 +65,8 @@ export const SESSION_STYLES = {
     sessionIcon: pausedIcon,
   },
   FAILED: {
-    textColor: "text-danger-emphasis",
+    textColorCard: "text-danger-emphasis",
+    textColorList: "text-danger-emphasis",
     bgColor: "danger",
     bgOpacity: 10,
     borderColor: "border-danger",
@@ -70,7 +74,8 @@ export const SESSION_STYLES = {
     sessionIcon: failedIcon,
   },
   STOPPING: {
-    textColor: "text-warning-emphasis",
+    textColorCard: "text-warning-emphasis",
+    textColorList: "text-warning-emphasis",
     bgColor: "warning",
     bgOpacity: 10,
     borderColor: "border-warning",
@@ -78,7 +83,8 @@ export const SESSION_STYLES = {
     sessionIcon: stoppedIcon,
   },
   DEFAULT: {
-    textColor: "text-warning",
+    textColorCard: "text-warning-emphasis",
+    textColorList: "text-warning-emphasis",
     bgColor: "warning",
     bgOpacity: 10,
     borderColor: "border-warning",
@@ -86,3 +92,21 @@ export const SESSION_STYLES = {
     sessionIcon: blockIcon,
   },
 } as const;
+
+export const SESSION_TITLE = {
+  [SESSION_STATES.RUNNING]: "My running session",
+  [SESSION_STATES.STARTING]: "Launching my session",
+  [SESSION_STATES.STOPPING]: "Shutting down my session...",
+  [SESSION_STATES.HIBERNATED]: "My paused session",
+  [SESSION_STATES.FAILED]: "Error in my session",
+  default: "Unknown status",
+};
+
+export const SESSION_TITLE_DASHBOARD = {
+  [SESSION_STATES.RUNNING]: "Running session",
+  [SESSION_STATES.STARTING]: "Launching session",
+  [SESSION_STATES.STOPPING]: "Shutting down session...",
+  [SESSION_STATES.HIBERNATED]: "Paused session",
+  [SESSION_STATES.FAILED]: "Error in session",
+  default: "Unknown status",
+};
