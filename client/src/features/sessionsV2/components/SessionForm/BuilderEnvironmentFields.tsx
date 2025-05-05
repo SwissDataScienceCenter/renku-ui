@@ -27,7 +27,6 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
-import WipBadge from "../../../projectsV2/shared/WipBadge";
 import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
@@ -106,11 +105,6 @@ export default function BuilderEnvironmentFields({
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div>
-        <WipBadge tooltip="This feature is available for you to use but still has some rough edges. We welcome your feedback as we continue to polish it.">
-          Early Access Feature
-        </WipBadge>
-      </div>
       {!isEdit && (
         <p className={cx("mb-0")}>
           Let RenkuLab create a customized environment from a code repository. A

@@ -54,7 +54,7 @@
           },
           {
             "status": "ready",
-            "step": "Starting session"
+            "step": "Launching session"
           }
         ],
         "readyNumContainers": 7,

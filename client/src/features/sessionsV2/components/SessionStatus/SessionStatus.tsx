@@ -19,7 +19,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode } from "react";
-import { CircleFill, Clock } from "react-bootstrap-icons";
+import { CircleFill, Clock, Hourglass } from "react-bootstrap-icons";
 import {
   Badge,
   PopoverBody,
@@ -33,7 +33,7 @@ import { PrettySessionErrorMessage } from "../../../session/components/status/Se
 import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
-
+import { SESSION_STATES, SESSION_STYLES } from "../../SessionStyles.constants";
 export function SessionBadge({
   children,
   className,
@@ -57,7 +57,7 @@ interface ActiveSessionTitleV2Props {
   session: SessionV2;
   launcher?: SessionLauncher;
 }
-export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
+export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
   const { status, image } = session;
   const state = status.state;
 
@@ -79,7 +79,7 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
           className={cx("me-1", "text-warning-emphasis")}
           inline
         />
-        <span className="text-warning-emphasis">Starting Session</span>
+        <span className="text-warning-emphasis">Launching Session</span>
       </SessionBadge>
     ) : state === "stopping" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
@@ -116,6 +116,65 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
     </div>
   );
 }
+
+interface SessionStatusStyles {
+  textColor: string;
+  bgColor: string;
+  bgOpacity: number;
+  borderColor: string;
+  sessionLine: string;
+}
+
+export function getSessionStatusStyles(session: {
+  status: { state: string };
+  image?: string;
+}): SessionStatusStyles {
+  const { status, image } = session;
+  const state = status.state;
+
+  if (state === SESSION_STATES.RUNNING) {
+    return image ? SESSION_STYLES.SUCCESS : SESSION_STYLES.WARNING;
+  }
+
+  const stateStyleMap: Record<string, SessionStatusStyles> = {
+    [SESSION_STATES.STARTING]: SESSION_STYLES.WARNING,
+    [SESSION_STATES.STOPPING]: SESSION_STYLES.STOPPING,
+    [SESSION_STATES.HIBERNATED]: SESSION_STYLES.HIBERNATED,
+    [SESSION_STATES.FAILED]: SESSION_STYLES.FAILED,
+  };
+
+  return stateStyleMap[state] ?? SESSION_STYLES.DEFAULT;
+}
+
+export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
+  const { status, image } = session;
+  const styles = getSessionStatusStyles({ status, image });
+
+  const getStatusMessage = (
+    state: "running" | "starting" | "stopping" | "failed" | "hibernated"
+  ) => {
+    const messages = {
+      [SESSION_STATES.RUNNING]: "My running session",
+      [SESSION_STATES.STARTING]: "Launching my session",
+      [SESSION_STATES.STOPPING]: "Shutting down my session",
+      [SESSION_STATES.HIBERNATED]: "My paused session",
+      [SESSION_STATES.FAILED]: "Error in my session",
+      default: "Unknown status",
+    };
+    return messages[state] ?? messages.default;
+  };
+
+  return (
+    <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
+      <div className={cx("fs-6", "fw-bold")}>
+        <span className={styles.textColor}>
+          {getStatusMessage(status.state)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
@@ -225,13 +284,13 @@ function SessionStatusV2Text({
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
-      <span>Created {startTimeText}</span>
+      <span>Launching since {startTimeText}</span>
     </div>
   ) : state === "stopping" ? (
     <>Shutting down session...</>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Hourglass size="16" className="flex-shrink-0" />
       <span>
         Session will be deleted in{" "}
         <TimeCaption
