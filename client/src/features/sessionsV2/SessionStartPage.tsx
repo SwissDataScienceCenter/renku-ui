@@ -16,20 +16,16 @@
  * limitations under the License
  */
 
-import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft } from "react-bootstrap-icons";
 import {
   generatePath,
-  Link,
   useNavigate,
   useParams,
   useSearchParams,
 } from "react-router";
 
-import { ErrorAlert } from "../../components/Alert";
 import PageLoader from "../../components/PageLoader";
 import {
   RtkErrorAlert,
@@ -60,10 +56,7 @@ import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
-import {
-  useGetSessionsImagesQuery as useGetDockerImageQuery,
-  usePostSessionsMutation as useLaunchSessionMutation,
-} from "./api/sessionsV2.api";
+import { usePostSessionsMutation as useLaunchSessionMutation } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
@@ -186,7 +179,7 @@ function SaveCloudStorage({
         description="Saving credentials..."
         type={ProgressType.Determinate}
         style={ProgressStyle.Light}
-        title={`Starting session ${launcher.name}`}
+        title={`Launching session ${launcher.name}`}
         status={steps}
       />
     </div>
@@ -291,7 +284,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
           description="Preparing to start session"
           type={ProgressType.Determinate}
           style={ProgressStyle.Light}
-          title={`Starting session ${launcher.name}`}
+          title={`Launching session ${launcher.name}`}
           status={steps}
         />
       </div>
@@ -407,7 +400,7 @@ function StartSessionWithCloudStorageModal({
           description="Preparing to start session"
           type={ProgressType.Determinate}
           style={ProgressStyle.Light}
-          title={`Starting session ${launcher.name}`}
+          title={`Launching session ${launcher.name}`}
           status={steps}
         />
         <DataConnectorSecretsModal
@@ -456,15 +449,6 @@ function StartSessionFromLauncher({
     isCustomLaunch: hasCustomQuery,
   });
 
-  const {
-    isLoading: isLoadingDockerImageStatus,
-    isFetching: isFetchingDockerImageStatus,
-    isError: isErrorDockerImageStatus,
-    error: errorDockerImageStatus,
-  } = useGetDockerImageQuery(
-    containerImage ? { imageUrl: containerImage } : skipToken
-  );
-
   const needsCredentials = startSessionOptionsV2.cloudStorage?.some(
     doesCloudStorageNeedCredentials
   );
@@ -474,9 +458,6 @@ function StartSessionFromLauncher({
   );
 
   const allDataFetched =
-    !isLoadingDockerImageStatus &&
-    !isFetchingDockerImageStatus &&
-    !isErrorDockerImageStatus &&
     containerImage &&
     startSessionOptionsV2.sessionClass !== 0 &&
     !isFetchingOrLoadingStorages &&
@@ -525,32 +506,15 @@ function StartSessionFromLauncher({
   const steps = [
     {
       id: 0,
-      status: isErrorDockerImageStatus
-        ? StatusStepProgressBar.FAILED
-        : StatusStepProgressBar.EXECUTING,
+      status: StatusStepProgressBar.EXECUTING,
       step: "Loading session configuration",
     },
     {
       id: 1,
-      status: isErrorDockerImageStatus
-        ? StatusStepProgressBar.CANCELED
-        : StatusStepProgressBar.WAITING,
+      status: StatusStepProgressBar.WAITING,
       step: "Requesting session",
     },
   ];
-
-  // Handle docker image error
-  if (isErrorDockerImageStatus) {
-    return (
-      <ShowContainerImageError
-        error={errorDockerImageStatus}
-        launcherName={launcher.name}
-        steps={steps}
-        containerImage={containerImage}
-        projectUrl={projectUrl}
-      />
-    );
-  }
 
   if (showSaveCredentials)
     return (
@@ -597,7 +561,7 @@ function StartSessionFromLauncher({
         description="Preparing to start session"
         type={ProgressType.Determinate}
         style={ProgressStyle.Light}
-        title={`Starting session ${launcher.name}`}
+        title={`Launching session ${launcher.name}`}
         status={steps}
       />
       <SelectResourceClassModal
@@ -654,49 +618,6 @@ export default function SessionStartPage() {
   return <StartSessionFromLauncher launcher={launcher} project={project} />;
 }
 
-function ShowContainerImageError({
-  error,
-  launcherName,
-  steps,
-  containerImage,
-  projectUrl,
-}: {
-  error: FetchBaseQueryError | SerializedError;
-  launcherName: string;
-  steps: StepsProgressBar[];
-  containerImage: string;
-  projectUrl: string;
-}) {
-  if (!("status" in error)) {
-    return null;
-  }
-
-  return (
-    <div className={cx("progress-box-small", "progress-box-small--steps")}>
-      <ProgressStepsIndicator
-        description="Preparing to start session"
-        type={ProgressType.Determinate}
-        style={ProgressStyle.Light}
-        title={`Starting session ${launcherName}`}
-        status={steps}
-      />
-      <ErrorAlert dismissible={false}>
-        <h5>Error loading container image</h5>
-        <p className="mb-0">
-          Error retrieving container image <code>{containerImage}</code>.
-          {error?.status === 404
-            ? " The image may not exist or is still being built."
-            : " Please verify the container image and try again."}
-        </p>
-      </ErrorAlert>
-      <Link to={projectUrl} className={cx("btn", "btn-primary")}>
-        <ArrowLeft className={cx("me-2", "text-icon")} />
-        Return to project page
-      </Link>
-    </div>
-  );
-}
-
 interface StartSessionWithSessionSecretsModalProps
   extends StartSessionFromLauncherProps {
   sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[];
@@ -733,7 +654,7 @@ function StartSessionWithSessionSecretsModal({
           description="Preparing to start session"
           type={ProgressType.Determinate}
           style={ProgressStyle.Light}
-          title={`Starting session ${launcher.name}`}
+          title={`Launching session ${launcher.name}`}
           status={steps}
         />
         <SessionSecretsModal

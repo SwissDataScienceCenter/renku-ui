@@ -72,7 +72,7 @@ export default function DeleteSessionLauncherModal({
       <ModalHeader toggle={toggle} className="text-danger">
         Delete session launcher
       </ModalHeader>
-      <ModalBody className="pt-0">
+      <ModalBody>
         {result.error && <RtkErrorAlert error={result.error} />}
         <p className="mb-3">
           Are you sure you want to delete the <b>{launcher.name}</b> session
@@ -100,7 +100,7 @@ export default function DeleteSessionLauncherModal({
           </WarnAlert>
         )}
       </ModalBody>
-      <ModalFooter className="pt-0">
+      <ModalFooter>
         <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
