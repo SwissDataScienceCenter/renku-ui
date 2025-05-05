@@ -46,7 +46,6 @@ import EditLauncherFormContent, {
 } from "../SessionForm/EditLauncherFormContent";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
-import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 
 export interface UpdateSessionLauncherModalProps {
   isOpen: boolean;
