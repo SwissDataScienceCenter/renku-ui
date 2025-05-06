@@ -53,6 +53,8 @@ import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnecto
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import { DATA_CONNECTORS_DOI_DOCS_URL } from "../../../dataConnectorsV2/components/dataConnector.constants";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -501,13 +503,12 @@ function ProjectDoiDataConnectorBodyAndFooter({
         <p className="text-body-secondary">
           Connect to data on Zenodo, Dataverse, and similar data repositories.
           More information{" "}
-          <a
-            href="https://renku.notion.site/How-to-connect-data-from-data-repositories-such-as-Zenodo-1eb0df2efafc802ab3bef1c47c8c45b4"
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            in our documentation
-          </a>
+          <ExternalLink
+            iconAfter={true}
+            role="link"
+            title="in our documentation"
+            url={DATA_CONNECTORS_DOI_DOCS_URL}
+          />
           .
         </p>
         <div className="mb-3">
