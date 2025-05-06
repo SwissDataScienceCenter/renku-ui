@@ -109,6 +109,14 @@ function AddEnvVariableButton({
   );
 }
 
+function RStudioInfo() {
+  return (
+    <span className="text-secondary">
+      Note: Environment Variables are not visible in RStudio-based environments.
+    </span>
+  );
+}
+
 interface EnvVariablesFormContentProps {
   control: Control<EnvVariablesForm, unknown>;
   errors: FieldErrors<EnvVariablesForm>;
@@ -329,30 +337,36 @@ export default function EnvVariablesModal({
         )}
       </ModalBody>
       <ModalFooter>
-        <Button
-          data-cy="close-cancel-button"
-          color="outline-primary"
-          onClick={toggle}
-        >
-          <XLg className={cx("bi", "me-1")} />
-          {result.isSuccess ? "Close" : "Cancel"}
-        </Button>
-        {!result.isSuccess && (
+        <div className="flex-shrink-1" style={{ width: "20rem" }}>
+          <RStudioInfo />
+        </div>
+        <div className={cx("flex-grow-1", "flex-fill", "text-end")}>
           <Button
-            color="primary"
-            data-cy="edit-session-button"
-            disabled={result.isLoading || !isDirty}
-            onClick={handleSubmit(onSubmit)}
-            type="submit"
+            className="me-2"
+            data-cy="close-cancel-button"
+            color="outline-primary"
+            onClick={toggle}
           >
-            {result.isLoading ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <CheckLg className={cx("bi", "me-1")} />
-            )}
-            Update session launcher
+            <XLg className={cx("bi", "me-1")} />
+            {result.isSuccess ? "Close" : "Cancel"}
           </Button>
-        )}
+          {!result.isSuccess && (
+            <Button
+              color="primary"
+              data-cy="edit-session-button"
+              disabled={result.isLoading || !isDirty}
+              onClick={handleSubmit(onSubmit)}
+              type="submit"
+            >
+              {result.isLoading ? (
+                <Loader className="me-1" inline size={16} />
+              ) : (
+                <CheckLg className={cx("bi", "me-1")} />
+              )}
+              Update session launcher
+            </Button>
+          )}
+        </div>
       </ModalFooter>
     </Modal>
   );
