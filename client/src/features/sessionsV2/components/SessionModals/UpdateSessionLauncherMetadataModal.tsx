@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -29,10 +29,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { SuccessAlert } from "../../../../components/Alert";
-
-import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
+import { Loader } from "../../../../components/Loader";
 import {
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
   usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation,
@@ -42,16 +40,10 @@ import {
   getLauncherDefaultValues,
 } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
-import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
-import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
+import { EditLauncherFormMetadata } from "../SessionForm/EditLauncherFormContent";
+import { UpdateSessionLauncherModalProps } from "./UpdateSessionLauncherModal";
 
-export interface UpdateSessionLauncherModalProps {
-  isOpen: boolean;
-  launcher: SessionLauncher;
-  toggle: () => void;
-}
-
-export default function UpdateSessionLauncherEnvironmentModal({
+export default function UpdateSessionLauncherMetadataModal({
   isOpen,
   launcher,
   toggle,
@@ -121,8 +113,8 @@ export default function UpdateSessionLauncherEnvironmentModal({
       scrollable
     >
       <ModalHeader toggle={toggle}>
-        <EnvironmentIcon type="default" size={20} /> Edit environment{" "}
-        {launcher.name}
+        <Pencil className={cx("me-2")} />
+        Edit session launcher {launcher.name}
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
@@ -130,7 +122,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
         ) : (
           <Form noValidate onSubmit={handleSubmit(onSubmit)}>
             {result.error && <RtkErrorAlert error={result.error} />}
-            <EditLauncherFormContent
+            <EditLauncherFormMetadata
               control={control}
               errors={errors}
               watch={watch}
@@ -175,7 +167,7 @@ const ConfirmationUpdate = () => {
     <div data-cy="session-launcher-update-success">
       <SuccessAlert dismissible={false} timeout={0}>
         <p className="fw-bold">
-          Session launcher environment updated successfully!
+          Session launcher metadata updated successfully!
         </p>
         <p className="mb-0">
           The changes will take effect the next time you launch a session with

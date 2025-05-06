@@ -122,7 +122,6 @@ describe("Set up project components", () => {
     // check session values
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("session-name").should("contain.text", "Session-custom");
-      cy.getDataCy("session-status").should("contain.text", "Not Running");
       cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
 
@@ -133,9 +132,16 @@ describe("Set up project components", () => {
     cy.getDataCy("session-view-menu-delete").should("be.visible");
     cy.getDataCy("session-view-menu-edit").should("be.visible").click();
     cy.getDataCy("edit-session-name").clear().type("Session custom");
-    cy.getDataCy("environment-kind-custom").should("be.visible");
     cy.getDataCy("edit-session-button").click();
     cy.wait("@editLauncher");
+    cy.getDataCy("close-cancel-button").click();
+
+    cy.getDataCy("session-view-menu-edit").should("be.visible");
+    cy.get(".offcanvas [data-cy=button-with-menu-dropdown]").first().click();
+    cy.getDataCy("session-view-menu-update-environment")
+      .should("be.visible")
+      .click();
+    cy.getDataCy("environment-kind-custom").should("be.visible");
     cy.getDataCy("close-cancel-button").click();
     cy.getDataCy("get-back-session-view").click();
 
@@ -163,7 +169,6 @@ describe("Set up project components", () => {
     // check session values
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("session-name").should("contain.text", "Jupyter Notebook");
-      cy.getDataCy("session-status").should("contain.text", "Not Running");
       cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
   });

@@ -88,7 +88,6 @@ describe("launch sessions with data connectors", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -111,7 +110,6 @@ describe("launch sessions with data connectors", () => {
     });
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
-    cy.wait("@getSessionImage");
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });
@@ -151,7 +149,6 @@ describe("launch sessions with data connectors", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -818,7 +815,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -855,7 +851,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -903,7 +898,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -1018,7 +1012,6 @@ describe("view autostart link", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
     cy.getDataCy("session-name").click();
@@ -1042,7 +1035,6 @@ describe("view autostart link", () => {
     );
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
-    cy.wait("@getSessionImage");
     cy.wait("@createSession");
     cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
   });

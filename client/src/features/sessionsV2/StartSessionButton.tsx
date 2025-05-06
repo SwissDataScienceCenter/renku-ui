@@ -17,41 +17,47 @@
  */
 
 import cx from "classnames";
+import { ReactNode } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
-
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
 
 interface StartSessionButtonProps {
   namespace: string;
   slug: string;
-  launcherId: string;
+  launcher: SessionLauncher;
+  disabled?: boolean;
+  useOldImage?: boolean;
+  otherActions?: ReactNode;
+  isDisabledDropdownToggle?: boolean;
 }
 
 export default function StartSessionButton({
-  launcherId,
+  launcher,
   namespace,
   slug,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
-      launcherId,
+      launcherId: launcher.id,
       namespace,
       slug,
     }
   );
-
-  const defaultAction = (
-    <Link
-      className={cx("btn", "btn-sm", "btn-primary")}
-      to={startUrl}
-      data-cy="start-session-button"
-    >
-      <PlayCircle className={cx("bi", "me-1")} />
-      Launch
-    </Link>
+  const launchAction = (
+    <span id={`launch-btn-${launcher.id}`}>
+      <Link
+        className={cx("btn", "btn-sm", "btn-primary", "rounded-end-0")}
+        to={startUrl}
+        data-cy="start-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        Launch
+      </Link>
+    </span>
   );
 
   const customizeLaunch = (
@@ -69,13 +75,15 @@ export default function StartSessionButton({
   );
 
   return (
-    <ButtonWithMenuV2
-      color="primary"
-      default={defaultAction}
-      preventPropagation
-      size="sm"
-    >
-      {customizeLaunch}
-    </ButtonWithMenuV2>
+    <>
+      <ButtonWithMenuV2
+        color={"primary"}
+        default={launchAction}
+        preventPropagation
+        size="sm"
+      >
+        {customizeLaunch}
+      </ButtonWithMenuV2>
+    </>
   );
 }
