@@ -19,10 +19,10 @@
 import cx from "classnames";
 import { useCallback, useMemo, useRef } from "react";
 import {
-  BoxArrowUpRight,
   EyeFill,
   Folder,
   Globe2,
+  Journal,
   Lock,
   Pencil,
 } from "react-bootstrap-icons";
@@ -33,7 +33,6 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { TimeCaption } from "../../../components/TimeCaption";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
@@ -41,7 +40,6 @@ import type {
   DataConnector,
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
-
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
@@ -107,7 +105,7 @@ export default function DataConnectorBoxListDisplay({
     if (scope === "namespace") {
       return <UserAvatar namespace={namespace as string} size="sm" />;
     }
-    return <BoxArrowUpRight className="bi" />;
+    return <Journal className="bi" />;
   }, [namespace]);
 
   const dataConnectorSource = useGetDataConnectorSource(dataConnector);

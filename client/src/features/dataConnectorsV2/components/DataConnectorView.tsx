@@ -19,11 +19,11 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo, useRef } from "react";
 import {
-  BoxArrowUpRight,
   Folder,
   Gear,
   Globe2,
   InfoCircleFill,
+  Journal,
   Key,
   Lock,
   PersonBadge,
@@ -441,7 +441,7 @@ function DataConnectorViewMetadata({
         <>
           <DataConnectorPropertyValue title="Source">
             <div className={cx("align-items-center", "d-flex", "gap-1")}>
-              <BoxArrowUpRight className={cx("bi", "flex-shrink-0")} />
+              <Journal className={cx("bi", "flex-shrink-0")} />
               DOI from {dataConnectorSource}
             </div>
           </DataConnectorPropertyValue>
