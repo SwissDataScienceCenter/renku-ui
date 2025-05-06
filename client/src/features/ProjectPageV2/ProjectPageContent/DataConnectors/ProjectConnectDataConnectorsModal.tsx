@@ -500,6 +500,15 @@ function ProjectDoiDataConnectorBodyAndFooter({
       <ModalBody data-cy="data-connector-edit-body">
         <p className="text-body-secondary">
           Connect to data on Zenodo, Dataverse, and similar data repositories.
+          More information{" "}
+          <a
+            href="https://renku.notion.site/How-to-connect-data-from-data-repositories-such-as-Zenodo-1eb0df2efafc802ab3bef1c47c8c45b4"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            in our documentation
+          </a>
+          .
         </p>
         <div className="mb-3">
           <Label className="form-label" for="data-connector-identifier">
