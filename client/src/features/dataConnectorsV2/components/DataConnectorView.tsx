@@ -15,17 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo, useRef } from "react";
 import {
+  BoxArrowUpRight,
   Folder,
   Gear,
+  Globe2,
   InfoCircleFill,
   Key,
   Lock,
   PersonBadge,
-  Globe2,
-  BoxArrowUpRight,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import {
@@ -34,13 +35,12 @@ import {
   OffcanvasBody,
   UncontrolledTooltip,
 } from "reactstrap";
-
+import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
+import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
-import { EntityPill } from "../../searchV2/components/SearchV2Results";
-
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -48,25 +48,21 @@ import {
 } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 import { storageSecretNameToFieldName } from "../../secretsV2/secrets.utils";
 import UserAvatar from "../../usersV2/show/UserAvatar";
-
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
-
-import DataConnectorActions from "./DataConnectorActions";
-import useDataConnectorProjects from "./useDataConnectorProjects.hook";
-import { WarnAlert } from "../../../components/Alert";
+import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
   useGetDataConnectorSource,
 } from "./dataConnector.utils";
-import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
-import { skipToken } from "@reduxjs/toolkit/query";
-import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
+import DataConnectorActions from "./DataConnectorActions";
+import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 
 const SECTION_CLASSES = [
   "border-top",

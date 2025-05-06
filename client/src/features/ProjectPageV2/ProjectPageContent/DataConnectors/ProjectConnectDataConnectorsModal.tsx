@@ -46,13 +46,13 @@ import {
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsGlobalMutation,
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "../../../dataConnectorsV2/components/DataConnectorModal/index";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
+import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -522,7 +522,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
             }}
           />
           <div className="form-text">
-            Paste a DOI identifier (E.G. <code>10.5281/zenodo.3831980</code>).
+            Paste a DOI, e.g. <code>10.5281/zenodo.3831980</code>.
           </div>
           <div className="invalid-feedback">Please provide a valid DOI</div>
         </div>
