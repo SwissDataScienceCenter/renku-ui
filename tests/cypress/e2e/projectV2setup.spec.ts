@@ -201,11 +201,14 @@ describe("Set up project components", () => {
     cy.wait("@sessionLaunchers");
     // check session launcher view and edit session launcher
     cy.getDataCy("session-name").click();
-    cy.getDataCy("env-variables-card").within(() => {
-      cy.get("tr").should("have.length", 2);
-      cy.get("tr").first().should("contain.text", "VAR_1");
-      cy.get("tr").last().should("contain.text", "VAR_2");
-    });
+    cy.getDataCy("env-variables-card")
+      .scrollIntoView()
+      .should("be.visible")
+      .within(() => {
+        cy.getDataCy("env-var-row").should("have.length", 2);
+        cy.getDataCy("env-var-name").first().should("contain.text", "VAR_1");
+        cy.getDataCy("env-var-name").last().should("contain.text", "VAR_2");
+      });
     cy.get("#modify-env-variables-button").click();
     // TEST bad input
     cy.getDataCy("env-variables-input_0-name").clear().type("RENKU VALUE");
@@ -283,11 +286,14 @@ describe("Set up project components", () => {
     cy.wait("@sessionLaunchers");
     // check session launcher view and edit session launcher
     cy.getDataCy("session-name").click();
-    cy.getDataCy("env-variables-card").within(() => {
-      cy.get("tr").should("have.length", 2);
-      cy.get("tr").first().should("contain.text", "VAR_1");
-      cy.get("tr").last().should("contain.text", "VAR_2");
-    });
+    cy.getDataCy("env-variables-card")
+      .scrollIntoView()
+      .should("be.visible")
+      .within(() => {
+        cy.getDataCy("env-var-row").should("have.length", 2);
+        cy.getDataCy("env-var-name").first().should("contain.text", "VAR_1");
+        cy.getDataCy("env-var-name").last().should("contain.text", "VAR_2");
+      });
     cy.get("#modify-env-variables-button").click();
     // TEST bad input
     cy.getDataCy("env-variables-input_0-name").clear().type("RENKU VALUE");

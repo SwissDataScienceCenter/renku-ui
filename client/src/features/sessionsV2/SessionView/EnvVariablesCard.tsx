@@ -35,14 +35,18 @@ export default function EnvVariablesCard({
   }
 
   return (
-    <ListGroup>
+    <ListGroup data-cy="env-variables-card">
       {envVariables.map(({ name, value }) => (
         <ListGroupItem key={`env-var-${name}`}>
-          <Row>
-            <Col xs={6} className={cx("fw-bold", "text-break")}>
+          <Row data-cy="env-var-row">
+            <Col
+              xs={6}
+              className={cx("fw-bold", "text-break")}
+              data-cy="env-var-name"
+            >
               {name}
             </Col>
-            <Col xs={6} className="text-break">
+            <Col xs={6} className="text-break" data-cy="env-var-value">
               {value ?? ""}
             </Col>
           </Row>
