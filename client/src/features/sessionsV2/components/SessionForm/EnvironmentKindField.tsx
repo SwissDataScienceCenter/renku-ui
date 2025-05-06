@@ -55,7 +55,8 @@ export default function EnvironmentKindField({
               className={cx(
                 "btn",
                 "btn-outline-primary",
-                "p-4",
+                "p-2",
+                "p-md-4",
                 "d-flex",
                 "justify-content-center"
               )}
@@ -65,12 +66,22 @@ export default function EnvironmentKindField({
             >
               <div className={cx("d-flex", "flex-column", "gap-2")}>
                 <div
-                  className={cx("d-flex", "flex-row", "gap-3", "text-start")}
+                  className={cx(
+                    "d-flex",
+                    "flex-row",
+                    "gap-3",
+                    "text-center",
+                    "text-md-start"
+                  )}
                 >
-                  <EnvironmentIcon type="global" size={30} />
+                  <EnvironmentIcon
+                    type="global"
+                    size={30}
+                    className={cx("d-none", "d-md-block")}
+                  />
                   <span className="fw-bold">Global environment</span>
                 </div>
-                <p className={cx("mb-0", "text-start")}>
+                <p className={cx("mb-0", "text-start", "d-none", "d-md-block")}>
                   Get started quickly with a pre-built environment.
                 </p>
               </div>
@@ -92,7 +103,8 @@ export default function EnvironmentKindField({
                   className={cx(
                     "btn",
                     "btn-outline-primary",
-                    "p-4",
+                    "p-2",
+                    "p-md-4",
                     "d-flex",
                     "justify-content-center"
                   )}
@@ -105,13 +117,25 @@ export default function EnvironmentKindField({
                         "d-flex",
                         "flex-row",
                         "gap-3",
-                        "text-start"
+                        "text-center",
+                        "text-md-start"
                       )}
                     >
-                      <EnvironmentIcon type="codeBased" size={30} />
+                      <EnvironmentIcon
+                        type="codeBased"
+                        size={30}
+                        className={cx("d-none", "d-md-block")}
+                      />
                       <span className="fw-bold">Create from code</span>
                     </div>
-                    <p className={cx("mb-0", "text-start")}>
+                    <p
+                      className={cx(
+                        "mb-0",
+                        "text-start",
+                        "d-none",
+                        "d-md-block"
+                      )}
+                    >
                       Customize your session with a requirements.txt or similar
                       file.
                     </p>
@@ -134,7 +158,8 @@ export default function EnvironmentKindField({
               className={cx(
                 "btn",
                 "btn-outline-primary",
-                "p-4",
+                "p-2",
+                "p-md-4",
                 "d-flex",
                 "justify-content-center"
               )}
@@ -144,12 +169,22 @@ export default function EnvironmentKindField({
             >
               <div className={cx("d-flex", "flex-column", "gap-2")}>
                 <div
-                  className={cx("d-flex", "flex-row", "gap-3", "text-start")}
+                  className={cx(
+                    "d-flex",
+                    "flex-row",
+                    "gap-3",
+                    "text-center",
+                    "text-md-start"
+                  )}
                 >
-                  <EnvironmentIcon type="custom" size={30} />
+                  <EnvironmentIcon
+                    type="custom"
+                    size={30}
+                    className={cx("d-none", "d-md-block")}
+                  />
                   <span className="fw-bold">External environment</span>
                 </div>
-                <p className={cx("mb-0", "text-start")}>
+                <p className={cx("mb-0", "text-start", "d-none", "d-md-block")}>
                   Run a session from a preexisting docker image.
                 </p>
               </div>
