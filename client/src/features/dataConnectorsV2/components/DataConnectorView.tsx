@@ -23,7 +23,7 @@ import {
   Gear,
   Globe2,
   InfoCircleFill,
-  Journal,
+  Journals,
   Key,
   Lock,
   PersonBadge,
@@ -441,7 +441,7 @@ function DataConnectorViewMetadata({
         <>
           <DataConnectorPropertyValue title="Source">
             <div className={cx("align-items-center", "d-flex", "gap-1")}>
-              <Journal className={cx("bi", "flex-shrink-0")} />
+              <Journals className={cx("bi", "flex-shrink-0")} />
               DOI from {dataConnectorSource}
             </div>
           </DataConnectorPropertyValue>

@@ -22,7 +22,7 @@ import {
   EyeFill,
   Folder,
   Globe2,
-  Journal,
+  Journals,
   Lock,
   Pencil,
 } from "react-bootstrap-icons";
@@ -105,7 +105,7 @@ export default function DataConnectorBoxListDisplay({
     if (scope === "namespace") {
       return <UserAvatar namespace={namespace as string} size="sm" />;
     }
-    return <Journal className="bi" />;
+    return <Journals className="bi" />;
   }, [namespace]);
 
   const dataConnectorSource = useGetDataConnectorSource(dataConnector);
