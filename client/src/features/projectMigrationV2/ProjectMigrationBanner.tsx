@@ -150,7 +150,8 @@ export function ProjectMigrationBanner() {
           style.ProjectMigrationBanner,
           "rounded-3",
           "pt-3",
-          "border-dark-subtle"
+          "border-0",
+          "card"
         )}
         toggle={onToggleDismissAlert}
       >
