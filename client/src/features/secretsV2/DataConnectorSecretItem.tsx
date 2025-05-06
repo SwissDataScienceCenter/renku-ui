@@ -169,14 +169,14 @@ function DataConnectorSecretUsedForItem({
     () =>
       dataConnector && namespace?.namespace_kind === "group"
         ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-            slug: dataConnector.namespace as string,
+            slug: namespace.slug,
           })
         : dataConnector && namespace?.namespace_kind === "user"
         ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-            username: dataConnector.namespace as string,
+            username: namespace.slug,
           })
         : undefined,
-    [dataConnector, namespace?.namespace_kind]
+    [dataConnector, namespace?.namespace_kind, namespace?.slug]
   );
   const dcHash = dataConnector ? `data-connector-${dataConnector.id}` : "";
 
