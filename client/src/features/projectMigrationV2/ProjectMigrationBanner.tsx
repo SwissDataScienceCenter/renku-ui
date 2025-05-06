@@ -47,7 +47,6 @@ export function ProjectMigrationBanner() {
   const onSearchTerm = useCallback(
     (term: string) => {
       setSearchTerm(term);
-      onPageChange(1);
     },
     [setSearchTerm, onPageChange]
   );
@@ -66,8 +65,11 @@ export function ProjectMigrationBanner() {
   }, [searchParams]);
 
   const toggle = useCallback(() => {
+    if (isOpenModal) {
+      onPageChange(1);
+    }
     setIsOpenModal((open) => !open);
-  }, []);
+  }, [isOpenModal]);
 
   const { data: dataUserPreferences, isLoading: isLoadingUserPreferences } =
     useGetUserPreferencesQuery();
