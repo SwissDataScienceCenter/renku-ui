@@ -1,5 +1,5 @@
 import cx from "classnames";
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { BoxArrowInUp, XLg } from "react-bootstrap-icons";
 import { useSearchParams } from "react-router";
 import {
@@ -47,6 +47,7 @@ export function ProjectMigrationBanner() {
   const onSearchTerm = useCallback(
     (term: string) => {
       setSearchTerm(term);
+      if (term != "") onPageChange(1);
     },
     [setSearchTerm, onPageChange]
   );
@@ -64,13 +65,6 @@ export function ProjectMigrationBanner() {
     }
   }, [searchParams]);
 
-  const toggle = useCallback(() => {
-    if (isOpenModal) {
-      onPageChange(1);
-    }
-    setIsOpenModal((open) => !open);
-  }, [isOpenModal]);
-
   const { data: dataUserPreferences, isLoading: isLoadingUserPreferences } =
     useGetUserPreferencesQuery();
 
@@ -87,12 +81,12 @@ export function ProjectMigrationBanner() {
     refetch: refetchMigrations,
   } = useGetRenkuV1ProjectsMigrationsQuery();
 
-  useEffect(() => {
-    if (!isOpenModal) {
-      refetchMigrations();
-      onSearchTerm("");
-    }
-  }, [isOpenModal, refetchMigrations, onSearchTerm]);
+  // useEffect(() => {
+  //   if (!isOpenModal) {
+  //     // refetchMigrations();
+  //     // onSearchTerm("");
+  //   }
+  // }, [isOpenModal, refetchMigrations, onSearchTerm]);
 
   const {
     data: dataGitlabProjects,
@@ -125,6 +119,15 @@ export function ProjectMigrationBanner() {
       };
     });
   }, [dataGitlabProjects, dataProjectsMigrations]);
+
+  const toggle = useCallback(() => {
+    if (isOpenModal) {
+      onPageChange(1);
+      refetchMigrations();
+      onSearchTerm("");
+    }
+    setIsOpenModal((open) => !open);
+  }, [isOpenModal, onPageChange, onSearchTerm, refetchMigrations]);
 
   // initially if there are project to migrate should display the banner, if a search by term doesn't return values it should show the banner.
   const hasInitialProjectsToMigrate = true;
