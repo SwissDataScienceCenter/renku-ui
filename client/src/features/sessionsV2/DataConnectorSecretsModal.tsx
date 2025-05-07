@@ -345,7 +345,7 @@ function CredentialsButtons({
 }: CredentialsButtonsProps) {
   return (
     <div>
-      <Button className="me-5" color="outline-danger" onClick={onCancel}>
+      <Button color="outline-danger" onClick={onCancel}>
         <XLg className={cx("bi", "me-1")} />
         Cancel
       </Button>
