@@ -28,7 +28,7 @@ import {
   useProjectMetadataQuery,
 } from "../projectKg.api";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
-import { ProjectMigrationAlert } from "./projectMigration/ProjectMigrationAlert";
+import ProjectMigrationAlert from "./projectMigration/ProjectMigrationAlert";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   defaultBranch: string;

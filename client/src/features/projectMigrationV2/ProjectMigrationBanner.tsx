@@ -1,7 +1,24 @@
+/*!
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { BoxArrowInUp, XLg } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router";
 import {
   Alert,
   Button,
@@ -10,60 +27,22 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { SuccessAlert } from "../../components/Alert.jsx";
-import { Loader } from "../../components/Loader.tsx";
-import { useGetAllProjectsQuery } from "../project/projectGitLab.api.ts";
-import { useGetRenkuV1ProjectsMigrationsQuery } from "../projectsV2/api/projectV2.api.ts";
+import { SuccessAlert } from "../../components/Alert";
+import { Loader } from "../../components/Loader";
 import {
   useGetUserPreferencesQuery,
   usePostUserPreferencesDismissProjectMigrationBannerMutation,
   UserPreferences,
-} from "../usersV2/api/users.api.ts";
-import { GitlabProjectsToMigrate } from "./ProjectMigration.types.ts";
+} from "../usersV2/api/users.api";
 import style from "./ProjectMigrationBanner.module.scss";
-import { MigrationModal } from "../project/components/projectMigration/ProjectMigration.tsx";
+import MigrationV2Modal from "./MigrationV2Modal.tsx";
 
-export const DEFAULT_PER_PAGE_PROJECT_MIGRATION = 5;
-
-export function ProjectMigrationBanner() {
+export default function ProjectMigrationBanner() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenDismissMigration, setIsOpenDismissMigration] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const [dismissProjectMigrationBanner, result] =
     usePostUserPreferencesDismissProjectMigrationBannerMutation();
-
-  const onPageChange = useCallback(
-    (page: number) => {
-      setSearchParams((prev) => {
-        prev.set("page", `${page}`);
-        return prev;
-      });
-    },
-    [setSearchParams]
-  );
-
-  const onSearchTerm = useCallback(
-    (term: string) => {
-      setSearchTerm(term);
-      if (term != "") onPageChange(1);
-    },
-    [setSearchTerm, onPageChange]
-  );
-
-  const page = useMemo(() => {
-    const pageRaw = searchParams.get("page");
-    if (!pageRaw) {
-      return 1;
-    }
-    try {
-      const page = parseInt(pageRaw, 10);
-      return page > 0 ? page : 1;
-    } catch {
-      return 1;
-    }
-  }, [searchParams]);
 
   const { data: dataUserPreferences, isLoading: isLoadingUserPreferences } =
     useGetUserPreferencesQuery();
@@ -75,62 +54,9 @@ export function ProjectMigrationBanner() {
       : false;
   }, [isLoadingUserPreferences, dataUserPreferences]);
 
-  const {
-    data: dataProjectsMigrations,
-    isLoading: isLoadingProjectMigrations,
-    refetch: refetchMigrations,
-  } = useGetRenkuV1ProjectsMigrationsQuery();
-
-  // useEffect(() => {
-  //   if (!isOpenModal) {
-  //     // refetchMigrations();
-  //     // onSearchTerm("");
-  //   }
-  // }, [isOpenModal, refetchMigrations, onSearchTerm]);
-
-  const {
-    data: dataGitlabProjects,
-    error: errorGitlabProjects,
-    isLoading: isLoadingGitlabProjects,
-  } = useGetAllProjectsQuery(
-    {
-      page: page,
-      perPage: DEFAULT_PER_PAGE_PROJECT_MIGRATION,
-      membership: true,
-      search: searchTerm,
-      min_access_level: 50,
-    },
-    {
-      skip:
-        isLoadingProjectMigrations ||
-        !dataProjectsMigrations ||
-        isDismissedProjectMigrationBanner,
-    }
-  );
-
-  const mappedGitlabProjects: GitlabProjectsToMigrate[] = useMemo(() => {
-    if (!dataGitlabProjects?.data || !dataProjectsMigrations) return [];
-    return dataGitlabProjects?.data.map((project) => {
-      return {
-        ...project,
-        alreadyMigrated: dataProjectsMigrations.some(
-          (migration: { v1_id: number }) => migration.v1_id === project.id
-        ),
-      };
-    });
-  }, [dataGitlabProjects, dataProjectsMigrations]);
-
   const toggle = useCallback(() => {
-    if (isOpenModal) {
-      onPageChange(1);
-      refetchMigrations();
-      onSearchTerm("");
-    }
     setIsOpenModal((open) => !open);
-  }, [isOpenModal, onPageChange, onSearchTerm, refetchMigrations]);
-
-  // initially if there are project to migrate should display the banner, if a search by term doesn't return values it should show the banner.
-  const hasInitialProjectsToMigrate = true;
+  }, []);
 
   const onToggleDismissAlert = useCallback(() => {
     setIsOpenDismissMigration((open) => !open);
@@ -141,10 +67,7 @@ export function ProjectMigrationBanner() {
   }, [dismissProjectMigrationBanner]);
 
   return (
-    !isDismissedProjectMigrationBanner &&
-    !isLoadingGitlabProjects &&
-    !isLoadingProjectMigrations &&
-    hasInitialProjectsToMigrate && (
+    !isDismissedProjectMigrationBanner && (
       <Alert
         className={cx(
           style.ProjectMigrationBanner,
@@ -172,19 +95,7 @@ export function ProjectMigrationBanner() {
             Legacy
           </Button>
         </div>
-        <MigrationModal
-          isOpen={isOpenModal}
-          toggle={toggle}
-          searchTerm={searchTerm}
-          setSearchTerm={onSearchTerm}
-          dataGitlabProjects={mappedGitlabProjects}
-          errorGitlabProjects={errorGitlabProjects}
-          isLoadingGitlabProjects={isLoadingGitlabProjects}
-          totalResult={dataGitlabProjects?.pagination?.totalItems ?? 0}
-          page={page}
-          onPageChange={onPageChange}
-          perPage={DEFAULT_PER_PAGE_PROJECT_MIGRATION}
-        />
+        <MigrationV2Modal isOpen={isOpenModal} toggle={toggle} />
         <DismissMigrationConfirmationModal
           onDismissBanner={onDismissBanner}
           toggle={onToggleDismissAlert}

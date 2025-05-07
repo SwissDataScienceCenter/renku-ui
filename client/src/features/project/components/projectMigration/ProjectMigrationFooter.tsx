@@ -21,22 +21,22 @@ import { useCallback, useMemo } from "react";
 import { ArrowLeft, BoxArrowInUp, XLg } from "react-bootstrap-icons";
 import { useLocation } from "react-router";
 import { Button, ModalFooter } from "reactstrap";
-import { Loader } from "../../../../components/Loader.tsx";
-import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2.ts";
-import { GitlabProjectsToMigrate } from "../../../projectMigrationV2/ProjectMigration.types.ts";
+import { Loader } from "../../../../components/Loader";
+import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
+import { GitlabProjectsToMigrate } from "../../../projectMigrationV2/ProjectMigration.types";
 
 interface ProjectMigrationFooterProps {
   isReadyMigrationResult: boolean;
   isLoadingMigration: boolean;
   isLoadingSessionValues: boolean;
   step: number;
-  setStep: (step: number) => void;
-  setSelectedProject: (project: GitlabProjectsToMigrate | null) => void;
+  setStep?: (step: number) => void;
+  setSelectedProject?: (project: GitlabProjectsToMigrate | null) => void;
   hasGitlabProjectList: boolean;
   toggle: () => void;
 }
 
-export function ProjectMigrationFooter({
+export default function ProjectMigrationFooter({
   isReadyMigrationResult,
   isLoadingMigration,
   isLoadingSessionValues,
@@ -57,8 +57,10 @@ export function ProjectMigrationFooter({
   );
 
   const handleBack = useCallback(() => {
-    setStep(1);
-    setSelectedProject(null);
+    if (setSelectedProject && setStep) {
+      setStep(1);
+      setSelectedProject(null);
+    }
   }, [setSelectedProject, setStep]);
 
   return (

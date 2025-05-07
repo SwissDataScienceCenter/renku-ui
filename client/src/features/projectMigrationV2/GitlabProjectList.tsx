@@ -1,58 +1,139 @@
+/*!
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import cx from "classnames";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { CheckCircle, Folder } from "react-bootstrap-icons";
+import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
 import VisibilityIcon from "../../components/entities/VisibilityIcon";
 import { Loader } from "../../components/Loader";
-import Pagination from "../../components/Pagination.tsx";
-import { GitlabProjectsToMigrate } from "./ProjectMigration.types.ts";
+import Pagination from "../../components/Pagination";
+import { GitlabProjectsToMigrate } from "./ProjectMigration.types";
+import { useGetAllProjectsQuery } from "../project/projectGitLab.api";
+import { useGetRenkuV1ProjectsMigrationsQuery } from "../projectsV2/api/projectV2.api";
+import { ErrorAlert } from "../../components/Alert";
+
+export const DEFAULT_PER_PAGE_PROJECT_MIGRATION = 5;
 
 interface GitlabProjectListProps {
-  projects: GitlabProjectsToMigrate[];
   onSelectProject: (project: GitlabProjectsToMigrate) => void;
-  onSearch: (searchTerm: string) => void;
-  isLoading: boolean;
-  searchTerm?: string;
-  page: number;
-  perPage: number;
-  totalResult: number;
-  onPageChange?: (page: number) => void;
 }
 
-export function GitlabProjectList({
-  projects,
+export default function GitlabProjectList({
   onSelectProject,
-  onSearch,
-  isLoading,
-  page,
-  perPage,
-  totalResult,
-  onPageChange,
 }: GitlabProjectListProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const onPageChange = useCallback(
+    (page: number) => {
+      setSearchParams((prev) => {
+        prev.set("page", `${page}`);
+        return prev;
+      });
+    },
+    [setSearchParams]
+  );
+
+  const onSearchTerm = useCallback(
+    (term: string) => {
+      setSearchTerm(term);
+      if (term != "") onPageChange(1);
+    },
+    [setSearchTerm, onPageChange]
+  );
+
+  const page = useMemo(() => {
+    const pageRaw = searchParams.get("page");
+    if (!pageRaw) {
+      return 1;
+    }
+    try {
+      const page = parseInt(pageRaw, 10);
+      return page > 0 ? page : 1;
+    } catch {
+      return 1;
+    }
+  }, [searchParams]);
+
+  const { data: dataProjectsMigrations } =
+    useGetRenkuV1ProjectsMigrationsQuery();
+
+  const {
+    data: dataGitlabProjects,
+    error: errorGitlabProjects,
+    isLoading: isLoadingGitlabProjects,
+  } = useGetAllProjectsQuery(
+    {
+      page: page,
+      perPage: DEFAULT_PER_PAGE_PROJECT_MIGRATION,
+      membership: true,
+      search: searchTerm,
+      min_access_level: 50,
+    },
+    {
+      skip: !dataProjectsMigrations,
+    }
+  );
+
+  const mappedGitlabProjects: GitlabProjectsToMigrate[] = useMemo(() => {
+    if (!dataGitlabProjects?.data || !dataProjectsMigrations) return [];
+    return dataGitlabProjects?.data.map((project) => {
+      return {
+        ...project,
+        alreadyMigrated: dataProjectsMigrations.some(
+          (migration: { v1_id: number }) => migration.v1_id === project.id
+        ),
+      };
+    });
+  }, [dataGitlabProjects, dataProjectsMigrations]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSearch(searchTerm);
+    onSearchTerm(searchTerm);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      onSearch(searchTerm);
+      onSearchTerm(searchTerm);
     }
   };
 
   const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    onSearch(searchTerm);
+    onSearchTerm(searchTerm);
   };
 
-  const notFoundProjects = projects.length === 0 && (
+  const notFoundProjects = mappedGitlabProjects.length === 0 && (
     <small className="text-muted">
       Not found projects {searchTerm && `with name ${searchTerm}`} to migrate{" "}
     </small>
   );
+
+  if (errorGitlabProjects) {
+    return (
+      <ErrorAlert dismissible={false}>
+        Error loading projects. Please try again.
+      </ErrorAlert>
+    );
+  }
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -86,14 +167,14 @@ export function GitlabProjectList({
           </InputGroup>
         </Form>
       </div>
-      {isLoading && (
+      {isLoadingGitlabProjects && (
         <>
           <Loader /> Loading projects...
         </>
       )}
       {notFoundProjects}
       <div className={cx("list-group")}>
-        {projects.map((project) => (
+        {mappedGitlabProjects.map((project) => (
           <button
             key={project.id}
             className={cx(
@@ -134,18 +215,14 @@ export function GitlabProjectList({
           </button>
         ))}
       </div>
-      {onPageChange && (
-        <>
-          <Pagination
-            currentPage={page}
-            perPage={perPage}
-            totalItems={totalResult ?? 0}
-            onPageChange={onPageChange}
-            showDescription={true}
-            totalInPage={projects.length ?? 0}
-          />
-        </>
-      )}
+      <Pagination
+        currentPage={page}
+        perPage={DEFAULT_PER_PAGE_PROJECT_MIGRATION}
+        totalItems={dataGitlabProjects?.pagination?.totalItems ?? 0}
+        onPageChange={onPageChange}
+        showDescription={true}
+        totalInPage={mappedGitlabProjects.length ?? 0}
+      />
     </div>
   );
 }

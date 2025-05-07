@@ -29,13 +29,12 @@ import {
 import { useLocation } from "react-router";
 import { Input, Label } from "reactstrap";
 import AppContext from "../../../../utils/context/appContext";
-import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions.js";
+import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
 import { ProjectMigrationForm } from "./ProjectMigration.types";
-
 import styles from "../../../projectsV2/fields/RenkuV1FormFields.module.scss";
 
 interface ProjectMigrationFormInputsProps {
@@ -45,7 +44,7 @@ interface ProjectMigrationFormInputsProps {
   setValue: UseFormSetValue<ProjectMigrationForm>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<ProjectMigrationForm>>>;
 }
-export function ProjectMigrationFormInputs({
+export default function ProjectMigrationFormInputs({
   control,
   dirtyFields,
   errors,

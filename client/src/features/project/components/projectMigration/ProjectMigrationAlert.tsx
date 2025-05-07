@@ -2,22 +2,22 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { generatePath, Link } from "react-router";
 import { Button } from "reactstrap";
-import { InfoAlert, WarnAlert } from "../../../../components/Alert.jsx";
-import { ExternalLink } from "../../../../components/ExternalLinks.tsx";
-import { Loader } from "../../../../components/Loader.tsx";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants.ts";
-import { Links } from "../../../../utils/constants/Docs.js";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook.ts";
-import { useGetRenkuV1ProjectsByV1IdMigrationsQuery } from "../../../projectsV2/api/projectV2.api.ts";
-import { MigrationModal } from "./ProjectMigration.tsx";
-import { ProjectMetadata } from "./ProjectMigration.types.ts";
+import { InfoAlert, WarnAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import { Loader } from "../../../../components/Loader";
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import { Links } from "../../../../utils/constants/Docs";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
+import { useGetRenkuV1ProjectsByV1IdMigrationsQuery } from "../../../projectsV2/api/projectV2.api";
+import { ProjectMetadata } from "./ProjectMigration.types";
+import MigrationV1Modal from "./MigrationV1Modal";
 
 interface ProjectMigrationAlertProps {
   projectId: number;
   description?: { isLoading?: boolean; unavailable?: string; value: string };
   tagList: string[];
 }
-export function ProjectMigrationAlert({
+export default function ProjectMigrationAlert({
   projectId,
   description,
   tagList,
@@ -94,10 +94,10 @@ export function ProjectMigrationAlert({
           />
         </div>
       </WarnAlert>
-      <MigrationModal
+      <MigrationV1Modal
         isOpen={isOpenModal}
         toggle={toggle}
-        description={description?.isLoading ? undefined : description?.value}
+        description={description?.value}
         tagList={tagList}
         projectMetadata={projectMetadata}
       />

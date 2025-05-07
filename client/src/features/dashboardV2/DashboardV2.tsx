@@ -50,7 +50,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
-import { ProjectMigrationBanner } from "../projectMigrationV2/ProjectMigrationBanner.tsx";
+import ProjectMigrationBanner from "../projectMigrationV2/ProjectMigrationBanner";
 import {
   GetGroupsApiResponse,
   GetProjectsApiResponse,

@@ -27,19 +27,19 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 import { Form } from "reactstrap";
-import { Loader } from "../../../../components/Loader.tsx";
-import { toHumanDateTime } from "../../../../utils/helpers/DateTimeUtils.ts";
-import { GitlabProjectResponse } from "../../GitLab.types.ts";
-import { useGetSessionLauncherData } from "../../hook/useGetSessionLauncherData.ts";
+import { Loader } from "../../../../components/Loader";
+import { toHumanDateTime } from "../../../../utils/helpers/DateTimeUtils";
+import { GitlabProjectResponse } from "../../GitLab.types";
+import { useGetSessionLauncherData } from "../../hook/useGetSessionLauncherData";
 import {
   ProjectMetadata,
   ProjectMigrationForm,
-} from "./ProjectMigration.types.ts";
+} from "./ProjectMigration.types";
 import {
   DetailsMigration,
   DetailsNotIncludedInMigration,
-} from "./ProjectMigrationDetails.tsx";
-import { ProjectMigrationFormInputs } from "./ProjectMigrationFormInputs.tsx";
+} from "./ProjectMigrationDetails";
+import ProjectMigrationFormInputs from "./ProjectMigrationFormInputs";
 
 interface MigrationFormProps {
   description?: string;
@@ -57,7 +57,7 @@ interface MigrationFormProps {
   handleSubmit: UseFormHandleSubmit<ProjectMigrationForm>;
 }
 
-export function MigrationForm({
+export default function MigrationForm({
   description,
   keywords,
   codeRepository,
