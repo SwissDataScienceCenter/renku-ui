@@ -12,11 +12,14 @@ RUN npm install --silent && \
     npm run-script build
 
 FROM node:22-alpine
+ARG UID=65543
+ARG GID=65543
+USER $UID:$GID
 
-COPY --from=builder /app/dist app/dist
-COPY --from=builder /app/node_modules app/node_modules
-COPY --from=builder /app/package.json app/package.json
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+COPY --from=builder --chown=$UID:$GID /app/dist app/dist
+COPY --from=builder --chown=$UID:$GID /app/node_modules app/node_modules
+COPY --from=builder --chown=$UID:$GID /app/package.json app/package.json
+COPY --chown=$UID:$GID docker-entrypoint.sh /app/docker-entrypoint.sh
 
 # HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /var/run/nginx.pid
 
