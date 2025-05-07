@@ -118,10 +118,18 @@ export default function ActiveSessionButton({
     skip: !isResuming,
   });
   useEffect(() => {
-    if (isSuccessResumeSession && !isWaitingForResumedSession) {
+    if (isResuming && isSuccessResumeSession && !isWaitingForResumedSession) {
+      setIsResuming(false);
+      console.log("navigate", [
+        isResuming,
+        isSuccessResumeSession,
+        isWaitingForResumedSession,
+        showSessionUrl,
+      ]);
       navigate(showSessionUrl);
     }
   }, [
+    isResuming,
     isSuccessResumeSession,
     isWaitingForResumedSession,
     navigate,
