@@ -20,12 +20,11 @@ import cx from "classnames";
 import { Link45deg, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
-import { Ulid } from "../api/sessionLaunchersV2.generated-api";
 import useSessionStartLink from "./useSessionStartLink.hook";
 
 interface SessionStartLinkModalProps {
   isOpen: boolean;
-  launcherId: Ulid;
+  launcherId: string;
   namespace: string;
   slug: string;
   toggle: () => void;

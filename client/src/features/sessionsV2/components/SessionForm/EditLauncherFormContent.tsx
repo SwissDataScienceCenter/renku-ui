@@ -31,7 +31,7 @@ import { InfoAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import { Links } from "../../../../utils/constants/Docs.js";
+import { Links } from "../../../../utils/constants/Docs";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { prioritizeSelectedEnvironment } from "../../session.utils";
@@ -165,6 +165,8 @@ export default function EditLauncherFormContent({
             role="text"
             url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
             title="documentation"
+            showLinkIcon
+            iconAfter
           />{" "}
           for how to complete this form to make your image run on Renkulab.
         </p>

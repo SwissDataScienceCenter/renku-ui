@@ -71,7 +71,8 @@ export default function EnvironmentKindField({
                     "flex-row",
                     "gap-3",
                     "text-center",
-                    "text-md-start"
+                    "text-md-start",
+                    "align-items-center"
                   )}
                 >
                   <EnvironmentIcon
@@ -118,7 +119,8 @@ export default function EnvironmentKindField({
                         "flex-row",
                         "gap-3",
                         "text-center",
-                        "text-md-start"
+                        "text-md-start",
+                        "align-items-center"
                       )}
                     >
                       <EnvironmentIcon
@@ -174,7 +176,8 @@ export default function EnvironmentKindField({
                     "flex-row",
                     "gap-3",
                     "text-center",
-                    "text-md-start"
+                    "text-md-start",
+                    "align-items-center"
                   )}
                 >
                   <EnvironmentIcon

@@ -522,15 +522,7 @@ function ShareSessionLinkButton({
   namespace?: string;
   slug?: string;
 }) {
-  const { launcherId } = useMemo(() => {
-    if (session == null) {
-      return { launcherId: undefined };
-    }
-    return {
-      launcherId: session.launcher_id,
-    };
-  }, [session]);
-
+  const launcherId = session?.launcher_id;
   const ref = useRef<HTMLButtonElement>(null);
   const buttonId = "share-session-button";
   const tooltip = "Share session launch link";

@@ -89,6 +89,8 @@ export function CustomEnvironmentFields({
             role="text"
             url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
             title="documentation"
+            showLinkIcon
+            iconAfter
           />{" "}
           for how to complete this form to make your image run on Renkulab.
         </p>

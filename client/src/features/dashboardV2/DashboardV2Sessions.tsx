@@ -141,6 +141,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
     : ABSOLUTE_ROUTES.v2.root;
 
   const sessionStyles = getSessionStatusStyles(session);
+  const state = session.status.state;
 
   return (
     <div
@@ -205,7 +206,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
             <div className={cx("d-flex", "gap-2")}>
               <img
                 src={sessionStyles.sessionIcon}
-                alt="Session icon indicator"
+                alt={`Session is ${state}`}
                 loading="lazy"
               />
               <SessionStatusV2Label session={session} variant="list" />

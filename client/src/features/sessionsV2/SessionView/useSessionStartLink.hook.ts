@@ -19,14 +19,13 @@ import { useContext } from "react";
 import { generatePath } from "react-router";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
-import { Ulid } from "../api/sessionLaunchersV2.generated-api";
 
 export default function useSessionStartLink({
   launcherId,
   namespace,
   slug,
 }: {
-  launcherId: Ulid;
+  launcherId: string;
   namespace: string;
   slug: string;
 }) {
