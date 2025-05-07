@@ -103,6 +103,47 @@
         "tags": ["data_connectors"]
       }
     },
+    "/data_connectors/global": {
+      "post": {
+        "summary": "Create a new data connector",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalDataConnectorPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The data connector already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "The data connector was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
     "/data_connectors/{data_connector_id}": {
       "parameters": [
         {
@@ -193,6 +234,47 @@
         "responses": {
           "204": {
             "description": "The data connector was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
+    "/data_connectors/global/{slug}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "slug",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a global data connector by slug",
+        "responses": {
+          "200": {
+            "description": "The data connector",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -644,7 +726,6 @@
         "required": [
           "id",
           "name",
-          "namespace",
           "slug",
           "storage",
           "creation_date",
@@ -688,7 +769,25 @@
             "$ref": "#/components/schemas/KeywordsList"
           }
         },
-        "required": ["name", "namespace", "storage"]
+        "required": ["name", "storage"]
+      },
+      "GlobalDataConnectorPost": {
+        "description": "A global data connector to be created in Renku 2.0\n",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "storage": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CloudStorageCorePost"
+              },
+              {
+                "$ref": "#/components/schemas/CloudStorageUrlV2"
+              }
+            ]
+          }
+        },
+        "required": ["storage"]
       },
       "DataConnectorPatch": {
         "description": "Patch of a data connector\n",
