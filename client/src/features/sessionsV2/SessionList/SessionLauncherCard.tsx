@@ -115,7 +115,6 @@ export default function SessionLauncherCard({
 
   return (
     <Card
-      action
       className={cx(
         styles.SessionLauncherCard,
         "mt-2",
