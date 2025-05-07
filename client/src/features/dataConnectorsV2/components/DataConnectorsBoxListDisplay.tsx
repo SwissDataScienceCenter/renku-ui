@@ -18,16 +18,21 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, useRef } from "react";
-import { EyeFill, Globe2, Lock, Pencil, Folder } from "react-bootstrap-icons";
 import {
+  EyeFill,
+  Folder,
+  Globe2,
+  Journals,
+  Lock,
+  Pencil,
+} from "react-bootstrap-icons";
+import {
+  Badge,
   Col,
   ListGroupItem,
   Row,
   UncontrolledTooltip,
-  Badge,
 } from "reactstrap";
-
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { TimeCaption } from "../../../components/TimeCaption";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
@@ -35,10 +40,12 @@ import type {
   DataConnector,
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
-
-import DataConnectorView from "./DataConnectorView";
-import { isProjectNamespace } from "./dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
+import {
+  getDataConnectorScope,
+  useGetDataConnectorSource,
+} from "./dataConnector.utils";
+import DataConnectorView from "./DataConnectorView";
 
 interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;
@@ -54,7 +61,6 @@ export default function DataConnectorBoxListDisplay({
 }: DataConnectorBoxListDisplayProps) {
   const {
     name,
-    description,
     visibility,
     creation_date: creationDate,
     storage,
@@ -91,6 +97,19 @@ export default function DataConnectorBoxListDisplay({
       </div>
     ));
 
+  const scopeIcon = useMemo(() => {
+    const scope = getDataConnectorScope(namespace);
+    if (scope === "project") {
+      return <Folder className="bi" />;
+    }
+    if (scope === "namespace") {
+      return <UserAvatar namespace={namespace as string} size="sm" />;
+    }
+    return <Journals className="bi" />;
+  }, [namespace]);
+
+  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
+
   return (
     <>
       <ListGroupItem
@@ -112,16 +131,11 @@ export default function DataConnectorBoxListDisplay({
                 "align-items-center"
               )}
             >
-              {isProjectNamespace(namespace) ? (
-                <Folder className="bi" />
-              ) : (
-                <UserAvatar namespace={namespace} size="sm" />
-              )}
+              {scopeIcon}
               <p className={cx("mb-0", "text-truncate", "text-muted")}>
-                {namespace}
+                {dataConnectorSource}
               </p>
             </div>
-            {description && <ClampedParagraph>{description}</ClampedParagraph>}
             {extendedPreview && <div className="text-muted">{type}</div>}
             <div
               className={cx(
@@ -178,6 +192,28 @@ export default function DataConnectorBoxListDisplay({
         }
       />
     </>
+  );
+}
+
+export function DataConnectorBoxListDisplayPlaceholder() {
+  return (
+    <ListGroupItem data-cy="data-connector-box-placeholder">
+      <Row>
+        <Col className={cx("d-flex", "flex-column")}>
+          <h5 className="mb-0">
+            <span className={cx("bg-secondary", "col-8", "placeholder")}></span>
+          </h5>
+          <p className="mb-0">
+            <span className={cx("bg-secondary", "col-5", "placeholder")}></span>
+          </p>
+          <p className="mb-0">
+            <span className={cx("bg-secondary", "col-4", "placeholder")}></span>
+            <span className={cx("bg-white", "col-5", "placeholder")}></span>
+            <span className={cx("bg-secondary", "col-3", "placeholder")}></span>
+          </p>
+        </Col>
+      </Row>
+    </ListGroupItem>
   );
 }
 

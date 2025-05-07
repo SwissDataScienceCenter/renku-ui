@@ -135,7 +135,7 @@ export function ExternalLink({
     const iconNode = props.customIcon ? (
       props.customIcon
     ) : (
-      <BoxArrowUpRight className={cx("bi", "me-1")} />
+      <BoxArrowUpRight className="bi" />
     );
     const icon = iconSup ? <sup>{iconNode}</sup> : <>{iconNode}</>;
     displayTitle = iconAfter ? (

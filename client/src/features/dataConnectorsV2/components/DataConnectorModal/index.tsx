@@ -142,7 +142,7 @@ function DataConnectorModalBodyAndFooterUnauthorized() {
 interface DataConnectorModalProps {
   dataConnector?: DataConnectorRead | null;
   isOpen: boolean;
-  namespace: string;
+  namespace?: string;
   project?: Project;
   toggle: () => void;
 }
