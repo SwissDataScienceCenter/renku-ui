@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Card, CardBody, Col, Row, Table } from "reactstrap";
+import { Col, ListGroup, ListGroupItem, Row } from "reactstrap";
 
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 
@@ -35,49 +35,23 @@ export default function EnvVariablesCard({
   }
 
   return (
-    <Card data-cy="env-variables-card" className={cx("border")}>
-      <CardBody className={cx("d-flex", "flex-column")}>
-        <Row>
-          <Col
-            xs={12}
-            className={cx(
-              "d-flex",
-              "flex-wrap",
-              "flex-sm-nowrap",
-              "align-items-start",
-              "justify-content-between",
-              "pb-2",
-              "gap-2"
-            )}
-          >
-            <Table size="sm">
-              <tbody>
-                {envVariables.map((env) => (
-                  <EnvVariableRow
-                    key={env.name}
-                    env={env.name}
-                    value={env.value}
-                  />
-                ))}
-              </tbody>
-            </Table>
-          </Col>
-        </Row>
-      </CardBody>
-    </Card>
-  );
-}
-
-interface EnvRowParameterProps {
-  env: string;
-  value: string | null | undefined;
-}
-
-function EnvVariableRow({ env, value }: EnvRowParameterProps) {
-  return (
-    <tr>
-      <th scope="row">{env}</th>
-      <td>{value ?? ""}</td>
-    </tr>
+    <ListGroup data-cy="env-variables-card">
+      {envVariables.map(({ name, value }) => (
+        <ListGroupItem key={`env-var-${name}`}>
+          <Row data-cy="env-var-row">
+            <Col
+              xs={6}
+              className={cx("fw-bold", "text-break")}
+              data-cy="env-var-name"
+            >
+              {name}
+            </Col>
+            <Col xs={6} className="text-break" data-cy="env-var-value">
+              {value ?? ""}
+            </Col>
+          </Row>
+        </ListGroupItem>
+      ))}
+    </ListGroup>
   );
 }
