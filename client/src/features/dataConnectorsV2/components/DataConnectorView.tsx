@@ -15,26 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo, useRef } from "react";
 import {
   Folder,
   Gear,
+  Globe2,
   InfoCircleFill,
+  Journals,
   Key,
   Lock,
   PersonBadge,
-  Globe2,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
-import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
-
+import {
+  Badge,
+  Offcanvas,
+  OffcanvasBody,
+  UncontrolledTooltip,
+} from "reactstrap";
+import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
+import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
-import { EntityPill } from "../../searchV2/components/SearchV2Results";
-
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -42,20 +48,21 @@ import {
 } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import { EntityPill } from "../../searchV2/components/SearchV2Results";
 import { storageSecretNameToFieldName } from "../../secretsV2/secrets.utils";
 import UserAvatar from "../../usersV2/show/UserAvatar";
-
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
-
+import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
+import {
+  getDataConnectorScope,
+  useGetDataConnectorSource,
+} from "./dataConnector.utils";
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
-import { WarnAlert } from "../../../components/Alert";
-import { isProjectNamespace } from "./dataConnector.utils";
-import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 
 const SECTION_CLASSES = [
   "border-top",
@@ -305,11 +312,10 @@ function DataConnectorViewProjects({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-projects-section"
     >
-      <div>
-        <h4>
-          <Folder className={cx("bi", "me-1")} /> Projects
-        </h4>
-      </div>
+      <h4>
+        <Folder className={cx("bi", "me-1")} />
+        Projects
+      </h4>
       <div>
         {isLoading && <p>Retrieving projects...</p>}
         {!isLoading && projects.length === 0 && <p>None</p>}
@@ -327,11 +333,11 @@ function DataConnectorViewProjects({
               );
               return (
                 <tr key={project.id}>
-                  <th scope="row">
+                  <td scope="row">
                     <Link to={projectUrl}>
                       {project.namespace}/{project.slug}
                     </Link>
-                  </th>
+                  </td>
                   <td>{project.description}</td>
                 </tr>
               );
@@ -370,83 +376,142 @@ function DataConnectorViewMetadata({
     storageDefinition.configuration
   ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
   const { data: namespace, isLoading: isLoadingNamespace } =
-    useGetNamespacesByNamespaceSlugQuery({
-      namespaceSlug: dataConnector.namespace,
-    });
+    useGetNamespacesByNamespaceSlugQuery(
+      dataConnector.namespace
+        ? {
+            namespaceSlug: dataConnector.namespace,
+          }
+        : skipToken
+    );
+
+  const scope = useMemo(
+    () => getDataConnectorScope(dataConnector.namespace),
+    [dataConnector.namespace]
+  );
 
   const namespaceUrl = useMemo(
     () =>
-      namespace == null
+      scope === "global" || !namespace || !dataConnector.namespace
         ? null
-        : namespace.namespace_kind == "user"
+        : scope === "project"
+        ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+            namespace: dataConnector.namespace.split("/")[0],
+            slug: dataConnector.namespace.split("/")[1],
+          })
+        : namespace.namespace_kind === "user"
         ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
             username: dataConnector.namespace,
           })
         : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
             slug: dataConnector.namespace,
           }),
-    [namespace, dataConnector.namespace]
+    [dataConnector.namespace, namespace, scope]
   );
-  const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
-    storageDefinition.storage_type
+
+  const hasAccessMode = useMemo(
+    () => STORAGES_WITH_ACCESS_MODE.includes(storageDefinition.storage_type),
+    [storageDefinition.storage_type]
   );
+
+  const identifier = useMemo(
+    () =>
+      scope === "global"
+        ? `${dataConnector.slug}`
+        : `${dataConnector.namespace}/${dataConnector.slug}`,
+    [dataConnector.namespace, dataConnector.slug, scope]
+  );
+
+  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
 
   return (
     <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
       <DataConnectorPropertyValue title="Identifier">
         <div className={cx("d-flex", "justify-content-between", "mx-0")}>
-          <div>
-            {dataConnector.namespace}/{dataConnector.slug}
-          </div>
+          <div>{identifier}</div>
           <div>
             <Clipboard
-              className={cx("border-0", "btn", "ms-1", "p-0")}
-              clipboardText={`${dataConnector.namespace}/${dataConnector.slug}`}
-            ></Clipboard>
+              className={cx("border-0", "btn", "ms-1", "p-0", "shadow-none")}
+              clipboardText={identifier}
+            />
           </div>
         </div>
       </DataConnectorPropertyValue>
-      <DataConnectorPropertyValue title="Owner">
-        <div className={cx("d-flex", "align-items-center")}>
-          <div className="me-1">
-            {isProjectNamespace(dataConnector.namespace) ? (
-              <Folder />
-            ) : (
-              <UserAvatar namespace={dataConnector.namespace} />
-            )}{" "}
-          </div>
-          {namespaceUrl == null ? (
-            <div className="me-1">
-              {isProjectNamespace(dataConnector.namespace) ? "" : "@"}
-              {dataConnector.namespace}
+
+      {scope === "global" ? (
+        <>
+          <DataConnectorPropertyValue title="Source">
+            <div className={cx("align-items-center", "d-flex", "gap-1")}>
+              <Journals className={cx("bi", "flex-shrink-0")} />
+              DOI from {dataConnectorSource}
             </div>
-          ) : (
-            <div>
-              <Link className="me-1" to={namespaceUrl}>
-                @{dataConnector.namespace}
-              </Link>
+          </DataConnectorPropertyValue>
+
+          <DataConnectorPropertyValue title="DOI">
+            <div
+              className={cx(
+                "align-items-center",
+                "d-flex",
+                "gap-1",
+                "justify-content-between"
+              )}
+            >
+              <a
+                href={`https://doi.org/${dataConnector.storage.configuration["doi"]}`}
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                {dataConnector.storage.configuration["doi"] as string}
+              </a>
+              <div>
+                <Clipboard
+                  className={cx(
+                    "border-0",
+                    "btn",
+                    "ms-1",
+                    "p-0",
+                    "shadow-none"
+                  )}
+                  clipboardText={
+                    dataConnector.storage.configuration["doi"] as string
+                  }
+                />
+              </div>
             </div>
-          )}
-          <div>
-            {isLoadingNamespace ? (
-              <Loader inline size={16} />
-            ) : namespace == null ? null : namespace.namespace_kind ==
-              "user" ? (
-              <EntityPill
-                entityType="User"
-                size="sm"
-                tooltipPlacement="bottom"
-              />
+          </DataConnectorPropertyValue>
+        </>
+      ) : (
+        <DataConnectorPropertyValue title="Owner">
+          <div className={cx("align-items-center", "d-flex", "gap-1")}>
+            {scope === "project" ? (
+              <>
+                <Folder className={cx("bi", "flex-shrink-0")} />
+                <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
+              </>
             ) : (
-              <EntityPill
-                entityType="Group"
-                size="sm"
-                tooltipPlacement="bottom"
-              />
+              <>
+                <UserAvatar namespace={dataConnector.namespace as string} />
+                <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
+                {isLoadingNamespace ? (
+                  <Loader inline size={16} />
+                ) : namespace?.namespace_kind === "user" ? (
+                  <EntityPill
+                    entityType="User"
+                    size="sm"
+                    tooltipPlacement="bottom"
+                  />
+                ) : namespace?.namespace_kind === "group" ? (
+                  <EntityPill
+                    entityType="Group"
+                    size="sm"
+                    tooltipPlacement="bottom"
+                  />
+                ) : null}
+              </>
             )}
           </div>
-        </div>
-      </DataConnectorPropertyValue>
+        </DataConnectorPropertyValue>
+      )}
+
       <DataConnectorPropertyValue title="Visibility">
         {dataConnector.visibility === "private" ? (
           <>
@@ -465,16 +530,36 @@ function DataConnectorViewMetadata({
           </WarnAlert>
         )}
       </DataConnectorPropertyValue>
-      {nonRequiredCredentialConfigurationKeys.map((key) => {
-        const title =
-          key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
-        const value = storageDefinition.configuration[key]?.toString() ?? "";
-        return (
-          <DataConnectorPropertyValue key={key} title={title}>
-            {value}
-          </DataConnectorPropertyValue>
-        );
-      })}
+
+      {dataConnector.keywords && dataConnector.keywords.length > 0 && (
+        <DataConnectorPropertyValue title="Keywords">
+          <div className={cx("d-flex", "flex-wrap", "gap-1", "my-1")}>
+            {dataConnector.keywords.map((keyword, index) => (
+              <Badge color="secondary" key={index}>
+                {keyword}
+              </Badge>
+            ))}
+          </div>
+        </DataConnectorPropertyValue>
+      )}
+
+      {dataConnector.description && (
+        <DataConnectorPropertyValue title="Description">
+          <LazyRenkuMarkdown markdownText={dataConnector.description} />
+        </DataConnectorPropertyValue>
+      )}
+
+      {scope !== "global" &&
+        nonRequiredCredentialConfigurationKeys.map((key) => {
+          const title =
+            key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
+          const value = storageDefinition.configuration[key]?.toString() ?? "";
+          return (
+            <DataConnectorPropertyValue key={key} title={title}>
+              {value}
+            </DataConnectorPropertyValue>
+          );
+        })}
     </section>
   );
 }

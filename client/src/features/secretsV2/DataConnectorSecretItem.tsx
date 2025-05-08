@@ -145,7 +145,9 @@ function DataConnectorSecretUsedForItem({
     isLoading: isLoadingNamespace,
     error: namespaceError,
   } = useGetNamespacesByNamespaceSlugQuery(
-    dataConnector ? { namespaceSlug: dataConnector.namespace } : skipToken
+    dataConnector?.namespace
+      ? { namespaceSlug: dataConnector.namespace }
+      : skipToken
   );
 
   const isLoading =
@@ -167,14 +169,14 @@ function DataConnectorSecretUsedForItem({
     () =>
       dataConnector && namespace?.namespace_kind === "group"
         ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-            slug: dataConnector.namespace,
+            slug: namespace.slug,
           })
         : dataConnector && namespace?.namespace_kind === "user"
         ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-            username: dataConnector.namespace,
+            username: namespace.slug,
           })
         : undefined,
-    [dataConnector, namespace?.namespace_kind]
+    [dataConnector, namespace?.namespace_kind, namespace?.slug]
   );
   const dcHash = dataConnector ? `data-connector-${dataConnector.id}` : "";
 
@@ -227,7 +229,7 @@ function DataConnectorSecretUsedForItem({
           <div
             className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
           >
-            <UserAvatar namespace={dataConnector.namespace} />
+            <UserAvatar namespace={dataConnector.namespace ?? ""} />
             <span>{namespaceName}</span>
           </div>
         </div>
