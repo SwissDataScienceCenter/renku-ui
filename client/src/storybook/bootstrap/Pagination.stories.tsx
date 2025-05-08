@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import { useMemo } from "react";
 
+import { useSearchParams } from "react-router";
 import Pagination from "../../components/Pagination";
 
 const componentDescription = `
@@ -46,7 +47,19 @@ type Story = StoryObj<PaginationInfoProps>;
 
 export const Pagination_: Story = {
   render: function Pagination_Story({ elements, perPage }) {
-    const [currentPage, setCurrentPage] = useState(1);
+    const [search] = useSearchParams();
+    const currentPage = useMemo(() => {
+      const pageRaw = search.get("page");
+      if (!pageRaw) {
+        return 1;
+      }
+      try {
+        const page = parseInt(pageRaw, 10);
+        return page > 0 ? page : 1;
+      } catch {
+        return 1;
+      }
+    }, [search]);
 
     return (
       <>
@@ -65,7 +78,7 @@ export const Pagination_: Story = {
           currentPage={currentPage}
           perPage={perPage}
           totalItems={elements}
-          onPageChange={(page: number) => setCurrentPage(page)}
+          pageQueryParam="page"
         />
       </>
     );

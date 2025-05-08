@@ -20,6 +20,16 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.dataConnectorPost,
       }),
     }),
+    postDataConnectorsGlobal: build.mutation<
+      PostDataConnectorsGlobalApiResponse,
+      PostDataConnectorsGlobalApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/global`,
+        method: "POST",
+        body: queryArg.globalDataConnectorPost,
+      }),
+    }),
     getDataConnectorsByDataConnectorId: build.query<
       GetDataConnectorsByDataConnectorIdApiResponse,
       GetDataConnectorsByDataConnectorIdApiArg
@@ -46,6 +56,14 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/data_connectors/${queryArg.dataConnectorId}`,
         method: "DELETE",
+      }),
+    }),
+    getDataConnectorsGlobalBySlug: build.query<
+      GetDataConnectorsGlobalBySlugApiResponse,
+      GetDataConnectorsGlobalBySlugApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/global/${queryArg.slug}`,
       }),
     }),
     getNamespacesByNamespaceDataConnectorsAndSlug: build.query<
@@ -157,6 +175,13 @@ export type PostDataConnectorsApiResponse =
 export type PostDataConnectorsApiArg = {
   dataConnectorPost: DataConnectorPost;
 };
+export type PostDataConnectorsGlobalApiResponse =
+  /** status 200 The data connector already exists */
+  | DataConnectorRead
+  | /** status 201 The data connector was created */ DataConnectorRead;
+export type PostDataConnectorsGlobalApiArg = {
+  globalDataConnectorPost: GlobalDataConnectorPost;
+};
 export type GetDataConnectorsByDataConnectorIdApiResponse =
   /** status 200 The data connector */ DataConnectorRead;
 export type GetDataConnectorsByDataConnectorIdApiArg = {
@@ -177,6 +202,11 @@ export type DeleteDataConnectorsByDataConnectorIdApiResponse =
 export type DeleteDataConnectorsByDataConnectorIdApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
+};
+export type GetDataConnectorsGlobalBySlugApiResponse =
+  /** status 200 The data connector */ DataConnectorRead;
+export type GetDataConnectorsGlobalBySlugApiArg = {
+  slug: string;
 };
 export type GetNamespacesByNamespaceDataConnectorsAndSlugApiResponse =
   /** status 200 The data connector */ DataConnectorRead;
@@ -332,7 +362,7 @@ export type KeywordsList = Keyword[];
 export type DataConnector = {
   id: Ulid;
   name: DataConnectorName;
-  namespace: SlugResponse;
+  namespace?: SlugResponse;
   slug: SlugResponse;
   storage: CloudStorageCore;
   creation_date: CreationDate;
@@ -345,7 +375,7 @@ export type DataConnector = {
 export type DataConnectorRead = {
   id: Ulid;
   name: DataConnectorName;
-  namespace: SlugResponse;
+  namespace?: SlugResponse;
   slug: SlugResponse;
   storage: CloudStorageCoreRead;
   creation_date: CreationDate;
@@ -397,7 +427,7 @@ export type CloudStorageUrlV2 = {
 };
 export type DataConnectorPost = {
   name: DataConnectorName;
-  namespace: OneOrTwoSlugs;
+  namespace?: OneOrTwoSlugs;
   slug?: Slug;
   storage: CloudStorageCorePost | CloudStorageUrlV2;
   visibility?: Visibility;
@@ -406,12 +436,18 @@ export type DataConnectorPost = {
 };
 export type DataConnectorPostRead = {
   name: DataConnectorName;
-  namespace: OneOrTwoSlugs;
+  namespace?: OneOrTwoSlugs;
   slug?: Slug;
   storage: CloudStorageCorePostRead | CloudStorageUrlV2;
   visibility?: Visibility;
   description?: Description;
   keywords?: KeywordsList;
+};
+export type GlobalDataConnectorPost = {
+  storage: CloudStorageCorePost | CloudStorageUrlV2;
+};
+export type GlobalDataConnectorPostRead = {
+  storage: CloudStorageCorePostRead | CloudStorageUrlV2;
 };
 export type CloudStorageCorePatch = {
   storage_type?: StorageType;
@@ -483,9 +519,11 @@ export type InaccessibleDataConnectorLinks = {
 export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
+  usePostDataConnectorsGlobalMutation,
   useGetDataConnectorsByDataConnectorIdQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdMutation,
+  useGetDataConnectorsGlobalBySlugQuery,
   useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
   useGetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugQuery,
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,

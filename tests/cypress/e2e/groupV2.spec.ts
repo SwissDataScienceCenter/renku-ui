@@ -467,7 +467,6 @@ describe("Work with group data connectors, missing permissions", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
-    cy.getDataCy("data-connector-credentials").should("be.visible");
     cy.getDataCy("data-connector-edit").should("not.exist");
   });
 
@@ -479,7 +478,6 @@ describe("Work with group data connectors, missing permissions", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
-    cy.getDataCy("data-connector-credentials").should("be.visible");
     cy.getDataCy("data-connector-delete").should("not.exist");
   });
 });

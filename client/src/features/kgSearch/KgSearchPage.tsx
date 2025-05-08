@@ -91,7 +91,7 @@ function SearchPage() {
 
   const {
     kgSearchState,
-    reducers: { setPage, setSort, reset },
+    reducers: { setSort, reset },
   } = useKgSearchContext();
   const {
     phrase,
@@ -176,7 +176,6 @@ function SearchPage() {
             data={data}
             isFetching={isFetching}
             isLoading={isLoading}
-            onPageChange={(value: number) => setPage(value)}
             onRemoveFilters={reset}
             error={error}
           />

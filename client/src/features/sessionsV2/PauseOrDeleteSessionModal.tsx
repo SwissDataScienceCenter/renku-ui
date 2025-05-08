@@ -127,10 +127,11 @@ function AnonymousDeleteSessionModal({
   }, [error, notifications]);
 
   useEffect(() => {
-    if (isSuccess && !isWaiting) {
+    if (isStopping && isSuccess && !isWaiting) {
+      setIsStopping(false);
       navigate(backUrl);
     }
-  }, [backUrl, isSuccess, isWaiting, navigate]);
+  }, [backUrl, isStopping, isSuccess, isWaiting, navigate]);
 
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
@@ -249,10 +250,11 @@ function PauseSessionModalContent({
   }, [error, notifications]);
 
   useEffect(() => {
-    if (isSuccess && !isWaiting) {
+    if (isStopping && isSuccess && !isWaiting) {
+      setIsStopping(false);
       navigate(backUrl);
     }
-  }, [backUrl, isSuccess, isWaiting, navigate]);
+  }, [backUrl, isStopping, isSuccess, isWaiting, navigate]);
 
   // TODO: Uncomment when hibernatedSecondsThreshold is available
   // const now = DateTime.utc();
@@ -358,10 +360,11 @@ function DeleteSessionModalContent({
   }, [error, notifications]);
 
   useEffect(() => {
-    if (isSuccess && !isWaiting) {
+    if (isStopping && isSuccess && !isWaiting) {
+      setIsStopping(false);
       navigate(backUrl);
     }
-  }, [backUrl, isSuccess, isWaiting, navigate]);
+  }, [backUrl, isStopping, isSuccess, isWaiting, navigate]);
 
   return (
     <>
