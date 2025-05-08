@@ -23,6 +23,10 @@
  *  Presentational components for project overview.
  */
 
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import fileSize from "filesize";
+import qs from "query-string";
 import { Component, Fragment } from "react";
 import {
   Badge,
@@ -35,19 +39,14 @@ import {
   Table,
   UncontrolledTooltip,
 } from "reactstrap";
-import fileSize from "filesize";
-import qs from "query-string";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
-import BootstrapGitLabIcon from "../../components/icons/BootstrapGitLabIcon";
-
-import { StatusHelper } from "../../model/Model";
-import { CommitsView } from "../../components/commits/Commits";
-import { Loader } from "../../components/Loader";
-import { ExternalLink } from "../../components/ExternalLinks";
 import { RefreshButton } from "../../components/buttons/Button";
+import { CommitsView } from "../../components/commits/Commits";
+import { ExternalLink } from "../../components/ExternalLinks";
+import BootstrapGitLabIcon from "../../components/icons/BootstrapGitLabIcon";
+import { Loader } from "../../components/Loader";
 import Pagination from "../../components/Pagination";
+import { StatusHelper } from "../../model/Model";
 
 class OverviewStats extends Component {
   valueOrEmptyOrLoading(value, fetching, readableSize = true) {
@@ -292,16 +291,6 @@ class OverviewCommitsBody extends Component {
     };
   }
 
-  onPageChange(newPage) {
-    this.setState({ currentPage: newPage });
-    const currentSearch = qs.parse(this.props.location.search);
-    const newSearch = qs.stringify({ ...currentSearch, page: newPage });
-    this.props.navigate({
-      pathname: this.props.location.pathname,
-      search: newSearch,
-    });
-  }
-
   render() {
     const { commits, metadata } = this.props;
     const { currentPage, perPage } = this.state;
@@ -325,7 +314,7 @@ class OverviewCommitsBody extends Component {
           currentPage={currentPage}
           perPage={perPage}
           totalItems={commits.list.length}
-          onPageChange={this.onPageChange.bind(this)}
+          pageQueryParam="page"
           className="mt-4 d-flex justify-content-center rk-search-pagination pagination-sm"
         />
       </Fragment>
@@ -333,7 +322,7 @@ class OverviewCommitsBody extends Component {
   }
 }
 
-export { OverviewStats, OverviewCommits };
+export { OverviewCommits, OverviewStats };
 
 // For testing
 export { OverviewCommitsBody };

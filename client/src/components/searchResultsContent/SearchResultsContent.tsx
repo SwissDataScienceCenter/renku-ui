@@ -41,7 +41,6 @@ interface SearchResultProps {
   data?: ListResponse<KgSearchResult>;
   isFetching: boolean;
   isLoading: boolean;
-  onPageChange: Function; // eslint-disable-line @typescript-eslint/ban-types
   onRemoveFilters: Function; // eslint-disable-line @typescript-eslint/ban-types
   error?: FetchBaseQueryError | SerializedError;
 }
@@ -103,7 +102,6 @@ const SearchResultsContent = ({
   data,
   isFetching,
   isLoading,
-  onPageChange,
   onRemoveFilters,
   error,
 }: SearchResultProps) => {
@@ -125,10 +123,6 @@ const SearchResultsContent = ({
     700: 1,
   };
 
-  const changePage = (value: number) => {
-    if (onPageChange) onPageChange(value);
-  };
-
   return (
     <>
       <Masonry
@@ -141,7 +135,7 @@ const SearchResultsContent = ({
         currentPage={data.page}
         perPage={data.perPage}
         totalItems={data.total}
-        onPageChange={changePage}
+        pageQueryParam="page"
         showDescription={true}
         totalInPage={data.results?.length}
         className="d-flex justify-content-center rk-search-pagination"

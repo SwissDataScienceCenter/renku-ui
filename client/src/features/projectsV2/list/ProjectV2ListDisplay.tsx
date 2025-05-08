@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Folder, PlusLg } from "react-bootstrap-icons";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
@@ -59,19 +59,6 @@ export default function ProjectListDisplay({
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const onPageChange = useCallback(
-    (pageNumber: number) => {
-      setSearchParams((prevParams) => {
-        if (pageNumber == 1) {
-          prevParams.delete(pageParam);
-        } else {
-          prevParams.set(pageParam, `${pageNumber}`);
-        }
-        return prevParams;
-      });
-    },
-    [pageParam, setSearchParams]
-  );
 
   const page = useMemo(() => {
     const pageRaw = searchParams.get(pageParam);
@@ -154,7 +141,7 @@ export default function ProjectListDisplay({
               <Pagination
                 className="mt-3"
                 currentPage={data.page}
-                onPageChange={onPageChange}
+                pageQueryParam={pageParam}
                 perPage={perPage}
                 totalItems={data.total}
               />

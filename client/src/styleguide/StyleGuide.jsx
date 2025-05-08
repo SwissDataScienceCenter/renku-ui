@@ -151,27 +151,27 @@ function StyleGuideNav() {
       <Col className="d-flex pb-2 mb-1" md={12} lg={12}>
         <Nav pills className="nav-pills-underline">
           <NavItem>
-            <RenkuNavLinkV2 end to=".">
+            <RenkuNavLinkV2 end to="/style-guide">
               Overview
             </RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLinkV2 to="fonts">Fonts</RenkuNavLinkV2>
+            <RenkuNavLinkV2 to="/style-guide/fonts">Fonts</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLinkV2 to="colors">Colors</RenkuNavLinkV2>
+            <RenkuNavLinkV2 to="/style-guide/colors">Colors</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLinkV2 to="buttons">Buttons</RenkuNavLinkV2>
+            <RenkuNavLinkV2 to="/style-guide/buttons">Buttons</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLinkV2 to="nav">Nav</RenkuNavLinkV2>
+            <RenkuNavLinkV2 to="/style-guide/nav">Nav</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLinkV2 to="forms">Forms</RenkuNavLinkV2>
+            <RenkuNavLinkV2 to="/style-guide/forms">Forms</RenkuNavLinkV2>
           </NavItem>
           <NavItem>
-            <RenkuNavLinkV2 to="lists">Lists</RenkuNavLinkV2>
+            <RenkuNavLinkV2 to="/style-guide/lists">Lists</RenkuNavLinkV2>
           </NavItem>
         </Nav>
       </Col>

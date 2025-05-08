@@ -20,8 +20,8 @@ import { Fragment } from "react";
 
 import { Link } from "react-router";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { TimeCaption } from "../components/TimeCaption";
 import Pagination from "../components/Pagination";
+import { TimeCaption } from "../components/TimeCaption";
 
 function createDateGradient() {
   const now = new Date();
@@ -115,9 +115,6 @@ function RowListGuide() {
 }
 
 function PaginationGuide() {
-  const onPageChange = () => {
-    // eslint-disable-line @typescript-eslint/no-empty-function
-  };
   return (
     <Fragment>
       <h3>Pagination</h3>
@@ -125,7 +122,7 @@ function PaginationGuide() {
         currentPage={2}
         perPage={10}
         totalItems={100}
-        onPageChange={onPageChange}
+        pageQueryParam="page"
         className="d-flex justify-content-center rk-search-pagination"
       />
     </Fragment>
