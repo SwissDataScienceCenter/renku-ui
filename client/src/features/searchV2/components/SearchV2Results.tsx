@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import {
   Folder2Open,
   Globe2,
@@ -27,7 +27,7 @@ import {
   Person,
   Question,
 } from "react-bootstrap-icons";
-import { Link, generatePath, useSearchParams } from "react-router";
+import { Link, generatePath } from "react-router";
 import {
   Badge,
   Card,
@@ -54,8 +54,6 @@ import {
 import useClampSearchPage from "../hooks/useClampSearchPage.hook";
 
 export default function SearchV2Results() {
-  const [, setSearchParams] = useSearchParams();
-
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
   const [search, { data: searchResults }] =
@@ -66,16 +64,6 @@ export default function SearchV2Results() {
   }, [page, perPage, query, search]);
 
   useClampSearchPage({ totalPages: searchResults?.pagingInfo.totalPages });
-
-  const onPageChange = useCallback(
-    (page: number) => {
-      setSearchParams((prev) => {
-        prev.set("page", `${page}`);
-        return prev;
-      });
-    },
-    [setSearchParams]
-  );
 
   return (
     <Row data-cy="search-results">
@@ -90,7 +78,7 @@ export default function SearchV2Results() {
           currentPage={page}
           perPage={perPage}
           totalItems={searchResults?.pagingInfo.totalResult ?? 0}
-          onPageChange={onPageChange}
+          pageQueryParam="page"
           showDescription={true}
         />
       </Col>
