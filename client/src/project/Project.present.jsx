@@ -516,7 +516,12 @@ function ProjectViewHeader(props) {
     <ProjectViewHeaderMinimal
       key="minimalHeader"
       forkedFromLink={forkedFromLink}
-      {...props}
+      client={props.client}
+      datasets={props.datasets}
+      datasetsUrl={props.datasetsUrl}
+      externalUrl={props.externalUrl}
+      forkedFromProject={props.forkedFromProject}
+      metadata={props.metadata}
     />
   );
 }
@@ -935,7 +940,20 @@ function ProjectView(props) {
         <Route path={`${datasetUrl}/*`} element={null} />
         <Route path={launchNotebookUrl} element={null} />
         <Route path={sessionShowUrl} element={null} />
-        <Route path="*" element={<ProjectViewHeader {...props} />} />
+        <Route
+          path="*"
+          element={
+            <ProjectViewHeader
+              client={props.client}
+              datasets={props.datasets}
+              datasetsUrl={props.datasetsUrl}
+              externalUrl={props.externalUrl}
+              forkedFromProject={props.forkedFromProject}
+              metadata={props.metadata}
+              projectsUrl={props.projectsUrl}
+            />
+          }
+        />
       </Routes>
       <Routes key="projectNav">
         <Route path={`${datasetUrl}/*`} element={null} />

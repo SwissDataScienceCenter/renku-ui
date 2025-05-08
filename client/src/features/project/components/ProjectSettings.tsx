@@ -31,7 +31,7 @@ export default function ProjectSettings({ ...props }: ProjectSettingsProps) {
     <Col key="settings">
       <Row>
         <Col key="nav" sm={12} md={2}>
-          <ProjectSettingsNav />
+          <ProjectSettingsNav baseUrl={props.baseUrl} />
         </Col>
         <Col key="content" sm={12} md={10} data-cy="settings-container">
           <Routes>
@@ -45,22 +45,26 @@ export default function ProjectSettings({ ...props }: ProjectSettingsProps) {
   );
 }
 
-export function ProjectSettingsNav() {
+export function ProjectSettingsNav({ baseUrl }: { baseUrl: string }) {
+  const settingsUrl = `${baseUrl}/settings`;
+
   return (
     <Nav
       className="flex-column nav-light nav-pills-underline"
       data-cy="settings-navbar"
     >
       <NavItem>
-        <RenkuNavLinkV2 end to=".">
+        <RenkuNavLinkV2 end to={settingsUrl}>
           General
         </RenkuNavLinkV2>
       </NavItem>
       <NavItem>
-        <RenkuNavLinkV2 to="sessions">Sessions</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to={`${settingsUrl}/sessions`}>Sessions</RenkuNavLinkV2>
       </NavItem>
       <NavItem>
-        <RenkuNavLinkV2 to="storage">Cloud Storage</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to={`${settingsUrl}/storage`}>
+          Cloud Storage
+        </RenkuNavLinkV2>
       </NavItem>
     </Nav>
   );

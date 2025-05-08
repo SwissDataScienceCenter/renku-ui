@@ -17,8 +17,8 @@ import type {
   GetGroupsApiArg,
   GetGroupsApiResponse as GetGroupsApiResponseOrig,
   GetNamespacesApiArg,
-  GroupResponseList,
   GetNamespacesApiResponse as GetNamespacesApiResponseOrig,
+  GroupResponseList,
   NamespaceResponseList,
 } from "./namespace.api";
 
@@ -189,6 +189,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "ProjectMembers",
     "SessionSecretSlot",
     "SessionSecret",
+    "ProjectMigrations",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -345,6 +346,18 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjectsByProjectIdCopies: {
       invalidatesTags: ["Project"],
     },
+    getRenkuV1ProjectsByV1IdMigrations: {
+      providesTags: (result, _error, { v1Id }) =>
+        result
+          ? [{ id: `${v1Id}`, type: "ProjectMigrations" }]
+          : ["ProjectMigrations"],
+    },
+    postRenkuV1ProjectsByV1IdMigrations: {
+      invalidatesTags: (result, _error, { v1Id }) =>
+        result
+          ? [{ id: `${v1Id}`, type: "ProjectMigrations" }]
+          : ["ProjectMigrations"],
+    },
   },
 });
 
@@ -374,6 +387,8 @@ export const {
   usePatchProjectsByProjectIdMembersMutation,
   usePostProjectsMutation,
   usePostProjectsByProjectIdCopiesMutation,
+  useGetRenkuV1ProjectsByV1IdMigrationsQuery,
+  usePostRenkuV1ProjectsByV1IdMigrationsMutation,
 
   // project session secret hooks
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
