@@ -157,7 +157,7 @@ function DataConnectorSecretUsedForItem({
   const dcSecret = useMemo(
     () =>
       dataConnectorSecrets?.find(({ secret_id }) => secret_id === secret.id),
-    [dataConnectorSecrets, secret.id]
+    [secret.id, dataConnectorSecrets]
   );
 
   const namespaceName = useMemo(
