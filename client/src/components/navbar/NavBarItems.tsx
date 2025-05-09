@@ -33,7 +33,7 @@ import {
 
 import { LoginHelper } from "../../authentication";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
-import AdminDropdownItem from "../../landing/AdminDropdownItem";
+import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem.tsx";
 import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
@@ -211,7 +211,7 @@ export function RenkuToolbarHelpMenu({ firstItem }: RenkuToolbarHelpMenuProps) {
         aria-labelledby="help-menu"
       >
         <DropdownItem className="p-0">
-          <Link className="dropdown-item" to="/help">
+          <Link className="dropdown-item" to={ABSOLUTE_ROUTES.v1.help.root}>
             Help
           </Link>
         </DropdownItem>
@@ -305,7 +305,9 @@ export function RenkuToolbarItemUser({
     );
   }
 
-  const userSecretsUrl = isV2 ? ABSOLUTE_ROUTES.v2.secrets : "/secrets";
+  const userSecretsUrl = isV2
+    ? ABSOLUTE_ROUTES.v2.secrets
+    : ABSOLUTE_ROUTES.v1.secrets;
 
   return (
     <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
@@ -349,7 +351,7 @@ export function RenkuToolbarItemUser({
               Integrations
             </Link>
             <DropdownItem divider />
-            <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
+            <Link to={ABSOLUTE_ROUTES.v1.root} className="dropdown-item">
               Back to <span className="fw-bold">Renku 1.0</span>
             </Link>
           </>
@@ -358,7 +360,7 @@ export function RenkuToolbarItemUser({
         {!isV2 && (
           <>
             <DropdownItem divider />
-            <Link to={ABSOLUTE_ROUTES.v2.root} className="dropdown-item">
+            <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
               <span className="fw-bold">Renku 2.0</span> Early access
             </Link>
           </>
