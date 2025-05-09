@@ -211,7 +211,10 @@ function DashboardSession({ session }: DashboardSessionProps) {
               />
               <SessionStatusV2Label session={session} variant="list" />
             </div>
-            <SessionStatusV2Description session={session} />
+            <SessionStatusV2Description
+              session={session}
+              showInfoDetails={false}
+            />
           </Col>
         </Row>
       </Link>

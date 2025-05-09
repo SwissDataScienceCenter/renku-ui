@@ -220,7 +220,14 @@ export function SessionListRowStatusExtraDetailsV2({
   if (!status.message) return null;
 
   const popover = (
-    <UncontrolledPopover target={ref} trigger="hover" placement="bottom">
+    <UncontrolledPopover
+      target={ref}
+      trigger="hover focus"
+      placement="bottom"
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+    >
       <PopoverHeader>Kubernetes pod status</PopoverHeader>
       <PopoverBody>
         <PrettySessionErrorMessage message={status.message} />
@@ -232,8 +239,15 @@ export function SessionListRowStatusExtraDetailsV2({
     return (
       <>
         {" "}
-        <span ref={ref} className={cx("text-muted", "cursor-pointer")}>
-          (Hover for details.)
+        <span
+          ref={ref}
+          className={cx("text-muted", "cursor-pointer")}
+          tabIndex={0}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          (More details.)
         </span>
         {popover}
       </>
