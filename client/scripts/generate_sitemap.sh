@@ -40,12 +40,6 @@ tee > "${OUTPUT_FILE}" << EOF
     <loc>${BASE_URL}/help</loc>
   </url>
   <url>
-    <loc>${BASE_URL}/help/docs</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/help/features</loc>
-  </url>
-  <url>
     <loc>${BASE_URL}/help/status</loc>
   </url>
   <url>

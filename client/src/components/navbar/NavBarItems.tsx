@@ -73,7 +73,7 @@ export function RenkuToolbarItemPlus() {
       <Link
         className="dropdown-item"
         id="navbar-project-new"
-        to="/projects/new"
+        to={ABSOLUTE_ROUTES.v1.projects.new}
       >
         Project
       </Link>
@@ -345,14 +345,14 @@ export function RenkuToolbarItemUser({
         {isV2 && (
           <>
             <Link
-              to={ABSOLUTE_ROUTES.v2.connectedServices}
+              to={ABSOLUTE_ROUTES.v2.integrations}
               className="dropdown-item"
             >
               Integrations
             </Link>
             <DropdownItem divider />
             <Link to={ABSOLUTE_ROUTES.v1.root} className="dropdown-item">
-              Back to <span className="fw-bold">Renku 1.0</span>
+              Go to <span className="fw-bold">Renku Legacy</span>
             </Link>
           </>
         )}
@@ -361,7 +361,7 @@ export function RenkuToolbarItemUser({
           <>
             <DropdownItem divider />
             <Link to={ABSOLUTE_ROUTES.root} className="dropdown-item">
-              <span className="fw-bold">Renku 2.0</span> Early access
+              Go to <span className="fw-bold">Renku 2.0</span>
             </Link>
           </>
         )}
