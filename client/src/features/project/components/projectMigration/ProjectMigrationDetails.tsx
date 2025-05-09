@@ -31,10 +31,10 @@ import {
   PlayCircle,
 } from "react-bootstrap-icons";
 import { Collapse } from "reactstrap";
-import { InfoAlert } from "../../../../components/Alert.jsx";
-import { ExternalLink } from "../../../../components/ExternalLinks.tsx";
+import { InfoAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { Links } from "../../../../utils/constants/Docs.js";
+import { Links } from "../../../../utils/constants/Docs";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import { GitLabRepositoryCommit } from "../../GitLab.types";

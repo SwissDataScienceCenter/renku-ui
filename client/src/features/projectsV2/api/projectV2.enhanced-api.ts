@@ -356,7 +356,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       invalidatesTags: (result, _error, { v1Id }) =>
         result
           ? [{ id: `${v1Id}`, type: "ProjectMigrations" }]
-          : ["ProjectMigrations"],
+          : ["ProjectMigrations", "Project"],
     },
   },
 });
