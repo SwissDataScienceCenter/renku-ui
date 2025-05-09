@@ -51,7 +51,7 @@ export default function ProjectMigrationBanner() {
     if (isLoadingUserPreferences) return true;
     return dataUserPreferences
       ? dataUserPreferences.show_project_migration_banner
-      : false;
+      : true;
   }, [isLoadingUserPreferences, dataUserPreferences]);
 
   const toggle = useCallback(() => {
@@ -135,7 +135,7 @@ function DismissMigrationConfirmationModal({
             legacy project page.
           </p>
         )}
-        {!result?.show_project_migration_banner && (
+        {result && !result?.show_project_migration_banner && (
           <SuccessAlert>Banner dismissed successfully</SuccessAlert>
         )}
       </ModalBody>
