@@ -24,9 +24,9 @@ import { Button, Form, InputGroup } from "reactstrap";
 import VisibilityIcon from "../../components/entities/VisibilityIcon";
 import { Loader } from "../../components/Loader";
 import Pagination from "../../components/Pagination";
+import { useGetRenkuV1ProjectsMigrationsQuery } from "../projectsV2/api/projectV2.api.ts";
 import { GitlabProjectsToMigrate } from "./ProjectMigration.types";
 import { useGetAllProjectsQuery } from "../project/projectGitLab.api";
-import { useGetRenkuV1ProjectsMigrationsQuery } from "../projectsV2/api/projectV2.api";
 import { ErrorAlert } from "../../components/Alert";
 
 export const DEFAULT_PER_PAGE_PROJECT_MIGRATION = 5;
@@ -41,22 +41,17 @@ export default function GitlabProjectList({
   const [searchTerm, setSearchTerm] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const onPageChange = useCallback(
-    (page: number) => {
-      setSearchParams((prev) => {
-        prev.set("page", `${page}`);
-        return prev;
-      });
-    },
-    [setSearchParams]
-  );
-
   const onSearchTerm = useCallback(
     (term: string) => {
       setSearchTerm(term);
-      if (term != "") onPageChange(1);
+      if (term != "") {
+        setSearchParams((prev) => {
+          prev.set("page", "1");
+          return prev;
+        });
+      }
     },
-    [setSearchTerm, onPageChange]
+    [setSearchTerm, setSearchParams]
   );
 
   const page = useMemo(() => {
@@ -219,7 +214,7 @@ export default function GitlabProjectList({
         currentPage={page}
         perPage={DEFAULT_PER_PAGE_PROJECT_MIGRATION}
         totalItems={dataGitlabProjects?.pagination?.totalItems ?? 0}
-        onPageChange={onPageChange}
+        pageQueryParam="page"
         showDescription={true}
         totalInPage={mappedGitlabProjects.length ?? 0}
       />
