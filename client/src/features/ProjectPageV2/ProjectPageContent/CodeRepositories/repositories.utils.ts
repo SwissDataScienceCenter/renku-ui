@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
+
 /**
  * Validates the URL of a code repository. Note that RenkuLab only supports HTTP(S) at the moment.
  */
@@ -66,4 +68,10 @@ export function detectSSHRepository(repositoryURL: string): boolean {
   // This matches URLs like "git@github.com:SwissDataScienceCenter/renku-ui.git"
   const gitUrlRegex = /git@(?:.)+:/;
   return cleaned.match(gitUrlRegex) != null;
+}
+
+export function getRepositoryName(repositoryURL: string): string {
+  const canonicalUrlStr = `${repositoryURL.replace(/.git$/i, "")}`;
+  const canonicalUrl = safeNewUrl(canonicalUrlStr);
+  return canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
 }

@@ -22,6 +22,12 @@ import linePaused from "../../styles/assets/linePaused.svg";
 import lineStopped from "../../styles/assets/lineStopped.svg";
 import lineBlock from "../../styles/assets/lineBlock.svg";
 
+import playingIcon from "../../styles/assets/playing.svg";
+import failedIcon from "../../styles/assets/failed.svg";
+import pausedIcon from "../../styles/assets/paused.svg";
+import stoppedIcon from "../../styles/assets/stopped.svg";
+import blockIcon from "../../styles/assets/block.svg";
+
 export const SESSION_STATES = {
   RUNNING: "running",
   STARTING: "starting",
@@ -32,45 +38,75 @@ export const SESSION_STATES = {
 
 export const SESSION_STYLES = {
   WARNING: {
-    textColor: "text-warning-emphasis",
+    textColorCard: "text-warning-emphasis",
+    textColorList: "text-warning-emphasis",
     bgColor: "warning",
     bgOpacity: 10,
     borderColor: "border-warning",
     sessionLine: linePlaying,
+    sessionIcon: playingIcon,
   },
   SUCCESS: {
-    textColor: "text-success-emphasis",
+    textColorCard: "text-success-emphasis",
+    textColorList: "text-primary",
     bgColor: "success",
     bgOpacity: 10,
     borderColor: "border-success",
     sessionLine: linePlaying,
+    sessionIcon: playingIcon,
   },
   HIBERNATED: {
-    textColor: "text-dark-emphasis",
+    textColorCard: "text-dark-emphasis",
+    textColorList: "text-dark-emphasis",
     bgColor: "light",
     bgOpacity: 100,
     borderColor: "border-dark-subtle",
     sessionLine: linePaused,
+    sessionIcon: pausedIcon,
   },
   FAILED: {
-    textColor: "text-danger-emphasis",
+    textColorCard: "text-danger-emphasis",
+    textColorList: "text-danger-emphasis",
     bgColor: "danger",
     bgOpacity: 10,
     borderColor: "border-danger",
     sessionLine: lineFailed,
+    sessionIcon: failedIcon,
   },
   STOPPING: {
-    textColor: "text-warning-emphasis",
+    textColorCard: "text-warning-emphasis",
+    textColorList: "text-warning-emphasis",
     bgColor: "warning",
     bgOpacity: 10,
     borderColor: "border-warning",
     sessionLine: lineStopped,
+    sessionIcon: stoppedIcon,
   },
   DEFAULT: {
-    textColor: "text-warning",
+    textColorCard: "text-warning-emphasis",
+    textColorList: "text-warning-emphasis",
     bgColor: "warning",
     bgOpacity: 10,
     borderColor: "border-warning",
     sessionLine: lineBlock,
+    sessionIcon: blockIcon,
   },
 } as const;
+
+export const SESSION_TITLE = {
+  [SESSION_STATES.RUNNING]: "My running session",
+  [SESSION_STATES.STARTING]: "Launching my session",
+  [SESSION_STATES.STOPPING]: "Shutting down my session...",
+  [SESSION_STATES.HIBERNATED]: "My paused session",
+  [SESSION_STATES.FAILED]: "Error in my session",
+  default: "Unknown status",
+};
+
+export const SESSION_TITLE_DASHBOARD = {
+  [SESSION_STATES.RUNNING]: "Running session",
+  [SESSION_STATES.STARTING]: "Launching session",
+  [SESSION_STATES.STOPPING]: "Shutting down session...",
+  [SESSION_STATES.HIBERNATED]: "Paused session",
+  [SESSION_STATES.FAILED]: "Error in session",
+  default: "Unknown status",
+};

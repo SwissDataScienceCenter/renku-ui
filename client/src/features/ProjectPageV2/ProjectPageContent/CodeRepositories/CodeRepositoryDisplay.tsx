@@ -73,6 +73,7 @@ import repositoriesApi, {
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import { SshRepositoryUrlWarning } from "./AddCodeRepositoryModal";
 import {
+  getRepositoryName,
   validateCodeRepository,
   validateNoDuplicatesInCodeRepositories,
 } from "./repositories.utils";
@@ -398,12 +399,8 @@ export function RepositoryItem({
     setShowDetails((open) => !open);
   }, []);
   const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
-  const canonicalUrl = useMemo(
-    () => safeNewUrl(canonicalUrlStr),
-    [canonicalUrlStr]
-  );
 
-  const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
+  const title = getRepositoryName(url);
   // ! Product team wants this restored -- keeping the code for the next iteration
   // const urlDisplay = (
   //   <div className={cx("d-flex", "align-items-center", "gap-2")}>

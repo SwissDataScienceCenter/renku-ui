@@ -346,7 +346,7 @@ function SessionLauncherDropdownActions({
               onClick={toggleShareLink}
             >
               <Link45deg className={cx("bi", "me-1")} />
-              Session launcher share link
+              Share session launch link
             </DropdownItem>
             <DropdownItem divider />
             <DropdownItem

@@ -137,9 +137,10 @@ export function SessionLauncherDisplay({
           />
           <SessionStartLinkModal
             isOpen={isShareLinkOpen}
-            launcher={launcher}
+            launcherId={launcher.id}
             toggle={toggleShareLink}
-            project={project}
+            namespace={project.namespace}
+            slug={project.slug}
           />
         </>
       )}

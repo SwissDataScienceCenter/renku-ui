@@ -259,13 +259,6 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const formId = "project-settings-form";
   return (
     <div>
-      {error && <RtkErrorAlert error={error} />}
-      {isSuccess && (
-        <SuccessAlert dismissible={false} timeout={0}>
-          <p className="mb-0">The project has been successfully updated.</p>
-        </SuccessAlert>
-      )}
-
       <Form
         className={cx("d-flex", "flex-column", "gap-3")}
         id={formId}
@@ -416,7 +409,12 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           requestedPermission="write"
           userPermissions={permissions}
         />
-
+        {error && <RtkErrorAlert error={error} />}
+        {isSuccess && (
+          <SuccessAlert dismissible={false} timeout={0}>
+            <p className="mb-0">The project has been successfully updated.</p>
+          </SuccessAlert>
+        )}
         <PermissionsGuard
           disabled={null}
           enabled={

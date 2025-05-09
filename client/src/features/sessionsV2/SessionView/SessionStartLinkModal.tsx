@@ -20,24 +20,24 @@ import cx from "classnames";
 import { Link45deg, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
-import { Project } from "../../projectsV2/api/projectV2.api";
-import { SessionLauncher } from "../api/sessionLaunchersV2.generated-api";
 import useSessionStartLink from "./useSessionStartLink.hook";
 
 interface SessionStartLinkModalProps {
   isOpen: boolean;
-  launcher: SessionLauncher;
-  project: Project;
+  launcherId: string;
+  namespace: string;
+  slug: string;
   toggle: () => void;
 }
 
 export default function SessionStartLinkModal({
   isOpen,
-  launcher,
+  launcherId,
   toggle,
-  project,
+  namespace,
+  slug,
 }: SessionStartLinkModalProps) {
-  const { url } = useSessionStartLink({ launcher, project });
+  const { url } = useSessionStartLink({ launcherId, namespace, slug });
   return (
     <Modal
       backdrop="static"
@@ -49,11 +49,15 @@ export default function SessionStartLinkModal({
     >
       <ModalHeader toggle={toggle}>
         <Link45deg className={cx("bi", "me-1")} />
-        Session launcher share link
+        Share session launch link
       </ModalHeader>
       <ModalBody>
         <p className="mb-2">
-          A session launch link leads directly to a session.
+          Share a link that directly launches a new session from this launcher.
+        </p>
+        <p className="mb-2">
+          Please note that this link will launch a fresh session from this
+          launcher, and does not share an existing session.
         </p>
         <CommandCopy command={url.toString()} noMargin />
       </ModalBody>

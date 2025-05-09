@@ -49,6 +49,8 @@ const Links = {
   RENKU_2_LEARN_MORE: "https://blog.renkulab.io/early-access",
   RENKU_2_MIGRATION_INFO:
     "https://renku.notion.site/How-to-migrate-a-Renku-1-0-project-to-Renku-2-0-1ac0df2efafc80a88e58e2b3db035110",
+  RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE:
+    "https://renku.notion.site/How-to-use-your-own-docker-image-for-a-session-launcher-11f0df2efafc80af848ffcaf9ccff31c",
 };
 
 const GitlabLinks = {

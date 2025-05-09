@@ -30,8 +30,9 @@ import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enha
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
-  SessionStatusV2Badge,
+  getSessionStatusStyles,
   SessionStatusV2Description,
+  SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
 
@@ -131,7 +132,6 @@ function DashboardSession({ session }: DashboardSessionProps) {
         id: projectId,
       })
     : ABSOLUTE_ROUTES.v2.root;
-  const sessionHash = project && launcherId ? `launcher-${launcherId}` : "";
   const showSessionUrl = project
     ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
         namespace: project.namespace,
@@ -139,6 +139,9 @@ function DashboardSession({ session }: DashboardSessionProps) {
         session: session.name,
       })
     : ABSOLUTE_ROUTES.v2.root;
+
+  const sessionStyles = getSessionStatusStyles(session);
+  const state = session.status.state;
 
   return (
     <div
@@ -154,7 +157,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
           "text-body",
           "text-decoration-none"
         )}
-        to={{ pathname: projectUrl, hash: sessionHash }}
+        to={{ pathname: projectUrl }}
       >
         <Row className="g-2">
           <Col className="order-1" xs={12} md={9} lg={10}>
@@ -181,9 +184,6 @@ function DashboardSession({ session }: DashboardSessionProps) {
                   )}
                 </h6>
               </Col>
-              <Col xs={12} xl="auto" className="mt-1">
-                <SessionStatusV2Badge session={session} />
-              </Col>
             </Row>
           </Col>
           <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
@@ -192,8 +192,29 @@ function DashboardSession({ session }: DashboardSessionProps) {
               <span className="bi" />
             </div>
           </Col>
-          <Col className={cx("order-2", "order-md-3", "mt-2")} xs={12}>
-            <SessionStatusV2Description session={session} />
+          <Col
+            className={cx(
+              "order-2",
+              "order-md-3",
+              "mt-2",
+              "d-block",
+              "d-sm-flex",
+              "gap-5"
+            )}
+            xs={12}
+          >
+            <div className={cx("d-flex", "gap-2")}>
+              <img
+                src={sessionStyles.sessionIcon}
+                alt={`Session is ${state}`}
+                loading="lazy"
+              />
+              <SessionStatusV2Label session={session} variant="list" />
+            </div>
+            <SessionStatusV2Description
+              session={session}
+              showInfoDetails={false}
+            />
           </Col>
         </Row>
       </Link>

@@ -121,6 +121,7 @@ export default function ActiveSessionButton({
     if (isResuming && isSuccessResumeSession && !isWaitingForResumedSession) {
       setIsResuming(false);
       navigate(showSessionUrl);
+      setIsResuming(false);
     }
   }, [
     isResuming,
