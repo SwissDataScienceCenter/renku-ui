@@ -277,11 +277,11 @@ export type ProjectSlug = string;
 export type PinnedProjects = {
   project_slugs?: ProjectSlug[];
 };
-export type DismissBannerProjectMigration = boolean;
+export type ShowProjectMigrationBanner = boolean;
 export type UserPreferences = {
   user_id: UserId;
   pinned_projects: PinnedProjects;
-  dismiss_project_migration_banner?: DismissBannerProjectMigration;
+  show_project_migration_banner?: ShowProjectMigrationBanner;
 };
 export type AddPinnedProject = {
   project_slug: ProjectSlug;

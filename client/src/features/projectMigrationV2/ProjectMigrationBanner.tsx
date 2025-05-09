@@ -35,7 +35,7 @@ import {
   UserPreferences,
 } from "../usersV2/api/users.api";
 import style from "./ProjectMigrationBanner.module.scss";
-import MigrationV2Modal from "./MigrationV2Modal.tsx";
+import MigrationV2Modal from "./MigrationV2Modal";
 
 export default function ProjectMigrationBanner() {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -47,10 +47,10 @@ export default function ProjectMigrationBanner() {
   const { data: dataUserPreferences, isLoading: isLoadingUserPreferences } =
     useGetUserPreferencesQuery();
 
-  const isDismissedProjectMigrationBanner = useMemo(() => {
+  const showProjectMigrationBanner = useMemo(() => {
     if (isLoadingUserPreferences) return true;
     return dataUserPreferences
-      ? dataUserPreferences.dismiss_project_migration_banner
+      ? dataUserPreferences.show_project_migration_banner
       : false;
   }, [isLoadingUserPreferences, dataUserPreferences]);
 
@@ -67,7 +67,7 @@ export default function ProjectMigrationBanner() {
   }, [dismissProjectMigrationBanner]);
 
   return (
-    !isDismissedProjectMigrationBanner && (
+    showProjectMigrationBanner && (
       <Alert
         className={cx(
           style.ProjectMigrationBanner,
@@ -135,7 +135,7 @@ function DismissMigrationConfirmationModal({
             legacy project page.
           </p>
         )}
-        {result?.dismiss_project_migration_banner && (
+        {!result?.show_project_migration_banner && (
           <SuccessAlert>Banner dismissed successfully</SuccessAlert>
         )}
       </ModalBody>
@@ -154,7 +154,7 @@ function DismissMigrationConfirmationModal({
             </Button>
           </>
         )}
-        {result?.dismiss_project_migration_banner && (
+        {!result?.show_project_migration_banner && (
           <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} /> Close
           </Button>
