@@ -40,6 +40,7 @@ import {
   DetailsNotIncludedInMigration,
 } from "./ProjectMigrationDetails";
 import ProjectMigrationFormInputs from "./ProjectMigrationFormInputs";
+import { ErrorAlert } from "../../../../components/Alert";
 
 interface MigrationFormProps {
   description?: string;
@@ -217,6 +218,17 @@ export default function MigrationForm({
           />
           <DetailsNotIncludedInMigration />
         </>
+      )}
+      {!containerImage && !isFetchingSessionData && (
+        <ErrorAlert dismissible={false}>
+          Container image not available, it does not exist or is currently
+          building.
+        </ErrorAlert>
+      )}
+      {!isProjectSupported && !isFetchingSessionData && (
+        <ErrorAlert dismissible={false}>
+          Please update this project before migrating it to Renku 2.0.
+        </ErrorAlert>
       )}
     </Form>
   );

@@ -179,8 +179,7 @@ export function useGetSessionLauncherData(
       backendAvailable === undefined ||
       coreSupportComputed === undefined ||
       resourcePoolsIsFetching ||
-      isLoadingProjectConfig ||
-      projectConfig == undefined,
+      isLoadingProjectConfig,
     error: renkuRegistryError || renkuRegistryTagError,
     projectConfig,
     commits,
