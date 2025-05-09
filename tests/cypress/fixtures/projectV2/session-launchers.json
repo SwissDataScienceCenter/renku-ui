@@ -24,7 +24,7 @@
         "value": "value1"
       },
       {
-        "name": "VAR_2",
+        "name": "VAR_WITH_LONGER_NAME",
         "value": "value2"
       }
     ]
