@@ -18,8 +18,8 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-
 import { FileEarmarkText, Markdown, Pencil, XLg } from "react-bootstrap-icons";
+import { useForm } from "react-hook-form";
 import {
   Button,
   ButtonGroup,
@@ -30,23 +30,18 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
-import { useForm } from "react-hook-form";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import ModalHeader from "../../../../components/modal/ModalHeader";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import ModalHeader from "../../../../components/modal/ModalHeader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
-
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-
 import DocumentationInput from "./DocumentationInput";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import styles from "./Documentation.module.scss";
 
 // Taken from src/features/projectsV2/api/projectV2.openapi.json
 const DESCRIPTION_MAX_LENGTH = 5000;
