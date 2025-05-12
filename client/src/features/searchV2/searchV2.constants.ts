@@ -77,6 +77,7 @@ export const TYPE_FILTER_ALLOWED_VALUES: SearchEntityType[] = [
   "group",
   "project",
   "user",
+  "dataconnector", //eslint-disable-line spellcheck/spell-checker
 ];
 
 // Visibility filter constants
