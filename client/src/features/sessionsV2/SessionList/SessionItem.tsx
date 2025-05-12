@@ -80,7 +80,7 @@ export default function SessionItem({
             </Col>
             <Col xs={12} xl="auto">
               {session ? (
-                <SessionStatusV2Label session={session} />
+                <SessionStatusV2Label session={session} variant="card" />
               ) : (
                 <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
                   <CircleFill

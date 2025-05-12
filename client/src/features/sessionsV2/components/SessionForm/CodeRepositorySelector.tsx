@@ -36,6 +36,7 @@ import Select, {
   components,
 } from "react-select";
 import { Label } from "reactstrap";
+import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 
 import type { RepositoryWithProbe } from "../../../repositories/repositories.types";
 
@@ -160,7 +161,7 @@ function CodeRepositorySelect({
       inputId="builder-environment-code-repository-select-input"
       name={name}
       isClearable={false}
-      isSearchable
+      isSearchable={false}
       options={options}
       getOptionLabel={(option) => option.repositoryUrl}
       getOptionValue={(option) => option.repositoryUrl}
@@ -186,11 +187,6 @@ const selectClassNames: ClassNamesConfig<RepositoryWithProbe, false> = {
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected, isDisabled }) =>
     cx(
-      "d-flex",
-      "flex-column",
-      "flex-sm-row",
-      "column-gap-3",
-      "justify-content-sm-between",
       "px-3",
       "py-2",
       isDisabled && "text-secondary",
@@ -244,9 +240,11 @@ const selectComponents: SelectComponentsConfig<
     >
   ) => {
     const { data } = props;
+    const title = getRepositoryName(data.repositoryUrl);
     return (
       <components.Option {...props}>
-        <OptionOrSingleValueContent option={data} />
+        <div className="fw-bold">{title}</div>
+        <div>{data.repositoryUrl}</div>
       </components.Option>
     );
   },

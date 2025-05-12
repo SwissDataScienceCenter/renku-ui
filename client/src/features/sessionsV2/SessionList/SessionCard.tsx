@@ -77,7 +77,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                 xs="12"
                 xl="auto"
               >
-                <SessionStatusV2Label session={session} />
+                <SessionStatusV2Label session={session} variant="card" />
               </Col>
               <Col
                 xs="auto"
@@ -85,7 +85,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
               >
                 <SessionStatusV2Description
                   session={session}
-                  showInfoDetails={false}
+                  showInfoDetails={true}
                 />
               </Col>
             </Row>
