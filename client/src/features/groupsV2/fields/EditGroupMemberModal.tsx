@@ -25,7 +25,6 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -33,6 +32,7 @@ import {
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type { GroupMemberResponse } from "../../projectsV2/api/namespace.api";
 import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import { ProjectMemberDisplay } from "../../projectsV2/shared/ProjectMemberDisplay";
@@ -51,7 +51,7 @@ export default function EditGroupMemberModal({
   toggle,
 }: EditGroupMemberModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -67,7 +67,7 @@ export default function EditGroupMemberModal({
           toggle={toggle}
         />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }
 

@@ -18,12 +18,13 @@
 
 import cx from "classnames";
 import { useCallback, useContext, useState } from "react";
-import { Button, Modal } from "reactstrap";
+import { Button } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { User } from "../../../model/renkuModels.types";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
@@ -122,7 +123,7 @@ function ForkProjectModal() {
       >
         Fork the project
       </Button>
-      <Modal isOpen={isOpen} toggle={toggleIsOpen}>
+      <ScrollableModal isOpen={isOpen} toggle={toggleIsOpen}>
         <ForkProject
           client={client}
           forkedId={id ?? 0}
@@ -131,7 +132,7 @@ function ForkProjectModal() {
           projectVisibility={visibility}
           toggleModal={toggleIsOpen}
         />
-      </Modal>
+      </ScrollableModal>
     </>
   );
 }

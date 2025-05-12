@@ -20,19 +20,12 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
 import { useNavigate } from "react-router";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Input, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
-
 import { notificationProjectDeleted } from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectDelete";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useDeleteProjectsByProjectIdMutation } from "../../projectsV2/api/projectV2.enhanced-api";
@@ -81,7 +74,7 @@ export default function ProjectDeleteConfirmation({
   ]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader className={cx("text-danger")}>Delete project</ModalHeader>
       <ModalBody>
         <p>
@@ -112,6 +105,6 @@ export default function ProjectDeleteConfirmation({
           Delete project
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

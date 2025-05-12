@@ -35,7 +35,6 @@ import {
   Button,
   Col,
   DropdownItem,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -46,6 +45,7 @@ import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { SshDropdown } from "../../../components/ssh/ssh";
 import { User } from "../../../model/renkuModels.types";
 import { NotebooksHelper } from "../../../notebooks";
@@ -587,7 +587,7 @@ function ConfirmDeleteModal({
   }, [onStopSession, toggleModal]);
 
   return (
-    <Modal centered isOpen={isOpen} toggle={toggleModal}>
+    <ScrollableModal centered isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
       <ModalBody>
         <Row>
@@ -624,7 +624,7 @@ function ConfirmDeleteModal({
           </Col>
         </Row>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -646,7 +646,7 @@ function ModifySessionModal({
   toggleModal,
 }: ModifySessionModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       centered
       fullscreen="lg"
       isOpen={isOpen}
@@ -661,7 +661,7 @@ function ModifySessionModal({
         status={status}
         toggleModal={toggleModal}
       />
-    </Modal>
+    </ScrollableModal>
   );
 }
 

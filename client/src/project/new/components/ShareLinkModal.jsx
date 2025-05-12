@@ -23,18 +23,19 @@
  */
 import { useEffect, useState } from "react";
 import {
-  FormGroup,
-  FormText,
-  Label,
-  Input,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Row,
   Col,
   Form,
+  FormGroup,
+  FormText,
+  Input,
+  Label,
+  ModalBody,
+  ModalHeader,
+  Row,
 } from "reactstrap";
+
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 
 function ShareLinkModal(props) {
   const { createUrl, input } = props;
@@ -173,7 +174,7 @@ function ShareLinkModal(props) {
   ) : null;
 
   return (
-    <Modal isOpen={props.show} toggle={props.toggle}>
+    <ScrollableModal isOpen={props.show} toggle={props.toggle}>
       <ModalHeader toggle={props.toggle}>Create shareable link</ModalHeader>
       <ModalBody>
         <Row>
@@ -199,7 +200,7 @@ function ShareLinkModal(props) {
           </Col>
         </Row>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

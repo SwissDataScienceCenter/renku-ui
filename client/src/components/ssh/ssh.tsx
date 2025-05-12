@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useContext } from "react";
 import { Link } from "react-router";
-import { DropdownItem, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { DropdownItem, ModalBody, ModalHeader } from "reactstrap";
 
 import {
   hideSshModal,
@@ -41,6 +41,7 @@ import { InfoAlert } from "../Alert";
 import { ExternalDocsLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { CommandCopy } from "../commandCopy/CommandCopy";
+import ScrollableModal from "../modal/ScrollableModal";
 
 const docsIconStyle = {
   showLinkIcon: true,
@@ -258,10 +259,10 @@ function SshModal() {
   );
 
   return (
-    <Modal isOpen={displayModal.show} toggle={toggleModal} size="lg">
+    <ScrollableModal isOpen={displayModal.show} toggle={toggleModal} size="lg">
       <ModalHeader toggle={toggleModal}>{title}</ModalHeader>
       <ModalBody>{modalBody}</ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

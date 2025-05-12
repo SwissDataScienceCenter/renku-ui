@@ -20,16 +20,10 @@ import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type { ProjectMemberResponse } from "../api/projectV2.api";
 import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectV2.enhanced-api";
 import { ProjectMemberDisplay } from "../shared/ProjectMemberDisplay";
@@ -109,7 +103,7 @@ export default function RemoveProjectMemberModal({
   toggle,
 }: RemoveProjectMemberModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -125,6 +119,6 @@ export default function RemoveProjectMemberModal({
           member={member}
         />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }

@@ -20,17 +20,11 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import FilenameField from "../secretsV2/fields/FilenameField";
 import NameField from "../secretsV2/fields/NameField";
 import SecretValueField from "../secretsV2/fields/SecretValueField";
@@ -124,7 +118,7 @@ export default function GeneralSecretNew() {
 
   return (
     <>
-      <Modal
+      <ScrollableModal
         backdrop="static"
         centered
         fullscreen="md"
@@ -162,7 +156,7 @@ export default function GeneralSecretNew() {
             Add
           </Button>
         </ModalFooter>
-      </Modal>
+      </ScrollableModal>
       <div className="mb-3">
         <Button
           id="new-secret-button"

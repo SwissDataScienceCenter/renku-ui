@@ -24,7 +24,6 @@ import {
   Col,
   DropdownItem,
   Input,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -34,17 +33,16 @@ import {
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import {
   projectV2Api,
   useGetNamespacesByNamespaceProjectsAndSlugQuery,
 } from "../../projectsV2/api/projectV2.enhanced-api";
-
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
@@ -55,7 +53,6 @@ import {
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
 } from "../api/data-connectors.enhanced-api";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
-
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import DataConnectorModal from "./DataConnectorModal";
 
@@ -108,7 +105,7 @@ function DataConnectorRemoveDeleteModal({
   }, [deleteDataConnector, dataConnector.id]);
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+    <ScrollableModal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <ModalHeader className="text-danger" toggle={toggleModal}>
         Delete data connector
       </ModalHeader>
@@ -223,7 +220,7 @@ function DataConnectorRemoveDeleteModal({
           />
         </div>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -274,7 +271,7 @@ function DataConnectorRemoveUnlinkModal({
   }, [unlinkDataConnector, dataConnector.id, linkId]);
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+    <ScrollableModal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <ModalHeader className="text-danger" toggle={toggleModal}>
         Unlink data connector
       </ModalHeader>
@@ -357,7 +354,7 @@ function DataConnectorRemoveUnlinkModal({
           </ModalFooter>
         </>
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }
 

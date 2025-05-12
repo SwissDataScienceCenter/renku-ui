@@ -27,7 +27,6 @@ import {
   FormText,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -37,6 +36,7 @@ import {
 
 import { Url } from "../../utils/helpers/url";
 import { CommandCopy } from "../commandCopy/CommandCopy";
+import ScrollableModal from "../modal/ScrollableModal";
 
 interface ShareLinkSessionProps {
   filters: ProjectFilters;
@@ -181,7 +181,7 @@ const ShareLinkSessionModal = ({
     </FormGroup>
   ) : null;
   return (
-    <Modal isOpen={showModal} toggle={toggleModal}>
+    <ScrollableModal isOpen={showModal} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Create shareable link</ModalHeader>
       <ModalBody>
         <Row>
@@ -250,7 +250,7 @@ const ShareLinkSessionModal = ({
           </Col>
         </Row>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 };
 
@@ -309,7 +309,7 @@ const ShareLinkSessionOpenFileModal = ({
     </FormGroup>
   ) : null;
   return (
-    <Modal isOpen={showModal} toggle={toggleModal}>
+    <ScrollableModal isOpen={showModal} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Create shareable link</ModalHeader>
       <ModalBody>
         <Row>
@@ -336,7 +336,7 @@ const ShareLinkSessionOpenFileModal = ({
           Want a specific branch or commit?
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 };
 

@@ -33,7 +33,6 @@ import {
   Col,
   DropdownItem,
   Form,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -42,6 +41,7 @@ import {
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import {
@@ -331,7 +331,13 @@ function EditSessionSecretModal({
   }, [result.isSuccess, toggle]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <Form noValidate onSubmit={onSubmit}>
         <ModalHeader toggle={toggle}>Edit session secret slot</ModalHeader>
         <ModalBody>
@@ -371,7 +377,7 @@ function EditSessionSecretModal({
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -408,7 +414,13 @@ function RemoveSessionSecretModal({
   }, [result.isSuccess, toggle]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader className="text-danger" toggle={toggle}>
         Remove session secret slot
       </ModalHeader>
@@ -445,7 +457,7 @@ function RemoveSessionSecretModal({
           Remove session secret slot
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -461,13 +473,19 @@ function ProvideSessionSecretModal({
   toggle,
 }: ProvideSessionSecretModalProps) {
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ProvideSessionSecretModalContent
         isOpen={isOpen}
         secretSlot={secretSlot}
         toggle={toggle}
       />
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -505,7 +523,13 @@ function ClearSessionSecretModal({
   }, [result.isSuccess, toggle]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader toggle={toggle}>Clear session secret</ModalHeader>
       <ModalBody>
         <p>
@@ -528,7 +552,7 @@ function ClearSessionSecretModal({
           Clear session secret
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

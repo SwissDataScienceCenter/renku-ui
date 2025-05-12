@@ -24,7 +24,6 @@ import {
   Button,
   DropdownItem,
   Form,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -36,6 +35,7 @@ import {
 } from "../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
   useDeleteUserSecretMutation,
@@ -196,7 +196,13 @@ function EditSecretModal({
   }, [result.isSuccess, toggle]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <Form
         className={cx(!isV2 && "form-rk-green")}
         noValidate
@@ -240,7 +246,7 @@ function EditSecretModal({
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -277,7 +283,13 @@ function DeleteSecretModal({ isOpen, secret, toggle }: DeleteSecretModalProps) {
   }, [result.isSuccess, toggle]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader className="text-danger" toggle={toggle}>
         Delete user secret
       </ModalHeader>
@@ -311,6 +323,6 @@ function DeleteSecretModal({ isOpen, secret, toggle }: DeleteSecretModalProps) {
           Delete secret
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

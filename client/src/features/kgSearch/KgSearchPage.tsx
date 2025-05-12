@@ -17,10 +17,11 @@
  */
 
 import { useState } from "react";
-import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { Col, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySearchFilter";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import QuickNav from "../../components/quicknav";
 import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
 import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
@@ -59,7 +60,7 @@ const ModalFilter = ({
   valuesDate,
 }: ModalFilterProps) => {
   return (
-    <Modal isOpen={isOpen} toggle={onToggle} className="filter-modal">
+    <ScrollableModal isOpen={isOpen} toggle={onToggle} className="filter-modal">
       <ModalHeader toggle={onToggle}>
         <span className="filter-title">Filters</span>
       </ModalHeader>
@@ -79,7 +80,7 @@ const ModalFilter = ({
           />
         </div>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 };
 

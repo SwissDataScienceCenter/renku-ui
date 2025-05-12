@@ -31,7 +31,6 @@ import {
   CardBody,
   Col,
   Collapse,
-  Modal,
   ModalBody,
   ModalFooter,
   PopoverBody,
@@ -42,6 +41,7 @@ import {
 import { Loader } from "../../../../components/Loader";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { getCredentialFieldDefinitions } from "../../utils/projectCloudStorage.utils";
 import AddOrEditCloudStorageButton from "./AddOrEditCloudStorageButton";
 import {
@@ -376,7 +376,7 @@ function DeleteCloudStorageModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal
+    <ScrollableModal
       className="modal-dialog-centered"
       isOpen={isOpen}
       size="lg"
@@ -405,6 +405,6 @@ function DeleteCloudStorageModal({
           Yes, delete this configuration
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

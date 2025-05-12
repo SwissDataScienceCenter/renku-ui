@@ -28,13 +28,13 @@ import {
   Input,
   InputGroup,
   InputGroupText,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
 
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import {
   useGetResourceClassByIdQuery,
   useGetResourcePoolsQuery,
@@ -144,7 +144,7 @@ export function SelectResourceClassModal({
     );
 
   return (
-    <Modal centered isOpen={isOpen} size="lg">
+    <ScrollableModal centered isOpen={isOpen} size="lg">
       <ModalHeader>
         {isCustom
           ? "Modify session launch before start"
@@ -259,7 +259,7 @@ export function SelectResourceClassModal({
           Continue
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

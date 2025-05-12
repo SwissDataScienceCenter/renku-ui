@@ -18,21 +18,21 @@
 
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { XLg } from "react-bootstrap-icons";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
+import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
+import type { DataConnectorRead } from "../api/data-connectors.api";
 import {
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
 } from "../api/data-connectors.enhanced-api";
-import type { DataConnectorRead } from "../api/data-connectors.api";
-import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
-
 import useDataConnectorConfiguration, {
   type DataConnectorConfiguration,
 } from "./useDataConnectorConfiguration.hook";
-import { Loader } from "../../../components/Loader";
 
 interface DataConnectorCredentialsModalProps {
   isOpen: boolean;
@@ -93,7 +93,7 @@ export default function DataConnectorCredentialsModal({
     dataConnector.storage.sensitive_fields.length === 0
   ) {
     return (
-      <Modal
+      <ScrollableModal
         centered
         data-cy="data-connector-credentials-not-needed-modal"
         isOpen={isOpen}
@@ -111,7 +111,7 @@ export default function DataConnectorCredentialsModal({
             Close
           </Button>
         </ModalFooter>
-      </Modal>
+      </ScrollableModal>
     );
   }
 
@@ -123,7 +123,7 @@ export default function DataConnectorCredentialsModal({
   ) {
     const error = saveCredentialsResult.error || deleteCredentialsResult.error;
     return (
-      <Modal
+      <ScrollableModal
         centered
         data-cy="data-connector-credentials-error-modal"
         isOpen={isOpen}
@@ -141,13 +141,13 @@ export default function DataConnectorCredentialsModal({
             Close
           </Button>
         </ModalFooter>
-      </Modal>
+      </ScrollableModal>
     );
   }
 
   if (saveCredentialsResult.isLoading) {
     return (
-      <Modal
+      <ScrollableModal
         centered
         data-cy="data-connector-credentials-modal"
         isOpen={isOpen}
@@ -159,13 +159,13 @@ export default function DataConnectorCredentialsModal({
         <ModalBody>
           <Loader />
         </ModalBody>
-      </Modal>
+      </ScrollableModal>
     );
   }
 
   if (deleteCredentialsResult.isLoading) {
     return (
-      <Modal
+      <ScrollableModal
         centered
         data-cy="data-connector-credentials-modal"
         isOpen={isOpen}
@@ -177,7 +177,7 @@ export default function DataConnectorCredentialsModal({
         <ModalBody>
           <Loader />
         </ModalBody>
-      </Modal>
+      </ScrollableModal>
     );
   }
 

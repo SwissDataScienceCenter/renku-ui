@@ -25,13 +25,14 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useUpdateResourcePoolMutation } from "../dataServices/computeResources.api";
 import { ResourcePool } from "../dataServices/dataServices.types";
 
@@ -112,7 +113,13 @@ function UpdateResourcePoolQuotaModal({
   }, [result.isSuccess, toggle]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader toggle={toggle}>Update {name}&apos;s quota</ModalHeader>
       <ModalBody>
         <Form
@@ -207,7 +214,7 @@ function UpdateResourcePoolQuotaModal({
           Update quota
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

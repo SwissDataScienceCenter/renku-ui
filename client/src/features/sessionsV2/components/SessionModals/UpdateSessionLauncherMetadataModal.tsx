@@ -20,17 +20,12 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { CheckLg, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import { SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import {
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
   usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation,
@@ -103,14 +98,13 @@ export default function UpdateSessionLauncherMetadataModal({
   }, [launcher, reset, defaultValues]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
     >
       <ModalHeader toggle={toggle}>
         <Pencil className={cx("me-2")} />
@@ -158,7 +152,7 @@ export default function UpdateSessionLauncherMetadataModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

@@ -23,22 +23,15 @@
  *  Automated Project component
  */
 import { useState } from "react";
-import {
-  Button,
-  Col,
-  Fade,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Row,
-} from "reactstrap";
 import { Link } from "react-router";
+import { Button, Col, Fade, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
-import { Url } from "../../../utils/helpers/url";
-import { Loader } from "../../../components/Loader";
-import { Docs } from "../../../utils/constants/Docs";
 import { ExternalLink } from "../../../components/ExternalLinks";
+import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
+import { Docs } from "../../../utils/constants/Docs";
+import { Url } from "../../../utils/helpers/url";
 
 const docsUrl = Docs.rtdReferencePage(
   "templates.html#create-shareable-project-creation-links-with-pre-filled-fields"
@@ -208,7 +201,12 @@ function AutomatedModal(props: AutomatedModalProps) {
     </p>
   );
   return (
-    <Modal isOpen={true} centered={true} keyboard={false} backdrop="static">
+    <ScrollableModal
+      isOpen={true}
+      centered={true}
+      keyboard={false}
+      backdrop="static"
+    >
       <ModalHeader data-cy="project-creation-embedded-fetching">
         Fetching initialization data
       </ModalHeader>
@@ -232,7 +230,7 @@ function AutomatedModal(props: AutomatedModalProps) {
           </Col>
         </Row>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

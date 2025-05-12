@@ -25,7 +25,6 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -33,6 +32,7 @@ import {
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
@@ -165,7 +165,7 @@ export default function EditProjectMemberModal({
   toggle,
 }: EditProjectMemberModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -182,6 +182,6 @@ export default function EditProjectMemberModal({
           member={member}
         />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }

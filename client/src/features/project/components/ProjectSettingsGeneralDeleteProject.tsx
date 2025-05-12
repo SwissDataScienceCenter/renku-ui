@@ -28,12 +28,12 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
 } from "reactstrap";
 
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import { useDeleteProjectMutation } from "../projectKg.api";
@@ -110,7 +110,7 @@ export const ProjectSettingsGeneralDeleteProject = ({
         <Button color="danger" onClick={onOpenModal}>
           Delete project
         </Button>
-        <Modal
+        <ScrollableModal
           isOpen={showModal || result.isLoading}
           toggle={result.isLoading ? undefined : toggleModal}
           centered
@@ -163,7 +163,7 @@ export const ProjectSettingsGeneralDeleteProject = ({
               </Form>
             </ModalBody>
           )}
-        </Modal>
+        </ScrollableModal>
       </CardBody>
     </Card>
   );

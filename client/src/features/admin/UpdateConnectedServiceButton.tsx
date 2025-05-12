@@ -25,7 +25,6 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -33,17 +32,17 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-
-import {
-  ConnectedServiceForm,
-  UpdateProviderParams,
-} from "../connectedServices/api/connectedServices.types";
-import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import {
   Provider,
   ProviderKind,
   usePatchOauth2ProvidersByProviderIdMutation,
 } from "../connectedServices/api/connectedServices.api";
+import {
+  ConnectedServiceForm,
+  UpdateProviderParams,
+} from "../connectedServices/api/connectedServices.types";
+import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 
 interface UpdateConnectedServiceButtonProps {
   provider: Provider;
@@ -152,7 +151,7 @@ function UpdateConnectedServiceModal({
   }, [provider, reset]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -200,6 +199,6 @@ function UpdateConnectedServiceModal({
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }

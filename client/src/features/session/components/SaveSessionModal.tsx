@@ -31,7 +31,6 @@ import {
   FormGroup,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalHeader,
   Row,
@@ -40,6 +39,7 @@ import {
 import { ACCESS_LEVELS } from "../../../api-client";
 import { SuccessAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { User } from "../../../model/renkuModels.types";
 import {
   CenteredLoader,
@@ -70,7 +70,11 @@ export default function SaveSessionModal({
   toggleModal,
 }: SaveSessionModalProps) {
   return (
-    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
+    <ScrollableModal
+      className={styles.sessionModal}
+      isOpen={isOpen}
+      toggle={toggleModal}
+    >
       <ModalHeader toggle={toggleModal}>Save Session</ModalHeader>
       <ModalBody>
         {isSessionReady ? (
@@ -82,7 +86,7 @@ export default function SaveSessionModal({
           <p>The session is not available yet.</p>
         )}
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

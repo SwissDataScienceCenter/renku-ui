@@ -19,10 +19,11 @@
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type { GroupMemberResponse } from "../../projectsV2/api/namespace.api";
 import { useDeleteGroupsByGroupSlugMembersAndUserIdMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import { ProjectMemberDisplay } from "../../projectsV2/shared/ProjectMemberDisplay";
@@ -41,7 +42,7 @@ export default function RemoveGroupMemberModal({
   toggle,
 }: RemoveGroupMemberModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       data-cy="remove-group-member-modal"
@@ -58,7 +59,7 @@ export default function RemoveGroupMemberModal({
           toggle={toggle}
         />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }
 

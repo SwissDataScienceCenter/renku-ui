@@ -25,19 +25,20 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
+import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
 import {
   ConnectedServiceForm,
   CreateProviderParams,
 } from "../connectedServices/api/connectedServices.types";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { Loader } from "../../components/Loader";
 import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
-import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
 
 export default function AddConnectedServiceButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -118,7 +119,7 @@ function AddConnectedServiceModal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -172,6 +173,6 @@ function AddConnectedServiceModal({
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }

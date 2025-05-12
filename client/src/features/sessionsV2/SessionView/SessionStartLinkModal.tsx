@@ -18,8 +18,10 @@
 
 import cx from "classnames";
 import { Link45deg, XLg } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import useSessionStartLink from "./useSessionStartLink.hook";
 
 interface SessionStartLinkModalProps {
@@ -39,7 +41,7 @@ export default function SessionStartLinkModal({
 }: SessionStartLinkModalProps) {
   const { url } = useSessionStartLink({ launcherId, namespace, slug });
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -67,6 +69,6 @@ export default function SessionStartLinkModal({
           Close
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

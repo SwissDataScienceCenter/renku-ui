@@ -36,7 +36,6 @@ import {
   Input,
   InputGroup,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -44,9 +43,9 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { User } from "../../model/renkuModels.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-
 import { validationParametersFromDataConnectorConfiguration } from "../dataConnectorsV2/components/dataConnector.utils";
 import { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { usePostStorageSchemaTestConnectionMutation } from "../project/components/cloudStorage/api/projectCloudStorage.api";
@@ -280,7 +279,7 @@ export default function DataConnectorSecretsModal({
   );
 
   return (
-    <Modal
+    <ScrollableModal
       centered
       data-cy={CONTEXT_STRINGS[context].dataCy}
       isOpen={isOpen}
@@ -322,7 +321,7 @@ export default function DataConnectorSecretsModal({
           />
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

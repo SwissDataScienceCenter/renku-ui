@@ -20,18 +20,12 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { InfoAlert } from "../../components/Alert";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import {
   usePatchUserSecretMutation,
   type SecretWithId,
@@ -131,7 +125,13 @@ export default function ReplaceSecretValueModal({
     ) : null;
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <Form
         className={cx(!isV2 && "form-rk-green")}
         data-cy="replace-secret-value-form"
@@ -176,7 +176,7 @@ export default function ReplaceSecretValueModal({
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

@@ -28,7 +28,6 @@ import {
   Card,
   CardBody,
   FormGroup,
-  Modal,
   ModalBody,
   ModalHeader,
 } from "reactstrap";
@@ -38,6 +37,7 @@ import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { LoadingLabel } from "../../../components/formlabels/FormLabels";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import VisibilitiesInput, {
   VISIBILITY_ITEMS,
   Visibilities,
@@ -149,7 +149,7 @@ function EditVisibilityModalConfirmation({
     );
 
   return (
-    <Modal isOpen={isOpen} toggle={() => toggleModal()} size="lg">
+    <ScrollableModal isOpen={isOpen} toggle={() => toggleModal()} size="lg">
       <ModalHeader toggle={() => toggleModal()}>
         Change visibility to{" "}
         {VISIBILITY_ITEMS.find((item) => item.value === visibility)?.title}
@@ -158,7 +158,7 @@ function EditVisibilityModalConfirmation({
         {content}
         {buttons}
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

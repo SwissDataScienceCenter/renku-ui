@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import React, { createRef, ReactNode, useEffect, useState } from "react";
 import {
   Button,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -30,6 +30,7 @@ import {
   TabPane,
 } from "reactstrap";
 
+import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
 import { displaySlice } from "../features/display";
 import { NotebooksHelper } from "../notebooks";
 import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
@@ -42,9 +43,7 @@ import {
   generateZip,
 } from "../utils/helpers/HelperFunctions";
 import { Loader } from "./Loader";
-
-import cx from "classnames";
-import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
+import ScrollableModal from "./modal/ScrollableModal";
 
 import styles from "./Logs.module.scss";
 
@@ -460,10 +459,9 @@ function EnvironmentLogsPresent({
   if (!logs?.show || logs?.show !== name || !logs) return null;
 
   return (
-    <Modal
+    <ScrollableModal
       isOpen={!!logs.show}
       className="modal-xl"
-      scrollable={true}
       toggle={() => {
         toggleLogs(name);
       }}
@@ -488,7 +486,7 @@ function EnvironmentLogsPresent({
       <ModalFooter>
         <SessionLogsButtons fetchLogs={fetchLogs} logs={logs} name={name} />
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

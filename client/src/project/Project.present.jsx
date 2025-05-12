@@ -35,7 +35,6 @@ import {
   CardBody,
   CardHeader,
   Col,
-  Modal,
   Nav,
   NavItem,
   Row,
@@ -52,6 +51,7 @@ import RenkuNavLinkV2, {
 } from "../components/RenkuNavLinkV2";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
+import ScrollableModal from "../components/modal/ScrollableModal";
 import { SshModal } from "../components/ssh/ssh";
 import {
   ProjectDatasetsView,
@@ -193,9 +193,9 @@ class ForkProjectModal extends Component {
     return (
       <Fragment>
         {buttons}
-        <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
+        <ScrollableModal isOpen={this.state.open} toggle={this.toggleFunction}>
           {content}
-        </Modal>
+        </ScrollableModal>
       </Fragment>
     );
   }

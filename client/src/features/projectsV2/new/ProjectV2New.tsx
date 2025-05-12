@@ -26,7 +26,6 @@ import {
   Form,
   FormGroup,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
 } from "reactstrap";
@@ -35,6 +34,7 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import ModalHeader from "../../../components/modal/ModalHeader";
+import ScrollableModal from "../../../components/modal/ScrollableModal.tsx";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
@@ -43,10 +43,10 @@ import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
-import SlugPreviewFormField from "../fields/SlugPreviewFormField.tsx";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
-import { NewProjectForm } from "./projectV2New.types";
+import SlugPreviewFormField from "../fields/SlugPreviewFormField.tsx";
 import { PROJECT_CREATION_HASH } from "./createProjectV2.constants";
+import { NewProjectForm } from "./projectV2New.types";
 
 export default function ProjectV2New() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
@@ -62,13 +62,12 @@ export default function ProjectV2New() {
 
   return (
     <>
-      <Modal
+      <ScrollableModal
         backdrop="static"
         centered
         data-cy="new-project-modal"
         fullscreen="lg"
         isOpen={showProjectCreationModal}
-        scrollable
         size="lg"
         unmountOnClose={true}
         toggle={toggleModal}
@@ -103,7 +102,7 @@ export default function ProjectV2New() {
             />
           </ModalBody>
         )}
-      </Modal>
+      </ScrollableModal>
     </>
   );
 }

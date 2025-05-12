@@ -25,7 +25,6 @@ import {
   CardBody,
   CardHeader,
   Collapse,
-  Modal,
   ModalBody,
   ModalFooter,
 } from "reactstrap";
@@ -34,6 +33,7 @@ import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
@@ -52,6 +52,7 @@ import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
+import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
@@ -62,7 +63,6 @@ import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
-import ConnectedServicesSection from "./ConnectedServicesSection";
 
 export default function AdminPage() {
   return (
@@ -592,7 +592,7 @@ function RemoveUserFromResourcePoolModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalBody>
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
@@ -617,7 +617,7 @@ function RemoveUserFromResourcePoolModal({
           Yes, remove user
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -679,7 +679,7 @@ function DeleteResourcePoolModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalBody>
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
@@ -703,6 +703,6 @@ function DeleteResourcePoolModal({
           Yes, delete this resource pool
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

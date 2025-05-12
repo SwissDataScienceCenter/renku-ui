@@ -37,7 +37,6 @@ import {
   Input,
   Label,
   ListGroupItem,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -55,6 +54,7 @@ import {
 import { Loader } from "../../../../components/Loader";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
@@ -152,7 +152,7 @@ function EditCodeRepositoryModal({
   const watchRepositoryUrl = watch("repositoryUrl");
 
   return (
-    <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
+    <ScrollableModal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggleModal}>Edit code repository</ModalHeader>
         <ModalBody>
@@ -216,7 +216,7 @@ function EditCodeRepositoryModal({
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -268,7 +268,7 @@ function CodeRepositoryDeleteModal({
   }, [isOpen, result]);
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+    <ScrollableModal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <ModalHeader className="text-danger" toggle={toggleModal}>
         Remove Code Repository
       </ModalHeader>
@@ -309,7 +309,7 @@ function CodeRepositoryDeleteModal({
           )}
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

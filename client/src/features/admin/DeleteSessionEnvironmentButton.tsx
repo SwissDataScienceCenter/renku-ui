@@ -19,9 +19,10 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { TrashFill, XLg } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { useDeleteSessionEnvironmentMutation } from "./adminSessions.api";
 
@@ -86,7 +87,7 @@ function DeleteSessionEnvironmentModal({
   }, [isOpen, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -119,6 +120,6 @@ function DeleteSessionEnvironmentModal({
           Delete session environment
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

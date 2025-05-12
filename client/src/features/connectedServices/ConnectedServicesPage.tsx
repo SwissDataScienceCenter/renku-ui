@@ -16,6 +16,7 @@
  * limitations under the License
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BoxArrowUpRight, CircleFill, XLg } from "react-bootstrap-icons";
@@ -27,18 +28,17 @@ import {
   CardBody,
   CardText,
   CardTitle,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 import { InfoAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
 import {
@@ -539,7 +539,13 @@ function GitHubStatusCheckModal({
     : null;
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader toggle={toggle}>GitHub app configuration</ModalHeader>
       <ModalBody>
         {settingsUrl ? (
@@ -578,6 +584,6 @@ function GitHubStatusCheckModal({
           Close
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

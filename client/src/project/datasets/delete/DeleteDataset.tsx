@@ -18,18 +18,11 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import {
-  Button,
-  Col,
-  FormText,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Row,
-} from "reactstrap";
+import { Button, Col, FormText, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { useDeleteDatasetMutation } from "../../../features/datasets/datasetsCore.api";
 import type { DatasetCore } from "../../../features/project/project.types";
 import { Url } from "../../../utils/helpers/url";
@@ -115,14 +108,14 @@ type DatasetDeleteModalProps = {
 
 function DatasetDeleteModal(props: DatasetDeleteModalProps) {
   return (
-    <Modal isOpen={props.modalOpen} toggle={props.closeModal}>
+    <ScrollableModal isOpen={props.modalOpen} toggle={props.closeModal}>
       <ModalHeader toggle={props.closeModal}>Delete Dataset</ModalHeader>
       <ModalBody>
         <Row className="mb-3">
           <ModalContent {...props} />
         </Row>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

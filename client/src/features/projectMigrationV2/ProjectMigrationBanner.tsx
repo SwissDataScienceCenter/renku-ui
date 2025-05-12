@@ -19,23 +19,17 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { BoxArrowInUp, XLg } from "react-bootstrap-icons";
-import {
-  Alert,
-  Button,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Alert, Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { SuccessAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import {
   useGetUserPreferencesQuery,
   usePostUserPreferencesDismissProjectMigrationBannerMutation,
   UserPreferences,
 } from "../usersV2/api/users.api";
-import style from "./ProjectMigrationBanner.module.scss";
 import MigrationV2Modal from "./MigrationV2Modal";
+import style from "./ProjectMigrationBanner.module.scss";
 
 export default function ProjectMigrationBanner() {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -120,7 +114,7 @@ function DismissMigrationConfirmationModal({
 }) {
   const isLoadingDismissMigration = false;
   return (
-    <Modal isOpen={isOpen} centered size="lg" toggle={toggle}>
+    <ScrollableModal isOpen={isOpen} centered size="lg" toggle={toggle}>
       <ModalHeader toggle={toggle} className="text-danger">
         Are you sure?
       </ModalHeader>
@@ -160,6 +154,6 @@ function DismissMigrationConfirmationModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

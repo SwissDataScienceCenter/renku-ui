@@ -19,10 +19,11 @@
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useDeleteSessionLaunchersByLauncherIdMutation as useDeleteSessionLauncherMutation } from "./api/sessionLaunchersV2.api";
 
@@ -61,7 +62,7 @@ export default function DeleteSessionLauncherModal({
   }, [isOpen, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -116,6 +117,6 @@ export default function DeleteSessionLauncherModal({
           Delete Session launcher
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

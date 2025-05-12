@@ -23,23 +23,23 @@ import { useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { Loader } from "../../../../components/Loader";
+import { SuccessAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
+import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import DescriptionField from "./fields/DescriptionField";
-import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import FilenameField from "./fields/FilenameField";
 import NameField from "./fields/NameField";
 import ProvideSessionSecretModalContent from "./ProvideSessionSecretModalContent";
-import { SuccessAlert } from "../../../../components/Alert";
 
 export default function AddSessionSecretButton() {
   const ref = useRef<HTMLButtonElement>(null);
@@ -92,7 +92,13 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
   );
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       {step === "add-secret-slot" && (
         <AddSessionSecretModalContentStep1
           isOpen={isOpen}
@@ -108,7 +114,7 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
           toggle={toggle}
         />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }
 

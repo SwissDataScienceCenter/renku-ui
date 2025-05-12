@@ -34,7 +34,6 @@ import {
 import { Link, generatePath, useNavigate, useParams } from "react-router";
 import {
   Button,
-  Modal,
   ModalBody,
   ModalHeader,
   UncontrolledTooltip,
@@ -45,6 +44,7 @@ import EnvironmentLogsV2 from "../../../components/LogsV2";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { User } from "../../../model/renkuModels.types";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
@@ -55,11 +55,11 @@ import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
+import SessionStartLinkModal from "../SessionView/SessionStartLinkModal";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
-import SessionStartLinkModal from "../SessionView/SessionStartLinkModal";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
@@ -429,7 +429,13 @@ function SessionDetails({
       </div>
     );
   const detailsModal = project && session && projectUrl && (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader toggle={toggle}>Session details {launcher.name}</ModalHeader>
       <ModalBody>
         <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -488,7 +494,7 @@ function SessionDetails({
           </div>
         </div>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
   return (
     <>

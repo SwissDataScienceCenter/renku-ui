@@ -18,9 +18,10 @@
 
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { Button, Col, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import {
   CenteredLoader,
   InformationalBody,
@@ -49,7 +50,11 @@ export default function PullSessionModal({
   toggleModal,
 }: PullSessionModalProps) {
   return (
-    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
+    <ScrollableModal
+      className={styles.sessionModal}
+      isOpen={isOpen}
+      toggle={toggleModal}
+    >
       <ModalHeader toggle={toggleModal}>Refresh Session</ModalHeader>
       <ModalBody>
         {isSessionReady ? (
@@ -61,7 +66,7 @@ export default function PullSessionModal({
           <p>The session is not available yet.</p>
         )}
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

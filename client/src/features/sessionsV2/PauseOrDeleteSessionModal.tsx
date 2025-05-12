@@ -21,9 +21,10 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../notifications/notifications.types";
@@ -134,7 +135,11 @@ function AnonymousDeleteSessionModal({
   }, [backUrl, isStopping, isSuccess, isWaiting, navigate]);
 
   return (
-    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
+    <ScrollableModal
+      className={styles.sessionModal}
+      isOpen={isOpen}
+      toggle={toggleModal}
+    >
       <ModalHeader toggle={toggleModal}>Shut Down Session</ModalHeader>
       <ModalBody>
         <p>Are you sure you want to shut down this session?</p>
@@ -164,7 +169,7 @@ function AnonymousDeleteSessionModal({
           )}
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -177,7 +182,11 @@ function LoggedPauseOrDeleteSessionModal({
   toggleModal,
 }: PauseOrDeleteSessionModalProps) {
   return (
-    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
+    <ScrollableModal
+      className={styles.sessionModal}
+      isOpen={isOpen}
+      toggle={toggleModal}
+    >
       <ModalHeader toggle={toggleModal}>
         {action === "pause" ? "Pause Session" : "Shut Down Session"}
       </ModalHeader>
@@ -196,7 +205,7 @@ function LoggedPauseOrDeleteSessionModal({
           toggleModal={toggleModal}
         />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }
 

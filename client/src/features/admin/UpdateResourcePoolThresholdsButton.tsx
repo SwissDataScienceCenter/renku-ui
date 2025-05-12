@@ -25,18 +25,20 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useUpdateResourcePoolMutation } from "../dataServices/computeResources.api";
 import { ResourcePool } from "../dataServices/dataServices.types";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import { ResourcePoolDefaultThreshold } from "./AddResourcePoolButton";
 import { UpdateResourcePoolThresholdsForm } from "./adminComputeResources.types";
+
 interface UpdateResourcePoolThresholdsButtonProps {
   resourcePool: ResourcePool;
 }
@@ -135,7 +137,7 @@ function UpdateResourcePoolThresholdsModal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -258,6 +260,6 @@ function UpdateResourcePoolThresholdsModal({
           Update Resource Pool
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

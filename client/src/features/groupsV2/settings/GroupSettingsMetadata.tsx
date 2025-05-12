@@ -26,13 +26,14 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -88,7 +89,7 @@ function GroupDeleteConfirmation({
   }, [result.isError, result.isSuccess, notifications, group.name, navigate]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader>Are you absolutely sure?</ModalHeader>
       <ModalBody>
         <p>
@@ -122,7 +123,7 @@ function GroupDeleteConfirmation({
           Yes, delete group
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

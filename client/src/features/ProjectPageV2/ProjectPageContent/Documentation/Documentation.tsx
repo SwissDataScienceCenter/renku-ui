@@ -214,10 +214,7 @@ function DocumentationModal({
       />
 
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ModalBody
-          data-cy="project-documentation-modal-body"
-          className={styles.modalBody}
-        >
+        <ModalBody data-cy="project-documentation-modal-body">
           <div className={cx("d-flex", "gap-4")}>
             <ButtonGroup size="sm">
               <Button

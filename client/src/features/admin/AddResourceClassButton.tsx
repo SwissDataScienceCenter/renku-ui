@@ -44,13 +44,14 @@ import {
   Input,
   InputGroup,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useAddResourceClassMutation } from "../dataServices/computeResources.api";
 import { NodeAffinity, ResourcePool } from "../dataServices/dataServices.types";
 
@@ -151,7 +152,7 @@ function AddResourceClassModal({
   }, [result.isSuccess, toggle]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -448,7 +449,7 @@ function AddResourceClassModal({
           Add resource class
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

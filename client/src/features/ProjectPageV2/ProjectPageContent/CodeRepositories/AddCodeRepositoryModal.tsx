@@ -26,15 +26,16 @@ import {
   FormGroup,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   Row,
 } from "reactstrap";
 
+import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
@@ -42,7 +43,6 @@ import {
   validateCodeRepository,
   validateNoDuplicatesInCodeRepositories,
 } from "./repositories.utils";
-import { WarnAlert } from "../../../../components/Alert";
 
 interface AddCodeRepositoryForm {
   repositoryUrl: string;
@@ -103,7 +103,7 @@ export default function AddCodeRepositoryModal({
   const watchRepositoryUrl = watch("repositoryUrl");
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+    <ScrollableModal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader toggle={toggleModal}>
           <CodeSquare className={cx("bi", "me-1")} />
@@ -175,7 +175,7 @@ export default function AddCodeRepositoryModal({
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

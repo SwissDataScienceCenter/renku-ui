@@ -37,7 +37,6 @@ import {
   Button,
   Col,
   DropdownItem,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -47,6 +46,7 @@ import {
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { User } from "../../../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../../notifications/notifications.types";
@@ -480,7 +480,7 @@ function ConfirmDeleteModal({
   }, [onStopSession, toggleModal]);
 
   return (
-    <Modal size="lg" centered isOpen={isOpen} toggle={toggleModal}>
+    <ScrollableModal size="lg" centered isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader className="text-danger" toggle={toggleModal}>
         Shut Down Session
       </ModalHeader>
@@ -515,7 +515,7 @@ function ConfirmDeleteModal({
           <Trash className={cx("bi", "me-1")} /> Shut down this session
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -537,7 +537,7 @@ function ModifySessionModal({
   resource_class_id,
 }: ModifySessionModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       centered
       fullscreen="lg"
       isOpen={isOpen}
@@ -552,7 +552,7 @@ function ModifySessionModal({
         toggleModal={toggleModal}
         resource_class_id={resource_class_id}
       />
-    </Modal>
+    </ScrollableModal>
   );
 }
 

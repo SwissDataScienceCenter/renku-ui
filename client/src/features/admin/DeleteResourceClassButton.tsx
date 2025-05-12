@@ -37,8 +37,10 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, TrashFill, XLg } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
+import { Button, ModalBody, ModalFooter } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useDeleteResourceClassMutation } from "../dataServices/computeResources.api";
 import {
   ResourceClass,
@@ -111,7 +113,7 @@ function DeleteResourceClassModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <ScrollableModal centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalBody>
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
@@ -135,6 +137,6 @@ function DeleteResourceClassModal({
           Yes, delete this resource class
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

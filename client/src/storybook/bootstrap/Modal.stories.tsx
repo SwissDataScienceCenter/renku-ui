@@ -4,11 +4,12 @@ import {
   Button,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
+import ScrollableModal from "../../components/modal/ScrollableModal";
 
 const componentDescription = `
 Modals are used to show complex dialog that require user interaction. They can be used to show information, ask for confirmation, or to perform more complex actions.
@@ -50,7 +51,7 @@ export const Modal_: Story = {
         <Button color="primary" onClick={toggle}>
           Open modal
         </Button>
-        <Modal isOpen={isOpen} toggle={toggle} {..._args}>
+        <ScrollableModal isOpen={isOpen} toggle={toggle} {..._args}>
           <ModalHeader toggle={toggle}>Add a project member</ModalHeader>
           <ModalBody>
             <Label>Username</Label>
@@ -64,7 +65,7 @@ export const Modal_: Story = {
               Cancel
             </Button>
           </ModalFooter>
-        </Modal>
+        </ScrollableModal>
       </>
     );
   },

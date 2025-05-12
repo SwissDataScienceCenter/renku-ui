@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, type Location } from "react-router";
-import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
+import { Button, Col, DropdownItem, Form, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
@@ -37,6 +37,7 @@ import {
   ButtonWithMenu,
   GoBackButton,
 } from "../../../components/buttons/Button";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
@@ -651,7 +652,7 @@ function ForkProjectModal() {
       >
         Fork the project
       </Button>
-      <Modal isOpen={isOpen} toggle={toggleIsOpen}>
+      <ScrollableModal isOpen={isOpen} toggle={toggleIsOpen}>
         <ForkProject
           client={client}
           forkedId={id ?? 0}
@@ -660,7 +661,7 @@ function ForkProjectModal() {
           projectVisibility={visibility}
           toggleModal={toggleIsOpen}
         />
-      </Modal>
+      </ScrollableModal>
     </>
   );
 }

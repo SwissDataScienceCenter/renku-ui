@@ -26,12 +26,13 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { User } from "../../searchV2/api/searchV2Api.api";
 import type {
   ProjectMemberPatchRequest,
@@ -172,7 +173,7 @@ export default function AddProjectMemberModal({
   toggle,
 }: AddProjectMemberModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -186,6 +187,6 @@ export default function AddProjectMemberModal({
         projectId={projectId}
         toggle={toggle}
       />
-    </Modal>
+    </ScrollableModal>
   );
 }

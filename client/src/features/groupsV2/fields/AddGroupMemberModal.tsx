@@ -26,13 +26,13 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type {
   GroupMemberPatchRequest,
   GroupMemberResponseList,
@@ -55,7 +55,7 @@ export default function AddGroupMemberModal({
   toggle,
 }: AddGroupMemberModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -69,7 +69,7 @@ export default function AddGroupMemberModal({
         groupSlug={groupSlug}
         toggle={toggle}
       />
-    </Modal>
+    </ScrollableModal>
   );
 }
 

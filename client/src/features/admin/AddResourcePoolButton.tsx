@@ -25,7 +25,6 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -33,6 +32,7 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
 import {
   useAddResourcePoolMutation,
@@ -167,7 +167,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
   }, [isOpen, reset, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -343,7 +343,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           Add Resource Pool
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

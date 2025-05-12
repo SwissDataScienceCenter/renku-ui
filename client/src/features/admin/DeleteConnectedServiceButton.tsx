@@ -17,14 +17,14 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect, useState } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { TrashFill, XLg } from "react-bootstrap-icons";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { Provider } from "../connectedServices/api/connectedServices.generated-api";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useDeleteOauth2ProvidersByProviderIdMutation } from "../connectedServices/api/connectedServices.api";
+import { Provider } from "../connectedServices/api/connectedServices.generated-api";
 
 interface DeleteConnectedServiceButtonProps {
   provider: Provider;
@@ -85,7 +85,7 @@ function DeleteConnectedServiceModal({
   }, [isOpen, result]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} toggle={toggle}>
+    <ScrollableModal backdrop="static" centered isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>Are you sure?</ModalHeader>
       <ModalBody>
         {result.error && <RtkOrNotebooksError error={result.error} />}
@@ -111,6 +111,6 @@ function DeleteConnectedServiceModal({
           Delete service
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
