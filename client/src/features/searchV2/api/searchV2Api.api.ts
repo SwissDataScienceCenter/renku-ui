@@ -16,8 +16,28 @@
  * limitations under the License.
  */
 
-import { searchV2GeneratedApi } from "./searchV2Api.generated-api";
+import {
+  GetSearchQueryApiArg,
+  GetSearchQueryApiResponse,
+  searchV2GeneratedApi,
+} from "./searchV2Api.generated-api";
 
-export const { useGetSearchQueryQuery } = searchV2GeneratedApi;
+// Fixes some API endpoints
+export const searchV2Api = searchV2GeneratedApi.injectEndpoints({
+  overrideExisting: true,
+  endpoints: (build) => ({
+    getSearchQuery: build.query<
+      GetSearchQueryApiResponse,
+      GetSearchQueryApiArg
+    >({
+      query: ({ params }) => ({
+        url: "/search/query",
+        params,
+      }),
+    }),
+  }),
+});
+
+export const { useGetSearchQueryQuery } = searchV2Api;
 
 export type * from "./searchV2Api.generated-api";

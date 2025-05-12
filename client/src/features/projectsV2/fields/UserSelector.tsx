@@ -218,9 +218,11 @@ export function UserControl(props: UserControlProps) {
     isLoading,
   } = useGetSearchQueryQuery(
     {
-      page: 1,
-      perPage: USER_REQUEST_LIMIT,
-      q: `type:user ${lookupQuery}`,
+      params: {
+        page: 1,
+        per_page: USER_REQUEST_LIMIT,
+        q: `type:user ${lookupQuery}`,
+      },
     },
     { skip: !lookupQuery || lookupQuery == null || lookupQuery.length < 2 }
   );

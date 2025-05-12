@@ -57,10 +57,16 @@ export default function SearchV2Results() {
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
   const [search, { data: searchResults }] =
-    searchV2Api.endpoints.getQuery.useLazyQuery();
+    searchV2Api.endpoints.getSearchQuery.useLazyQuery();
 
   useEffect(() => {
-    search({ page, perPage, q: query });
+    search({
+      params: {
+        page,
+        per_page: perPage,
+        q: query,
+      },
+    });
   }, [page, perPage, query, search]);
 
   useClampSearchPage({ totalPages: searchResults?.pagingInfo.totalPages });
@@ -89,10 +95,12 @@ export default function SearchV2Results() {
 function SearchV2ResultsContent() {
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
-  const searchResults = searchV2Api.endpoints.getQuery.useQueryState({
-    page,
-    perPage,
-    q: query,
+  const searchResults = searchV2Api.endpoints.getSearchQuery.useQueryState({
+    params: {
+      page,
+      per_page: perPage,
+      q: query,
+    },
   });
 
   if (searchResults.isFetching) {
