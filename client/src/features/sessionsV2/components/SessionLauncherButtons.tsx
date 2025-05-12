@@ -116,7 +116,7 @@ export function SessionLauncherButtons({
   return (
     <>
       <ButtonWithMenuV2
-        color={hasSession ? "outline-primary" : "primary"}
+        color={"primary"}
         default={defaultAction}
         preventPropagation
         size="sm"

@@ -27,6 +27,7 @@ import {
   Cloud,
   ExclamationTriangle,
   FileEarmarkText,
+  Link45deg,
   PauseCircle,
   Trash,
 } from "react-bootstrap-icons";
@@ -58,6 +59,7 @@ import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionL
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
+import SessionStartLinkModal from "../SessionView/SessionStartLinkModal";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
@@ -214,6 +216,11 @@ export default function ShowSessionPage() {
             <LogsBtn toggle={toggleModalLogs} />
             <PauseSessionBtn openPauseSession={openPauseSession} />
             <DeleteSessionBtn openDeleteSession={openDeleteSession} />
+            <ShareSessionLinkButton
+              session={thisSession}
+              namespace={namespace}
+              slug={slug}
+            />
           </div>
           <div
             className={cx(
@@ -503,5 +510,59 @@ function SessionDetails({
       </Button>
       {detailsModal}
     </>
+  );
+}
+
+function ShareSessionLinkButton({
+  session,
+  namespace,
+  slug,
+}: {
+  session?: SessionV2;
+  namespace?: string;
+  slug?: string;
+}) {
+  const launcherId = session?.launcher_id;
+  const ref = useRef<HTMLButtonElement>(null);
+  const buttonId = "share-session-button";
+  const tooltip = "Share session launch link";
+
+  const [isShareLinkOpen, setIsShareLinkOpen] = useState(false);
+  const toggleShareLink = useCallback(() => {
+    setIsShareLinkOpen((open) => !open);
+  }, []);
+
+  if (launcherId == null || namespace == null || slug == null) return null;
+
+  return (
+    <div>
+      <Button
+        className={cx(
+          "bg-transparent",
+          "border-0",
+          "no-focus",
+          "p-0",
+          "shadow-none",
+          "text-dark"
+        )}
+        data-cy={buttonId}
+        id={buttonId}
+        innerRef={ref}
+        onClick={toggleShareLink}
+      >
+        <Link45deg className="bi" />
+        <span className="visually-hidden">{tooltip}</span>
+      </Button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        {tooltip}
+      </UncontrolledTooltip>
+      <SessionStartLinkModal
+        isOpen={isShareLinkOpen}
+        launcherId={launcherId}
+        toggle={toggleShareLink}
+        slug={slug}
+        namespace={namespace}
+      />
+    </div>
   );
 }
