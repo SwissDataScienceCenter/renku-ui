@@ -34,6 +34,8 @@ async function main() {
       updateProjectCloudStorageApi();
     } else if (arg.trim() === "users") {
       updateUsersApi();
+    } else if (arg.trim() === "searchV2") {
+      updateSearchV2Api();
     }
   });
 }
@@ -57,6 +59,13 @@ async function updateUsersApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/users/api.spec.yaml",
     destFile: "src/features/usersV2/api/users.openapi.json",
+  });
+}
+
+async function updateSearchV2Api() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/search/api.spec.yaml",
+    destFile: "src/features/searchV2/api/search.openapi.json",
   });
 }
 
