@@ -61,6 +61,12 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.projectMigrationPost,
       }),
     }),
+    getRenkuV1ProjectsMigrations: build.query<
+      GetRenkuV1ProjectsMigrationsApiResponse,
+      GetRenkuV1ProjectsMigrationsApiArg
+    >({
+      query: () => ({ url: `/renku_v1_projects/migrations` }),
+    }),
     getNamespacesByNamespaceProjectsAndSlug: build.query<
       GetNamespacesByNamespaceProjectsAndSlugApiResponse,
       GetNamespacesByNamespaceProjectsAndSlugApiArg
@@ -258,6 +264,9 @@ export type PostRenkuV1ProjectsByV1IdMigrationsApiArg = {
   v1Id: number;
   projectMigrationPost: ProjectMigrationPost;
 };
+export type GetRenkuV1ProjectsMigrationsApiResponse =
+  /** status 200 List of project migrations */ ProjectMigrationList;
+export type GetRenkuV1ProjectsMigrationsApiArg = void;
 export type GetNamespacesByNamespaceProjectsAndSlugApiResponse =
   /** status 200 The project */ Project;
 export type GetNamespacesByNamespaceProjectsAndSlugApiArg = {
@@ -459,6 +468,7 @@ export type ProjectMigrationInfo = {
   v1_id: number;
   launcher_id?: Ulid;
 };
+export type ProjectMigrationList = ProjectMigrationInfo[];
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
@@ -536,6 +546,7 @@ export const {
   useDeleteProjectsByProjectIdMutation,
   useGetRenkuV1ProjectsByV1IdMigrationsQuery,
   usePostRenkuV1ProjectsByV1IdMigrationsMutation,
+  useGetRenkuV1ProjectsMigrationsQuery,
   useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdCopiesQuery,
   usePostProjectsByProjectIdCopiesMutation,

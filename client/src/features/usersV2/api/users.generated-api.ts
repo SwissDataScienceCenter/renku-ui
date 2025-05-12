@@ -87,6 +87,24 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: () => ({ url: `/user/preferences` }),
     }),
+    postUserPreferencesDismissProjectMigrationBanner: build.mutation<
+      PostUserPreferencesDismissProjectMigrationBannerApiResponse,
+      PostUserPreferencesDismissProjectMigrationBannerApiArg
+    >({
+      query: () => ({
+        url: `/user/preferences/dismiss_project_migration_banner`,
+        method: "POST",
+      }),
+    }),
+    deleteUserPreferencesDismissProjectMigrationBanner: build.mutation<
+      DeleteUserPreferencesDismissProjectMigrationBannerApiResponse,
+      DeleteUserPreferencesDismissProjectMigrationBannerApiArg
+    >({
+      query: () => ({
+        url: `/user/preferences/dismiss_project_migration_banner`,
+        method: "DELETE",
+      }),
+    }),
     postUserPreferencesPinnedProjects: build.mutation<
       PostUserPreferencesPinnedProjectsApiResponse,
       PostUserPreferencesPinnedProjectsApiArg
@@ -173,6 +191,12 @@ export type GetVersionApiArg = void;
 export type GetUserPreferencesApiResponse =
   /** status 200 The user preferences */ UserPreferences;
 export type GetUserPreferencesApiArg = void;
+export type PostUserPreferencesDismissProjectMigrationBannerApiResponse =
+  /** status 200 The updated user preferences */ UserPreferences;
+export type PostUserPreferencesDismissProjectMigrationBannerApiArg = void;
+export type DeleteUserPreferencesDismissProjectMigrationBannerApiResponse =
+  /** status 200 The updated user preferences */ UserPreferences;
+export type DeleteUserPreferencesDismissProjectMigrationBannerApiArg = void;
 export type PostUserPreferencesPinnedProjectsApiResponse =
   /** status 200 The updated user preferences */ UserPreferences;
 export type PostUserPreferencesPinnedProjectsApiArg = {
@@ -253,9 +277,11 @@ export type ProjectSlug = string;
 export type PinnedProjects = {
   project_slugs?: ProjectSlug[];
 };
+export type ShowProjectMigrationBanner = boolean;
 export type UserPreferences = {
   user_id: UserId;
   pinned_projects: PinnedProjects;
+  show_project_migration_banner?: ShowProjectMigrationBanner;
 };
 export type AddPinnedProject = {
   project_slug: ProjectSlug;
@@ -274,6 +300,8 @@ export const {
   useGetErrorQuery,
   useGetVersionQuery,
   useGetUserPreferencesQuery,
+  usePostUserPreferencesDismissProjectMigrationBannerMutation,
+  useDeleteUserPreferencesDismissProjectMigrationBannerMutation,
   usePostUserPreferencesPinnedProjectsMutation,
   useDeleteUserPreferencesPinnedProjectsMutation,
 } = injectedRtkApi;

@@ -401,6 +401,46 @@
         "tags": ["user_preferences"]
       }
     },
+    "/user/preferences/dismiss_project_migration_banner": {
+      "post": {
+        "summary": "Dismiss banner project migration",
+        "responses": {
+          "200": {
+            "description": "The updated user preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferences"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["user_preferences"]
+      },
+      "delete": {
+        "summary": "Remove dismiss banner project migration",
+        "responses": {
+          "200": {
+            "description": "The updated user preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferences"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["user_preferences"]
+      }
+    },
     "/user/preferences/pinned_projects": {
       "post": {
         "summary": "Add a pinned project",
@@ -724,9 +764,16 @@
           },
           "pinned_projects": {
             "$ref": "#/components/schemas/PinnedProjects"
+          },
+          "show_project_migration_banner": {
+            "$ref": "#/components/schemas/ShowProjectMigrationBanner"
           }
         },
         "required": ["user_id", "pinned_projects"]
+      },
+      "ShowProjectMigrationBanner": {
+        "description": "Should display project migration banner",
+        "type": "boolean"
       },
       "PinnedProjects": {
         "type": "object",

@@ -346,17 +346,17 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjectsByProjectIdCopies: {
       invalidatesTags: ["Project"],
     },
+    getRenkuV1ProjectsMigrations: {
+      providesTags: ["ProjectMigrations", "Project"],
+    },
     getRenkuV1ProjectsByV1IdMigrations: {
       providesTags: (result, _error, { v1Id }) =>
         result
           ? [{ id: `${v1Id}`, type: "ProjectMigrations" }]
-          : ["ProjectMigrations"],
+          : ["ProjectMigrations", "Project"],
     },
     postRenkuV1ProjectsByV1IdMigrations: {
-      invalidatesTags: (result, _error, { v1Id }) =>
-        result
-          ? [{ id: `${v1Id}`, type: "ProjectMigrations" }]
-          : ["ProjectMigrations"],
+      invalidatesTags: ["ProjectMigrations", "Project"],
     },
   },
 });
