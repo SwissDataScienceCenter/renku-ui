@@ -55,6 +55,8 @@ export default function MigrationV1Modal({
     result,
     onSubmit,
     linkToProject,
+    reset,
+    resetResult,
   } = useMigrationForm({
     initialValues: {
       name: projectMetadata.title,
@@ -73,7 +75,11 @@ export default function MigrationV1Modal({
       centered
       isOpen={isOpen}
       size="lg"
-      toggle={toggle}
+      toggle={() => {
+        reset();
+        resetResult();
+        toggle();
+      }}
     >
       <ModalHeader toggle={toggle}>
         <BoxArrowInUp className={cx("bi", "me-1")} />

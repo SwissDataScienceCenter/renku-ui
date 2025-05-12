@@ -63,6 +63,14 @@ export default function ProjectMigrationFooter({
     }
   }, [setSelectedProject, setStep]);
 
+  const handleClose = useCallback(() => {
+    if (setSelectedProject && setStep) {
+      setStep(1);
+      setSelectedProject(null);
+    }
+    toggle();
+  }, [setSelectedProject, setStep, toggle]);
+
   return (
     <ModalFooter>
       {!isReadyMigrationResult && (
@@ -72,7 +80,7 @@ export default function ProjectMigrationFooter({
               <ArrowLeft className={cx("bi", "me-1")} /> Back
             </Button>
           ) : (
-            <Button color={buttonClasses.outline} onClick={toggle}>
+            <Button color={buttonClasses.outline} onClick={handleClose}>
               <XLg className={cx("bi", "me-1")} /> Cancel
             </Button>
           )}
@@ -96,7 +104,7 @@ export default function ProjectMigrationFooter({
         </>
       )}
       {isReadyMigrationResult && (
-        <Button color={buttonClasses.outline} onClick={toggle}>
+        <Button color={buttonClasses.outline} onClick={handleClose}>
           Close
         </Button>
       )}

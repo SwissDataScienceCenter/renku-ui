@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { BoxArrowInUp } from "react-bootstrap-icons";
 import { ModalBody, ModalHeader } from "reactstrap";
 import { GitlabProjectsToMigrate } from "./ProjectMigration.types";
@@ -56,6 +56,7 @@ export default function MigrationV2Modal({
     result,
     onSubmit,
     linkToProject,
+    resetResult,
   } = useMigrationForm();
 
   const handleProjectSelect = (project: GitlabProjectsToMigrate) => {
@@ -69,15 +70,23 @@ export default function MigrationV2Modal({
     setStep(2);
   };
 
+  const handleClose = useCallback(() => {
+    reset();
+    resetResult();
+    setStep(1);
+    setSelectedProject(null);
+    toggle();
+  }, [reset, resetResult, setStep, toggle]);
+
   return (
     <ScrollableModal
       backdrop="static"
       centered
       isOpen={isOpen}
       size="lg"
-      toggle={toggle}
+      toggle={handleClose}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader toggle={handleClose}>
         <BoxArrowInUp className={cx("bi", "me-1")} />
         {step === 1
           ? "Select project to migrate"
@@ -125,7 +134,7 @@ export default function MigrationV2Modal({
         setStep={setStep}
         setSelectedProject={setSelectedProject}
         hasGitlabProjectList={true}
-        toggle={toggle}
+        toggle={handleClose}
       />
     </ScrollableModal>
   );

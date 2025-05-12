@@ -57,6 +57,10 @@ export function useMigrationForm({
   const [migrateProject, result] =
     usePostRenkuV1ProjectsByV1IdMigrationsMutation();
 
+  const resetResult = useCallback(() => {
+    result.reset();
+  }, [result]);
+
   const containerImage = watch("containerImage");
   const defaultUrl = watch("defaultUrl");
 
@@ -115,5 +119,6 @@ export function useMigrationForm({
     result,
     onSubmit,
     linkToProject,
+    resetResult,
   };
 }
