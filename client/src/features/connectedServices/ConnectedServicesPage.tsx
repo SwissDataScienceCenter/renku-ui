@@ -16,6 +16,7 @@
  * limitations under the License
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BoxArrowUpRight, CircleFill, XLg } from "react-bootstrap-icons";
@@ -32,13 +33,12 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 import { InfoAlert, WarnAlert } from "../../components/Alert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
 import {
@@ -55,6 +55,7 @@ import {
   type ProviderKind,
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
+import ContactUsCard from "./ContactUsCard";
 
 const CHECK_STATUS_QUERY_PARAM = "check-status";
 
@@ -83,12 +84,18 @@ export default function ConnectedServicesPage() {
       Anonymous users cannot connect to external services.
     </InfoAlert>
   ) : !providers || providers.length === 0 ? (
-    <p>There are currently no external services users can connect to.</p>
+    <>
+      <p>There are currently no external services users can connect to.</p>
+      <div className={cx("row", "g-3")}>
+        <ContactUsCard />
+      </div>
+    </>
   ) : (
     <div className={cx("row", "g-3")}>
       {providers.map((provider) => (
         <ConnectedServiceCard key={provider.id} provider={provider} />
       ))}
+      <ContactUsCard />
     </div>
   );
 
@@ -97,7 +104,6 @@ export default function ConnectedServicesPage() {
       <h1>Integrations</h1>
       <p>These integrations are only supported in Renku 2.0</p>
       {content}
-      <div>TODO: Contact us!</div>
     </div>
   );
 }
