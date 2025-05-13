@@ -31,7 +31,7 @@ import {
 import {
   Button,
   Form,
-  Modal,
+  Input,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -40,13 +40,12 @@ import {
 import { SuccessAlert } from "../../../components/Alert";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type {
   SessionLauncher,
   SessionLauncherPatch,
 } from "../api/sessionLaunchersV2.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../api/sessionLaunchersV2.api";
-
-import { Input } from "reactstrap";
 
 interface EnvVariable {
   name: string;
@@ -295,14 +294,13 @@ export default function EnvVariablesModal({
   }, [append, fields, hasAddedDefaultValue, isDirty, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
     >
       <ModalHeader toggle={toggle}>
         Environment variables for {launcher.name}
@@ -368,7 +366,7 @@ export default function EnvVariablesModal({
           )}
         </div>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

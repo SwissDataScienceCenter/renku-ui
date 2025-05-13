@@ -32,13 +32,15 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
 } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import ModalHeader from "../../../../components/modal/ModalHeader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import {
@@ -46,15 +48,15 @@ import {
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsGlobalMutation,
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import { DATA_CONNECTORS_DOI_DOCS_URL } from "../../../dataConnectorsV2/components/dataConnector.constants";
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "../../../dataConnectorsV2/components/DataConnectorModal/index";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
+
 import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import { DATA_CONNECTORS_DOI_DOCS_URL } from "../../../dataConnectorsV2/components/dataConnector.constants";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -79,7 +81,7 @@ export default function ProjectConnectDataConnectorsModal({
     originalToggle();
   }, [dispatch, originalToggle]);
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       className={styles.modal}
@@ -87,7 +89,6 @@ export default function ProjectConnectDataConnectorsModal({
       fullscreen="lg"
       id={"connect-project-data-connector"}
       isOpen={isOpen}
-      scrollable
       size="lg"
       unmountOnClose={false}
       toggle={toggle}
@@ -127,7 +128,7 @@ export default function ProjectConnectDataConnectorsModal({
           }}
         />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }
 

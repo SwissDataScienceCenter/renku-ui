@@ -18,12 +18,13 @@
 
 import cx from "classnames";
 import { InfoCircle } from "react-bootstrap-icons";
-import { Container, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Container, ModalBody, ModalHeader } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EntityType } from "../../../components/entities/entities.types";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { Docs } from "../../../utils/constants/Docs";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
@@ -44,10 +45,9 @@ export default function AboutSessionModal({
   toggleModal,
 }: AboutSessionModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       className={styles.aboutModal}
       isOpen={isOpen}
-      scrollable={true}
       toggle={toggleModal}
     >
       <ModalHeader
@@ -64,7 +64,7 @@ export default function AboutSessionModal({
           <Help />
         </div>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
