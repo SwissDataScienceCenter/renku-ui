@@ -54,12 +54,16 @@ import { displaySlice, resetFavicon, setFavicon } from "../../display";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
+import type { Project } from "../../projectsV2/api/projectV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
-import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "../api/sessionLaunchersV2.api";
+import {
+  useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
+  type SessionLauncher,
+} from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
-import SessionStartLinkModal from "../SessionView/SessionStartLinkModal";
+import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
@@ -376,30 +380,17 @@ function SessionDetails({
   slug?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { projectId, launcherId } = useMemo(() => {
-    if (session == null) {
-      return { projectId: undefined, launcherId: undefined };
-    }
-    return {
-      projectId: session.project_id,
-      launcherId: session.launcher_id,
-    };
-  }, [session]);
-
   const {
-    data: launchers,
-    isLoading: isLoadingLaunchers,
-    error: launchersError,
-  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
-  const { data: project, isLoading: isLoadingProject } =
-    useGetNamespacesByNamespaceProjectsAndSlugQuery(
-      namespace && slug ? { namespace, slug } : skipToken
-    );
-
-  const launcher = useMemo(
-    () => launchers?.find(({ id }) => id === launcherId),
-    [launcherId, launchers]
-  );
+    isLoadingLaunchers,
+    isLoadingProject,
+    launcher,
+    launchersError,
+    project,
+  } = useSessionProjectAndLauncher({
+    namespace,
+    session,
+    slug,
+  });
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
@@ -522,7 +513,11 @@ function ShareSessionLinkButton({
   namespace?: string;
   slug?: string;
 }) {
-  const launcherId = session?.launcher_id;
+  const { launcher, project } = useSessionProjectAndLauncher({
+    namespace,
+    session,
+    slug,
+  });
   const ref = useRef<HTMLButtonElement>(null);
   const buttonId = "share-session-button";
   const tooltip = "Share session launch link";
@@ -532,7 +527,7 @@ function ShareSessionLinkButton({
     setIsShareLinkOpen((open) => !open);
   }, []);
 
-  if (launcherId == null || namespace == null || slug == null) return null;
+  if (launcher == null || project == null) return null;
 
   return (
     <div>
@@ -556,13 +551,60 @@ function ShareSessionLinkButton({
       <UncontrolledTooltip placement="bottom" target={ref}>
         {tooltip}
       </UncontrolledTooltip>
-      <SessionStartLinkModal
+      <SessionLaunchLinkModal
         isOpen={isShareLinkOpen}
-        launcherId={launcherId}
+        launcher={launcher}
+        project={project}
         toggle={toggleShareLink}
-        slug={slug}
-        namespace={namespace}
       />
     </div>
   );
+}
+
+function useSessionProjectAndLauncher({
+  namespace,
+  session,
+  slug,
+}: {
+  namespace: string | undefined;
+  session: SessionV2 | undefined;
+  slug: string | undefined;
+}): {
+  isLoadingLaunchers: boolean;
+  isLoadingProject: boolean;
+  launcher: SessionLauncher | undefined;
+  launchersError: unknown;
+  project: Project | undefined;
+} {
+  const { projectId, launcherId } = useMemo(() => {
+    if (session == null) {
+      return { projectId: undefined, launcherId: undefined };
+    }
+    return {
+      projectId: session.project_id,
+      launcherId: session.launcher_id,
+    };
+  }, [session]);
+
+  const {
+    data: launchers,
+    isLoading: isLoadingLaunchers,
+    error: launchersError,
+  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
+  const { data: project, isLoading: isLoadingProject } =
+    useGetNamespacesByNamespaceProjectsAndSlugQuery(
+      namespace && slug ? { namespace, slug } : skipToken
+    );
+
+  const launcher = useMemo(
+    () => launchers?.find(({ id }) => id === launcherId),
+    [launcherId, launchers]
+  );
+  return {
+    isLoadingLaunchers,
+    isLoadingProject,
+    launcher,
+    launchersError,
+    project,
+  };
 }
