@@ -57,6 +57,8 @@ export default function ContactUsCard() {
   const renderedBody = BODY.replace(/[{][{]full_name[}][}]/g, `${signature}`);
   url.searchParams.set("body", renderedBody);
 
+  const urlStr = url.toString().replace(/[+]/g, "%20");
+
   return (
     <div
       data-cy="connected-services-contact-us-card"
@@ -74,7 +76,7 @@ export default function ContactUsCard() {
               className="stretched-link"
               color="outline-primary"
               tag="a"
-              href={url.href}
+              href={urlStr}
             >
               <Send className={cx("bi", "me-1")} />
               Contact us
