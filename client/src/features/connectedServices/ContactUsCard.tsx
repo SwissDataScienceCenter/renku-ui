@@ -16,15 +16,17 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
+import { Send } from "react-bootstrap-icons";
 import { Button, Card, CardBody, CardText, CardTitle } from "reactstrap";
 
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
+import { useGetUserQuery } from "../usersV2/api/users.api";
 
 import styles from "./ContactUsCard.module.scss";
-import { Send } from "react-bootstrap-icons";
 
 export default function ContactUsCard() {
   const { params } = useContext(AppContext);
@@ -32,13 +34,28 @@ export default function ContactUsCard() {
     params?.SESSION_CLASS_EMAIL_US ??
     DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
 
+  const { data: user } = useGetUserQuery(
+    SESSION_CLASS_EMAIL_US.enabled ? undefined : skipToken
+  );
+  const name = useMemo(
+    () =>
+      user?.isLoggedIn && user.first_name && user.last_name
+        ? `${user.first_name} ${user.last_name}`
+        : user?.isLoggedIn
+        ? user?.first_name || user?.last_name
+        : undefined,
+    [user]
+  );
+
   if (!SESSION_CLASS_EMAIL_US.enabled) {
     return null;
   }
 
-  const href = SESSION_CLASS_EMAIL_US.enabled
-    ? SESSION_CLASS_EMAIL_US.email.to
-    : "mailto:nobody";
+  const url = new URL(`mailto:${SESSION_CLASS_EMAIL_US.email.to}`);
+  url.searchParams.set("subject", SUBJECT);
+  const signature = name || "<signature>";
+  const renderedBody = BODY.replace(/[{][{]full_name[}][}]/g, `${signature}`);
+  url.searchParams.set("body", renderedBody);
 
   return (
     <div
@@ -57,7 +74,7 @@ export default function ContactUsCard() {
               className="stretched-link"
               color="outline-primary"
               tag="a"
-              href={href}
+              href={url.href}
             >
               <Send className={cx("bi", "me-1")} />
               Contact us
@@ -69,3 +86,13 @@ export default function ContactUsCard() {
     </div>
   );
 }
+
+// TODO: Can we move this to the database?
+const SUBJECT = "Renku Integration Request";
+const BODY = `Hello Renku team,
+
+I would like to be able to connect git repositories from <insert URL here> to Renku projects. Would it be possible to add it as a Renku Integration?
+
+Best,
+
+{{full_name}}`;
