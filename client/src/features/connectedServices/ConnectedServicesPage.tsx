@@ -97,6 +97,7 @@ export default function ConnectedServicesPage() {
       <h1>Integrations</h1>
       <p>These integrations are only supported in Renku 2.0</p>
       {content}
+      <div>TODO: Contact us!</div>
     </div>
   );
 }
