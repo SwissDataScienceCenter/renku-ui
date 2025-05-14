@@ -64,7 +64,7 @@ export default function ContactUsCard() {
       data-cy="connected-services-contact-us-card"
       className={cx("col-12", "col-lg-6")}
     >
-      <Card className={cx("h-100", "border-0", styles.card)}>
+      <Card className={cx("border-0", styles.card)}>
         <CardBody>
           <CardTitle>
             <h4>
