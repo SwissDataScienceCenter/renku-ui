@@ -72,6 +72,8 @@ export const FAVICON_BY_SESSION_STATUS = {
   },
 };
 
+export const CUSTOM_LAUNCH_SEARCH_PARAM = "renku_custom_launch";
+
 export const ENVIRONMENT_VALUES_DESCRIPTION = {
   urlPath: `Specify a subpath for your Renku session. By default, the session opens at the path defined by the environment variable \`RENKU_SESSION_PATH\`. If you set a subpath (e.g., "foo"), the session will open at \`<RENKU_SESSION_PATH>/foo\`.`,
   port: `The network port that your application will use to listen for incoming connections.  
