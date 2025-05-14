@@ -64,6 +64,7 @@ import {
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
+import { validateEnvVariableName } from "./session.utils";
 
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
@@ -209,7 +210,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
         ?.filter(({ active }) => active)
         .map((cs) => storageDefinitionFromConfig(cs)),
       env_variable_overrides: Array.from(searchParams)
-        .filter(([name]) => !name.toUpperCase().startsWith("RENKU"))
+        .filter(([name]) => typeof validateEnvVariableName(name) !== "string")
         .map(([name, value]) => ({
           name,
           value,
