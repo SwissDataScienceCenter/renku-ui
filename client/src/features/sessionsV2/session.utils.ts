@@ -340,7 +340,7 @@ export function ensureHTTPS(url: string): string {
  */
 export function validateEnvVariableName(name: string): true | string {
   if (name.toUpperCase().startsWith(ENV_VARIABLES_RESERVED_PREFIX)) {
-    `Variable names cannot start with '${ENV_VARIABLES_RESERVED_PREFIX}'.`;
+    return `Variable names cannot start with '${ENV_VARIABLES_RESERVED_PREFIX}'.`;
   }
   return true;
 }
