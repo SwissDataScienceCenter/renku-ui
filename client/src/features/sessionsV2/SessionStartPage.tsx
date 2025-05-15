@@ -210,7 +210,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
         ?.filter(({ active }) => active)
         .map((cs) => storageDefinitionFromConfig(cs)),
       env_variable_overrides: Array.from(searchParams)
-        .filter(([name]) => typeof validateEnvVariableName(name) !== "string")
+        .filter(([name]) => typeof validateEnvVariableName(name) === true)
         .map(([name, value]) => ({
           name,
           value,
