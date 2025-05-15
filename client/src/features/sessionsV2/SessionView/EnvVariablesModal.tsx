@@ -31,6 +31,7 @@ import {
 import {
   Button,
   Form,
+  Input,
   Modal,
   ModalBody,
   ModalFooter,
@@ -45,8 +46,7 @@ import type {
   SessionLauncherPatch,
 } from "../api/sessionLaunchersV2.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../api/sessionLaunchersV2.api";
-
-import { Input } from "reactstrap";
+import { validateEnvVariableName } from "../session.utils";
 
 interface EnvVariable {
   name: string;
@@ -79,13 +79,6 @@ function getPatchFromForm(
     error: null,
     env_variables,
   };
-}
-
-function validateEnvVariableName(name: string): string | boolean {
-  if (name.toUpperCase().startsWith("RENKU")) {
-    return "Variable names cannot start with 'RENKU'.";
-  }
-  return true;
 }
 
 function AddEnvVariableButton({
@@ -170,7 +163,8 @@ function EditEnvVariablesFormContent({
                 "A variable name is made up of letters, numbers and '_'.",
             },
             validate: {
-              startWithRenku: (value) => validateEnvVariableName(value),
+              validateEnvVariableName: (value) =>
+                validateEnvVariableName(value),
             },
           }}
         />
