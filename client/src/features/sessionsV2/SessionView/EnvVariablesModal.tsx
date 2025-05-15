@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CheckLg, Plus, XLg } from "react-bootstrap-icons";
+import { Braces, CheckLg, Plus, XLg } from "react-bootstrap-icons";
 import {
   Controller,
   useFieldArray,
@@ -299,6 +299,7 @@ export default function EnvVariablesModal({
       scrollable
     >
       <ModalHeader toggle={toggle}>
+        <Braces className={cx("me-1", "bi")} />
         Environment variables for {launcher.name}
       </ModalHeader>
       <ModalBody>

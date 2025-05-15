@@ -160,7 +160,10 @@ function UpdateSecretsMountDirectoryModal({
       toggle={toggle}
     >
       <Form noValidate onSubmit={onSubmit}>
-        <ModalHeader toggle={toggle}>Update secrets mount location</ModalHeader>
+        <ModalHeader toggle={toggle}>
+          <Pencil className={cx("bi", "me-1")} />
+          Update secrets mount location
+        </ModalHeader>
         <ModalBody>
           <p>
             Change the location where secrets will be mounted in sessions. Note
