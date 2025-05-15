@@ -40,7 +40,6 @@ import ProgressStepsIndicator, {
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
@@ -58,12 +57,14 @@ import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { usePostSessionsMutation as useLaunchSessionMutation } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
+import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
   SessionStartDataConnectorConfiguration,
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
+import { validateEnvVariableName } from "./session.utils";
 
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
@@ -208,10 +209,12 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       cloudstorage: startSessionOptionsV2.cloudStorage
         ?.filter(({ active }) => active)
         .map((cs) => storageDefinitionFromConfig(cs)),
-      env_variable_overrides: Array.from(searchParams).map(([name, value]) => ({
-        name,
-        value,
-      })),
+      env_variable_overrides: Array.from(searchParams)
+        .filter(([name]) => validateEnvVariableName(name) === true)
+        .map(([name, value]) => ({
+          name,
+          value,
+        })),
     };
   }, [
     launcher.id,
@@ -425,7 +428,9 @@ function StartSessionFromLauncher({
 }: StartSessionFromLauncherProps) {
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
-  const hasCustomQuery = searchParams.has("custom");
+  const hasCustomQuery = !!+(
+    searchParams.get(CUSTOM_LAUNCH_SEARCH_PARAM) ?? ""
+  );
   const [sessionStarted, setSessionStarted] = useState(false);
   const [showSaveCredentials, setShowSaveCredentials] = useState(false);
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {

@@ -24,7 +24,10 @@ import type {
   SessionLauncherEnvironmentParams,
   SessionLauncherEnvironmentPatchParams,
 } from "./api/sessionLaunchersV2.api";
-import { DEFAULT_URL } from "./session.constants";
+import {
+  DEFAULT_URL,
+  ENV_VARIABLES_RESERVED_PREFIX,
+} from "./session.constants";
 import { SessionLauncherForm } from "./sessionsV2.types";
 
 export function getSessionFavicon(
@@ -327,4 +330,17 @@ export function ensureHTTPS(url: string): string {
   } catch (error) {
     throw new Error(`Invalid URL: ${url}`);
   }
+}
+
+/**
+ * Validation method for environment variable names
+ *
+ * @param name the name of the environment variable
+ * @returns true if the variable name is allowed, an error message otherwise.
+ */
+export function validateEnvVariableName(name: string): true | string {
+  if (name.toUpperCase().startsWith(ENV_VARIABLES_RESERVED_PREFIX)) {
+    return `Variable names cannot start with '${ENV_VARIABLES_RESERVED_PREFIX}'.`;
+  }
+  return true;
 }
