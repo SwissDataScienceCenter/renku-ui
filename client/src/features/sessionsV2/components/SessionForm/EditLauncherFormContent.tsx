@@ -223,6 +223,7 @@ export function EditLauncherFormMetadata({
       <div>
         <Label className="form-label" for="addSessionLauncherDescription">
           Session launcher description
+          <span className={cx("text-muted", "small", "ms-2")}>(Optional)</span>
         </Label>
         <Controller
           control={control}

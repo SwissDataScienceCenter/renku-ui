@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { ReactNode, useRef } from "react";
-import { InfoCircleFill } from "react-bootstrap-icons";
+import { InfoCircle } from "react-bootstrap-icons";
 import { PopoverBody, UncontrolledPopover } from "reactstrap";
 
 export function MoreInfo({
@@ -33,8 +33,9 @@ export function MoreInfo({
   return (
     <>
       <span ref={ref}>
-        <InfoCircleFill
-          className={cx("bi", "ms-1", "cursor-pointer", "text-light-emphasis")}
+        <InfoCircle
+          size={18}
+          className={cx("bi", "ms-1", "cursor-pointer")}
           tabIndex={0}
         />
       </span>
