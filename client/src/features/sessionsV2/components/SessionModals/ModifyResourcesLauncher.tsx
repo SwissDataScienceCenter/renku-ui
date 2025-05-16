@@ -29,6 +29,7 @@ import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
 } from "./ResourceClassWarning";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 
 interface ModifyResourcesLauncherModalProps {
   isOpen: boolean;
@@ -141,7 +142,7 @@ export function ModifyResourcesLauncherModal({
   );
 
   return (
-    <Modal
+    <ScrollableModal
       centered
       fullscreen="lg"
       isOpen={isOpen}
@@ -271,7 +272,7 @@ export function ModifyResourcesLauncherModal({
           Modify resources
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
