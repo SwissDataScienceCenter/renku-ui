@@ -17,6 +17,7 @@
  */
 
 import {
+  Database,
   Folder2Open,
   Globe2,
   Icon,
@@ -76,6 +77,7 @@ export const TYPE_FILTER_ALLOWED_VALUES: SearchEntityType[] = [
   "group",
   "project",
   "user",
+  "dataconnector", //eslint-disable-line spellcheck/spell-checker
 ];
 
 // Visibility filter constants
@@ -158,6 +160,7 @@ export const FILTER_VALUE_LABELS: {
   group: { icon: People, label: "Group" },
   project: { icon: Folder2Open, label: "Project" },
   user: { icon: Person, label: "User" },
+  dataconnector: { icon: Database, label: "Data connector" }, // eslint-disable-line spellcheck/spell-checker
 
   private: { icon: Lock, label: "Private" },
   public: { icon: Globe2, label: "Public" },

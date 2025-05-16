@@ -1,69 +1,34 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.2",
   "info": {
-    "title": "Renku Search API",
-    "version": "0.3.0-24-g4b9bfff"
+    "title": "Renku Data Services API",
+    "description": "This service is the main backend for Renku. It provides information about users, projects,\ncloud storage, access to compute resources and many other things.\n",
+    "version": "v1"
   },
   "servers": [
     {
-      "url": "/api/search",
-      "description": "Renku Search API"
+      "url": "/api/data"
     }
   ],
   "paths": {
-    "/query": {
+    "/search/query": {
       "get": {
-        "tags": ["Search"],
-        "description": "## Search Query\n\nThe search accepts queries in two representations: JSON and a simple\nquery string. A query may contain specific and unspecific search\nterms.\n\n### Query String\n\nA query is a sequence of words. All words that are not recognized as\nspecific search terms are used for searching in various entity\nproperties, such as `name` or `description`. Specific search terms are\nmatched exactly against a certain field. Terms are separated by\nwhitespace.\n\nExample:\n```\nnumpy flight visibility:public\n```\n\nSearches for entities containing `numpy` _and_ `flight` that are\npublic.\n\nThe term order is usually not relevant, it may influence the score of\na result, though.\n\nIf a value for a specific field contains whitespace, quotes or a comma\nit must be enclosed in quotes. Additionally, multiple values can be\nprovided for each field by using a comma separated list. The values\nare treated as alternatives, so any such value would yield a result.\n\nExample:\n```\nnumpy flight visibility:public,private\n```\n\nSearches for entities containing `numpy` _and_ `flight` that are\n_either_ `public` _or_ `private`.\n\n### Fields\n\nThe following fields are available:\n\n- `id`\n- `name`\n- `slug`\n- `visibility`\n- `created`\n- `createdBy`\n- `type`\n- `role`\n- `keyword`\n- `namespace`\n\nEach field allows to specify one or more values, separated by comma.\nThe value must be separated by a `:`. For date fields, additional `<`\nand `>` is supported.\n\n### EntityTypes\n\nThe field `type` allows to search for specific entity types. If it is\nmissing, all entity types are included in the result. Entity types are:\n\n- `Project`\n- `User`\n- `Group`\n\nExample:\n `type:Project`\n\n### Roles\n\nThe field `role` allows to search for projects the current user has\nthe given role. Other entities are excluded from the results.\n\n- `owner`\n- `editor`\n- `viewer`\n- `member`\n\n### Visibility\n\nThe `visibility` field can be used to restrict to entities with a\ncertain visibility. Users have a default visibility of `public`.\nPossbile values are:\n\n- `public`\n- `private`\n\n\n\n### Dates\n\nDate fields, like\n\n- `created`\n\naccept date strings which can be specified in various ways. There are\n\n- relative dates: `today`\n- partial timestamps: `2023-05`, `2023-11-12T10`\n- calculations based on the above: `today-5d`, `2023-10-15/10d`\n\n\n#### Relative dates\n\nThere are the following keywords for relative dates:\n\n- `today`\n- `yesterday`\n\n#### Partial Timestamps\n\nTimestamps must be in ISO8601 form and are UTC based and allow to\nspecify time up to seconds. The full form is\n\n```\nyyyy-mm-ddTHH:MM:ssZ\n```\n\nAny part starting from right can be omitted. When querying, it will be\nfilled with either the maximum or minimum possible value depending on\nthe side of comparison. When the date is an upper bound, the missing\nparts will be set to their minimum values. Conversely, when used as a\nlower bound then the parts are set to its maximum value.\n\nExample:\n- `created>2023-03` will turn into `created>2023-03-31T23:59:59`\n- `created<2023-03` will turn into `created<2023-03-01T00:00:00`\n\n#### Date calculations\n\nAt last, a date can be specified by adding or subtracting days from a\nreference date. The reference date must be given either as a relative\ndate or partial timestamp. Then a `+`, `-` or `/` follows with the\namount of days.\n\nThe `/` character allows to add and substract the days from the\nreference date, making the reference date the middle.\n\nExample:\n- `created>today-14d` things created from 14 days ago\n- `created<2023-05/14d` things created from last two weeks of April\n  and first two weeks of May\n\n#### Date Comparison\n\nComparing dates with `>` and `<` is done as expected. More interesting\nis to specify more than one date and the use of the `:` comparison.\n\nThe `:` can be used to specify ranges more succinctly. For a full\ntimestamp, it means /equals/. With partial timestamps it searches\nwithin the minimum and maximum possible date for that partial\ntimestamp.\n\nSince multiple values are combined using `OR`, it is possible to\nsearch in multiple ranges.\n\nExample:\n```\ncreated:2023-03,2023-06\n```\n\nThe above means to match entities created in March 2023 or June 2023.\n\n## Sorting\n\nThe query allows to define terms for sorting. Sorting is limited to\nspecific fields, which are:\n\n- `name`\n- `created`\n- `score`\n\nSorting by a field is defined by writing the field name, followed by a\ndash and the sort direction. Multiple such definitions can be\nspecified, using a comma separated list. Alternatively, multiple\n`sort:…` terms will be combined into a single one in the order they\nappear.\n\nExample:\n`sort:score-desc,created-asc`\nis equivalent to\n`sort:score-desc sort:created-asc`\n",
-        "operationId": "getQuery",
+        "summary": "Run a search query.",
         "parameters": [
           {
-            "name": "Renku-Auth-Anon-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "q",
             "in": "query",
-            "description": "User defined search query",
-            "required": false,
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
             "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "The page to retrieve, starting at 1",
-            "required": false,
-            "schema": {
-              "default": 1,
-              "type": "integer",
-              "format": "int32",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "description": "How many items to return for one page",
-            "required": false,
-            "schema": {
-              "default": 25,
-              "type": "integer",
-              "format": "int32",
-              "minimum": 1,
-              "maximum": 100
+              "$ref": "#/components/schemas/SearchQuery"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Search results according to the query.",
             "headers": {
               "x-page": {
                 "required": true,
@@ -92,20 +57,6 @@
                   "type": "integer",
                   "format": "int32"
                 }
-              },
-              "x-prev-page": {
-                "required": false,
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "x-next-page": {
-                "required": false,
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
               }
             },
             "content": {
@@ -116,208 +67,120 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid value for: header Renku-Auth-Anon-Id, Invalid value for: query parameter page, Invalid value for: query parameter per_page",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+          "422": {
+            "description": "Failed to validate the query parameters"
           },
-          "default": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {},
-          {
-            "httpAuth": []
-          }
-        ]
-      }
-    },
-    "/version": {
-      "get": {
-        "tags": ["Information"],
-        "description": "Returns version information",
-        "operationId": "getVersion",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CurrentVersion"
-                }
-              }
-            }
+          "500": {
+            "description": "Internal server error."
+          },
+          "503": {
+            "description": "Temporary internal error."
           }
         }
       }
     },
-    "/": {
-      "get": {
-        "tags": ["Search (Legacy)"],
-        "description": "## Search Query\n\nThe search accepts queries in two representations: JSON and a simple\nquery string. A query may contain specific and unspecific search\nterms.\n\n### Query String\n\nA query is a sequence of words. All words that are not recognized as\nspecific search terms are used for searching in various entity\nproperties, such as `name` or `description`. Specific search terms are\nmatched exactly against a certain field. Terms are separated by\nwhitespace.\n\nExample:\n```\nnumpy flight visibility:public\n```\n\nSearches for entities containing `numpy` _and_ `flight` that are\npublic.\n\nThe term order is usually not relevant, it may influence the score of\na result, though.\n\nIf a value for a specific field contains whitespace, quotes or a comma\nit must be enclosed in quotes. Additionally, multiple values can be\nprovided for each field by using a comma separated list. The values\nare treated as alternatives, so any such value would yield a result.\n\nExample:\n```\nnumpy flight visibility:public,private\n```\n\nSearches for entities containing `numpy` _and_ `flight` that are\n_either_ `public` _or_ `private`.\n\n### Fields\n\nThe following fields are available:\n\n- `id`\n- `name`\n- `slug`\n- `visibility`\n- `created`\n- `createdBy`\n- `type`\n- `role`\n- `keyword`\n- `namespace`\n\nEach field allows to specify one or more values, separated by comma.\nThe value must be separated by a `:`. For date fields, additional `<`\nand `>` is supported.\n\n### EntityTypes\n\nThe field `type` allows to search for specific entity types. If it is\nmissing, all entity types are included in the result. Entity types are:\n\n- `Project`\n- `User`\n- `Group`\n\nExample:\n `type:Project`\n\n### Roles\n\nThe field `role` allows to search for projects the current user has\nthe given role. Other entities are excluded from the results.\n\n- `owner`\n- `editor`\n- `viewer`\n- `member`\n\n### Visibility\n\nThe `visibility` field can be used to restrict to entities with a\ncertain visibility. Users have a default visibility of `public`.\nPossbile values are:\n\n- `public`\n- `private`\n\n\n\n### Dates\n\nDate fields, like\n\n- `created`\n\naccept date strings which can be specified in various ways. There are\n\n- relative dates: `today`\n- partial timestamps: `2023-05`, `2023-11-12T10`\n- calculations based on the above: `today-5d`, `2023-10-15/10d`\n\n\n#### Relative dates\n\nThere are the following keywords for relative dates:\n\n- `today`\n- `yesterday`\n\n#### Partial Timestamps\n\nTimestamps must be in ISO8601 form and are UTC based and allow to\nspecify time up to seconds. The full form is\n\n```\nyyyy-mm-ddTHH:MM:ssZ\n```\n\nAny part starting from right can be omitted. When querying, it will be\nfilled with either the maximum or minimum possible value depending on\nthe side of comparison. When the date is an upper bound, the missing\nparts will be set to their minimum values. Conversely, when used as a\nlower bound then the parts are set to its maximum value.\n\nExample:\n- `created>2023-03` will turn into `created>2023-03-31T23:59:59`\n- `created<2023-03` will turn into `created<2023-03-01T00:00:00`\n\n#### Date calculations\n\nAt last, a date can be specified by adding or subtracting days from a\nreference date. The reference date must be given either as a relative\ndate or partial timestamp. Then a `+`, `-` or `/` follows with the\namount of days.\n\nThe `/` character allows to add and substract the days from the\nreference date, making the reference date the middle.\n\nExample:\n- `created>today-14d` things created from 14 days ago\n- `created<2023-05/14d` things created from last two weeks of April\n  and first two weeks of May\n\n#### Date Comparison\n\nComparing dates with `>` and `<` is done as expected. More interesting\nis to specify more than one date and the use of the `:` comparison.\n\nThe `:` can be used to specify ranges more succinctly. For a full\ntimestamp, it means /equals/. With partial timestamps it searches\nwithin the minimum and maximum possible date for that partial\ntimestamp.\n\nSince multiple values are combined using `OR`, it is possible to\nsearch in multiple ranges.\n\nExample:\n```\ncreated:2023-03,2023-06\n```\n\nThe above means to match entities created in March 2023 or June 2023.\n\n## Sorting\n\nThe query allows to define terms for sorting. Sorting is limited to\nspecific fields, which are:\n\n- `name`\n- `created`\n- `score`\n\nSorting by a field is defined by writing the field name, followed by a\ndash and the sort direction. Multiple such definitions can be\nspecified, using a comma separated list. Alternatively, multiple\n`sort:…` terms will be combined into a single one in the order they\nappear.\n\nExample:\n`sort:score-desc,created-asc`\nis equivalent to\n`sort:score-desc sort:created-asc`\n",
-        "operationId": "get",
-        "parameters": [
-          {
-            "name": "Renku-Auth-Anon-Id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "q",
-            "in": "query",
-            "description": "User defined search query",
-            "required": false,
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "The page to retrieve, starting at 1",
-            "required": false,
-            "schema": {
-              "default": 1,
-              "type": "integer",
-              "format": "int32",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "description": "How many items to return for one page",
-            "required": false,
-            "schema": {
-              "default": 25,
-              "type": "integer",
-              "format": "int32",
-              "minimum": 1,
-              "maximum": 100
-            }
-          }
-        ],
+    "/search/reprovision": {
+      "post": {
+        "summary": "Start a new reprovisioning",
+        "description": "Only a single reprovisioning is active at any time",
         "responses": {
-          "200": {
-            "description": "",
-            "headers": {
-              "x-page": {
-                "required": true,
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "x-per-page": {
-                "required": true,
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "x-total": {
-                "required": true,
-                "schema": {
-                  "type": "integer",
-                  "format": "int64"
-                }
-              },
-              "x-total-pages": {
-                "required": true,
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "x-prev-page": {
-                "required": false,
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "x-next-page": {
-                "required": false,
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            },
+          "201": {
+            "description": "The reprovisioning is/will be started",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchResult"
+                  "$ref": "#/components/schemas/Reprovisioning"
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid value for: header Renku-Auth-Anon-Id, Invalid value for: query parameter page, Invalid value for: query parameter per_page",
+          "409": {
+            "description": "A reprovisioning is already started"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["search"]
+      },
+      "get": {
+        "summary": "Return status of reprovisioning",
+        "responses": {
+          "200": {
+            "description": "Status of reprovisioning if there's one in progress",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ReprovisioningStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There's no active reprovisioning",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           },
           "default": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Error"
           }
         },
-        "deprecated": true,
-        "security": [
-          {},
-          {
-            "httpAuth": []
+        "tags": ["search"]
+      },
+      "delete": {
+        "summary": "Stop an active reprovisioning",
+        "responses": {
+          "204": {
+            "description": "The reprovisioning was stopped or there was no one in progress"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
-        ]
+        },
+        "tags": ["search"]
       }
     }
   },
   "components": {
     "schemas": {
-      "CurrentVersion": {
-        "title": "CurrentVersion",
+      "SearchQuery": {
+        "description": "Query params for the search request",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          },
+          {
+            "properties": {
+              "q": {
+                "description": "The search query.",
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        ]
+      },
+      "PaginationRequest": {
         "type": "object",
-        "required": ["name", "version", "headCommit", "describedVersion"],
+        "additionalProperties": false,
         "properties": {
-          "name": {
-            "type": "string"
+          "page": {
+            "description": "Result's page number starting from 1",
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
           },
-          "version": {
-            "type": "string"
-          },
-          "headCommit": {
-            "type": "string"
-          },
-          "describedVersion": {
-            "type": "string"
+          "per_page": {
+            "description": "The number of results per page",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
           }
         }
       },
@@ -371,7 +234,8 @@
             "format": "double"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "const": "Group"
           }
         }
       },
@@ -424,7 +288,7 @@
           }
         }
       },
-      "Project": {
+      "SearchProject": {
         "title": "Project",
         "examples": [
           {
@@ -451,9 +315,9 @@
               "lastName": "Einstein",
               "score": 2.1
             },
-            "creationDate": "2024-06-20T09:03:48.708391961Z",
+            "creationDate": "2025-03-06T15:05:42.058323392Z",
             "keywords": ["data", "science"],
-            "score": 1.0
+            "score": 1
           }
         ],
         "type": "object",
@@ -508,7 +372,98 @@
             "format": "double"
           },
           "type": {
+            "type": "string",
+            "const": "Project"
+          }
+        }
+      },
+      "SearchDataConnector": {
+        "title": "DataConnector",
+        "examples": [
+          {
+            "type": "DataConnector",
+            "id": "01HRA7AZ2Q234CDQWGA052F8MK",
+            "name": "renku",
+            "slug": "renku",
+            "namespace": {
+              "type": "Group",
+              "id": "2CAF4C73F50D4514A041C9EDDB025A36",
+              "name": "SDSC",
+              "namespace": "SDSC",
+              "description": "SDSC group",
+              "score": 1.1
+            },
+            "visibility": "public",
+            "description": "Renku project",
+            "createdBy": {
+              "type": "User",
+              "id": "1CAF4C73F50D4514A041C9EDDB025A36",
+              "namespace": "renku/renku",
+              "firstName": "Albert",
+              "lastName": "Einstein",
+              "score": 2.1
+            },
+            "creationDate": "2025-03-06T15:05:42.058323392Z",
+            "keywords": ["data", "science"],
+            "score": 1
+          }
+        ],
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "visibility",
+          "creationDate",
+          "type",
+          "storageType",
+          "readonly"
+        ],
+        "properties": {
+          "id": {
             "type": "string"
+          },
+          "storageType": {
+            "type": "string"
+          },
+          "readonly": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "namespace": {
+            "$ref": "#/components/schemas/UserOrGroup"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/Visibility"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/User"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "score": {
+            "type": "number",
+            "format": "double"
+          },
+          "type": {
+            "type": "string",
+            "const": "DataConnector"
           }
         }
       },
@@ -519,18 +474,22 @@
             "$ref": "#/components/schemas/Group"
           },
           {
-            "$ref": "#/components/schemas/Project"
+            "$ref": "#/components/schemas/SearchProject"
           },
           {
             "$ref": "#/components/schemas/User"
+          },
+          {
+            "$ref": "#/components/schemas/SearchDataConnector"
           }
         ],
         "discriminator": {
           "propertyName": "type",
           "mapping": {
             "Group": "#/components/schemas/Group",
-            "Project": "#/components/schemas/Project",
-            "User": "#/components/schemas/User"
+            "Project": "#/components/schemas/SearchProject",
+            "User": "#/components/schemas/User",
+            "DataConnector": "#/components/schemas/SearchDataConnector"
           }
         }
       },
@@ -585,7 +544,8 @@
             "format": "double"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "const": "User"
           }
         }
       },
@@ -618,15 +578,78 @@
         }
       },
       "Visibility": {
-        "title": "Visibility",
+        "description": "Project's visibility levels",
         "type": "string",
-        "enum": ["Private", "Public"]
+        "enum": ["private", "public"]
+      },
+      "Reprovisioning": {
+        "description": "A reprovisioning",
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "start_date": {
+            "description": "The date and time the reprovisioning was started (in UTC and ISO-8601 format)",
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-11-01T17:32:28Z"
+          }
+        },
+        "required": ["id", "start_date"]
+      },
+      "ReprovisioningStatus": {
+        "description": "Status of a reprovisioning",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Reprovisioning"
+          }
+        ]
+      },
+      "Ulid": {
+        "description": "ULID identifier",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
       }
     },
-    "securitySchemes": {
-      "httpAuth": {
-        "type": "http",
-        "scheme": "bearer"
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
       }
     }
   }

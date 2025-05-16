@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { ReactNode, useEffect, useRef } from "react";
 import {
+  Database,
   Folder2Open,
   Globe2,
   Icon,
@@ -39,16 +40,18 @@ import {
 } from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import {
-  Group,
-  Project,
-  SearchEntity,
-  User,
+  type DataConnector,
+  type Group,
+  type Project,
+  type SearchEntity,
+  type User,
   searchV2Api,
 } from "../api/searchV2Api.api";
 import useClampSearchPage from "../hooks/useClampSearchPage.hook";
@@ -57,10 +60,16 @@ export default function SearchV2Results() {
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
   const [search, { data: searchResults }] =
-    searchV2Api.endpoints.getQuery.useLazyQuery();
+    searchV2Api.endpoints.getSearchQuery.useLazyQuery();
 
   useEffect(() => {
-    search({ page, perPage, q: query });
+    search({
+      params: {
+        page,
+        per_page: perPage,
+        q: query,
+      },
+    });
   }, [page, perPage, query, search]);
 
   useClampSearchPage({ totalPages: searchResults?.pagingInfo.totalPages });
@@ -89,18 +98,26 @@ export default function SearchV2Results() {
 function SearchV2ResultsContent() {
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
-  const searchResults = searchV2Api.endpoints.getQuery.useQueryState({
-    page,
-    perPage,
-    q: query,
+  const searchResults = searchV2Api.endpoints.getSearchQuery.useQueryState({
+    params: {
+      page,
+      per_page: perPage,
+      q: query,
+    },
   });
 
   if (searchResults.isFetching) {
     return <Loader />;
   }
 
+  if (searchResults.error) {
+    return (
+      <RtkOrNotebooksError error={searchResults.error} dismissible={false} />
+    );
+  }
+
   if (!searchResults.data?.items?.length) {
-    return query == null ? (
+    return query == null || query === "" ? (
       <p>No results</p>
     ) : (
       <>
@@ -127,6 +144,14 @@ function SearchV2ResultsContent() {
     } else if (entity.type === "User") {
       return (
         <SearchV2ResultUser key={`user-result-${entity.id}`} user={entity} />
+      );
+    } else if (entity.type === "DataConnector") {
+      entity;
+      return (
+        <SearchV2ResultDataConnector
+          key={`user-result-${entity.id}`}
+          dataConnector={entity}
+        />
       );
     }
     // Unknown entity type, in case backend introduces new types before the UI catches up
@@ -208,6 +233,8 @@ export function EntityPill({
       ? People
       : entityType === "User"
       ? Person
+      : entityType === "DataConnector"
+      ? Database
       : Question;
   const sizeClass =
     size == "sm"
@@ -365,6 +392,39 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
         name={displayName || "unknown"}
         namespace={namespace || "unknown"}
         namespaceUrl={userUrl}
+      />
+      <CardBody />
+    </SearchV2ResultsContainer>
+  );
+}
+
+interface SearchV2ResultDataConnectorProps {
+  dataConnector: DataConnector;
+}
+function SearchV2ResultDataConnector({
+  dataConnector,
+}: SearchV2ResultDataConnectorProps) {
+  const { id, name, namespace } = dataConnector;
+
+  const namespaceUrl =
+    namespace?.type === "User"
+      ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          username: namespace?.namespace ?? "",
+        })
+      : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: namespace?.namespace ?? "",
+        });
+  const hash = `data-connector-${id}`;
+  const dcUrl = `${namespaceUrl}#${hash}`;
+
+  return (
+    <SearchV2ResultsContainer>
+      <SearchV2CardTitle
+        entityType="DataConnector"
+        entityUrl={dcUrl}
+        name={name}
+        namespace={namespace?.namespace ?? ""}
+        namespaceUrl={namespaceUrl}
       />
       <CardBody />
     </SearchV2ResultsContainer>
