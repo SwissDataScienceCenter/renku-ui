@@ -8,7 +8,6 @@ import {
   Input,
   InputGroup,
   InputGroupText,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -17,6 +16,7 @@ import {
 
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
@@ -29,7 +29,6 @@ import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
 } from "./ResourceClassWarning";
-import ScrollableModal from "../../../../components/modal/ScrollableModal";
 
 interface ModifyResourcesLauncherModalProps {
   isOpen: boolean;
