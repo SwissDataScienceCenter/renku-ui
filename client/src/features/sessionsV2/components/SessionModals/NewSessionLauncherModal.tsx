@@ -40,7 +40,6 @@ import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
 import {
   LauncherStep,
-  SessionLauncherBreadcrumbNavbar,
 } from "../SessionForm/SessionLauncherBreadcrumbNavbar";
 
 interface NewSessionLauncherModalProps {
@@ -235,14 +234,24 @@ export default function NewSessionLauncherModal({
         )}
       </ModalBody>
       <ModalFooter>
-        {!result.isSuccess && (
-          <div className={cx("d-flex", "flex-grow-1")}>
-            <SessionLauncherBreadcrumbNavbar
-              step={step}
-              setStep={setStep}
-              readyToGoNext={isEnvironmentDefined}
-            />
-          </div>
+        {/*{!result.isSuccess && (*/}
+        {/*  <div className={cx("d-flex", "flex-grow-1")}>*/}
+        {/*    <SessionLauncherBreadcrumbNavbar*/}
+        {/*      step={step}*/}
+        {/*      setStep={setStep}*/}
+        {/*      readyToGoNext={isEnvironmentDefined}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*)}*/}
+        {!result.isSuccess && step == LauncherStep.LauncherDetails && (
+          <Button
+            color="outline-primary"
+            data-cy="back-environment-button"
+            onClick={() => setStep(LauncherStep.Environment)}
+          >
+            <ArrowRight className={cx("bi", "me-1")} />
+            Back
+          </Button>
         )}
         <Button
           data-cy="close-cancel-button"
