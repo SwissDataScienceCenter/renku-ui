@@ -418,7 +418,7 @@ function DataConnectorActionsInner({
   }, []);
 
   const actions = [
-    ...(permissions.write && scope !== "global"
+    ...(permissions.write
       ? [
           {
             key: "data-connector-edit",
