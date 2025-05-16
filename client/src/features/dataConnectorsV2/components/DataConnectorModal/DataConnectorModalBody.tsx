@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback } from "react";
 import { Globe, Lock } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { ButtonGroup, FormText, Input, Label } from "reactstrap";
+import { ButtonGroup, Input, Label } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
 import { WarnAlert } from "../../../../components/Alert";
@@ -42,6 +42,7 @@ import {
   type AddStorageStepProps,
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
+import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField.tsx";
 import type { DataConnectorSecret } from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
@@ -190,9 +191,10 @@ export function DataConnectorMount() {
   );
   const {
     control,
-    formState: { errors, touchedFields },
+    formState: { dirtyFields, errors, touchedFields },
     setValue,
     getValues,
+    watch,
   } = useForm<DataConnectorMountForm>({
     mode: "onChange",
     defaultValues: {
@@ -268,6 +270,15 @@ export function DataConnectorMount() {
     (o) => flatDataConnector.options && flatDataConnector.options[o.name]
   );
 
+  const url = `${flatDataConnector.namespace}/${flatDataConnector.slug}`;
+  const currentName = watch("name");
+  const currentSlug = watch("slug");
+  const resetUrl = useCallback(() => {
+    setValue("slug", slugFromTitle(currentName, true, true), {
+      shouldValidate: true,
+    });
+  }, [setValue, currentName]);
+
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
       <h5>Final details</h5>
@@ -341,55 +352,68 @@ export function DataConnectorMount() {
         <div className="invalid-feedback">
           {errors.name?.message?.toString()}
         </div>
-        {flatDataConnector.namespace && flatDataConnector.slug ? (
-          <div className={cx("form-text", "text-muted")}>
-            The url for this data connector will be{" "}
-            <b>{`${flatDataConnector.namespace}/${flatDataConnector.slug}`}</b>.
-          </div>
-        ) : (
-          <div className={cx("form-text", "text-muted")}>
-            The owner and slug together form the url for this data connector.
-          </div>
-        )}
+        {/*{flatDataConnector.namespace && flatDataConnector.slug ? (*/}
+        {/*  <div className={cx("form-text", "text-muted")}>*/}
+        {/*    The url for this data connector will be{" "}*/}
+        {/*    <b>{`${flatDataConnector.namespace}/${flatDataConnector.slug}`}</b>.*/}
+        {/*  </div>*/}
+        {/*) : (*/}
+        {/*  <div className={cx("form-text", "text-muted")}>*/}
+        {/*    The owner and slug together form the url for this data connector.*/}
+        {/*  </div>*/}
+        {/*)}*/}
       </div>
 
-      <div className="mb-3">
-        <Label className="form-label" for="data-connector-slug">
-          Slug
-        </Label>
-        <Controller
-          control={control}
-          name="slug"
-          render={({ field }) => (
-            <Input
-              aria-describedby="data-connector-SlugHelp"
-              className={cx("form-control", errors.slug && "is-invalid")}
-              data-cy="data-connector-slug-input"
-              id="data-connector-slug"
-              type="text"
-              {...field}
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("slug", e.target.value);
-              }}
-            />
-          )}
-          rules={{
-            required: true,
-            maxLength: 99,
-            pattern:
-              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
-          }}
-        />
-        <div className="invalid-feedback">
-          Please provide a slug consisting of lowercase letters, numbers, and
-          hyphens.
-        </div>
-        <FormText id="data-connector-SlugHelp" className="input-hint">
-          A short, machine-readable identifier for the data connector,
-          restricted to lowercase letters, numbers, and hyphens.
-        </FormText>
-      </div>
+      <SlugPreviewFormField
+        compact={true}
+        control={control}
+        errors={errors}
+        name="slug"
+        resetFunction={resetUrl}
+        url={url}
+        slug={currentSlug}
+        dirtyFields={dirtyFields}
+        label="Project URL"
+        entityName="project"
+      />
+
+      {/*<div className="mb-3">*/}
+      {/*  <Label className="form-label" for="data-connector-slug">*/}
+      {/*    Slug*/}
+      {/*  </Label>*/}
+      {/*  <Controller*/}
+      {/*    control={control}*/}
+      {/*    name="slug"*/}
+      {/*    render={({ field }) => (*/}
+      {/*      <Input*/}
+      {/*        aria-describedby="data-connector-SlugHelp"*/}
+      {/*        className={cx("form-control", errors.slug && "is-invalid")}*/}
+      {/*        data-cy="data-connector-slug-input"*/}
+      {/*        id="data-connector-slug"*/}
+      {/*        type="text"*/}
+      {/*        {...field}*/}
+      {/*        onChange={(e) => {*/}
+      {/*          field.onChange(e);*/}
+      {/*          onFieldValueChange("slug", e.target.value);*/}
+      {/*        }}*/}
+      {/*      />*/}
+      {/*    )}*/}
+      {/*    rules={{*/}
+      {/*      required: true,*/}
+      {/*      maxLength: 99,*/}
+      {/*      pattern:*/}
+      {/*        /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*  <div className="invalid-feedback">*/}
+      {/*    Please provide a slug consisting of lowercase letters, numbers, and*/}
+      {/*    hyphens.*/}
+      {/*  </div>*/}
+      {/*  <FormText id="data-connector-SlugHelp" className="input-hint">*/}
+      {/*    A short, machine-readable identifier for the data connector,*/}
+      {/*    restricted to lowercase letters, numbers, and hyphens.*/}
+      {/*  </FormText>*/}
+      {/*</div>*/}
 
       <div className="mb-3">
         <Label className="form-label" for="visibility">
