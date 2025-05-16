@@ -20,18 +20,12 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { CheckLg, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
-import { SuccessAlert } from "../../../../components/Alert";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
+import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
@@ -41,10 +35,10 @@ import {
   getFormattedEnvironmentValuesForEdit,
   getLauncherDefaultValues,
 } from "../../session.utils";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent, {
   EditLauncherFormMetadata,
 } from "../SessionForm/EditLauncherFormContent";
-import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
 
 export interface UpdateSessionLauncherModalProps {
@@ -113,14 +107,13 @@ export default function UpdateSessionLauncherEnvironmentModal({
   }, [launcher, reset, defaultValues]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
     >
       <ModalHeader toggle={toggle}>
         <EnvironmentIcon type="default" size={20} /> Edit environment{" "}
@@ -168,7 +161,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -232,14 +225,13 @@ export function UpdateSessionLauncherMetadataModal({
   }, [launcher, reset, defaultValues]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
     >
       <ModalHeader toggle={toggle}>
         <Pencil className={cx("me-2")} />
@@ -287,7 +279,7 @@ export function UpdateSessionLauncherMetadataModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

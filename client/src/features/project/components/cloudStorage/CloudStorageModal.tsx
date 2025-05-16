@@ -21,24 +21,23 @@ import cx from "classnames";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowCounterclockwise } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import {
   findSensitive,
   getCurrentStorageDetails,
   getSchemaProviders,
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
-
 import {
   useGetStorageSchemaQuery,
   usePatchStorageByStorageIdMutation,
   usePostStorageMutation,
   usePostStorageSchemaTestConnectionMutation,
-  type PostStorageSchemaTestConnectionApiArg,
   type PostStorageApiArg,
+  type PostStorageSchemaTestConnectionApiArg,
 } from "./api/projectCloudStorage.api";
 import {
   AddCloudStorageBackButton,
@@ -54,9 +53,9 @@ import {
   EMPTY_CLOUD_STORAGE_STATE,
 } from "./projectCloudStorage.constants";
 import type {
-  CloudStorage,
   AddCloudStorageState,
   AuxiliaryCommandStatus,
+  CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
 } from "./projectCloudStorage.types";
@@ -369,7 +368,7 @@ export default function CloudStorageModal({
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       className={styles.modal}
@@ -377,7 +376,6 @@ export default function CloudStorageModal({
       fullscreen="lg"
       id={currentStorage?.storage.storage_id ?? "new-cloud-storage"}
       isOpen={isOpen}
-      scrollable
       size="lg"
       unmountOnClose={false}
       toggle={toggle}
@@ -454,6 +452,6 @@ export default function CloudStorageModal({
           />
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

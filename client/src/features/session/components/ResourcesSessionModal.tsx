@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import {
-  Modal,
   ModalBody,
   ModalHeader,
   Nav,
@@ -27,11 +26,14 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
+
 import { SessionLogs } from "../../../components/Logs";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import SessionCheatSheetGenerated from "../../../notebooks/components/SessionCheatSheet";
 import { Docs } from "../../../utils/constants/Docs";
 import useGetSessionLogs from "../../../utils/customHooks/UseGetSessionLogs";
+
 import styles from "./SessionModals.module.scss";
 
 interface ResourcesSessionModalProps {
@@ -50,14 +52,13 @@ export default function ResourcesSessionModal({
   toggleModal,
 }: ResourcesSessionModalProps) {
   return (
-    <Modal
+    <ScrollableModal
       className={cx(
         styles.resourcesModal,
         "modal-fullscreen-lg-down",
         "modal-xl"
       )}
       isOpen={isOpen}
-      scrollable
       toggle={toggleModal}
     >
       <ModalHeader data-cy="modal-header" toggle={toggleModal}>
@@ -109,7 +110,7 @@ export default function ResourcesSessionModal({
           <Resources activeTab={activeTab} sessionName={sessionName} />
         </div>
       </ModalBody>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
