@@ -19,7 +19,13 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, CheckLg, PlayCircle, XLg } from "react-bootstrap-icons";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckLg,
+  PlayCircle,
+  XLg,
+} from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -35,12 +41,9 @@ import {
 } from "../../api/sessionLaunchersV2.api";
 import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
 import { getFormattedEnvironmentValues } from "../../session.utils";
-import { SessionLauncherForm } from "../../sessionsV2.types";
+import { LauncherStep, SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
-import {
-  LauncherStep,
-} from "../SessionForm/SessionLauncherBreadcrumbNavbar";
 
 interface NewSessionLauncherModalProps {
   isOpen: boolean;
@@ -234,25 +237,6 @@ export default function NewSessionLauncherModal({
         )}
       </ModalBody>
       <ModalFooter>
-        {/*{!result.isSuccess && (*/}
-        {/*  <div className={cx("d-flex", "flex-grow-1")}>*/}
-        {/*    <SessionLauncherBreadcrumbNavbar*/}
-        {/*      step={step}*/}
-        {/*      setStep={setStep}*/}
-        {/*      readyToGoNext={isEnvironmentDefined}*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*)}*/}
-        {!result.isSuccess && step == LauncherStep.LauncherDetails && (
-          <Button
-            color="outline-primary"
-            data-cy="back-environment-button"
-            onClick={() => setStep(LauncherStep.Environment)}
-          >
-            <ArrowRight className={cx("bi", "me-1")} />
-            Back
-          </Button>
-        )}
         <Button
           data-cy="close-cancel-button"
           color="outline-primary"
@@ -261,6 +245,16 @@ export default function NewSessionLauncherModal({
           <XLg className={cx("bi", "me-1")} />
           {result.isSuccess ? "Close" : "Cancel"}
         </Button>
+        {!result.isSuccess && step == LauncherStep.LauncherDetails && (
+          <Button
+            color="outline-primary"
+            data-cy="back-environment-button"
+            onClick={() => setStep(LauncherStep.Environment)}
+          >
+            <ArrowLeft className={cx("bi", "me-1")} />
+            Back
+          </Button>
+        )}
         {!result.isSuccess && step === "environment" && (
           <Button
             color="primary"
