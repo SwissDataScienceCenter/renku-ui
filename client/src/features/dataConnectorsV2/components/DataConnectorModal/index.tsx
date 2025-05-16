@@ -41,7 +41,10 @@ import type { DataConnectorRead } from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import useDataConnectorPermissions from "../../utils/useDataConnectorPermissions.hook";
 
-import { dataConnectorToFlattened } from "../dataConnector.utils";
+import {
+  dataConnectorToFlattened,
+  getDataConnectorScope,
+} from "../dataConnector.utils";
 
 import styles from "./DataConnectorModal.module.scss";
 import DataConnectorModalBody from "./DataConnectorModalBody";
@@ -154,6 +157,7 @@ export default function DataConnectorModal({
   toggle: originalToggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
+  const scope = getDataConnectorScope(dataConnector?.namespace);
   const { permissions, isLoading: isLoadingPermissions } =
     useDataConnectorPermissions({ dataConnectorId: dataConnectorId ?? "" });
   const dispatch = useAppDispatch();
@@ -180,7 +184,9 @@ export default function DataConnectorModal({
       <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
         <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
-      {!isLoadingPermissions && dataConnectorId != null ? (
+      {!isLoadingPermissions &&
+      dataConnectorId != null &&
+      scope !== "global" ? (
         <PermissionsGuard
           disabled={<DataConnectorModalBodyAndFooterUnauthorized />}
           enabled={
@@ -194,6 +200,13 @@ export default function DataConnectorModal({
               }}
             />
           }
+          requestedPermission={"write"}
+          userPermissions={permissions}
+        />
+      ) : !isLoadingPermissions && dataConnectorId != null ? (
+        <PermissionsGuard
+          disabled={<DataConnectorModalBodyAndFooterUnauthorized />}
+          enabled={<div>DO NOT EDIT!!!</div>}
           requestedPermission={"write"}
           userPermissions={permissions}
         />

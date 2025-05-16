@@ -58,6 +58,7 @@ import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.ho
 
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import DataConnectorModal from "./DataConnectorModal";
+import { getDataConnectorScope } from "./dataConnector.utils";
 
 interface DataConnectorRemoveModalProps {
   dataConnector: DataConnectorRead;
@@ -367,6 +368,7 @@ function DataConnectorActionsInner({
   toggleView,
 }: DataConnectorActionsProps) {
   const { id: dataConnectorId } = dataConnector;
+  const scope = getDataConnectorScope(dataConnector.namespace);
   const { permissions } = useDataConnectorPermissions({ dataConnectorId });
 
   const { project_id: projectId } = dataConnectorLink ?? {};
@@ -416,7 +418,7 @@ function DataConnectorActionsInner({
   }, []);
 
   const actions = [
-    ...(permissions.write
+    ...(permissions.write && scope !== "global"
       ? [
           {
             key: "data-connector-edit",
@@ -444,7 +446,7 @@ function DataConnectorActionsInner({
           },
         ]
       : []),
-    ...(permissions.delete && removeMode === "delete"
+    ...(permissions.delete && removeMode === "delete" && scope !== "global"
       ? [
           {
             key: "data-connector-delete",
