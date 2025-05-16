@@ -67,7 +67,7 @@ export default function GroupNew() {
           toggle={toggleModal}
           modalTitle={
             <>
-              <People className="bi" />
+              <People className={cx("bi", "me-1")} />
               Create a new group
             </>
           }

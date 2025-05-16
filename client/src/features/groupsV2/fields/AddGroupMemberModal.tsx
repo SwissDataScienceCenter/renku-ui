@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
+import { PersonGear, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { SingleValue } from "react-select";
 import {
@@ -63,7 +63,10 @@ export default function AddGroupMemberModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Add a group member</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <PersonGear className={cx("me-1", "bi")} />
+        Add a group member
+      </ModalHeader>
       <AddGroupMemberAccessForm
         members={members}
         groupSlug={groupSlug}

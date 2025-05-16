@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, CheckLg, XLg } from "react-bootstrap-icons";
+import { ArrowRight, CheckLg, PlayCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -199,7 +199,10 @@ export default function NewSessionLauncherModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Add session launcher</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <PlayCircle className={cx("bi", "me-1")} />
+        Add session launcher
+      </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
           <ConfirmationCreate />

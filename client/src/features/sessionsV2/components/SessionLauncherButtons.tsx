@@ -20,12 +20,14 @@ import { ReactNode } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { ButtonGroup, UncontrolledTooltip } from "reactstrap";
+
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import {
   Build,
   SessionLauncher,
 } from "../api/sessionLaunchersV2.generated-api";
+import { CUSTOM_LAUNCH_SEARCH_PARAM } from "../session.constants";
 import BuildLauncherButtons from "./BuildLauncherButtons";
 
 interface SessionLauncherButtonsProps {
@@ -104,7 +106,9 @@ export function SessionLauncherButtons({
       className={cx("dropdown-item", hasSession && "disabled")}
       to={{
         pathname: startUrl,
-        search: new URLSearchParams({ custom: "1" }).toString(),
+        search: new URLSearchParams({
+          [CUSTOM_LAUNCH_SEARCH_PARAM]: "1",
+        }).toString(),
       }}
       data-cy="start-custom-session-button"
     >

@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CheckLg, Plus, XLg } from "react-bootstrap-icons";
+import { Braces, CheckLg, Plus, XLg } from "react-bootstrap-icons";
 import {
   Controller,
   useFieldArray,
@@ -46,6 +46,7 @@ import type {
   SessionLauncherPatch,
 } from "../api/sessionLaunchersV2.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../api/sessionLaunchersV2.api";
+import { validateEnvVariableName } from "../session.utils";
 
 interface EnvVariable {
   name: string;
@@ -78,13 +79,6 @@ function getPatchFromForm(
     error: null,
     env_variables,
   };
-}
-
-function validateEnvVariableName(name: string): string | boolean {
-  if (name.toUpperCase().startsWith("RENKU")) {
-    return "Variable names cannot start with 'RENKU'.";
-  }
-  return true;
 }
 
 function AddEnvVariableButton({
@@ -169,7 +163,8 @@ function EditEnvVariablesFormContent({
                 "A variable name is made up of letters, numbers and '_'.",
             },
             validate: {
-              startWithRenku: (value) => validateEnvVariableName(value),
+              validateEnvVariableName: (value) =>
+                validateEnvVariableName(value),
             },
           }}
         />
@@ -303,6 +298,7 @@ export default function EnvVariablesModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>
+        <Braces className={cx("me-1", "bi")} />
         Environment variables for {launcher.name}
       </ModalHeader>
       <ModalBody>

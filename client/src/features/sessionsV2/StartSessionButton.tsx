@@ -23,6 +23,7 @@ import { Link, generatePath } from "react-router";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
+import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 
 interface StartSessionButtonProps {
   namespace: string;
@@ -65,7 +66,9 @@ export default function StartSessionButton({
       className="dropdown-item"
       to={{
         pathname: startUrl,
-        search: new URLSearchParams({ custom: "1" }).toString(),
+        search: new URLSearchParams({
+          [CUSTOM_LAUNCH_SEARCH_PARAM]: "1",
+        }).toString(),
       }}
       data-cy="start-custom-session-button"
     >
