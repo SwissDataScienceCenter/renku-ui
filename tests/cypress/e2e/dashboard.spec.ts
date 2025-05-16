@@ -43,7 +43,7 @@ describe("dashboard", () => {
       .noActiveProjects()
       .sessionServersEmpty();
 
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
     cy.wait("@getEntities");
@@ -88,7 +88,7 @@ describe("dashboard", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     let projects;
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
@@ -138,7 +138,7 @@ describe("dashboard", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     let projects;
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
@@ -198,14 +198,14 @@ describe("dashboard", () => {
         queryUrl:
           "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Florenzo.cavazzi.tech%2Freadme-file-dev&branch=master",
       });
-    cy.visit("projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
+    cy.visit("/projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
     cy.wait("@getFirstProject");
 
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
     cy.wait("@getSessions");
     cy.getDataCy("session-container").should("be.visible");
-    cy.getDataCy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
+    cy.visit("/v1");
     cy.wait("@getLastVisitedProjects");
     cy.getDataCy("container-session").should("have.length", 3);
     cy.getDataCy("container-session")
@@ -248,7 +248,7 @@ describe("dashboard message", () => {
   });
 
   const visitDashboardPage = () => {
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUser");
     cy.wait("@getDataServiceUser");
     cy.wait("@getEntities");
@@ -295,7 +295,7 @@ describe("dashboard message", () => {
     cy.getDataCy("dashboard-message").should("not.exist");
   });
 
-  it("displays a non-dissmissible success message with a read more section", () => {
+  it("displays a non-dismissible success message with a read more section", () => {
     fixtures.configWithDashboardMessage({
       fixture: NON_DISMISSIBLE_READ_MORE_SUCCESS_MESSAGE_FIXTURE,
     });
@@ -357,7 +357,7 @@ describe("Dashboard pins", () => {
       })
       .sessionServersEmpty()
       .userPreferences();
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUserPreferences");
 
     cy.getDataCy("projects-container").should("be.visible");
@@ -391,7 +391,7 @@ describe("Dashboard pins", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUserPreferences");
     cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
 
@@ -454,7 +454,7 @@ describe("Dashboard pins", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUserPreferences");
     cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
 
@@ -525,7 +525,7 @@ describe("Dashboard pins", () => {
       });
     }
 
-    cy.visit("/");
+    cy.visit("/v1");
     cy.wait("@getUserPreferences");
     cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
 
@@ -544,5 +544,62 @@ describe("Dashboard pins", () => {
       .contains(
         "There are already 3 pinned projects. Unpin one if you want to pin this project."
       );
+  });
+});
+
+describe("announce v2 banner", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest().userPreferences();
+  });
+
+  it("v2 banner should be visible on the v1 dashboard", () => {
+    fixtures
+      .projects()
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .noActiveProjects()
+      .sessionServersEmpty();
+
+    cy.visit("/v1");
+    cy.wait("@getUser");
+    cy.wait("@getDataServiceUser");
+    cy.wait("@getEntities");
+    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getNoActiveProjects");
+
+    cy.getDataCy("announce-v2-banner").should("be.visible");
+
+    // TODO -- go to search, banner should not be visible there
+  });
+
+  it("v2 banner should not be visible outside the v1 dashboard", () => {
+    fixtures
+      .projects()
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .noActiveProjects()
+      .sessionServersEmpty();
+
+    cy.visit("/v1/search");
+    cy.wait("@getUser");
+    cy.wait("@getDataServiceUser");
+    cy.wait("@getEntities");
+
+    cy.getDataCy("announce-v2-banner").should("not.exist");
+  });
+});
+
+describe("anonymous dashboard", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userNone();
+  });
+
+  it("user should be prompted to log in", () => {
+    cy.visit("/v1");
+    cy.contains("to view the Renku legacy dashboard").should("be.visible");
   });
 });
