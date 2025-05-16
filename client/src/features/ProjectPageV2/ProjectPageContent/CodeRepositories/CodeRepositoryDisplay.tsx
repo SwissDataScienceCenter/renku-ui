@@ -21,6 +21,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   CircleFill,
+  FileCode,
   Pencil,
   Trash,
   XLg,
@@ -154,7 +155,10 @@ function EditCodeRepositoryModal({
   return (
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader toggle={toggleModal}>Edit code repository</ModalHeader>
+        <ModalHeader toggle={toggleModal}>
+          <FileCode className={cx("me-1", "bi")} />
+          Edit code repository
+        </ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
           <p>Specify a code repository by its URL.</p>
