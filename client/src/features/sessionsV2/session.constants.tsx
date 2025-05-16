@@ -117,6 +117,14 @@ export const BUILDER_FRONTENDS = [
     description: "A freely-licensed version Microsoft’s editor VS Code.",
     /* eslint-enable spellcheck/spell-checker */
   },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "jupyterlab",
+    label: "Jupyterlab",
+    description:
+      "Web-based interactive development environment for Jupyter notebooks, code and data.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
 ] as readonly BuilderSelectorOption[];
 
 export const IMAGE_BUILD_DOCS =
