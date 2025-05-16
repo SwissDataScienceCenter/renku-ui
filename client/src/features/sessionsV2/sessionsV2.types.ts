@@ -181,3 +181,8 @@ export interface BuilderSelectorOption {
   value: string;
   description?: ReactNode;
 }
+
+export enum LauncherStep {
+  Environment = "environment",
+  LauncherDetails = "launcherDetails",
+}
