@@ -48,7 +48,7 @@ const RequiredLabel = ({ isRequired }: RequiredLabelProps) => {
   return isRequired ? (
     <span className="required-label">*</span>
   ) : (
-    <span> (Optional)</span>
+    <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
   );
 };
 
