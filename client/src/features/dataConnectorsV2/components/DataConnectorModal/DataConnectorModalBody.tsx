@@ -17,20 +17,18 @@
  */
 
 import cx from "classnames";
-import { useCallback } from "react";
-import { Globe, Lock, PlusLg } from "react-bootstrap-icons";
+import { useCallback, useState } from "react";
+import { Globe, Lock } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Button,
   ButtonGroup,
-  Col,
-  FormText,
+  Collapse,
   Input,
   Label,
-  Row,
 } from "reactstrap";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
@@ -51,10 +49,8 @@ import type {
 import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
-import type {
-  DataConnectorRead,
-  DataConnectorSecret,
-} from "../../api/data-connectors.api";
+import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField.tsx";
+import type { DataConnectorSecret } from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import DataConnectorModalResult from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
@@ -210,11 +206,20 @@ export function DataConnectorMount({
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
     (state) => state.dataConnectorFormSlice
   );
+  const [isAdvancedSettingOpen, setIsAdvancedSettingsOpen] = useState(false);
+  const toggleIsOpen = useCallback(
+    () =>
+      setIsAdvancedSettingsOpen(
+        (isAdvancedSettingOpen) => !isAdvancedSettingOpen
+      ),
+    []
+  );
   const {
     control,
-    formState: { errors, touchedFields },
-    getValues,
+    formState: { dirtyFields, errors, touchedFields },
     setValue,
+    watch,
+    getValues,
     watch,
   } = useForm<DataConnectorMountForm>({
     mode: "onChange",
@@ -296,6 +301,15 @@ export function DataConnectorMount({
     (o) => flatDataConnector.options && flatDataConnector.options[o.name]
   );
 
+  const url = `${flatDataConnector.namespace}/`;
+  const currentName = watch("name");
+  const currentSlug = watch("slug");
+  const resetUrl = useCallback(() => {
+    setValue("slug", slugFromTitle(currentName, true, true), {
+      shouldValidate: true,
+    });
+  }, [setValue, currentName]);
+
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
       <h5>Final details</h5>
@@ -369,54 +383,21 @@ export function DataConnectorMount({
         <div className="invalid-feedback">
           {errors.name?.message?.toString()}
         </div>
-        {flatDataConnector.namespace && flatDataConnector.slug ? (
-          <div className={cx("form-text", "text-muted")}>
-            The url for this data connector will be{" "}
-            <b>{`${flatDataConnector.namespace}/${flatDataConnector.slug}`}</b>.
-          </div>
-        ) : (
-          <div className={cx("form-text", "text-muted")}>
-            The owner and slug together form the url for this data connector.
-          </div>
-        )}
       </div>
 
       <div className="mb-3">
-        <Label className="form-label" for="data-connector-slug">
-          Slug
-        </Label>
-        <Controller
+        <SlugPreviewFormField
+          compact={true}
           control={control}
+          errors={errors}
           name="slug"
-          render={({ field }) => (
-            <Input
-              aria-describedby="data-connector-SlugHelp"
-              className={cx("form-control", errors.slug && "is-invalid")}
-              data-cy="data-connector-slug-input"
-              id="data-connector-slug"
-              type="text"
-              {...field}
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("slug", e.target.value);
-              }}
-            />
-          )}
-          rules={{
-            required: true,
-            maxLength: 99,
-            pattern:
-              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
-          }}
+          resetFunction={resetUrl}
+          url={url}
+          slug={currentSlug}
+          dirtyFields={dirtyFields}
+          label="Project URL"
+          entityName="project"
         />
-        <div className="invalid-feedback">
-          Please provide a slug consisting of lowercase letters, numbers, and
-          hyphens.
-        </div>
-        <FormText id="data-connector-SlugHelp" className="input-hint">
-          A short, machine-readable identifier for the data connector,
-          restricted to lowercase letters, numbers, and hyphens.
-        </FormText>
       </div>
 
       <div className="mb-3">
@@ -494,63 +475,44 @@ export function DataConnectorMount({
       </div>
 
       <div className="mb-3">
-        <Label className="form-label" for="mountPoint">
-          Mount point
-        </Label>
-
-        <Controller
-          name="mountPoint"
-          control={control}
-          render={({ field }) => (
-            <input
-              id="mountPoint"
-              type="string"
-              {...field}
-              className={cx("form-control", errors.mountPoint && "is-invalid")}
-              data-cy="data-connector-mount-input"
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("mountPoint", e.target.value);
-              }}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a mount point.</div>
-        <div className={cx("form-text", "text-muted")}>
-          This is the name of the folder where you will find your external
-          storage in sessions. You should pick something different from the
-          folders used in the projects repository, and from folders mounted by
-          other storage services.
-        </div>
-      </div>
-
-      <div className="mb-3">
-        <Label className="form-label" for="readOnly">
-          Read-only
-        </Label>
-
         <Controller
           name="readOnly"
           control={control}
           render={({ field }) => (
-            <input
-              id="readOnly"
-              type="checkbox"
-              {...field}
-              className={cx(
-                "form-check-input",
-                "ms-1",
-                errors.readOnly && "is-invalid"
-              )}
-              data-cy="data-connector-readonly-input"
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("readOnly", e.target.checked);
-              }}
-              value=""
-              checked={flatDataConnector.readOnly ?? false}
-            />
+            <div className={cx("d-flex", "gap-2")}>
+              <Label className={cx("form-label", "mb-0")} for="readOnly">
+                Read-only
+              </Label>
+              <div
+                className={cx(
+                  "d-flex",
+                  "align-item-center",
+                  "form-check",
+                  "form-switch"
+                )}
+              >
+                <input
+                  id="readOnly"
+                  role="switch"
+                  type="checkbox"
+                  {...field}
+                  className={cx(
+                    "form-check-input",
+                    "rounded-pill",
+                    "my-auto",
+                    "me-2",
+                    errors.readOnly && "is-invalid"
+                  )}
+                  data-cy="data-connector-readonly-input"
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onFieldValueChange("readOnly", e.target.checked);
+                  }}
+                  value=""
+                  checked={flatDataConnector.readOnly ?? false}
+                />
+              </div>
+            </div>
           )}
           rules={{ required: true }}
         />
@@ -677,6 +639,65 @@ export function DataConnectorMount({
           specific topics. You can add multiple keywords.
         </div>
       </div>
+
+      <div className="mb-3">
+        <button
+          className={cx(
+            "d-flex",
+            "align-items-center",
+            "w-100",
+            "bg-transparent",
+            "border-0",
+            "fw-bold",
+            "px-0"
+          )}
+          type="button"
+          onClick={toggleIsOpen}
+        >
+          Advanced settings
+          <ChevronFlippedIcon
+            className="ms-1"
+            flipped={isAdvancedSettingOpen}
+          />
+        </button>
+      </div>
+
+      <Collapse isOpen={isAdvancedSettingOpen}>
+        <div className="mb-3">
+          <Label className="form-label" for="mountPoint">
+            Mount point
+          </Label>
+
+          <Controller
+            name="mountPoint"
+            control={control}
+            render={({ field }) => (
+              <input
+                id="mountPoint"
+                type="string"
+                {...field}
+                className={cx(
+                  "form-control",
+                  errors.mountPoint && "is-invalid"
+                )}
+                data-cy="data-connector-mount-input"
+                onChange={(e) => {
+                  field.onChange(e);
+                  onFieldValueChange("mountPoint", e.target.value);
+                }}
+              />
+            )}
+            rules={{ required: true }}
+          />
+          <div className="invalid-feedback">Please provide a mount point.</div>
+          <div className={cx("form-text", "text-muted")}>
+            This is the name of the folder where you will find your external
+            storage in sessions. You should pick something different from the
+            folders used in the projects repository, and from folders mounted by
+            other storage services.
+          </div>
+        </div>
+      </Collapse>
 
       {flatDataConnector.dataConnectorId == null &&
         hasPasswordFieldWithInput &&
