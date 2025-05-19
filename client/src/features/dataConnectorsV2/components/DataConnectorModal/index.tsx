@@ -20,32 +20,29 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { Database } from "react-bootstrap-icons";
-import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { useGetStorageSchemaQuery } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_TOTAL_STEPS,
   EMPTY_CLOUD_STORAGE_STATE,
 } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { AddCloudStorageState } from "../../../project/components/cloudStorage/projectCloudStorage.types";
-
-import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-
-import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../../api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../api/data-connectors.api";
+import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../../api/data-connectors.enhanced-api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import useDataConnectorPermissions from "../../utils/useDataConnectorPermissions.hook";
-
 import { dataConnectorToFlattened } from "../dataConnector.utils";
-
-import styles from "./DataConnectorModal.module.scss";
 import DataConnectorModalBody from "./DataConnectorModalBody";
 import DataConnectorModalFooter from "./DataConnectorModalFooter";
+
+import styles from "./DataConnectorModal.module.scss";
 
 export function DataConnectorModalBodyAndFooter({
   dataConnector = null,
@@ -164,7 +161,7 @@ export default function DataConnectorModal({
   }, [dispatch, originalToggle]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       className={styles.modal}
@@ -172,7 +169,6 @@ export default function DataConnectorModal({
       fullscreen="lg"
       id={dataConnector?.id ?? "new-data-connector"}
       isOpen={isOpen}
-      scrollable
       size="lg"
       unmountOnClose={false}
       toggle={toggle}
@@ -210,7 +206,7 @@ export default function DataConnectorModal({
       ) : (
         <DataConnectorModalBodyAndFooterUnauthorized />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }
 
