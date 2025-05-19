@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { Pencil, XLg } from "react-bootstrap-icons";
+import { Pencil, Save, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -138,7 +138,10 @@ export default function ReplaceSecretValueModal({
         noValidate
         onSubmit={onSubmit}
       >
-        <ModalHeader toggle={toggle}>Replace secret value</ModalHeader>
+        <ModalHeader toggle={toggle}>
+          <Save className={cx("bi", "me-1")} />
+          Replace secret value
+        </ModalHeader>
         <ModalBody>
           <p>
             Here you can replace the value of the secret named{" "}

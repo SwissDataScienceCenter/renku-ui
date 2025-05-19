@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { PencilSquare, XLg } from "react-bootstrap-icons";
+import { PencilSquare, PersonGear, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -173,7 +173,10 @@ export default function EditProjectMemberModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Change access</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <PersonGear className={cx("me-1", "bi")} />
+        Change access
+      </ModalHeader>
       {member != null && (
         <EditProjectMemberAccessForm
           members={members}
