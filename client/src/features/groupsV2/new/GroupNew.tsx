@@ -21,19 +21,13 @@ import { useCallback, useEffect } from "react";
 import { CheckLg, People, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router";
-import {
-  Button,
-  Form,
-  FormGroup,
-  Modal,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+import { Button, Form, FormGroup, ModalBody, ModalFooter } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
-import ModalHeader from "../../../components/modal/ModalHeader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import ModalHeader from "../../../components/modal/ModalHeader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
@@ -41,7 +35,7 @@ import type { GroupPostRequest } from "../../projectsV2/api/namespace.api";
 import { usePostGroupsMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import DescriptionFormField from "../../projectsV2/fields/DescriptionFormField";
 import NameFormField from "../../projectsV2/fields/NameFormField";
-import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField.tsx";
+import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField";
 import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { GROUP_CREATION_HASH } from "./createGroup.constants";
 
@@ -59,13 +53,12 @@ export default function GroupNew() {
 
   return (
     <>
-      <Modal
+      <ScrollableModal
         backdrop="static"
         centered
         data-cy="new-group-modal"
         fullscreen="lg"
         isOpen={showGroupCreationModal}
-        scrollable
         size="lg"
         unmountOnClose={true}
         toggle={toggleModal}
@@ -102,7 +95,7 @@ export default function GroupNew() {
             </ModalBody>
           )}
         </div>
-      </Modal>
+      </ScrollableModal>
     </>
   );
 }

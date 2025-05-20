@@ -28,7 +28,6 @@ import Select, {
   type SingleValue,
 } from "react-select";
 
-import { BUILDER_TYPES } from "../../session.constants";
 import type { BuilderSelectorOption } from "../../sessionsV2.types";
 
 import styles from "./Select.module.scss";
@@ -57,8 +56,8 @@ export default function BuilderSelectorCommon({
   onChange: onChange_,
 }: BuilderSelectorCommonProps) {
   const value = useMemo(
-    () => BUILDER_TYPES.find(({ value }) => value === value_) ?? defaultValue,
-    [defaultValue, value_]
+    () => options.find(({ value }) => value === value_) ?? defaultValue,
+    [defaultValue, value_, options]
   );
 
   const onChange = useCallback(
