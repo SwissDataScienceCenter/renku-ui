@@ -1008,7 +1008,7 @@ export function AddStorageOptions({
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-options">
-      <h5>Options</h5>
+      <h5>Connection information</h5>
       <p>
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.

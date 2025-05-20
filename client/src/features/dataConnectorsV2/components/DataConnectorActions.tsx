@@ -369,6 +369,7 @@ function DataConnectorActionsInner({
 }: DataConnectorActionsProps) {
   const { id: dataConnectorId } = dataConnector;
   const scope = getDataConnectorScope(dataConnector.namespace);
+  const [initialStep, setInitialStep] = useState(2);
   const { permissions } = useDataConnectorPermissions({ dataConnectorId });
 
   const { project_id: projectId } = dataConnectorLink ?? {};
@@ -411,6 +412,11 @@ function DataConnectorActionsInner({
     setIsDeleteOpen((open) => !open);
   }, []);
   const toggleEdit = useCallback(() => {
+    setInitialStep(3);
+    setIsEditOpen((open) => !open);
+  }, []);
+  const toggleEditConnection = useCallback(() => {
+    setInitialStep(2);
     setIsEditOpen((open) => !open);
   }, []);
   const toggleUnlink = useCallback(() => {
@@ -426,7 +432,17 @@ function DataConnectorActionsInner({
             content: (
               <>
                 <Pencil className={cx("bi", "me-1")} />
-                Edit
+                Edit properties
+              </>
+            ),
+          },
+          {
+            key: "data-connector-edit-connection",
+            onClick: toggleEditConnection,
+            content: (
+              <>
+                <Pencil className={cx("bi", "me-1")} />
+                Edit Connection Information
               </>
             ),
           },
@@ -521,6 +537,7 @@ function DataConnectorActionsInner({
         isOpen={isEditOpen}
         namespace={dataConnector.namespace}
         toggle={toggleEdit}
+        initialStep={initialStep}
       />
       <DataConnectorCredentialsModal
         dataConnector={dataConnector}

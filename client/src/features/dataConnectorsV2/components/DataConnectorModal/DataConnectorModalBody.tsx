@@ -81,12 +81,6 @@ export default function DataConnectorModalBody({
   if (schemata.length < 1) return <Loader />;
   return (
     <>
-      {!flatDataConnector.dataConnectorId && (
-        <p className="text-body-secondary">
-          Add published datasets from data repositories for use in your project.
-          Or, connect to cloud storage to read and write custom data.
-        </p>
-      )}
       <AddOrEditDataConnector
         dataConnector={dataConnector}
         project={project}
@@ -135,6 +129,12 @@ function AddOrEditDataConnector({
   if (CloudStorageContentByStep)
     return (
       <>
+        {!flatDataConnector.dataConnectorId && cloudStorageState.step <= 1 && (
+          <p className="text-body-secondary">
+            Add published datasets from data repositories for use in your
+            project. Or, connect to cloud storage to read and write custom data.
+          </p>
+        )}
         <div className={cx("d-flex", "justify-content-end")}>
           <AddStorageAdvancedToggle
             state={cloudStorageState}
@@ -312,7 +312,7 @@ export function DataConnectorMount({
 
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
-      <h5>Final details</h5>
+      <h5>Mount Properties</h5>
       <p>We need a few more details to mount your data properly.</p>
 
       <div className="mb-3">

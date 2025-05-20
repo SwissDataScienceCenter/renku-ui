@@ -360,7 +360,6 @@ describe("Set up data connectors", () => {
     cy.getDataCy("project-data-controller-mode-link").click();
     cy.get("#data-connector-identifier").type("user1-uuid/example-storage");
     cy.getDataCy("link-data-connector-button").click();
-    cy.wait("@getDataConnectorByNamespaceAndSlugNotFound");
     cy.contains(
       "Data connector with identifier 'user1-uuid/example-storage' does not exist or you do not have access to it."
     ).should("be.visible");

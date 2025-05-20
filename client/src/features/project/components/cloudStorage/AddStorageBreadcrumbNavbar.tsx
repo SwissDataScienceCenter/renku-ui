@@ -48,7 +48,9 @@ export default function AddStorageBreadcrumbNavbar({
       return (
         <BreadcrumbItem active={active} key={stepNumber}>
           {active ? (
-            <>{mapStepToName[stepNumber]}</>
+            <span className={active && "fw-bold"}>
+              {mapStepToName[stepNumber]}
+            </span>
           ) : (
             <>
               <Button
@@ -80,6 +82,6 @@ export default function AddStorageBreadcrumbNavbar({
 const mapStepToName: { [key: number]: string } = {
   0: "Advanced configuration",
   1: "Storage",
-  2: "Options",
+  2: "Connection",
   3: "Mount",
 };
