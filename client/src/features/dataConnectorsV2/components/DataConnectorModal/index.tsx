@@ -19,9 +19,10 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { Database } from "react-bootstrap-icons";
-import { ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Database, XLg } from "react-bootstrap-icons";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
+import { ErrorAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
@@ -38,7 +39,10 @@ import type { DataConnectorRead } from "../../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../../api/data-connectors.enhanced-api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import useDataConnectorPermissions from "../../utils/useDataConnectorPermissions.hook";
-import { dataConnectorToFlattened } from "../dataConnector.utils";
+import {
+  dataConnectorToFlattened,
+  getDataConnectorScope,
+} from "../dataConnector.utils";
 import DataConnectorModalBody from "./DataConnectorModalBody";
 import DataConnectorModalFooter from "./DataConnectorModalFooter";
 
@@ -151,6 +155,7 @@ export default function DataConnectorModal({
   toggle: originalToggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
+  const scope = getDataConnectorScope(dataConnector?.namespace);
   const { permissions, isLoading: isLoadingPermissions } =
     useDataConnectorPermissions({ dataConnectorId: dataConnectorId ?? "" });
   const dispatch = useAppDispatch();
@@ -176,7 +181,9 @@ export default function DataConnectorModal({
       <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
         <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
-      {!isLoadingPermissions && dataConnectorId != null ? (
+      {!isLoadingPermissions &&
+      dataConnectorId != null &&
+      scope !== "global" ? (
         <PermissionsGuard
           disabled={<DataConnectorModalBodyAndFooterUnauthorized />}
           enabled={
@@ -190,6 +197,13 @@ export default function DataConnectorModal({
               }}
             />
           }
+          requestedPermission={"write"}
+          userPermissions={permissions}
+        />
+      ) : !isLoadingPermissions && dataConnectorId != null ? (
+        <PermissionsGuard
+          disabled={<DataConnectorModalBodyAndFooterUnauthorized />}
+          enabled={<DoNotEditGlobalDataConnector toggle={toggle} />}
           requestedPermission={"write"}
           userPermissions={permissions}
         />
@@ -220,6 +234,41 @@ export function DataConnectorModalHeader({
     <>
       <Database className={cx("bi", "me-1")} />{" "}
       {dataConnectorId ? "Edit" : "Add"} data connector
+    </>
+  );
+}
+
+interface DoNotEditGlobalDataConnectorProps {
+  toggle: () => void;
+}
+
+function DoNotEditGlobalDataConnector({
+  toggle,
+}: DoNotEditGlobalDataConnectorProps) {
+  return (
+    <>
+      <ModalBody data-cy="data-connector-edit-body-warning">
+        <ErrorAlert dismissible={false} timeout={0}>
+          <h3>
+            RenkuLab administrators should avoid editing global data connectors
+          </h3>
+          <p className="mb-1">
+            Global data connectors can be used be all users of RenkuLab,
+            therefore edits on global data connectors can break many projects.
+          </p>
+          <p className="mb-0">
+            If a global data connector really needs to be edited, it is possible
+            to do so by directly using the RenkuLab API.
+          </p>
+        </ErrorAlert>
+      </ModalBody>
+
+      <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
+        <Button color="danger" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+      </ModalFooter>
     </>
   );
 }
