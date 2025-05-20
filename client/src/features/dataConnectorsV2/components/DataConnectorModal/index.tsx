@@ -54,6 +54,7 @@ export function DataConnectorModalBodyAndFooter({
   namespace,
   project,
   toggle,
+  initialStep,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
   // Fetch available schema when users open the modal
@@ -81,7 +82,7 @@ export function DataConnectorModalBodyAndFooter({
       dataConnector != null
         ? {
             ...EMPTY_CLOUD_STORAGE_STATE,
-            step: 2,
+            step: initialStep ?? 2,
             completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
           }
         : EMPTY_CLOUD_STORAGE_STATE;
@@ -92,7 +93,7 @@ export function DataConnectorModalBodyAndFooter({
         schemata: schemata ?? [],
       })
     );
-  }, [dataConnector, dispatch, namespace, project, schemata]);
+  }, [dataConnector, dispatch, namespace, project, schemata, initialStep]);
 
   // Visual elements
   return (
@@ -146,6 +147,7 @@ interface DataConnectorModalProps {
   namespace?: string;
   project?: Project;
   toggle: () => void;
+  initialStep?: number;
 }
 export default function DataConnectorModal({
   dataConnector = null,
@@ -153,6 +155,7 @@ export default function DataConnectorModal({
   namespace,
   project,
   toggle: originalToggle,
+  initialStep,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
   const scope = getDataConnectorScope(dataConnector?.namespace);
@@ -194,6 +197,7 @@ export default function DataConnectorModal({
                 namespace,
                 project,
                 toggle,
+                initialStep,
               }}
             />
           }
