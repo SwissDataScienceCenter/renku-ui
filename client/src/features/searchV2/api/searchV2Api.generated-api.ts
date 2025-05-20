@@ -50,14 +50,16 @@ export type DeleteSearchReprovisionApiArg = void;
 export type Group = {
   id: string;
   name: string;
-  namespace: string;
+  path: string;
+  slug: string;
   description?: string;
   score?: number;
   type: "Group";
 };
 export type User = {
   id: string;
-  namespace?: string;
+  path: string;
+  slug: string;
   firstName?: string;
   lastName?: string;
   score?: number;
@@ -75,6 +77,7 @@ export type Project = {
   id: string;
   name: string;
   slug: string;
+  path: string;
   namespace?: UserOrGroup;
   repositories?: string[];
   visibility: Visibility;
@@ -85,13 +88,24 @@ export type Project = {
   score?: number;
   type: "Project";
 };
+export type UserOrGroupOrProject =
+  | ({
+      type: "Group";
+    } & Group)
+  | ({
+      type: "User";
+    } & User)
+  | ({
+      type: "Project";
+    } & Project);
 export type DataConnector = {
   id: string;
   storageType: string;
   readonly: boolean;
   name: string;
   slug: string;
-  namespace?: UserOrGroup;
+  path: string;
+  namespace?: UserOrGroupOrProject;
   visibility: Visibility;
   description?: string;
   createdBy?: User;

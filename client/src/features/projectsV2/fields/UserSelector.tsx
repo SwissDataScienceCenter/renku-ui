@@ -50,7 +50,7 @@ function OptionOrSingleValueContent({ user }: OptionOrSingleValueContentProps) {
         {user.firstName} {user.lastName}
       </span>
       <span className={cx("fst-italic", "text-body-secondary", styles.kind)}>
-        @{user.namespace}
+        @{user.path}
       </span>
     </>
   );
@@ -184,7 +184,7 @@ export function UserSelector({
       unstyled
       getOptionValue={(option) => option.id}
       getOptionLabel={(option) =>
-        `${option.firstName} ${option.lastName} @${option.namespace}`
+        `${option.firstName} ${option.lastName} @${option.path}`
       }
       onChange={onChange}
       classNames={selectClassNames}

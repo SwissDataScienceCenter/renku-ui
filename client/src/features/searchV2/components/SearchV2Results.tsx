@@ -284,15 +284,15 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
   const namespaceUrl =
     namespace?.type === "User"
       ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-          username: namespace?.namespace ?? "",
+          username: namespace?.path ?? "",
         })
       : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: namespace?.namespace ?? "",
+          slug: namespace?.path ?? "",
         });
   const projectUrl =
-    namespace?.namespace != null
+    namespace?.path != null
       ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: namespace.namespace,
+          namespace: namespace.path,
           slug,
         })
       : generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
@@ -305,7 +305,7 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
         entityType="Project"
         entityUrl={projectUrl}
         name={name}
-        namespace={namespace?.namespace ?? ""}
+        namespace={namespace?.path ?? ""}
         namespaceUrl={namespaceUrl}
       />
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
@@ -344,7 +344,7 @@ interface SearchV2ResultGroupProps {
   group: Group;
 }
 function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
-  const { name, namespace, description } = group;
+  const { name, path: namespace, description } = group;
 
   const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
     slug: namespace,
@@ -373,7 +373,7 @@ interface SearchV2ResultUserProps {
   user: User;
 }
 function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
-  const { firstName, lastName, namespace } = user;
+  const { firstName, lastName, path: namespace } = user;
 
   const userUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
     username: namespace ?? "",
@@ -409,10 +409,10 @@ function SearchV2ResultDataConnector({
   const namespaceUrl =
     namespace?.type === "User"
       ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-          username: namespace?.namespace ?? "",
+          username: namespace?.path ?? "",
         })
       : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: namespace?.namespace ?? "",
+          slug: namespace?.path ?? "",
         });
   const hash = `data-connector-${id}`;
   const dcUrl = `${namespaceUrl}#${hash}`;
@@ -423,7 +423,7 @@ function SearchV2ResultDataConnector({
         entityType="DataConnector"
         entityUrl={dcUrl}
         name={name}
-        namespace={namespace?.namespace ?? ""}
+        namespace={namespace?.path ?? ""}
         namespaceUrl={namespaceUrl}
       />
       <CardBody />
