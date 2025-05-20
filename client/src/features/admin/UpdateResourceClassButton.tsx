@@ -26,13 +26,14 @@ import {
   Input,
   InputGroup,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useUpdateResourceClassMutation } from "../dataServices/computeResources.api";
 import {
   NodeAffinity,
@@ -167,13 +168,12 @@ function UpdateResourceClassModal({
   }, [reset, resourceClass]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       className={styles.modal}
       fullscreen="lg"
       isOpen={isOpen}
-      scrollable
       size="lg"
       toggle={toggle}
     >
@@ -463,7 +463,7 @@ function UpdateResourceClassModal({
           Update resource class
         </Button>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

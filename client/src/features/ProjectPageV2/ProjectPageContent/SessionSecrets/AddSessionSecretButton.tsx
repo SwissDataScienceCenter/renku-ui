@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
+import { PlusLg, ShieldLock, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -180,7 +180,10 @@ function AddSessionSecretModalContentStep1({
 
   return (
     <Form noValidate onSubmit={onSubmit}>
-      <ModalHeader toggle={toggle}>Add session secret slot</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <ShieldLock className={cx("me-1", "bi")} />
+        Add session secret slot
+      </ModalHeader>
       <ModalBody>
         <p>Add a new slot for a secret to be mounted in sessions.</p>
 

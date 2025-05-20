@@ -22,6 +22,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Pencil,
   Save,
+  ShieldLock,
   ShieldMinus,
   ShieldPlus,
   Trash,
@@ -333,7 +334,10 @@ function EditSessionSecretModal({
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <Form noValidate onSubmit={onSubmit}>
-        <ModalHeader toggle={toggle}>Edit session secret slot</ModalHeader>
+        <ModalHeader toggle={toggle}>
+          <ShieldLock className={cx("me-1", "bi")} />
+          Edit session secret slot
+        </ModalHeader>
         <ModalBody>
           {result.error && (
             <RtkOrNotebooksError error={result.error} dismissible={false} />
@@ -506,7 +510,10 @@ function ClearSessionSecretModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>Clear session secret</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <ShieldMinus className={cx("bi", "me-1")} />
+        Clear session secret
+      </ModalHeader>
       <ModalBody>
         <p>
           This action will clear the secret value from the{" "}

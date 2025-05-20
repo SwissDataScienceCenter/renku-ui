@@ -1,3 +1,7 @@
 .modal :global(.modal-content) {
   height: unset !important;
+
+  & :global(.modal-body) {
+    max-height: 75vh;
+  }
 }

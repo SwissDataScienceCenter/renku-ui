@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CheckLg, Plus, XLg } from "react-bootstrap-icons";
+import { Braces, CheckLg, Plus, XLg } from "react-bootstrap-icons";
 import {
   Controller,
   useFieldArray,
@@ -31,7 +31,7 @@ import {
 import {
   Button,
   Form,
-  Modal,
+  Input,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -40,13 +40,13 @@ import {
 import { SuccessAlert } from "../../../components/Alert";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type {
   SessionLauncher,
   SessionLauncherPatch,
 } from "../api/sessionLaunchersV2.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../api/sessionLaunchersV2.api";
-
-import { Input } from "reactstrap";
+import { validateEnvVariableName } from "../session.utils";
 
 interface EnvVariable {
   name: string;
@@ -79,13 +79,6 @@ function getPatchFromForm(
     error: null,
     env_variables,
   };
-}
-
-function validateEnvVariableName(name: string): string | boolean {
-  if (name.toUpperCase().startsWith("RENKU")) {
-    return "Variable names cannot start with 'RENKU'.";
-  }
-  return true;
 }
 
 function AddEnvVariableButton({
@@ -170,7 +163,8 @@ function EditEnvVariablesFormContent({
                 "A variable name is made up of letters, numbers and '_'.",
             },
             validate: {
-              startWithRenku: (value) => validateEnvVariableName(value),
+              validateEnvVariableName: (value) =>
+                validateEnvVariableName(value),
             },
           }}
         />
@@ -295,16 +289,16 @@ export default function EnvVariablesModal({
   }, [append, fields, hasAddedDefaultValue, isDirty, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
     >
       <ModalHeader toggle={toggle}>
+        <Braces className={cx("me-1", "bi")} />
         Environment variables for {launcher.name}
       </ModalHeader>
       <ModalBody>
@@ -368,7 +362,7 @@ export default function EnvVariablesModal({
           )}
         </div>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
