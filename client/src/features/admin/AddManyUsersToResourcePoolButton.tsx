@@ -41,7 +41,6 @@ import {
   FormText,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -49,6 +48,7 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useAddUsersToResourcePoolMutation } from "../dataServices/computeResources.api";
 import { ResourcePool } from "../dataServices/dataServices.types";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
@@ -183,13 +183,12 @@ function AddManyUsersToResourcePoolModal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       className={styles.modal}
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
-      scrollable
       size="lg"
       toggle={toggle}
     >
@@ -302,7 +301,7 @@ function AddManyUsersToResourcePoolModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 

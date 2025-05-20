@@ -32,7 +32,6 @@ import {
   Button,
   Form,
   Input,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -41,6 +40,7 @@ import {
 import { SuccessAlert } from "../../../components/Alert";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type {
   SessionLauncher,
   SessionLauncherPatch,
@@ -289,14 +289,13 @@ export default function EnvVariablesModal({
   }, [append, fields, hasAddedDefaultValue, isDirty, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
     >
       <ModalHeader toggle={toggle}>
         <Braces className={cx("me-1", "bi")} />
@@ -363,7 +362,7 @@ export default function EnvVariablesModal({
           )}
         </div>
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
