@@ -74,7 +74,7 @@ export default function useSearch() {
     if (isNaN(page) || page < 1) {
       setSearchParams(
         (prev) => {
-          prev.set("page", FIRST_PAGE);
+          prev.set("page", FIRST_PAGE.toString());
           return prev;
         },
         { replace: true }
@@ -92,7 +92,7 @@ export default function useSearch() {
     if (isNaN(perPage) || perPage < 1) {
       setSearchParams(
         (prev) => {
-          prev.set("perPage", DEFAULT_PAGE_SIZE);
+          prev.set("perPage", DEFAULT_PAGE_SIZE.toString());
           return prev;
         },
         { replace: true }
@@ -103,7 +103,7 @@ export default function useSearch() {
     if (perPage > 100) {
       setSearchParams(
         (prev) => {
-          prev.set("perPage", MAX_PAGE_SIZE);
+          prev.set("perPage", MAX_PAGE_SIZE.toString());
           return prev;
         },
         { replace: true }
@@ -122,8 +122,8 @@ export default function useSearch() {
 
       setSearchParams((prev) => {
         prev.set("q", query);
-        prev.set("page", FIRST_PAGE);
-        prev.set("perPage", DEFAULT_PAGE_SIZE);
+        prev.set("page", FIRST_PAGE.toString());
+        prev.set("perPage", DEFAULT_PAGE_SIZE.toString());
         return prev;
       });
       queryRef.current = query;
