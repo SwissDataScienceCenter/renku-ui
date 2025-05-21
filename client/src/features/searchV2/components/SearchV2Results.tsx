@@ -99,16 +99,6 @@ export default function SearchV2Results() {
         </Col>
       </Row>
       <ShowGlobalDataConnector />
-
-      {/* <DataConnectorView
-              dataConnector={dataConnector}
-              dataConnectorLink={dataConnectorLink}
-              showView={showDetails}
-              toggleView={toggleDetails}
-              dataConnectorPotentiallyInaccessible={
-                dataConnectorPotentiallyInaccessible
-              }
-            /> */}
     </>
   );
 }
