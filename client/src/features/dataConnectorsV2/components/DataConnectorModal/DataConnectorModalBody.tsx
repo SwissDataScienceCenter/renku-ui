@@ -153,12 +153,14 @@ function AddOrEditDataConnector({
   if (DataConnectorContentByStep)
     return (
       <>
-        <div className={cx("d-flex", "justify-content-end")}>
-          <AddStorageAdvancedToggle
-            state={cloudStorageState}
-            setState={setState}
-          />
-        </div>
+        {!flatDataConnector.dataConnectorId && (
+          <div className={cx("d-flex", "justify-content-end")}>
+            <AddStorageAdvancedToggle
+              state={cloudStorageState}
+              setState={setState}
+            />
+          </div>
+        )}
         <DataConnectorContentByStep
           storageSecrets={storageSecrets}
           project={project}
@@ -290,7 +292,7 @@ export function DataConnectorMount() {
 
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
-      <h5>Mount Properties</h5>
+      <h5 className="fw-bold">Mount properties</h5>
       <p>We need a few more details to mount your data properly.</p>
 
       <div className="mb-3">

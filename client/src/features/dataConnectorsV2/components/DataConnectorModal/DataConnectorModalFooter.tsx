@@ -394,7 +394,6 @@ interface DataConnectorEditFooterProps
 function DataConnectorEditFooter({
   dataConnector,
   isOpen,
-  toggle,
 }: DataConnectorEditFooterProps) {
   const dataConnectorId = dataConnector.id;
   const dispatch = useAppDispatch();
@@ -409,18 +408,6 @@ function DataConnectorEditFooter({
     schemata,
     success,
   } = useAppSelector((state) => state.dataConnectorFormSlice);
-
-  // Enhanced setters
-  const setStateSafe = useCallback(
-    (newState: Partial<AddCloudStorageState>) => {
-      dispatch(
-        dataConnectorFormSlice.actions.setCloudStorageState({
-          cloudStorageState: newState,
-        })
-      );
-    },
-    [dispatch]
-  );
 
   // Mutations
   const [updateDataConnector, updateResult] =
@@ -541,12 +528,6 @@ function DataConnectorEditFooter({
           <RtkOrNotebooksError error={actionError} />
         </div>
       )}
-      <div className={cx("d-flex", "flex-grow-1")}>
-        <AddStorageBreadcrumbNavbar
-          state={cloudStorageState}
-          setState={setStateSafe}
-        />
-      </div>
       {!isResultLoading && !success && (
         <Button
           color="outline-danger"
@@ -559,9 +540,6 @@ function DataConnectorEditFooter({
           <ArrowCounterclockwise className={cx("bi", "me-1")} />
           Reset
         </Button>
-      )}
-      {!isResultLoading && (
-        <DataConnectorModalBackButton success={success} toggle={toggle} />
       )}
       {!success && (
         <DataConnectorModalContinueButton
