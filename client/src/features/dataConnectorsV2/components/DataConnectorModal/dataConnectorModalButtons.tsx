@@ -172,6 +172,7 @@ export function DataConnectorModalContinueButton({
           continueId="add-data-connector-continue"
           step={cloudStorageState.step}
           testId="test-data-connector"
+          editDataConnector={addOrEditStorage}
         />
         {disableContinueButton && (
           <UncontrolledTooltip
@@ -262,11 +263,13 @@ interface TestConnectionAndContinueButtonsProps
   continueId: string;
   step: number;
   testId: string;
+  editDataConnector?: () => void;
 }
 function TestConnectionAndContinueButtons({
   continueId,
   step,
   testId,
+  editDataConnector,
 }: TestConnectionAndContinueButtonsProps) {
   const dispatch = useAppDispatch();
   const { flatDataConnector, isActionOngoing, validationResultIsCurrent } =
@@ -367,22 +370,81 @@ function TestConnectionAndContinueButtons({
 
   const buttonContinueId = `${continueId}-button`;
   const divContinueId = `${continueId}-div`;
-  const continueContent = validationResult.isSuccess ? (
-    <>
-      Continue <ChevronRight className="bi" />
-    </>
-  ) : validationResult.isError ? (
-    <>
-      Skip Test <ChevronRight className="bi" />
-    </>
+  const dataConnectorId = flatDataConnector.dataConnectorId;
+  const continueContent =
+    dataConnectorId ? null : validationResult.isSuccess ? (
+      <>
+        Continue <ChevronRight className="bi" />
+      </>
+    ) : validationResult.isError ? (
+      <>
+        Skip Test <ChevronRight className="bi" />
+      </>
+    ) : null;
+
+  const updateContent = dataConnectorId ? (
+    validationResult.isSuccess ? (
+      <>
+        <PencilSquare className={cx("bi", "me-1")} /> Update connector
+      </>
+    ) : (
+      <>
+        <PencilSquare className={cx("bi", "me-1")} /> Skip Test and Save
+      </>
+    )
   ) : null;
   const continueColorClass = validationResult.isSuccess
     ? "btn-primary"
     : validationResult.isError
     ? "btn-outline-danger"
     : "btn-primary";
-  const continueSection =
-    !validationResult.isError && !validationResult.isSuccess ? null : (
+  const continueSection = dataConnectorId ? null : !validationResult.isError &&
+    !validationResult.isSuccess ? null : (
+    <div id={divContinueId} className={cx("d-inline-block", "ms-2")}>
+      <Button
+        color=""
+        id={buttonContinueId}
+        data-cy={buttonContinueId}
+        className={cx(continueColorClass)}
+        disabled={validationResult.isLoading}
+        onClick={() => {
+          dispatch(
+            dataConnectorFormSlice.actions.setValidationResult({
+              validationResult: {
+                isSuccess: validationResult.isSuccess,
+                isError: validationResult.isError,
+                error: validationResult.error,
+              },
+            })
+          );
+          if (validationResult.isError || validationResult.isSuccess) {
+            validationResult.reset();
+          }
+          dispatch(
+            dataConnectorFormSlice.actions.setCloudStorageState({
+              cloudStorageState: {
+                step: step === 0 ? CLOUD_STORAGE_TOTAL_STEPS : step + 1,
+                completedSteps:
+                  step === 0 ? CLOUD_STORAGE_TOTAL_STEPS - 1 : step,
+              },
+            })
+          );
+        }}
+      >
+        {continueContent}
+      </Button>
+      {validationResult.isError && (
+        <UncontrolledTooltip placement="top" target={divContinueId}>
+          The connection is not working as configured. You can make changes and
+          try again, or skip and continue.
+        </UncontrolledTooltip>
+      )}
+    </div>
+  );
+
+  const saveSection =
+    !dataConnectorId || !editDataConnector ? null : !validationResult.isError &&
+      !validationResult.isSuccess ? null : (
       <div id={divContinueId} className={cx("d-inline-block", "ms-2")}>
         <Button
           color=""
@@ -390,36 +452,14 @@ function TestConnectionAndContinueButtons({
           data-cy={buttonContinueId}
           className={cx(continueColorClass)}
           disabled={validationResult.isLoading}
-          onClick={() => {
-            dispatch(
-              dataConnectorFormSlice.actions.setValidationResult({
-                validationResult: {
-                  isSuccess: validationResult.isSuccess,
-                  isError: validationResult.isError,
-                  error: validationResult.error,
-                },
-              })
-            );
-            if (validationResult.isError || validationResult.isSuccess) {
-              validationResult.reset();
-            }
-            dispatch(
-              dataConnectorFormSlice.actions.setCloudStorageState({
-                cloudStorageState: {
-                  step: step === 0 ? CLOUD_STORAGE_TOTAL_STEPS : step + 1,
-                  completedSteps:
-                    step === 0 ? CLOUD_STORAGE_TOTAL_STEPS - 1 : step,
-                },
-              })
-            );
-          }}
+          onClick={() => editDataConnector()}
         >
-          {continueContent}
+          {updateContent}
         </Button>
         {validationResult.isError && (
           <UncontrolledTooltip placement="top" target={divContinueId}>
             The connection is not working as configured. You can make changes
-            and try again, or skip and continue.
+            and try again, or skip and save.
           </UncontrolledTooltip>
         )}
       </div>
@@ -429,6 +469,7 @@ function TestConnectionAndContinueButtons({
     <div className="d-inline-block">
       {testConnectionSection}
       {continueSection}
+      {saveSection}
     </div>
   );
 }
