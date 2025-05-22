@@ -17,8 +17,9 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import {
+  Database,
   Folder2Open,
   Globe2,
   Icon,
@@ -27,7 +28,7 @@ import {
   Person,
   Question,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { Link, generatePath, useLocation } from "react-router";
 import {
   Badge,
   Card,
@@ -38,69 +39,93 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
+import { useGetDataConnectorsByDataConnectorIdQuery } from "../../dataConnectorsV2/api/data-connectors.api";
+import DataConnectorView from "../../dataConnectorsV2/components/DataConnectorView";
 import {
-  Group,
-  Project,
-  SearchEntity,
-  User,
+  type DataConnector,
+  type Group,
+  type Project,
+  type SearchEntity,
+  type User,
   searchV2Api,
 } from "../api/searchV2Api.api";
 import useClampSearchPage from "../hooks/useClampSearchPage.hook";
+import { toDisplayName } from "../searchV2.utils";
 
 export default function SearchV2Results() {
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
   const [search, { data: searchResults }] =
-    searchV2Api.endpoints.getQuery.useLazyQuery();
+    searchV2Api.endpoints.getSearchQuery.useLazyQuery();
 
   useEffect(() => {
-    search({ page, perPage, q: query });
+    search({
+      params: {
+        page,
+        per_page: perPage,
+        q: query,
+      },
+    });
   }, [page, perPage, query, search]);
 
   useClampSearchPage({ totalPages: searchResults?.pagingInfo.totalPages });
 
   return (
-    <Row data-cy="search-results">
-      <Col className="d-sm-none" xs={12}>
-        <h4>Results</h4>
-      </Col>
-      <Col xs={12}>
-        <SearchV2ResultsContent />
-      </Col>
-      <Col className="mt-4" xs={12}>
-        <Pagination
-          currentPage={page}
-          perPage={perPage}
-          totalItems={searchResults?.pagingInfo.totalResult ?? 0}
-          pageQueryParam="page"
-          showDescription={true}
-        />
-      </Col>
-    </Row>
+    <>
+      <Row data-cy="search-results">
+        <Col className="d-sm-none" xs={12}>
+          <h4>Results</h4>
+        </Col>
+        <Col xs={12}>
+          <SearchV2ResultsContent />
+        </Col>
+        <Col className="mt-4" xs={12}>
+          <Pagination
+            currentPage={page}
+            perPage={perPage}
+            totalItems={searchResults?.pagingInfo.totalResult ?? 0}
+            pageQueryParam="page"
+            showDescription={true}
+          />
+        </Col>
+      </Row>
+      <ShowGlobalDataConnector />
+    </>
   );
 }
 
 function SearchV2ResultsContent() {
   const { page, perPage, query } = useAppSelector(({ searchV2 }) => searchV2);
 
-  const searchResults = searchV2Api.endpoints.getQuery.useQueryState({
-    page,
-    perPage,
-    q: query,
+  const searchResults = searchV2Api.endpoints.getSearchQuery.useQueryState({
+    params: {
+      page,
+      per_page: perPage,
+      q: query,
+    },
   });
 
   if (searchResults.isFetching) {
     return <Loader />;
   }
 
+  if (searchResults.error) {
+    return (
+      <RtkOrNotebooksError error={searchResults.error} dismissible={false} />
+    );
+  }
+
   if (!searchResults.data?.items?.length) {
-    return query == null ? (
+    return query == null || query === "" ? (
       <p>No results</p>
     ) : (
       <>
@@ -128,6 +153,14 @@ function SearchV2ResultsContent() {
       return (
         <SearchV2ResultUser key={`user-result-${entity.id}`} user={entity} />
       );
+    } else if (entity.type === "DataConnector") {
+      entity;
+      return (
+        <SearchV2ResultDataConnector
+          key={`user-result-${entity.id}`}
+          dataConnector={entity}
+        />
+      );
     }
     // Unknown entity type, in case backend introduces new types before the UI catches up
     return <SearchV2ResultsUnknown key={`unknown-result-${index}`} />;
@@ -148,11 +181,11 @@ function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
 }
 
 interface SearchV2CardTitleProps {
-  entityType?: SearchEntity["type"];
+  entityType: SearchEntity["type"];
   entityUrl: string;
   name: string;
-  namespace: string;
-  namespaceUrl: string;
+  namespace?: string;
+  namespaceUrl?: string;
 }
 function SearchV2CardTitle({
   entityType,
@@ -170,9 +203,15 @@ function SearchV2CardTitle({
           </Link>
         </h5>
         <p className="mb-0">
-          <Link data-cy="search-card-namespace-link" to={namespaceUrl}>
-            @{namespace}
-          </Link>
+          {namespace == null || namespaceUrl == null ? (
+            <span className="fst-italic">
+              Global {toDisplayName(entityType)}
+            </span>
+          ) : (
+            <Link data-cy="search-card-namespace-link" to={namespaceUrl}>
+              @{namespace}
+            </Link>
+          )}
         </p>
       </div>
       {entityType && (
@@ -208,6 +247,8 @@ export function EntityPill({
       ? People
       : entityType === "User"
       ? Person
+      : entityType === "DataConnector"
+      ? Database
       : Question;
   const sizeClass =
     size == "sm"
@@ -240,7 +281,7 @@ export function EntityPill({
       </div>
       {tooltip && (
         <UncontrolledTooltip placement={tooltipPlacement} target={ref}>
-          {entityType}
+          {toDisplayName(entityType)}
         </UncontrolledTooltip>
       )}
     </>
@@ -257,15 +298,15 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
   const namespaceUrl =
     namespace?.type === "User"
       ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-          username: namespace?.namespace ?? "",
+          username: namespace?.path ?? "",
         })
       : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: namespace?.namespace ?? "",
+          slug: namespace?.path ?? "",
         });
   const projectUrl =
-    namespace?.namespace != null
+    namespace?.path != null
       ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: namespace.namespace,
+          namespace: namespace.path,
           slug,
         })
       : generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
@@ -278,7 +319,7 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
         entityType="Project"
         entityUrl={projectUrl}
         name={name}
-        namespace={namespace?.namespace ?? ""}
+        namespace={namespace?.path ?? ""}
         namespaceUrl={namespaceUrl}
       />
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
@@ -317,7 +358,7 @@ interface SearchV2ResultGroupProps {
   group: Group;
 }
 function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
-  const { name, namespace, description } = group;
+  const { name, path: namespace, description } = group;
 
   const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
     slug: namespace,
@@ -346,7 +387,7 @@ interface SearchV2ResultUserProps {
   user: User;
 }
 function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
-  const { firstName, lastName, namespace } = user;
+  const { firstName, lastName, path: namespace } = user;
 
   const userUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
     username: namespace ?? "",
@@ -371,6 +412,80 @@ function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
   );
 }
 
+interface SearchV2ResultDataConnectorProps {
+  dataConnector: DataConnector;
+}
+function SearchV2ResultDataConnector({
+  dataConnector,
+}: SearchV2ResultDataConnectorProps) {
+  const { id, name, namespace, description, visibility, creationDate } =
+    dataConnector;
+
+  const location = useLocation();
+
+  const namespaceUrl =
+    namespace == null
+      ? undefined
+      : namespace?.type === "Project"
+      ? generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
+          // NOTE: we use the `showById` route to not have to split the path
+          id: namespace.path,
+        })
+      : namespace?.type === "User"
+      ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          username: namespace.path,
+        })
+      : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: namespace?.path ?? "",
+        });
+  const hash = `data-connector-${id}`;
+  const dcUrl =
+    namespace == null
+      ? `${location.search}#${hash}`
+      : `${namespaceUrl}#${hash}`;
+
+  return (
+    <SearchV2ResultsContainer>
+      <SearchV2CardTitle
+        entityType="DataConnector"
+        entityUrl={dcUrl}
+        name={name}
+        namespace={namespace?.path ?? ""}
+        namespaceUrl={namespaceUrl}
+      />
+      {/* <CardBody /> */}
+      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+        {description && <ClampedParagraph>{description}</ClampedParagraph>}
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "flex-wrap",
+            "gap-2",
+            "justify-content-between",
+            "mt-auto"
+          )}
+        >
+          <div>
+            {visibility.toLowerCase() === "private" ? (
+              <>
+                <Lock className={cx("bi", "me-1")} />
+                Private
+              </>
+            ) : (
+              <>
+                <Globe2 className={cx("bi", "me-1")} />
+                Public
+              </>
+            )}
+          </div>
+          <TimeCaption datetime={creationDate} prefix="Created" enableTooltip />
+        </div>
+      </CardBody>
+    </SearchV2ResultsContainer>
+  );
+}
+
 function SearchV2ResultsUnknown() {
   return (
     <SearchV2ResultsContainer>
@@ -381,5 +496,41 @@ function SearchV2ResultsUnknown() {
         <p className="mb-0">This entity type is not supported yet.</p>
       </CardBody>
     </SearchV2ResultsContainer>
+  );
+}
+
+function ShowGlobalDataConnector() {
+  const [hash, setHash] = useLocationHash();
+
+  const dataConnectorId = useMemo(
+    () =>
+      hash.startsWith("data-connector-")
+        ? hash.slice("data-connector-".length)
+        : undefined,
+    [hash]
+  );
+
+  const { currentData: dataConnector } =
+    useGetDataConnectorsByDataConnectorIdQuery(
+      dataConnectorId != null ? { dataConnectorId } : skipToken
+    );
+
+  const toggleView = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = !!prev;
+      return isOpen ? "" : `data-connector-${dataConnectorId}`;
+    });
+  }, [dataConnectorId, setHash]);
+
+  if (dataConnector == null) {
+    return null;
+  }
+
+  return (
+    <DataConnectorView
+      dataConnector={dataConnector}
+      showView
+      toggleView={toggleView}
+    />
   );
 }

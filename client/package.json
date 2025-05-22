@@ -36,7 +36,8 @@
     "generate-api:users": "rtk-query-codegen-openapi src/features/usersV2/api/users.api-config.ts",
     "update-api:dataConnectors": "node scripts/update_api_spec.js dataConnectors",
     "update-api:projectCloudStorage": "node scripts/update_api_spec.js projectCloudStorage",
-    "update-api:users": "node scripts/update_api_spec.js users"
+    "update-api:users": "node scripts/update_api_spec.js users",
+    "update-api:searchV2": "node scripts/update_api_spec.js searchV2"
   },
   "type": "module",
   "dependencies": {
@@ -135,6 +136,7 @@
     "@typescript-eslint/parser": "^6.13.2",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^8.2.2",
+    "esbuild-runner": "^2.2.2",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-jest": "^27.6.0",

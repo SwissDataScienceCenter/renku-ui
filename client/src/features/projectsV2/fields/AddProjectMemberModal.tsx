@@ -32,7 +32,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { User } from "../../searchV2/api/searchV2Api.api";
+import type { User } from "../../searchV2/api/searchV2Api.api";
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
