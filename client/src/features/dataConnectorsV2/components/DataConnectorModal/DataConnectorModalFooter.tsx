@@ -533,8 +533,12 @@ function DataConnectorEditFooter({
           <RtkOrNotebooksError error={actionError} />
         </div>
       )}
-      {!isResultLoading && initialStep === 2 && (
-        <DataConnectorModalBackButton success={success} toggle={toggle} />
+      {!isResultLoading && (
+        <DataConnectorModalBackButton
+          success={success}
+          toggle={toggle}
+          initialStep={initialStep}
+        />
       )}
       {!isResultLoading && !success && (
         <Button
