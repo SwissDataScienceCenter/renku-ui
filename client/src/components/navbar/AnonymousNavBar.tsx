@@ -30,7 +30,7 @@ import {
 } from "reactstrap";
 
 import StatusBanner from "../../features/platform/components/StatusBanner";
-import LearnAboutV2Button from "../../features/projectsV2/shared/LearnAboutV2Button";
+import SunsetV1Button from "../../features/projectsV2/shared/SunsetV1Button";
 import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
@@ -83,7 +83,7 @@ export default function AnonymousNavBar() {
           <Badge color="warning" className="mx-2">
             Legacy
           </Badge>
-          <LearnAboutV2Button outline />
+          <SunsetV1Button outline />
           <NavbarToggler onClick={onToggle} className="border-0">
             <List className="bi text-rk-white" />
           </NavbarToggler>

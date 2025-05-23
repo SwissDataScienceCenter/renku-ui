@@ -19,16 +19,16 @@
 import cx from "classnames";
 import { ExternalLink } from "../../../components/ExternalLinks";
 
-interface LearnAboutV2ButtonProps {
+interface SunsetV1ButtonProps {
   children?: React.ReactNode;
   color?: string;
   outline?: boolean;
 }
-export default function LearnAboutV2Button({
+export default function SunsetV1Button({
   children = "Learn more",
   color = "light",
   outline = false,
-}: LearnAboutV2ButtonProps) {
+}: SunsetV1ButtonProps) {
   return (
     <ExternalLink
       className={cx(
@@ -40,7 +40,7 @@ export default function LearnAboutV2Button({
         ]
       )}
       role={outline ? "button" : "link"}
-      url="https://blog.renkulab.io/launch-renku-2"
+      url="https://blog.renkulab.io/sunsetting-legacy"
     >
       {children}
     </ExternalLink>
