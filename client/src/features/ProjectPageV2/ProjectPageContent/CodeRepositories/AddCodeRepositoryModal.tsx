@@ -117,7 +117,6 @@ export default function AddCodeRepositoryModal({
               <FormGroup className="field-group" noMargin>
                 <Label for={`project-${project.id}-add-repository-url`}>
                   Repository URL
-                  <span className="required-label">*</span>
                 </Label>
                 <Controller
                   control={control}

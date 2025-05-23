@@ -72,6 +72,7 @@ export default function SessionEnvironmentFormContent({
       <div className="mb-3">
         <Label className="form-label" for="addSessionEnvironmentDescription">
           Description
+          <span className={cx("text-muted", "small", "ms-2")}>(Optional)</span>
         </Label>
         <Controller
           control={control}

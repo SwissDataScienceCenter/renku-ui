@@ -47,6 +47,7 @@ function FormField<T extends FieldValues>({
   placeholder,
   rules,
   type = "text",
+  isOptional,
 }: {
   control: Control<T>;
   errors?: FieldErrors<T>;
@@ -56,14 +57,19 @@ function FormField<T extends FieldValues>({
   placeholder?: string;
   rules?: ControllerProps<T>["rules"];
   type: InputType;
+  isOptional?: boolean;
 }) {
   return (
     <>
       <Label
         for={`addSessionLauncher${name}`}
         className={cx("form-label", "me-2")}
+        aria-required={isOptional ? "false" : "true"}
       >
         {label}
+        {isOptional && (
+          <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+        )}
       </Label>
       <MoreInfo>
         <LazyRenkuMarkdown markdownText={info} />
@@ -101,6 +107,7 @@ interface JsonFieldProps<T extends FieldValues> {
   info: string;
   errors?: FieldErrors<T>;
   helpText: string;
+  isOptional?: boolean;
 }
 
 function JsonField<T extends FieldValues>({
@@ -110,11 +117,18 @@ function JsonField<T extends FieldValues>({
   info,
   errors,
   helpText,
+  isOptional,
 }: JsonFieldProps<T>) {
   return (
     <>
-      <Label for={`addSessionLauncher${name}`} className="form-label me-2 mb-0">
+      <Label
+        for={`addSessionLauncher${name}`}
+        className={cx("form-label", "me-2", "mb-0")}
+      >
         {label}
+        {isOptional && (
+          <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+        )}
       </Label>
       <MoreInfo>
         <LazyRenkuMarkdown markdownText={info} />
@@ -171,7 +185,8 @@ export function AdvancedSettingsFields<
           <FormField<T>
             control={control}
             name={"port" as Path<T>}
-            label="Port (Optional)"
+            label="Port"
+            isOptional={true}
             placeholder="e.g. 8080"
             errors={errors}
             info={ENVIRONMENT_VALUES_DESCRIPTION.port}
@@ -188,7 +203,8 @@ export function AdvancedSettingsFields<
           <FormField<T>
             control={control}
             name={"mount_directory" as Path<T>}
-            label="Mount Directory (Optional)"
+            label="Mount Directory"
+            isOptional={true}
             errors={errors}
             info={ENVIRONMENT_VALUES_DESCRIPTION.mountDirectory}
             type="text"
@@ -207,7 +223,8 @@ export function AdvancedSettingsFields<
           <FormField<T>
             control={control}
             name={"working_directory" as Path<T>}
-            label="Working Directory (Optional)"
+            label="Working Directory"
+            isOptional={true}
             errors={errors}
             info={ENVIRONMENT_VALUES_DESCRIPTION.workingDirectory}
             type="text"
@@ -219,7 +236,8 @@ export function AdvancedSettingsFields<
           <FormField<T>
             control={control}
             name={"uid" as Path<T>}
-            label="UID (Optional)"
+            label="UID"
+            isOptional={true}
             placeholder="e.g. 1000"
             type="number"
             errors={errors}
@@ -231,7 +249,8 @@ export function AdvancedSettingsFields<
           <FormField<T>
             control={control}
             name={"gid" as Path<T>}
-            label="GID (Optional)"
+            label="GID"
+            isOptional={true}
             placeholder="e.g. 1000"
             type="number"
             errors={errors}
@@ -245,7 +264,8 @@ export function AdvancedSettingsFields<
           <JsonField<T>
             control={control}
             name={"command" as Path<T>}
-            label="Command ENTRYPOINT (Optional)"
+            label="Command ENTRYPOINT"
+            isOptional={true}
             info={ENVIRONMENT_VALUES_DESCRIPTION.command}
             errors={errors}
             helpText='Please enter a valid JSON array format e.g. ["python3","main.py"]'
@@ -257,7 +277,8 @@ export function AdvancedSettingsFields<
           <JsonField<T>
             control={control}
             name={"args" as Path<T>}
-            label="Command Arguments CMD (Optional)"
+            label="Command Arguments CMD"
+            isOptional={true}
             info={ENVIRONMENT_VALUES_DESCRIPTION.args}
             errors={errors}
             helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'

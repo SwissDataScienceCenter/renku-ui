@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CheckLg,
-  InfoCircleFill,
+  InfoCircle,
   KeyFill,
   TrashFill,
   XLg,
@@ -297,7 +297,7 @@ export function CredentialMoreInfo({ help }: { help: string }) {
   return (
     <>
       <span ref={ref}>
-        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
+        <InfoCircle className={cx("bi", "ms-1")} tabIndex={0} />
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
         <PopoverBody>
