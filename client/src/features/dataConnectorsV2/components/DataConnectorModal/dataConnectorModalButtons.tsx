@@ -52,10 +52,12 @@ interface DataConnectorModalBackButtonProps
   extends DataConnectorModalForwardBackButtonProps {
   success: boolean;
   toggle: () => void;
+  initialStep?: number;
 }
 export function DataConnectorModalBackButton({
   success,
   toggle,
+  initialStep,
 }: DataConnectorModalBackButtonProps) {
   const { cloudStorageState, isActionOngoing } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -74,26 +76,28 @@ export function DataConnectorModalBackButton({
       </Button>
     );
   return (
-    <Button
-      color="outline-primary"
-      data-cy="data-connector-edit-back-button"
-      disabled={isActionOngoing}
-      onClick={() => {
-        dispatch(
-          dataConnectorFormSlice.actions.setCloudStorageState({
-            cloudStorageState: {
-              step: cloudStorageState.advancedMode
-                ? 0
-                : cloudStorageState.step - 1,
-            },
-            validationResult: null,
-          })
-        );
-      }}
-    >
-      <ChevronLeft className={cx("bi", "me-1")} />
-      Back
-    </Button>
+    (!initialStep || initialStep === 2) && (
+      <Button
+        color="outline-primary"
+        data-cy="data-connector-edit-back-button"
+        disabled={isActionOngoing}
+        onClick={() => {
+          dispatch(
+            dataConnectorFormSlice.actions.setCloudStorageState({
+              cloudStorageState: {
+                step: cloudStorageState.advancedMode
+                  ? 0
+                  : cloudStorageState.step - 1,
+              },
+              validationResult: null,
+            })
+          );
+        }}
+      >
+        <ChevronLeft className={cx("bi", "me-1")} />
+        Back
+      </Button>
+    )
   );
 }
 
