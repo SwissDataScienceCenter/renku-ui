@@ -34,7 +34,6 @@ export function MoreInfo({
     <>
       <span ref={ref}>
         <InfoCircle
-          size={18}
           className={cx("bi", "ms-1", "cursor-pointer")}
           tabIndex={0}
         />
