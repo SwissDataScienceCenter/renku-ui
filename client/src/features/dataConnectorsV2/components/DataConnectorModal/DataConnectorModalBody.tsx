@@ -311,11 +311,14 @@ export function DataConnectorMount({
       shouldValidate: true,
     });
   }, [setValue, currentName]);
+  const dataConnectorId = flatDataConnector.dataConnectorId;
 
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
-      <h5 className="fw-bold">Mount properties</h5>
-      <p>We need a few more details to mount your data properly.</p>
+      {!dataConnectorId && <h5 className="fw-bold">Final details</h5>}
+      <p>
+        Set how your data connector displays in Renku and who can access it.
+      </p>
 
       <div className="mb-3">
         <Label className="form-label" for="name">
