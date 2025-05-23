@@ -22,7 +22,7 @@ import {
   Folder,
   Gear,
   Globe2,
-  InfoCircleFill,
+  InfoCircle,
   Journals,
   Key,
   Lock,
@@ -581,7 +581,7 @@ function MountPointHead() {
     <>
       <span>Mount Point</span>
       <span ref={ref}>
-        <InfoCircleFill className={cx("bi ms-1")} />
+        <InfoCircle className={cx("bi ms-1")} />
       </span>
       <UncontrolledTooltip target={ref} placement="bottom">
         This is where the data connector will be mounted during sessions.

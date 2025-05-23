@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { EyeFill, EyeSlashFill, InfoCircleFill } from "react-bootstrap-icons";
+import { EyeFill, EyeSlashFill, InfoCircle } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import {
   Button,
@@ -343,7 +343,7 @@ function CredentialMoreInfo({ help }: { help: string }) {
   return (
     <>
       <span ref={ref}>
-        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
+        <InfoCircle className={cx("bi", "ms-1")} tabIndex={0} />
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
         <PopoverBody>

@@ -33,7 +33,10 @@ export default function DescriptionField<T extends FieldValues>({
   const fieldId = `session-secret-${name}`;
   return (
     <div className="mb-3">
-      <Label for={fieldId}>Description</Label>
+      <Label for={fieldId}>
+        Description
+        <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+      </Label>
       <Controller
         name={name}
         control={control}
