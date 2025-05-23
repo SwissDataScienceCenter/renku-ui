@@ -57,7 +57,6 @@ import {
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
-import DataConnectorModal from "./DataConnectorModal";
 import { getDataConnectorScope } from "./dataConnector.utils";
 
 interface DataConnectorRemoveModalProps {
@@ -366,10 +365,10 @@ function DataConnectorActionsInner({
   dataConnector,
   dataConnectorLink,
   toggleView,
+  toggleEdit,
 }: DataConnectorActionsProps) {
   const { id: dataConnectorId } = dataConnector;
   const scope = getDataConnectorScope(dataConnector.namespace);
-  const [initialStep, setInitialStep] = useState(2);
   const { permissions } = useDataConnectorPermissions({ dataConnectorId });
 
   const { project_id: projectId } = dataConnectorLink ?? {};
@@ -395,7 +394,6 @@ function DataConnectorActionsInner({
     dataConnector.storage.sensitive_fields?.length > 0;
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
   const onDelete = useCallback(() => {
     toggleView();
@@ -411,14 +409,7 @@ function DataConnectorActionsInner({
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
   }, []);
-  const toggleEdit = useCallback(() => {
-    setInitialStep(3);
-    setIsEditOpen((open) => !open);
-  }, []);
-  const toggleEditConnection = useCallback(() => {
-    setInitialStep(2);
-    setIsEditOpen((open) => !open);
-  }, []);
+
   const toggleUnlink = useCallback(() => {
     setIsUnlinkOpen((open) => !open);
   }, []);
@@ -428,17 +419,17 @@ function DataConnectorActionsInner({
       ? [
           {
             key: "data-connector-edit",
-            onClick: toggleEdit,
+            onClick: () => toggleEdit(3),
             content: (
               <>
                 <Pencil className={cx("bi", "me-1")} />
-                Edit properties
+                Edit
               </>
             ),
           },
           {
             key: "data-connector-edit-connection",
-            onClick: toggleEditConnection,
+            onClick: () => toggleEdit(2),
             content: (
               <>
                 <Pencil className={cx("bi", "me-1")} />
@@ -532,13 +523,6 @@ function DataConnectorActionsInner({
   return (
     <>
       {actionsContent}
-      <DataConnectorModal
-        dataConnector={dataConnector}
-        isOpen={isEditOpen}
-        namespace={dataConnector.namespace}
-        toggle={toggleEdit}
-        initialStep={initialStep}
-      />
       <DataConnectorCredentialsModal
         dataConnector={dataConnector}
         setOpen={setCredentialsOpen}
@@ -570,6 +554,7 @@ interface DataConnectorActionsProps {
   dataConnector: DataConnectorRead;
   dataConnectorLink?: DataConnectorToProjectLink;
   toggleView: () => void;
+  toggleEdit: (initialStep: number) => void;
 }
 
 export default function DataConnectorActions(props: DataConnectorActionsProps) {
