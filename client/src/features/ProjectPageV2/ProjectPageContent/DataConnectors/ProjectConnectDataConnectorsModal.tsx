@@ -388,7 +388,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
-        <Button color="outline-primary" onClick={toggle}>
+        <Button color="outline-primary" onClick={() => toggle()}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -541,7 +541,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
-        <Button color="outline-primary" onClick={toggle}>
+        <Button color="outline-primary" onClick={() => toggle()}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
