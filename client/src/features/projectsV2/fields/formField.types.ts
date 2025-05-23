@@ -32,7 +32,7 @@ export interface SlugPreviewFormFieldProps<T extends FieldValues>
   parentPath: string;
   slug: string;
   label: string;
-  entityName: "project" | "group";
+  entityName: "project" | "group" | "data-connector";
   dirtyFields: Partial<
     Readonly<{
       name?: boolean | undefined;

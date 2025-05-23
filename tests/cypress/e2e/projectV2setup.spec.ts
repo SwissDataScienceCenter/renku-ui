@@ -504,10 +504,6 @@ describe("Set up data connectors", () => {
     cy.contains("example storage").should("be.visible").click();
     cy.getDataCy("data-connector-edit").should("be.visible").click();
     // Fill out the details
-    cy.getDataCy("test-data-connector-button").click();
-    cy.getDataCy("add-data-connector-continue-button")
-      .contains("Continue")
-      .click();
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@patchDataConnector");
     cy.getDataCy("data-connector-edit-body").should(

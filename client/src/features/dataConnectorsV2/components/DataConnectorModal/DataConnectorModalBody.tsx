@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Globe, Lock } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -306,6 +306,13 @@ export function DataConnectorMount({
   const url = `${flatDataConnector.namespace}/`;
   const currentName = watch("name");
   const currentSlug = watch("slug");
+  useEffect(() => {
+    dispatch(
+      dataConnectorFormSlice.actions.setFlatDataConnector({
+        flatDataConnector: { ...getValues() },
+      })
+    );
+  }, [currentSlug, getValues, dispatch]);
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
       shouldValidate: true,
@@ -401,7 +408,7 @@ export function DataConnectorMount({
           slug={currentSlug}
           dirtyFields={dirtyFields}
           label="Project URL"
-          entityName="project"
+          entityName="data-connector"
         />
       </div>
 

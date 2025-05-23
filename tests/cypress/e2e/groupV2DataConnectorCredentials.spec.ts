@@ -333,7 +333,8 @@ describe("Set up data connectors with credentials", () => {
       fixture: "cloudStorage/storage-schema-s3.json",
     });
     openDataConnectorMenu();
-    cy.getDataCy("data-connector-edit").click();
+    cy.getDataCy("button-with-menu-dropdown").click();
+    cy.getDataCy("data-connector-edit-connection").click();
     cy.getDataCy("data-connector-edit-modal")
       .find("#access_key_id")
       .invoke("attr", "value")
