@@ -31,7 +31,10 @@ import Select, {
   SingleValue,
   SingleValueProps,
 } from "react-select";
-import { useGetQueryQuery, User } from "../../searchV2/api/searchV2Api.api";
+import {
+  useGetSearchQueryQuery,
+  type User,
+} from "../../searchV2/api/searchV2Api.api";
 import styles from "./ProjectNamespaceFormField.module.scss";
 
 const USER_REQUEST_LIMIT = 100;
@@ -47,7 +50,7 @@ function OptionOrSingleValueContent({ user }: OptionOrSingleValueContentProps) {
         {user.firstName} {user.lastName}
       </span>
       <span className={cx("fst-italic", "text-body-secondary", styles.kind)}>
-        @{user.namespace}
+        @{user.path}
       </span>
     </>
   );
@@ -181,7 +184,7 @@ export function UserSelector({
       unstyled
       getOptionValue={(option) => option.id}
       getOptionLabel={(option) =>
-        `${option.firstName} ${option.lastName} @${option.namespace}`
+        `${option.firstName} ${option.lastName} @${option.path}`
       }
       onChange={onChange}
       classNames={selectClassNames}
@@ -213,11 +216,13 @@ export function UserControl(props: UserControlProps) {
     data: users,
     isFetching,
     isLoading,
-  } = useGetQueryQuery(
+  } = useGetSearchQueryQuery(
     {
-      page: 1,
-      perPage: USER_REQUEST_LIMIT,
-      q: `type:user ${lookupQuery}`,
+      params: {
+        page: 1,
+        per_page: USER_REQUEST_LIMIT,
+        q: `type:user ${lookupQuery}`,
+      },
     },
     { skip: !lookupQuery || lookupQuery == null || lookupQuery.length < 2 }
   );

@@ -22,10 +22,12 @@ import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 import type { Role } from "../projectsV2/api/projectV2.api";
 import {
   DEFAULT_CREATION_DATE_FILTER,
+  DEFAULT_PAGE_SIZE,
   DEFAULT_ROLE_FILTER,
   DEFAULT_SORT_BY,
   DEFAULT_TYPE_FILTER,
   DEFAULT_VISIBILITY_FILTER,
+  FIRST_PAGE,
 } from "./searchV2.constants";
 import type {
   CreationDateFilter,
@@ -47,8 +49,8 @@ const initialState: SearchV2State = {
     visibility: DEFAULT_VISIBILITY_FILTER,
   },
   initialQuery: "",
-  page: 1,
-  perPage: 10,
+  page: FIRST_PAGE,
+  perPage: DEFAULT_PAGE_SIZE,
   query: "",
   searchBarQuery: "",
   sortBy: DEFAULT_SORT_BY,
