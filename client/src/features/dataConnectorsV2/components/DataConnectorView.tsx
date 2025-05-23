@@ -59,6 +59,7 @@ import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-c
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
+  parseDoi,
   useGetDataConnectorSource,
 } from "./dataConnector.utils";
 import DataConnectorActions from "./DataConnectorActions";
@@ -421,6 +422,16 @@ function DataConnectorViewMetadata({
     [dataConnector.namespace, dataConnector.slug, scope]
   );
 
+  const doiReference = useMemo(
+    () =>
+      scope === "global" &&
+      dataConnector.storage.configuration["doi"] &&
+      typeof dataConnector.storage.configuration["doi"] === "string"
+        ? parseDoi(dataConnector.storage.configuration["doi"])
+        : null,
+    [dataConnector.storage.configuration, scope]
+  );
+
   const dataConnectorSource = useGetDataConnectorSource(dataConnector);
 
   return (
@@ -456,11 +467,11 @@ function DataConnectorViewMetadata({
               )}
             >
               <a
-                href={`https://doi.org/${dataConnector.storage.configuration["doi"]}`}
+                href={`https://doi.org/${doiReference}`}
                 rel="noreferrer noopener"
                 target="_blank"
               >
-                {dataConnector.storage.configuration["doi"] as string}
+                {doiReference}
               </a>
               <div>
                 <Clipboard

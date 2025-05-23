@@ -8,3 +8,4 @@ src/features/projectsV2/api/projectV2.api.ts
 src/features/sessionsV2/api/sessionLaunchersV2.generated-api.ts
 src/features/sessionsV2/api/sessionsV2.generated-api.ts
 src/features/usersV2/api/users.generated-api.ts
+src/features/searchV2/api/searchV2Api.generated-api.ts

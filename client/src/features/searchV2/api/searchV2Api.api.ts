@@ -1,132 +1,43 @@
-import { searchV2EmptyApi as api } from "./searchV2-empty.api";
-const injectedRtkApi = api.injectEndpoints({
+/*!
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  GetSearchQueryApiArg,
+  GetSearchQueryApiResponse,
+  searchV2GeneratedApi,
+} from "./searchV2Api.generated-api";
+
+// Fixes some API endpoints
+export const searchV2Api = searchV2GeneratedApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (build) => ({
-    getQuery: build.query<GetQueryApiResponse, GetQueryApiArg>({
-      query: (queryArg) => ({
-        url: `/query`,
-        headers: { "Renku-Auth-Anon-Id": queryArg["Renku-Auth-Anon-Id"] },
-        params: {
-          q: queryArg.q,
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-        },
-      }),
-    }),
-    getVersion: build.query<GetVersionApiResponse, GetVersionApiArg>({
-      query: () => ({ url: `/version` }),
-    }),
-    $get: build.query<$getApiResponse, $getApiArg>({
-      query: (queryArg) => ({
-        url: `/`,
-        headers: { "Renku-Auth-Anon-Id": queryArg["Renku-Auth-Anon-Id"] },
-        params: {
-          q: queryArg.q,
-          page: queryArg.page,
-          per_page: queryArg.perPage,
-        },
+    getSearchQuery: build.query<
+      GetSearchQueryApiResponse,
+      GetSearchQueryApiArg
+    >({
+      query: ({ params }) => ({
+        url: "/search/query",
+        params,
       }),
     }),
   }),
-  overrideExisting: false,
 });
-export { injectedRtkApi as searchV2Api };
-export type GetQueryApiResponse = /** status 200  */ SearchResult;
-export type GetQueryApiArg = {
-  "Renku-Auth-Anon-Id"?: string;
-  /** User defined search query */
-  q?: string;
-  /** The page to retrieve, starting at 1 */
-  page?: number;
-  /** How many items to return for one page */
-  perPage?: number;
-};
-export type GetVersionApiResponse = /** status 200  */ CurrentVersion;
-export type GetVersionApiArg = void;
-export type $getApiResponse = /** status 200  */ SearchResult;
-export type $getApiArg = {
-  "Renku-Auth-Anon-Id"?: string;
-  /** User defined search query */
-  q?: string;
-  /** The page to retrieve, starting at 1 */
-  page?: number;
-  /** How many items to return for one page */
-  perPage?: number;
-};
-export type Group = {
-  id: string;
-  name: string;
-  namespace: string;
-  description?: string;
-  score?: number;
-  type: string;
-};
-export type User = {
-  id: string;
-  namespace?: string;
-  firstName?: string;
-  lastName?: string;
-  score?: number;
-  type: string;
-};
-export type UserOrGroup =
-  | ({
-      type: "Group";
-    } & Group)
-  | ({
-      type: "User";
-    } & User);
-export type Visibility = "Private" | "Public";
-export type Project = {
-  id: string;
-  name: string;
-  slug: string;
-  namespace?: UserOrGroup;
-  repositories?: string[];
-  visibility: Visibility;
-  description?: string;
-  createdBy?: User;
-  creationDate: string;
-  keywords?: string[];
-  score?: number;
-  type: string;
-};
-export type SearchEntity =
-  | ({
-      type: "Group";
-    } & Group)
-  | ({
-      type: "Project";
-    } & Project)
-  | ({
-      type: "User";
-    } & User);
-export type MapEntityTypeInt = {
-  [key: string]: number;
-};
-export type FacetData = {
-  entityType: MapEntityTypeInt;
-};
-export type PageDef = {
-  limit: number;
-  offset: number;
-};
-export type PageWithTotals = {
-  page: PageDef;
-  totalResult: number;
-  totalPages: number;
-  prevPage?: number;
-  nextPage?: number;
-};
-export type SearchResult = {
-  items?: SearchEntity[];
-  facets: FacetData;
-  pagingInfo: PageWithTotals;
-};
-export type CurrentVersion = {
-  name: string;
-  version: string;
-  headCommit: string;
-  describedVersion: string;
-};
-export const { useGetQueryQuery, useGetVersionQuery, use$getQuery } =
-  injectedRtkApi;
+
+export const { useGetSearchQueryQuery } = searchV2Api;
+
+export type * from "./searchV2Api.generated-api";

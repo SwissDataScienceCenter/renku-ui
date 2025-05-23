@@ -30,10 +30,12 @@ export default function SearchV2Header() {
     ({ searchV2 }) => searchV2
   );
 
-  const searchResults = searchV2Api.endpoints.getQuery.useQueryState({
-    page,
-    perPage,
-    q: query,
+  const searchResults = searchV2Api.endpoints.getSearchQuery.useQueryState({
+    params: {
+      page,
+      per_page: perPage,
+      q: query,
+    },
   });
 
   const onChange = useCallback(

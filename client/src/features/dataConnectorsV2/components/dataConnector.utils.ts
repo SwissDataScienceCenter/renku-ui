@@ -267,7 +267,7 @@ export function useGetDataConnectorSource(dataConnector: DataConnector) {
  * - https://doi.org/10.1000/182 -> 10.1000/182
  * - doi:10.1000/182 -> 10.1000/182
  */
-function parseDoi(doi: string): string {
+export function parseDoi(doi: string): string {
   try {
     const doiURL = new URL(doi);
     if (doiURL.protocol.toLowerCase() === "doi:") {
