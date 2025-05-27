@@ -204,8 +204,8 @@ function App(props) {
       <AppContext.Provider value={appContext}>
         <RenkuNavBar user={user} />
         <CentralContentContainer user={user} socket={webSocket} />
+        <FooterNavbar />
       </AppContext.Provider>
-      <FooterNavbar />
       <Cookie />
       <ToastContainer />
     </Fragment>
