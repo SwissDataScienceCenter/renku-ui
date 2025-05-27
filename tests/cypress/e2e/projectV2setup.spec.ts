@@ -771,3 +771,79 @@ describe("Customize session environment variables", () => {
     ).should("be.visible");
   });
 });
+
+describe("Repository connection cases", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .listNamespaceV2()
+      .dataServicesUser({
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .getProjectV2Permissions()
+      .listProjectV2Members()
+      .projects()
+      .landingUserProjects()
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .readProjectV2({
+        fixture: "projectV2/read-projectV2-one-github-repo.json",
+      })
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-one-github-repo.json",
+      });
+  });
+
+  it("handle connected", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    // check badge
+    cy.getDataCy("code-repository-item")
+      .contains("Push & pull")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.contains("Clone, Pull: Yes").should("be.visible");
+    cy.contains("Push: Yes").should("be.visible");
+  });
+
+  it("handle token error", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture: "repositories/repository-metadata-token-error.json",
+        statusCode: 400,
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    // check badge
+    cy.getDataCy("code-repository-item")
+      .contains("No access")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.contains("Clone, Pull: No").should("be.visible");
+    cy.contains(
+      "There is a problem with the integration to the repository host."
+    ).should("be.visible");
+    cy.get("a").contains("Reconnect").should("be.visible");
+  });
+});
