@@ -199,29 +199,30 @@ function ProjectV2CreationDetails() {
                 formId={formId}
                 name="name"
               />
+              <div>
+                <div className="mb-1">
+                  <ProjectNamespaceFormField
+                    control={control}
+                    ensureNamespace={defaultNamespace}
+                    entityName={`${formId}-project`}
+                    errors={errors}
+                    name="namespace"
+                  />
+                </div>
 
-              <div className="mb-1">
-                <ProjectNamespaceFormField
+                <SlugPreviewFormField
+                  compact={true}
                   control={control}
-                  ensureNamespace={defaultNamespace}
-                  entityName={`${formId}-project`}
                   errors={errors}
-                  name="namespace"
+                  name="slug"
+                  resetFunction={resetUrl}
+                  parentPath={parentPath}
+                  slug={currentSlug}
+                  dirtyFields={dirtyFields}
+                  label="Project URL"
+                  entityName="project"
                 />
               </div>
-
-              <SlugPreviewFormField
-                compact={true}
-                control={control}
-                errors={errors}
-                name="slug"
-                resetFunction={resetUrl}
-                parentPath={parentPath}
-                slug={currentSlug}
-                dirtyFields={dirtyFields}
-                label="Project URL"
-                entityName="project"
-              />
 
               <div className="mb-1">
                 <ProjectVisibilityFormField

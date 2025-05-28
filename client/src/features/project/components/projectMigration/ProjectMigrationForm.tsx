@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { DateTime } from "luxon";
 import { useEffect, useMemo } from "react";
 import {
@@ -27,6 +28,7 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 import { Form } from "reactstrap";
+import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { toHumanDateTime } from "../../../../utils/helpers/DateTimeUtils";
 import { GitlabProjectResponse } from "../../GitLab.types";
@@ -40,7 +42,6 @@ import {
   DetailsNotIncludedInMigration,
 } from "./ProjectMigrationDetails";
 import ProjectMigrationFormInputs from "./ProjectMigrationFormInputs";
-import { ErrorAlert } from "../../../../components/Alert";
 
 interface MigrationFormProps {
   description?: string;
@@ -185,6 +186,7 @@ export default function MigrationForm({
 
   return (
     <Form
+      className={cx("d-flex", "flex-column", "gap-3")}
       id="project-migration-form"
       noValidate
       onSubmit={handleSubmit(onSubmit)}
@@ -199,7 +201,7 @@ export default function MigrationForm({
         />
       )}
       {isFetchingSessionData && (
-        <div className="py-2">
+        <div>
           <Loader inline size={16} /> Loading session data...
         </div>
       )}
