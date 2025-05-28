@@ -23,8 +23,36 @@ interface SimpleOrEmpty extends SimpleFixture {
   empty?: boolean;
 }
 
+interface RepositoryFixture extends SimpleFixture {
+  repositoryUrl: string;
+  statusCode?: number;
+}
+
 export function ConnectedServices<T extends FixturesConstructor>(Parent: T) {
   return class ConnectedServicesFixtures extends Parent {
+    getRepositoryMetadata(args?: RepositoryFixture) {
+      const {
+        fixture = "repositories/repository-metadata.json",
+        name = "getRepositoryMetadata",
+        repositoryUrl,
+        statusCode = 200,
+      } = args ?? {};
+
+      cy.fixture(fixture).then((repoMetadata) => {
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/repositories/${encodeURIComponent(
+            repositoryUrl
+          )}`,
+          {
+            body: repoMetadata,
+            statusCode,
+          }
+        ).as(name);
+      });
+
+      return this;
+    }
     listConnectedServicesProviders(args?: SimpleOrEmpty) {
       const {
         fixture = "connectedServicesV2/providers.json",
