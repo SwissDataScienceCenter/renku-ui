@@ -117,7 +117,6 @@ export default function SessionLauncherCard({
     <Card
       className={cx(
         styles.SessionLauncherCard,
-        "mt-2",
         "cursor-pointer",
         "shadow-none",
         "rounded-0"
