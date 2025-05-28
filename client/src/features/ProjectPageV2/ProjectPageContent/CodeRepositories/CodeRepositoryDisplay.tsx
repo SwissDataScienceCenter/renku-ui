@@ -71,6 +71,7 @@ import repositoriesApi, {
   useGetRepositoryMetadataQuery,
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
+import { NotebooksErrorResponse } from "../../../session/sessions.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import { SshRepositoryUrlWarning } from "./AddCodeRepositoryModal";
 import {
@@ -385,6 +386,29 @@ function CodeRepositoryActions({
       userPermissions={permissions}
     />
   );
+}
+
+function CodeRepositoryError({
+  error,
+}: {
+  error: NonNullable<Parameters<typeof RtkOrNotebooksError>[0]["error"]>;
+}) {
+  if (
+    "data" in error &&
+    typeof error.data == "object" &&
+    error.data &&
+    "error" in error.data
+  ) {
+    const errorData = error.data as NotebooksErrorResponse;
+    if (errorData.error.code == 1401)
+      return (
+        <WarnAlert>
+          There is a problem with the integration to the repository host. You
+          can try to reconnect or check the Integrations page for more details.
+        </WarnAlert>
+      );
+  }
+  return <RtkOrNotebooksError error={error} dismissible={false} />;
 }
 
 interface RepositoryItemProps {
@@ -954,7 +978,7 @@ function RepositoryProviderDetails({
   }
 
   if (error) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+    return <CodeRepositoryError error={error} />;
   }
 
   if (provider) {
