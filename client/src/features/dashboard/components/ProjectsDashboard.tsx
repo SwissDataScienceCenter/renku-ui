@@ -35,6 +35,7 @@ import ListBarSession from "../../../components/list/ListBarSessions";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import { Notebook } from "../../../notebooks/components/session.types";
 import { urlMap } from "../../../project/list/ProjectList.container";
+import { Links } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
@@ -91,7 +92,7 @@ function ProjectAlert({ total }: ProjectAlertProps) {
           <ExternalLink
             role="text"
             title="hands-on tutorial"
-            url="https://renku.notion.site/Hands-On-Tutorial-1a50df2efafc800f8554e30fd7458fa6"
+            url={Links.RENKU_2_HANDS_ON_TUTORIAL}
             className="fw-bold"
           />
           . You may also{" "}
@@ -105,7 +106,7 @@ function ProjectAlert({ total }: ProjectAlertProps) {
           <ExternalLink
             role="text"
             title="Community Portal"
-            url="https://renku.notion.site/Renku-Community-Portal-2a154d7d30b24ab8a5968c60c2592d87"
+            url={Links.RENKU_2_COMMUNITY_PORTAL}
             className="fw-bold"
           />{" "}
           .
