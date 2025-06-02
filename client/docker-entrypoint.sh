@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export NGINX_PATH=/usr/share/nginx/html
+export NGINX_PATH=/tmp/nginx/html
 
 echo "Config file contains the following settings:"
 echo "==================================================="
@@ -89,7 +89,7 @@ tee > "${NGINX_PATH}/config.json" << EOF
 EOF
 echo "config.json created in ${NGINX_PATH}"
 
-/app/scripts/generate_sitemap.sh "${BASE_URL}" "${NGINX_PATH}/sitemap.xml"
+/tmp/scripts/generate_sitemap.sh "${BASE_URL}" "${NGINX_PATH}/sitemap.xml"
 echo "sitemap.xml created in ${NGINX_PATH}"
 
 tee > "${NGINX_PATH}/robots.txt" << EOF
