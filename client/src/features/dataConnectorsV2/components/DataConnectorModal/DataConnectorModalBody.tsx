@@ -318,7 +318,7 @@ export function DataConnectorMount({
     });
   }, [setValue, currentName]);
   const dataConnectorId = flatDataConnector.dataConnectorId;
-  const parentPath = `${flatDataConnector.namespace}/`;
+  const parentPath = `/${flatDataConnector.namespace}/`;
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
       {!dataConnectorId && <h5 className="fw-bold">Final details</h5>}
