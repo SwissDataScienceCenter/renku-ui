@@ -46,7 +46,7 @@ import { Loader } from "../../../components/Loader";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard.tsx";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -62,7 +62,7 @@ import type {
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
-import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook.ts";
+import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
@@ -121,48 +121,46 @@ export default function DataConnectorView({
   }, []);
 
   return (
-    <>
-      <Offcanvas
-        toggle={toggleView}
-        isOpen={showView}
-        direction="end"
-        backdrop={true}
-      >
-        <OffcanvasBody>
-          <div className="mb-3">
-            <button
-              aria-label="Close"
-              className="btn-close"
-              data-cy="data-connector-view-back-button"
-              data-bs-dismiss="offcanvas"
-              onClick={toggleView}
-            ></button>
-          </div>
-          <DataConnectorViewHeader
-            {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
-          />
-          <DataConnectorViewMetadata
-            dataConnector={dataConnector}
-            dataConnectorPotentiallyInaccessible={
-              dataConnectorPotentiallyInaccessible
-            }
-          />
-          <DataConnectorViewConfiguration
-            dataConnector={dataConnector}
-            toggleEdit={toggleEdit}
-          />
-          <DataConnectorViewAccess dataConnector={dataConnector} />
-          <DataConnectorViewProjects dataConnector={dataConnector} />
-        </OffcanvasBody>
-        <DataConnectorModal
-          dataConnector={dataConnector}
-          isOpen={isEditOpen}
-          namespace={dataConnector.namespace}
-          toggle={toggleEdit}
-          initialStep={initialStep}
+    <Offcanvas
+      toggle={toggleView}
+      isOpen={showView}
+      direction="end"
+      backdrop={true}
+    >
+      <OffcanvasBody>
+        <div className="mb-3">
+          <button
+            aria-label="Close"
+            className="btn-close"
+            data-cy="data-connector-view-back-button"
+            data-bs-dismiss="offcanvas"
+            onClick={toggleView}
+          ></button>
+        </div>
+        <DataConnectorViewHeader
+          {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
         />
-      </Offcanvas>
-    </>
+        <DataConnectorViewMetadata
+          dataConnector={dataConnector}
+          dataConnectorPotentiallyInaccessible={
+            dataConnectorPotentiallyInaccessible
+          }
+        />
+        <DataConnectorViewConfiguration
+          dataConnector={dataConnector}
+          toggleEdit={toggleEdit}
+        />
+        <DataConnectorViewAccess dataConnector={dataConnector} />
+        <DataConnectorViewProjects dataConnector={dataConnector} />
+      </OffcanvasBody>
+      <DataConnectorModal
+        dataConnector={dataConnector}
+        isOpen={isEditOpen}
+        namespace={dataConnector.namespace}
+        toggle={toggleEdit}
+        initialStep={initialStep}
+      />
+    </Offcanvas>
   );
 }
 

@@ -49,7 +49,7 @@ import type {
 import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
-import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField.tsx";
+import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
 import type { DataConnectorSecret } from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import DataConnectorModalResult from "./DataConnectorModalResult";
