@@ -334,7 +334,7 @@ describe("Set up data connectors with credentials", () => {
     });
     openDataConnectorMenu();
     cy.getDataCy("button-with-menu-dropdown").click();
-    cy.getDataCy("data-connector-edit-connection").click({ force: true });
+    cy.getDataCy("data-connector-edit-connection").click();
     cy.getDataCy("data-connector-edit-modal")
       .find("#access_key_id")
       .invoke("attr", "value")
