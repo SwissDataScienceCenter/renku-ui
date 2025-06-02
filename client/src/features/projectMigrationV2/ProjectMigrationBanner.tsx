@@ -34,7 +34,6 @@ import {
   usePostUserPreferencesDismissProjectMigrationBannerMutation,
   UserPreferences,
 } from "../usersV2/api/users.api";
-import style from "./ProjectMigrationBanner.module.scss";
 import MigrationV2Modal from "./MigrationV2Modal";
 
 export default function ProjectMigrationBanner() {
@@ -70,11 +69,12 @@ export default function ProjectMigrationBanner() {
     showProjectMigrationBanner && (
       <Alert
         className={cx(
-          style.ProjectMigrationBanner,
-          "rounded-3",
-          "pt-3",
+          "bg-opacity-10",
+          "bg-primary",
           "border-0",
-          "card"
+          "card",
+          "mb-0",
+          "rounded-3"
         )}
         toggle={onToggleDismissAlert}
       >

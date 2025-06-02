@@ -153,7 +153,10 @@ function GroupV2CreationDetails() {
     }
   }, [result, navigate]);
 
-  const url = "renkulab.io/v2/groups/";
+  const groupPath = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+    slug: "",
+  });
+  const parentPath = `${groupPath}/`;
 
   const resetUrl = useCallback(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
@@ -171,27 +174,29 @@ function GroupV2CreationDetails() {
         >
           <FormGroup className="d-inline" disabled={result.isLoading}>
             <div className={cx("d-flex", "flex-column", "gap-3")}>
-              <div className="mb-1">
-                <NameFormField
+              <div>
+                <div className="mb-1">
+                  <NameFormField
+                    control={control}
+                    entityName="group"
+                    errors={errors}
+                    name="name"
+                  />
+                </div>
+
+                <SlugPreviewFormField
+                  compact={true}
                   control={control}
-                  entityName="group"
                   errors={errors}
-                  name="name"
+                  name="slug"
+                  resetFunction={resetUrl}
+                  parentPath={parentPath}
+                  slug={currentSlug}
+                  dirtyFields={dirtyFields}
+                  label="Group URL"
+                  entityName="group"
                 />
               </div>
-
-              <SlugPreviewFormField
-                compact={true}
-                control={control}
-                errors={errors}
-                name="slug"
-                resetFunction={resetUrl}
-                url={url}
-                slug={currentSlug}
-                dirtyFields={dirtyFields}
-                label="Group URL"
-                entityName="group"
-              />
 
               <DescriptionFormField
                 control={control}

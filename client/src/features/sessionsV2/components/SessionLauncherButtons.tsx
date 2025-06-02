@@ -29,26 +29,28 @@ import {
 } from "../api/sessionLaunchersV2.generated-api";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "../session.constants";
 import BuildLauncherButtons from "./BuildLauncherButtons";
+import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 
 interface SessionLauncherButtonsProps {
-  namespace: string;
-  slug: string;
-  launcher: SessionLauncher;
   hasSession?: boolean;
-  useOldImage?: boolean;
-  otherActions?: ReactNode;
   lastBuild?: Build;
+  launcher: SessionLauncher;
+  namespace: string;
+  otherActions?: ReactNode;
+  slug: string;
+  useOldImage?: boolean;
 }
 export function SessionLauncherButtons({
+  hasSession,
+  lastBuild,
   launcher,
   namespace,
-  slug,
-  hasSession,
-  useOldImage,
   otherActions,
-  lastBuild,
+  slug,
+  useOldImage,
 }: SessionLauncherButtonsProps) {
   const environment = launcher?.environment;
+  const permissions = useProjectPermissions({ projectId: launcher.project_id });
   const isBuildEnvironment =
     environment && environment.environment_image_source === "build";
   const startUrl = generatePath(
@@ -66,6 +68,7 @@ export function SessionLauncherButtons({
     useOldImage;
 
   const buildActions = isBuildEnvironment &&
+    permissions.write &&
     (useOldImage || lastBuild?.status !== "succeeded") && (
       <BuildLauncherButtons
         launcher={launcher}
@@ -97,9 +100,9 @@ export function SessionLauncherButtons({
       {buildActions}
       {launchAction}
     </ButtonGroup>
-  ) : (
+  ) : launchAction ? (
     launchAction
-  );
+  ) : null;
 
   const customizeLaunch = displayLaunchSession && (
     <Link
@@ -117,6 +120,7 @@ export function SessionLauncherButtons({
     </Link>
   );
 
+  if (!defaultAction) return null;
   return (
     <>
       <ButtonWithMenuV2

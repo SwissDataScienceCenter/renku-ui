@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   Control,
   Controller,
@@ -26,9 +26,10 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import { useLocation } from "react-router";
+import { generatePath, useLocation } from "react-router";
 import { Input, Label } from "reactstrap";
-import AppContext from "../../../../utils/context/appContext";
+
+import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
@@ -54,7 +55,6 @@ export default function ProjectMigrationFormInputs({
   const currentName = watch("name");
   const currentNamespace = watch("namespace");
   const currentSlug = watch("slug");
-  const { params } = useContext(AppContext);
 
   useEffect(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {
@@ -66,15 +66,20 @@ export default function ProjectMigrationFormInputs({
       shouldValidate: true,
     });
   }, [setValue, currentName]);
-  const url = `${params?.BASE_URL ?? ""}/v2/projects/${
-    currentNamespace ?? "<Owner>"
-  }/`;
+  const projectParentPath = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.root,
+    {
+      namespace: currentNamespace ?? "<Owner>",
+      slug: "",
+    }
+  );
+  const parentPath = `${projectParentPath}/`;
   const location = useLocation();
   const isRenkuV1 = isRenkuLegacy(location.pathname);
   const formId = "project-migration-form";
   return (
-    <>
-      <div className="mb-3">
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <div>
         <Label className="form-label" for="migrateProjectName">
           Name
         </Label>
@@ -98,29 +103,31 @@ export default function ProjectMigrationFormInputs({
         />
         <div className="invalid-feedback">Please provide a name</div>
       </div>
-      <div className="mb-3">
-        <ProjectNamespaceFormField
-          control={control}
-          entityName="project"
-          errors={errors}
-          name="namespace"
-        />
+      <div>
+        <div className="mb-1">
+          <ProjectNamespaceFormField
+            control={control}
+            entityName="project"
+            errors={errors}
+            name="namespace"
+          />
+        </div>
+        <div>
+          <SlugPreviewFormField
+            compact={true}
+            control={control}
+            errors={errors}
+            name="slug"
+            resetFunction={resetUrl}
+            parentPath={parentPath}
+            slug={currentSlug}
+            dirtyFields={dirtyFields}
+            label="Project URL"
+            entityName="project"
+          />
+        </div>
       </div>
-      <div className="mb-3">
-        <SlugPreviewFormField
-          compact={true}
-          control={control}
-          errors={errors}
-          name="slug"
-          resetFunction={resetUrl}
-          url={url}
-          slug={currentSlug}
-          dirtyFields={dirtyFields}
-          label="Project URL"
-          entityName="project"
-        />
-      </div>
-      <div className="mb-3">
+      <div>
         <ProjectVisibilityFormField
           name="visibility"
           control={control}
@@ -128,6 +135,6 @@ export default function ProjectMigrationFormInputs({
           formId={formId}
         />
       </div>
-    </>
+    </div>
   );
 }

@@ -386,7 +386,7 @@ export function BuildActions({ launcher }: BuildActionsProps) {
       size="sm"
     >
       <BootstrapReboot className={cx("bi", "me-1")} />
-      {"Rebuild"}
+      Rebuild
     </Button>
   );
 

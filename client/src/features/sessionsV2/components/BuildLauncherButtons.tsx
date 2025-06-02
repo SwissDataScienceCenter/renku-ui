@@ -122,7 +122,7 @@ export default function BuildLauncherButtons({
         size="sm"
       >
         <BootstrapReboot className={cx("bi", "me-1")} />
-        {"Rebuild"}
+        Rebuild
       </Button>
     </>
   );

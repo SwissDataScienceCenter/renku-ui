@@ -117,7 +117,6 @@ export default function SessionLauncherCard({
     <Card
       className={cx(
         styles.SessionLauncherCard,
-        "mt-2",
         "cursor-pointer",
         "shadow-none",
         "rounded-0"
@@ -251,17 +250,17 @@ export default function SessionLauncherCard({
                   )}
                 >
                   <SessionLauncherButtons
-                    launcher={launcher}
-                    namespace={project.namespace}
-                    slug={project.slug}
                     hasSession={hasSession}
                     lastBuild={lastBuild}
+                    launcher={launcher}
+                    namespace={project.namespace}
+                    otherActions={otherLauncherActions}
+                    slug={project.slug}
                     useOldImage={
                       isBuildEnvironment &&
                       lastBuild?.status !== "succeeded" &&
                       !!lastSuccessfulBuild
                     }
-                    otherActions={otherLauncherActions}
                   />
                   {isBuildEnvironment &&
                     lastBuild?.status !== "succeeded" &&

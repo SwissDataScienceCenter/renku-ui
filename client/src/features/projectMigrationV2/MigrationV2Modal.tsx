@@ -92,7 +92,7 @@ export default function MigrationV2Modal({
           ? "Select project to migrate"
           : "Migrate project to Renku 2.0"}
       </ModalHeader>
-      <ModalBody className="p-4">
+      <ModalBody>
         {result.error && <RtkErrorAlert error={result.error} />}
         {step === 1 ? (
           <>

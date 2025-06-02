@@ -18,7 +18,14 @@
 
 import cx from "classnames";
 import { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useNavigate } from "react-router";
+import {
+  Navigate,
+  Route,
+  Routes,
+  generatePath,
+  useMatch,
+  useNavigate,
+} from "react-router";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
@@ -35,13 +42,11 @@ import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
 import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
-import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
 import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
 import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
-import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import ProjectV2New from "../projectsV2/new/ProjectV2New";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySecretsV2 from "../secretsV2/LazySecretsV2";
@@ -49,7 +54,39 @@ import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 import LazyUserShow from "../usersV2/LazyUserShow";
-import NavbarV2 from "./NavbarV2";
+
+function BetaV2Redirect() {
+  const navigate = useNavigate();
+  const betaProjectsMatch = useMatch(ABSOLUTE_ROUTES.v2.projects.beta.splat);
+  const betaGroupsMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.beta.splat);
+
+  useEffect(() => {
+    if (
+      betaProjectsMatch?.params.namespace != null &&
+      betaProjectsMatch?.params.slug != null
+    ) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: betaProjectsMatch.params.namespace,
+          slug: betaProjectsMatch.params.slug,
+        }),
+        { replace: true }
+      );
+    }
+  }, [navigate, betaProjectsMatch?.params]);
+
+  useEffect(() => {
+    if (betaGroupsMatch?.params.slug != null) {
+      navigate(
+        generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: betaGroupsMatch.params.slug,
+        }),
+        { replace: true }
+      );
+    }
+  }, [navigate, betaGroupsMatch?.params]);
+  return <Navigate to={generatePath(ABSOLUTE_ROUTES.v2.root)} replace={true} />;
+}
 
 export default function RootV2() {
   const navigate = useNavigate();
@@ -75,7 +112,6 @@ export default function RootV2() {
 
   return (
     <div className="w-100">
-      <NavbarV2 />
       <ProjectV2New />
       <GroupNew />
 
@@ -88,6 +124,10 @@ export default function RootV2() {
                 <LazyDashboardV2 />
               </ContainerWrap>
             }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v2.betaRoot}
+            element={<BetaV2Redirect />}
           />
           <Route
             path={RELATIVE_ROUTES.v2.user}
@@ -106,7 +146,7 @@ export default function RootV2() {
             element={<ProjectsV2Routes />}
           />
           <Route
-            path="help/*"
+            path={RELATIVE_ROUTES.v2.help.root}
             element={
               <ContainerWrap>
                 <LazyHelpV2 />
@@ -114,7 +154,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path="search/*"
+            path={RELATIVE_ROUTES.v2.search}
             element={
               <ContainerWrap>
                 <LazySearchV2 />
@@ -122,7 +162,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path={RELATIVE_ROUTES.v2.connectedServices}
+            path={RELATIVE_ROUTES.v2.integrations}
             element={
               <ContainerWrap>
                 <LazyConnectedServicesPage />
@@ -154,19 +194,7 @@ export default function RootV2() {
 function GroupsV2Routes() {
   return (
     <Routes>
-      <Route
-        path={RELATIVE_ROUTES.v2.groups.new}
-        element={
-          <Navigate
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.root,
-              hash: GROUP_CREATION_HASH,
-            }}
-            replace
-          />
-        }
-      />
-
+      <Route index element={<RedirectToSearch entityType="group" />} />
       <Route path={RELATIVE_ROUTES.v2.groups.show.root}>
         <Route element={<LazyGroupContainer />}>
           <Route index element={<LazyGroupV2Overview />} />
@@ -188,21 +216,25 @@ function GroupsV2Routes() {
   );
 }
 
+function RedirectToSearch({ entityType }: { entityType: string }) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate(
+      {
+        pathname: ABSOLUTE_ROUTES.v2.search,
+        search: `q=type:${entityType}`,
+      },
+      { replace: true }
+    );
+  });
+
+  return null;
+}
+
 function ProjectsV2Routes() {
   return (
     <Routes>
-      <Route
-        path={RELATIVE_ROUTES.v2.projects.new}
-        element={
-          <Navigate
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.root,
-              hash: PROJECT_CREATION_HASH,
-            }}
-            replace
-          />
-        }
-      />
+      <Route index element={<RedirectToSearch entityType="project" />} />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route element={<LazyProjectPageV2Show />}>
           <Route index element={<LazyProjectPageOverview />} />
