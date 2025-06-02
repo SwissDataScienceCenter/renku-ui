@@ -281,7 +281,6 @@ export function DataConnectorMount() {
     (o) => flatDataConnector.options && flatDataConnector.options[o.name]
   );
 
-  const url = `${flatDataConnector.namespace}/`;
   const currentName = watch("name");
   const currentSlug = watch("slug");
   useEffect(() => {
@@ -297,7 +296,7 @@ export function DataConnectorMount() {
     });
   }, [setValue, currentName]);
   const dataConnectorId = flatDataConnector.dataConnectorId;
-
+  const parentPath = `${flatDataConnector.namespace}/`;
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
       {!dataConnectorId && <h5 className="fw-bold">Final details</h5>}
@@ -382,11 +381,11 @@ export function DataConnectorMount() {
           errors={errors}
           name="slug"
           resetFunction={resetUrl}
-          url={url}
           slug={currentSlug}
           dirtyFields={dirtyFields}
           label="Project URL"
           entityName="data-connector"
+          parentPath={parentPath}
         />
       </div>
 
