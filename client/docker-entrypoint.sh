@@ -113,4 +113,10 @@ else
   echo "No terms-of-use.md"
 fi
 
+chmod 644 /usr/share/nginx/html/config.json
+chmod 644 /usr/share/nginx/html/robots.txt
+chmod 644 /usr/share/nginx/html/sitemap.xml
+chmod 644 /usr/share/nginx/html/privacy-statement.md
+chmod 644 /usr/share/nginx/html/terms-of-use.md
+
 exec -- "$@"
