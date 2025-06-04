@@ -87,7 +87,7 @@ function ProjectAlert({ total }: ProjectAlertProps) {
             title="Renku 2.0"
             className="fw-bold"
             url={"/"}
-          />
+          />{" "}
           and follow the{" "}
           <ExternalLink
             role="text"
