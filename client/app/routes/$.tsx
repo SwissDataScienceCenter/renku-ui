@@ -16,10 +16,4 @@
  * limitations under the License.
  */
 
-import type { DataConnector } from "./api/data-connectors.api";
-
-export type DataConnectorScope = "global" | "namespace" | "project";
-
-export type DataConnectorWithScope = DataConnector & {
-  scope: DataConnectorScope;
-};
+export { default } from "~/old-src/index";
