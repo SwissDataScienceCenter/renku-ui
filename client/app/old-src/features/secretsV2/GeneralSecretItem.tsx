@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { Folder, ShieldLock } from "react-bootstrap-icons";
-import { generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";

@@ -326,7 +326,7 @@ export const projectCoreApi = createApi({
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
     }),
-    projectMetadata: builder.mutation<
+    projectMetadata: builder.query<
       ProjectMetadataResponse,
       ProjectMetadataParams
     >({
@@ -355,9 +355,10 @@ export const projectCoreApi = createApi({
         };
       },
       transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
-      invalidatesTags: (_result, _error, arg) => [
-        { type: "ProjectMetadata", id: arg.projectRepositoryUrl },
-      ],
+      providesTags: (result) =>
+        result && result.result
+          ? [{ id: result.result.id, type: "ProjectMetadata" }]
+          : ["ProjectMetadata"],
     }),
   }),
 });
@@ -468,5 +469,5 @@ export const {
   useStartMigrationMutation,
   useGetConfigQuery,
   useUpdateConfigMutation,
-  useProjectMetadataMutation,
+  useProjectMetadataQuery,
 } = projectCoreApi;

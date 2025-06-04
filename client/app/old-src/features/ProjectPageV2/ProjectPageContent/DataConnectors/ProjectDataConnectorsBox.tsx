@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
 import {
   Badge,
@@ -26,13 +26,16 @@ import {
   CardBody,
   CardHeader,
   ListGroup,
+  UncontrolledTooltip,
 } from "reactstrap";
-
+import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-
-import { useGetDataConnectorsByDataConnectorIdQuery } from "../../../dataConnectorsV2/api/data-connectors.api";
-import DataConnectorBoxListDisplay from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
+import { useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery } from "../../../dataConnectorsV2/api/data-connectors.api";
+import { useGetDataConnectorsByDataConnectorIdQuery } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import DataConnectorBoxListDisplay, {
+  DataConnectorBoxListDisplayPlaceholder,
+} from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   DataConnectorToProjectLink,
@@ -41,9 +44,7 @@ import type {
 } from "../../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
-
 interface DataConnectorListDisplayProps {
   project: Project;
 }
@@ -56,22 +57,49 @@ export default function ProjectDataConnectorsBox({
       projectId: project.id,
     });
 
-  if (isLoading) return <DataConnectorLoadingBoxContent />;
+  const {
+    data: inaccessibleDataConnectorsData,
+    isLoading: inaccessibleDataConnectorsIsLoading,
+  } = useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery({
+    projectId: project.id,
+  });
 
-  if (error || data == null) {
+  if (isLoading || inaccessibleDataConnectorsIsLoading)
+    return <DataConnectorLoadingBoxContent />;
+
+  if (error) {
     return <RtkOrNotebooksError error={error} dismissible={false} />;
   }
 
-  return <ProjectDataConnectorBoxContent data={data} project={project} />;
+  if (data == null) {
+    return (
+      <ErrorAlert>
+        Data connectors could not be loaded from the API, please contact a Renku
+        administrator.
+      </ErrorAlert>
+    );
+  }
+
+  return (
+    <ProjectDataConnectorBoxContent
+      data={data}
+      project={project}
+      inaccessibleDataConnectorsCount={
+        inaccessibleDataConnectorsData?.count || 0
+      }
+    />
+  );
 }
 
 interface ProjectDataConnectorBoxContentProps
   extends DataConnectorListDisplayProps {
   data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
+  inaccessibleDataConnectorsCount: number;
 }
 function ProjectDataConnectorBoxContent({
   data,
   project,
+  inaccessibleDataConnectorsCount,
 }: ProjectDataConnectorBoxContentProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const toggleOpen = useCallback(() => {
@@ -83,7 +111,8 @@ function ProjectDataConnectorBoxContent({
         <ProjectDataConnectorBoxHeader
           projectId={project.id}
           toggleOpen={toggleOpen}
-          totalConnectors={data.length}
+          accessibleDataConnectorsCount={data.length}
+          inaccessibleDataConnectorsCount={inaccessibleDataConnectorsCount}
         />
         <CardBody>
           {data.length === 0 && (
@@ -95,7 +124,11 @@ function ProjectDataConnectorBoxContent({
           {data != null && data.length > 0 && (
             <ListGroup flush>
               {data.map((dc) => (
-                <DataConnectorLinkDisplay key={dc.id} dataConnectorLink={dc} />
+                <DataConnectorLinkDisplay
+                  key={dc.id}
+                  dataConnectorLink={dc}
+                  projectPath={`${project.namespace}/${project.slug}`}
+                />
               ))}
             </ListGroup>
           )}
@@ -116,13 +149,15 @@ function ProjectDataConnectorBoxContent({
 interface ProjectDataConnectorBoxHeaderProps {
   projectId: Project["id"];
   toggleOpen: () => void;
-  totalConnectors: number;
+  accessibleDataConnectorsCount: number;
+  inaccessibleDataConnectorsCount: number;
 }
 
 function ProjectDataConnectorBoxHeader({
   projectId,
   toggleOpen,
-  totalConnectors,
+  accessibleDataConnectorsCount,
+  inaccessibleDataConnectorsCount,
 }: ProjectDataConnectorBoxHeaderProps) {
   const permissions = useProjectPermissions({ projectId });
 
@@ -135,12 +170,17 @@ function ProjectDataConnectorBoxHeader({
           "justify-content-between"
         )}
       >
-        <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("mb-0", "me-2")}>
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <h4 className="mb-0">
             <Database className={cx("me-1", "bi")} />
             Data
           </h4>
-          <Badge>{totalConnectors}</Badge>
+          <Badge>{accessibleDataConnectorsCount}</Badge>
+          {inaccessibleDataConnectorsCount > 0 && (
+            <MissingDataConnectorsBadge
+              inaccessibleConnectors={inaccessibleDataConnectorsCount}
+            />
+          )}
         </div>
         <div className="my-auto">
           <PermissionsGuard
@@ -193,21 +233,59 @@ function DataConnectorLoadingBoxContent() {
 
 interface DataConnectorLinkDisplayProps {
   dataConnectorLink: DataConnectorToProjectLink;
+  projectPath: string;
 }
 function DataConnectorLinkDisplay({
   dataConnectorLink,
+  projectPath,
 }: DataConnectorLinkDisplayProps) {
   const { data_connector_id } = dataConnectorLink;
   const { data: dataConnector, isLoading } =
     useGetDataConnectorsByDataConnectorIdQuery({
       dataConnectorId: data_connector_id,
     });
-  if (isLoading) return <Loader size={16} inline />;
+  if (isLoading) {
+    return <DataConnectorBoxListDisplayPlaceholder />;
+  }
   if (!dataConnector) return null;
   return (
     <DataConnectorBoxListDisplay
       dataConnector={dataConnector}
       dataConnectorLink={dataConnectorLink}
+      dataConnectorPotentiallyInaccessible={
+        projectPath != dataConnector.namespace &&
+        dataConnector.visibility == "private"
+      }
     />
+  );
+}
+
+interface MissingDataConnectorsBadgeProps {
+  className?: string;
+  inaccessibleConnectors: number;
+}
+
+function MissingDataConnectorsBadge({
+  className,
+  inaccessibleConnectors,
+}: MissingDataConnectorsBadgeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  if (!inaccessibleConnectors) return null;
+  const singular = inaccessibleConnectors === 1;
+  return (
+    <>
+      <Badge
+        className={cx("rounded-pill", className)}
+        color="primary"
+        innerRef={ref}
+      >
+        +{inaccessibleConnectors} hidden
+      </Badge>
+      <UncontrolledTooltip target={ref}>
+        There {singular ? "is" : "are"} {inaccessibleConnectors} data connector
+        {singular ? "" : "s"} linked to this project but not visible to you.
+      </UncontrolledTooltip>
+    </>
   );
 }

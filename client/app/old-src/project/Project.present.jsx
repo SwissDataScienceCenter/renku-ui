@@ -27,8 +27,7 @@ import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Component, Fragment, useEffect } from "react";
-import { Link } from "react-router";
-import { Route, Routes, useLocation, useParams } from "react-router";
+import { Link, Route, Routes, useLocation, useParams } from "react-router";
 import {
   Alert,
   Button,
@@ -517,7 +516,12 @@ function ProjectViewHeader(props) {
     <ProjectViewHeaderMinimal
       key="minimalHeader"
       forkedFromLink={forkedFromLink}
-      {...props}
+      client={props.client}
+      datasets={props.datasets}
+      datasetsUrl={props.datasetsUrl}
+      externalUrl={props.externalUrl}
+      forkedFromProject={props.forkedFromProject}
+      metadata={props.metadata}
     />
   );
 }
@@ -936,7 +940,20 @@ function ProjectView(props) {
         <Route path={`${datasetUrl}/*`} element={null} />
         <Route path={launchNotebookUrl} element={null} />
         <Route path={sessionShowUrl} element={null} />
-        <Route path="*" element={<ProjectViewHeader {...props} />} />
+        <Route
+          path="*"
+          element={
+            <ProjectViewHeader
+              client={props.client}
+              datasets={props.datasets}
+              datasetsUrl={props.datasetsUrl}
+              externalUrl={props.externalUrl}
+              forkedFromProject={props.forkedFromProject}
+              metadata={props.metadata}
+              projectsUrl={props.projectsUrl}
+            />
+          }
+        />
       </Routes>
       <Routes key="projectNav">
         <Route path={`${datasetUrl}/*`} element={null} />

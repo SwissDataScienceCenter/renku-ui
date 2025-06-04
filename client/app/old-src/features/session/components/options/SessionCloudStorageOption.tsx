@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { EyeFill, EyeSlashFill, InfoCircleFill } from "react-bootstrap-icons";
+import { EyeFill, EyeSlashFill, InfoCircle } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import {
   Button,
@@ -42,7 +42,7 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import CloudStorageItem from "../../../project/components/cloudStorage/CloudStorageItem";
-import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import { useGetStorageQuery } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { StateModelProject } from "../../../project/project.types";
 import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
@@ -111,10 +111,12 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
     data: storageForProject,
     error,
     isLoading,
-  } = useGetCloudStorageForProjectQuery(
+  } = useGetStorageQuery(
     devAccess
       ? {
-          project_id: `${projectId}`,
+          storageParams: {
+            project_id: `${projectId}`,
+          },
         }
       : skipToken
   );
@@ -341,7 +343,7 @@ function CredentialMoreInfo({ help }: { help: string }) {
   return (
     <>
       <span ref={ref}>
-        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
+        <InfoCircle className={cx("bi", "ms-1")} tabIndex={0} />
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
         <PopoverBody>

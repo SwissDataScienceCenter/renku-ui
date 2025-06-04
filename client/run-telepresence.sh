@@ -40,7 +40,7 @@ CURRENT_COMMIT=`git rev-parse --short HEAD`
 # E.g.,
 #HOMEPAGE_PROJECT_PATH='elisabet.capon/renku-demo-project-machine-learning'
 #HOMEPAGE_DATASET_SLUG='f838eb3c50c44be182f5ae5ac36babc2'
-if [[ "$OSTYPE" == "linux-gnu" ]]
+if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "linux" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
 elif [[ "$OSTYPE" == "darwin"* ]]

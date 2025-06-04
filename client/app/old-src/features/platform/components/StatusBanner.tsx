@@ -24,8 +24,7 @@ import {
   BoxArrowUpRight,
   WrenchAdjustableCircleFill,
 } from "react-bootstrap-icons";
-import { Link } from "react-router";
-import { useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 import { Alert, Container } from "reactstrap";
 
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
@@ -302,8 +301,8 @@ function StatusPageMaintenance({
   const location = useLocation();
   const isDashboard =
     (userLogged && location.pathname === "/") ||
-    location.pathname === "/v2" ||
-    location.pathname === "/v2/";
+    location.pathname === "/v1" ||
+    location.pathname === "/v1/";
 
   // 1. There is a scheduled maintenance in < 48 hours: show it on all pages except the landing page
   // 2. There is a scheduled maintenance in < 7 days: show it on the v1 Dashboard and the v2 Dashboard

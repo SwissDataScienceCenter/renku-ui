@@ -20,8 +20,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { Link } from "react-router";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";

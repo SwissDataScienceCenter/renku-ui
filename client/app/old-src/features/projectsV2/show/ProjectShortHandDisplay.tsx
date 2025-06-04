@@ -16,9 +16,8 @@
  * limitations under the License
  */
 
-import { Link } from "react-router";
 import cx from "classnames";
-import { generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";

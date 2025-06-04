@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 
-import {
-  NavLink as RRNavLink,
-  type NavLinkProps as RRNavLinkProps,
-} from "react-router";
 import cx from "classnames";
 import { RefAttributes, useMemo } from "react";
-import { matchPath, useLocation } from "react-router";
+import {
+  matchPath,
+  NavLink as RRNavLink,
+  useLocation,
+  type NavLinkProps as RRNavLinkProps,
+} from "react-router";
 import { NavLink } from "reactstrap";
 
 type RenkuNavLinkV2Props = RRNavLinkProps & RefAttributes<HTMLAnchorElement>;

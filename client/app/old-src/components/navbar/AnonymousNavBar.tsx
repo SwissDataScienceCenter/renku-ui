@@ -17,35 +17,35 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
-import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
+import {
+  Badge,
+  Collapse,
+  Nav,
+  NavItem,
+  Navbar,
+  NavbarToggler,
+} from "reactstrap";
 
+import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import StatusBanner from "../../features/platform/components/StatusBanner";
-import { NavBarWarnings } from "../../landing/NavBarWarnings";
-import type { AppParams } from "../../utils/context/appParams.types";
-import { Url } from "../../utils/helpers/url";
+import SunsetV1Button from "../../features/projectsV2/shared/SunsetV1Button";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import AppContext from "../../utils/context/appContext";
 import RenkuNavLinkV2 from "../RenkuNavLinkV2";
+import AnnounceV2Banner from "./AnnounceV2Banner";
 import {
   RenkuToolbarHelpMenu,
   RenkuToolbarItemUser,
   RenkuToolbarNotifications,
 } from "./NavBarItems";
-import { RENKU_LOGO } from "./navbar.constans";
+import { RENKU_LOGO } from "./navbar.constants";
 
-interface AnonymousNavBarProps {
-  model: unknown;
-  notifications: unknown;
-  params: AppParams;
-}
-
-export default function AnonymousNavBar({
-  model,
-  notifications,
-  params,
-}: AnonymousNavBarProps) {
-  const uiShortSha = params.UI_SHORT_SHA;
+export default function AnonymousNavBar() {
+  const { params, model, notifications } = useContext(AppContext);
+  const uiShortSha = params?.UI_SHORT_SHA;
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -55,18 +55,35 @@ export default function AnonymousNavBar({
 
   return (
     <>
-      <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
+      <header
+        className={cx(
+          "navbar",
+          "navbar-expand-lg",
+          "bg-navy",
+          "rk-navbar",
+          "p-0"
+        )}
+      >
         <Navbar
           color="primary"
-          className="container-fluid flex-wrap flex-lg-nowrap renku-container"
+          className={cx(
+            "container",
+            "flex-wrap",
+            "flex-lg-nowrap",
+            "renku-container"
+          )}
         >
           <Link
             id="link-home"
-            to={Url.get(Url.pages.landing)}
+            to={ABSOLUTE_ROUTES.v1.root}
             className="navbar-brand me-2 pb-0 pt-0"
           >
             <img src={RENKU_LOGO} alt="Renku" height="50" className="d-block" />
           </Link>
+          <Badge color="warning" className="mx-2">
+            Legacy
+          </Badge>
+          <SunsetV1Button outline />
           <NavbarToggler onClick={onToggle} className="border-0">
             <List className="bi text-rk-white" />
           </NavbarToggler>
@@ -85,7 +102,7 @@ export default function AnonymousNavBar({
                 <RenkuNavLinkV2
                   className={cx("d-flex", "gap-2", "align-items-center")}
                   id="link-search"
-                  to={Url.get(Url.pages.search)}
+                  to={ABSOLUTE_ROUTES.v1.search}
                 >
                   <Search />
                   Search
@@ -94,7 +111,7 @@ export default function AnonymousNavBar({
               <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
                 <RenkuNavLinkV2
                   id="link-sessions"
-                  to={Url.get(Url.pages.sessions)}
+                  to={ABSOLUTE_ROUTES.v1.sessions}
                 >
                   Sessions
                 </RenkuNavLinkV2>
@@ -116,6 +133,7 @@ export default function AnonymousNavBar({
           </Collapse>
         </Navbar>
       </header>
+      <AnnounceV2Banner />
       <StatusBanner params={params} />
       <NavBarWarnings model={model} uiShortSha={uiShortSha} />
     </>

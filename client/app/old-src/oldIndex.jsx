@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
-import { Route, Routes, useLocation, useNavigate } from "react-router";
-import { BrowserRouter } from "react-router";
+import { BrowserRouter, useLocation, useNavigate } from "react-router";
 
 import "bootstrap";
 
@@ -23,118 +22,105 @@ import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
+import { isRenkuLegacy } from "./utils/helpers/HelperFunctionsV2";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
-let hasRendered = false;
+const configFetch = fetch("/config.json");
 
-export default function appIndex() {
-  if (!hasRendered) {
-    appIndexInner();
-  }
-  hasRendered = true;
-}
+configFetch.then((valuesRead) => {
+  const configResp = valuesRead;
+  const configRead = configResp.json();
 
-function appIndexInner() {
-  const configFetch = fetch("/config.json");
+  configRead.then((params_) => {
+    const container = document.getElementById("root");
+    const root = createRoot(container);
 
-  configFetch.then((valuesRead) => {
-    const configResp = valuesRead;
-    const configRead = configResp.json();
+    const params = validatedAppParams(params_);
 
-    configRead.then((params_) => {
-      const container = document.getElementById("root");
-      const root = createRoot(container);
+    // configure core api versioned url helper
+    const coreApiVersionedUrlConfig = createCoreApiVersionedUrlConfig(
+      params.CORE_API_VERSION_CONFIG
+    );
 
-      const params = validatedAppParams(params_);
+    // configure base url
+    Url.setBaseUrl(params.BASE_URL);
 
-      // configure core api versioned url helper
-      const coreApiVersionedUrlConfig = createCoreApiVersionedUrlConfig(
-        params.CORE_API_VERSION_CONFIG
-      );
+    // create client to be passed to coordinators
+    const client = new APIClient(
+      `${params.UISERVER_URL}/api`,
+      params.UISERVER_URL,
+      coreApiVersionedUrlConfig
+    );
 
-      // configure base url
-      Url.setBaseUrl(params.BASE_URL);
+    // Create the global model containing the formal schema definition and the redux store
+    const model = new StateModel(globalSchema);
 
-      // create client to be passed to coordinators
-      const client = new APIClient(
-        `${params.UISERVER_URL}/api`,
-        params.UISERVER_URL,
-        coreApiVersionedUrlConfig
-      );
-
-      // Create the global model containing the formal schema definition and the redux store
-      const model = new StateModel(globalSchema);
-
-      // show maintenance page when necessary
-      const maintenance = params.MAINTENANCE;
-      if (maintenance) {
-        root.render(
-          <Provider store={model.reduxStore}>
-            <Helmet>
-              <style type="text/css">{v1Styles}</style>
-            </Helmet>
-            <Maintenance info={maintenance} />
-          </Provider>
-        );
-        return;
-      }
-
-      // Query user data
-      const userCoordinator = new UserCoordinator(
-        client,
-        model.subModel("user")
-      );
-      let userPromise = userCoordinator.fetchUser();
-
-      // configure Sentry
-      let uiApplication = App;
-      if (params.SENTRY_URL) {
-        Sentry.init(
-          params.SENTRY_URL,
-          params.SENTRY_NAMESPACE,
-          userPromise,
-          params.UI_VERSION,
-          params.TELEPRESENCE,
-          params.SENTRY_SAMPLE_RATE,
-          [params.UISERVER_URL]
-        );
-        const profiler = !!params.SENTRY_SAMPLE_RATE;
-        if (profiler) uiApplication = Sentry.withProfiler(App);
-      }
-
-      // Set up polling
-      const statuspageId = params.STATUSPAGE_ID;
-      pollStatuspage(statuspageId, model);
-
-      // Map redux user data to the initial react application
-      function mapStateToProps(state, ownProps) {
-        return { user: state.stateModel.user, ...ownProps };
-      }
-
-      // Render UI application
-      const VisibleApp = connect(mapStateToProps)(uiApplication);
+    // show maintenance page when necessary
+    const maintenance = params.MAINTENANCE;
+    if (maintenance) {
       root.render(
         <Provider store={model.reduxStore}>
-          <BrowserRouter>
-            <AppErrorBoundary>
-              <LoginHandler />
-              <FeatureFlagHandler />
-              <StyleHandler />
-              <VisibleApp
-                client={client}
-                coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
-                params={params}
-                model={model}
-                statuspageId={statuspageId}
-              />
-            </AppErrorBoundary>
-          </BrowserRouter>
+          <Helmet>
+            <style type="text/css">{v1Styles}</style>
+          </Helmet>
+          <Maintenance info={maintenance} />
         </Provider>
       );
-    });
+      return;
+    }
+
+    // Query user data
+    const userCoordinator = new UserCoordinator(client, model.subModel("user"));
+    let userPromise = userCoordinator.fetchUser();
+
+    // configure Sentry
+    let uiApplication = App;
+    if (params.SENTRY_URL) {
+      Sentry.init(
+        params.SENTRY_URL,
+        params.SENTRY_NAMESPACE,
+        userPromise,
+        params.UI_VERSION,
+        params.TELEPRESENCE,
+        params.SENTRY_SAMPLE_RATE,
+        [params.UISERVER_URL]
+      );
+      const profiler = !!params.SENTRY_SAMPLE_RATE;
+      if (profiler) uiApplication = Sentry.withProfiler(App);
+    }
+
+    // Set up polling
+    const statuspageId = params.STATUSPAGE_ID;
+    pollStatuspage(statuspageId, model);
+
+    // Map redux user data to the initial react application
+    function mapStateToProps(state, ownProps) {
+      return { user: state.stateModel.user, ...ownProps };
+    }
+
+    // Render UI application
+    const VisibleApp = connect(mapStateToProps)(uiApplication);
+    root.render(
+      <Provider store={model.reduxStore}>
+        <BrowserRouter>
+          <AppErrorBoundary>
+            <LoginHandler />
+            <FeatureFlagHandler />
+            <StyleHandler />
+            <VisibleApp
+              client={client}
+              coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
+              params={params}
+              model={model}
+              statuspageId={statuspageId}
+            />
+          </AppErrorBoundary>
+        </BrowserRouter>
+      </Provider>
+    );
   });
-}
+});
 
 function LoginHandler() {
   const location = useLocation();
@@ -153,24 +139,12 @@ function FeatureFlagHandler() {
 }
 
 export function StyleHandler() {
+  const location = useLocation();
   return (
-    <Routes>
-      <Route
-        path="/v2/*"
-        element={
-          <Helmet>
-            <style type="text/css">{v2Styles}</style>
-          </Helmet>
-        }
-      />
-      <Route
-        path="*"
-        element={
-          <Helmet>
-            <style type="text/css">{v1Styles}</style>
-          </Helmet>
-        }
-      />
-    </Routes>
+    <Helmet>
+      <style type="text/css">
+        {isRenkuLegacy(location.pathname) ? v1Styles : v2Styles}
+      </style>
+    </Helmet>
   );
 }

@@ -21,6 +21,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   CircleFill,
+  FileCode,
   Pencil,
   Trash,
   XLg,
@@ -73,6 +74,7 @@ import repositoriesApi, {
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import { SshRepositoryUrlWarning } from "./AddCodeRepositoryModal";
 import {
+  getRepositoryName,
   validateCodeRepository,
   validateNoDuplicatesInCodeRepositories,
 } from "./repositories.utils";
@@ -153,7 +155,10 @@ function EditCodeRepositoryModal({
   return (
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader toggle={toggleModal}>Edit code repository</ModalHeader>
+        <ModalHeader toggle={toggleModal}>
+          <FileCode className={cx("me-1", "bi")} />
+          Edit code repository
+        </ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
           <p>Specify a code repository by its URL.</p>
@@ -162,7 +167,6 @@ function EditCodeRepositoryModal({
               <FormGroup className="field-group" noMargin>
                 <Label for={`project-${project.id}-edit-repository-url`}>
                   Repository URL
-                  <span className="required-label">*</span>
                 </Label>
                 <Controller
                   control={control}
@@ -398,12 +402,8 @@ export function RepositoryItem({
     setShowDetails((open) => !open);
   }, []);
   const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
-  const canonicalUrl = useMemo(
-    () => safeNewUrl(canonicalUrlStr),
-    [canonicalUrlStr]
-  );
 
-  const title = canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
+  const title = getRepositoryName(url);
   // ! Product team wants this restored -- keeping the code for the next iteration
   // const urlDisplay = (
   //   <div className={cx("d-flex", "align-items-center", "gap-2")}>
@@ -639,14 +639,18 @@ function RepositoryView({
               <div className={cx("float-end", "mt-1", "ms-1")}>
                 <CodeRepositoryActions project={project} url={repositoryUrl} />
               </div>
-              <h2
-                className={cx("m-0", "text-break")}
-                data-cy="data-source-title"
-              >
-                {title}
-              </h2>
+              <div className={cx("d-flex", "flex-column")}>
+                <span className={cx("small", "text-muted", "me-3")}>
+                  Code repository
+                </span>
+                <h2
+                  className={cx("m-0", "text-break")}
+                  data-cy="code-repository-title"
+                >
+                  {title}
+                </h2>
+              </div>
             </div>
-            <p className={cx("fst-italic", "m-0")}>Code repository</p>
           </div>
 
           <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -816,7 +820,7 @@ function RepositoryPermissionsAlert({
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               Your user account is not currently connected to{" "}
               {provider.display_name}. See{" "}
-              <Link to={ABSOLUTE_ROUTES.v2.connectedServices}>
+              <Link to={ABSOLUTE_ROUTES.v2.integrations}>
                 connected services
               </Link>
               .
@@ -843,7 +847,7 @@ function RepositoryPermissionsAlert({
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               Your user account is not currently connected to{" "}
               {provider.display_name}. See{" "}
-              <Link to={ABSOLUTE_ROUTES.v2.connectedServices}>
+              <Link to={ABSOLUTE_ROUTES.v2.integrations}>
                 connected services
               </Link>
               .

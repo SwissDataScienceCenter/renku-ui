@@ -18,6 +18,7 @@
 
 import { DateTime } from "luxon";
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
+import type { SearchEntity } from "./api/searchV2Api.api";
 import {
   CREATION_DATE_FILTER_KEY,
   DATE_AFTER_LEEWAY,
@@ -498,4 +499,11 @@ export function dateFiltersAsArray(
   dateFilters: SearchDateFilters
 ): SearchDateFilter[] {
   return [dateFilters.created];
+}
+
+export function toDisplayName(entityType: SearchEntity["type"]): string {
+  if (entityType === "DataConnector") {
+    return "Data Connector";
+  }
+  return entityType;
 }

@@ -21,8 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { groupBy, isEmpty } from "lodash-es";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link } from "react-router";
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import {
   Button,
   Card,

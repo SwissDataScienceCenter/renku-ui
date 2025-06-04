@@ -24,8 +24,7 @@ import {
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
-import { Link } from "react-router";
-import { useMatch } from "react-router";
+import { Link, useMatch } from "react-router";
 import {
   Collapse,
   Dropdown,
@@ -47,10 +46,8 @@ import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import StatusBanner from "../platform/components/StatusBanner";
 import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
-import BackToV1Button from "../projectsV2/shared/BackToV1Button";
-import WipBadge from "../projectsV2/shared/WipBadge";
 
-const RENKU_ALPHA_LOGO = "/static/public/img/logo.svg";
+const RENKU_LOGO = "/static/public/img/logo.svg";
 
 function NavbarItemPlus() {
   const [isOpen, setIsOpen] = useState(false);
@@ -166,12 +163,8 @@ export default function NavbarV2() {
               data-cy="link-home"
               to={ABSOLUTE_ROUTES.v2.root}
             >
-              <img src={RENKU_ALPHA_LOGO} alt="Renku v2 (beta)" height="50" />
+              <img src={RENKU_LOGO} alt="Renku" height="50" />
             </RenkuNavLinkV2>
-            <WipBadge>
-              <span className="fw-bold">2.0</span> Early access
-            </WipBadge>
-            <BackToV1Button outline={true} />
           </div>
           <div className="ms-auto">
             <NavbarToggler onClick={onToggle} className={cx("border-0", "p-2")}>

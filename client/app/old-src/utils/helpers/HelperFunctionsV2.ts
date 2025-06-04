@@ -19,7 +19,7 @@
 export function isRenkuLegacy(pathname: string | undefined) {
   return (
     typeof pathname === "string" &&
-    (!pathname.startsWith("/v2") ||
+    (pathname.startsWith("/v1") ||
       pathname.startsWith("/projects") ||
       pathname.startsWith("/datasets"))
   );

@@ -19,33 +19,34 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { Database } from "react-bootstrap-icons";
-import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Database, XLg } from "react-bootstrap-icons";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
+import { ErrorAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-
-import { useGetCloudStorageSchemaQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
+import { useGetStorageSchemaQuery } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_TOTAL_STEPS,
   EMPTY_CLOUD_STORAGE_STATE,
 } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { AddCloudStorageState } from "../../../project/components/cloudStorage/projectCloudStorage.types";
-
-import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-
-import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../../api/data-connectors.enhanced-api";
 import type { DataConnectorRead } from "../../api/data-connectors.api";
+import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../../api/data-connectors.enhanced-api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import useDataConnectorPermissions from "../../utils/useDataConnectorPermissions.hook";
-
-import { dataConnectorToFlattened } from "../dataConnector.utils";
-
-import styles from "./DataConnectorModal.module.scss";
+import {
+  dataConnectorToFlattened,
+  getDataConnectorScope,
+} from "../dataConnector.utils";
 import DataConnectorModalBody from "./DataConnectorModalBody";
 import DataConnectorModalFooter from "./DataConnectorModalFooter";
+
+import styles from "./DataConnectorModal.module.scss";
 
 export function DataConnectorModalBodyAndFooter({
   dataConnector = null,
@@ -56,7 +57,7 @@ export function DataConnectorModalBodyAndFooter({
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
   // Fetch available schema when users open the modal
-  const schemaQueryResult = useGetCloudStorageSchemaQuery(
+  const schemaQueryResult = useGetStorageSchemaQuery(
     isOpen ? undefined : skipToken
   );
   const dispatch = useAppDispatch();
@@ -72,7 +73,7 @@ export function DataConnectorModalBodyAndFooter({
     if (dataConnector == null) {
       flattened = {
         ...flattened,
-        namespace,
+        namespace: project ? `${project.namespace}/${project.slug}` : namespace,
         visibility: project?.visibility ?? "private",
       };
     }
@@ -91,7 +92,7 @@ export function DataConnectorModalBodyAndFooter({
         schemata: schemata ?? [],
       })
     );
-  }, [dataConnector, dispatch, namespace, project?.visibility, schemata]);
+  }, [dataConnector, dispatch, namespace, project, schemata]);
 
   // Visual elements
   return (
@@ -102,7 +103,10 @@ export function DataConnectorModalBodyAndFooter({
         ) : schemaQueryResult.error ? (
           <RtkOrNotebooksError error={schemaQueryResult.error} />
         ) : (
-          <DataConnectorModalBody storageSecrets={connectorSecrets ?? []} />
+          <DataConnectorModalBody
+            storageSecrets={connectorSecrets ?? []}
+            project={project}
+          />
         )}
       </ModalBody>
 
@@ -139,7 +143,7 @@ function DataConnectorModalBodyAndFooterUnauthorized() {
 interface DataConnectorModalProps {
   dataConnector?: DataConnectorRead | null;
   isOpen: boolean;
-  namespace: string;
+  namespace?: string;
   project?: Project;
   toggle: () => void;
 }
@@ -151,6 +155,7 @@ export default function DataConnectorModal({
   toggle: originalToggle,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
+  const scope = getDataConnectorScope(dataConnector?.namespace);
   const { permissions, isLoading: isLoadingPermissions } =
     useDataConnectorPermissions({ dataConnectorId: dataConnectorId ?? "" });
   const dispatch = useAppDispatch();
@@ -161,7 +166,7 @@ export default function DataConnectorModal({
   }, [dispatch, originalToggle]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       className={styles.modal}
@@ -169,7 +174,6 @@ export default function DataConnectorModal({
       fullscreen="lg"
       id={dataConnector?.id ?? "new-data-connector"}
       isOpen={isOpen}
-      scrollable
       size="lg"
       unmountOnClose={false}
       toggle={toggle}
@@ -177,7 +181,9 @@ export default function DataConnectorModal({
       <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
         <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
       </ModalHeader>
-      {!isLoadingPermissions && dataConnectorId != null ? (
+      {!isLoadingPermissions &&
+      dataConnectorId != null &&
+      scope !== "global" ? (
         <PermissionsGuard
           disabled={<DataConnectorModalBodyAndFooterUnauthorized />}
           enabled={
@@ -194,6 +200,13 @@ export default function DataConnectorModal({
           requestedPermission={"write"}
           userPermissions={permissions}
         />
+      ) : !isLoadingPermissions && dataConnectorId != null ? (
+        <PermissionsGuard
+          disabled={<DataConnectorModalBodyAndFooterUnauthorized />}
+          enabled={<DoNotEditGlobalDataConnector toggle={toggle} />}
+          requestedPermission={"write"}
+          userPermissions={permissions}
+        />
       ) : dataConnectorId == null ? (
         <DataConnectorModalBodyAndFooter
           {...{
@@ -207,7 +220,7 @@ export default function DataConnectorModal({
       ) : (
         <DataConnectorModalBodyAndFooterUnauthorized />
       )}
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -221,6 +234,41 @@ export function DataConnectorModalHeader({
     <>
       <Database className={cx("bi", "me-1")} />{" "}
       {dataConnectorId ? "Edit" : "Add"} data connector
+    </>
+  );
+}
+
+interface DoNotEditGlobalDataConnectorProps {
+  toggle: () => void;
+}
+
+function DoNotEditGlobalDataConnector({
+  toggle,
+}: DoNotEditGlobalDataConnectorProps) {
+  return (
+    <>
+      <ModalBody data-cy="data-connector-edit-body-warning">
+        <ErrorAlert dismissible={false} timeout={0}>
+          <h3>
+            RenkuLab administrators should avoid editing global data connectors
+          </h3>
+          <p className="mb-1">
+            Global data connectors can be used be all users of RenkuLab,
+            therefore edits on global data connectors can break many projects.
+          </p>
+          <p className="mb-0">
+            If a global data connector really needs to be edited, it is possible
+            to do so by directly using the RenkuLab API.
+          </p>
+        </ErrorAlert>
+      </ModalBody>
+
+      <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
+        <Button color="danger" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+      </ModalFooter>
     </>
   );
 }

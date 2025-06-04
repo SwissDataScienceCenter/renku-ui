@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect } from "react";
+import cx from "classnames";
+import React, { createRef, ReactNode, useEffect, useState } from "react";
+import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
 import {
   Button,
-  Modal,
   ModalBody,
+  ModalFooter,
   ModalHeader,
   Nav,
   NavItem,
@@ -41,9 +43,7 @@ import {
   generateZip,
 } from "../utils/helpers/HelperFunctions";
 import { Loader } from "./Loader";
-
-import cx from "classnames";
-import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
+import ScrollableModal from "./modal/ScrollableModal";
 
 import styles from "./Logs.module.scss";
 
@@ -72,13 +72,20 @@ export interface IFetchableLogs {
 
 interface LogBodyProps extends IFetchableLogs {
   name: string;
+  showButtons?: boolean;
+  defaultTab?: string;
 }
 
-const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
-  const [activeTab, setActiveTab] = React.useState<string | undefined>(
-    undefined
-  );
-  const [data, setData] = React.useState<Record<string, string> | null>(null);
+const LogTabs = ({
+  logs,
+  defaultTab,
+}: {
+  logs: Record<string, string>;
+  defaultTab?: string;
+}) => {
+  const [activeTab, setActiveTab] = useState<string | undefined>(defaultTab);
+  const [data, setData] = useState<Record<string, string> | null>(null);
+  const activeTabPaneRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
     if (logs) {
@@ -94,6 +101,17 @@ const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
     }
   }, [logs, activeTab]);
 
+  useEffect(() => {
+    if (activeTabPaneRef.current && activeTab === defaultTab) {
+      requestAnimationFrame(() => {
+        const preElement = activeTabPaneRef.current?.querySelector("pre");
+        if (preElement) {
+          preElement.scrollTop = preElement.scrollHeight;
+        }
+      });
+    }
+  }, [activeTab, defaultTab, data, activeTabPaneRef]);
+
   const getTitle = (name: string) => {
     return name
       .split("-")
@@ -104,8 +122,11 @@ const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
   if (!data) return null;
 
   return (
-    <div>
-      <Nav tabs className="mb-2">
+    <>
+      <Nav
+        tabs
+        className={cx("mb-2", "position-sticky", "top-0", "z-index-100")}
+      >
         {Object.keys(data).map((tab) => {
           return (
             <NavItem key={tab} data-cy="log-tab" role="button">
@@ -121,14 +142,21 @@ const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
           );
         })}
       </Nav>
-      <TabContent activeTab={activeTab}>
+      <TabContent
+        activeTab={activeTab}
+        className={cx("flex-1", "overflow-y-auto")}
+      >
         {Object.keys(data).map((tab) => {
           return (
             <TabPane key={`log_${tab}`} tabId={tab}>
-              <div className="d-flex flex-column">
+              <div
+                className="d-flex flex-column"
+                ref={tab === activeTab ? activeTabPaneRef : null}
+              >
                 <pre
-                  className="overflow-hidden"
-                  style={{ whiteSpace: "pre-line" }}
+                  className="overflow-auto"
+                  // eslint-disable-next-line spellcheck/spell-checker
+                  style={{ whiteSpace: "pre-line", maxHeight: "60vh" }}
                 >
                   {data[tab]}
                 </pre>
@@ -137,7 +165,7 @@ const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
           );
         })}
       </TabContent>
-    </div>
+    </>
   );
 };
 
@@ -241,7 +269,7 @@ function NoLogsAvailable(props: LogBodyProps) {
 }
 
 function SessionLogsBody(props: LogBodyProps) {
-  const { fetchLogs, logs, name } = props;
+  const { fetchLogs, logs, name, defaultTab } = props;
   if (logs.fetching) return <Loader />;
   if (!logs.fetched) {
     return (
@@ -268,10 +296,55 @@ function SessionLogsBody(props: LogBodyProps) {
     logs.data[LOG_ERROR_KEY] != null
   )
     return <NoLogsAvailable fetchLogs={fetchLogs} logs={logs} name={name} />;
-  return <LogTabs logs={logsWithData} />;
+  return <LogTabs logs={logsWithData} defaultTab={defaultTab} />;
 }
 
 function SessionLogs(props: LogBodyProps) {
+  const { fetchLogs, logs, showButtons = true, defaultTab } = props;
+  const sessionName = props.name;
+  const [downloading, save] = useDownloadLogs(logs, fetchLogs, sessionName);
+
+  useEffect(() => {
+    if (fetchLogs) fetchLogs(sessionName);
+  }, []); // eslint-disable-line
+
+  // ? Having a minHeight prevent losing the vertical scroll position.
+  // TODO: Revisit after #1219
+  return (
+    <>
+      {showButtons && (
+        <div className={cx("text-nowrap", "mb-3")}>
+          <Button
+            key="button"
+            color="outline-primary"
+            style={{ marginRight: 8 }}
+            id="session-refresh-logs"
+            onClick={() => {
+              fetchLogs(sessionName);
+            }}
+            disabled={logs.fetching}
+          >
+            <ArrowRepeat className={cx("bi", "me-1")} /> Refresh logs
+          </Button>
+          <LogDownloadButton
+            logs={logs}
+            downloading={downloading}
+            save={save}
+            color="outline-primary"
+          />
+        </div>
+      )}
+      <SessionLogsBody
+        fetchLogs={fetchLogs}
+        logs={logs}
+        name={sessionName}
+        defaultTab={defaultTab}
+      />
+    </>
+  );
+}
+
+function SessionLogsButtons(props: LogBodyProps) {
   const { fetchLogs, logs } = props;
   const sessionName = props.name;
   const [downloading, save] = useDownloadLogs(logs, fetchLogs, sessionName);
@@ -303,9 +376,6 @@ function SessionLogs(props: LogBodyProps) {
           save={save}
           color="outline-primary"
         />
-      </div>
-      <div>
-        <SessionLogsBody fetchLogs={fetchLogs} logs={logs} name={sessionName} />
       </div>
     </>
   );
@@ -376,6 +446,7 @@ interface EnvironmentLogsPresentProps {
   logs?: ILogs;
   name: string;
   toggleLogs: (name: string) => unknown;
+  defaultTab?: string;
 }
 function EnvironmentLogsPresent({
   logs,
@@ -383,14 +454,14 @@ function EnvironmentLogsPresent({
   toggleLogs,
   fetchLogs,
   title,
+  defaultTab,
 }: EnvironmentLogsPresentProps) {
   if (!logs?.show || logs?.show !== name || !logs) return null;
 
   return (
-    <Modal
+    <ScrollableModal
       isOpen={!!logs.show}
       className="modal-xl"
-      scrollable={true}
       toggle={() => {
         toggleLogs(name);
       }}
@@ -403,12 +474,19 @@ function EnvironmentLogsPresent({
       >
         {title}
       </ModalHeader>
-      <ModalBody>
-        <div className="mx-2">
-          <SessionLogs fetchLogs={fetchLogs} logs={logs} name={name} />
-        </div>
+      <ModalBody className={cx("d-flex", "flex-column", "h-auto")}>
+        <SessionLogs
+          fetchLogs={fetchLogs}
+          logs={logs}
+          name={name}
+          showButtons={false}
+          defaultTab={defaultTab}
+        />
       </ModalBody>
-    </Modal>
+      <ModalFooter>
+        <SessionLogsButtons fetchLogs={fetchLogs} logs={logs} name={name} />
+      </ModalFooter>
+    </ScrollableModal>
   );
 }
 

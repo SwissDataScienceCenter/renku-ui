@@ -58,6 +58,7 @@ import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.ho
 
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import DataConnectorModal from "./DataConnectorModal";
+import { getDataConnectorScope } from "./dataConnector.utils";
 
 interface DataConnectorRemoveModalProps {
   dataConnector: DataConnectorRead;
@@ -96,11 +97,11 @@ function DataConnectorRemoveDeleteModal({
   );
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && isOpen) {
       dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       onDelete();
     }
-  }, [dispatch, isSuccess, onDelete]);
+  }, [dispatch, isOpen, isSuccess, onDelete]);
   const onDeleteDataCollector = useCallback(() => {
     deleteDataConnector({
       dataConnectorId: dataConnector.id,
@@ -258,11 +259,11 @@ function DataConnectorRemoveUnlinkModal({
   const linkId = dataConnectorLink.id;
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && isOpen) {
       dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       onDelete();
     }
-  }, [dispatch, isSuccess, onDelete]);
+  }, [dispatch, isOpen, isSuccess, onDelete]);
 
   const onDeleteDataCollector = useCallback(() => {
     if (!linkId) return;
@@ -292,7 +293,7 @@ function DataConnectorRemoveUnlinkModal({
               <Col>
                 <PermissionsGuard
                   disabled={
-                    <p>
+                    <p className="mb-0">
                       You do not have the required permissions to unlink this
                       data connector.
                     </p>
@@ -307,7 +308,7 @@ function DataConnectorRemoveUnlinkModal({
                         </strong>
                         ?
                       </p>
-                      <p>
+                      <p className="mb-0">
                         The data from the data connector will no longer be
                         available in sessions.
                       </p>
@@ -357,7 +358,6 @@ function DataConnectorRemoveUnlinkModal({
           </ModalFooter>
         </>
       )}
-      ;
     </Modal>
   );
 }
@@ -368,6 +368,7 @@ function DataConnectorActionsInner({
   toggleView,
 }: DataConnectorActionsProps) {
   const { id: dataConnectorId } = dataConnector;
+  const scope = getDataConnectorScope(dataConnector.namespace);
   const { permissions } = useDataConnectorPermissions({ dataConnectorId });
 
   const { project_id: projectId } = dataConnectorLink ?? {};
@@ -389,12 +390,19 @@ function DataConnectorActionsInner({
     dataConnectorLink == null
       ? "delete"
       : "unlink";
+  const requiresCredentials =
+    dataConnector.storage.sensitive_fields?.length > 0;
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
   const onDelete = useCallback(() => {
-    setIsDeleteOpen(false);
     toggleView();
+    setIsDeleteOpen(false);
+  }, [toggleView]);
+  const onUnlink = useCallback(() => {
+    toggleView();
+    setIsUnlinkOpen(false);
   }, [toggleView]);
   const toggleCredentials = useCallback(() => {
     setCredentialsOpen((open) => !open);
@@ -404,6 +412,9 @@ function DataConnectorActionsInner({
   }, []);
   const toggleEdit = useCallback(() => {
     setIsEditOpen((open) => !open);
+  }, []);
+  const toggleUnlink = useCallback(() => {
+    setIsUnlinkOpen((open) => !open);
   }, []);
 
   const actions = [
@@ -421,17 +432,21 @@ function DataConnectorActionsInner({
           },
         ]
       : []),
-    {
-      key: "data-connector-credentials",
-      onClick: toggleCredentials,
-      content: (
-        <>
-          <Lock className={cx("bi", "me-1")} />
-          Credentials
-        </>
-      ),
-    },
-    ...(permissions.delete && removeMode === "delete"
+    ...(requiresCredentials
+      ? [
+          {
+            key: "data-connector-credentials",
+            onClick: toggleCredentials,
+            content: (
+              <>
+                <Lock className={cx("bi", "me-1")} />
+                Credentials
+              </>
+            ),
+          },
+        ]
+      : []),
+    ...(permissions.delete && removeMode === "delete" && scope !== "global"
       ? [
           {
             key: "data-connector-delete",
@@ -448,8 +463,8 @@ function DataConnectorActionsInner({
     ...(projectPermissions.write && removeMode === "unlink"
       ? [
           {
-            key: "data-connector-delete",
-            onClick: toggleDelete,
+            key: "data-connector-unlink",
+            onClick: toggleUnlink,
             content: (
               <>
                 <NodeMinus className={cx("bi", "me-1")} />
@@ -523,11 +538,11 @@ function DataConnectorActionsInner({
         <DataConnectorRemoveUnlinkModal
           dataConnector={dataConnector}
           dataConnectorLink={dataConnectorLink}
-          isOpen={isDeleteOpen}
-          onDelete={onDelete}
+          isOpen={isUnlinkOpen}
+          onDelete={onUnlink}
           projectNamespace={namespace!}
           projectSlug={slug!}
-          toggleModal={toggleDelete}
+          toggleModal={toggleUnlink}
         />
       )}
     </>

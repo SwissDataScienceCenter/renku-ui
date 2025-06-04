@@ -34,12 +34,14 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 
-import { useTestCloudStorageConnectionMutation } from "../../../project/components/cloudStorage/projectCloudStorage.api";
+import {
+  type PostStorageSchemaTestConnectionApiArg,
+  usePostStorageSchemaTestConnectionMutation,
+} from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   AddCloudStorageState,
   CloudStorageDetailsOptions,
-  TestCloudStorageConnectionParams,
 } from "../../../project/components/cloudStorage/projectCloudStorage.types";
 
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
@@ -249,7 +251,7 @@ export function DataConnectorConnectionTestResult() {
       data-cy="cloud-storage-connection-success"
     >
       <SuccessAlert timeout={0}>
-        <p className="p-0">The connection to the storage works correctly.</p>
+        <p className="mb-0">The connection to the storage works correctly.</p>
       </SuccessAlert>
     </div>
   );
@@ -271,7 +273,7 @@ function TestConnectionAndContinueButtons({
     useAppSelector((state) => state.dataConnectorFormSlice);
 
   const [validateCloudStorageConnection, validationResult] =
-    useTestCloudStorageConnectionMutation();
+    usePostStorageSchemaTestConnectionMutation();
 
   useEffect(() => {
     if (
@@ -289,9 +291,9 @@ function TestConnectionAndContinueButtons({
   }, [dispatch, isActionOngoing, validationResult, validationResultIsCurrent]);
 
   const validateConnection = useCallback(() => {
-    const validateParameters: TestCloudStorageConnectionParams = {
+    const validateParameters: PostStorageSchemaTestConnectionApiArg["body"] = {
       configuration: {
-        type: flatDataConnector.schema,
+        type: flatDataConnector.schema ?? null,
       },
       source_path: flatDataConnector.sourcePath ?? "/",
     };
@@ -312,19 +314,21 @@ function TestConnectionAndContinueButtons({
     dispatch(
       dataConnectorFormSlice.actions.setActionOngoing({ isActionOngoing: true })
     );
-    validateCloudStorageConnection(validateParameters).then((result) => {
-      const validationResult =
-        "data" in result
-          ? { isSuccess: true, isError: false, error: null }
-          : { isSuccess: false, isError: true, error: result.error };
+    validateCloudStorageConnection({ body: validateParameters }).then(
+      (result) => {
+        const validationResult =
+          "data" in result
+            ? { isSuccess: true, isError: false, error: null }
+            : { isSuccess: false, isError: true, error: result.error };
 
-      dispatch(
-        dataConnectorFormSlice.actions.setValidationResult({
-          validationResult,
-          isActionOngoing: false,
-        })
-      );
-    });
+        dispatch(
+          dataConnectorFormSlice.actions.setValidationResult({
+            validationResult,
+            isActionOngoing: false,
+          })
+        );
+      }
+    );
   }, [dispatch, flatDataConnector, validateCloudStorageConnection]);
   const buttonTestId = `${testId}-button`;
   const divTestId = `${testId}-div`;

@@ -19,19 +19,18 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { Link } from "react-router";
-import { generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
+  getSessionStatusStyles,
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
@@ -83,8 +82,8 @@ function ErrorState({
 }) {
   return (
     <div>
-      <p className="mb-0">Cannot show sessions.</p>
-      <RtkErrorAlert error={error} />
+      <p>Cannot show sessions.</p>
+      <RtkOrNotebooksError error={error} />
     </div>
   );
 }
@@ -115,9 +114,6 @@ interface DashboardSessionProps {
   session: SessionV2;
 }
 function DashboardSession({ session }: DashboardSessionProps) {
-  const displayModal = useAppSelector(
-    ({ display }) => display.modals.sessionLogs
-  );
   const { project_id: projectId, launcher_id: launcherId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
     projectId ? { projectId } : skipToken
@@ -136,7 +132,6 @@ function DashboardSession({ session }: DashboardSessionProps) {
         id: projectId,
       })
     : ABSOLUTE_ROUTES.v2.root;
-  const sessionHash = project && launcherId ? `launcher-${launcherId}` : "";
   const showSessionUrl = project
     ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
         namespace: project.namespace,
@@ -144,6 +139,9 @@ function DashboardSession({ session }: DashboardSessionProps) {
         session: session.name,
       })
     : ABSOLUTE_ROUTES.v2.root;
+
+  const sessionStyles = getSessionStatusStyles(session);
+  const state = session.status.state;
 
   return (
     <div
@@ -159,7 +157,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
           "text-body",
           "text-decoration-none"
         )}
-        to={{ pathname: projectUrl, hash: sessionHash }}
+        to={{ pathname: projectUrl }}
       >
         <Row className="g-2">
           <Col className="order-1" xs={12} md={9} lg={10}>
@@ -186,9 +184,6 @@ function DashboardSession({ session }: DashboardSessionProps) {
                   )}
                 </h6>
               </Col>
-              <Col xs={12} xl="auto" className="mt-1">
-                <SessionStatusV2Label session={session} />
-              </Col>
             </Row>
           </Col>
           <Col className={cx("order-3", "order-md-2")} xs={12} md={3} lg={2}>
@@ -197,8 +192,29 @@ function DashboardSession({ session }: DashboardSessionProps) {
               <span className="bi" />
             </div>
           </Col>
-          <Col className={cx("order-2", "order-md-3", "mt-2")} xs={12}>
-            <SessionStatusV2Description session={session} />
+          <Col
+            className={cx(
+              "order-2",
+              "order-md-3",
+              "mt-2",
+              "d-block",
+              "d-sm-flex",
+              "gap-5"
+            )}
+            xs={12}
+          >
+            <div className={cx("d-flex", "gap-2")}>
+              <img
+                src={sessionStyles.sessionIcon}
+                alt={`Session is ${state}`}
+                loading="lazy"
+              />
+              <SessionStatusV2Label session={session} variant="list" />
+            </div>
+            <SessionStatusV2Description
+              session={session}
+              showInfoDetails={false}
+            />
           </Col>
         </Row>
       </Link>
@@ -210,7 +226,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
           showSessionUrl={showSessionUrl}
         />
       </div>
-      <EnvironmentLogsV2 name={displayModal.targetServer} />
+      <EnvironmentLogsV2 name={session.name} />
     </div>
   );
 }

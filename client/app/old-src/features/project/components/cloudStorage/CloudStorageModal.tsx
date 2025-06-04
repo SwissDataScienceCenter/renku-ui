@@ -21,10 +21,10 @@ import cx from "classnames";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowCounterclockwise } from "react-bootstrap-icons";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import {
   findSensitive,
   getCurrentStorageDetails,
@@ -32,35 +32,33 @@ import {
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
 import {
-  useAddCloudStorageForProjectMutation,
-  useGetCloudStorageSchemaQuery,
-  useTestCloudStorageConnectionMutation,
-  useUpdateCloudStorageMutation,
-} from "./projectCloudStorage.api";
-import {
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-  CLOUD_STORAGE_TOTAL_STEPS,
-  EMPTY_CLOUD_STORAGE_DETAILS,
-  EMPTY_CLOUD_STORAGE_STATE,
-} from "./projectCloudStorage.constants";
-import {
-  AddCloudStorageForProjectParams,
-  AddCloudStorageState,
-  AuxiliaryCommandStatus,
-  CloudStorage,
-  CloudStorageDetails,
-  CloudStorageDetailsOptions,
-  TestCloudStorageConnectionParams,
-  UpdateCloudStorageParams,
-} from "./projectCloudStorage.types";
-
+  useGetStorageSchemaQuery,
+  usePatchStorageByStorageIdMutation,
+  usePostStorageMutation,
+  usePostStorageSchemaTestConnectionMutation,
+  type PostStorageApiArg,
+  type PostStorageSchemaTestConnectionApiArg,
+} from "./api/projectCloudStorage.api";
 import {
   AddCloudStorageBackButton,
   AddCloudStorageBodyContent,
   AddCloudStorageConnectionTestResult,
   AddCloudStorageContinueButton,
   AddCloudStorageHeaderContent,
-} from "./cloudStorageModalComponents.tsx";
+} from "./cloudStorageModalComponents";
+import {
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+  CLOUD_STORAGE_TOTAL_STEPS,
+  EMPTY_CLOUD_STORAGE_DETAILS,
+  EMPTY_CLOUD_STORAGE_STATE,
+} from "./projectCloudStorage.constants";
+import type {
+  AddCloudStorageState,
+  AuxiliaryCommandStatus,
+  CloudStorage,
+  CloudStorageDetails,
+  CloudStorageDetailsOptions,
+} from "./projectCloudStorage.types";
 
 import styles from "./CloudStorage.module.scss";
 
@@ -82,7 +80,7 @@ export default function CloudStorageModal({
     data: schema,
     error: schemaError,
     isFetching: schemaIsFetching,
-  } = useGetCloudStorageSchemaQuery(isOpen ? undefined : skipToken);
+  } = useGetStorageSchemaQuery(isOpen ? undefined : skipToken);
 
   // Reset state on props change
   useEffect(() => {
@@ -160,12 +158,11 @@ export default function CloudStorageModal({
   }, [redraw]);
 
   // Mutations
-  const [addCloudStorageForProject, addResult] =
-    useAddCloudStorageForProjectMutation();
+  const [addCloudStorageForProject, addResult] = usePostStorageMutation();
   const [modifyCloudStorageForProject, modifyResult] =
-    useUpdateCloudStorageMutation();
+    usePatchStorageByStorageIdMutation();
   const [validateCloudStorageConnection, validationResult] =
-    useTestCloudStorageConnectionMutation();
+    usePostStorageSchemaTestConnectionMutation();
 
   const reset = useCallback(() => {
     const resetStatus = getCurrentStorageDetails(currentStorage);
@@ -213,9 +210,9 @@ export default function CloudStorageModal({
   );
 
   const validateConnection = useCallback(() => {
-    const validateParameters: TestCloudStorageConnectionParams = {
+    const validateParameters: PostStorageSchemaTestConnectionApiArg["body"] = {
       configuration: {
-        type: storageDetails.schema,
+        type: storageDetails.schema ?? null,
       },
       source_path: storageDetails.sourcePath ?? "/",
     };
@@ -226,7 +223,7 @@ export default function CloudStorageModal({
       storageDetails.options &&
       Object.keys(storageDetails.options).length > 0
     ) {
-      const options = storageDetails.options as CloudStorageDetailsOptions;
+      const options = storageDetails.options; // as CloudStorageDetailsOptions;
       Object.entries(options).forEach(([key, value]) => {
         if (value != undefined && value !== "") {
           validateParameters.configuration[key] = value;
@@ -234,18 +231,17 @@ export default function CloudStorageModal({
       });
     }
 
-    validateCloudStorageConnection(validateParameters);
+    validateCloudStorageConnection({ body: validateParameters });
   }, [storageDetails, validateCloudStorageConnection]);
 
   const addOrEditStorage = useCallback(() => {
-    const storageParameters: AddCloudStorageForProjectParams | CloudStorage = {
-      name: storageDetails.name as string,
+    const storageParameters: PostStorageApiArg["body"] = {
+      name: storageDetails.name ?? "",
       readonly: storageDetails.readOnly ?? true,
       project_id: `${projectId}`,
       source_path: storageDetails.sourcePath ?? "/",
       target_path: storageDetails.mountPoint as string,
-      configuration: { type: storageDetails.schema },
-      private: false,
+      configuration: { type: storageDetails.schema ?? null },
     };
     // Add provider when required
     if (storageDetails.provider) {
@@ -259,7 +255,7 @@ export default function CloudStorageModal({
       storageDetails.options &&
       Object.keys(storageDetails.options).length > 0
     ) {
-      const allOptions = storageDetails.options as CloudStorageDetailsOptions;
+      const allOptions = storageDetails.options;
       const sensitiveFields = schema
         ? findSensitive(schema.find((s) => s.prefix === storageDetails.schema))
         : currentStorage?.sensitive_fields
@@ -286,18 +282,19 @@ export default function CloudStorageModal({
     // We manually set success only when we get an ID back. That's just to sho a success message
     if (storageId) {
       // v1
-      const storageParametersWithId: UpdateCloudStorageParams = {
-        ...storageParameters,
-        storage_id: storageId as string,
-      };
-      modifyCloudStorageForProject(storageParametersWithId).then((result) => {
-        if ("data" in result && result.data?.storage.storage_id) {
+      modifyCloudStorageForProject({
+        storageId: storageId,
+        body: storageParameters,
+      }).then((result) => {
+        if ("data" in result && result.data.storage.storage_id) {
           setSuccess(true);
         }
       });
     } else {
-      addCloudStorageForProject(storageParameters).then((result) => {
-        if ("data" in result && result.data?.storage.storage_id) {
+      addCloudStorageForProject({
+        body: storageParameters,
+      }).then((result) => {
+        if ("data" in result && result.data.storage.storage_id) {
           setSuccess(true);
         }
       });
@@ -371,7 +368,7 @@ export default function CloudStorageModal({
   const isResultLoading = isAddResultLoading || isModifyResultLoading;
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       className={styles.modal}
@@ -379,7 +376,6 @@ export default function CloudStorageModal({
       fullscreen="lg"
       id={currentStorage?.storage.storage_id ?? "new-cloud-storage"}
       isOpen={isOpen}
-      scrollable
       size="lg"
       unmountOnClose={false}
       toggle={toggle}
@@ -403,6 +399,7 @@ export default function CloudStorageModal({
           storageId={storageId}
           success={success}
           validationSucceeded={validationSucceeded}
+          projectId={projectId}
         />
       </ModalBody>
 
@@ -455,6 +452,6 @@ export default function CloudStorageModal({
           />
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }

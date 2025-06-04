@@ -19,13 +19,18 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, CheckLg, XLg } from "react-bootstrap-icons";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckLg,
+  PlayCircle,
+  XLg,
+} from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
 import { SuccessAlert } from "../../../../components/Alert";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -35,13 +40,9 @@ import {
 } from "../../api/sessionLaunchersV2.api";
 import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
 import { getFormattedEnvironmentValues } from "../../session.utils";
-import { SessionLauncherForm } from "../../sessionsV2.types";
+import { LauncherStep, SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
-import {
-  LauncherStep,
-  SessionLauncherBreadcrumbNavbar,
-} from "../SessionForm/SessionLauncherBreadcrumbNavbar";
 
 interface NewSessionLauncherModalProps {
   isOpen: boolean;
@@ -86,6 +87,7 @@ export default function NewSessionLauncherModal({
   const watchEnvironmentCustomImage = watch("container_image");
   const watchEnvironmentSelect = watch("environmentSelect");
   const watchCodeRepository = watch("repository");
+  const watchBuilderVariant = watch("builder_variant");
 
   const isEnvironmentDefined = useMemo(() => {
     return (
@@ -161,6 +163,18 @@ export default function NewSessionLauncherModal({
   }, [watchEnvironmentId, setValue, environments, trigger]);
 
   useEffect(() => {
+    if (watchEnvironmentSelect === "custom + build" && watchBuilderVariant) {
+      setValue(
+        "name",
+        `${
+          watchBuilderVariant.charAt(0).toUpperCase() +
+          watchBuilderVariant.slice(1)
+        } environment`
+      );
+    }
+  }, [watchEnvironmentSelect, watchBuilderVariant, setValue]);
+
+  useEffect(() => {
     if (environments == null) {
       return;
     }
@@ -186,7 +200,10 @@ export default function NewSessionLauncherModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Add session launcher</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <PlayCircle className={cx("bi", "me-1")} />
+        Add session launcher
+      </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
           <ConfirmationCreate />
@@ -201,7 +218,7 @@ export default function NewSessionLauncherModal({
               </>
             )}
             <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-              {result.error && <RtkErrorAlert error={result.error} />}
+              {result.error && <RtkOrNotebooksError error={result.error} />}
               {step === "environment" && (
                 <EnvironmentFields
                   errors={errors}
@@ -219,15 +236,6 @@ export default function NewSessionLauncherModal({
         )}
       </ModalBody>
       <ModalFooter>
-        {!result.isSuccess && (
-          <div className={cx("d-flex", "flex-grow-1")}>
-            <SessionLauncherBreadcrumbNavbar
-              step={step}
-              setStep={setStep}
-              readyToGoNext={isEnvironmentDefined}
-            />
-          </div>
-        )}
         <Button
           data-cy="close-cancel-button"
           color="outline-primary"
@@ -236,6 +244,16 @@ export default function NewSessionLauncherModal({
           <XLg className={cx("bi", "me-1")} />
           {result.isSuccess ? "Close" : "Cancel"}
         </Button>
+        {!result.isSuccess && step == LauncherStep.LauncherDetails && (
+          <Button
+            color="outline-primary"
+            data-cy="back-environment-button"
+            onClick={() => setStep(LauncherStep.Environment)}
+          >
+            <ArrowLeft className={cx("bi", "me-1")} />
+            Back
+          </Button>
+        )}
         {!result.isSuccess && step === "environment" && (
           <Button
             color="primary"

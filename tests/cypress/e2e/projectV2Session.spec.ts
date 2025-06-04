@@ -53,7 +53,7 @@ describe("launch sessions with data connectors", () => {
       .sessionSecrets({
         fixture: "projectV2SessionSecrets/empty_list.json",
       });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
   });
 
@@ -62,7 +62,7 @@ describe("launch sessions with data connectors", () => {
       fixture: "dataConnector/data-connector-public.json",
     });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -88,7 +88,6 @@ describe("launch sessions with data connectors", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -110,10 +109,9 @@ describe("launch sessions with data connectors", () => {
       cy.getDataCy("start-session-button").click();
     });
     cy.wait("@getResourceClass");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
-    cy.wait("@getSessionImage");
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with data connector requiring credentials", () => {
@@ -125,7 +123,7 @@ describe("launch sessions with data connectors", () => {
         fixture: "dataConnector/data-connector-secrets-empty.json",
       });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -151,7 +149,6 @@ describe("launch sessions with data connectors", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -178,7 +175,7 @@ describe("launch sessions with data connectors", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.wait("@getResourceClass");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
     cy.getDataCy("session-data-connector-credentials-modal")
       .should("be.visible")
       .contains("Please provide")
@@ -204,7 +201,7 @@ describe("launch sessions with data connectors", () => {
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with data connector, saving credentials", () => {
@@ -230,7 +227,7 @@ describe("launch sessions with data connectors", () => {
         ],
       });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -297,7 +294,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@getDataConnectorSecretsAfterSaving");
 
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with data connector, saving credentials on skip", () => {
@@ -323,7 +320,7 @@ describe("launch sessions with data connectors", () => {
         ],
       });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -375,7 +372,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@patchDataConnectorSecrets");
     cy.wait("@getDataConnectorSecretsAfterSaving");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with saved credentials", () => {
@@ -386,7 +383,7 @@ describe("launch sessions with data connectors", () => {
       .getDataConnector()
       .dataConnectorSecrets();
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -414,7 +411,7 @@ describe("launch sessions with data connectors", () => {
         cy.wait("@getDataConnectorSecrets");
       });
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session with incomplete saved credentials", () => {
@@ -426,7 +423,7 @@ describe("launch sessions with data connectors", () => {
         fixture: "dataConnector/data-connector-secrets-partial.json",
       });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -469,7 +466,7 @@ describe("launch sessions with data connectors", () => {
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it.skip("launch session multiple data connectors requiring multiple credentials, saving all", () => {
@@ -515,7 +512,7 @@ describe("launch sessions with data connectors", () => {
         ],
       });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -575,7 +572,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@testCloudStorage");
     cy.wait("@getResourceClass");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it.skip("launch session multiple data connectors requiring multiple credentials, skipping some", () => {
@@ -599,7 +596,7 @@ describe("launch sessions with data connectors", () => {
         fixture: "dataConnector/data-connector-secrets-empty.json",
       });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -670,7 +667,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@testCloudStorage");
     cy.wait("@getResourceClass");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it.skip("launch session with multiple data connectors requiring credentials, skipping all", () => {
@@ -694,7 +691,7 @@ describe("launch sessions with data connectors", () => {
         fixture: "dataConnector/data-connector-secrets-empty.json",
       });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -759,7 +756,7 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@testCloudStorage");
     cy.wait("@getResourceClass");
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 });
 
@@ -794,7 +791,7 @@ describe("launch sessions with secrets", () => {
       .listProjectDataConnectors({
         fixture: "dataConnector/empty-list.json",
       });
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
   });
 
@@ -807,7 +804,7 @@ describe("launch sessions with secrets", () => {
         fixture: "projectV2SessionSecrets/empty_list.json",
       });
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -818,7 +815,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -836,15 +832,15 @@ describe("launch sessions with secrets", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.wait("@getResourceClass");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session requiring secrets, skipping", () => {
     fixtures.sessionSecretSlots().sessionSecrets();
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -855,7 +851,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -873,7 +868,7 @@ describe("launch sessions with secrets", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.wait("@getResourceClass");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
 
     cy.getDataCy("session-secrets-modal").should("be.visible");
     cy.getDataCy("session-secrets-modal")
@@ -886,13 +881,13 @@ describe("launch sessions with secrets", () => {
     cy.getDataCy("session-secrets-modal").contains("button", "Skip").click();
 
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
   it("launch session requiring secrets, saving new secret", () => {
     fixtures.sessionSecretSlots().sessionSecrets();
 
-    cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
+    cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
@@ -903,7 +898,6 @@ describe("launch sessions with secrets", () => {
       .first()
       .within(() => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("session-status").should("contain.text", "Not Running");
         cy.getDataCy("start-session-button").should("contain.text", "Launch");
       });
 
@@ -921,7 +915,7 @@ describe("launch sessions with secrets", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.wait("@getResourceClass");
-    cy.url().should("match", /\/projects\/.*\/sessions\/.*\/start$/);
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
 
     cy.getDataCy("session-secrets-modal").should("be.visible");
     cy.getDataCy("session-secrets-modal")
@@ -959,6 +953,87 @@ describe("launch sessions with secrets", () => {
     cy.wait("@patchSessionSecrets").wait("@updatedSessionSecrets");
 
     cy.wait("@createSession");
-    cy.url().should("match", /\/projects\/.*\/sessions\/show\/.*/);
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  });
+});
+
+describe("view autostart link", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .listNamespaceV2()
+      .dataServicesUser({
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .projects()
+      .readGroupV2Namespace({ groupSlug: "user1-uuid" })
+      .landingUserProjects()
+      .readProjectV2()
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .resourcePoolsTest()
+      .getResourceClass()
+      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+      .listProjectV2Members()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+      })
+      .sessionServersEmptyV2()
+      .sessionImage()
+      .newLauncher()
+      .environments()
+      .sessionSecretSlots({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      });
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("use autostart link", () => {
+    fixtures.testCloudStorage().listProjectDataConnectors().getDataConnector({
+      fixture: "dataConnector/data-connector-public.json",
+    });
+
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // check session launcher view and edit session launcher
+    cy.getDataCy("session-launcher-item")
+      .find('[data-cy="button-with-menu-dropdown"]')
+      .click();
+    cy.getDataCy("session-launcher-menu-share-link").click();
+    cy.contains("Copy Launch Link").should("be.visible");
+
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        const csConfig = req.body.cloudstorage;
+        expect(csConfig.length).equal(1);
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.visit(
+      "/p/user1-uuid/test-2-v2-project/sessions/01HYJE99XEKWNKPYN8WRB6QA8Z/start"
+    );
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+    cy.wait("@createSession");
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 });

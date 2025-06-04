@@ -52,16 +52,20 @@ export interface GetProjectsApiResponse extends AbstractKgPaginatedResponse {
 const injectedApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getGroupsPaged: builder.query<GetGroupsApiResponse, GetGroupsApiArg>({
-      query: ({ params }) => ({
+      query: (params) => ({
         url: "/groups",
-        params,
+        params: {
+          page: params.page,
+          per_page: params.perPage,
+          direct_member: params.directMember,
+        },
       }),
-      transformResponse: (response, meta, { params }) => {
+      transformResponse: (response, meta, params) => {
         const groups = response as GroupResponseList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          { page: params?.page, perPage: params?.per_page },
+          { page: params?.page, perPage: params?.perPage },
           groups
         );
 
@@ -78,16 +82,21 @@ const injectedApi = api.injectEndpoints({
       GetNamespacesApiResponse,
       GetNamespacesApiArg
     >({
-      query: ({ params }) => ({
+      query: (params) => ({
         url: "/namespaces",
-        params,
+        params: {
+          page: params.page,
+          per_page: params.perPage,
+          minimum_role: params.minimumRole,
+          kinds: params.kinds,
+        },
       }),
-      transformResponse: (response, meta, { params }) => {
+      transformResponse: (response, meta, params) => {
         const namespaces = response as NamespaceResponseList;
         const headers = meta?.response?.headers;
         const headerResponse = processPaginationHeaders(
           headers,
-          { page: params?.page, perPage: params?.per_page },
+          { page: params?.page, perPage: params?.perPage },
           namespaces
         );
 
@@ -180,6 +189,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "ProjectMembers",
     "SessionSecretSlot",
     "SessionSecret",
+    "ProjectMigrations",
   ],
   endpoints: {
     deleteGroupsByGroupSlug: {
@@ -336,6 +346,18 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postProjectsByProjectIdCopies: {
       invalidatesTags: ["Project"],
     },
+    getRenkuV1ProjectsMigrations: {
+      providesTags: ["ProjectMigrations", "Project"],
+    },
+    getRenkuV1ProjectsByV1IdMigrations: {
+      providesTags: (result, _error, { v1Id }) =>
+        result
+          ? [{ id: `${v1Id}`, type: "ProjectMigrations" }]
+          : ["ProjectMigrations", "Project"],
+    },
+    postRenkuV1ProjectsByV1IdMigrations: {
+      invalidatesTags: ["ProjectMigrations", "Project"],
+    },
   },
 });
 
@@ -365,6 +387,8 @@ export const {
   usePatchProjectsByProjectIdMembersMutation,
   usePostProjectsMutation,
   usePostProjectsByProjectIdCopiesMutation,
+  useGetRenkuV1ProjectsByV1IdMigrationsQuery,
+  usePostRenkuV1ProjectsByV1IdMigrationsMutation,
 
   // project session secret hooks
   useGetProjectsByProjectIdSessionSecretSlotsQuery,

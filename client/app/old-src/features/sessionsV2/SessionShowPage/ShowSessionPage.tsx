@@ -27,11 +27,11 @@ import {
   Cloud,
   ExclamationTriangle,
   FileEarmarkText,
+  Link45deg,
   PauseCircle,
   Trash,
 } from "react-bootstrap-icons";
-import { Link } from "react-router";
-import { generatePath, useNavigate, useParams } from "react-router";
+import { Link, generatePath, useNavigate, useParams } from "react-router";
 import {
   Button,
   Modal,
@@ -51,17 +51,22 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
+import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import SessionUnavailable from "../../session/components/SessionUnavailable";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
-import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "../api/sessionLaunchersV2.api";
+import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
+import {
+  useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
+  type SessionLauncher,
+} from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
+import SessionUnavailable from "./SessionUnavailable";
 
 import styles from "../../session/components/ShowSession.module.scss";
 
@@ -215,6 +220,11 @@ export default function ShowSessionPage() {
             <LogsBtn toggle={toggleModalLogs} />
             <PauseSessionBtn openPauseSession={openPauseSession} />
             <DeleteSessionBtn openDeleteSession={openDeleteSession} />
+            <ShareSessionLinkButton
+              session={thisSession}
+              namespace={namespace}
+              slug={slug}
+            />
           </div>
           <div
             className={cx(
@@ -370,30 +380,17 @@ function SessionDetails({
   slug?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { projectId, launcherId } = useMemo(() => {
-    if (session == null) {
-      return { projectId: undefined, launcherId: undefined };
-    }
-    return {
-      projectId: session.project_id,
-      launcherId: session.launcher_id,
-    };
-  }, [session]);
-
   const {
-    data: launchers,
-    isLoading: isLoadingLaunchers,
-    error: launchersError,
-  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
-  const { data: project, isLoading: isLoadingProject } =
-    useGetNamespacesByNamespaceProjectsAndSlugQuery(
-      namespace && slug ? { namespace, slug } : skipToken
-    );
-
-  const launcher = useMemo(
-    () => launchers?.find(({ id }) => id === launcherId),
-    [launcherId, launchers]
-  );
+    isLoadingLaunchers,
+    isLoadingProject,
+    launcher,
+    launchersError,
+    project,
+  } = useSessionProjectAndLauncher({
+    namespace,
+    session,
+    slug,
+  });
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
@@ -505,4 +502,109 @@ function SessionDetails({
       {detailsModal}
     </>
   );
+}
+
+function ShareSessionLinkButton({
+  session,
+  namespace,
+  slug,
+}: {
+  session?: SessionV2;
+  namespace?: string;
+  slug?: string;
+}) {
+  const { launcher, project } = useSessionProjectAndLauncher({
+    namespace,
+    session,
+    slug,
+  });
+  const ref = useRef<HTMLButtonElement>(null);
+  const buttonId = "share-session-button";
+  const tooltip = "Share session launch link";
+
+  const [isShareLinkOpen, setIsShareLinkOpen] = useState(false);
+  const toggleShareLink = useCallback(() => {
+    setIsShareLinkOpen((open) => !open);
+  }, []);
+
+  if (launcher == null || project == null) return null;
+
+  return (
+    <div>
+      <Button
+        className={cx(
+          "bg-transparent",
+          "border-0",
+          "no-focus",
+          "p-0",
+          "shadow-none",
+          "text-dark"
+        )}
+        data-cy={buttonId}
+        id={buttonId}
+        innerRef={ref}
+        onClick={toggleShareLink}
+      >
+        <Link45deg className="bi" />
+        <span className="visually-hidden">{tooltip}</span>
+      </Button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        {tooltip}
+      </UncontrolledTooltip>
+      <SessionLaunchLinkModal
+        isOpen={isShareLinkOpen}
+        launcher={launcher}
+        project={project}
+        toggle={toggleShareLink}
+      />
+    </div>
+  );
+}
+
+function useSessionProjectAndLauncher({
+  namespace,
+  session,
+  slug,
+}: {
+  namespace: string | undefined;
+  session: SessionV2 | undefined;
+  slug: string | undefined;
+}): {
+  isLoadingLaunchers: boolean;
+  isLoadingProject: boolean;
+  launcher: SessionLauncher | undefined;
+  launchersError: unknown;
+  project: Project | undefined;
+} {
+  const { projectId, launcherId } = useMemo(() => {
+    if (session == null) {
+      return { projectId: undefined, launcherId: undefined };
+    }
+    return {
+      projectId: session.project_id,
+      launcherId: session.launcher_id,
+    };
+  }, [session]);
+
+  const {
+    data: launchers,
+    isLoading: isLoadingLaunchers,
+    error: launchersError,
+  } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
+  const { data: project, isLoading: isLoadingProject } =
+    useGetNamespacesByNamespaceProjectsAndSlugQuery(
+      namespace && slug ? { namespace, slug } : skipToken
+    );
+
+  const launcher = useMemo(
+    () => launchers?.find(({ id }) => id === launcherId),
+    [launcherId, launchers]
+  );
+  return {
+    isLoadingLaunchers,
+    isLoadingProject,
+    launcher,
+    launchersError,
+    project,
+  };
 }

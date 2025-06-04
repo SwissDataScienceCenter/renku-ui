@@ -19,6 +19,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
+  Braces,
   CircleFill,
   Clock,
   Database,
@@ -59,16 +60,18 @@ import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
-import UpdateSessionLauncherModal from "../components/SessionModals/UpdateSessionLauncherModal";
+import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import {
   SessionBadge,
+  SessionStatusV2Badge,
   SessionStatusV2Description,
-  SessionStatusV2Label,
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
 import { SessionV2 } from "../sessionsV2.types";
-import { EnvironmentCard } from "./EnvironmentCard";
+import EnvironmentCard from "./EnvironmentCard";
+import EnvVariablesCard from "./EnvVariablesCard";
+import EnvVariablesModal from "./EnvVariablesModal";
 
 interface SessionCardContentProps {
   color: string;
@@ -93,7 +96,7 @@ function SessionCardContent({
           <Col xs="auto" className="d-flex">
             {contentLabel}
           </Col>
-          <Col xs="auto" className={cx("d-flex", "ms-sm-auto")}>
+          <Col xs="auto" className={cx("d-flex", "ms-auto")}>
             {contentSession}
           </Col>
           <Col xs={12} className={cx("d-flex", "align-items-center")}>
@@ -117,7 +120,7 @@ function SessionCard({
     <SessionCardContent
       color={getSessionColor(session.status.state)}
       contentDescription={<SessionStatusV2Description session={session} />}
-      contentLabel={<SessionStatusV2Label session={session} />}
+      contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
         <ActiveSessionButton
           session={session}
@@ -166,7 +169,7 @@ function SessionCardNotRunning({
       contentSession={
         <div className="my-auto">
           <StartSessionButton
-            launcherId={launcher.id}
+            launcher={launcher}
             namespace={project.namespace}
             slug={project.slug}
           />
@@ -197,6 +200,9 @@ interface SessionViewProps {
   project: Project;
   sessions?: SessionV2[];
   toggle: () => void;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
 }
 export function SessionView({
   id,
@@ -205,14 +211,21 @@ export function SessionView({
   toggle: setToggleSessionView,
   isOpen: toggleSessionView,
   project,
+  toggleDelete,
+  toggleUpdate,
+  toggleUpdateEnvironment,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
+  const [isEnvVariablesModalOpen, setEnvVariablesModalOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsUpdateOpen((open) => !open);
   }, []);
   const toggleModifyResources = useCallback(() => {
     setModifyResourcesOpen((open) => !open);
+  }, []);
+  const toggleEnvVariables = useCallback(() => {
+    setEnvVariablesModalOpen((open) => !open);
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
@@ -239,7 +252,12 @@ export function SessionView({
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";
   const launcherMenu = launcher && (
-    <SessionV2Actions launcher={launcher} sessionsLength={totalSession} />
+    <SessionV2Actions
+      launcher={launcher}
+      toggleDelete={toggleDelete ?? undefined}
+      toggleUpdate={toggleUpdate ?? undefined}
+      toggleUpdateEnvironment={toggleUpdateEnvironment ?? undefined}
+    />
   );
   const description =
     launcher && launcher.description ? (
@@ -311,16 +329,18 @@ export function SessionView({
               <div className={cx("float-end", "mt-1", "ms-1")}>
                 {launcherMenu}
               </div>
-              <h2
-                className={cx("m-0", "text-break")}
-                data-cy="session-view-title"
-              >
-                {title}
-              </h2>
+              <div className={cx("d-flex", "flex-column")}>
+                <span className={cx("small", "text-muted", "me-3")}>
+                  {launcher ? "Session launcher" : "Session without launcher"}
+                </span>
+                <h2
+                  className={cx("m-0", "text-break")}
+                  data-cy="session-view-title"
+                >
+                  {title}
+                </h2>
+              </div>
             </div>
-            <p className={cx("fst-italic", "m-0")}>
-              {launcher ? "Session launcher" : "Session without launcher"}
-            </p>
           </div>
           {description && <p className="m-0">{description}</p>}
 
@@ -375,7 +395,7 @@ export function SessionView({
                 />
               </div>
               <EnvironmentCard launcher={launcher} />
-              <UpdateSessionLauncherModal
+              <UpdateSessionLauncherEnvironmentModal
                 isOpen={isUpdateOpen}
                 launcher={launcher}
                 toggle={toggle}
@@ -514,6 +534,53 @@ export function SessionView({
           </div>
 
           <SessionViewSessionSecrets />
+          {launcher && (
+            <div>
+              <div
+                className={cx(
+                  "d-flex",
+                  "align-items-center",
+                  "justify-content-between",
+                  "mb-2"
+                )}
+              >
+                <h4 className={cx("mb-0", "me-2")}>
+                  <Braces className={cx("me-1", "bi")} />
+                  Environment Variables
+                </h4>
+                <PermissionsGuard
+                  disabled={null}
+                  enabled={
+                    <>
+                      <Button
+                        color="outline-primary"
+                        id="modify-env-variables-button"
+                        onClick={toggleEnvVariables}
+                        size="sm"
+                        tabIndex={0}
+                      >
+                        <Pencil className="bi" />
+                      </Button>
+                      <UncontrolledTooltip target="modify-env-variables-button">
+                        Modify environment variables
+                      </UncontrolledTooltip>
+                    </>
+                  }
+                  requestedPermission="write"
+                  userPermissions={permissions}
+                />
+              </div>
+              <p className="mb-2">
+                Environment variables pass information into the session.
+              </p>
+              <EnvVariablesCard launcher={launcher} />
+              <EnvVariablesModal
+                isOpen={isEnvVariablesModalOpen}
+                launcher={launcher}
+                toggle={toggleEnvVariables}
+              />
+            </div>
+          )}
         </div>
       </OffcanvasBody>
     </Offcanvas>

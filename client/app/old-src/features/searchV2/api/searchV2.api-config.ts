@@ -23,8 +23,8 @@ import path from "path";
 const config: ConfigFile = {
   apiFile: "./searchV2-empty.api.ts",
   apiImport: "searchV2EmptyApi",
-  outputFile: "./searchV2Api.api.ts",
-  exportName: "searchV2Api",
+  outputFile: "./searchV2Api.generated-api.ts",
+  exportName: "searchV2GeneratedApi",
   hooks: true,
   schemaFile: path.join(__dirname, "search.openapi.json"),
 };

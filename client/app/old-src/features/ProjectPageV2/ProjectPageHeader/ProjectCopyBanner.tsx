@@ -17,20 +17,19 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Button } from "reactstrap";
 import {
   ArrowRight,
   BoxArrowInRight,
   Diagram3Fill,
 } from "react-bootstrap-icons";
-import { Link } from "react-router";
-import { generatePath } from "react-router";
+import { Link, generatePath } from "react-router";
+import { Button } from "reactstrap";
 
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { Loader } from "../../../components/Loader";
 import PrimaryAlert from "../../../components/PrimaryAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";

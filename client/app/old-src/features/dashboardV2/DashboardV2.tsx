@@ -17,7 +17,6 @@
  */
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Link } from "react-router";
 import cx from "classnames";
 import { ReactNode } from "react";
 import {
@@ -33,7 +32,7 @@ import {
   PlusSquare,
   Send,
 } from "react-bootstrap-icons";
-import { generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import {
   Badge,
   Card,
@@ -51,6 +50,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import ProjectMigrationBanner from "../projectMigrationV2/ProjectMigrationBanner";
 import {
   GetGroupsApiResponse,
   GetProjectsApiResponse,
@@ -101,6 +101,7 @@ export default function DashboardV2() {
             >
               <SessionsDashboard />
               <ProjectsDashboard />
+              <ProjectMigrationBanner />
               <FooterDashboard />
             </Col>
           </Row>
@@ -159,16 +160,22 @@ function FooterDashboard() {
 }
 
 interface FooterDashboardCardProps {
+  className?: string;
   children: ReactNode;
   url: string;
 }
-function FooterDashboardCard({ children, url }: FooterDashboardCardProps) {
+export function FooterDashboardCard({
+  className,
+  children,
+  url,
+}: FooterDashboardCardProps) {
   return (
-    <Card className={cx(DashboardStyles.DashboardCard, "border-0")}>
+    <Card className={cx(DashboardStyles.DashboardCard, "border-0", "h-100")}>
       <CardBody className={DashboardStyles.FooterCard}>
         <a
           target="_blank"
           className={cx(
+            className,
             "text-primary",
             "d-flex",
             "flex-column",
@@ -298,11 +305,9 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
 
 function GroupsDashboard() {
   const { data, error, isLoading } = useGetGroupsQuery({
-    params: {
-      page: 1,
-      per_page: 5,
-      direct_member: true,
-    },
+    page: 1,
+    perPage: 5,
+    directMember: true,
   });
   const hasGroups = data && data?.groups?.length > 0;
   return (
@@ -570,16 +575,20 @@ function ViewAllLink({
   noItems: boolean;
   total: number;
 }) {
+  const searchUrl = ABSOLUTE_ROUTES.v2.search;
   return noItems ? (
     <Link
-      to={`/v2/search?page=1&perPage=12&q=type:${type}`}
+      to={{ pathname: searchUrl, search: "q=type:${type}" }}
       data-cy={`view-other-${type}s-btn`}
     >
       View other {type === "project" ? "projects" : "groups"}
     </Link>
   ) : (
     <Link
-      to={`/v2/search?page=1&perPage=12&q=role:owner,editor,viewer+type:${type}+sort:created-desc`}
+      to={{
+        pathname: searchUrl,
+        search: `q=role:owner,editor,viewer+type:${type}+sort:created-desc`,
+      }}
       data-cy={`view-my-${type}s-btn`}
     >
       View all my {total > 5 ? total : ""}{" "}
@@ -589,6 +598,7 @@ function ViewAllLink({
 }
 
 function EmptyProjectsButtons() {
+  const searchUrl = ABSOLUTE_ROUTES.v2.search;
   return (
     <div className={cx("d-flex", "gap-3")}>
       <Link
@@ -599,7 +609,7 @@ function EmptyProjectsButtons() {
         Create my first project
       </Link>
       <Link
-        to={"/v2/search?page=1&perPage=12&q=type:project"}
+        to={{ pathname: searchUrl, search: "q=type:project" }}
         className={cx("btn", "btn-outline-primary")}
       >
         <Eye className={cx("bi", "me-1")} />

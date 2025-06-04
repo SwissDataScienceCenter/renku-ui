@@ -20,8 +20,7 @@ import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useMemo } from "react";
 import { People } from "react-bootstrap-icons";
-import { Link } from "react-router";
-import { generatePath } from "react-router";
+import { Link, generatePath } from "react-router";
 import { Badge } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

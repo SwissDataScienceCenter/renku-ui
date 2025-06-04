@@ -18,20 +18,14 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
@@ -42,15 +36,18 @@ import {
   getLauncherDefaultValues,
 } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
-import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
+import EditLauncherFormContent, {
+  EditLauncherFormMetadata,
+} from "../SessionForm/EditLauncherFormContent";
+import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
 
-interface UpdateSessionLauncherModalProps {
+export interface UpdateSessionLauncherModalProps {
   isOpen: boolean;
   launcher: SessionLauncher;
   toggle: () => void;
 }
 
-export default function UpdateSessionLauncherModal({
+export default function UpdateSessionLauncherEnvironmentModal({
   isOpen,
   launcher,
   toggle,
@@ -110,17 +107,17 @@ export default function UpdateSessionLauncherModal({
   }, [launcher, reset, defaultValues]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggle}
-      scrollable
     >
       <ModalHeader toggle={toggle}>
-        Edit session launcher {launcher.name}
+        <EnvironmentIcon type="default" size={20} /> Edit environment{" "}
+        {launcher.name}
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
@@ -164,7 +161,125 @@ export default function UpdateSessionLauncherModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
+  );
+}
+
+export function UpdateSessionLauncherMetadataModal({
+  isOpen,
+  launcher,
+  toggle,
+}: UpdateSessionLauncherModalProps) {
+  const { data: environments } = useGetSessionEnvironmentsQuery({});
+  const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
+  const defaultValues = useMemo(
+    () => getLauncherDefaultValues(launcher),
+    [launcher]
+  );
+
+  const {
+    control,
+    formState: { errors, isDirty, touchedFields },
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+  } = useForm<SessionLauncherForm>({
+    defaultValues,
+  });
+  const onSubmit = useCallback(
+    (data: SessionLauncherForm) => {
+      const { description, name } = data;
+      const environment = getFormattedEnvironmentValuesForEdit(data);
+      if (environment.success && environment.data)
+        updateSessionLauncher({
+          launcherId: launcher.id,
+          sessionLauncherPatch: {
+            name,
+            description: description?.trim() || undefined,
+            environment: environment.data,
+          },
+        });
+    },
+    [launcher.id, updateSessionLauncher]
+  );
+
+  useEffect(() => {
+    if (environments == null) {
+      return;
+    }
+    if (environments.length == 0) {
+      setValue("environmentSelect", "custom + image");
+    }
+  }, [environments, setValue]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+      result.reset();
+    }
+  }, [isOpen, reset, result]);
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [launcher, reset, defaultValues]);
+
+  return (
+    <ScrollableModal
+      backdrop="static"
+      centered
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle}>
+        <Pencil className={cx("me-2")} />
+        Edit session launcher {launcher.name}
+      </ModalHeader>
+      <ModalBody>
+        {result.isSuccess ? (
+          <ConfirmationUpdate />
+        ) : (
+          <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+            {result.error && <RtkErrorAlert error={result.error} />}
+            <EditLauncherFormMetadata
+              control={control}
+              errors={errors}
+              watch={watch}
+              touchedFields={touchedFields}
+              environmentId={launcher.environment?.id}
+            />
+          </Form>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          data-cy="close-cancel-button"
+          color="outline-primary"
+          onClick={toggle}
+        >
+          <XLg className={cx("bi", "me-1")} />
+          {result.isSuccess ? "Close" : "Cancel"}
+        </Button>
+        {!result.isSuccess && (
+          <Button
+            color="primary"
+            data-cy="edit-session-button"
+            disabled={result.isLoading || !isDirty}
+            onClick={handleSubmit(onSubmit)}
+            type="submit"
+          >
+            {result.isLoading ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <CheckLg className={cx("bi", "me-1")} />
+            )}
+            Update session launcher
+          </Button>
+        )}
+      </ModalFooter>
+    </ScrollableModal>
   );
 }
 
@@ -172,7 +287,9 @@ const ConfirmationUpdate = () => {
   return (
     <div data-cy="session-launcher-update-success">
       <SuccessAlert dismissible={false} timeout={0}>
-        <p className="fw-bold">Session launcher updated successfully!</p>
+        <p className="fw-bold">
+          Session launcher environment updated successfully!
+        </p>
         <p className="mb-0">
           The changes will take effect the next time you launch a session with
           this launcher. Current sessions will not be affected.

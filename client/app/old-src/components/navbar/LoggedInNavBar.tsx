@@ -17,15 +17,25 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
-import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
+import {
+  Badge,
+  Collapse,
+  Nav,
+  NavItem,
+  Navbar,
+  NavbarToggler,
+} from "reactstrap";
+
+import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import StatusBanner from "../../features/platform/components/StatusBanner";
-import { NavBarWarnings } from "../../landing/NavBarWarnings";
-import { AppParams } from "../../utils/context/appParams.types";
-import { Url } from "../../utils/helpers/url";
+import SunsetV1Button from "../../features/projectsV2/shared/SunsetV1Button";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import AppContext from "../../utils/context/appContext";
 import RenkuNavLinkV2 from "../RenkuNavLinkV2";
+import AnnounceV2Banner from "./AnnounceV2Banner";
 import {
   RenkuToolbarGitLabMenu,
   RenkuToolbarHelpMenu,
@@ -33,26 +43,16 @@ import {
   RenkuToolbarItemUser,
   RenkuToolbarNotifications,
 } from "./NavBarItems";
-import { RENKU_LOGO } from "./navbar.constans";
+import { RENKU_LOGO } from "./navbar.constants";
 
-interface LoggedInNavBarProps {
-  model: unknown;
-  notifications: unknown;
-  params: AppParams;
-}
-
-export default function LoggedInNavBar({
-  model,
-  notifications,
-  params,
-}: LoggedInNavBarProps) {
-  const uiShortSha = params.UI_SHORT_SHA;
-
+export default function LoggedInNavBar() {
+  const { params, model, notifications } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
-
   const onToggle = useCallback(() => {
     setIsOpen((isOpen) => !isOpen);
   }, []);
+  if (!params) return null;
+  const uiShortSha = params?.UI_SHORT_SHA;
 
   return (
     <>
@@ -64,11 +64,20 @@ export default function LoggedInNavBar({
           <Link
             id="link-home"
             data-cy="link-home"
-            to={Url.get(Url.pages.landing)}
+            to={ABSOLUTE_ROUTES.v1.root}
             className="navbar-brand me-2 pb-0 pt-0"
           >
-            <img src={RENKU_LOGO} alt="Renku" height="50" className="d-block" />
+            <img
+              src={RENKU_LOGO}
+              alt="Renku Legacy"
+              height="50"
+              className="d-block"
+            />
           </Link>
+          <Badge color="warning" className="mx-2">
+            Legacy
+          </Badge>
+          <SunsetV1Button outline />
           <NavbarToggler onClick={onToggle} className="border-0">
             <List className="bi text-rk-white" />
           </NavbarToggler>
@@ -87,7 +96,7 @@ export default function LoggedInNavBar({
                 <RenkuNavLinkV2
                   className={cx("d-flex", "gap-2", "align-items-center")}
                   id="link-search"
-                  to={Url.get(Url.pages.search)}
+                  to={ABSOLUTE_ROUTES.v1.search}
                 >
                   <Search />
                   Search
@@ -100,7 +109,7 @@ export default function LoggedInNavBar({
               >
                 <RenkuNavLinkV2
                   id="link-dashboard"
-                  to={Url.get(Url.pages.landing)}
+                  to={ABSOLUTE_ROUTES.v1.root}
                 >
                   Dashboard
                 </RenkuNavLinkV2>
@@ -127,6 +136,7 @@ export default function LoggedInNavBar({
           </Collapse>
         </Navbar>
       </header>
+      <AnnounceV2Banner />
       <StatusBanner params={params} />
       <NavBarWarnings model={model} uiShortSha={uiShortSha} />
     </>

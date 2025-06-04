@@ -31,10 +31,10 @@ import {
   PlayCircle,
 } from "react-bootstrap-icons";
 import { Collapse } from "reactstrap";
-import { InfoAlert } from "../../../../components/Alert.jsx";
-import { ExternalLink } from "../../../../components/ExternalLinks.tsx";
+import { InfoAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { Links } from "../../../../utils/constants/Docs.js";
+import { Links } from "../../../../utils/constants/Docs";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import { GitLabRepositoryCommit } from "../../GitLab.types";
@@ -92,7 +92,8 @@ export function DetailsMigration({
       <span>- Resource class:</span>
       {resourceClass ? (
         <>
-          <span>{resourceClass?.name} |</span>
+          <span>{resourceClass?.name}</span>
+          <span>|</span>
           <SessionRowResourceRequests resourceRequests={resourceClassData} />
         </>
       ) : (
@@ -102,7 +103,7 @@ export function DetailsMigration({
   );
 
   const detailsSession = (
-    <div className={cx("ps-4", "d-flex", "flex-column", "gap-2", "pb-2")}>
+    <div className={cx("ps-4", "d-flex", "flex-column", "gap-3")}>
       {isPinnedImage ? (
         <>
           <div>
@@ -133,18 +134,16 @@ export function DetailsMigration({
   );
 
   const containerImageInfoAlert = (
-    <div className="py-2">
-      <InfoAlert dismissible={false} timeout={0}>
-        This session image will not update as you make additional commits.{" "}
-        <ExternalLink
-          role="text"
-          showLinkIcon={true}
-          title="Learn more"
-          className={cx("text-info")}
-          url={Links.RENKU_2_MIGRATION_INFO}
-        />
-      </InfoAlert>
-    </div>
+    <InfoAlert className="mb-0" dismissible={false} timeout={0}>
+      This session image will not update as you make additional commits.{" "}
+      <ExternalLink
+        role="text"
+        showLinkIcon={true}
+        title="Learn more"
+        className={cx("text-info")}
+        url={Links.RENKU_2_MIGRATION_INFO}
+      />
+    </InfoAlert>
   );
 
   return (
@@ -154,7 +153,7 @@ export function DetailsMigration({
         isProjectSupported &&
         !showDetails &&
         containerImageInfoAlert}
-      <div className="mb-2">
+      <div>
         <a
           className={cx(
             "d-inline-block",
@@ -168,66 +167,61 @@ export function DetailsMigration({
           migrated <ChevronFlippedIcon className="ms-1" flipped={showDetails} />
         </a>
       </div>
-      <div className="mb-3">
-        <Collapse isOpen={showDetails}>
-          <div className="mx-4">
-            <div className="py-2">
-              <span className="fw-bold">
-                <FileCode className={cx("bi", "me-1")} />
-                Code repository:
-              </span>{" "}
-              {codeRepository}
-            </div>
-            <div className="py-2">
-              <span className="fw-bold">
-                <FileEarmarkRuled className={cx("bi", "me-1")} /> Datasets &
-                Data in Git LFS:{" "}
-              </span>
-              Will continue to be available via the git lfs command line
-            </div>
-            <div className="py-2">
-              <span className="fw-bold">
-                <PlayCircle className={cx("bi", "me-1")} /> Session launcher{" "}
-              </span>
-            </div>
-            {detailsSession}
-            {!isPinnedImage &&
-              containerImage &&
-              isProjectSupported &&
-              showDetails &&
-              containerImageInfoAlert}
-            <div className="py-2">
-              <span className="fw-bold">
-                <BarChartSteps className={cx("bi", "me-1")} /> Workflows:{" "}
-              </span>
-              You may continue to use Renku workflows in your session via the
-              CLI.
-            </div>
-            <div className="py-2">
-              <span className="fw-bold">
-                <FileText className={cx("bi", "me-1")} /> Description:
-              </span>{" "}
-              {description ? (
-                description
-              ) : (
-                <span className="text-body-secondary">
-                  Description not found
-                </span>
-              )}
-            </div>
-            <div className="py-2">
-              <span className="fw-bold">
-                <Bookmarks className={cx("bi", "me-1")} /> Keywords:
-              </span>{" "}
-              {keywords ? (
-                keywords
-              ) : (
-                <span className="text-body-secondary">Keywords not found</span>
-              )}
-            </div>
+      <Collapse isOpen={showDetails}>
+        <div className={cx("d-flex", "flex-column", "gap-3", "mx-4")}>
+          <div>
+            <span className="fw-bold">
+              <FileCode className={cx("bi", "me-1")} />
+              Code repository:
+            </span>{" "}
+            {codeRepository}
           </div>
-        </Collapse>
-      </div>
+          <div>
+            <span className="fw-bold">
+              <FileEarmarkRuled className={cx("bi", "me-1")} /> Datasets & Data
+              in Git LFS:{" "}
+            </span>
+            Will continue to be available via the git lfs command line
+          </div>
+          <div>
+            <span className="fw-bold">
+              <PlayCircle className={cx("bi", "me-1")} /> Session launcher{" "}
+            </span>
+          </div>
+          {detailsSession}
+          {!isPinnedImage &&
+            containerImage &&
+            isProjectSupported &&
+            showDetails &&
+            containerImageInfoAlert}
+          <div>
+            <span className="fw-bold">
+              <BarChartSteps className={cx("bi", "me-1")} /> Workflows:{" "}
+            </span>
+            You may continue to use Renku workflows in your session via the CLI.
+          </div>
+          <div>
+            <span className="fw-bold">
+              <FileText className={cx("bi", "me-1")} /> Description:
+            </span>{" "}
+            {description ? (
+              description
+            ) : (
+              <span className="text-body-secondary">Description not found</span>
+            )}
+          </div>
+          <div>
+            <span className="fw-bold">
+              <Bookmarks className={cx("bi", "me-1")} /> Keywords:
+            </span>{" "}
+            {keywords ? (
+              keywords
+            ) : (
+              <span className="text-body-secondary">Keywords not found</span>
+            )}
+          </div>
+        </div>
+      </Collapse>
     </>
   );
 }
@@ -239,8 +233,8 @@ export function DetailsNotIncludedInMigration() {
   }, []);
 
   return (
-    <div>
-      <div className="mb-2">
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <div>
         <a
           className={cx(
             "d-inline-block",
@@ -254,34 +248,32 @@ export function DetailsNotIncludedInMigration() {
           <ChevronFlippedIcon className="ms-1" flipped={showDetails} />
         </a>
       </div>
-      <div className="mb-3">
-        <Collapse isOpen={showDetails}>
-          <div className="mx-4">
-            <div className="py-2">
-              <span className="fw-bold">
-                <People className={cx("bi", "me-1")} /> Members:
-              </span>{" "}
-              Members will not be migrated. Please add members directly to the
-              Renku 2.0 project.
-            </div>
-            <div className="py-2">
-              <span className="fw-bold">
-                <Database className={cx("bi", "me-1")} /> Cloud storage:
-              </span>{" "}
-              We&apos;re sorry, cloud storage migration isn&apos;t available at
-              the moment. Please reconfigure your cloud storage as a Renku 2.0
-              Data Connector.
-            </div>
-            <div className="py-2">
-              <span className="fw-bold">
-                <CardImage className={cx("bi", "me-1")} /> Project image:
-              </span>{" "}
-              We&apos;re sorry, project image migration isn&apos;t available at
-              the moment.
-            </div>
+      <Collapse isOpen={showDetails}>
+        <div className={cx("d-flex", "flex-column", "gap-3", "mx-4")}>
+          <div>
+            <span className="fw-bold">
+              <People className={cx("bi", "me-1")} /> Members:
+            </span>{" "}
+            Members will not be migrated. Please add members directly to the
+            Renku 2.0 project.
           </div>
-        </Collapse>
-      </div>
+          <div>
+            <span className="fw-bold">
+              <Database className={cx("bi", "me-1")} /> Cloud storage:
+            </span>{" "}
+            We&apos;re sorry, cloud storage migration isn&apos;t available at
+            the moment. Please reconfigure your cloud storage as a Renku 2.0
+            Data Connector.
+          </div>
+          <div>
+            <span className="fw-bold">
+              <CardImage className={cx("bi", "me-1")} /> Project image:
+            </span>{" "}
+            We&apos;re sorry, project image migration isn&apos;t available at
+            the moment.
+          </div>
+        </div>
+      </Collapse>
     </div>
   );
 }

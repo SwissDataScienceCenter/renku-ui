@@ -8,9 +8,6 @@
   "servers": [
     {
       "url": "/api/data"
-    },
-    {
-      "url": "/ui-server/api/data"
     }
   ],
   "paths": {
@@ -89,6 +86,47 @@
           }
         },
         "responses": {
+          "201": {
+            "description": "The data connector was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
+    "/data_connectors/global": {
+      "post": {
+        "summary": "Create a new data connector",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalDataConnectorPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The data connector already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
           "201": {
             "description": "The data connector was created",
             "content": {
@@ -204,6 +242,47 @@
         "tags": ["data_connectors"]
       }
     },
+    "/data_connectors/global/{slug}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "slug",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a global data connector by slug",
+        "responses": {
+          "200": {
+            "description": "The data connector",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
     "/namespaces/{namespace}/data_connectors/{slug}": {
       "parameters": [
         {
@@ -225,6 +304,63 @@
       ],
       "get": {
         "summary": "Get a data connector by namespace and project slug",
+        "responses": {
+          "200": {
+            "description": "The data connector",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
+    "/namespaces/{namespace}/projects/{project}/data_connectors/{slug}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "namespace",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "path",
+          "name": "project",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "path",
+          "name": "slug",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a data connector that is owned by a namespace by its slug",
         "responses": {
           "200": {
             "description": "The data connector",
@@ -473,6 +609,70 @@
         },
         "tags": ["data_connectors"]
       }
+    },
+    "/projects/{project_id}/data_connector_links": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the project"
+        }
+      ],
+      "get": {
+        "summary": "Get all links from data connectors to a given project",
+        "responses": {
+          "200": {
+            "description": "List of data connector to project links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnectorToProjectLinksList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
+    "/projects/{project_id}/inaccessible_data_connector_links": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the project"
+        }
+      ],
+      "get": {
+        "summary": "Get the number of links that the user does not have access to in a project",
+        "responses": {
+          "200": {
+            "description": "List of data connector to project links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InaccessibleDataConnectorLinks"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
     }
   },
   "components": {
@@ -496,10 +696,10 @@
             "$ref": "#/components/schemas/DataConnectorName"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "slug": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "storage": {
             "$ref": "#/components/schemas/CloudStorageCore"
@@ -526,7 +726,6 @@
         "required": [
           "id",
           "name",
-          "namespace",
           "slug",
           "storage",
           "creation_date",
@@ -544,7 +743,7 @@
             "$ref": "#/components/schemas/DataConnectorName"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/OneOrTwoSlugs"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -570,7 +769,25 @@
             "$ref": "#/components/schemas/KeywordsList"
           }
         },
-        "required": ["name", "namespace", "storage"]
+        "required": ["name", "storage"]
+      },
+      "GlobalDataConnectorPost": {
+        "description": "A global data connector to be created in Renku 2.0\n",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "storage": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CloudStorageCorePost"
+              },
+              {
+                "$ref": "#/components/schemas/CloudStorageUrlV2"
+              }
+            ]
+          }
+        },
+        "required": ["storage"]
       },
       "DataConnectorPatch": {
         "description": "Patch of a data connector\n",
@@ -581,7 +798,7 @@
             "$ref": "#/components/schemas/DataConnectorName"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/OneOrTwoSlugs"
           },
           "slug": {
             "$ref": "#/components/schemas/Slug"
@@ -818,7 +1035,8 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 5000,
-        "nullable": true
+        "nullable": true,
+        "example": "My secret value"
       },
       "RCloneOption": {
         "type": "object",
@@ -879,7 +1097,8 @@
                   "type": "string",
                   "description": "The provider this value is applicable for. Empty if valid for all providers."
                 }
-              }
+              },
+              "required": ["value", "help"]
             }
           },
           "required": {
@@ -902,12 +1121,37 @@
             "type": "boolean",
             "description": "if true, only values from 'examples' can be used"
           },
-          "datatype": {
+          "type": {
             "type": "string",
             "description": "data type of option value. RClone has more options but they map to the ones listed here.",
-            "enum": ["int", "bool", "string", "Time"]
+            "enum": [
+              "int",
+              "bool",
+              "string",
+              "Time",
+              "Duration",
+              "MultiEncoder",
+              "SizeSuffix",
+              "SpaceSepList",
+              "CommaSepList",
+              "Tristate",
+              "Encoding",
+              "Bits"
+            ]
           }
-        }
+        },
+        "required": [
+          "name",
+          "help",
+          "default",
+          "default_str",
+          "required",
+          "ispassword",
+          "sensitive",
+          "advanced",
+          "exclusive",
+          "type"
+        ]
       },
       "Ulid": {
         "description": "ULID identifier",
@@ -921,8 +1165,22 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
-        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*$",
         "example": "a-slug-example"
+      },
+      "SlugResponse": {
+        "description": "A command-line/url friendly name for a namespace",
+        "type": "string",
+        "minLength": 1,
+        "example": "a-slug-example"
+      },
+      "OneOrTwoSlugs": {
+        "description": "A command-line/url friendly name for a single slug or two slugs separated by /",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*(?<!\\.git)(?<!\\.atom)(?:/[a-z0-9][a-z0-9\\-_.]*){0,1}$",
+        "example": "user1/project-1"
       },
       "CreationDate": {
         "description": "The date and time the resource was created (in UTC and ISO-8601 format)",
@@ -1073,6 +1331,17 @@
           }
         },
         "required": ["error"]
+      },
+      "InaccessibleDataConnectorLinks": {
+        "description": "Information about inaccessible data connector links",
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The number of data links the user does not have access to"
+          }
+        }
       }
     },
     "responses": {

@@ -18,15 +18,15 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
+
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
 import useDefaultBranchOption from "../../session/hooks/options/useDefaultBranchOption.hook";
 import useDefaultCommitOption from "../../session/hooks/options/useDefaultCommitOption.hook";
 import {
+  projectCoreApi,
   ProjectMetadataParams,
   useGetConfigQuery,
-  useProjectMetadataMutation,
 } from "../projectCoreApi";
 import projectGitLabApi, {
   useGetAllRepositoryBranchesQuery,
@@ -34,16 +34,11 @@ import projectGitLabApi, {
 } from "../projectGitLab.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
 
-export function useGetSessionLauncherData() {
-  const defaultBranch = useLegacySelector<string>(
-    (state) => state.stateModel.project.metadata.defaultBranch
-  );
-  const gitLabProjectId = useLegacySelector<number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
-  const projectRepositoryUrl = useLegacySelector<string>(
-    (state) => state.stateModel.project.metadata.externalUrl
-  );
+export function useGetSessionLauncherData(
+  defaultBranch: string,
+  gitLabProjectId: number | null,
+  projectRepositoryUrl: string
+) {
   const { branch: currentBranch, commit } = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions
   );
@@ -76,19 +71,21 @@ export function useGetSessionLauncherData() {
 
   const isSupported = coreSupportComputed && backendAvailable;
 
-  const { data: projectConfig } = useGetConfigQuery(
-    backendAvailable && coreSupportComputed && currentBranch && commit
-      ? {
-          apiVersion,
-          metadataVersion,
-          projectRepositoryUrl,
-          branch: currentBranch,
-          commit,
-        }
-      : skipToken
-  );
+  const { data: projectConfig, isLoading: isLoadingProjectConfig } =
+    useGetConfigQuery(
+      backendAvailable && coreSupportComputed && currentBranch && commit
+        ? {
+            apiVersion,
+            metadataVersion,
+            projectRepositoryUrl,
+            branch: currentBranch,
+            commit,
+          }
+        : skipToken
+    );
 
-  const [projectMetadata, projectMetadataStatus] = useProjectMetadataMutation();
+  const [projectMetadata, projectMetadataStatus] =
+    projectCoreApi.endpoints.projectMetadata.useLazyQuery();
 
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
@@ -117,7 +114,7 @@ export function useGetSessionLauncherData() {
         metadataVersion,
         apiVersion,
       };
-      projectMetadata(params);
+      projectMetadata(params, /*preferCacheValue=*/ true);
     }
   }, [
     projectRepositoryUrl,
@@ -181,7 +178,8 @@ export function useGetSessionLauncherData() {
       registryTagIsFetching ||
       backendAvailable === undefined ||
       coreSupportComputed === undefined ||
-      resourcePoolsIsFetching,
+      resourcePoolsIsFetching ||
+      isLoadingProjectConfig,
     error: renkuRegistryError || renkuRegistryTagError,
     projectConfig,
     commits,

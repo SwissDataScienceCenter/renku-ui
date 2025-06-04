@@ -1,0 +1,23 @@
+{
+  "id": "ULID-DOI-1",
+  "name": "Gastroenteritis: Rehydration of children with Severe Acute Malnutrition (GASTROSAM)",
+  "slug": "doi-10.7910-dvn-dxh6fk",
+  "storage": {
+    "storage_type": "doi",
+    "configuration": {
+      "doi": "doi:10.7910/DVN/DXH6FK",
+      "type": "doi",
+      "provider": "dataverse"
+    },
+    "source_path": "/",
+    "target_path": "gastroenteritis-rehydration-of-doi-10.7910-dvn-dxh6fk",
+    "readonly": true,
+    "sensitive_fields": []
+  },
+  "creation_date": "2025-04-29T11:02:50.738444Z",
+  "created_by": "11235430-2a2f-43a5-9884-c7d8ef951c20",
+  "visibility": "public",
+  "description": "The package contains Gastroenteritis: Rehydration of children with\nSevere Acute Malnutrition (GASTROSAM) Trial SAP. \n\nThe trial has been registered on ISRCTN (registry identifier 76149273), ICREC (identifier 18IC4427), and PACTR (identifier 202103852542919).",
+  "etag": "\"A4A2C36C87DE921CFA2FAD9F920E4B3F\"",
+  "keywords": []
+}

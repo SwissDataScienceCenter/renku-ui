@@ -23,8 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Link } from "react-router";
-import { useMatch } from "react-router";
+import { Link, useMatch } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { Url } from "../../../../utils/helpers/url";

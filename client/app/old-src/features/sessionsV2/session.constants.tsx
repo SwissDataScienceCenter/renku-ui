@@ -72,6 +72,10 @@ export const FAVICON_BY_SESSION_STATUS = {
   },
 };
 
+export const CUSTOM_LAUNCH_SEARCH_PARAM = "renku_custom_launch";
+
+export const ENV_VARIABLES_RESERVED_PREFIX = "RENKU";
+
 export const ENVIRONMENT_VALUES_DESCRIPTION = {
   urlPath: `Specify a subpath for your Renku session. By default, the session opens at the path defined by the environment variable \`RENKU_SESSION_PATH\`. If you set a subpath (e.g., "foo"), the session will open at \`<RENKU_SESSION_PATH>/foo\`.`,
   port: `The network port that your application will use to listen for incoming connections.  
@@ -111,6 +115,14 @@ export const BUILDER_FRONTENDS = [
     value: "vscodium",
     label: "VSCodium",
     description: "A freely-licensed version Microsoft’s editor VS Code.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "jupyterlab",
+    label: "Jupyterlab",
+    description:
+      "Web-based interactive development environment for Jupyter notebooks, code and data.",
     /* eslint-enable spellcheck/spell-checker */
   },
 ] as readonly BuilderSelectorOption[];

@@ -18,7 +18,7 @@
 
 import Masonry from "react-masonry-css";
 
-import Pagination from "./Pagination";
+import Pagination from "./PaginationLegacy";
 import ListBar from "./list/ListBar";
 import ListCard from "./list/ListCard";
 

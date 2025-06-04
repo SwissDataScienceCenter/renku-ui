@@ -19,8 +19,7 @@
 import cx from "classnames";
 import type { To } from "history";
 import { ReactNode, useRef } from "react";
-import { Link } from "react-router";
-import { useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -139,7 +138,6 @@ export default function SessionFileButton({
 interface SessionFileButtonComponentProps {
   hasOrangeAccent?: boolean;
   target: To;
-  state?: unknown;
   tooltip: ReactNode;
 }
 

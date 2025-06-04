@@ -18,64 +18,121 @@
 
 export const ABSOLUTE_ROUTES = {
   root: "/",
-  v2: {
-    root: "/v2",
-    user: "/v2/user",
-    users: {
-      show: "/v2/users/:username",
-    },
-    groups: {
-      new: "/v2/groups/new",
-      show: {
-        root: "/v2/groups/:slug",
-        settings: "/v2/groups/:slug/settings",
-      },
-    },
+  datasets: {
+    root: "/datasets",
+    splat: "/datasets/*",
+  },
+  projects: {
+    root: "/projects",
+    splat: "/projects/*",
+  },
+  v1: {
+    root: "/v1",
+    splat: "/v1/*",
+    inactiveKGProjects: "/v1/inactive-kg-projects",
+    search: "/v1/search",
     projects: {
-      new: "/v2/projects/new",
-      show: {
-        root: "/v2/projects/:namespace/:slug",
-        settings: "/v2/projects/:namespace/:slug/settings",
-        sessions: {
-          root: "/v2/projects/:namespace/:slug/sessions",
-          show: "/v2/projects/:namespace/:slug/sessions/show/:session",
-          start: "/v2/projects/:namespace/:slug/sessions/:launcherId/start",
-        },
-      },
-      showById: "/v2/projects/:id",
+      root: "/v1/projects",
+      all: "/v1/projects/all",
+      new: "/v1/projects/new",
+      starred: "/v1/projects/starred",
     },
     help: {
-      root: "/v2/help",
-      contact: "/v2/help/contact",
-      status: "/v2/help/status",
-      release: "/v2/help/release",
-      tos: "/v2/help/tos",
-      privacy: "/v2/help/privacy",
+      root: "/v1/help",
+      contact: "/v1/help/contact",
+      status: "/v1/help/status",
+      release: "/v1/help/release",
+      tos: "/v1/help/tos",
+      privacy: "/v1/help/privacy",
     },
-    search: "/v2/search",
-    connectedServices: "/v2/connected-services",
-    secrets: "/v2/secrets",
+    notifications: "/v1/notifications",
+    styleGuide: "/v1/style-guide",
+    secrets: "/v1/secrets",
+    sessions: "/v1/sessions",
+  },
+  v2: {
+    root: "/",
+    integrations: "/integrations",
+    groups: {
+      show: {
+        root: "/g/:slug",
+        settings: "/g/:slug/settings",
+        splat: "/g/:slug/*",
+      },
+      beta: { splat: "/v2/groups/:slug/*" },
+    },
+    help: {
+      root: "/help",
+      contact: "/help/contact",
+      status: "/help/status",
+      release: "/help/release",
+      tos: "/help/tos",
+      privacy: "/help/privacy",
+    },
+    projects: {
+      show: {
+        root: "/p/:namespace/:slug",
+        settings: "/p/:namespace/:slug/settings",
+        sessions: {
+          root: "/p/:namespace/:slug/sessions",
+          show: "/p/:namespace/:slug/sessions/show/:session",
+          start: "/p/:namespace/:slug/sessions/:launcherId/start",
+        },
+      },
+      showById: "/p/:id",
+      beta: { splat: "/v2/projects/:namespace/:slug/*" },
+    },
+    search: "/search",
+    secrets: "/secrets",
+    user: "/user",
+    users: {
+      show: "/u/:username",
+    },
   },
 } as const;
 
 export const RELATIVE_ROUTES = {
   root: "/",
-  v2: {
-    root: "v2/*",
-    user: "user",
-    users: {
-      show: "users/:username",
+  datasets: "/datasets",
+  projects: "/projects",
+  v1: {
+    root: "v1/*",
+    projects: {
+      root: "projects/*",
+      all: "all",
+      new: "new",
+      starred: "starred",
     },
+    help: "help/*",
+    inactiveKGProjects: "inactive-kg-projects",
+    notifications: "notifications",
+    search: "search",
+    secrets: "secrets",
+    sessions: "sessions",
+    styleGuide: "style-guide",
+  },
+  v2: {
+    root: "/*",
+    betaRoot: "/v2/*",
+    integrations: "integrations",
     groups: {
-      root: "groups/*",
+      root: "g/*",
       new: "new",
       show: {
         root: ":slug/*",
         settings: "settings",
       },
     },
+    help: {
+      root: "help/*",
+      contact: "contact",
+      status: "status",
+      release: "release",
+      tos: "tos",
+      privacy: "privacy",
+    },
     projects: {
-      root: "projects/*",
+      root: "p/*",
       new: "new",
       show: {
         root: ":namespace/:slug/*",
@@ -88,16 +145,11 @@ export const RELATIVE_ROUTES = {
       },
       showById: ":id",
     },
-    help: {
-      root: "help/*",
-      contact: "contact",
-      status: "status",
-      release: "release",
-      tos: "tos",
-      privacy: "privacy",
-    },
     search: "search",
-    connectedServices: "connected-services",
     secrets: "secrets",
+    user: "user",
+    users: {
+      show: "u/:username",
+    },
   },
 } as const;

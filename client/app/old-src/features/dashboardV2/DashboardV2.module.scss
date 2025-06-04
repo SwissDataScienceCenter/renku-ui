@@ -30,11 +30,14 @@
 }
 
 .FooterCard {
-  a svg {
+  a svg,
+  a img {
     transition: all 0.3s linear;
   }
   a:hover svg,
-  a:focus svg {
+  a:focus svg,
+  a:hover img,
+  a:focus img {
     transform: scale(1.3);
   }
 }

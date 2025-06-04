@@ -16,14 +16,13 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useMemo } from "react";
+import { Database, NodePlus } from "react-bootstrap-icons";
+import { generatePath, Link } from "react-router";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
-import { skipToken } from "@reduxjs/toolkit/query";
-import { Database, NodePlus } from "react-bootstrap-icons";
-import { generatePath } from "react-router";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
@@ -146,7 +145,9 @@ function DataConnectorSecretUsedForItem({
     isLoading: isLoadingNamespace,
     error: namespaceError,
   } = useGetNamespacesByNamespaceSlugQuery(
-    dataConnector ? { namespaceSlug: dataConnector.namespace } : skipToken
+    dataConnector?.namespace
+      ? { namespaceSlug: dataConnector.namespace }
+      : skipToken
   );
 
   const isLoading =
@@ -168,14 +169,14 @@ function DataConnectorSecretUsedForItem({
     () =>
       dataConnector && namespace?.namespace_kind === "group"
         ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-            slug: dataConnector.namespace,
+            slug: namespace.slug,
           })
         : dataConnector && namespace?.namespace_kind === "user"
         ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-            username: dataConnector.namespace,
+            username: namespace.slug,
           })
         : undefined,
-    [dataConnector, namespace?.namespace_kind]
+    [dataConnector, namespace?.namespace_kind, namespace?.slug]
   );
   const dcHash = dataConnector ? `data-connector-${dataConnector.id}` : "";
 
@@ -228,7 +229,7 @@ function DataConnectorSecretUsedForItem({
           <div
             className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
           >
-            <UserAvatar namespace={dataConnector.namespace} />
+            <UserAvatar namespace={dataConnector.namespace ?? ""} />
             <span>{namespaceName}</span>
           </div>
         </div>

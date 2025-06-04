@@ -18,8 +18,8 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { ReactNode } from "react";
-import { CircleFill, Clock } from "react-bootstrap-icons";
+import { ReactNode, useRef } from "react";
+import { CircleFill, Clock, Hourglass } from "react-bootstrap-icons";
 import {
   Badge,
   PopoverBody,
@@ -33,7 +33,12 @@ import { PrettySessionErrorMessage } from "../../../session/components/status/Se
 import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
-
+import {
+  SESSION_STATES,
+  SESSION_STYLES,
+  SESSION_TITLE,
+  SESSION_TITLE_DASHBOARD,
+} from "../../SessionStyles.constants";
 export function SessionBadge({
   children,
   className,
@@ -49,6 +54,7 @@ export function SessionBadge({
 }
 interface ActiveSessionV2Props {
   session: SessionV2;
+  variant?: "card" | "list";
 }
 interface ActiveSessionDescV2Props extends ActiveSessionV2Props {
   showInfoDetails?: boolean;
@@ -57,7 +63,7 @@ interface ActiveSessionTitleV2Props {
   session: SessionV2;
   launcher?: SessionLauncher;
 }
-export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
+export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
   const { status, image } = session;
   const state = status.state;
 
@@ -79,7 +85,7 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
           className={cx("me-1", "text-warning-emphasis")}
           inline
         />
-        <span className="text-warning-emphasis">Starting Session</span>
+        <span className="text-warning-emphasis">Launching Session</span>
       </SessionBadge>
     ) : state === "stopping" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
@@ -116,11 +122,74 @@ export function SessionStatusV2Label({ session }: ActiveSessionV2Props) {
     </div>
   );
 }
+
+interface SessionStatusStyles {
+  textColorCard: string;
+  textColorList: string;
+  bgColor: string;
+  bgOpacity: number;
+  borderColor: string;
+  sessionLine: string;
+  sessionIcon: string;
+}
+
+export function getSessionStatusStyles(session: {
+  status: { state: string };
+  image?: string;
+}): SessionStatusStyles {
+  const { status, image } = session;
+  const state = status.state;
+
+  if (state === SESSION_STATES.RUNNING) {
+    return image ? SESSION_STYLES.SUCCESS : SESSION_STYLES.WARNING;
+  }
+
+  const stateStyleMap: Record<string, SessionStatusStyles> = {
+    [SESSION_STATES.STARTING]: SESSION_STYLES.WARNING,
+    [SESSION_STATES.STOPPING]: SESSION_STYLES.STOPPING,
+    [SESSION_STATES.HIBERNATED]: SESSION_STYLES.HIBERNATED,
+    [SESSION_STATES.FAILED]: SESSION_STYLES.FAILED,
+  };
+
+  return stateStyleMap[state] ?? SESSION_STYLES.DEFAULT;
+}
+
+export function SessionStatusV2Label({
+  session,
+  variant = "card",
+}: ActiveSessionV2Props) {
+  const { status, image } = session;
+  const styles = getSessionStatusStyles({ status, image });
+
+  const getStatusMessage = (
+    state: "running" | "starting" | "stopping" | "failed" | "hibernated",
+    variant?: "card" | "list"
+  ) => {
+    return variant === "list"
+      ? SESSION_TITLE_DASHBOARD[state]
+      : SESSION_TITLE[state];
+  };
+
+  return (
+    <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
+      <div className={cx("fs-6", "fw-bold")}>
+        <span
+          className={
+            variant === "list" ? styles.textColorList : styles.textColorCard
+          }
+        >
+          {getStatusMessage(status.state, variant)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
 }: ActiveSessionDescV2Props) {
-  const { started, status, name } = session;
+  const { started, status } = session;
   return (
     <div
       className={cx(
@@ -135,7 +204,7 @@ export function SessionStatusV2Description({
         <SessionStatusV2Text startTimestamp={started} status={status} />
       )}
       {showInfoDetails && (
-        <SessionListRowStatusExtraDetailsV2 status={status} uid={name} />
+        <SessionListRowStatusExtraDetailsV2 status={status} />
       )}
     </div>
   );
@@ -143,16 +212,22 @@ export function SessionStatusV2Description({
 
 interface StatusExtraDetailsV2Props {
   status: SessionStatus;
-  uid: string;
 }
 export function SessionListRowStatusExtraDetailsV2({
   status,
-  uid,
 }: StatusExtraDetailsV2Props) {
+  const ref = useRef<HTMLElement>(null);
   if (!status.message) return null;
 
   const popover = (
-    <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
+    <UncontrolledPopover
+      target={ref}
+      trigger="hover focus"
+      placement="bottom"
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+    >
       <PopoverHeader>Kubernetes pod status</PopoverHeader>
       <PopoverBody>
         <PrettySessionErrorMessage message={status.message} />
@@ -164,8 +239,15 @@ export function SessionListRowStatusExtraDetailsV2({
     return (
       <>
         {" "}
-        <span id={uid} className={cx("text-muted", "cursor-pointer")}>
-          (Click here for details.)
+        <span
+          ref={ref}
+          className={cx("text-muted", "cursor-pointer")}
+          tabIndex={0}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          (More details.)
         </span>
         {popover}
       </>
@@ -173,7 +255,9 @@ export function SessionListRowStatusExtraDetailsV2({
   return (
     <>
       {" "}
-      <FontAwesomeIcon id={uid} icon={faInfoCircle} />
+      <span ref={ref}>
+        <FontAwesomeIcon icon={faInfoCircle} />
+      </span>
       {popover}
     </>
   );
@@ -225,13 +309,11 @@ function SessionStatusV2Text({
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
-      <span>Created {startTimeText}</span>
+      <span>Launching since {startTimeText}</span>
     </div>
-  ) : state === "stopping" ? (
-    <>Shutting down session...</>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Hourglass size="16" className="flex-shrink-0" />
       <span>
         Session will be deleted in{" "}
         <TimeCaption

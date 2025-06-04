@@ -24,38 +24,31 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 
 import { LoginHelper } from "./authentication";
-import { DashboardBanner } from "./components/earlyAccessBanner/EarlyAccessBanner";
 import { Loader } from "./components/Loader";
 import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import LazyShowDataset from "./dataset/LazyShowDataset";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
-import LazyDashboard from "./features/dashboard/LazyDashboard";
 import { Favicon } from "./features/favicon/Favicon";
-import LazyInactiveKGProjectsPage from "./features/inactiveKgProjects/LazyInactiveKGProjectsPage";
-import LazySearchPage from "./features/kgSearch/LazySearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import LazyRootV1 from "./features/rootV1/LazyRootV1";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
-import LazySecrets from "./features/secrets/LazySecrets";
-import LazyAnonymousSessionsList from "./features/session/components/LazyAnonymousSessionsList";
 import { useGetUserQuery } from "./features/usersV2/api/users.api";
-import LazyHelp from "./help/LazyHelp";
-import LazyAnonymousHome from "./landing/LazyAnonymousHome";
-import { FooterNavbar, RenkuNavBar } from "./landing/NavBar";
-import LazyNotFound from "./not-found/LazyNotFound";
-import LazyNotificationsPage from "./notifications/LazyNotificationsPage";
+import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
+import {
+  FooterNavbar,
+  RenkuNavBar,
+} from "./features/landing/components/NavBar/NavBar";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import LazyProjectView from "./project/LazyProjectView";
-import LazyProjectList from "./project/list/LazyProjectList";
-import LazyNewProject from "./project/new/LazyNewProject";
-import LazyStyleGuide from "./styleguide/LazyStyleGuide";
+import { ABSOLUTE_ROUTES } from "./routing/routes.constants";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
@@ -70,171 +63,77 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
   return <div className={classContainer}>{children}</div>;
 };
 
-function CentralContentContainer(props) {
-  const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
+function CentralContentContainer({ user }) {
+  const { model, client } = useContext(AppContext);
 
   const { data: userInfo } = useGetUserQuery(
-    props.user.logged ? undefined : skipToken
+    user.logged ? undefined : skipToken
   );
-
-  const appContext = {
-    client: props.client,
-    coreApiVersionedUrlConfig,
-    location: props.location,
-    model: props.model,
-    notifications,
-    params: props.params,
-    webSocket: socket,
-  };
 
   return (
     <div className="d-flex flex-grow-1">
-      <AppContext.Provider value={appContext}>
-        <Helmet>
-          <title>Reproducible Data Science | Open Research | Renku</title>
-        </Helmet>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              props.user.logged ? (
-                <ContainerWrap>
-                  <LazyDashboard />
-                </ContainerWrap>
-              ) : (
-                <div className="w-100">
-                  <LazyAnonymousHome />
-                </div>
-              )
-            }
-          />
-          <Route
-            path="/help/*"
-            element={
-              <ContainerWrap>
-                <LazyHelp />
+      <Helmet>
+        <title>Reproducible Data Science | Open Research | Renku</title>
+      </Helmet>
+      <Routes>
+        <Route
+          index
+          element={
+            user.logged ? (
+              <ContainerWrap fullSize={true}>
+                <LazyRootV2 />
               </ContainerWrap>
-            }
-          />
-          <Route
-            path="/search"
-            element={
-              <ContainerWrap>
-                <LazySearchPage />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path="/inactive-kg-projects"
-            element={
-              props.user.logged ? (
-                <ContainerWrap>
-                  <LazyInactiveKGProjectsPage />
-                </ContainerWrap>
-              ) : (
-                <LazyNotFound />
-              )
-            }
-          />
-          {["/projects", "/projects/starred", "/projects/all"].map((path) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <ContainerWrap>
-                  <LazyProjectList />
-                </ContainerWrap>
+            ) : (
+              <div className="w-100">
+                <LazyAnonymousHome />
+              </div>
+            )
+          }
+        />
+        <Route path="/projects/*" element={<LazyProjectView />} />
+        <Route
+          path="/datasets/:identifier/add"
+          element={
+            <LazyDatasetAddToProject insideProject={false} model={model} />
+          }
+        />
+        <Route
+          path="/datasets/:identifier"
+          element={
+            <LazyShowDataset
+              insideProject={false}
+              client={client}
+              projectsUrl="/projects"
+              datasetCoordinator={
+                new DatasetCoordinator(client, model.subModel("dataset"))
               }
+              logged={user.logged}
+              model={model}
             />
-          ))}
-          <Route
-            path="/projects/new"
-            element={
-              <ContainerWrap>
-                <LazyNewProject />
-              </ContainerWrap>
-            }
-          />
-          <Route path="/projects/*" element={<LazyProjectView />} />
-          <Route
-            path="/sessions"
-            element={
-              !user.logged ? (
-                <LazyAnonymousSessionsList />
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
-          />
-          <Route
-            path="/datasets/:identifier/add"
-            element={
-              <LazyDatasetAddToProject
-                insideProject={false}
-                model={props.model}
-              />
-            }
-          />
-          <Route
-            path="/datasets/:identifier"
-            element={
-              <LazyShowDataset
-                insideProject={false}
-                client={props.client}
-                projectsUrl="/projects"
-                datasetCoordinator={
-                  new DatasetCoordinator(
-                    props.client,
-                    props.model.subModel("dataset")
-                  )
-                }
-                logged={props.user.logged}
-                model={props.model}
-              />
-            }
-          />
-          <Route
-            path="/datasets"
-            element={<Navigate to="/search?type=dataset" replace />}
-          />
-          <Route
-            path="/notifications"
-            element={
-              <ContainerWrap>
-                <LazyNotificationsPage />
-              </ContainerWrap>
-            }
-          />
-          <Route path="/v2/*" element={<LazyRootV2 />} />
-          <Route
-            path="/style-guide"
-            element={
-              <ContainerWrap>
-                <LazyStyleGuide />
-              </ContainerWrap>
-            }
-          />
-          {userInfo?.isLoggedIn && userInfo.is_admin && (
-            <Route
-              path="/admin"
-              element={
-                <ContainerWrap>
-                  <LazyAdminPage />
-                </ContainerWrap>
-              }
+          }
+        />
+        <Route
+          path="/datasets"
+          element={
+            <Navigate
+              to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`}
+              replace
             />
-          )}
+          }
+        />
+        <Route path="/v1/*" element={<LazyRootV1 />} />
+        {userInfo?.isLoggedIn && userInfo.is_admin && (
           <Route
-            path="/secrets"
+            path="/admin"
             element={
               <ContainerWrap>
-                <LazySecrets />
+                <LazyAdminPage />
               </ContainerWrap>
             }
           />
-          <Route path="*" element={<LazyNotFound />} />
-        </Routes>
-      </AppContext.Provider>
+        )}
+        <Route path="*" element={<LazyRootV2 />} />
+      </Routes>
     </div>
   );
 }
@@ -288,19 +187,25 @@ function App(props) {
       <Unavailable model={props.model} statuspageId={props.statuspageId} />
     );
   }
+  const { coreApiVersionedUrlConfig, socket } = props;
+  const appContext = {
+    client: props.client,
+    coreApiVersionedUrlConfig,
+    location: props.location,
+    model: props.model,
+    notifications,
+    params: props.params,
+    webSocket: socket,
+  };
 
   return (
     <Fragment>
       <Favicon />
-      <RenkuNavBar {...props} notifications={notifications} />
-      <DashboardBanner user={props.user} />
-      <CentralContentContainer
-        notifications={notifications}
-        socket={webSocket}
-        location={location}
-        {...props}
-      />
-      <FooterNavbar params={props.params} />
+      <AppContext.Provider value={appContext}>
+        <RenkuNavBar user={user} />
+        <CentralContentContainer user={user} socket={webSocket} />
+        <FooterNavbar />
+      </AppContext.Provider>
       <Cookie />
       <ToastContainer />
     </Fragment>

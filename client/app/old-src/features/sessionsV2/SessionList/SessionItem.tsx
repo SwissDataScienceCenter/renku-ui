@@ -80,7 +80,7 @@ export default function SessionItem({
             </Col>
             <Col xs={12} xl="auto">
               {session ? (
-                <SessionStatusV2Label session={session} />
+                <SessionStatusV2Label session={session} variant="card" />
               ) : (
                 <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
                   <CircleFill
@@ -114,7 +114,7 @@ export default function SessionItem({
               />
             ) : launcher != null ? (
               <StartSessionButton
-                launcherId={launcher.id}
+                launcher={launcher}
                 namespace={project.namespace}
                 slug={project.slug}
               />

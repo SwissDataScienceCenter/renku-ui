@@ -20,13 +20,12 @@ import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
-import { generatePath, useNavigate } from "react-router";
+import { generatePath, useMatch, useNavigate } from "react-router";
 import {
   Button,
   Form,
   FormGroup,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
 } from "reactstrap";
@@ -35,6 +34,7 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import ModalHeader from "../../../components/modal/ModalHeader";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
@@ -43,10 +43,10 @@ import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../fields/ProjectNamespaceFormField";
-import SlugPreviewFormField from "../fields/SlugPreviewFormField.tsx";
 import ProjectVisibilityFormField from "../fields/ProjectVisibilityFormField";
-import { NewProjectForm } from "./projectV2New.types";
+import SlugPreviewFormField from "../fields/SlugPreviewFormField";
 import { PROJECT_CREATION_HASH } from "./createProjectV2.constants";
+import { NewProjectForm } from "./projectV2New.types";
 
 export default function ProjectV2New() {
   const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
@@ -62,13 +62,12 @@ export default function ProjectV2New() {
 
   return (
     <>
-      <Modal
+      <ScrollableModal
         backdrop="static"
         centered
         data-cy="new-project-modal"
         fullscreen="lg"
         isOpen={showProjectCreationModal}
-        scrollable
         size="lg"
         unmountOnClose={true}
         toggle={toggleModal}
@@ -77,7 +76,7 @@ export default function ProjectV2New() {
           toggle={toggleModal}
           modalTitle={
             <>
-              <Folder className="bi" />
+              <Folder className={cx("bi", "me-1")} />
               Create a new project
             </>
           }
@@ -103,7 +102,7 @@ export default function ProjectV2New() {
             />
           </ModalBody>
         )}
-      </Modal>
+      </ScrollableModal>
     </>
   );
 }
@@ -111,7 +110,8 @@ export default function ProjectV2New() {
 function ProjectV2CreationDetails() {
   const [createProject, result] = usePostProjectsMutation();
   const navigate = useNavigate();
-
+  const groupMatch = useMatch(ABSOLUTE_ROUTES.v2.groups.show.splat);
+  const defaultNamespace = groupMatch?.params.slug;
   const [, setHash] = useLocationHash();
   const closeModal = useCallback(() => {
     setHash();
@@ -129,7 +129,7 @@ function ProjectV2CreationDetails() {
     defaultValues: {
       description: "",
       name: "",
-      namespace: "",
+      namespace: defaultNamespace ?? "",
       slug: "",
       visibility: "private",
     },
@@ -171,7 +171,14 @@ function ProjectV2CreationDetails() {
     });
   }, [setValue, currentName]);
 
-  const url = `renkulab.io/v2/projects/${currentNamespace ?? "<Owner>"}/`;
+  const projectParentPath = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.root,
+    {
+      namespace: currentNamespace ?? "<Owner>",
+      slug: "",
+    }
+  );
+  const parentPath = `${projectParentPath}/`;
 
   const formId = "project-creation-form";
 
@@ -192,28 +199,30 @@ function ProjectV2CreationDetails() {
                 formId={formId}
                 name="name"
               />
+              <div>
+                <div className="mb-1">
+                  <ProjectNamespaceFormField
+                    control={control}
+                    ensureNamespace={defaultNamespace}
+                    entityName={`${formId}-project`}
+                    errors={errors}
+                    name="namespace"
+                  />
+                </div>
 
-              <div className="mb-1">
-                <ProjectNamespaceFormField
+                <SlugPreviewFormField
+                  compact={true}
                   control={control}
-                  entityName={`${formId}-project`}
                   errors={errors}
-                  name="namespace"
+                  name="slug"
+                  resetFunction={resetUrl}
+                  parentPath={parentPath}
+                  slug={currentSlug}
+                  dirtyFields={dirtyFields}
+                  label="Project URL"
+                  entityName="project"
                 />
               </div>
-
-              <SlugPreviewFormField
-                compact={true}
-                control={control}
-                errors={errors}
-                name="slug"
-                resetFunction={resetUrl}
-                url={url}
-                slug={currentSlug}
-                dirtyFields={dirtyFields}
-                label="Project URL"
-                entityName="project"
-              />
 
               <div className="mb-1">
                 <ProjectVisibilityFormField

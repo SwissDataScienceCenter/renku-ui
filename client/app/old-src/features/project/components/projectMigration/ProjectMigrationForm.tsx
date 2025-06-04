@@ -17,118 +17,221 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect } from "react";
+import { DateTime } from "luxon";
+import { useEffect, useMemo } from "react";
 import {
   Control,
-  Controller,
   FieldErrors,
   FieldNamesMarkedBoolean,
+  UseFormHandleSubmit,
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import { useLocation } from "react-router";
-import { Input, Label } from "reactstrap";
-import AppContext from "../../../../utils/context/appContext";
-import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions.js";
-import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
-import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
-import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
-import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
-import { ProjectMigrationForm } from "./ProjectMigration.types";
+import { Form } from "reactstrap";
+import { ErrorAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
+import { toHumanDateTime } from "../../../../utils/helpers/DateTimeUtils";
+import { GitlabProjectResponse } from "../../GitLab.types";
+import { useGetSessionLauncherData } from "../../hook/useGetSessionLauncherData";
+import {
+  ProjectMetadata,
+  ProjectMigrationForm,
+} from "./ProjectMigration.types";
+import {
+  DetailsMigration,
+  DetailsNotIncludedInMigration,
+} from "./ProjectMigrationDetails";
+import ProjectMigrationFormInputs from "./ProjectMigrationFormInputs";
 
-import styles from "../../../projectsV2/fields/RenkuV1FormFields.module.scss";
-
-interface ProjectMigrationFormInputsProps {
-  control: Control<ProjectMigrationForm>;
+interface MigrationFormProps {
+  description?: string;
+  keywords?: string[];
+  codeRepository?: string;
+  isReadyMigrationResult: boolean;
+  control: Control<ProjectMigrationForm, unknown>;
   errors: FieldErrors<ProjectMigrationForm>;
-  watch: UseFormWatch<ProjectMigrationForm>;
   setValue: UseFormSetValue<ProjectMigrationForm>;
+  watch: UseFormWatch<ProjectMigrationForm>;
   dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<ProjectMigrationForm>>>;
+  selectedProject?: GitlabProjectResponse | null;
+  projectMetadata?: ProjectMetadata;
+  onSubmit: (data: ProjectMigrationForm) => void;
+  handleSubmit: UseFormHandleSubmit<ProjectMigrationForm>;
 }
-export function ProjectMigrationFormInputs({
+
+export default function MigrationForm({
+  description,
+  keywords,
+  codeRepository,
+  isReadyMigrationResult,
   control,
-  dirtyFields,
   errors,
-  watch,
   setValue,
-}: ProjectMigrationFormInputsProps) {
-  const currentName = watch("name");
-  const currentNamespace = watch("namespace");
-  const currentSlug = watch("slug");
-  const { params } = useContext(AppContext);
+  watch,
+  dirtyFields,
+  selectedProject,
+  projectMetadata,
+  onSubmit,
+  handleSubmit,
+}: MigrationFormProps) {
+  const defaultBranch =
+    selectedProject?.default_branch ??
+    projectMetadata?.defaultBranch ??
+    "master";
+  const {
+    commits,
+    registryTag,
+    isFetchingData: isFetchingSessionData,
+    projectConfig,
+    templateName,
+    resourcePools,
+    isProjectSupported,
+  } = useGetSessionLauncherData(
+    defaultBranch,
+    selectedProject?.id
+      ? Number(selectedProject.id)
+      : projectMetadata?.id
+      ? Number(projectMetadata.id)
+      : null,
+    selectedProject?.http_url_to_repo ?? projectMetadata?.externalUrl ?? ""
+  );
+
+  const projectName = watch("name");
+  const isPinnedImage = !!projectConfig?.config?.sessions?.dockerImage;
+
+  const containerImage = useMemo(() => {
+    return (
+      projectConfig?.config?.sessions?.dockerImage ?? registryTag?.location
+    );
+  }, [projectConfig, registryTag]);
 
   useEffect(() => {
-    setValue("slug", slugFromTitle(currentName, true, true), {
-      shouldValidate: true,
-    });
-  }, [currentName, setValue]);
-  const resetUrl = useCallback(() => {
-    setValue("slug", slugFromTitle(currentName, true, true), {
-      shouldValidate: true,
-    });
-  }, [setValue, currentName]);
-  const url = `${params?.BASE_URL ?? ""}/v2/projects/${
-    currentNamespace ?? "<Owner>"
-  }/`;
-  const location = useLocation();
-  const isRenkuV1 = isRenkuLegacy(location.pathname);
-  const formId = "project-migration-form";
+    if (setValue && containerImage) {
+      setValue("containerImage", containerImage);
+    }
+  }, [containerImage, setValue]);
+
+  useEffect(() => {
+    if (setValue && projectConfig?.config?.sessions?.defaultUrl) {
+      setValue("defaultUrl", projectConfig?.config?.sessions?.defaultUrl);
+    }
+  }, [projectConfig?.config?.sessions?.defaultUrl, setValue]);
+
+  const defaultSessionClass = useMemo(
+    () =>
+      resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
+      resourcePools?.find(() => true)?.classes[0] ??
+      undefined,
+    [resourcePools]
+  );
+
+  const resourceClass = useMemo(() => {
+    return (
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClass?.id && c.matching) ??
+      resourcePools
+        ?.filter((pool) => pool.default)
+        .flatMap((pool) => pool.classes)
+        .find((c) => c.matching) ??
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClass?.id) ??
+      undefined
+    );
+  }, [resourcePools, defaultSessionClass]);
+
+  useEffect(() => {
+    if (setValue && resourceClass) {
+      setValue("resourceClassId", resourceClass?.id);
+    }
+  }, [resourceClass, setValue]);
+
+  useEffect(() => {
+    if (setValue) {
+      setValue("codeRepositories", [codeRepository ?? ""]);
+    }
+  }, [codeRepository, setValue]);
+
+  useEffect(() => {
+    if (setValue && description) {
+      setValue("description", description);
+    }
+  }, [description, setValue]);
+
+  useEffect(() => {
+    if (setValue && keywords) {
+      setValue("keywords", keywords);
+    }
+  }, [keywords, setValue]);
+
+  useEffect(() => {
+    if (setValue) {
+      const nowFormatted = toHumanDateTime({ datetime: DateTime.now() });
+      setValue(
+        "session_launcher_name",
+        `${templateName ?? projectName} ${nowFormatted}`
+      );
+    }
+  }, [templateName, projectName, setValue]);
+
+  useEffect(() => {
+    if (setValue) {
+      setValue(
+        "v1Id",
+        parseInt(selectedProject?.id?.toString() ?? projectMetadata?.id ?? "0")
+      );
+    }
+  }, [selectedProject, projectMetadata, setValue]);
+
   return (
-    <>
-      <div className="mb-3">
-        <Label className="form-label" for="migrateProjectName">
-          Name
-        </Label>
-        <Controller
-          control={control}
-          name="name"
-          render={({ field, fieldState: { error } }) => (
-            <Input
-              className={cx(
-                "form-control",
-                isRenkuV1 && styles.RenkuV1input,
-                error && "is-invalid"
-              )}
-              id="migrateProjectName"
-              placeholder="Project name"
-              type="text"
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a name</div>
-      </div>
-      <div className="mb-3">
-        <ProjectNamespaceFormField
-          control={control}
-          entityName="project"
+    <Form
+      className={cx("d-flex", "flex-column", "gap-3")}
+      id="project-migration-form"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      {!isReadyMigrationResult && (
+        <ProjectMigrationFormInputs
           errors={errors}
-          name="namespace"
-        />
-      </div>
-      <div className="mb-3">
-        <SlugPreviewFormField
-          compact={true}
+          setValue={setValue}
+          watch={watch}
           control={control}
-          errors={errors}
-          name="slug"
-          resetFunction={resetUrl}
-          url={url}
-          slug={currentSlug}
           dirtyFields={dirtyFields}
-          label="Project URL"
-          entityName="project"
         />
-      </div>
-      <div className="mb-3">
-        <ProjectVisibilityFormField
-          name="visibility"
-          control={control}
-          errors={errors}
-          formId={formId}
-        />
-      </div>
-    </>
+      )}
+      {isFetchingSessionData && (
+        <div>
+          <Loader inline size={16} /> Loading session data...
+        </div>
+      )}
+      {!isReadyMigrationResult && !isFetchingSessionData && (
+        <>
+          <DetailsMigration
+            isPinnedImage={isPinnedImage}
+            containerImage={containerImage}
+            branch={defaultBranch}
+            commits={commits}
+            description={description}
+            keywords={keywords?.join(",")}
+            codeRepository={codeRepository ?? ""}
+            resourceClass={resourceClass}
+            isProjectSupported={isProjectSupported}
+          />
+          <DetailsNotIncludedInMigration />
+        </>
+      )}
+      {!containerImage && !isFetchingSessionData && (
+        <ErrorAlert dismissible={false}>
+          Container image not available, it does not exist or is currently
+          building.
+        </ErrorAlert>
+      )}
+      {!isProjectSupported && !isFetchingSessionData && (
+        <ErrorAlert dismissible={false}>
+          Please update this project before migrating it to Renku 2.0.
+        </ErrorAlert>
+      )}
+    </Form>
   );
 }

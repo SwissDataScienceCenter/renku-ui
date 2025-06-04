@@ -29,8 +29,7 @@ import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
-import { Link } from "react-router";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { SingleValue } from "react-select";
 import {
   Button,

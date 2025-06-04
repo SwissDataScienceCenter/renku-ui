@@ -20,6 +20,16 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.dataConnectorPost,
       }),
     }),
+    postDataConnectorsGlobal: build.mutation<
+      PostDataConnectorsGlobalApiResponse,
+      PostDataConnectorsGlobalApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/global`,
+        method: "POST",
+        body: queryArg.globalDataConnectorPost,
+      }),
+    }),
     getDataConnectorsByDataConnectorId: build.query<
       GetDataConnectorsByDataConnectorIdApiResponse,
       GetDataConnectorsByDataConnectorIdApiArg
@@ -48,12 +58,28 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getDataConnectorsGlobalBySlug: build.query<
+      GetDataConnectorsGlobalBySlugApiResponse,
+      GetDataConnectorsGlobalBySlugApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/global/${queryArg.slug}`,
+      }),
+    }),
     getNamespacesByNamespaceDataConnectorsAndSlug: build.query<
       GetNamespacesByNamespaceDataConnectorsAndSlugApiResponse,
       GetNamespacesByNamespaceDataConnectorsAndSlugApiArg
     >({
       query: (queryArg) => ({
         url: `/namespaces/${queryArg["namespace"]}/data_connectors/${queryArg.slug}`,
+      }),
+    }),
+    getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug: build.query<
+      GetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugApiResponse,
+      GetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.project}/data_connectors/${queryArg.slug}`,
       }),
     }),
     getDataConnectorsByDataConnectorIdPermissions: build.query<
@@ -118,6 +144,22 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getProjectsByProjectIdDataConnectorLinks: build.query<
+      GetProjectsByProjectIdDataConnectorLinksApiResponse,
+      GetProjectsByProjectIdDataConnectorLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/data_connector_links`,
+      }),
+    }),
+    getProjectsByProjectIdInaccessibleDataConnectorLinks: build.query<
+      GetProjectsByProjectIdInaccessibleDataConnectorLinksApiResponse,
+      GetProjectsByProjectIdInaccessibleDataConnectorLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/projects/${queryArg.projectId}/inaccessible_data_connector_links`,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -132,6 +174,13 @@ export type PostDataConnectorsApiResponse =
   /** status 201 The data connector was created */ DataConnectorRead;
 export type PostDataConnectorsApiArg = {
   dataConnectorPost: DataConnectorPost;
+};
+export type PostDataConnectorsGlobalApiResponse =
+  /** status 200 The data connector already exists */
+  | DataConnectorRead
+  | /** status 201 The data connector was created */ DataConnectorRead;
+export type PostDataConnectorsGlobalApiArg = {
+  globalDataConnectorPost: GlobalDataConnectorPost;
 };
 export type GetDataConnectorsByDataConnectorIdApiResponse =
   /** status 200 The data connector */ DataConnectorRead;
@@ -154,12 +203,25 @@ export type DeleteDataConnectorsByDataConnectorIdApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
 };
+export type GetDataConnectorsGlobalBySlugApiResponse =
+  /** status 200 The data connector */ DataConnectorRead;
+export type GetDataConnectorsGlobalBySlugApiArg = {
+  slug: string;
+};
 export type GetNamespacesByNamespaceDataConnectorsAndSlugApiResponse =
   /** status 200 The data connector */ DataConnectorRead;
 export type GetNamespacesByNamespaceDataConnectorsAndSlugApiArg = {
   namespace: string;
   slug: string;
 };
+export type GetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugApiResponse =
+  /** status 200 The data connector */ DataConnectorRead;
+export type GetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugApiArg =
+  {
+    namespace: string;
+    project: string;
+    slug: string;
+  };
 export type GetDataConnectorsByDataConnectorIdPermissionsApiResponse =
   /** status 200 The set of permissions. */ DataConnectorPermissions;
 export type GetDataConnectorsByDataConnectorIdPermissionsApiArg = {
@@ -206,9 +268,21 @@ export type DeleteDataConnectorsByDataConnectorIdSecretsApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
 };
+export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
+  /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
+export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
+  /** the ID of the project */
+  projectId: Ulid;
+};
+export type GetProjectsByProjectIdInaccessibleDataConnectorLinksApiResponse =
+  /** status 200 List of data connector to project links */ InaccessibleDataConnectorLinks;
+export type GetProjectsByProjectIdInaccessibleDataConnectorLinksApiArg = {
+  /** the ID of the project */
+  projectId: Ulid;
+};
 export type Ulid = string;
 export type DataConnectorName = string;
-export type Slug = string;
+export type SlugResponse = string;
 export type StorageType = string;
 export type StorageTypeRead = string;
 export type RCloneConfig = {
@@ -219,36 +293,48 @@ export type TargetPath = string;
 export type StorageReadOnly = boolean;
 export type RCloneOption = {
   /** name of the option */
-  name?: string;
+  name: string;
   /** help text for the option */
-  help?: string;
+  help: string;
   /** The cloud provider the option is for (See 'provider' RCloneOption in the schema for potential values) */
   provider?: string;
   /** default value for the option */
-  default?: number | string | boolean | object | any;
+  default: number | string | boolean | object | any;
   /** string representation of the default value */
-  default_str?: string;
+  default_str: string;
   /** These list potential values for this option, like an enum. With `exclusive: true`, only a value from the list is allowed. */
   examples?: {
     /** a potential value for the option (think enum) */
-    value?: string;
+    value: string;
     /** help text for the value */
-    help?: string;
+    help: string;
     /** The provider this value is applicable for. Empty if valid for all providers. */
     provider?: string;
   }[];
   /** whether the option is required or not */
-  required?: boolean;
+  required: boolean;
   /** whether the field is a password (use **** for display) */
-  ispassword?: boolean;
+  ispassword: boolean;
   /** whether the value is sensitive (not stored in the service). Do not send this in requests to the service. */
-  sensitive?: boolean;
+  sensitive: boolean;
   /** whether this is an advanced config option (probably don't show these to users) */
-  advanced?: boolean;
+  advanced: boolean;
   /** if true, only values from 'examples' can be used */
-  exclusive?: boolean;
+  exclusive: boolean;
   /** data type of option value. RClone has more options but they map to the ones listed here. */
-  datatype?: "int" | "bool" | "string" | "Time";
+  type:
+    | "int"
+    | "bool"
+    | "string"
+    | "Time"
+    | "Duration"
+    | "MultiEncoder"
+    | "SizeSuffix"
+    | "SpaceSepList"
+    | "CommaSepList"
+    | "Tristate"
+    | "Encoding"
+    | "Bits";
 };
 export type CloudStorageCore = {
   storage_type: StorageType;
@@ -276,8 +362,8 @@ export type KeywordsList = Keyword[];
 export type DataConnector = {
   id: Ulid;
   name: DataConnectorName;
-  namespace: Slug;
-  slug: Slug;
+  namespace?: SlugResponse;
+  slug: SlugResponse;
   storage: CloudStorageCore;
   creation_date: CreationDate;
   created_by: UserId;
@@ -289,8 +375,8 @@ export type DataConnector = {
 export type DataConnectorRead = {
   id: Ulid;
   name: DataConnectorName;
-  namespace: Slug;
-  slug: Slug;
+  namespace?: SlugResponse;
+  slug: SlugResponse;
   storage: CloudStorageCoreRead;
   creation_date: CreationDate;
   created_by: UserId;
@@ -318,6 +404,8 @@ export type DataConnectorsGetQuery = PaginationRequest & {
   /** A namespace, used as a filter. */
   namespace?: string;
 };
+export type OneOrTwoSlugs = string;
+export type Slug = string;
 export type CloudStorageCorePost = {
   storage_type?: StorageType;
   configuration: RCloneConfig;
@@ -339,7 +427,7 @@ export type CloudStorageUrlV2 = {
 };
 export type DataConnectorPost = {
   name: DataConnectorName;
-  namespace: Slug;
+  namespace?: OneOrTwoSlugs;
   slug?: Slug;
   storage: CloudStorageCorePost | CloudStorageUrlV2;
   visibility?: Visibility;
@@ -348,12 +436,18 @@ export type DataConnectorPost = {
 };
 export type DataConnectorPostRead = {
   name: DataConnectorName;
-  namespace: Slug;
+  namespace?: OneOrTwoSlugs;
   slug?: Slug;
   storage: CloudStorageCorePostRead | CloudStorageUrlV2;
   visibility?: Visibility;
   description?: Description;
   keywords?: KeywordsList;
+};
+export type GlobalDataConnectorPost = {
+  storage: CloudStorageCorePost | CloudStorageUrlV2;
+};
+export type GlobalDataConnectorPostRead = {
+  storage: CloudStorageCorePostRead | CloudStorageUrlV2;
 };
 export type CloudStorageCorePatch = {
   storage_type?: StorageType;
@@ -371,7 +465,7 @@ export type CloudStorageCorePatchRead = {
 };
 export type DataConnectorPatch = {
   name?: DataConnectorName;
-  namespace?: Slug;
+  namespace?: OneOrTwoSlugs;
   slug?: Slug;
   storage?: CloudStorageCorePatch;
   visibility?: Visibility;
@@ -380,7 +474,7 @@ export type DataConnectorPatch = {
 };
 export type DataConnectorPatchRead = {
   name?: DataConnectorName;
-  namespace?: Slug;
+  namespace?: OneOrTwoSlugs;
   slug?: Slug;
   storage?: CloudStorageCorePatchRead;
   visibility?: Visibility;
@@ -418,13 +512,20 @@ export type DataConnectorSecretPatch = {
   value: SecretValueNullable;
 };
 export type DataConnectorSecretPatchList = DataConnectorSecretPatch[];
+export type InaccessibleDataConnectorLinks = {
+  /** The number of data links the user does not have access to */
+  count?: number;
+};
 export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
+  usePostDataConnectorsGlobalMutation,
   useGetDataConnectorsByDataConnectorIdQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdMutation,
+  useGetDataConnectorsGlobalBySlugQuery,
   useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
+  useGetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugQuery,
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
@@ -432,4 +533,6 @@ export const {
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
 } = injectedRtkApi;

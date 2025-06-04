@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Control,
   Controller,
@@ -25,19 +25,21 @@ import {
   FieldNamesMarkedBoolean,
   UseFormWatch,
 } from "react-hook-form";
-import { Collapse, Input, Label, ListGroup } from "reactstrap";
+import { Input, Label, ListGroup } from "reactstrap";
+import { InfoAlert } from "../../../../components/Alert";
 
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import { Links } from "../../../../utils/constants/Docs";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { prioritizeSelectedEnvironment } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
+import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 import EnvironmentKindField from "./EnvironmentKindField";
 import { SessionEnvironmentItem } from "./SessionEnvironmentItem";
-import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 
 interface SessionLauncherFormContentProps {
   control: Control<SessionLauncherForm, unknown>;
@@ -64,12 +66,6 @@ export default function EditLauncherFormContent({
     isLoading,
   } = useGetSessionEnvironmentsQuery({});
   const environmentSelect = watch("environmentSelect");
-  const [isAdvanceSettingOpen, setIsAdvanceSettingsOpen] = useState(false);
-  const toggleIsOpen = useCallback(
-    () =>
-      setIsAdvanceSettingsOpen((isAdvanceSettingOpen) => !isAdvanceSettingOpen),
-    []
-  );
 
   const orderedEnvironment = useMemo(
     () => prioritizeSelectedEnvironment(environments, environmentId),
@@ -160,24 +156,47 @@ export default function EditLauncherFormContent({
         {errors.container_image?.message ??
           "Please provide a valid container image."}
       </div>
-      <div>
-        <span
-          className={cx("fw-bold", "cursor-pointer")}
-          onClick={toggleIsOpen}
-        >
-          Advanced settings{" "}
-          <ChevronFlippedIcon flipped={isAdvanceSettingOpen} />
-        </span>
-      </div>
-      <Collapse isOpen={isAdvanceSettingOpen}>
-        <AdvancedSettingsFields<SessionLauncherForm>
-          control={control}
-          errors={errors}
-        />
-      </Collapse>
+      <div className={cx("fw-bold", "w-100")}>Advanced settings</div>
+
+      <InfoAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          Please see the{" "}
+          <ExternalLink
+            role="text"
+            url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
+            title="documentation"
+            showLinkIcon
+            iconAfter
+          />{" "}
+          for how to complete this form to make your image run on Renkulab.
+        </p>
+      </InfoAlert>
+
+      <AdvancedSettingsFields<SessionLauncherForm>
+        control={control}
+        errors={errors}
+      />
     </>
   );
 
+  return (
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <EnvironmentKindField control={control} />
+
+      {environmentSelect === "global" && renderEnvironmentList()}
+      {environmentSelect === "custom + image" &&
+        renderCustomEnvironmentFields()}
+      {environmentSelect === "custom + build" && (
+        <BuilderEnvironmentFields control={control} isEdit />
+      )}
+    </div>
+  );
+}
+
+export function EditLauncherFormMetadata({
+  control,
+  errors,
+}: EditLauncherFormContentProps) {
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <div>
@@ -204,6 +223,7 @@ export default function EditLauncherFormContent({
       <div>
         <Label className="form-label" for="addSessionLauncherDescription">
           Session launcher description
+          <span className={cx("text-muted", "small", "ms-2")}>(Optional)</span>
         </Label>
         <Controller
           control={control}
@@ -219,14 +239,6 @@ export default function EditLauncherFormContent({
           )}
         />
       </div>
-      <EnvironmentKindField control={control} />
-
-      {environmentSelect === "global" && renderEnvironmentList()}
-      {environmentSelect === "custom + image" &&
-        renderCustomEnvironmentFields()}
-      {environmentSelect === "custom + build" && (
-        <BuilderEnvironmentFields control={control} isEdit />
-      )}
     </div>
   );
 }
