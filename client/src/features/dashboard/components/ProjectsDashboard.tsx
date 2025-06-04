@@ -81,14 +81,14 @@ function ProjectAlert({ total }: ProjectAlertProps) {
         </h3>
         <p>
           You are accessing the &quot;legacy&quot; version of Renku. If you are
-          here for your first time, we recommend you go to{" "}
+          here for your first time, we recommend that you go to{" "}
           <ExternalLink
             role="text"
             title="Renku 2.0"
             className="fw-bold"
             url={"/"}
           />
-          , and follow the{" "}
+          and follow the{" "}
           <ExternalLink
             role="text"
             title="hands-on tutorial"
@@ -108,7 +108,7 @@ function ProjectAlert({ total }: ProjectAlertProps) {
             title="Community Portal"
             url={Links.RENKU_2_COMMUNITY_PORTAL}
             className="fw-bold"
-          />{" "}
+          />
           .
         </p>
       </div>
