@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { Link, generatePath } from "react-router";
-
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import UserAvatar from "../../usersV2/show/UserAvatar";

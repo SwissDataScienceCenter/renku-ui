@@ -51,12 +51,11 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
-import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
+import type { Project } from "../../projectsV2/api/projectV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
-import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
@@ -64,6 +63,7 @@ import {
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
+import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";

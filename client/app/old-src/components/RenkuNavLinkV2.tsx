@@ -21,8 +21,8 @@ import { RefAttributes, useMemo } from "react";
 import {
   matchPath,
   NavLink as RRNavLink,
-  useLocation,
   type NavLinkProps as RRNavLinkProps,
+  useLocation,
 } from "react-router";
 import { NavLink } from "reactstrap";
 

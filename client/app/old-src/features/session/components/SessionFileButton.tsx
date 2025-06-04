@@ -17,9 +17,8 @@
  */
 
 import cx from "classnames";
-import type { To } from "history";
 import { ReactNode, useRef } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, type To } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -70,13 +69,12 @@ export default function SessionFileButton({
         autostart: "1",
         notebook: filePath,
       }).toString(),
+      state: { successUrl: location.pathname },
     };
-    const state = { successUrl: location.pathname };
 
     return (
       <SessionFileButtonComponent
         target={target}
-        state={state}
         tooltip="Start a session and open this notebook"
       />
     );
@@ -98,14 +96,13 @@ export default function SessionFileButton({
     });
     const target = {
       pathname: sessionUrl,
+      state: { from: location.pathname, filePath },
     };
-    const state = { from: location.pathname, filePath };
 
     return (
       <SessionFileButtonComponent
         hasOrangeAccent
         target={target}
-        state={state}
         tooltip="Open this notebook in JupyterLab"
       />
     );
@@ -144,7 +141,6 @@ interface SessionFileButtonComponentProps {
 function SessionFileButtonComponent({
   hasOrangeAccent,
   target,
-  state,
   tooltip,
 }: SessionFileButtonComponentProps) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -152,7 +148,7 @@ function SessionFileButtonComponent({
   return (
     <>
       <span data-cy="check-notebook-icon" ref={ref}>
-        <Link to={target} state={state}>
+        <Link to={target}>
           <JupyterIcon
             hasOrangeAccent={hasOrangeAccent}
             className={cx("svg-inline--fa", "fa-w-16", "icon-link")}

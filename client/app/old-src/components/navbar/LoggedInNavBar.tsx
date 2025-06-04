@@ -28,10 +28,9 @@ import {
   Navbar,
   NavbarToggler,
 } from "reactstrap";
-
-import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import StatusBanner from "../../features/platform/components/StatusBanner";
 import SunsetV1Button from "../../features/projectsV2/shared/SunsetV1Button";
+import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import RenkuNavLinkV2 from "../RenkuNavLinkV2";

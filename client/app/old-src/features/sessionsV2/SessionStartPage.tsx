@@ -58,13 +58,13 @@ import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionL
 import { usePostSessionsMutation as useLaunchSessionMutation } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
-import { validateEnvVariableName } from "./session.utils";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
   SessionStartDataConnectorConfiguration,
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
+import { validateEnvVariableName } from "./session.utils";
 
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
