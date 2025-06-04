@@ -2,8 +2,11 @@
 *.svg
 # Generated files should not be linted
 app/old-src/features/dataConnectorsV2/api/data-connectors.api.ts
+app/old-src/features/dataConnectorsV2/api/doiResolver.generated-api.ts
+app/old-src/features/project/components/cloudStorage/api/projectCloudStorage.generated-api.ts
 app/old-src/features/projectsV2/api/projectV2.api.ts
 app/old-src/features/projectsV2/api/storagesV2.api.ts
+app/old-src/features/searchV2/api/searchV2Api.generated-api.ts
 app/old-src/features/sessionsV2/api/sessionLaunchersV2.generated-api.ts
 app/old-src/features/sessionsV2/api/sessionsV2.generated-api.ts
 app/old-src/features/usersV2/api/users.generated-api.ts
