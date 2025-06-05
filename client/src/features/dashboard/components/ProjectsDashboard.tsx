@@ -98,8 +98,8 @@ function ProjectAlert({ total }: ProjectAlertProps) {
           . You may also{" "}
           <ExternalLink
             role="text"
-            title="explore other projects"
-            url="/search"
+            title="explore other existing projects"
+            url="/v1/search"
             className="fw-bold"
           />{" "}
           or learn more about Renku features in our{" "}
