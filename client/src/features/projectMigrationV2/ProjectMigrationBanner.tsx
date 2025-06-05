@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { BoxArrowInUp, XLg } from "react-bootstrap-icons";
+import { BoxArrowInUp, Link45deg, XLg } from "react-bootstrap-icons";
 import {
   Alert,
   Button,
@@ -35,6 +35,8 @@ import {
   UserPreferences,
 } from "../usersV2/api/users.api";
 import MigrationV2Modal from "./MigrationV2Modal";
+import { Link } from "react-router";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 export default function ProjectMigrationBanner() {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -90,10 +92,19 @@ export default function ProjectMigrationBanner() {
           <p className={cx("text-primary", "mb-0")}>
             Looking for your Renku Legacy projects?
           </p>
-          <Button size="sm" color="outline-primary" onClick={toggle}>
-            <BoxArrowInUp size={20} className={cx("me-1")} /> Migrate from Renku
-            Legacy
-          </Button>
+          <div className={cx("d-flex", "flex-row", "gap-2")}>
+            <Link
+              className={cx("btn", "btn-outline-primary", "btn-sm")}
+              to={ABSOLUTE_ROUTES.v1.root}
+            >
+              <Link45deg className={cx("me-1")} />
+              Go to Legacy
+            </Link>
+            <Button size="sm" color="primary" onClick={toggle}>
+              <BoxArrowInUp className={cx("me-1")} />
+              Migrate from Legacy
+            </Button>
+          </div>
         </div>
         <MigrationV2Modal isOpen={isOpenModal} toggle={toggle} />
         <DismissMigrationConfirmationModal
