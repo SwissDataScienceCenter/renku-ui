@@ -52,9 +52,9 @@ const Links = {
   RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE:
     "https://renku.notion.site/How-to-use-your-own-docker-image-for-a-session-launcher-11f0df2efafc80af848ffcaf9ccff31c",
   RENKU_2_COMMUNITY_PORTAL:
-    "https://www.notion.so/renku/Renku-Community-Portal-2a154d7d30b24ab8a5968c60c2592d87",
+    "https://renku.notion.site/Renku-Community-Portal-2a154d7d30b24ab8a5968c60c2592d87",
   RENKU_2_DOCUMENTATION:
-    "https://www.notion.so/renku/Documentation-db396cfc9a664cd2b161e4c6068a5ec9",
+    "https://renku.notion.site/Documentation-db396cfc9a664cd2b161e4c6068a5ec9",
   RENKU_2_RESEARCH:
     "https://renku.notion.site/Renku-for-Data-Scientists-21d46b16e76e4bc484add8367c44f884",
   RENKU_2_TEACHING:
@@ -62,11 +62,13 @@ const Links = {
   RENKU_2_EVENTS:
     "https://renku.notion.site/Renku-for-Events-18c0df2efafc800bb26ae93333b4318d",
   RENKU_2_QUICK_START_TUTORIAL:
-    "https://www.notion.so/renku/Quick-Start-tutorial-1460df2efafc80998204c1f61e333e63",
+    "https://renku.notion.site/Quick-Start-tutorial-1460df2efafc80998204c1f61e333e63",
   RENKU_2_GET_HELP:
-    "https://www.notion.so/renku/Get-help-1a2b4b7b0e4746769e246c0328d3d3ad",
+    "https://renku.notion.site/Get-help-1a2b4b7b0e4746769e246c0328d3d3ad",
   RENKU_2_WHY_RENKU:
     "https://renku.notion.site/Why-Renku-1900df2efafc80839b26cbad43f24778",
+  RENKU_2_HANDS_ON_TUTORIAL:
+    "https://renku.notion.site/Hands-On-Tutorial-1a50df2efafc800f8554e30fd7458fa6",
 };
 
 const GitlabLinks = {
