@@ -29,12 +29,7 @@ import {
   PersonBadge,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
-import {
-  Badge,
-  Offcanvas,
-  OffcanvasBody,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
 import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
@@ -64,6 +59,7 @@ import {
 } from "./dataConnector.utils";
 import DataConnectorActions from "./DataConnectorActions";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
+import RenkuBadge from "../../../components/renkuBadge/RenkuBadge";
 
 const SECTION_CLASSES = [
   "border-top",
@@ -546,9 +542,9 @@ function DataConnectorViewMetadata({
         <DataConnectorPropertyValue title="Keywords">
           <div className={cx("d-flex", "flex-wrap", "gap-1", "my-1")}>
             {dataConnector.keywords.map((keyword, index) => (
-              <Badge color="secondary" key={index}>
+              <RenkuBadge key={index} pills={false}>
                 {keyword}
-              </Badge>
+              </RenkuBadge>
             ))}
           </div>
         </DataConnectorPropertyValue>
