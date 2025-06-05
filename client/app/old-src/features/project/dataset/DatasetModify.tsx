@@ -459,7 +459,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
         // ? this was a quick fix; we should _not_ use then/catch but rather rely on postDatasetStatus
         postDatasetMutation(datasetMutationParams)
           .then(async (response) => {
-            if ("error" in response) {
+            if (response.error != null) {
               const coreError =
                 "data" in response.error
                   ? (response.error.data as CoreErrorResponse).error
