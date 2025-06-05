@@ -31,7 +31,7 @@ export const DEFAULT_META_TITLE: string =
   "Reproducible Data Science | Open Research | Renku";
 
 export const DEFAULT_META_DESCRIPTION: string =
-  "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources.";
+  "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources."; // eslint-disable-line spellcheck/spell-checker
 
 export const DEFAULT_META: MetaDescriptor[] = [
   {
