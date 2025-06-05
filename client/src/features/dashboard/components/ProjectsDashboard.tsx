@@ -35,7 +35,7 @@ import ListBarSession from "../../../components/list/ListBarSessions";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import { Notebook } from "../../../notebooks/components/session.types";
 import { urlMap } from "../../../project/list/ProjectList.container";
-import { Docs } from "../../../utils/constants/Docs";
+import { Links } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
@@ -80,36 +80,36 @@ function ProjectAlert({ total }: ProjectAlertProps) {
           <strong>You do not have any projects yet.</strong>
         </h3>
         <p>
-          If you are here for your first time, we recommend you go to through
-          our{" "}
+          You are accessing the &quot;legacy&quot; version of Renku. If you are
+          here for your first time, we recommend that you go to{" "}
           <ExternalLink
             role="text"
-            title="tutorial"
+            title="Renku 2.0"
             className="fw-bold"
-            url={Docs.READ_THE_DOCS_TUTORIALS_STARTING}
-          />
-          . You can also{" "}
+            url={"/"}
+          />{" "}
+          and follow the{" "}
           <ExternalLink
             role="text"
-            title="create a new project"
-            url="/v1/projects/new"
+            title="hands-on tutorial"
+            url={Links.RENKU_2_HANDS_ON_TUTORIAL}
             className="fw-bold"
           />
-          ,{" "}
+          . You may also{" "}
           <ExternalLink
             role="text"
             title="explore other projects"
-            url="/v1/search"
+            url="/search"
             className="fw-bold"
           />{" "}
-          or{" "}
+          or learn more about Renku features in our{" "}
           <ExternalLink
             role="text"
-            title="search"
-            url="/v1/search"
+            title="Community Portal"
+            url={Links.RENKU_2_COMMUNITY_PORTAL}
             className="fw-bold"
-          />{" "}
-          for a specific project or dataset.
+          />
+          .
         </p>
       </div>
     </InfoAlert>
