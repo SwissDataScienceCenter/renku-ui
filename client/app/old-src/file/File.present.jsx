@@ -46,7 +46,7 @@ import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";
 import FilePreview from "./FilePreview";
 
-import "../../node_modules/highlight.js/styles/atom-one-light.css";
+import "../../../node_modules/highlight.js/styles/atom-one-light.css";
 
 const commitMessageLengthLimit = 120;
 

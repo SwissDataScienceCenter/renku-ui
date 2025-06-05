@@ -21,7 +21,7 @@ import { Diagram2, FileEarmarkFill } from "react-bootstrap-icons";
 import { useNavigate } from "react-router";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
 
-import "../../node_modules/highlight.js/styles/atom-one-light.css";
+import "../../../node_modules/highlight.js/styles/atom-one-light.css";
 
 interface FileAndLineageSwitchProps {
   switchToPath: string;

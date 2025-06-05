@@ -124,12 +124,11 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         immutableCheck: false,
         serializableCheck: false,
       })
-        .concat(computeResourcesApi.middleware)
         .concat(adminKeycloakApi.middleware)
         .concat(adminSessionsApi.middleware)
+        .concat(computeResourcesApi.middleware)
         .concat(connectedServicesApi.middleware)
         .concat(dataConnectorsApi.middleware)
-        // this is causing some problems, and I do not know why
         .concat(datasetsCoreApi.middleware)
         .concat(doiResolverApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
@@ -146,7 +145,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(searchV2Api.middleware)
         .concat(sessionLaunchersV2Api.middleware)
         .concat(sessionsApi.middleware)
-        .concat(sessionSidecarApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
         .concat(statuspageApi.middleware)
