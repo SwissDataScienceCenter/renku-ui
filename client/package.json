@@ -8,6 +8,7 @@
     "build": "tsc && NODE_OPTIONS=--max-old-space-size=4096 remix vite:build",
     "build:analyze": "NODE_OPTIONS=--max-old-space-size=4096 vite-bundle-visualizer",
     "preview": "remix-serve ./build/server/index.js --port 3000 --strictPort",
+    "serve": "remix-serve",
     "optimize": "vite optimize",
     "test": "vitest",
     "lint": "eslint --max-warnings=0 app/",

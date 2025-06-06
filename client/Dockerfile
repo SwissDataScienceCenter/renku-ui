@@ -63,4 +63,4 @@ ARG PORT="3000"
 ENV PORT=$PORT
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
-CMD ["npm", "run-script", "remix-serve", "/app/build/server/index.js"]
+CMD ["npx", "run-script", "serve", "/app/build/server/index.js"]
