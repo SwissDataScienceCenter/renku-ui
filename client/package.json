@@ -3,11 +3,11 @@
   "version": "3.59.1",
   "private": true,
   "scripts": {
-    "start": "vite --port 3000",
-    "start:strict-port": "vite --port 3000 --strictPort",
-    "build": "tsc && NODE_OPTIONS=--max-old-space-size=4096 vite build",
+    "start": "remix vite:dev --port 3000",
+    "start:strict-port": "remix vite:dev --port 3000 --strictPort",
+    "build": "tsc && NODE_OPTIONS=--max-old-space-size=4096 remix vite:build",
     "build:analyze": "NODE_OPTIONS=--max-old-space-size=4096 vite-bundle-visualizer",
-    "preview": "vite preview --port 3000 --strictPort",
+    "preview": "remix-serve ./build/server/index.js --port 3000 --strictPort",
     "optimize": "vite optimize",
     "test": "vitest",
     "lint": "eslint --max-warnings=0 app/",
@@ -37,10 +37,7 @@
     "update-api:dataConnectors": "node scripts/update_api_spec.js dataConnectors",
     "update-api:projectCloudStorage": "node scripts/update_api_spec.js projectCloudStorage",
     "update-api:users": "node scripts/update_api_spec.js users",
-    "update-api:searchV2": "node scripts/update_api_spec.js searchV2",
-    "remix:build": "remix vite:build",
-    "remix:dev": "remix vite:dev",
-    "remix:start": "remix-serve ./build/server/index.js"
+    "update-api:searchV2": "node scripts/update_api_spec.js searchV2"
   },
   "type": "module",
   "dependencies": {
