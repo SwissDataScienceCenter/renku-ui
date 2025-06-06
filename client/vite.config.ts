@@ -1,6 +1,7 @@
 import eslintPlugin from "@nabla/vite-plugin-eslint";
-import react from "@vitejs/plugin-react";
+import { reactRouter } from "@react-router/dev/vite";
 import { resolve } from "path";
+import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
@@ -12,7 +13,7 @@ export default defineConfig({
   server: {
     allowedHosts: [".dev.renku.ch"],
   },
-  plugins: [react({ include: "/index.html" }), eslintPlugin()],
+  plugins: [reactRouter(), eslintPlugin(), tsconfigPaths()],
   resolve: {
     alias: {
       "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),

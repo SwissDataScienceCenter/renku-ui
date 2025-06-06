@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const searchV2EmptyApi = createApi({

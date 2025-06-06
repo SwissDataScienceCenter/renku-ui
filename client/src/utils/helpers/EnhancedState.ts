@@ -83,9 +83,9 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [searchV2Slice.name]: searchV2Slice.reducer,
-    [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
+    [startSessionSlice.name]: startSessionSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
@@ -126,12 +126,11 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         immutableCheck: false,
         serializableCheck: false,
       })
-        .concat(computeResourcesApi.middleware)
         .concat(adminKeycloakApi.middleware)
         .concat(adminSessionsApi.middleware)
+        .concat(computeResourcesApi.middleware)
         .concat(connectedServicesApi.middleware)
         .concat(dataConnectorsApi.middleware)
-        // this is causing some problems, and I do not know why
         .concat(datasetsCoreApi.middleware)
         .concat(doiResolverApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
@@ -149,14 +148,16 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionLaunchersV2Api.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
-        .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
         .concat(statuspageApi.middleware)
         .concat(termsApi.middleware)
         .concat(usersApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
-    enhancers,
+    enhancers: (getDefaultEnhancers) =>
+      enhancers
+        ? getDefaultEnhancers().concat(enhancers)
+        : getDefaultEnhancers(),
   });
   return store;
 };
