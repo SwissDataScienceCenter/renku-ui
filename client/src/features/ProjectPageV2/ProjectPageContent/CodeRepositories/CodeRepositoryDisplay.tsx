@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { skipToken } from "@reduxjs/toolkit/query";
+import type { SerializedError } from "@reduxjs/toolkit";
+import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -391,7 +392,7 @@ function CodeRepositoryActions({
 }
 
 interface CodeRepositoryErrorProps {
-  error: NonNullable<Parameters<typeof RtkOrNotebooksError>[0]["error"]>;
+  error: FetchBaseQueryError | SerializedError;
   provider: Pick<Provider, "id" | "kind"> | undefined;
 }
 
