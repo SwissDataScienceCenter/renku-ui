@@ -264,18 +264,29 @@ describe("Set up data connectors with credentials", () => {
       })
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-empty.json",
+        name: "getDataConnectorSecretsEmpty",
       });
 
     cy.visit("/g/test-2-group-v2");
-    cy.wait("@readGroupV2");
-    cy.wait("@listDataConnectors");
+    cy.wait(["@readGroupV2", "@listDataConnectors"]);
     // Credentials should not yet be stored
-    cy.getDataCy("data-connector-name").contains("example storage").click();
-    cy.wait("@getDataConnectorSecrets");
-    cy.getDataCy("data-connector-title").should(
-      "contain.text",
-      "example storage"
-    );
+    cy.getDataCy("data-connector-item")
+      .should("be.visible")
+      .and("have.length.at.least", 1);
+    cy.getDataCy("data-connector-name")
+      .first()
+      .contains("example storage")
+      .click()
+      .then(() => {
+        cy.hash().should("include", "data-connector-");
+        cy.getDataCy("data-connector-metadata-section").should("be.visible");
+      });
+
+    cy.wait("@getDataConnectorSecretsEmpty");
+    cy.getDataCy("data-connector-title")
+      .first()
+      .should("contain.text", "example storage");
+
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
       "Requires credentials"
@@ -333,7 +344,7 @@ describe("Set up data connectors with credentials", () => {
       fixture: "cloudStorage/storage-schema-s3.json",
     });
     openDataConnectorMenu();
-    cy.getDataCy("data-connector-edit").click();
+    cy.getDataCy("data-connector-edit-connection").click();
     cy.getDataCy("data-connector-edit-modal")
       .find("#access_key_id")
       .invoke("attr", "value")

@@ -45,8 +45,9 @@ import {
 
 import { WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { DataConnectorSecret } from "../../../dataConnectorsV2/api/data-connectors.api";
-import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils.ts";
+import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils";
 import {
   convertFromAdvancedConfig,
   getSchemaOptions,
@@ -872,7 +873,10 @@ export function AddStorageOptions({
     storage.provider
   );
   const { control, setValue, getValues } = useForm();
-
+  const { flatDataConnector } = useAppSelector(
+    (state) => state.dataConnectorFormSlice
+  );
+  const dataConnectorId = flatDataConnector.dataConnectorId;
   const onFieldValueChange = (
     option: string,
     value: string | number | boolean
@@ -1008,7 +1012,7 @@ export function AddStorageOptions({
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-options">
-      <h5>Options</h5>
+      {!dataConnectorId && <h5 className="fw-bold">Connection information</h5>}
       <p>
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.

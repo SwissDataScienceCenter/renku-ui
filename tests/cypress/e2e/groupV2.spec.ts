@@ -343,11 +343,9 @@ describe("Work with group data connectors", () => {
     cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
     cy.getDataCy("data-connector-edit-mount").within(() => {
       cy.get("#name").type("example storage without credentials");
-      cy.get("#data-connector-slug").should(
-        "have.value",
-        "example-storage-without-credentials"
-      );
-      cy.get("#data-connector-slug")
+      cy.getDataCy("data-connector-slug-toggle").click();
+      cy.getDataCy("data-connector-slug-input")
+        .should("have.value", "example-storage-without-credentials")
         .clear()
         .type("example-storage-no-credentials");
     });
@@ -368,13 +366,13 @@ describe("Work with group data connectors", () => {
       .patchDataConnector({ namespace: "test-2-group-v2" });
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
-    cy.contains("public-storage").should("be.visible").click();
+
+    cy.getDataCy("data-connector-name")
+      .first()
+      .should("contain.text", "public-storage")
+      .click();
     cy.getDataCy("data-connector-edit").should("be.visible").click();
     // Fill out the details
-    cy.getDataCy("test-data-connector-button").click();
-    cy.getDataCy("add-data-connector-continue-button")
-      .contains("Continue")
-      .click();
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@patchDataConnector");
     cy.getDataCy("data-connector-edit-body").should(

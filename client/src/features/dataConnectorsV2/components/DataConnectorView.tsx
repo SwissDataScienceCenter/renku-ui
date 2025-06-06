@@ -17,7 +17,7 @@
  */
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Folder,
   Gear,
@@ -26,11 +26,13 @@ import {
   Journals,
   Key,
   Lock,
+  Pencil,
   PersonBadge,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import {
   Badge,
+  Button,
   Offcanvas,
   OffcanvasBody,
   UncontrolledTooltip,
@@ -41,6 +43,7 @@ import { Loader } from "../../../components/Loader";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -56,6 +59,7 @@ import type {
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
+import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
@@ -63,6 +67,7 @@ import {
   useGetDataConnectorSource,
 } from "./dataConnector.utils";
 import DataConnectorActions from "./DataConnectorActions";
+import DataConnectorModal from "./DataConnectorModal";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 
 const SECTION_CLASSES = [
@@ -94,6 +99,7 @@ interface DataConnectorViewProps {
   dataConnectorLink?: DataConnectorToProjectLink;
   showView: boolean;
   toggleView: () => void;
+  toggleEdit: (initialStep?: number) => void;
   dataConnectorPotentiallyInaccessible?: boolean;
 }
 export default function DataConnectorView({
@@ -102,7 +108,15 @@ export default function DataConnectorView({
   showView,
   toggleView,
   dataConnectorPotentiallyInaccessible = false,
-}: DataConnectorViewProps) {
+}: Omit<DataConnectorViewProps, "toggleEdit">) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [initialStep, setInitialStep] = useState(2);
+
+  const toggleEdit = useCallback((initialStep?: number) => {
+    if (initialStep) setInitialStep(initialStep);
+    setIsEditOpen((open) => !open);
+  }, []);
+
   return (
     <Offcanvas
       toggle={toggleView}
@@ -121,7 +135,7 @@ export default function DataConnectorView({
           ></button>
         </div>
         <DataConnectorViewHeader
-          {...{ dataConnector, dataConnectorLink, toggleView }}
+          {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
         />
         <DataConnectorViewMetadata
           dataConnector={dataConnector}
@@ -129,10 +143,20 @@ export default function DataConnectorView({
             dataConnectorPotentiallyInaccessible
           }
         />
-        <DataConnectorViewConfiguration dataConnector={dataConnector} />
-        <DataConnectorViewProjects dataConnector={dataConnector} />
+        <DataConnectorViewConfiguration
+          dataConnector={dataConnector}
+          toggleEdit={toggleEdit}
+        />
         <DataConnectorViewAccess dataConnector={dataConnector} />
+        <DataConnectorViewProjects dataConnector={dataConnector} />
       </OffcanvasBody>
+      <DataConnectorModal
+        dataConnector={dataConnector}
+        isOpen={isEditOpen}
+        namespace={dataConnector.namespace}
+        toggle={toggleEdit}
+        initialStep={initialStep}
+      />
     </Offcanvas>
   );
 }
@@ -187,7 +211,7 @@ function DataConnectorViewAccess({
         {anySensitiveField &&
           requiredCredentials &&
           requiredCredentials.length > 0 && (
-            <div className="mt-3">
+            <div className={cx("mb-4", "mt-3")}>
               <p className={cx("fw-bold", "m-0")}>Required credentials</p>
               <table
                 className={cx(
@@ -243,11 +267,6 @@ function DataConnectorViewAccess({
               </table>
             </div>
           )}
-        <DataConnectorPropertyValue title="Access mode">
-          {storageDefinition.readonly
-            ? "Force Read-only"
-            : "Allow Read-Write (requires adequate privileges on the storage)"}
-        </DataConnectorPropertyValue>
       </div>
     </section>
   );
@@ -255,26 +274,83 @@ function DataConnectorViewAccess({
 
 function DataConnectorViewConfiguration({
   dataConnector,
-}: Pick<DataConnectorViewProps, "dataConnector">) {
+  toggleEdit,
+}: Pick<DataConnectorViewProps, "dataConnector" | "toggleEdit">) {
   const storageDefinition = dataConnector.storage;
+  const { permissions } = useDataConnectorPermissions({
+    dataConnectorId: dataConnector.id,
+  });
+  const credentialFieldDefinitions = useMemo(
+    () =>
+      getCredentialFieldDefinitions({
+        storage: storageDefinition,
+        sensitive_fields: storageDefinition.sensitive_fields,
+      }),
+    [storageDefinition]
+  );
+  const requiredCredentials = useMemo(
+    () =>
+      credentialFieldDefinitions?.filter((field) => field.requiredCredential),
+    [credentialFieldDefinitions]
+  );
+  const nonRequiredCredentialConfigurationKeys = Object.keys(
+    storageDefinition.configuration
+  ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
+  const scope = useMemo(
+    () => getDataConnectorScope(dataConnector.namespace),
+    [dataConnector.namespace]
+  );
+  const hasAccessMode = useMemo(
+    () => STORAGES_WITH_ACCESS_MODE.includes(storageDefinition.storage_type),
+    [storageDefinition.storage_type]
+  );
 
   return (
     <section
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-configuration-section"
     >
-      <div>
-        <h4 className="mb-4">
+      <div className={cx("d-flex", "justify-content-between", "mb-4")}>
+        <h4>
           <Gear className={cx("bi", "me-1")} />
-          Configuration
+          {scope === "global" ? "Configuration" : "Connection Information"}
         </h4>
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <>
+              <Button
+                color="outline-primary"
+                id="modify-data-connection-button"
+                onClick={() => toggleEdit(2)}
+                size="sm"
+                tabIndex={0}
+              >
+                <Pencil className="bi" />
+              </Button>
+              <UncontrolledTooltip target="modify-data-connection-button">
+                Modify connection information
+              </UncontrolledTooltip>
+            </>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
       </div>
+      {scope !== "global" &&
+        nonRequiredCredentialConfigurationKeys.map((key) => {
+          const title =
+            key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
+          const value = storageDefinition.configuration[key]?.toString() ?? "";
+          return (
+            <DataConnectorPropertyValue key={key} title={title}>
+              {value}
+            </DataConnectorPropertyValue>
+          );
+        })}
       <div>
         <DataConnectorPropertyValue title="Source path">
           {storageDefinition.source_path}
-        </DataConnectorPropertyValue>
-        <DataConnectorPropertyValue title={<MountPointHead />}>
-          {storageDefinition.target_path}
         </DataConnectorPropertyValue>
       </div>
     </section>
@@ -285,15 +361,18 @@ function DataConnectorViewHeader({
   dataConnector,
   dataConnectorLink,
   toggleView,
+  toggleEdit,
 }: Omit<DataConnectorViewProps, "showView">) {
   return (
     <div className="mb-4">
+      <span className={cx("small", "text-muted", "me-3")}>Data connector</span>
       <div>
         <div className={cx("float-end", "mt-1", "ms-1")}>
           <DataConnectorActions
             dataConnector={dataConnector}
             dataConnectorLink={dataConnectorLink}
             toggleView={toggleView}
+            toggleEdit={toggleEdit}
           />
         </div>
         <h2 className={cx("m-0", "text-break")} data-cy="data-connector-title">
@@ -313,7 +392,7 @@ function DataConnectorViewProjects({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-projects-section"
     >
-      <h4>
+      <h4 className="mb-4">
         <Folder className={cx("bi", "me-1")} />
         Projects
       </h4>
@@ -360,22 +439,6 @@ function DataConnectorViewMetadata({
   dataConnectorPotentiallyInaccessible,
 }: DataConnectorViewMetadataProps) {
   const storageDefinition = dataConnector.storage;
-  const credentialFieldDefinitions = useMemo(
-    () =>
-      getCredentialFieldDefinitions({
-        storage: storageDefinition,
-        sensitive_fields: storageDefinition.sensitive_fields,
-      }),
-    [storageDefinition]
-  );
-  const requiredCredentials = useMemo(
-    () =>
-      credentialFieldDefinitions?.filter((field) => field.requiredCredential),
-    [credentialFieldDefinitions]
-  );
-  const nonRequiredCredentialConfigurationKeys = Object.keys(
-    storageDefinition.configuration
-  ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
   const { data: namespace, isLoading: isLoadingNamespace } =
     useGetNamespacesByNamespaceSlugQuery(
       dataConnector.namespace
@@ -407,11 +470,6 @@ function DataConnectorViewMetadata({
             slug: dataConnector.namespace,
           }),
     [dataConnector.namespace, namespace, scope]
-  );
-
-  const hasAccessMode = useMemo(
-    () => STORAGES_WITH_ACCESS_MODE.includes(storageDefinition.storage_type),
-    [storageDefinition.storage_type]
   );
 
   const identifier = useMemo(
@@ -447,6 +505,12 @@ function DataConnectorViewMetadata({
           </div>
         </div>
       </DataConnectorPropertyValue>
+
+      {dataConnector.description && (
+        <DataConnectorPropertyValue title="Description">
+          <LazyRenkuMarkdown markdownText={dataConnector.description} />
+        </DataConnectorPropertyValue>
+      )}
 
       {scope === "global" ? (
         <>
@@ -554,23 +618,14 @@ function DataConnectorViewMetadata({
         </DataConnectorPropertyValue>
       )}
 
-      {dataConnector.description && (
-        <DataConnectorPropertyValue title="Description">
-          <LazyRenkuMarkdown markdownText={dataConnector.description} />
-        </DataConnectorPropertyValue>
-      )}
-
-      {scope !== "global" &&
-        nonRequiredCredentialConfigurationKeys.map((key) => {
-          const title =
-            key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
-          const value = storageDefinition.configuration[key]?.toString() ?? "";
-          return (
-            <DataConnectorPropertyValue key={key} title={title}>
-              {value}
-            </DataConnectorPropertyValue>
-          );
-        })}
+      <DataConnectorPropertyValue title={<MountPointHead />}>
+        {storageDefinition.target_path}
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue title="Access mode">
+        {storageDefinition.readonly
+          ? "Force Read-only"
+          : "Allow Read-Write (requires adequate privileges on the storage)"}
+      </DataConnectorPropertyValue>
     </section>
   );
 }

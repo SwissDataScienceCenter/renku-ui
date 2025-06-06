@@ -66,6 +66,7 @@ interface DataConnectorModalFooterProps {
   isOpen: boolean;
   project?: Project;
   toggle: () => void;
+  initialStep?: number;
 }
 
 function DataConnectorCreateFooter({
@@ -354,34 +355,36 @@ function DataConnectorCreateFooter({
           setState={setStateSafe}
         />
       </div>
-      {!isResultLoading && !success && (
-        <Button
-          color="outline-danger"
-          data-cy="data-connector-edit-rest-button"
-          disabled={isActionOngoing}
-          onClick={() => {
-            reset();
-          }}
-        >
-          <ArrowCounterclockwise className={cx("bi", "me-1")} />
-          Reset
-        </Button>
-      )}
-      {!isResultLoading && (
-        <DataConnectorModalBackButton success={success} toggle={toggle} />
-      )}
-      {!success && (
-        <DataConnectorModalContinueButton
-          addButtonDisableReason={addButtonDisableReason}
-          addOrEditStorage={addStorage}
-          disableAddButton={disableAddButton}
-          disableContinueButton={!!disableContinueButton}
-          hasStoredCredentialsInConfig={false}
-          isResultLoading={isResultLoading}
-          dataConnectorId={null}
-          selectedSchemaHasAccessMode={!!schemaHasAccessModes}
-        />
-      )}
+      <div className={cx("d-flex", "gap-2")}>
+        {!isResultLoading && !success && (
+          <Button
+            color="outline-danger"
+            data-cy="data-connector-edit-rest-button"
+            disabled={isActionOngoing}
+            onClick={() => {
+              reset();
+            }}
+          >
+            <ArrowCounterclockwise className={cx("bi", "me-1")} />
+            Reset
+          </Button>
+        )}
+        {!isResultLoading && (
+          <DataConnectorModalBackButton success={success} toggle={toggle} />
+        )}
+        {!success && (
+          <DataConnectorModalContinueButton
+            addButtonDisableReason={addButtonDisableReason}
+            addOrEditStorage={addStorage}
+            disableAddButton={disableAddButton}
+            disableContinueButton={!!disableContinueButton}
+            hasStoredCredentialsInConfig={false}
+            isResultLoading={isResultLoading}
+            dataConnectorId={null}
+            selectedSchemaHasAccessMode={!!schemaHasAccessModes}
+          />
+        )}
+      </div>
     </>
   );
 }
@@ -395,6 +398,7 @@ function DataConnectorEditFooter({
   dataConnector,
   isOpen,
   toggle,
+  initialStep,
 }: DataConnectorEditFooterProps) {
   const dataConnectorId = dataConnector.id;
   const dispatch = useAppDispatch();
@@ -409,18 +413,6 @@ function DataConnectorEditFooter({
     schemata,
     success,
   } = useAppSelector((state) => state.dataConnectorFormSlice);
-
-  // Enhanced setters
-  const setStateSafe = useCallback(
-    (newState: Partial<AddCloudStorageState>) => {
-      dispatch(
-        dataConnectorFormSlice.actions.setCloudStorageState({
-          cloudStorageState: newState,
-        })
-      );
-    },
-    [dispatch]
-  );
 
   // Mutations
   const [updateDataConnector, updateResult] =
@@ -541,12 +533,13 @@ function DataConnectorEditFooter({
           <RtkOrNotebooksError error={actionError} />
         </div>
       )}
-      <div className={cx("d-flex", "flex-grow-1")}>
-        <AddStorageBreadcrumbNavbar
-          state={cloudStorageState}
-          setState={setStateSafe}
+      {!isResultLoading && (
+        <DataConnectorModalBackButton
+          success={success}
+          toggle={toggle}
+          initialStep={initialStep}
         />
-      </div>
+      )}
       {!isResultLoading && !success && (
         <Button
           color="outline-danger"
@@ -559,9 +552,6 @@ function DataConnectorEditFooter({
           <ArrowCounterclockwise className={cx("bi", "me-1")} />
           Reset
         </Button>
-      )}
-      {!isResultLoading && (
-        <DataConnectorModalBackButton success={success} toggle={toggle} />
       )}
       {!success && (
         <DataConnectorModalContinueButton
@@ -584,6 +574,7 @@ export default function DataConnectorModalFooter({
   isOpen,
   project,
   toggle,
+  initialStep,
 }: DataConnectorModalFooterProps) {
   if (dataConnector) {
     return (
@@ -592,6 +583,7 @@ export default function DataConnectorModalFooter({
         isOpen={isOpen}
         project={project}
         toggle={toggle}
+        initialStep={initialStep}
       />
     );
   }
