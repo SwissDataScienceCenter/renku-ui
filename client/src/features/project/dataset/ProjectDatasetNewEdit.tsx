@@ -19,7 +19,7 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import React from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Alert, Button, Col } from "reactstrap";

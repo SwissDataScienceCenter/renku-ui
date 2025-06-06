@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FetchBaseQueryMeta } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
+import { FetchBaseQueryMeta } from "@reduxjs/toolkit/query/fetchBaseQuery";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
