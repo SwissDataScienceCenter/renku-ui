@@ -16,6 +16,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN npm run-script build
 
+COPY vite.storybook.config.ts /app/
 COPY .storybook /app/.storybook
 
 RUN npm run storybook-build -- -o storybook-static
