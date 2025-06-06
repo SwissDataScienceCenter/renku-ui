@@ -203,12 +203,18 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
 }
 
 interface ConnectButtonParams {
+  className?: string;
   connectionStatus?: ConnectionStatus;
   id: string;
   kind?: ProviderKind;
 }
 
-function ConnectButton({ id, connectionStatus, kind }: ConnectButtonParams) {
+export function ConnectButton({
+  connectionStatus,
+  className,
+  id,
+  kind,
+}: ConnectButtonParams) {
   const hereUrl = useMemo(() => {
     const here = new URL(window.location.href);
     if (kind === "github") {
@@ -225,7 +231,7 @@ function ConnectButton({ id, connectionStatus, kind }: ConnectButtonParams) {
     connectionStatus === "connected" ? "btn-outline-primary" : "btn-primary";
 
   return (
-    <a className={cx(color, "btn", "ms-auto")} href={url}>
+    <a className={cx(color, "btn", "ms-auto", className)} href={url}>
       {text}
     </a>
   );
