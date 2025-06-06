@@ -10,53 +10,57 @@ RUN npm ci
 
 COPY index.html tsconfig.json tsconfig.node.json vite.config.ts /app/
 COPY public /app/public
-COPY src /app/src/
+COPY app /app/app/
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN npm run-script build
 
+COPY vite.storybook.config.ts /app/
 COPY .storybook /app/.storybook
 
 RUN npm run storybook-build -- -o storybook-static
 
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM node:22-alpine
 
-COPY --from=builder /app/build /usr/share/nginx/html
-COPY --from=builder /app/storybook-static /usr/share/nginx/html/storybook
-COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
+
+COPY --from=builder /app/build /app/build
+COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/package.json /app/package.json
+
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 COPY scripts/generate_sitemap.sh /app/scripts/generate_sitemap.sh
 
 # Set up the config files written by docker-entrypoint
 USER root
-RUN touch /usr/share/nginx/html/config.json
-RUN chmod a+r /usr/share/nginx/html/config.json
-RUN chown nginx /usr/share/nginx/html/config.json
+RUN touch /app/build/client/config.json
+RUN chmod a+r /app/build/client/config.json
+RUN chown node /app/build/client/config.json
 
-RUN touch /usr/share/nginx/html/robots.txt
-RUN chmod a+r /usr/share/nginx/html/robots.txt
-RUN chown nginx /usr/share/nginx/html/robots.txt
+RUN touch /app/build/client/robots.txt
+RUN chmod a+r /app/build/client/robots.txt
+RUN chown node /app/build/client/robots.txt
 
-RUN touch /usr/share/nginx/html/sitemap.xml
-RUN chmod a+r /usr/share/nginx/html/sitemap.xml
-RUN chown nginx /usr/share/nginx/html/sitemap.xml
+RUN touch /app/build/client/sitemap.xml
+RUN chmod a+r /app/build/client/sitemap.xml
+RUN chown node /app/build/client/sitemap.xml
 
-RUN touch /usr/share/nginx/html/privacy-statement.md
-RUN chmod a+r /usr/share/nginx/html/privacy-statement.md
-RUN chown nginx /usr/share/nginx/html/privacy-statement.md
+RUN touch /app/build/client/privacy-statement.md
+RUN chmod a+r /app/build/client/privacy-statement.md
+RUN chown node /app/build/client/privacy-statement.md
 
-RUN touch /usr/share/nginx/html/terms-of-use.md
-RUN chmod a+r /usr/share/nginx/html/terms-of-use.md
-RUN chown nginx /usr/share/nginx/html/terms-of-use.md
+RUN touch /app/build/client/terms-of-use.md
+RUN chmod a+r /app/build/client/terms-of-use.md
+RUN chown node /app/build/client/terms-of-use.md
 
-USER nginx
-
-
-HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /var/run/nginx.pid
+USER node
 
 ARG SHORT_SHA
 ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
+ARG PORT="3000"
+ENV PORT=$PORT
+
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run-script", "serve", "/app/build/server/index.js"]
