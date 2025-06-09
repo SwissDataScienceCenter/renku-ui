@@ -44,6 +44,7 @@ import ProgressIndicator, {
   ProgressStyle,
   ProgressType,
 } from "../../components/progress/Progress";
+import SunsetBanner from "../../features/projectsV2/shared/SunsetV1Banner";
 import Automated from "./components/Automated";
 import Title from "./components/Title";
 import Description from "./components/Description";
@@ -408,6 +409,7 @@ class NewProject extends Component {
     return !importingDataset ? (
       <FormSchema showHeader={!formOnProcess} title={title} description={desc}>
         {creation}
+        <SunsetBanner />
         {form}
       </FormSchema>
     ) : (

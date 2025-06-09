@@ -16,13 +16,11 @@
  * limitations under the License.
  */
 
-// import { Link } from "react-router";
-import { WarnAlert } from "../../components/Alert.jsx";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { SshModal } from "../../components/ssh/ssh";
 // import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import SunsetV1Button from "../projectsV2/shared/SunsetV1Button.tsx";
+import SunsetBanner from "../projectsV2/shared/SunsetV1Banner";
 import DashboardMessage from "./components/DashboardMessage";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
 // import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
@@ -60,22 +58,5 @@ export default function Dashboard() {
       <DatasetDashboard />
       <SshModal />
     </div>
-  );
-}
-
-function SunsetBanner() {
-  return (
-    <WarnAlert>
-      <h3>Deprecation Notice</h3>
-      <p>
-        As of July 15, 2025, creating new projects and datasets in the Legacy
-        Renku interface will be discontinued.
-      </p>
-      <p>
-        We encourage you to transition to the new Renku platform, which offers
-        enhanced features and a more modern user experience.
-      </p>
-      <SunsetV1Button />
-    </WarnAlert>
   );
 }
