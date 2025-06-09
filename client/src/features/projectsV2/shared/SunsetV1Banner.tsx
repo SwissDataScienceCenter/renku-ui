@@ -8,7 +8,7 @@ import SunsetV1Button from "./SunsetV1Button";
 export default function SunsetBanner() {
   return (
     <WarnAlert>
-      <h4>New project creation ends July 15</h4>
+      <h4>Feature Unavailable</h4>
       <p>
         You won’t be able to create new projects or datasets in Renku Legacy
         after July 15, 2025. This is in preparation for Renku Legacy being fully

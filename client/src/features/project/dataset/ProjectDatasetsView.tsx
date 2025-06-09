@@ -39,11 +39,11 @@ import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
+import SunsetBanner from "../../projectsV2/shared/SunsetV1Banner.tsx";
 import { StateModelProject } from "../project.types";
 import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
-import ProjectDatasetImport from "./ProjectDatasetImport";
-import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
+import { ProjectDatasetEdit } from "./ProjectDatasetNewEdit";
 import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetListView from "./ProjectDatasetsListView";
 
@@ -106,41 +106,6 @@ function ProjectDatasetsNav(props: any) {
       newDatasetUrl={props.newDatasetUrl}
       accessLevel={props.metadata.accessLevel}
     />
-  );
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ProjectAddDataset(props: any) {
-  const [newDataset, setNewDataset] = React.useState(true);
-  function toggleNewDataset() {
-    setNewDataset(!newDataset);
-  }
-
-  return (
-    <Col>
-      {newDataset ? (
-        <ProjectDatasetNew
-          apiVersion={props.apiVersion}
-          client={props.client}
-          fetchDatasets={props.fetchDatasets}
-          metadataVersion={props.metadataVersion}
-          model={props.model}
-          notifications={props.notifications}
-          params={props.params}
-          toggleNewDataset={toggleNewDataset}
-          versionUrl={props.versionUrl}
-        />
-      ) : (
-        <ProjectDatasetImport
-          client={props.client}
-          fetchDatasets={props.fetchDatasets}
-          model={props.model}
-          notifications={props.notifications}
-          params={props.params}
-          toggleNewDataset={toggleNewDataset}
-        />
-      )}
-    </Col>
   );
 }
 
@@ -368,19 +333,7 @@ function ProjectDatasetsView(props: any) {
           path="new"
           element={
             <>
-              <Col key="btn" md={12}>
-                <GoBackButton
-                  data-cy="go-back-dataset"
-                  label="Back to list"
-                  url={props.datasetsUrl}
-                />
-              </Col>
-              <ProjectAddDataset
-                {...props}
-                apiVersion={apiVersion}
-                metadataVersion={metadataVersion}
-                versionUrl={versionUrl}
-              />
+              <SunsetBanner />
             </>
           }
         />
