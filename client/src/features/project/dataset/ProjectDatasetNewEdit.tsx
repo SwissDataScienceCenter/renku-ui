@@ -35,6 +35,7 @@ import ProgressIndicator, {
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
+import SunsetBanner from "../../projectsV2/shared/SunsetV1Banner.tsx";
 import type { IDatasetFiles, StateModelProject } from "../project.types";
 import type {
   DatasetModifyDisplayProps,
@@ -218,6 +219,7 @@ function ProjectDatasetNew(
       }
     >
       <div className="d-flex flex-column">
+        <SunsetBanner />
         <div className="form-rk-pink d-flex flex-column">
           <AddDatasetButtons
             optionSelected="addDataset"
