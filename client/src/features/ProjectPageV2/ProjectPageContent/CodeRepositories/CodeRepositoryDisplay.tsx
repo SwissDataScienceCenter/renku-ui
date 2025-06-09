@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { skipToken } from "@reduxjs/toolkit/query";
+import type { SerializedError } from "@reduxjs/toolkit";
+import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -62,7 +63,9 @@ import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 import {
   connectedServicesApi,
   useGetOauth2ProvidersQuery,
+  type Provider,
 } from "../../../connectedServices/api/connectedServices.api";
+import { ConnectButton } from "../../../connectedServices/ConnectedServicesPage";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
@@ -71,6 +74,7 @@ import repositoriesApi, {
   useGetRepositoryMetadataQuery,
   useGetRepositoryProbeQuery,
 } from "../../../repositories/repositories.api";
+import { NotebooksErrorResponse } from "../../../session/sessions.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import { SshRepositoryUrlWarning } from "./AddCodeRepositoryModal";
 import {
@@ -385,6 +389,55 @@ function CodeRepositoryActions({
       userPermissions={permissions}
     />
   );
+}
+
+interface CodeRepositoryErrorProps {
+  error: FetchBaseQueryError | SerializedError;
+  provider: Pick<Provider, "id" | "kind"> | undefined;
+}
+
+function CodeRepositoryError({ error, provider }: CodeRepositoryErrorProps) {
+  if (!("data" in error))
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  if (typeof error.data != "object")
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  if (error.data == null)
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  if (!("error" in error.data))
+    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  const errorData = error.data as NotebooksErrorResponse;
+
+  if (errorData.error.code == 1401) {
+    if (provider == null)
+      return (
+        <WarnAlert dismissible={false}>
+          There is a problem with the integration to the repository host. You
+          can check the{" "}
+          <Link to={ABSOLUTE_ROUTES.v2.integrations}>connected services</Link>{" "}
+          for more details.
+        </WarnAlert>
+      );
+
+    return (
+      <WarnAlert dismissible={false}>
+        <div>
+          There is a problem with the integration to the repository host. You
+          can try to reconnect or check the{" "}
+          <Link to={ABSOLUTE_ROUTES.v2.integrations}>connected services</Link>{" "}
+          for more details.
+        </div>
+        <div className="mt-2">
+          <ConnectButton
+            className="btn-sm"
+            connectionStatus="connected"
+            id={provider.id}
+            kind={provider.kind}
+          />
+        </div>
+      </WarnAlert>
+    );
+  }
+  return <RtkOrNotebooksError error={error} dismissible={false} />;
 }
 
 interface RepositoryItemProps {
@@ -923,15 +976,18 @@ function RepositoryProviderDetails({
     "status" in repositoryProviderMatchError &&
     repositoryProviderMatchError.status == 404;
 
-  const provider = useMemo(
-    () =>
-      repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID
-        ? { id: INTERNAL_GITLAB_PROVIDER_ID, display_name: "Internal GitLab" }
-        : providers?.find(
-            ({ id }) => id === repositoryProviderMatch?.provider_id
-          ),
-    [providers, repositoryProviderMatch?.provider_id]
-  );
+  const provider = useMemo(() => {
+    const canonicalUrl = safeNewUrl(repositoryUrl);
+    const providerId =
+      repositoryProviderMatch?.provider_id ?? canonicalUrl?.host;
+    if (repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID)
+      return {
+        id: INTERNAL_GITLAB_PROVIDER_ID,
+        display_name: "Internal GitLab",
+        kind: "gitlab" as const,
+      };
+    return providers?.find(({ id }) => id === providerId);
+  }, [providers, repositoryProviderMatch?.provider_id, repositoryUrl]);
 
   const status =
     repositoryProviderMatch?.connection_id ||
@@ -954,7 +1010,7 @@ function RepositoryProviderDetails({
   }
 
   if (error) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+    return <CodeRepositoryError error={error} provider={provider} />;
   }
 
   if (provider) {

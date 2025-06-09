@@ -73,17 +73,30 @@ export default function AnonymousNavBar() {
             "renku-container"
           )}
         >
-          <Link
-            id="link-home"
-            to={ABSOLUTE_ROUTES.v1.root}
-            className="navbar-brand me-2 pb-0 pt-0"
+          <div
+            className={cx(
+              "align-items-center",
+              "d-flex",
+              "flex-row",
+              "gap-3",
+              "me-3"
+            )}
           >
-            <img src={RENKU_LOGO} alt="Renku" height="50" className="d-block" />
-          </Link>
-          <Badge color="warning" className="mx-2">
-            Legacy
-          </Badge>
-          <SunsetV1Button outline />
+            <Link
+              id="link-home"
+              to={ABSOLUTE_ROUTES.v1.root}
+              className={cx("m-0", "navbar-brand", "p-0")}
+            >
+              <img
+                src={RENKU_LOGO}
+                alt="Renku"
+                height="50"
+                className="d-block"
+              />
+            </Link>
+            <Badge color="warning">Legacy</Badge>
+            <SunsetV1Button outline />
+          </div>
           <NavbarToggler onClick={onToggle} className="border-0">
             <List className="bi text-rk-white" />
           </NavbarToggler>
