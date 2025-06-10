@@ -28,7 +28,7 @@ export default function RenkuBadge({
   children,
   className,
   color = "light",
-  pills = true,
+  pills = false,
 }: RenkuBadgeProps) {
   const colorClasses =
     color === "success"

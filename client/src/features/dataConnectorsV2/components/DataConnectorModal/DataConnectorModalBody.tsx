@@ -562,9 +562,7 @@ export function DataConnectorMount() {
               {field.value && field.value.length > 0 && (
                 <div className={cx("d-flex", "flex-wrap", "gap-1", "mb-2")}>
                   {getValues("keywords").map((keyword, index) => (
-                    <RenkuBadge key={index} pills={false}>
-                      {keyword}
-                    </RenkuBadge>
+                    <RenkuBadge key={index}>{keyword}</RenkuBadge>
                   ))}
                 </div>
               )}
