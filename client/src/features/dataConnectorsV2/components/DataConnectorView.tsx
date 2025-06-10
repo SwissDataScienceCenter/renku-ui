@@ -542,9 +542,7 @@ function DataConnectorViewMetadata({
         <DataConnectorPropertyValue title="Keywords">
           <div className={cx("d-flex", "flex-wrap", "gap-1", "my-1")}>
             {dataConnector.keywords.map((keyword, index) => (
-              <RenkuBadge key={index} pills={false}>
-                {keyword}
-              </RenkuBadge>
+              <RenkuBadge key={index}>{keyword}</RenkuBadge>
             ))}
           </div>
         </DataConnectorPropertyValue>
