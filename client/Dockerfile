@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json /app/
 RUN npm ci
 
-COPY index.html tsconfig.json tsconfig.node.json vite.config.ts /app/
+COPY index.html react-router.config.ts tsconfig.json tsconfig.node.json vite.config.ts /app/
 COPY public /app/public
 COPY src /app/src/
 
