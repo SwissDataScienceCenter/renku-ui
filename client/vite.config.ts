@@ -5,10 +5,11 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   build: {
     outDir: "build",
     sourcemap: true,
+    rollupOptions: isSsrBuild ? { input: "./server/app.ts" } : undefined,
   },
   server: {
     allowedHosts: [".dev.renku.ch"],
@@ -19,4 +20,4 @@ export default defineConfig({
       "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),
     },
   },
-});
+}));
