@@ -34,6 +34,8 @@ RUN npm ci --omit=dev
 
 FROM node:22
 
+ENV PORT=8080
+
 RUN apt-get update && apt-get upgrade --quiet --assume-yes
 
 WORKDIR /app
