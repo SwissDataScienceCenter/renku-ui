@@ -1,0 +1,12 @@
+{
+  "provider_id": "github.com",
+  "connection_id": "0100933QTQVNX4R5CC8P177VTC",
+  "repository_metadata": {
+    "git_http_url": "https://github.com/renku/url-repo.git",
+    "web_url": "https://github.com/renku/url-repo",
+    "permissions": {
+      "pull": true,
+      "push": true
+    }
+  }
+}
