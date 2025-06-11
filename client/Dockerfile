@@ -10,7 +10,8 @@ RUN npm ci
 
 COPY index.html react-router.config.ts tsconfig.json tsconfig.node.json vite.config.ts /app/
 COPY public /app/public
-COPY src /app/src/
+COPY src /app/src
+COPY server /app/server
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
