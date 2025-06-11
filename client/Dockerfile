@@ -39,6 +39,7 @@ RUN apt-get update && apt-get upgrade --quiet --assume-yes
 WORKDIR /app
 
 COPY package.json package-lock.json server.js /app/
+COPY --from=dependencies /app/node_modules /app/node_modules
 COPY --from=builder /app/build /app/build
 COPY --from=builder /app/storybook-static /storybook-static
 
