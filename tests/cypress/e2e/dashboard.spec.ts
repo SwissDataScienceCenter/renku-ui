@@ -603,3 +603,17 @@ describe("anonymous dashboard", () => {
     cy.contains("to view the Renku legacy dashboard").should("be.visible");
   });
 });
+
+describe("No legacy support", () => {
+  beforeEach(() => {
+    fixtures.config({ fixture: "config-no-legacy.json" }).versions().userTest();
+    fixtures
+      .projects()
+      .landingUserProjects({ fixture: "projects/member-projects.json" });
+  });
+
+  it("displays warning when dataset doesn't exist", () => {
+    cy.visit("/v1");
+    cy.contains("Legacy not supported").should("be.visible");
+  });
+});

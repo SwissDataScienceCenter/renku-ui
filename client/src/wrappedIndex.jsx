@@ -49,6 +49,7 @@ function appIndexInner() {
       const params = validatedAppParams(params_);
 
       // configure core api versioned url helper
+      // TODO: if the params.LEGACY_SUPPORT.enabled flag is false, do not create this config
       const coreApiVersionedUrlConfig = createCoreApiVersionedUrlConfig(
         params.CORE_API_VERSION_CONFIG
       );
@@ -57,6 +58,7 @@ function appIndexInner() {
       Url.setBaseUrl(params.BASE_URL);
 
       // create client to be passed to coordinators
+      // TODO: if the params.LEGACY_SUPPORT.enabled flag is false, do not create an APIClient
       const client = new APIClient(
         `${params.UISERVER_URL}/api`,
         params.UISERVER_URL,
@@ -89,6 +91,7 @@ function appIndexInner() {
 
       // configure Sentry
       let uiApplication = App;
+      // TODO: if the params.LEGACY_SUPPORT.enabled flag is false, we need another way to get the user information
       if (params.SENTRY_URL) {
         Sentry.init(
           params.SENTRY_URL,
@@ -112,6 +115,8 @@ function appIndexInner() {
         return { user: state.stateModel.user, ...ownProps };
       }
 
+      const forceV2Style = params && !params.LEGACY_SUPPORT.enabled;
+
       // Render UI application
       const VisibleApp = connect(mapStateToProps)(uiApplication);
       root.render(
@@ -120,7 +125,7 @@ function appIndexInner() {
             <AppErrorBoundary>
               <LoginHandler />
               <FeatureFlagHandler />
-              <StyleHandler />
+              <StyleHandler forceV2Style={forceV2Style} />
               <VisibleApp
                 client={client}
                 coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
@@ -152,8 +157,18 @@ function FeatureFlagHandler() {
   return null;
 }
 
-export function StyleHandler() {
+// interface StyleHandlerProps {
+//   forceV2Style: boolean;
+// }
+export function StyleHandler({ forceV2Style }) {
   const location = useLocation();
+  if (forceV2Style) {
+    return (
+      <Helmet>
+        <style type="text/css">{v2Styles}</style>
+      </Helmet>
+    );
+  }
   return (
     <Helmet>
       <style type="text/css">
