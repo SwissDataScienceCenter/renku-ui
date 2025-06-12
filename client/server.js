@@ -18,7 +18,7 @@ if (DEVELOPMENT) {
 console.log("Starting production server");
 
 // Storybook
-app.use("/storybook", express.static("storybook-static", { maxAge: "1h" }));
+app.use("/storybook", express.static("storybook-static"));
 
 // Client assets
 app.use(
@@ -30,7 +30,7 @@ app.use(
 app.use(morgan("tiny"));
 
 // Client files
-app.use(express.static("build/client", { maxAge: "1h" }));
+app.use(express.static("build/client"));
 
 // Server-side rendering
 app.use(await import(BUILD_PATH).then((mod) => mod.app));
