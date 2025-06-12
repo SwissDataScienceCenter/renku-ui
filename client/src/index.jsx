@@ -39,6 +39,7 @@ configFetch.then((valuesRead) => {
     const params = validatedAppParams(params_);
 
     // configure core api versioned url helper
+    // TODO: if the params.LEGACY_SUPPORT.enabled flag is false, do not create this config
     const coreApiVersionedUrlConfig = createCoreApiVersionedUrlConfig(
       params.CORE_API_VERSION_CONFIG
     );
@@ -47,6 +48,7 @@ configFetch.then((valuesRead) => {
     Url.setBaseUrl(params.BASE_URL);
 
     // create client to be passed to coordinators
+    // TODO: if the params.LEGACY_SUPPORT.enabled flag is false, do not create an APIClient
     const client = new APIClient(
       `${params.UISERVER_URL}/api`,
       params.UISERVER_URL,
@@ -76,6 +78,7 @@ configFetch.then((valuesRead) => {
 
     // configure Sentry
     let uiApplication = App;
+    // TODO: if the params.LEGACY_SUPPORT.enabled flag is false, we need another way to get the user information
     if (params.SENTRY_URL) {
       Sentry.init(
         params.SENTRY_URL,
