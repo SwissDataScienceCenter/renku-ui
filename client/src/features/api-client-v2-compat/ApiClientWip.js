@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -15,30 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CoreApiVersionedUrlHelper } from "../utils/helpers/url";
 
-import addDatasetMethods from "./dataset";
-import addGraphMethods from "./graph";
-import addInstanceMethods from "./instance";
-import addJobMethods from "./job";
-import addNotebookServersMethods from "./notebook-servers";
-import addPipelineMethods from "./pipeline";
-import addProjectMethods from "./project";
-import addRepositoryMethods from "./repository";
-import addTemplatesMethods from "./templates";
-import addUserMethods from "./user";
-import processPaginationHeaders from "./pagination";
-import testClient from "./test-client";
-import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
-import { renkuFetch, RETURN_TYPES } from "./utils";
+// A minimal API client for V2 compatibility. Should be replaced by ./ApiClientV2Compat.ts
 
-const ACCESS_LEVELS = {
-  GUEST: 10,
-  REPORTER: 20,
-  DEVELOPER: 30,
-  MAINTAINER: 40,
-  OWNER: 50,
-};
+import addUserMethods from "~/api-client/user";
+import processPaginationHeaders from "~/api-client/pagination";
+import { alertAPIErrors, API_ERRORS } from "~/api-client/errors";
+import { renkuFetch, RETURN_TYPES } from "~/api-client/utils";
 
 const FETCH_DEFAULT = {
   options: { headers: new Headers() },
@@ -58,24 +41,10 @@ class APIClient {
    * @param {string} uiserverUrl - UI server base url, mainly used for authentication
    * @param {CoreApiVersionedUrlConfig} coreApiVersionedUrlConfig - helper object for computing versioned URLs.
    */
-  constructor(apiUrl, uiserverUrl, coreApiVersionedUrlConfig) {
+  constructor(apiUrl, uiserverUrl) {
     this.baseUrl = apiUrl;
     this.uiserverUrl = uiserverUrl;
-    this.coreApiVersionedUrlHelper = new CoreApiVersionedUrlHelper(
-      coreApiVersionedUrlConfig
-    );
     this.returnTypes = RETURN_TYPES;
-    this.supportsLegacy = true;
-
-    addDatasetMethods(this);
-    addGraphMethods(this);
-    addInstanceMethods(this);
-    addJobMethods(this);
-    addNotebookServersMethods(this);
-    addPipelineMethods(this);
-    addProjectMethods(this);
-    addRepositoryMethods(this);
-    addTemplatesMethods(this);
     addUserMethods(this);
   }
 
@@ -226,39 +195,6 @@ class APIClient {
     };
     return new Headers(headers);
   }
-
-  /**
-   * Return a versioned endpoint url for the core service.
-   * @param {string} endpoint
-   * @param {string or null} metadataVersion
-   * @returns string
-   */
-  versionedCoreUrl(endpoint, metadataVersion) {
-    const path = this.coreApiVersionedUrlHelper.urlForEndpoint(
-      endpoint,
-      metadataVersion
-    );
-    return `${this.baseUrl}/renku${path}`;
-  }
-
-  /**
-   * Return upload file endpoint url.
-   * @returns string
-   */
-  uploadFileURL(versionUrl) {
-    return this.versionedCoreUrl(
-      "cache.files_upload?override_existing=true",
-      versionUrl
-    );
-  }
 }
 
 export default APIClient;
-export {
-  alertAPIErrors,
-  APIError,
-  ACCESS_LEVELS,
-  API_ERRORS,
-  FETCH_DEFAULT,
-  testClient,
-};

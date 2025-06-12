@@ -76,11 +76,51 @@ describe("launch autostart session for migrated project", () => {
     cy.contains("Checking if project has been migrated").should("be.visible");
     cy.url().should("contain", "/p/user1-uuid/test-2-v2-project");
   });
+
   it("autostart session unchanged for non-migrated project", () => {
     fixtures.readProjectV1MigrationError();
     cy.visit(`${projectUrl}/sessions/new?autostart=1`);
     cy.contains("Checking if project has been migrated").should("be.visible");
     cy.wait("@readProjectV1Migration");
     cy.contains("Preparing session").should("be.visible");
+  });
+});
+
+describe("launch autostart sessions without legacy support", () => {
+  const projectUrl = "/projects/e2e/local-test-project";
+  beforeEach(() => {
+    fixtures
+      .config({ fixture: "config-no-legacy.json" })
+      .versions()
+      .projects()
+      .landingUserProjects();
+    fixtures.projectTest().projectMigrationUpToDate();
+    fixtures
+      .sessionServersEmpty()
+      .renkuIni()
+      .sessionServerOptions()
+      .projectLockStatus()
+      .resourcePoolsTest()
+      .newSessionImages();
+    fixtures.userTest();
+  });
+
+  it("autostart session redirects to migrated project [broken]", () => {
+    fixtures.readProjectV1Migration().readProjectV2();
+    cy.visit(`${projectUrl}/sessions/new?autostart=1`);
+    // TODO: this should redirect to the migrated project, but the backend does not support this yet
+    // cy.wait("@readProjectV1Migration");
+    // cy.contains("Checking if project has been migrated").should("be.visible");
+    // cy.url().should("contain", "/p/user1-uuid/test-2-v2-project");
+    cy.contains("Legacy not supported").should("be.visible");
+  });
+
+  it("autostart session shows not supported for non-migrated project", () => {
+    fixtures.readProjectV1MigrationError();
+    cy.visit(`${projectUrl}/sessions/new?autostart=1`);
+    // TODO: once supported, wait for a call to see if this project should redirect
+    // cy.contains("Checking if project has been migrated").should("be.visible");
+    // cy.wait("@readProjectV1Migration");
+    cy.contains("Legacy not supported").should("be.visible");
   });
 });
