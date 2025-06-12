@@ -20,7 +20,15 @@ import cx from "classnames";
 import { useCallback } from "react";
 import { Globe, Lock, PlusLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { Button, ButtonGroup, FormText, Input, Label } from "reactstrap";
+import {
+  Button,
+  ButtonGroup,
+  Col,
+  FormText,
+  Input,
+  Label,
+  Row,
+} from "reactstrap";
 import { WarnAlert } from "../../../../components/Alert";
 import RenkuBadge from "../../../../components/renkuBadge/RenkuBadge";
 import { Loader } from "../../../../components/Loader";
@@ -554,62 +562,82 @@ export function DataConnectorMount() {
           Keywords
         </Label>
 
-        <Controller
-          name="keywords"
-          control={control}
-          render={({ field }) => (
-            <>
-              {field.value && field.value.length > 0 && (
-                <div className={cx("d-flex", "flex-wrap", "gap-1", "mb-2")}>
-                  {getValues("keywords").map((keyword, index) => (
-                    <RenkuBadge key={index}>{keyword}</RenkuBadge>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        />
+        <Row className="g-2">
+          <Col xs={12}>
+            <div className={cx("input-group", "input-group-sm")}>
+              <Controller
+                name="keyword"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <input
+                      id="keyword"
+                      placeholder="Add new keyword"
+                      type="string"
+                      {...field}
+                      className={cx(
+                        "form-control",
+                        errors.keyword && "is-invalid"
+                      )}
+                      data-cy="data-connector-keyword-input"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        onFieldValueChange("keyword", e.target.value);
+                      }}
+                    />
+                    <Button
+                      color={field.value ? "primary" : "outline-primary"}
+                      disabled={!field.value}
+                      onClick={() => {
+                        if (field.value) {
+                          const newKeywords = [
+                            ...getValues("keywords"),
+                            field.value.trim(),
+                          ];
+                          setValue("keywords", newKeywords);
+                          setValue("keyword", "");
+                          onFieldValueChange("keyword", "");
+                        }
+                      }}
+                      type="button"
+                    >
+                      <PlusLg className={cx("bi", "me-1")} />
+                      Add
+                    </Button>
+                  </>
+                )}
+              />
+            </div>
+          </Col>
 
-        <div className="input-group">
-          <Controller
-            name="keyword"
-            control={control}
-            render={({ field }) => (
-              <>
-                <Button
-                  color={field.value ? "primary" : "outline-primary"}
-                  disabled={!field.value}
-                  onClick={() => {
-                    if (field.value) {
-                      const newKeywords = [
-                        ...getValues("keywords"),
-                        field.value.trim(),
-                      ];
-                      setValue("keywords", newKeywords);
-                      setValue("keyword", "");
-                      onFieldValueChange("keyword", "");
-                    }
-                  }}
-                  type="button"
-                >
-                  <PlusLg className={cx("bi", "me-1")} />
-                  Add keyword
-                </Button>
-                <input
-                  id="keyword"
-                  type="string"
-                  {...field}
-                  className={cx("form-control", errors.keyword && "is-invalid")}
-                  data-cy="data-connector-keyword-input"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onFieldValueChange("keyword", e.target.value);
-                  }}
-                />
-              </>
-            )}
-          />
-        </div>
+          <Col className="d-flex">
+            <Controller
+              name="keywords"
+              control={control}
+              render={({ field }) => (
+                <>
+                  {field.value && field.value.length > 0 && (
+                    <div
+                      className={cx(
+                        "align-items-center",
+                        "d-flex",
+                        "flex-wrap",
+                        "fs-5",
+                        "gap-1"
+                      )}
+                    >
+                      {getValues("keywords").map((keyword, index) => (
+                        <RenkuBadge className="fw-semibold" key={index}>
+                          {keyword}
+                        </RenkuBadge>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            />
+          </Col>
+        </Row>
 
         <div className={cx("form-text", "text-muted")}>
           Keywords help orginizing your work and are available to search. You
