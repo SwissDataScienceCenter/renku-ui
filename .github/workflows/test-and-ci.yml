@@ -149,7 +149,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
+          ref: "4.0.0"
       - name: set up environment variables
         run: |
           echo "GIT_USER=Renku Bot" >> $GITHUB_ENV
