@@ -292,6 +292,7 @@ export function RenkuToolbarItemUser({
   const gatewayURL = params.GATEWAY_URL;
   const uiserverURL = params.UISERVER_URL;
   const redirect_url = encodeURIComponent(params.BASE_URL);
+  const isLegacyEnabled = params.LEGACY_SUPPORT.enabled;
 
   const loginUrl = useLoginUrl({ params });
 
@@ -350,10 +351,14 @@ export function RenkuToolbarItemUser({
             >
               Integrations
             </Link>
-            <DropdownItem divider />
-            <Link to={ABSOLUTE_ROUTES.v1.root} className="dropdown-item">
-              Go to <span className="fw-bold">Renku Legacy</span>
-            </Link>
+            {isLegacyEnabled && (
+              <>
+                <DropdownItem divider />
+                <Link to={ABSOLUTE_ROUTES.v1.root} className="dropdown-item">
+                  Go to <span className="fw-bold">Renku Legacy</span>
+                </Link>
+              </>
+            )}
           </>
         )}
 

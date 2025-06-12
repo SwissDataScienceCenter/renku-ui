@@ -29,17 +29,25 @@ const AUTH_HEADER = {
   invalidHeaderExpired: "expired",
 };
 
+interface FetchOptions {
+  credentials?: RequestCredentials;
+  headers: Headers;
+  method?: string;
+  queryParams?: Record<string, string>;
+}
+
 // Wrapper around fetch which will throw exceptions on all non 20x responses.
 // Adapted from https://github.com/github/fetch/issues/155
-function renkuFetch(url, options) {
+function renkuFetch(url: string | URL, options: FetchOptions) {
   // Add query parameters to URL instance. This will also work
   // if url is already an instance of URL. Note that this also encodes the URL
   // and the parameters.
 
   const urlObject = new URL(url);
-  if (options.queryParams) {
-    Object.keys(options.queryParams).forEach((key) => {
-      urlObject.searchParams.append(key, options.queryParams[key]);
+  const queryParams = options.queryParams;
+  if (queryParams) {
+    Object.keys(queryParams).forEach((key) => {
+      urlObject.searchParams.append(key, queryParams[key]);
     });
   }
 
@@ -72,8 +80,13 @@ function renkuFetch(url, options) {
   );
 }
 
-function formatEnvironmentVariables(variables) {
-  const env_variables = {};
+interface EnvVariable {
+  key: string;
+  value: string;
+}
+
+function formatEnvironmentVariables(variables: EnvVariable[]) {
+  const env_variables: Record<string, string> = {};
   if (variables?.length > 0) {
     variables.map((variable) => {
       if (variable.key && variable.value)
@@ -84,3 +97,4 @@ function formatEnvironmentVariables(variables) {
 }
 
 export { renkuFetch, formatEnvironmentVariables, AUTH_HEADER, RETURN_TYPES };
+export type { FetchOptions };
