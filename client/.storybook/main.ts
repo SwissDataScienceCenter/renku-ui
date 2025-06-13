@@ -9,10 +9,13 @@ const config: StorybookConfig = {
     "@storybook/addon-links",
     "@storybook/react-vite",
   ],
-
   framework: {
     name: "@storybook/react-vite",
-    options: {},
+    options: {
+      builder: {
+        viteConfigPath: "storybook-vite.config.ts",
+      },
+    },
   },
   typescript: {
     reactDocgen: "react-docgen-typescript",

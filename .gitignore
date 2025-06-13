@@ -111,3 +111,6 @@ client/.rtk/*Api.ts
 
 # stoybook files
 client/storybook-static
+
+# react-router files
+.react-router/

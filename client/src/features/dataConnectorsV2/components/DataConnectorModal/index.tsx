@@ -69,6 +69,10 @@ export function DataConnectorModalBodyAndFooter({
 
   // Reset state on props change
   useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
     let flattened = dataConnectorToFlattened(dataConnector);
     if (dataConnector == null) {
       flattened = {
@@ -92,7 +96,7 @@ export function DataConnectorModalBodyAndFooter({
         schemata: schemata ?? [],
       })
     );
-  }, [dataConnector, dispatch, namespace, project, schemata]);
+  }, [dataConnector, dispatch, isOpen, namespace, project, schemata]);
 
   // Visual elements
   return (
