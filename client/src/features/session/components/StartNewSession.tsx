@@ -145,10 +145,7 @@ export default function StartNewSession() {
     return (
       <>
         <BackButton />
-        <CheckingMigrationRedirect
-          isFetchingMigrations={isFetchingMigrations}
-          projectV2={projectV2}
-        />
+        <CheckingMigrationRedirect projectV2={projectV2} />
       </>
     );
   }
@@ -218,7 +215,6 @@ interface LocationState {
 }
 
 interface CheckingMigrationRedirectProps {
-  isFetchingMigrations: boolean;
   projectV2: ProjectV2 | undefined;
 }
 
