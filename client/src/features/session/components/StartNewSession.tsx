@@ -23,9 +23,15 @@ import {
   faUserClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate, type Location } from "react-router";
+import {
+  generatePath,
+  useLocation,
+  useNavigate,
+  type Location,
+} from "react-router";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -46,6 +52,7 @@ import { ShareLinkSessionModal } from "../../../components/shareLinkSession/Shar
 import { LockStatus, User } from "../../../model/renkuModels.types";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -56,6 +63,10 @@ import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
 import { useCoreSupport } from "../../project/useProjectCoreSupport";
 import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
+import {
+  useGetRenkuV1ProjectsByV1IdMigrationsQuery,
+  type Project as ProjectV2,
+} from "../../projectsV2/api/projectV2.api";
 import { useStartSessionMutation } from "../sessions.api";
 import startSessionSlice, {
   setError,
@@ -84,6 +95,13 @@ export default function StartNewSession() {
     () => new URLSearchParams(location.search),
     [location.search]
   );
+  const projectId = useLegacySelector<number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
+  const { data: projectV2, isFetching: isFetchingMigrations } =
+    useGetRenkuV1ProjectsByV1IdMigrationsQuery(
+      projectId ? { v1Id: projectId } : skipToken
+    );
   const autostart = !!searchParams.get("autostart");
 
   const logged = useLegacySelector<User["logged"]>(
@@ -119,6 +137,15 @@ export default function StartNewSession() {
       <>
         <BackButton />
         <AnonymousSessionsDisabledNotice />
+      </>
+    );
+  }
+
+  if (autostart && (isFetchingMigrations || projectV2 != null)) {
+    return (
+      <>
+        <BackButton />
+        <CheckingMigrationRedirect projectV2={projectV2} />
       </>
     );
   }
@@ -185,6 +212,50 @@ interface LocationState {
   from?: string;
   filePath?: string;
   fromLanding?: boolean;
+}
+
+interface CheckingMigrationRedirectProps {
+  projectV2: ProjectV2 | undefined;
+}
+
+function CheckingMigrationRedirect({
+  projectV2,
+}: CheckingMigrationRedirectProps) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (projectV2 != null) {
+      const pathname = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+        namespace: projectV2.namespace,
+        slug: projectV2.slug,
+      });
+      navigate(
+        {
+          pathname,
+        },
+        {
+          replace: true,
+        }
+      );
+    }
+  }, [navigate, projectV2]);
+
+  return (
+    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <ProgressStepsIndicator
+        description="Checking migration"
+        type={ProgressType.Determinate}
+        style={ProgressStyle.Light}
+        title="Checking if project has been migrated"
+        status={[
+          {
+            id: 0,
+            status: StatusStepProgressBar.EXECUTING,
+            step: "Checking migration status",
+          },
+        ]}
+      />
+    </div>
+  );
 }
 
 function SessionStarting() {

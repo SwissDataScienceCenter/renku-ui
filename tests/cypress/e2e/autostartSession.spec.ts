@@ -53,3 +53,34 @@ describe("launch autostart sessions", () => {
     cy.get(".alert-danger").should("contain.text", alertMessage);
   });
 });
+
+describe("launch autostart session for migrated project", () => {
+  const projectUrl = "/projects/e2e/local-test-project";
+  beforeEach(() => {
+    fixtures.config().versions().projects().landingUserProjects();
+    fixtures.projectTest().projectMigrationUpToDate();
+    fixtures
+      .sessionServersEmpty()
+      .renkuIni()
+      .sessionServerOptions()
+      .projectLockStatus()
+      .resourcePoolsTest()
+      .newSessionImages();
+    fixtures.userTest();
+  });
+
+  it("autostart session redirects to migrated project", () => {
+    fixtures.readProjectV1Migration().readProjectV2();
+    cy.visit(`${projectUrl}/sessions/new?autostart=1`);
+    cy.wait("@readProjectV1Migration");
+    cy.contains("Checking if project has been migrated").should("be.visible");
+    cy.url().should("contain", "/p/user1-uuid/test-2-v2-project");
+  });
+  it("autostart session unchanged for non-migrated project", () => {
+    fixtures.readProjectV1MigrationError();
+    cy.visit(`${projectUrl}/sessions/new?autostart=1`);
+    cy.contains("Checking if project has been migrated").should("be.visible");
+    cy.wait("@readProjectV1Migration");
+    cy.contains("Preparing session").should("be.visible");
+  });
+});
