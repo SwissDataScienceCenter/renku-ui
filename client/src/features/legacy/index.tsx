@@ -9,7 +9,7 @@ import { DatasetCoordinator } from "../../dataset/Dataset.state";
 import LazyShowDataset from "../../dataset/LazyShowDataset";
 import LazyProjectView from "../../project/LazyProjectView";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import rkNotFoundImg from "../../styles/assets/not-found.svg";
+import rkNotFoundImg from "../../styles/assets/not-foundV2.svg";
 import AppContext from "../../utils/context/appContext";
 
 import LazyRootV1 from "../rootV1/LazyRootV1";
@@ -41,7 +41,7 @@ function NoLegacySupport() {
               "d-flex",
               "align-items-center",
               "gap-3",
-              "text-rk-green"
+              "text-primary"
             )}
           >
             <img src={rkNotFoundImg} />
@@ -49,7 +49,7 @@ function NoLegacySupport() {
           </h3>
           <Tag data-cy="not-found-description">{description}</Tag>
           <div>
-            <Link to={homeLink} className={cx("btn", "btn-rk-green")}>
+            <Link to={homeLink} className={cx("btn", "btn-primary")}>
               <ArrowLeft className={cx("bi", "me-1")} />
               Return to home
             </Link>
