@@ -97,7 +97,7 @@ function CentralContentContainer({ user }) {
         />
         <Route
           path="/datasets/:identifier"
-          element={<LegacyShowDataset user={user} />}
+          element={<LegacyShowDataset userInfo={userInfo} />}
         />
         <Route path="/datasets" element={<LegacyDatasets />} />
         <Route path="/v1/*" element={<LegacyRoot />} />

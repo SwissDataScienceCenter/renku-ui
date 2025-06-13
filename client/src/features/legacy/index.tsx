@@ -13,6 +13,8 @@ import rkNotFoundImg from "../../styles/assets/not-found.svg";
 import AppContext from "../../utils/context/appContext";
 
 import LazyRootV1 from "../rootV1/LazyRootV1";
+import NavbarV2 from "../rootV2/NavbarV2";
+import type { UserInfo } from "../usersV2/api/users.types";
 
 function NoLegacySupport() {
   const title = "Legacy not supported";
@@ -75,22 +77,46 @@ export function LegacyDatasetAddToProject() {
 }
 
 export function LegacyDatasets() {
+  const { params } = useContext(AppContext);
+  if (params && !params.LEGACY_SUPPORT.enabled) {
+    return (
+      <Navigate
+        // eslint-disable-next-line spellcheck/spell-checker
+        to={`${ABSOLUTE_ROUTES.v2.search}?q=type%3Adataconnector`}
+        replace
+      />
+    );
+  }
   return <Navigate to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`} replace />;
 }
 
 export function LegacyProjectView() {
+  const { params } = useContext(AppContext);
+  if (params && !params.LEGACY_SUPPORT.enabled) {
+    return <NoLegacySupport />;
+  }
+
   return <LazyProjectView />;
 }
 
 export function LegacyRoot() {
+  const { params } = useContext(AppContext);
+  if (params && !params.LEGACY_SUPPORT.enabled) {
+    return (
+      <>
+        <NavbarV2 />
+        <NoLegacySupport />
+      </>
+    );
+  }
   return <LazyRootV1 />;
 }
 
 interface LegacyDatasetProps {
-  user: { logged: boolean };
+  userInfo: UserInfo;
 }
 
-export function LegacyShowDataset({ user }: LegacyDatasetProps) {
+export function LegacyShowDataset({ userInfo }: LegacyDatasetProps) {
   const { client, model: contextModel, params } = useContext(AppContext);
   if (params && !params.LEGACY_SUPPORT.enabled) {
     return <NoLegacySupport />;
@@ -105,7 +131,7 @@ export function LegacyShowDataset({ user }: LegacyDatasetProps) {
       datasetCoordinator={
         new DatasetCoordinator(client, model.subModel("dataset"))
       }
-      logged={user.logged}
+      logged={userInfo.isLoggedIn}
       model={model}
     />
   );
