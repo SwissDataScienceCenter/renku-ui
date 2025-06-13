@@ -51,6 +51,11 @@ interface ListProjectV2MembersFixture extends ProjectV2IdArgs {
   };
 }
 
+interface ProjectV1MigrationArgs extends SimpleFixture {
+  v1Id?: string;
+  overrides?: Partial<ProjectOverrides>;
+}
+
 interface ProjectV2CreateArgs extends SimpleFixture {
   slug?: string;
   namespace?: string;
@@ -354,6 +359,46 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         `/ui-server/api/data/namespaces/${namespace}/projects/${projectSlug}*`,
         response
       ).as(name);
+      return this;
+    }
+
+    readProjectV1Migration(args?: ProjectV1MigrationArgs) {
+      const {
+        fixture = "projectV2/read-projectV2.json",
+        name = "readProjectV1Migration",
+        overrides = {},
+        v1Id = "39646",
+      } = args ?? {};
+      cy.fixture(fixture).then((project) => {
+        const response = {
+          ...project,
+          ...overrides,
+        };
+        cy.intercept(
+          "GET",
+          `/ui-server/api/data/renku_v1_projects/${v1Id}/migrations`,
+          response
+        ).as(name);
+      });
+      return this;
+    }
+
+    readProjectV1MigrationError(
+      args?: Omit<ProjectV1MigrationArgs, "fixture" | "overrides">
+    ) {
+      const { name = "readProjectV1Migration", v1Id = "39646" } = args ?? {};
+      const response = {
+        error: {
+          code: 1404,
+          message: `Migration for project v1 with id '${v1Id}' does not exist.`,
+        },
+      };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/data/renku_v1_projects/${v1Id}/migrations`,
+        { body: response, statusCode: 404 }
+      ).as(name);
+
       return this;
     }
 
