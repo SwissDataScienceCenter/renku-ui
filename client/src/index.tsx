@@ -27,7 +27,7 @@ export default function AppRoot() {
 
 function AppRootInner() {
   useEffect(() => {
-    import("./oldIndex").then(({ default: render }) => render());
+    import("./wrappedIndex").then(({ default: render }) => render());
   }, []);
   return null;
 }
