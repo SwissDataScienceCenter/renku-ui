@@ -8,13 +8,10 @@ import SunsetV1Button from "./SunsetV1Button";
 export default function SunsetBanner() {
   return (
     <WarnAlert>
-      <h4>Feature Unavailable</h4>
+      <h4>Project creation no longer available</h4>
       <p>
-        You won’t be able to create new projects or datasets in Renku Legacy
-        after July 15, 2025. This is in preparation for Renku Legacy being fully
-        discontinued in October 2025. Our transition guide will help walk you
-        through migrating to Renku 2.0 for enhanced features and continued
-        access to your work.
+        You can no longer create new projects or datasets in Renku Legacy.
+        Switch to Renku 2.0 to continue creating and managing your work.
       </p>
       <Link
         to={ABSOLUTE_ROUTES.v2.root}
@@ -24,7 +21,7 @@ export default function SunsetBanner() {
         <ArrowRight className={cx("bi", "ms-1")} />
       </Link>
       <SunsetV1Button outline color="warning">
-        View transition guide
+        Learn more
         <BoxArrowUpRight className="bi ms-1" />
       </SunsetV1Button>
     </WarnAlert>

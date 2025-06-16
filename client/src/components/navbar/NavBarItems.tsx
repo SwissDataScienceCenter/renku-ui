@@ -63,7 +63,8 @@ export function RenkuToolbarItemPlus() {
     <DropdownItem className="p-0" id="add-dataset-main-link">
       <div className="dropdown-item disabled">Dataset</div>
       <UncontrolledTooltip target="add-dataset-main-link" placement="right">
-        Adding new datasets is no longer supported in the legacy Renku interface
+        Creating new datasets is no longer supported in Renku Legacy. Switch to
+        Renku 2.0 to continue creating and managing your work.
       </UncontrolledTooltip>
     </DropdownItem>
   ) : null;
@@ -71,7 +72,8 @@ export function RenkuToolbarItemPlus() {
     <DropdownItem className="p-0" id="add-project-main-link">
       <div className="dropdown-item disabled">Project</div>
       <UncontrolledTooltip target="add-project-main-link" placement="right">
-        Adding new projects is no longer supported in the legacy Renku interface
+        Creating new projects is no longer supported in Renku Legacy. Switch to
+        Renku 2.0 to continue creating and managing your work.
       </UncontrolledTooltip>
     </DropdownItem>
   );
