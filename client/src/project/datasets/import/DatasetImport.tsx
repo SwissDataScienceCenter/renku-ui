@@ -39,7 +39,7 @@ import ProgressIndicator, {
   ProgressType,
 } from "../../../components/progress/Progress";
 import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
-import SunsetBanner from "../../../features/projectsV2/shared/SunsetV1Banner.tsx";
+import SunsetBanner from "../../../features/projectsV2/shared/SunsetV1Banner";
 import { ImportStateMessage } from "../../../utils/constants/Dataset";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 

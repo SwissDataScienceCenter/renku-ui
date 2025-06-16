@@ -35,7 +35,7 @@ import ProgressIndicator, {
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-import SunsetBanner from "../../projectsV2/shared/SunsetV1Banner.tsx";
+import SunsetBanner from "../../projectsV2/shared/SunsetV1Banner";
 import type { IDatasetFiles, StateModelProject } from "../project.types";
 import type {
   DatasetModifyDisplayProps,

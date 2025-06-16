@@ -1,9 +1,9 @@
 import cx from "classnames";
 import { ArrowRight, BoxArrowUpRight } from "react-bootstrap-icons";
 import { Link } from "react-router";
-import { WarnAlert } from "../../../components/Alert.jsx";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants.ts";
-import SunsetV1Button from "./SunsetV1Button.tsx";
+import { WarnAlert } from "../../../components/Alert";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import SunsetV1Button from "./SunsetV1Button";
 
 export default function SunsetBanner() {
   return (
