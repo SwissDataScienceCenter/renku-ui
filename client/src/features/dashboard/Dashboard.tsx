@@ -18,12 +18,11 @@
 
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { SshModal } from "../../components/ssh/ssh";
-// import { ABSOLUTE_ROUTES } from "../../routing/routes.constants.ts";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import SunsetBanner from "../projectsV2/shared/SunsetV1Banner";
 import DashboardMessage from "./components/DashboardMessage";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
-// import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
+import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
 import { ProjectsDashboard } from "./components/ProjectsDashboard";
 
 import "./Dashboard.scss";
@@ -53,7 +52,7 @@ export default function Dashboard() {
       <h1 data-cy="dashboard-title">Renku Dashboard - {user.data.name}</h1>
       <DashboardMessage />
       <SunsetBanner />
-      {/*<ProjectsInactiveKGWarning />*/}
+      <ProjectsInactiveKGWarning />
       <ProjectsDashboard />
       <DatasetDashboard />
       <SshModal />

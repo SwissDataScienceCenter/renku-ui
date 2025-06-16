@@ -1,5 +1,5 @@
 import cx from "classnames";
-import { ArrowLeft, BoxArrowUpRight } from "react-bootstrap-icons";
+import { ArrowRight, BoxArrowUpRight } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { WarnAlert } from "../../../components/Alert.jsx";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants.ts";
@@ -14,19 +14,19 @@ export default function SunsetBanner() {
         after July 15, 2025. This is in preparation for Renku Legacy being fully
         discontinued in October 2025. Our transition guide will help walk you
         through migrating to Renku 2.0 for enhanced features and continued
-        access to your work.{" "}
-        <Link
-          to={ABSOLUTE_ROUTES.v2.root}
-          className={cx("btn", "btn-warning", "me-2")}
-        >
-          <ArrowLeft className={cx("bi", "me-1")} />
-          Go to Renku 2.0
-        </Link>
-        <SunsetV1Button outline color="warning">
-          View transition guide
-          <BoxArrowUpRight className="bi ms-1" />
-        </SunsetV1Button>
+        access to your work.
       </p>
+      <Link
+        to={ABSOLUTE_ROUTES.v2.root}
+        className={cx("btn", "btn-sm", "btn-warning", "me-2")}
+      >
+        Go to Renku 2.0
+        <ArrowRight className={cx("bi", "ms-1")} />
+      </Link>
+      <SunsetV1Button outline color="warning">
+        View transition guide
+        <BoxArrowUpRight className="bi ms-1" />
+      </SunsetV1Button>
     </WarnAlert>
   );
 }
