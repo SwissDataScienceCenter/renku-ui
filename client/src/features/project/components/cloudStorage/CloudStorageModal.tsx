@@ -286,7 +286,7 @@ export default function CloudStorageModal({
         storageId: storageId,
         body: storageParameters,
       }).then((result) => {
-        if ("data" in result && result.data.storage.storage_id) {
+        if (result.data && result.data.storage.storage_id) {
           setSuccess(true);
         }
       });
@@ -294,7 +294,7 @@ export default function CloudStorageModal({
       addCloudStorageForProject({
         body: storageParameters,
       }).then((result) => {
-        if ("data" in result && result.data.storage.storage_id) {
+        if (result.data && result.data.storage.storage_id) {
           setSuccess(true);
         }
       });
