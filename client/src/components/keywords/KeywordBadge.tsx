@@ -17,37 +17,35 @@
  */
 
 import cx from "classnames";
+import RenkuBadge from "../renkuBadge/RenkuBadge";
+import { XCircle } from "react-bootstrap-icons";
 
-interface RenkuBadgeProps {
+interface KeywordBadgeProps {
   children?: React.ReactNode;
   className?: string;
-  color?: "success" | "danger" | "warning" | "light";
-  pills?: boolean;
+  removable?: boolean;
+  removeHandler?: () => void;
 }
 
-export default function RenkuBadge({
+export default function KeywordBadge({
   children,
   className,
-  color = "light",
-  pills = false,
-}: RenkuBadgeProps) {
-  const colorClasses =
-    color === "success"
-      ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
-      : color === "danger"
-      ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
-      : color === "warning"
-      ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
-      : ["border-dark-subtle", "bg-light", "text-dark-emphasis"];
+  removable = true,
+  removeHandler,
+}: KeywordBadgeProps) {
+  const remove =
+    removable && removeHandler ? (
+      <XCircle
+        className={cx("cursor-pointer")}
+        aria-label="Remove keyword"
+        onClick={removeHandler}
+      />
+    ) : null;
 
-  const baseClasses = [
-    "border",
-    "badge",
-    pills ? "rounded-pill" : "",
-    ...colorClasses,
-  ];
-
-  const finalClasses = className ? cx(className, baseClasses) : cx(baseClasses);
-
-  return <div className={finalClasses}>{children}</div>;
+  return (
+    <RenkuBadge className={cx("d-flex", "fw-semibold", "gap-1", className)}>
+      {children}
+      {remove}
+    </RenkuBadge>
+  );
 }

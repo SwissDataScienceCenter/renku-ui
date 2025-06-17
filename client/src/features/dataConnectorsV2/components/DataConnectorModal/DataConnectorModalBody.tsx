@@ -29,8 +29,9 @@ import {
   Label,
   Row,
 } from "reactstrap";
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { WarnAlert } from "../../../../components/Alert";
-import RenkuBadge from "../../../../components/renkuBadge/RenkuBadge";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -617,21 +618,21 @@ export function DataConnectorMount() {
               render={({ field }) => (
                 <>
                   {field.value && field.value.length > 0 && (
-                    <div
-                      className={cx(
-                        "align-items-center",
-                        "d-flex",
-                        "flex-wrap",
-                        "fs-5",
-                        "gap-1"
-                      )}
-                    >
+                    <KeywordContainer>
                       {getValues("keywords").map((keyword, index) => (
-                        <RenkuBadge className="fw-semibold" key={index}>
+                        <KeywordBadge
+                          key={index}
+                          removeHandler={() => {
+                            const newKeywords = getValues("keywords").filter(
+                              (k) => k !== keyword
+                            );
+                            setValue("keywords", newKeywords);
+                          }}
+                        >
                           {keyword}
-                        </RenkuBadge>
+                        </KeywordBadge>
                       ))}
-                    </div>
+                    </KeywordContainer>
                   )}
                 </>
               )}

@@ -18,36 +18,27 @@
 
 import cx from "classnames";
 
-interface RenkuBadgeProps {
+interface KeywordContainerProps {
   children?: React.ReactNode;
   className?: string;
-  color?: "success" | "danger" | "warning" | "light";
-  pills?: boolean;
 }
 
-export default function RenkuBadge({
+export default function KeywordContainer({
   children,
   className,
-  color = "light",
-  pills = false,
-}: RenkuBadgeProps) {
-  const colorClasses =
-    color === "success"
-      ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
-      : color === "danger"
-      ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
-      : color === "warning"
-      ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
-      : ["border-dark-subtle", "bg-light", "text-dark-emphasis"];
-
-  const baseClasses = [
-    "border",
-    "badge",
-    pills ? "rounded-pill" : "",
-    ...colorClasses,
-  ];
-
-  const finalClasses = className ? cx(className, baseClasses) : cx(baseClasses);
-
-  return <div className={finalClasses}>{children}</div>;
+}: KeywordContainerProps) {
+  return (
+    <div
+      className={cx(
+        "align-items-center",
+        "d-flex",
+        "flex-wrap",
+        "fs-5",
+        "gap-1",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
 }
