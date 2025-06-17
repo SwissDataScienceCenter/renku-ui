@@ -600,6 +600,7 @@ export function DataConnectorMount() {
                     />
                     <Button
                       color={field.value ? "primary" : "outline-primary"}
+                      data-cy="data-connector-keyword-button"
                       disabled={!field.value}
                       onClick={() => {
                         if (field.value) {
@@ -631,9 +632,10 @@ export function DataConnectorMount() {
               render={({ field }) => (
                 <>
                   {field.value && field.value.length > 0 && (
-                    <KeywordContainer>
+                    <KeywordContainer data-cy="data-connector-keywords">
                       {getValues("keywords").map((keyword, index) => (
                         <KeywordBadge
+                          data-cy="data-connector-keyword"
                           key={index}
                           removeHandler={() => {
                             const newKeywords = getValues("keywords").filter(
