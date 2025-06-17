@@ -67,6 +67,10 @@ export default function SearchV2Bar() {
     setFocus("searchBarQuery");
   }, [setFocus]);
 
+  useEffect(() => {
+    throw new Error("Heeeeelp!");
+  }, []);
+
   return (
     <Form noValidate onSubmit={onSubmit}>
       <InputGroup data-cy="search-bar">
