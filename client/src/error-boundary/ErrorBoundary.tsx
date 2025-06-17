@@ -57,9 +57,9 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 
 function ErrorPage() {
   const location = useLocation();
-  const isLegacy = isRenkuLegacy(location.pathname);
   const { params } = useContext(AppContext);
   const forceV2Style = params && !params.LEGACY_SUPPORT.enabled;
+  const isLegacy = isRenkuLegacy(location.pathname, forceV2Style);
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (
     <>
