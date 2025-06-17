@@ -585,17 +585,30 @@ export function DataConnectorMount() {
                         field.onChange(e);
                         onFieldValueChange("keyword", e.target.value);
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && field.value) {
+                          const newValue = field.value.trim();
+                          const currentKeywords = getValues("keywords");
+                          if (!currentKeywords.includes(newValue)) {
+                            const newKeywords = [...currentKeywords, newValue];
+                            setValue("keywords", newKeywords);
+                          }
+                          setValue("keyword", "");
+                          onFieldValueChange("keyword", "");
+                        }
+                      }}
                     />
                     <Button
                       color={field.value ? "primary" : "outline-primary"}
                       disabled={!field.value}
                       onClick={() => {
                         if (field.value) {
-                          const newKeywords = [
-                            ...getValues("keywords"),
-                            field.value.trim(),
-                          ];
-                          setValue("keywords", newKeywords);
+                          const newValue = field.value.trim();
+                          const currentKeywords = getValues("keywords");
+                          if (!currentKeywords.includes(newValue)) {
+                            const newKeywords = [...currentKeywords, newValue];
+                            setValue("keywords", newKeywords);
+                          }
                           setValue("keyword", "");
                           onFieldValueChange("keyword", "");
                         }
@@ -627,6 +640,7 @@ export function DataConnectorMount() {
                               (k) => k !== keyword
                             );
                             setValue("keywords", newKeywords);
+                            onFieldValueChange("keyword", "");
                           }}
                         >
                           {keyword}
