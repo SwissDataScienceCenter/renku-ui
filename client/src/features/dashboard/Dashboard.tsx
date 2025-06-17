@@ -46,7 +46,7 @@ export default function Dashboard() {
 
   if (user == null || user.data == null || user.data.name == null)
     return <LoggedOutDashboard />;
-
+  console.log("Rendering Dashboard");
   return (
     <div className="rk-dashboard">
       <h1 data-cy="dashboard-title">Renku Dashboard - {user.data.name}</h1>
