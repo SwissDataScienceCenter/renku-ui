@@ -39,6 +39,7 @@ import ProgressIndicator, {
   ProgressType,
 } from "../../../components/progress/Progress";
 import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
+import SunsetBanner from "../../../features/projectsV2/shared/SunsetV1Banner";
 import { ImportStateMessage } from "../../../utils/constants/Dataset";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
@@ -155,6 +156,7 @@ function DatasetImportForm(
   return (
     <FormSchema showHeader={true} title="Import Dataset" description={desc}>
       <div className="form-rk-pink d-flex flex-column">
+        <SunsetBanner />
         <AddDatasetButtons
           optionSelected="importDataset"
           toggleNewDataset={props.toggleNewDataset}

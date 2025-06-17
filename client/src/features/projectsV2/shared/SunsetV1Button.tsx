@@ -41,6 +41,7 @@ export default function SunsetV1Button({
       )}
       role={outline ? "button" : "link"}
       url="https://blog.renkulab.io/sunsetting-legacy"
+      color={outline ? `outline-${color}` : color}
     >
       {children}
     </ExternalLink>

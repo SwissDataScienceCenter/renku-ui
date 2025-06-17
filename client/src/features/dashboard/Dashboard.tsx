@@ -19,6 +19,7 @@
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { SshModal } from "../../components/ssh/ssh";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import SunsetBanner from "../projectsV2/shared/SunsetV1Banner";
 import DashboardMessage from "./components/DashboardMessage";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
@@ -50,6 +51,7 @@ export default function Dashboard() {
     <div className="rk-dashboard">
       <h1 data-cy="dashboard-title">Renku Dashboard - {user.data.name}</h1>
       <DashboardMessage />
+      <SunsetBanner />
       <ProjectsInactiveKGWarning />
       <ProjectsDashboard />
       <DatasetDashboard />

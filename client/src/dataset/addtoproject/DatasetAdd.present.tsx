@@ -23,6 +23,7 @@ import { Button, ButtonGroup, Col, Row, Table } from "reactstrap";
 import { ContainerWrap } from "../../App";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
+import SunsetBanner from "../../features/projectsV2/shared/SunsetV1Banner";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { DatasetError } from "../DatasetError";
 import { getDatasetAuthors } from "../DatasetFunctions";
@@ -110,6 +111,7 @@ function DatasetAddMainContent({
   );
   return (
     <>
+      <SunsetBanner />
       <ButtonGroup className="d-flex">
         <Button
           disabled={disabled}
