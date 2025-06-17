@@ -16,6 +16,7 @@ interface ProjectKeywordsFormFieldProps {
   control: Control<Required<ProjectV2MetadataWithKeyword>>;
   errors: FieldErrors<Required<ProjectV2MetadataWithKeyword>>;
   getValues: UseFormGetValues<Required<ProjectV2MetadataWithKeyword>>;
+  oldKeywords?: string[];
   setValue: UseFormSetValue<Required<ProjectV2MetadataWithKeyword>>;
 }
 
@@ -23,6 +24,7 @@ export default function ProjectKeywordsFormField({
   control,
   errors,
   getValues,
+  oldKeywords,
   setValue,
 }: ProjectKeywordsFormFieldProps) {
   return (
@@ -90,20 +92,23 @@ export default function ProjectKeywordsFormField({
           <>
             {field.value && field.value.length > 0 && (
               <KeywordContainer data-cy="project-settings-keywords">
-                {getValues("keywords").map((keyword, index) => (
-                  <KeywordBadge
-                    data-cy="project-settings-keyword"
-                    key={index}
-                    removeHandler={() => {
-                      const newKeywords = getValues("keywords").filter(
-                        (k) => k !== keyword
-                      );
-                      setValue("keywords", newKeywords);
-                    }}
-                  >
-                    {keyword}
-                  </KeywordBadge>
-                ))}
+                {getValues("keywords")
+                  .sort((a, b) => a.localeCompare(b))
+                  .map((keyword, index) => (
+                    <KeywordBadge
+                      data-cy="project-settings-keyword"
+                      key={index}
+                      highlighted={!oldKeywords?.includes(keyword)}
+                      removeHandler={() => {
+                        const newKeywords = getValues("keywords").filter(
+                          (k) => k !== keyword
+                        );
+                        setValue("keywords", newKeywords);
+                      }}
+                    >
+                      {keyword}
+                    </KeywordBadge>
+                  ))}
               </KeywordContainer>
             )}
           </>

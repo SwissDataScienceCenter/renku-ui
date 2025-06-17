@@ -24,6 +24,7 @@ interface KeywordBadgeProps {
   children?: React.ReactNode;
   className?: string;
   "data-cy"?: string;
+  highlighted?: boolean;
   removable?: boolean;
   removeHandler?: () => void;
 }
@@ -32,6 +33,7 @@ export default function KeywordBadge({
   children,
   className,
   "data-cy": dataCy,
+  highlighted,
   removable = true,
   removeHandler,
 }: KeywordBadgeProps) {
@@ -46,7 +48,13 @@ export default function KeywordBadge({
 
   return (
     <RenkuBadge
-      className={cx("d-flex", "fw-semibold", "gap-1", className)}
+      className={cx(
+        "d-flex",
+        "fw-semibold",
+        "gap-1",
+        highlighted ? "bg-success-subtle" : "",
+        className
+      )}
       data-cy={dataCy}
     >
       {children}

@@ -164,6 +164,12 @@ export default function ProjectInformation({
           }),
     [namespace?.namespace_kind, project.namespace]
   );
+  const keywordsSorted = useMemo(() => {
+    if (!project.keywords) return [];
+    return project.keywords
+      .map((keyword) => keyword.trim())
+      .sort((a, b) => a.localeCompare(b));
+  }, [project.keywords]);
 
   const information = (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -209,7 +215,7 @@ export default function ProjectInformation({
         }
       >
         <KeywordContainer className="mt-1">
-          {project.keywords?.map((keyword, index) => (
+          {keywordsSorted.map((keyword, index) => (
             <KeywordBadge key={`keyword-${index}`}>{keyword}</KeywordBadge>
           ))}
         </KeywordContainer>

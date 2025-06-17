@@ -51,21 +51,26 @@ import type {
 import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
-import type { DataConnectorSecret } from "../../api/data-connectors.api";
+import type {
+  DataConnectorRead,
+  DataConnectorSecret,
+} from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import DataConnectorModalResult from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
 
 interface AddOrEditDataConnectorProps {
-  storageSecrets: DataConnectorSecret[];
+  dataConnector?: DataConnectorRead | null;
   project?: Project;
+  storageSecrets: DataConnectorSecret[];
 }
 
 type DataConnectorModalBodyProps = AddOrEditDataConnectorProps;
 
 export default function DataConnectorModalBody({
-  storageSecrets,
+  dataConnector = null,
   project,
+  storageSecrets,
 }: DataConnectorModalBodyProps) {
   const { flatDataConnector, schemata, success } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -87,16 +92,18 @@ export default function DataConnectorModalBody({
         </p>
       )}
       <AddOrEditDataConnector
-        storageSecrets={storageSecrets}
+        dataConnector={dataConnector}
         project={project}
+        storageSecrets={storageSecrets}
       />
     </>
   );
 }
 
 function AddOrEditDataConnector({
-  storageSecrets,
+  dataConnector,
   project,
+  storageSecrets,
 }: AddOrEditDataConnectorProps) {
   const { cloudStorageState, flatDataConnector, schemata, validationResult } =
     useAppSelector((state) => state.dataConnectorFormSlice);
@@ -165,8 +172,9 @@ function AddOrEditDataConnector({
           />
         </div>
         <DataConnectorContentByStep
-          storageSecrets={storageSecrets}
+          dataConnector={dataConnector}
           project={project}
+          storageSecrets={storageSecrets}
         />
       </>
     );
@@ -174,15 +182,15 @@ function AddOrEditDataConnector({
 }
 
 export interface DataConnectorMountForm {
-  name: string;
+  keyword: string;
+  keywords: string[];
   mountPoint: string;
+  name: string;
   namespace: string;
   readOnly: boolean;
   saveCredentials: boolean;
   slug: string;
   visibility: string;
-  keyword: string;
-  keywords: string[];
 }
 type DataConnectorMountFormFields =
   | "keyword"
@@ -195,7 +203,9 @@ type DataConnectorMountFormFields =
   | "slug"
   | "visibility";
 
-export function DataConnectorMount() {
+export function DataConnectorMount({
+  dataConnector,
+}: AddOrEditDataConnectorProps) {
   const dispatch = useAppDispatch();
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -205,6 +215,7 @@ export function DataConnectorMount() {
     formState: { errors, touchedFields },
     getValues,
     setValue,
+    watch,
   } = useForm<DataConnectorMountForm>({
     mode: "onChange",
     defaultValues: {
@@ -221,6 +232,9 @@ export function DataConnectorMount() {
       visibility: flatDataConnector.visibility || "private",
     },
   });
+  const currentKeywords = watch("keywords");
+  const oldKeywords = dataConnector?.keywords ?? [];
+
   const onFieldValueChange = useCallback(
     (field: DataConnectorMountFormFields, value: string | boolean) => {
       setValue(field, value);
@@ -588,7 +602,6 @@ export function DataConnectorMount() {
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && field.value) {
                           const newValue = field.value.trim();
-                          const currentKeywords = getValues("keywords");
                           if (!currentKeywords.includes(newValue)) {
                             const newKeywords = [...currentKeywords, newValue];
                             setValue("keywords", newKeywords);
@@ -605,7 +618,6 @@ export function DataConnectorMount() {
                       onClick={() => {
                         if (field.value) {
                           const newValue = field.value.trim();
-                          const currentKeywords = getValues("keywords");
                           if (!currentKeywords.includes(newValue)) {
                             const newKeywords = [...currentKeywords, newValue];
                             setValue("keywords", newKeywords);
@@ -633,21 +645,24 @@ export function DataConnectorMount() {
                 <>
                   {field.value && field.value.length > 0 && (
                     <KeywordContainer data-cy="data-connector-keywords">
-                      {getValues("keywords").map((keyword, index) => (
-                        <KeywordBadge
-                          data-cy="data-connector-keyword"
-                          key={index}
-                          removeHandler={() => {
-                            const newKeywords = getValues("keywords").filter(
-                              (k) => k !== keyword
-                            );
-                            setValue("keywords", newKeywords);
-                            onFieldValueChange("keyword", "");
-                          }}
-                        >
-                          {keyword}
-                        </KeywordBadge>
-                      ))}
+                      {[...currentKeywords]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((keyword, index) => (
+                          <KeywordBadge
+                            data-cy="data-connector-keyword"
+                            key={index}
+                            highlighted={!oldKeywords?.includes(keyword)}
+                            removeHandler={() => {
+                              const newKeywords = currentKeywords.filter(
+                                (k) => k !== keyword
+                              );
+                              setValue("keywords", newKeywords);
+                              onFieldValueChange("keyword", "");
+                            }}
+                          >
+                            {keyword}
+                          </KeywordBadge>
+                        ))}
                     </KeywordContainer>
                   )}
                 </>

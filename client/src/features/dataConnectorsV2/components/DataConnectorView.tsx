@@ -430,6 +430,13 @@ function DataConnectorViewMetadata({
     [dataConnector.storage.configuration, scope]
   );
 
+  const sortedKeywords = useMemo(() => {
+    if (!dataConnector.keywords) return [];
+    return dataConnector.keywords
+      .map((keyword) => keyword.trim())
+      .sort((a, b) => a.localeCompare(b));
+  }, [dataConnector.keywords]);
+
   const dataConnectorSource = useGetDataConnectorSource(dataConnector);
 
   return (
@@ -543,7 +550,7 @@ function DataConnectorViewMetadata({
       {dataConnector.keywords && dataConnector.keywords.length > 0 && (
         <DataConnectorPropertyValue title="Keywords">
           <KeywordContainer>
-            {dataConnector.keywords.map((keyword, index) => (
+            {sortedKeywords.map((keyword, index) => (
               <KeywordBadge key={index}>{keyword}</KeywordBadge>
             ))}
           </KeywordContainer>

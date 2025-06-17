@@ -404,18 +404,22 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
               control={control}
               errors={errors}
               getValues={getValues}
+              oldKeywords={project.keywords ?? []}
               setValue={setValue}
             />
           }
           requestedPermission="write"
           userPermissions={permissions}
         />
+
         {error && <RtkErrorAlert error={error} />}
+
         {isSuccess && (
-          <SuccessAlert dismissible={false} timeout={0}>
+          <SuccessAlert className="mb-0" dismissible={false} timeout={0}>
             <p className="mb-0">The project has been successfully updated.</p>
           </SuccessAlert>
         )}
+
         <PermissionsGuard
           disabled={null}
           enabled={
