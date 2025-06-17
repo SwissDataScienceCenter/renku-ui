@@ -23,6 +23,7 @@ import { XCircle } from "react-bootstrap-icons";
 interface KeywordBadgeProps {
   children?: React.ReactNode;
   className?: string;
+  "data-cy"?: string;
   removable?: boolean;
   removeHandler?: () => void;
 }
@@ -30,6 +31,7 @@ interface KeywordBadgeProps {
 export default function KeywordBadge({
   children,
   className,
+  "data-cy": dataCy,
   removable = true,
   removeHandler,
 }: KeywordBadgeProps) {
@@ -43,7 +45,10 @@ export default function KeywordBadge({
     ) : null;
 
   return (
-    <RenkuBadge className={cx("d-flex", "fw-semibold", "gap-1", className)}>
+    <RenkuBadge
+      className={cx("d-flex", "fw-semibold", "gap-1", className)}
+      data-cy={dataCy}
+    >
       {children}
       {remove}
     </RenkuBadge>

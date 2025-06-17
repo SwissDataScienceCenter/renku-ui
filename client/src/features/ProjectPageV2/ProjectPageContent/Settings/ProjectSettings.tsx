@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
+import { Diagram3Fill, Pencil, PlusLg, Sliders } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { generatePath, useLocation, useNavigate } from "react-router";
 import {
@@ -31,11 +32,9 @@ import {
   Input,
   Label,
 } from "reactstrap";
-
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import KeywordsInput from "../../../../components/form-field/KeywordsInput";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
@@ -47,15 +46,18 @@ import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescr
 import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
-
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
-import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
+import type {
+  ProjectV2Metadata,
+  ProjectV2MetadataWithKeyword,
+} from "../../settings/projectSettings.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-
 import ProjectSessionSecrets from "../SessionSecrets/ProjectSessionSecrets";
 import ProjectPageDelete from "./ProjectDelete";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
+import KeywordBadge from "~/components/keywords/KeywordBadge";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -180,17 +182,19 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const {
     control,
     formState: { errors, isDirty },
+    getValues,
     handleSubmit,
     watch,
-    register,
     reset,
-  } = useForm<Required<ProjectV2Metadata>>({
+    setValue,
+  } = useForm<Required<ProjectV2MetadataWithKeyword>>({
     defaultValues: {
       description: project.description ?? "",
       name: project.name,
       namespace: project.namespace,
       visibility: project.visibility,
       keywords: project.keywords ?? [],
+      keyword: "",
       is_template: project.is_template ?? false,
     },
   });
@@ -199,7 +203,6 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const navigate = useNavigate();
   const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
   const { notifications } = useContext(AppContext);
-  const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
   const [
     updateProject,
@@ -209,13 +212,17 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const isUpdating = isLoading;
 
   const onSubmit = useCallback(
-    (data: ProjectV2Metadata) => {
+    (data: ProjectV2MetadataWithKeyword) => {
       const namespaceChanged = data.namespace !== project.namespace;
       setRedirectAfterUpdate(namespaceChanged);
+      const editedData = {
+        ...data,
+      };
+      delete editedData.keyword;
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
-        projectPatch: data,
+        projectPatch: editedData as ProjectV2Metadata,
       });
     },
     [project, updateProject]
@@ -394,17 +401,99 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
         <PermissionsGuard
           disabled={null}
           enabled={
-            <KeywordsInput
-              hasError={errors.keywords != null}
-              help="Keywords are used to describe the project. To add one, type a keyword and press enter."
-              label="Keywords"
-              name="keywords"
-              register={register("keywords", {
-                validate: () => !areKeywordsDirty,
-              })}
-              setDirty={setKeywordsDirty}
-              value={project.keywords as string[]}
-            />
+            <div>
+              <Label className="form-label" for="project-keywords">
+                Keywords
+              </Label>
+              <div className={cx("input-group", "input-group-sm", "mb-2")}>
+                <Controller
+                  name="keyword"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <input
+                        id="keyword"
+                        placeholder="Add new keyword"
+                        type="string"
+                        {...field}
+                        className={cx(
+                          "form-control",
+                          errors.keyword && "is-invalid"
+                        )}
+                        data-cy="project-settings-keyword-input"
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && field.value) {
+                            e.preventDefault();
+                            const newValue = field.value.trim();
+                            const currentKeywords = getValues("keywords");
+                            if (!currentKeywords.includes(newValue)) {
+                              const newKeywords = [
+                                ...currentKeywords,
+                                newValue,
+                              ];
+                              setValue("keywords", newKeywords);
+                            }
+                            setValue("keyword", "");
+                          }
+                        }}
+                      />
+                      <Button
+                        color={field.value ? "primary" : "outline-primary"}
+                        disabled={!field.value}
+                        data-cy="project-settings-keyword-button"
+                        onClick={() => {
+                          if (field.value) {
+                            const newValue = field.value.trim();
+                            const currentKeywords = getValues("keywords");
+                            if (!currentKeywords.includes(newValue)) {
+                              const newKeywords = [
+                                ...currentKeywords,
+                                newValue,
+                              ];
+                              setValue("keywords", newKeywords);
+                            }
+                            setValue("keyword", "");
+                          }
+                        }}
+                        type="button"
+                      >
+                        <PlusLg className={cx("bi", "me-1")} />
+                        Add
+                      </Button>
+                    </>
+                  )}
+                />
+              </div>
+              <Controller
+                name="keywords"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    {field.value && field.value.length > 0 && (
+                      <KeywordContainer data-cy="project-settings-keywords">
+                        {getValues("keywords").map((keyword, index) => (
+                          <KeywordBadge
+                            data-cy="project-settings-keyword"
+                            key={index}
+                            removeHandler={() => {
+                              const newKeywords = getValues("keywords").filter(
+                                (k) => k !== keyword
+                              );
+                              setValue("keywords", newKeywords);
+                            }}
+                          >
+                            {keyword}
+                          </KeywordBadge>
+                        ))}
+                      </KeywordContainer>
+                    )}
+                  </>
+                )}
+              />
+            </div>
           }
           requestedPermission="write"
           userPermissions={permissions}

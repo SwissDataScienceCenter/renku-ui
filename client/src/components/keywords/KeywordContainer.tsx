@@ -21,11 +21,13 @@ import cx from "classnames";
 interface KeywordContainerProps {
   children?: React.ReactNode;
   className?: string;
+  "data-cy"?: string;
 }
 
 export default function KeywordContainer({
   children,
   className,
+  "data-cy": dataCy,
 }: KeywordContainerProps) {
   return (
     <div
@@ -37,6 +39,7 @@ export default function KeywordContainer({
         "gap-1",
         className
       )}
+      data-cy={dataCy}
     >
       {children}
     </div>

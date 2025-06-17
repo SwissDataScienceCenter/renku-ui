@@ -30,28 +30,28 @@ import {
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
-
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import type {
+  Project,
   ProjectMemberListResponse,
   ProjectMemberResponse,
 } from "../../../projectsV2/api/projectV2.api";
 import {
   useGetNamespacesByNamespaceSlugQuery,
-  useGetProjectsByProjectIdQuery,
   useGetProjectsByProjectIdMembersQuery,
+  useGetProjectsByProjectIdQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
-import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-
-import ProjectInformationButton from "./ProjectInformationButton";
 import styles from "./ProjectInformation.module.scss";
+import ProjectInformationButton from "./ProjectInformationButton";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 
@@ -208,11 +208,11 @@ export default function ProjectInformation({
           </>
         }
       >
-        {project.keywords?.map((keyword, index) => (
-          <p key={`keyword-${index}`} className="mb-0">
-            #{keyword}
-          </p>
-        ))}
+        <KeywordContainer className="mt-1">
+          {project.keywords?.map((keyword, index) => (
+            <KeywordBadge key={`keyword-${index}`}>{keyword}</KeywordBadge>
+          ))}
+        </KeywordContainer>
       </ProjectInformationBox>
       <ProjectCopyTemplateInformationBox project={project} />
     </div>

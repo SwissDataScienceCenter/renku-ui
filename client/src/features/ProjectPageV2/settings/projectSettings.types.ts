@@ -19,3 +19,7 @@
 import type { ProjectPatch } from "../../projectsV2/api/projectV2.api";
 
 export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
+
+export type ProjectV2MetadataWithKeyword = ProjectV2Metadata & {
+  keyword?: string;
+};

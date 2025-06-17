@@ -22,6 +22,7 @@ interface RenkuBadgeProps {
   children?: React.ReactNode;
   className?: string;
   color?: "success" | "danger" | "warning" | "light";
+  "data-cy"?: string;
   pills?: boolean;
 }
 
@@ -29,6 +30,7 @@ export default function RenkuBadge({
   children,
   className,
   color = "light",
+  "data-cy": dataCy,
   pills = false,
 }: RenkuBadgeProps) {
   const colorClasses =
@@ -49,5 +51,9 @@ export default function RenkuBadge({
 
   const finalClasses = className ? cx(className, baseClasses) : cx(baseClasses);
 
-  return <div className={finalClasses}>{children}</div>;
+  return (
+    <div className={finalClasses} data-cy={dataCy}>
+      {children}
+    </div>
+  );
 }
