@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-export function isRenkuLegacy(
-  pathname: string | undefined,
-  forceV2 = false
-): boolean {
-  if (forceV2) return false;
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
+
+const ProjectView = lazy(() => import("./LegacyProjectView"));
+
+export default function LazyProjectView() {
   return (
-    typeof pathname === "string" &&
-    (pathname.startsWith("/v1") ||
-      pathname.startsWith("/projects") ||
-      pathname.startsWith("/datasets"))
+    <Suspense fallback={<PageLoader />}>
+      <ProjectView />
+    </Suspense>
   );
 }
