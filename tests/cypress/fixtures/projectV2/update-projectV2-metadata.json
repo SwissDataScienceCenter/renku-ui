@@ -12,5 +12,6 @@
   "visibility": "public",
   "description": "new description",
   "is_template": true,
-  "secrets_mount_directory": "/secrets"
+  "secrets_mount_directory": "/secrets",
+  "keywords": ["keyword1", "keyword2"]
 }

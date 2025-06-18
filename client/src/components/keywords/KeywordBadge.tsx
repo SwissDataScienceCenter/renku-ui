@@ -32,7 +32,7 @@ interface KeywordBadgeProps {
 export default function KeywordBadge({
   children,
   className,
-  "data-cy": dataCy,
+  "data-cy": dataCy = "keyword",
   highlighted,
   removable = true,
   removeHandler,
@@ -40,8 +40,9 @@ export default function KeywordBadge({
   const remove =
     removable && removeHandler ? (
       <XCircle
-        className={cx("cursor-pointer")}
         aria-label="Remove keyword"
+        className={cx("cursor-pointer")}
+        data-cy={`${dataCy}-remove`}
         onClick={removeHandler}
       />
     ) : null;

@@ -29,17 +29,17 @@ export default function ProjectKeywordsFormField({
 }: ProjectKeywordsFormFieldProps) {
   return (
     <div>
-      <Label className="form-label" for="project-keywords">
+      <Label className="form-label" for="project-keyword">
         Keywords
       </Label>
       <div className={cx("input-group", "input-group-sm", "mb-2")}>
         <Controller
-          name="keyword"
           control={control}
+          name="keyword"
           render={({ field }) => (
             <>
               <input
-                id="keyword"
+                id="project-keyword"
                 placeholder="Add new keyword"
                 type="string"
                 {...field}
