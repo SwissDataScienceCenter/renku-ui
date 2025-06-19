@@ -50,8 +50,8 @@ export default function SessionIframe({
         return;
       }
       const headText =
-        ref.current.contentDocument?.head.querySelector("title")?.textContent ??
-        "";
+        ref.current.contentDocument?.head?.querySelector?.("title")
+          ?.textContent ?? "";
       if (headText.includes("503 Service Temporarily Unavailable")) {
         setState({ isError: true, hasLoaded: false });
         ref.current?.contentDocument?.location.reload();
