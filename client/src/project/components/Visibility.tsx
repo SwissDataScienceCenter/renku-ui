@@ -33,25 +33,25 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { SuccessAlert } from "../../../components/Alert";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Loader } from "../../../components/Loader";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { LoadingLabel } from "../../../components/formlabels/FormLabels";
+import { SuccessAlert } from "../../components/Alert";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { Loader } from "../../components/Loader";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { LoadingLabel } from "../../components/formlabels/FormLabels";
 import VisibilitiesInput, {
   VISIBILITY_ITEMS,
   Visibilities,
-} from "../../../components/visibility/Visibility";
-import { SettingRequiresKg } from "../../../features/project/components/ProjectSettingsUtils";
-import { useGetProjectByIdQuery } from "../../../features/project/projectGitLab.api";
+} from "../../components/visibility/Visibility";
+import { SettingRequiresKg } from "../../features/project/components/ProjectSettingsUtils";
+import { useGetProjectByIdQuery } from "../../features/project/projectGitLab.api";
 import {
   useGetProjectIndexingStatusQuery,
   useProjectMetadataQuery,
   useUpdateProjectMutation,
-} from "../../../features/project/projectKg.api";
-import { useGetGroupByPathQuery } from "../../../features/projects/projects.api";
-import { GitlabLinks } from "../../../utils/constants/Docs";
-import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
+} from "../../features/project/projectKg.api";
+import { useGetGroupByPathQuery } from "../../features/projects/projects.api";
+import { GitlabLinks } from "../../utils/constants/Docs";
+import { computeVisibilities } from "../../utils/helpers/HelperFunctions";
 import {
   NewProjectHandlers,
   NewProjectInputs,

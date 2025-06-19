@@ -7,7 +7,7 @@ import SunsetV1Button from "./SunsetV1Button";
 
 export default function SunsetBanner() {
   return (
-    <WarnAlert>
+    <WarnAlert data-cy="sunset-banner">
       <h4>Project creation no longer available</h4>
       <p>
         You can no longer create new projects or datasets in Renku Legacy.

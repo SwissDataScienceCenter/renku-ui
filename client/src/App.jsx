@@ -24,6 +24,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import cx from "classnames";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Navigate, Route, Routes, useLocation } from "react-router";
@@ -94,7 +95,14 @@ function CentralContentContainer({ user }) {
         <Route
           path="/datasets/:identifier/add"
           element={
-            <div>
+            <div
+              className={cx(
+                "d-flex",
+                "flex-column",
+                "align-items-center",
+                "w-100"
+              )}
+            >
               <SunsetBanner />
             </div>
           }

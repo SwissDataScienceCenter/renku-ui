@@ -105,6 +105,8 @@ describe("Project dataset", () => {
 
   it("displays project datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@datasetList")
       .its("response.body")
@@ -121,6 +123,8 @@ describe("Project dataset", () => {
     fixtures.getFiles().uploadDatasetFile().addFileDataset().editDataset();
 
     cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@datasetList")
       .its("response.body")
@@ -196,6 +200,8 @@ describe("Project dataset", () => {
     });
 
     cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@datasetList")
       .its("response.body")
@@ -230,6 +236,8 @@ describe("Project dataset", () => {
 
   it("delete project dataset", () => {
     cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@datasetList")
       .its("response.body")
@@ -280,6 +288,8 @@ describe("Project dataset", () => {
     fixtures.invalidDataset({ id: datasetIdentifier });
     fixtures.getFiles();
     cy.visit(`projects/${projectPath}/datasets/${datasetName}`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@datasetList");
     cy.wait("@invalidDataset");
@@ -305,6 +315,8 @@ describe("Project dataset (legacy ids)", () => {
 
   it("displays legacy project datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@datasetList")
       .its("response.body")
@@ -340,6 +352,8 @@ describe("Error loading datasets", () => {
 
   it("display project datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@datasetList")
       .its("response.body")
@@ -365,6 +379,8 @@ describe("Migration check errors", () => {
   it("display project datasets", () => {
     fixtures.projectMigrationError({ errorNumber: 2200, queryUrl: "*" });
     cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@getMigration");
     cy.get("div.alert-danger")
@@ -389,6 +405,8 @@ describe("Project dataset (locked)", () => {
 
   it("display project datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.wait("@getProject");
     cy.wait("@getProjectLockStatus");
     cy.wait("@datasetList")
