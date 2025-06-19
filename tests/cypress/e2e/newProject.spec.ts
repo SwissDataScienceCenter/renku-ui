@@ -19,7 +19,6 @@
 import fixtures from "../support/renkulab-fixtures";
 
 describe("Add new project", () => {
-  const newProjectTitle = "new project";
   const slug = "new-project";
   const newProjectPath = `e2e/${slug}`;
 
