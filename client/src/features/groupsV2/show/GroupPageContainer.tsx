@@ -101,6 +101,9 @@ export default function GroupPageContainer() {
     overviewUrl: generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
       slug: group.slug,
     }),
+    searchUrl: generatePath(ABSOLUTE_ROUTES.v2.groups.show.search, {
+      slug: group.slug,
+    }),
     settingsUrl: generatePath(ABSOLUTE_ROUTES.v2.groups.show.settings, {
       slug: group.slug,
     }),
