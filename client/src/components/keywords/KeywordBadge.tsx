@@ -17,16 +17,15 @@
  */
 
 import cx from "classnames";
-import RenkuBadge from "../renkuBadge/RenkuBadge";
 import { XCircle } from "react-bootstrap-icons";
+import RenkuBadge from "../renkuBadge/RenkuBadge";
 
 interface KeywordBadgeProps {
   children?: React.ReactNode;
   className?: string;
   "data-cy"?: string;
   highlighted?: boolean;
-  removable?: boolean;
-  removeHandler?: () => void;
+  remove?: () => void;
 }
 
 export default function KeywordBadge({
@@ -34,18 +33,19 @@ export default function KeywordBadge({
   className,
   "data-cy": dataCy = "keyword",
   highlighted,
-  removable = true,
-  removeHandler,
+  remove,
 }: KeywordBadgeProps) {
-  const remove =
-    removable && removeHandler ? (
-      <XCircle
-        aria-label="Remove keyword"
-        className={cx("cursor-pointer")}
-        data-cy={`${dataCy}-remove`}
-        onClick={removeHandler}
-      />
-    ) : null;
+  const removeButton = remove ? (
+    <button
+      aria-label="Remove keyword"
+      className={cx("p-0", "border-0", "bg-transparent")}
+      data-cy={`${dataCy}-remove`}
+      onClick={remove}
+      type="button"
+    >
+      <XCircle className="bi" />
+    </button>
+  ) : null;
 
   return (
     <RenkuBadge
@@ -53,13 +53,13 @@ export default function KeywordBadge({
         "d-flex",
         "fw-semibold",
         "gap-1",
-        highlighted ? "bg-success-subtle" : "",
+        highlighted && "bg-success-subtle",
         className
       )}
       data-cy={dataCy}
     >
       {children}
-      {remove}
+      {removeButton}
     </RenkuBadge>
   );
 }

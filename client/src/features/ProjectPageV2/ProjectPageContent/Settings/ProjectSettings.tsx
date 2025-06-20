@@ -214,10 +214,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
     (data: ProjectV2MetadataWithKeyword) => {
       const namespaceChanged = data.namespace !== project.namespace;
       setRedirectAfterUpdate(namespaceChanged);
-      const editedData = {
-        ...data,
-      };
-      delete editedData.keyword;
+      const { keyword, ...editedData } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
@@ -402,9 +399,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           enabled={
             <ProjectKeywordsFormField
               control={control}
-              errors={errors}
               getValues={getValues}
-              oldKeywords={project.keywords ?? []}
               setValue={setValue}
             />
           }

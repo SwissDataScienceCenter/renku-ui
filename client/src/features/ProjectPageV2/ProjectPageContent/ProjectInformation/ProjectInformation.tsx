@@ -214,11 +214,13 @@ export default function ProjectInformation({
           </>
         }
       >
-        <KeywordContainer className="mt-1">
-          {keywordsSorted.map((keyword, index) => (
-            <KeywordBadge key={`keyword-${index}`}>{keyword}</KeywordBadge>
-          ))}
-        </KeywordContainer>
+        {keywordsSorted.length > 0 && (
+          <KeywordContainer className="mt-1">
+            {keywordsSorted.map((keyword, index) => (
+              <KeywordBadge key={`keyword-${index}`}>{keyword}</KeywordBadge>
+            ))}
+          </KeywordContainer>
+        )}
       </ProjectInformationBox>
       <ProjectCopyTemplateInformationBox project={project} />
     </div>

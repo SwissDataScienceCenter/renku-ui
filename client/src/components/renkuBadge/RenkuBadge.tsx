@@ -23,7 +23,7 @@ interface RenkuBadgeProps {
   className?: string;
   color?: "success" | "danger" | "warning" | "light";
   "data-cy"?: string;
-  pills?: boolean;
+  pill?: boolean;
 }
 
 export default function RenkuBadge({
@@ -31,7 +31,7 @@ export default function RenkuBadge({
   className,
   color = "light",
   "data-cy": dataCy,
-  pills = false,
+  pill = false,
 }: RenkuBadgeProps) {
   const colorClasses =
     color === "success"
@@ -45,11 +45,11 @@ export default function RenkuBadge({
   const baseClasses = [
     "border",
     "badge",
-    pills ? "rounded-pill" : "",
+    pill && "rounded-pill",
     ...colorClasses,
   ];
 
-  const finalClasses = className ? cx(className, baseClasses) : cx(baseClasses);
+  const finalClasses = cx(className, baseClasses);
 
   return (
     <div className={finalClasses} data-cy={dataCy}>

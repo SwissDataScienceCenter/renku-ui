@@ -652,7 +652,7 @@ export function DataConnectorMount({
                             data-cy="data-connector-keyword"
                             key={index}
                             highlighted={!oldKeywords?.includes(keyword)}
-                            removeHandler={() => {
+                            remove={() => {
                               const newKeywords = currentKeywords.filter(
                                 (k) => k !== keyword
                               );

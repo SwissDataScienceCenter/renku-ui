@@ -1,32 +1,37 @@
 import cx from "classnames";
-import { Controller } from "react-hook-form";
-import { Button, FormText, Label } from "reactstrap";
-import KeywordContainer from "~/components/keywords/KeywordContainer";
-import KeywordBadge from "~/components/keywords/KeywordBadge";
 import { PlusLg } from "react-bootstrap-icons";
 import type {
-  FieldErrors,
+  Control,
   UseFormGetValues,
   UseFormSetValue,
-  Control,
 } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { Button, FormText, Label } from "reactstrap";
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import type { ProjectV2MetadataWithKeyword } from "../../settings/projectSettings.types";
 
 interface ProjectKeywordsFormFieldProps {
   control: Control<Required<ProjectV2MetadataWithKeyword>>;
-  errors: FieldErrors<Required<ProjectV2MetadataWithKeyword>>;
   getValues: UseFormGetValues<Required<ProjectV2MetadataWithKeyword>>;
-  oldKeywords?: string[];
   setValue: UseFormSetValue<Required<ProjectV2MetadataWithKeyword>>;
 }
 
 export default function ProjectKeywordsFormField({
   control,
-  errors,
   getValues,
-  oldKeywords,
   setValue,
 }: ProjectKeywordsFormFieldProps) {
+  const setKeywords = (fieldValue: string) => {
+    const newValue = fieldValue.trim();
+    const currentKeywords = getValues("keywords");
+    if (!currentKeywords.includes(newValue)) {
+      const newKeywords = [...currentKeywords, newValue];
+      setValue("keywords", newKeywords);
+    }
+    setValue("keyword", "");
+  };
+
   return (
     <div>
       <Label className="form-label" for="project-keyword">
@@ -36,28 +41,19 @@ export default function ProjectKeywordsFormField({
         <Controller
           control={control}
           name="keyword"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <>
               <input
                 id="project-keyword"
                 placeholder="Add new keyword"
                 type="string"
                 {...field}
-                className={cx("form-control", errors.keyword && "is-invalid")}
+                className={cx("form-control", fieldState.error && "is-invalid")}
                 data-cy="project-settings-keyword-input"
-                onChange={(e) => {
-                  field.onChange(e);
-                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && field.value) {
                     e.preventDefault();
-                    const newValue = field.value.trim();
-                    const currentKeywords = getValues("keywords");
-                    if (!currentKeywords.includes(newValue)) {
-                      const newKeywords = [...currentKeywords, newValue];
-                      setValue("keywords", newKeywords);
-                    }
-                    setValue("keyword", "");
+                    setKeywords(field.value);
                   }
                 }}
               />
@@ -67,13 +63,7 @@ export default function ProjectKeywordsFormField({
                 data-cy="project-settings-keyword-button"
                 onClick={() => {
                   if (field.value) {
-                    const newValue = field.value.trim();
-                    const currentKeywords = getValues("keywords");
-                    if (!currentKeywords.includes(newValue)) {
-                      const newKeywords = [...currentKeywords, newValue];
-                      setValue("keywords", newKeywords);
-                    }
-                    setValue("keyword", "");
+                    setKeywords(field.value);
                   }
                 }}
                 type="button"
@@ -88,19 +78,23 @@ export default function ProjectKeywordsFormField({
       <Controller
         name="keywords"
         control={control}
-        render={({ field }) => (
+        render={({ field, formState }) => (
           <>
             {field.value && field.value.length > 0 && (
               <KeywordContainer data-cy="project-settings-keywords">
-                {getValues("keywords")
+                {field.value
                   .sort((a, b) => a.localeCompare(b))
                   .map((keyword, index) => (
                     <KeywordBadge
                       data-cy="project-settings-keyword"
                       key={index}
-                      highlighted={!oldKeywords?.includes(keyword)}
-                      removeHandler={() => {
-                        const newKeywords = getValues("keywords").filter(
+                      highlighted={
+                        !(formState.defaultValues?.keywords ?? []).includes(
+                          keyword
+                        )
+                      }
+                      remove={() => {
+                        const newKeywords = field.value.filter(
                           (k) => k !== keyword
                         );
                         setValue("keywords", newKeywords);
