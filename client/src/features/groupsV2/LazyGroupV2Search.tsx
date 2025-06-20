@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 
-import type { ProjectPatch } from "../../projectsV2/api/projectV2.api";
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
+const GroupV2Search = lazy(() => import("./search/GroupV2Search"));
 
-export type ProjectV2MetadataWithKeyword = ProjectV2Metadata & {
-  keyword?: string;
-};
+export default function LazyGroupV2Search() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <GroupV2Search />
+    </Suspense>
+  );
+}
