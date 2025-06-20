@@ -18,22 +18,24 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { Globe, Lock } from "react-bootstrap-icons";
+import { Globe, Lock, PlusLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { ButtonGroup, FormText, Input, Label } from "reactstrap";
-
-import { Loader } from "../../../../components/Loader";
+import {
+  Button,
+  ButtonGroup,
+  Col,
+  FormText,
+  Input,
+  Label,
+  Row,
+} from "reactstrap";
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { WarnAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
-
-import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
-import type {
-  AddCloudStorageState,
-  CloudStorageDetails,
-} from "../../../project/components/cloudStorage/projectCloudStorage.types";
-import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
 import {
   AddStorageAdvanced,
   AddStorageAdvancedToggle,
@@ -41,24 +43,34 @@ import {
   AddStorageType,
   type AddStorageStepProps,
 } from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
+import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
+import type {
+  AddCloudStorageState,
+  CloudStorageDetails,
+} from "../../../project/components/cloudStorage/projectCloudStorage.types";
+import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
+import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
-import type { DataConnectorSecret } from "../../api/data-connectors.api";
+import type {
+  DataConnectorRead,
+  DataConnectorSecret,
+} from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
-
 import DataConnectorModalResult from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
-import type { Project } from "../../../projectsV2/api/projectV2.api";
 
 interface AddOrEditDataConnectorProps {
-  storageSecrets: DataConnectorSecret[];
+  dataConnector?: DataConnectorRead | null;
   project?: Project;
+  storageSecrets: DataConnectorSecret[];
 }
 
 type DataConnectorModalBodyProps = AddOrEditDataConnectorProps;
 
 export default function DataConnectorModalBody({
-  storageSecrets,
+  dataConnector = null,
   project,
+  storageSecrets,
 }: DataConnectorModalBodyProps) {
   const { flatDataConnector, schemata, success } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -80,16 +92,18 @@ export default function DataConnectorModalBody({
         </p>
       )}
       <AddOrEditDataConnector
-        storageSecrets={storageSecrets}
+        dataConnector={dataConnector}
         project={project}
+        storageSecrets={storageSecrets}
       />
     </>
   );
 }
 
 function AddOrEditDataConnector({
-  storageSecrets,
+  dataConnector,
   project,
+  storageSecrets,
 }: AddOrEditDataConnectorProps) {
   const { cloudStorageState, flatDataConnector, schemata, validationResult } =
     useAppSelector((state) => state.dataConnectorFormSlice);
@@ -158,8 +172,9 @@ function AddOrEditDataConnector({
           />
         </div>
         <DataConnectorContentByStep
-          storageSecrets={storageSecrets}
+          dataConnector={dataConnector}
           project={project}
+          storageSecrets={storageSecrets}
         />
       </>
     );
@@ -167,23 +182,30 @@ function AddOrEditDataConnector({
 }
 
 export interface DataConnectorMountForm {
+  keyword: string;
+  keywords: string[];
+  mountPoint: string;
   name: string;
   namespace: string;
-  slug: string;
-  visibility: string;
-  mountPoint: string;
   readOnly: boolean;
   saveCredentials: boolean;
+  slug: string;
+  visibility: string;
 }
 type DataConnectorMountFormFields =
+  | "keyword"
+  | "keywords"
+  | "mountPoint"
   | "name"
   | "namespace"
-  | "slug"
-  | "visibility"
-  | "mountPoint"
   | "readOnly"
-  | "saveCredentials";
-export function DataConnectorMount() {
+  | "saveCredentials"
+  | "slug"
+  | "visibility";
+
+export function DataConnectorMount({
+  dataConnector,
+}: AddOrEditDataConnectorProps) {
   const dispatch = useAppDispatch();
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -191,22 +213,28 @@ export function DataConnectorMount() {
   const {
     control,
     formState: { errors, touchedFields },
-    setValue,
     getValues,
+    setValue,
+    watch,
   } = useForm<DataConnectorMountForm>({
     mode: "onChange",
     defaultValues: {
-      name: flatDataConnector.name || "",
-      namespace: flatDataConnector.namespace || "",
-      visibility: flatDataConnector.visibility || "private",
-      slug: flatDataConnector.slug || "",
+      keyword: "",
+      keywords: flatDataConnector.keywords || [],
       mountPoint:
         flatDataConnector.mountPoint ||
         `${flatDataConnector.schema?.toLowerCase()}`,
+      name: flatDataConnector.name || "",
+      namespace: flatDataConnector.namespace || "",
       readOnly: flatDataConnector.readOnly ?? false,
       saveCredentials: cloudStorageState.saveCredentials,
+      slug: flatDataConnector.slug || "",
+      visibility: flatDataConnector.visibility || "private",
     },
   });
+  const currentKeywords = watch("keywords");
+  const oldKeywords = dataConnector?.keywords ?? [];
+
   const onFieldValueChange = useCallback(
     (field: DataConnectorMountFormFields, value: string | boolean) => {
       setValue(field, value);
@@ -497,7 +525,7 @@ export function DataConnectorMount() {
         </div>
       </div>
 
-      <div>
+      <div className="mb-3">
         <Label className="form-label" for="readOnly">
           Read-only
         </Label>
@@ -541,6 +569,112 @@ export function DataConnectorMount() {
           Check this box to mount the storage in read-only mode. You should
           always check this if you do not have credentials to write. You can use
           this in any case to prevent accidental data modifications.
+        </div>
+      </div>
+
+      <div>
+        <Label className="form-label" for="data-connector-slug">
+          Keywords
+        </Label>
+
+        <Row className="g-2">
+          <Col xs={12}>
+            <div className={cx("input-group", "input-group-sm")}>
+              <Controller
+                name="keyword"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <input
+                      id="keyword"
+                      placeholder="Add new keyword"
+                      type="string"
+                      {...field}
+                      className={cx(
+                        "form-control",
+                        errors.keyword && "is-invalid"
+                      )}
+                      data-cy="data-connector-keyword-input"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        onFieldValueChange("keyword", e.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && field.value) {
+                          const newValue = field.value.trim();
+                          if (!currentKeywords.includes(newValue)) {
+                            const newKeywords = [...currentKeywords, newValue];
+                            setValue("keywords", newKeywords);
+                          }
+                          setValue("keyword", "");
+                          onFieldValueChange("keyword", "");
+                        }
+                      }}
+                    />
+                    <Button
+                      color={field.value ? "primary" : "outline-primary"}
+                      data-cy="data-connector-keyword-button"
+                      disabled={!field.value}
+                      onClick={() => {
+                        if (field.value) {
+                          const newValue = field.value.trim();
+                          if (!currentKeywords.includes(newValue)) {
+                            const newKeywords = [...currentKeywords, newValue];
+                            setValue("keywords", newKeywords);
+                          }
+                          setValue("keyword", "");
+                          onFieldValueChange("keyword", "");
+                        }
+                      }}
+                      type="button"
+                    >
+                      <PlusLg className={cx("bi", "me-1")} />
+                      Add
+                    </Button>
+                  </>
+                )}
+              />
+            </div>
+          </Col>
+
+          <Col className="d-flex">
+            <Controller
+              name="keywords"
+              control={control}
+              render={({ field }) => (
+                <>
+                  {field.value && field.value.length > 0 && (
+                    <KeywordContainer data-cy="data-connector-keywords">
+                      {[...currentKeywords]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((keyword, index) => (
+                          <KeywordBadge
+                            data-cy="data-connector-keyword"
+                            key={index}
+                            highlighted={!oldKeywords?.includes(keyword)}
+                            remove={() => {
+                              const newKeywords = currentKeywords.filter(
+                                (k) => k !== keyword
+                              );
+                              setValue("keywords", newKeywords);
+                              onFieldValueChange("keyword", "");
+                            }}
+                          >
+                            {keyword}
+                          </KeywordBadge>
+                        ))}
+                    </KeywordContainer>
+                  )}
+                </>
+              )}
+            />
+          </Col>
+        </Row>
+
+        <div className={cx("form-text", "text-muted")}>
+          Keywords help orginizing your work and are available to search. You
+          can use them to group elements that belong together or to create
+          specific topics. You can add multiple keywords.
         </div>
       </div>
 
