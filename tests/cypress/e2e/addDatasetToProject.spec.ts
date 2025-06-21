@@ -16,11 +16,20 @@
  * limitations under the License.
  */
 
+import fixtures from "../support/renkulab-fixtures";
+
 describe("Add dataset to project", () => {
   const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
 
-  it("Add dataset to existing project not supported", () => {
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects();
+  });
+
+  it("Should not support adding a dataset to an existing project", () => {
     cy.visit(`datasets/${datasetIdentifier}/add`);
+    cy.wait("@getConfig");
+    cy.wait("@getUser");
     cy.getDataCy("sunset-banner").should(
       "contain",
       "Project creation no longer available"
