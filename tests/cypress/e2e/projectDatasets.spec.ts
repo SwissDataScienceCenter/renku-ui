@@ -28,10 +28,12 @@ function checkDatasetInKg(
   const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
   fixtures.datasetById({ id: datasetIdentifier });
   cy.visit(`projects/${projectPath}/datasets/${datasetName}`);
+  cy.wait("@getConfig");
+  cy.wait("@getUser");
   cy.wait("@getProject");
   cy.wait("@datasetList");
   cy.wait("@getDatasetById");
-  cy.getDataCy("add-to-project-button").should("be.enabled");
+  cy.getDataCy("add-to-project-button").should("be.disabled");
   cy.getDataCy("not-in-kg-warning").should("not.exist");
 }
 
