@@ -23,7 +23,7 @@ import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
 import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
-import { EditVisibility } from "../../../project/new/components/Visibility";
+import { EditVisibility } from "../../../project/components/Visibility";
 import { Visibilities } from "../../../components/visibility/Visibility";
 import ProjectKeywordsInput from "../../../project/shared/ProjectKeywords";
 import { ProjectSettingsAvatar } from "./ProjectSettingAvatar";

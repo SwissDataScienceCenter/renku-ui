@@ -260,13 +260,9 @@ describe("fork a project", () => {
     cy.visit("/projects/e2e/local-test-project");
   });
 
-  it("displays fork modal correctly", () => {
+  it("fork a project is not possible", () => {
     fixtures.projectTest({ overrides: { visibility: "private" } });
     cy.wait("@getProject");
-    cy.get("#fork-project").click();
-    cy.wait("@getNamespaces");
-    cy.getDataCy("visibility-private").should("be.enabled");
-    cy.getDataCy("visibility-internal").should("be.disabled");
-    cy.getDataCy("visibility-public").should("be.disabled");
+    cy.get("#fork-project").should("be.disabled");
   });
 });

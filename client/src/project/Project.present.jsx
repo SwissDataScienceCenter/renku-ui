@@ -35,7 +35,6 @@ import {
   CardBody,
   CardHeader,
   Col,
-  Modal,
   Nav,
   NavItem,
   Row,
@@ -74,7 +73,6 @@ import GitLabConnectButton, {
 } from "./components/GitLabConnect";
 import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
-import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 
 function filterPaths(paths, blacklist) {
@@ -91,11 +89,7 @@ function isRequestPending(props, request) {
   return requests[request] === SpecialPropVal.UPDATING;
 }
 
-function ToggleForkModalButton({
-  forkProjectDisabled,
-  showForkCount,
-  toggleModal,
-}) {
+function ToggleForkModalButton({ forkProjectDisabled, showForkCount }) {
   // display the button a bit differently if showForkCount == false
   if (showForkCount == false) {
     return (
@@ -104,7 +98,6 @@ function ToggleForkModalButton({
         color="primary"
         size="sm"
         disabled={forkProjectDisabled}
-        onClick={toggleModal}
       >
         Fork the project
       </Button>
@@ -115,12 +108,8 @@ function ToggleForkModalButton({
       id="fork-project"
       className="btn-outline-rk-green"
       disabled={forkProjectDisabled}
-      onClick={toggleModal}
     >
       <FontAwesomeIcon size="sm" icon={faCodeBranch} /> Fork
-      <UncontrolledTooltip target="fork-project">
-        Fork your own copy of this project
-      </UncontrolledTooltip>
     </Button>
   );
 }
@@ -137,7 +126,6 @@ function ForkCountButton({ forkProjectDisabled, externalUrl, forksCount }) {
       rel="noreferrer noopener"
     >
       {forksCount}
-      <UncontrolledTooltip target="project-forks">Forks</UncontrolledTooltip>
     </Button>
   );
 }
@@ -146,58 +134,42 @@ class ForkProjectModal extends Component {
   constructor(props) {
     super(props);
     this.state = { open: false };
-    this.toggleFunction = this.toggle.bind(this);
-  }
-
-  toggle() {
-    this.setState({ open: !this.state.open });
   }
 
   render() {
-    let content = null;
-    // this prevents flashing wrong content during the close animation
-    if (this.state.open) {
-      content = (
-        <ForkProject
-          client={this.props.client}
-          forkedId={this.props.id}
-          forkedTitle={this.props.title}
-          model={this.props.model}
-          projectVisibility={this.props.projectVisibility}
-          toggleModal={this.toggleFunction}
-        />
-      );
-    }
     // Treat undefined as true
     const buttons =
       this.props.showForkCount === false ? (
-        <ToggleForkModalButton
-          forkProjectDisabled={this.props.forkProjectDisabled}
-          showForkCount={false}
-          toggleModal={this.toggleFunction}
-        />
-      ) : (
-        <RoundButtonGroup>
+        <div id="fork-project-button">
           <ToggleForkModalButton
-            forkProjectDisabled={this.props.forkProjectDisabled}
-            showForkCount={true}
-            toggleModal={this.toggleFunction}
+            forkProjectDisabled={true}
+            showForkCount={false}
           />
-          <ForkCountButton
-            externalUrl={this.props.externalUrl}
-            forksCount={this.props.forksCount}
-            forkProjectDisabled={this.props.forkProjectDisabled}
-          />
-        </RoundButtonGroup>
+          <UncontrolledTooltip target="fork-project-button">
+            Fork a project is no longer supported in Renku Legacy. Switch to
+            Renku 2.0 to continue creating and managing your work.
+          </UncontrolledTooltip>
+        </div>
+      ) : (
+        <div id="fork-project-button">
+          <RoundButtonGroup>
+            <ToggleForkModalButton
+              forkProjectDisabled={true}
+              showForkCount={true}
+            />
+            <ForkCountButton
+              externalUrl={this.props.externalUrl}
+              forksCount={this.props.forksCount}
+              forkProjectDisabled={this.props.forkProjectDisabled}
+            />
+          </RoundButtonGroup>
+          <UncontrolledTooltip target="fork-project-button">
+            Fork a project is no longer supported in Renku Legacy. Switch to
+            Renku 2.0 to continue creating and managing your work.
+          </UncontrolledTooltip>
+        </div>
       );
-    return (
-      <Fragment>
-        {buttons}
-        <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
-          {content}
-        </Modal>
-      </Fragment>
-    );
+    return <Fragment>{buttons}</Fragment>;
   }
 }
 
