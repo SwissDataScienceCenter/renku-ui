@@ -26,7 +26,7 @@ describe("Add dataset to project", () => {
     fixtures.projects().landingUserProjects();
   });
 
-  it("Should not support adding a dataset to an existing project", () => {
+  it("Should not allow adding a dataset to an existing project", () => {
     cy.visit(`datasets/${datasetIdentifier}/add`);
     cy.wait("@getConfig");
     cy.wait("@getUser");

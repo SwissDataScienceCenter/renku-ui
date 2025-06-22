@@ -260,7 +260,7 @@ describe("fork a project", () => {
     cy.visit("/projects/e2e/local-test-project");
   });
 
-  it("fork a project is not possible", () => {
+  it("Should not allow forking a project", () => {
     fixtures.projectTest({ overrides: { visibility: "private" } });
     cy.wait("@getProject");
     cy.get("#fork-project").should("be.disabled");

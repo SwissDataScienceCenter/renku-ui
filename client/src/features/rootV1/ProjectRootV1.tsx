@@ -21,7 +21,7 @@ import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyProjectList from "../../project/list/LazyProjectList";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
-import SunsetBanner from "../projectsV2/shared/SunsetV1Banner.tsx";
+import SunsetBanner from "../projectsV2/shared/SunsetV1Banner";
 
 export default function RootV1() {
   return (

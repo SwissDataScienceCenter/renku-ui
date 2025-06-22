@@ -28,7 +28,7 @@ describe("Add new project", () => {
     cy.visit("/v1/projects/new");
   });
 
-  it("create a new project is not longer supported", () => {
+  it("Creating a new project is no longer supported", () => {
     fixtures
       .templates()
       .createProject()

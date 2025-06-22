@@ -39,7 +39,7 @@ import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-import SunsetBanner from "../../projectsV2/shared/SunsetV1Banner.tsx";
+import SunsetBanner from "../../projectsV2/shared/SunsetV1Banner";
 import { StateModelProject } from "../project.types";
 import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
