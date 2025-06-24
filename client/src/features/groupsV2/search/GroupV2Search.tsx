@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   AccordionBody,
@@ -34,9 +34,34 @@ import {
 } from "reactstrap";
 // import { useGroup } from "../show/GroupPageContainer";
 import { useSearchParams } from "react-router";
+import { Loader } from "~/components/Loader";
 import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api.ts";
+import {
+  generateQueryParams,
+  getSearchQueryMissingFilters,
+} from "./groupSearch.utils";
 
 export default function GroupV2Search() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Add any missing default parameter. There shouldn't be anything content-dependant.
+  useEffect(() => {
+    const missingParams = getSearchQueryMissingFilters(searchParams);
+    if (Object.keys(missingParams).length > 0) {
+      const newSearchParams = new URLSearchParams(searchParams);
+      Object.entries(missingParams).forEach(([key, value]) => {
+        newSearchParams.set(key, String(value));
+      });
+      setSearchParams(newSearchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // This prevents loading the page on semi-ready content and sending unnecessary requests.
+  const missingParams = getSearchQueryMissingFilters(searchParams);
+  if (Object.keys(missingParams).length > 0) {
+    return <Loader />;
+  }
+
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Row>
@@ -61,7 +86,7 @@ interface SearchBarForm {
 }
 
 function GroupSearchQueryInput() {
-  // const { group } = useGroup();
+  // Set the input properly
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") ?? "";
 
@@ -76,9 +101,11 @@ function GroupSearchQueryInput() {
 
   const onSubmit = useCallback(
     (data: SearchBarForm) => {
-      setSearchParams({ q: data.query });
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("q", data.query);
+      setSearchParams(newParams, { replace: true });
     },
-    [setSearchParams]
+    [searchParams, setSearchParams]
   );
 
   return (
@@ -203,12 +230,12 @@ function GroupSearchFilterContentMain({
   visualization,
 }: GroupSearchFilterPropsMain) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const current = searchParams.get("content") ?? "";
+  const current = searchParams.get("type") ?? "";
 
   const onChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams);
-      params.set("content", value);
+      params.set("type", value);
       setSearchParams(params);
     },
     [searchParams, setSearchParams]
@@ -225,10 +252,10 @@ function GroupSearchFilterContentMain({
         Project
       </GroupSearchFilterRadioElement>
       <GroupSearchFilterRadioElement
-        identifier="group-search-filter-content-data"
-        isChecked={current === "data"}
+        identifier="group-search-filter-content-dataconnector"
+        isChecked={current === "dataconnector"}
         visualization={visualization}
-        onChange={() => onChange("data")}
+        onChange={() => onChange("dataconnector")}
       >
         Data
       </GroupSearchFilterRadioElement>
@@ -297,22 +324,15 @@ function GroupSearchFilterRadioElement({
 }
 
 function GroupSearchResults() {
+  // Load and visualize the search results
   const [searchParams] = useSearchParams();
-
-  const query = searchParams.get("q") ?? "";
-
-  // const [searchParams] = useSearchParams();
-  // const [query, setQuery] = useState(searchParams.get("q") ?? "");
-  // useEffect(() => {
-  //   setQuery(searchParams.get("q") ?? "");
-  // }, [searchParams]);
+  const params = useMemo(
+    () => generateQueryParams(searchParams),
+    [searchParams]
+  );
 
   const { data } = useGetSearchQueryQuery({
-    params: {
-      page: 1,
-      per_page: 20,
-      q: query,
-    },
+    params,
   });
 
   // ! TODO: Add some visualization
