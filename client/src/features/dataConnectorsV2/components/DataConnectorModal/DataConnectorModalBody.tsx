@@ -651,6 +651,17 @@ export function DataConnectorMount({
         </div>
       </div>
 
+      {flatDataConnector.dataConnectorId == null &&
+        hasPasswordFieldWithInput &&
+        validationResult?.isSuccess && (
+          <div className="mb-3">
+            <DataConnectorSaveCredentialsInfo
+              control={control}
+              onFieldValueChange={onFieldValueChange}
+            />
+          </div>
+        )}
+
       <div className="mb-3">
         <button
           className={cx(
@@ -709,15 +720,6 @@ export function DataConnectorMount({
           </div>
         </div>
       </Collapse>
-
-      {flatDataConnector.dataConnectorId == null &&
-        hasPasswordFieldWithInput &&
-        validationResult?.isSuccess && (
-          <DataConnectorSaveCredentialsInfo
-            control={control}
-            onFieldValueChange={onFieldValueChange}
-          />
-        )}
     </form>
   );
 }

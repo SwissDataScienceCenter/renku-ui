@@ -95,7 +95,15 @@ export function DataConnectorModalBodyAndFooter({
         schemata: schemata ?? [],
       })
     );
-  }, [dataConnector, dispatch, isOpen, namespace, project, schemata, initialStep]);
+  }, [
+    dataConnector,
+    dispatch,
+    isOpen,
+    namespace,
+    project,
+    schemata,
+    initialStep,
+  ]);
 
   // Visual elements
   return (
