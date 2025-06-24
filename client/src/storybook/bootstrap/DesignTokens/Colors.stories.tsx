@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx"; // Assuming this path is correct
 
-// Updated color JSON design token content
 const allColorTokens = {
   "brand colors": {
     primary: { value: "#006e58", notes: "Main brand color" },
@@ -21,21 +20,21 @@ const allColorTokens = {
     "body-bg": { value: "#ffffff", notes: "Default background color" },
   },
   grayscale: {
-    white: { value: "#ffffff" },
+    white: { value: "#ffffff", notes: "" },
     light: { value: "#f8f9fa", notes: "Light grayscale" },
     dark: { value: "#212529", notes: "Dark grayscale" },
     gray: { value: "#6c757d", notes: "Gray base" },
     "gray-dark": { value: "#343a40", notes: "Dark gray" },
     "gray-100": { value: "#f8f9fa", notes: "Lightest gray" },
-    "gray-200": { value: "#e9ecef" },
-    "gray-300": { value: "#dee2e6" },
-    "gray-400": { value: "#ced4da" },
-    "gray-500": { value: "#adb5bd" },
-    "gray-600": { value: "#6c757d" },
-    "gray-700": { value: "#495057" },
-    "gray-800": { value: "#343a40" },
+    "gray-200": { value: "#e9ecef", notes: "" },
+    "gray-300": { value: "#dee2e6", notes: "" },
+    "gray-400": { value: "#ced4da", notes: "" },
+    "gray-500": { value: "#adb5bd", notes: "" },
+    "gray-600": { value: "#6c757d", notes: "" },
+    "gray-700": { value: "#495057", notes: "" },
+    "gray-800": { value: "#343a40", notes: "" },
     "gray-900": { value: "#212529", notes: "Darkest gray" },
-    black: { value: "#000000" },
+    black: { value: "#000000", notes: "" },
   },
   text: {
     "text-primary": { value: "#006e58" },
@@ -61,24 +60,24 @@ const allColorTokens = {
     "text-dark-emphasis": { value: "#495057" },
   },
   background: {
-    "bg-primary-subtle": { value: "#cce2de" },
-    "bg-secondary-subtle": { value: "#e2e3e5" },
-    "bg-success-subtle": { value: "#e0edcf" },
-    "bg-info-subtle": { value: "#d1ecf1" },
-    "bg-warning-subtle": { value: "#fff3cd" },
-    "bg-danger-subtle": { value: "#f8d7da" },
-    "bg-light-subtle": { value: "#fcfcfd" },
-    "bg-dark-subtle": { value: "#ced4da" },
+    "bg-primary-subtle": { value: "#cce2de", notes: "" },
+    "bg-secondary-subtle": { value: "#e2e3e5", notes: "" },
+    "bg-success-subtle": { value: "#e0edcf", notes: "" },
+    "bg-info-subtle": { value: "#d1ecf1", notes: "" },
+    "bg-warning-subtle": { value: "#fff3cd", notes: "" },
+    "bg-danger-subtle": { value: "#f8d7da", notes: "" },
+    "bg-light-subtle": { value: "#fcfcfd", notes: "" },
+    "bg-dark-subtle": { value: "#ced4da", notes: "" },
   },
   border: {
-    "border-primary-subtle": { value: "#99c5bc" },
-    "border-secondary-subtle": { value: "#c4c8cb" },
-    "border-success-subtle": { value: "#c1da9e" },
-    "border-info-subtle": { value: "#a2dae3" },
-    "border-warning-subtle": { value: "#ffe69c" },
-    "border-danger-subtle": { value: "#f1aeb5" },
-    "border-light-subtle": { value: "#e9ecef" },
-    "border-dark-subtle": { value: "#adb5bd" },
+    "border-primary-subtle": { value: "#99c5bc", notes: "" },
+    "border-secondary-subtle": { value: "#c4c8cb", notes: "" },
+    "border-success-subtle": { value: "#c1da9e", notes: "" },
+    "border-info-subtle": { value: "#a2dae3", notes: "" },
+    "border-warning-subtle": { value: "#ffe69c", notes: "" },
+    "border-danger-subtle": { value: "#f1aeb5", notes: "" },
+    "border-light-subtle": { value: "#e9ecef", notes: "" },
+    "border-dark-subtle": { value: "#adb5bd", notes: "" },
   },
   "link colors": {
     "link-color": { value: "#006e58", notes: "Link color" },
@@ -113,12 +112,6 @@ const hexToRgb = (hex: string): string | undefined => {
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
   return `rgb(${r}, ${g}, ${b})`;
-};
-
-type ColorTokenData = {
-  value: string;
-  notes?: string;
-  rgb?: string; // Add rgb here for direct use if available
 };
 
 type ColorSection = {
@@ -191,7 +184,7 @@ const transformedSections: ColorSection[] = [
       token,
       hex: data.value,
       rgb: hexToRgb(data.value),
-      notes: data.notes,
+      notes: data.notes ?? "",
     })),
   },
   {
@@ -250,161 +243,141 @@ const ColorCard: React.FC<{
   const bg = hex || rgb || "#fff";
   return (
     <div
-      style={{
-        width: 180,
-        height: 240,
-        borderRadius: 8,
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-        overflow: "hidden",
-        fontFamily: "sans-serif",
-      }}
+      className={cx("rounded-3", "shadow-sm", "overflow-hidden", "font-sans")}
+      style={{ width: 300, height: 280 }}
     >
+      {/* Top section: Color display */}
       <div
-        style={{
-          height: 120,
-          background: bg,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "0.9rem",
-          padding: "10px",
-        }}
+        className={cx(
+          "d-flex",
+          "align-items-center",
+          "justify-content-center",
+          "p-2"
+        )}
+        style={{ height: 120, background: bg, fontSize: "0.9rem" }}
         title={hex || rgb}
       ></div>
+      {/* Bottom section: Color details */}
       <div
-        style={{
-          padding: 12,
-          background: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          height: 120,
-        }}
+        className={cx("p-3", "bg-white", "d-flex", "flex-column")}
+        style={{ height: 120 }}
       >
         <div
-          style={{
-            fontWeight: 600,
-            fontSize: 14,
-            marginBottom: 4,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-          }}
+          className={cx(
+            "fs-6",
+            "mb-1",
+            "cursor-pointer",
+            "d-flex",
+            "align-items-center"
+          )}
           onClick={() => token && Copy(token, setCopied)}
         >
+          <strong className="me-1">Token: </strong>
           {token}
           {copied === token && (
-            <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+            <span className={cx("ms-1", "text-success")}>✓</span>
           )}
           {copied !== token && <CopyIcon />}
         </div>
         <div
-          style={{
-            fontSize: 13,
-            color: "#666",
-            marginBottom: 4,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-          }}
+          className={cx(
+            "fs-6",
+            "text-muted",
+            "mb-1",
+            "cursor-pointer",
+            "d-flex",
+            "align-items-center"
+          )}
           onClick={() => hex && Copy(hex, setCopied)}
         >
           {hex}
           {copied === hex && (
-            <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+            <span className={cx("ms-1", "text-success")}>✓</span>
           )}
           {copied !== hex && <CopyIcon />}
         </div>
         {rgb && (
           <div
-            style={{
-              fontSize: 13,
-              color: "#666",
-              marginBottom: 4,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className={cx(
+              "fs-6",
+              "text-muted",
+              "mb-1",
+              "cursor-pointer",
+              "d-flex",
+              "align-items-center"
+            )}
             onClick={() => Copy(rgb, setCopied)}
           >
             {rgb}
             {copied === rgb && (
-              <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+              <span className={cx("ms-1", "text-success")}>✓</span>
             )}
             {copied !== rgb && <CopyIcon />}
           </div>
         )}
         {notes && (
-          <div style={{ fontSize: 11, color: "#999", marginTop: "auto" }}>
-            {notes}
-          </div>
+          <div className={cx("mt-4", "small", "text-muted")}>{notes}</div>
         )}
       </div>
     </div>
   );
 };
 
-const TextColorExampleCard: React.FC<{
+const TextColorCard: React.FC<{
   token: string;
   color: string;
   bgColor: string;
   notes?: string;
-}> = ({ token, color, bgColor, notes }) => {
+}> = ({ token, color, bgColor }) => {
   const [copied, setCopied] = useState("");
   return (
     <div
+      className={cx(
+        "rounded-3",
+        "shadow-sm",
+        "overflow-hidden",
+        "font-sans",
+        "d-flex",
+        "flex-column",
+        "justify-content-between"
+      )}
       style={{
-        width: 250,
+        width: 300,
         minHeight: 120,
-        borderRadius: 8,
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-        overflow: "hidden",
-        fontFamily: "sans-serif",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
         border: `1px solid ${
           bgColor === "#ffffff" ? "#dee2e6" : "transparent"
-        }`, // Add border for white background
+        }`, // Keep inline for conditional styling
       }}
     >
       <div
-        style={{ backgroundColor: bgColor, padding: 16 }}
-        className="border-bottom"
+        className={cx("p-3", "border-bottom")}
+        style={{ backgroundColor: bgColor }}
       >
-        <p
-          style={{
-            color: color,
-            fontSize: 16,
-            lineHeight: 1.5,
-            marginBottom: 8,
-          }}
-        >
+        <p className={cx("fs-5", "lh-base", "mb-2")} style={{ color: color }}>
           The quick brown fox jumps over the lazy dog.
         </p>
       </div>
-      <div style={{ padding: 16 }}>
-        <div
-          className="small"
-          style={{ marginTop: "auto", display: "flex", alignItems: "center" }}
-        >
+      <div className="p-3">
+        <div className={cx("mt-auto", "d-flex", "align-items-center", "mb-1")}>
           <strong className="me-1">Token:</strong>
           {token}
           <span
             className={cx("cursor-pointer")}
             onClick={() => token && Copy(token, setCopied)}
           >
-            {copied === token && <span style={{ color: "green" }}>✓</span>}
+            {copied === token && (
+              <span className={cx("text-success", "ms-1")}>✓</span>
+            )}
             {copied !== token && <CopyIcon />}
           </span>
         </div>
         <div
-          className="text-muted small"
-          style={{ marginBottom: 4 }}
+          className={cx("text-muted", "small", "d-flex", "align-items-center")}
           onClick={() => token && Copy(color, setCopied)}
         >
-          {color}{" "}
+          {color}
           {copied === color && (
-            <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+            <span className={cx("ms-1", "text-success")}>✓</span>
           )}
           {copied !== color && <CopyIcon />}
         </div>
@@ -413,33 +386,150 @@ const TextColorExampleCard: React.FC<{
   );
 };
 
+const BorderColorCard: React.FC<{
+  token: string;
+  hex: string;
+  rgb?: string;
+  notes?: string;
+  borderSize: string;
+}> = ({ token, hex, rgb, notes, borderSize }) => {
+  const [copied, setCopied] = useState("");
+  const borderColor = hex || rgb || "#fff"; // Use the color for the border
+  const displayBg =
+    borderColor === "#ffffff" || borderColor === "rgb(255, 255, 255)"
+      ? "#f8f9fa"
+      : "#ffffff"; // A subtle background for white borders
+
+  return (
+    <div
+      className={cx(
+        "rounded-3",
+        "shadow-sm",
+        "overflow-hidden",
+        "font-sans",
+        "border",
+        token,
+        borderSize
+      )}
+      style={{ width: 400, height: 180, background: displayBg }}
+    >
+      <div
+        className={cx("p-3", "bg-white", "d-flex", "flex-column")}
+        style={{ height: 120 }}
+      >
+        <div
+          className={cx(
+            "fs-6",
+            "mb-1",
+            "cursor-pointer",
+            "d-flex",
+            "align-items-center"
+          )}
+          onClick={() => token && Copy(token, setCopied)}
+        >
+          <strong className="me-1">Token: </strong>
+          {token}
+          {copied === token && (
+            <span className={cx("ms-1", "text-success")}>✓</span>
+          )}
+          {copied !== token && <CopyIcon />}
+        </div>
+        <div
+          className={cx(
+            "fs-6",
+            "text-muted",
+            "mb-1",
+            "cursor-pointer",
+            "d-flex",
+            "align-items-center"
+          )}
+          onClick={() => hex && Copy(hex, setCopied)}
+        >
+          {hex}
+          {copied === hex && (
+            <span className={cx("ms-1", "text-success")}>✓</span>
+          )}
+          {copied !== hex && <CopyIcon />}
+        </div>
+        {rgb && (
+          <div
+            className={cx(
+              "fs-6",
+              "text-muted",
+              "mb-1",
+              "cursor-pointer",
+              "d-flex",
+              "align-items-center"
+            )}
+            onClick={() => Copy(rgb, setCopied)}
+          >
+            {rgb}
+            {copied === rgb && (
+              <span className={cx("ms-1", "text-success")}>✓</span>
+            )}
+            {copied !== rgb && <CopyIcon />}
+          </div>
+        )}
+      </div>
+      {notes && (
+        <div className={cx("px-3", "mt-3", "small", "text-muted")}>{notes}</div>
+      )}
+    </div>
+  );
+};
+
 const Section: React.FC<{
   title: string;
   tokens: { token: string; hex: string; rgb?: string; notes?: string }[];
 }> = ({ title, tokens }) => (
-  <section style={{ marginBottom: 48 }}>
+  <section className="mb-5">
     <h2
-      style={{
-        fontFamily: "sans-serif",
-        fontWeight: 700,
-        fontSize: 20,
-        marginBottom: 16,
-        borderBottom: "2px solid #006e58",
-        paddingBottom: 6,
-        color: "#006e58",
-      }}
+      className={cx(
+        "font-sans",
+        "fw-bold",
+        "fs-5",
+        "mb-3",
+        "border-bottom",
+        "border-2",
+        "border-primary",
+        "pb-2",
+        "text-primary"
+      )}
     >
       {title}
     </h2>
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 16,
-      }}
-    >
+    <div className={cx("d-flex", "flex-wrap", "gap-3")}>
       {tokens.map((c) => (
         <ColorCard key={c.token} {...c} />
+      ))}
+    </div>
+  </section>
+);
+
+const SectionBorder: React.FC<{
+  title: string;
+  tokens: { token: string; hex: string; rgb?: string; notes?: string }[];
+  borderSize: string;
+}> = ({ title, tokens, borderSize }) => (
+  <section className="mb-5">
+    <h2
+      className={cx(
+        "font-sans",
+        "fw-bold",
+        "fs-5",
+        "mb-3",
+        "border-bottom",
+        "border-2",
+        "border-primary",
+        "pb-2",
+        "text-primary"
+      )}
+    >
+      {title}
+    </h2>
+    <div className={cx("d-flex", "flex-wrap", "gap-3")}>
+      {tokens.map((c) => (
+        <BorderColorCard key={c.token} {...c} borderSize={borderSize} />
       ))}
     </div>
   </section>
@@ -448,151 +538,139 @@ const Section: React.FC<{
 const SectionText: React.FC<{ title: string; tokens: { token: string }[] }> = ({
   title,
 }) => (
-  <section style={{ marginBottom: 48 }}>
+  <section className="mb-5">
     <h2
-      style={{
-        fontFamily: "sans-serif",
-        fontWeight: 700,
-        fontSize: 20,
-        marginBottom: 16,
-        borderBottom: "2px solid #006e58",
-        paddingBottom: 6,
-        color: "#006e58",
-      }}
+      className={cx(
+        "font-sans",
+        "fw-bold",
+        "fs-5",
+        "mb-3",
+        "border-bottom",
+        "border-2",
+        "border-primary",
+        "pb-2",
+        "text-primary"
+      )}
     >
       {title}
     </h2>
     <p
-      style={{
-        fontFamily: "sans-serif",
-        fontSize: 14,
-        color: "#666",
-        marginBottom: 24,
-        maxWidth: 800,
-      }}
+      className={cx("font-sans", "small", "text-muted", "mb-4")}
+      style={{ maxWidth: 800 }}
     >
       They directly correspond to Bootstrap's `.text-*` utility classes.
     </p>
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 16,
-      }}
-    >
-      {/* Example: Regular text colors */}
-      <TextColorExampleCard
+    <div className={cx("d-flex", "flex-wrap", "gap-3")}>
+      <TextColorCard
         token="text-primary"
         color={allColorTokens.text["text-primary"].value}
         bgColor="#fff"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-secondary"
         color={allColorTokens.text["text-secondary"].value}
         bgColor="#fff"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-success"
         color={allColorTokens.text["text-success"].value}
         bgColor="#fff"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-info"
         color={allColorTokens.text["text-info"].value}
         bgColor="#fff"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-warning"
         color={allColorTokens.text["text-warning"].value}
         bgColor="#fff"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-danger"
         color={allColorTokens.text["text-danger"].value}
         bgColor="#fff"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-body"
         color={allColorTokens.text["text-body"].value}
         bgColor="#fff"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-muted"
         color={allColorTokens.text["text-muted"].value}
         bgColor="#fff"
       />
 
-      {/* Example: Light/Dark text colors with contrasting backgrounds */}
-      <TextColorExampleCard
+      <TextColorCard
         token="text-light"
         color={allColorTokens.text["text-light"].value}
         bgColor={allColorTokens.grayscale.dark.value}
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-dark"
         color={allColorTokens.text["text-dark"].value}
         bgColor={allColorTokens.grayscale.light.value}
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-white"
         color={allColorTokens.text["text-white"].value}
         bgColor={allColorTokens.grayscale.dark.value}
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-black-50"
         color={allColorTokens.text["text-black-50"].value}
         bgColor={allColorTokens.grayscale.light.value}
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-white-50"
         color={allColorTokens.text["text-white-50"].value}
         bgColor={allColorTokens.grayscale.dark.value}
       />
 
-      {/* Example: Emphasis text colors */}
-      <TextColorExampleCard
+      <TextColorCard
         token="text-primary-emphasis"
         color={allColorTokens.text["text-primary-emphasis"].value}
-        bgColor="#cce2de"
+        bgColor={allColorTokens.background["bg-primary-subtle"].value}
         notes="On primary subtle background"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-secondary-emphasis"
         color={allColorTokens.text["text-secondary-emphasis"].value}
-        bgColor="#e2e3e5"
+        bgColor={allColorTokens.background["bg-secondary-subtle"].value}
         notes="On secondary subtle background"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-success-emphasis"
         color={allColorTokens.text["text-success-emphasis"].value}
-        bgColor="#e0edcf"
+        bgColor={allColorTokens.background["bg-success-subtle"].value}
         notes="On success subtle background"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-info-emphasis"
         color={allColorTokens.text["text-info-emphasis"].value}
-        bgColor="#d1ecf1"
+        bgColor={allColorTokens.background["bg-info-subtle"].value}
         notes="On info subtle background"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-warning-emphasis"
         color={allColorTokens.text["text-warning-emphasis"].value}
-        bgColor="#fff3cd"
+        bgColor={allColorTokens.background["bg-warning-subtle"].value}
         notes="On warning subtle background"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-danger-emphasis"
         color={allColorTokens.text["text-danger-emphasis"].value}
-        bgColor="#f8d7da"
+        bgColor={allColorTokens.background["bg-danger-subtle"].value}
         notes="On danger subtle background"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-light-emphasis"
         color={allColorTokens.text["text-light-emphasis"].value}
         bgColor={allColorTokens.grayscale.dark.value}
         notes="On dark background"
       />
-      <TextColorExampleCard
+      <TextColorCard
         token="text-dark-emphasis"
         color={allColorTokens.text["text-dark-emphasis"].value}
         bgColor={allColorTokens.grayscale.light.value}
@@ -614,6 +692,13 @@ const meta: Meta = {
     layout: "centered",
   },
   tags: ["autodocs"],
+  argTypes: {
+    borderSize: {
+      options: ["border-1", "border-2", "border-3", "border-4", "border-5"],
+      control: { type: "select" },
+      description: "Sets the thickness of the border using Bootstrap classes.",
+    },
+  },
 };
 
 export default meta;
@@ -621,15 +706,34 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ColorPalette: Story = {
-  render: () => (
-    <div style={{ padding: 24, maxWidth: "1200px", margin: "0 auto" }}>
-      {transformedSections.map((s) =>
-        s.title !== "5. Text Colors" ? (
-          <Section key={s.title} title={s.title} tokens={s.tokens} />
-        ) : (
-          <SectionText key={s.title} title={s.title} tokens={s.tokens} />
-        )
-      )}
-    </div>
-  ),
+  args: {
+    borderSize: "border-1", // Default value for the control
+  },
+  render: (args) => {
+    return (
+      <div className={cx("p-4", "mx-auto")} style={{ maxWidth: "1200px" }}>
+        {transformedSections.map((s) => {
+          if (s.title === "5. Text Colors") {
+            return (
+              <SectionText key={s.title} title={s.title} tokens={s.tokens} />
+            );
+          } else if (
+            s.title === "9. Border Colors" ||
+            s.title === "7. Subtle Border Colors"
+          ) {
+            return (
+              <SectionBorder
+                key={s.title}
+                title={s.title}
+                tokens={s.tokens}
+                borderSize={args.borderSize}
+              />
+            );
+          } else {
+            return <Section key={s.title} title={s.title} tokens={s.tokens} />;
+          }
+        })}
+      </div>
+    );
+  },
 };
