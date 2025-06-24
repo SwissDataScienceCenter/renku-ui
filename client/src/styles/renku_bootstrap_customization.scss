@@ -1,5 +1,5 @@
 // Functions: should be imported first
-@import "~bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/functions";
 
 // Font
 @import "./fonts/fonts";
@@ -16,8 +16,8 @@ $shadow-renku: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
   rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
 // Variables and functions
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/variables-dark";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/variables-dark";
 
 // Add navy color
 $additional-colors: (
