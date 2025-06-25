@@ -1,5 +1,5 @@
-@import "../../node_modules/bootstrap/scss/functions";
-@import "../../node_modules/bootstrap/scss/mixins";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/mixins";
 
 @include color-mode("navy") {
   --#{$prefix}body-color: var(--#{$prefix}white);

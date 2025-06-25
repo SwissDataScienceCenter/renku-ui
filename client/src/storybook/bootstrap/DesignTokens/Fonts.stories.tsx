@@ -3,13 +3,12 @@ import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx";
 
-// Define your font token data
 const fontTokens = {
   typography: {
-    "body-font-family": { value: '"Inter", sans-serif' },
+    "body-font-family": { value: '"Inter", sans-serif', px: "" },
     "body-font-size": { value: "1rem", px: "16px" },
-    "body-font-weight": { value: "400" },
-    "body-line-height": { value: "1.5" },
+    "body-font-weight": { value: "400", px: "" },
+    "body-line-height": { value: "1.5", px: "" },
   },
   fontSizes: {
     "fs-1": { value: "2.5rem", px: "40px", type: "fontSizes" },
@@ -59,87 +58,95 @@ const fontTokens = {
   },
 };
 
-// Helper component to display font properties
-const FontPropertyCard: React.FC<{
+interface FontPropertyCardProps {
   token: string;
   value: string | number;
   px?: string;
   notes?: string;
-}> = ({ token, value, px, notes }) => (
+}
+
+const FontPropertyCard: React.FC<FontPropertyCardProps> = ({
+  token,
+  value,
+  px,
+  notes,
+}) => (
   <div
-    style={{
-      width: 200, // Slightly wider for font details
-      minHeight: 120,
-      borderRadius: 8,
-      boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-      overflow: "hidden",
-      fontFamily: "sans-serif",
-      backgroundColor: "#fff",
-      padding: 16,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-    }}
+    className={cx(
+      "bg-white",
+      "p-3",
+      "rounded",
+      "shadow-sm",
+      "border",
+      "d-flex",
+      "flex-column",
+      "justify-content-between"
+    )}
   >
     <div>
       <div
-        style={{
-          fontWeight: 600,
-          fontSize: 14,
-          marginBottom: 4,
-          color: "#006e58",
-        }}
+        className={cx("fw-semibold", "text-primary", "mb-1")}
+        style={{ fontSize: "14px" }}
       >
         {token}
       </div>
-      <div style={{ fontSize: 13, color: "#333", marginBottom: 4 }}>
+      <div className={cx("text-dark", "mb-1")} style={{ fontSize: "13px" }}>
         Value: <strong>{value}</strong>
       </div>
-      {px && <div style={{ fontSize: 13, color: "#666" }}>PX: {px}</div>}
+      {px && (
+        <div className="text-muted" style={{ fontSize: "13px" }}>
+          PX: {px}
+        </div>
+      )}
     </div>
     {notes && (
-      <div style={{ fontSize: 11, color: "#999", marginTop: "auto" }}>
+      <div className={cx("text-muted", "mt-auto")} style={{ fontSize: "11px" }}>
         {notes}
       </div>
     )}
   </div>
 );
 
-// Helper component to display font size examples
-const FontSizeExampleCard: React.FC<{
+interface FontSizeExampleCardProps {
   token: string;
   value: string;
   px: string;
-}> = ({ token, value, px }) => {
+}
+
+const FontSizeExampleCard: React.FC<FontSizeExampleCardProps> = ({
+  token,
+  value,
+  px,
+}) => {
   const [copied, setCopied] = useState("");
+
   return (
     <div
-      style={{
-        width: "100%", // Take full width for better readability of large text
-        minHeight: 120,
-        borderRadius: 8,
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-        overflow: "hidden",
-        fontFamily: fontTokens.typography["body-font-family"].value, // Apply the body font family
-        backgroundColor: "#fff",
-        padding: 24,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "flex-start",
-      }}
+      className={cx(
+        "bg-white",
+        "rounded",
+        "shadow-sm",
+        "border",
+        "p-4",
+        "d-flex",
+        "flex-column",
+        "justify-content-center",
+        "align-items-start",
+        "w-100"
+      )}
     >
       <div
+        className="text-dark"
         style={{
           fontSize: value,
           lineHeight: fontTokens.typography["body-line-height"].value,
           fontWeight: fontTokens.typography["body-font-weight"].value,
-          color: "#212529",
+          fontFamily: fontTokens.typography["body-font-family"].value,
         }}
       >
         The quick brown fox jumps over the lazy dog.
       </div>
-      <div style={{ marginTop: 16, fontSize: "0.9rem", color: "#666" }}>
+      <div className={cx("mt-3", "text-muted")} style={{ fontSize: "0.9rem" }}>
         <strong>Token:</strong>
         <span
           className={cx("cursor-pointer", "ms-2")}
@@ -147,58 +154,65 @@ const FontSizeExampleCard: React.FC<{
         >
           <code>{token}</code>
           {copied === token && (
-            <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+            <span className={cx("ms-1", "text-success")}>✓</span>
           )}
           {copied !== token && <CopyIcon />} | <strong>Value:</strong> {value} (
           {px})
         </span>
       </div>
-      <div style={{ fontSize: "0.8rem", color: "#999", marginTop: 4 }}>
+      <div className={cx("text-muted", "mt-1")} style={{ fontSize: "0.8rem" }}>
         Bootstrap class: <code>.fs-{token.split("-")[1]}</code>
       </div>
     </div>
   );
 };
 
-// Helper component to display line height examples
-const LineHeightExampleCard: React.FC<{
+interface LineHeightExampleCardProps {
   token: string;
   value: number;
   description: string;
   px?: string;
   rem: string;
-}> = ({ token, value, description, px, rem }) => {
+}
+
+const LineHeightExampleCard: React.FC<LineHeightExampleCardProps> = ({
+  token,
+  value,
+  description,
+  px,
+  rem,
+}) => {
   const [copied, setCopied] = useState("");
+
   return (
     <div
-      style={{
-        width: "100%",
-        minHeight: 150, // Increased height to show line spacing clearly
-        borderRadius: 8,
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-        overflow: "hidden",
-        fontFamily: fontTokens.typography["body-font-family"].value,
-        backgroundColor: "#fff",
-        padding: 24,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "flex-start",
-      }}
+      className={cx(
+        "bg-white",
+        "rounded",
+        "shadow-sm",
+        "border",
+        "p-4",
+        "d-flex",
+        "flex-column",
+        "justify-content-center",
+        "align-items-start",
+        "w-100"
+      )}
     >
       <div
+        className="text-dark"
         style={{
           fontSize: fontTokens.typography["body-font-size"].value,
           lineHeight: value,
           fontWeight: fontTokens.typography["body-font-weight"].value,
-          color: "#212529",
+          fontFamily: fontTokens.typography["body-font-family"].value,
         }}
       >
-        This is an example of text with **line height {value}**. <br />
+        This is an example of text with <b>line height {value}</b>. <br />
         It demonstrates how spacing between lines changes. <br />
         Readability is key to a great user experience.
       </div>
-      <div style={{ marginTop: 16, fontSize: "0.9rem", color: "#666" }}>
+      <div className={cx("mt-3", "text-muted")} style={{ fontSize: "0.9rem" }}>
         <strong>Token:</strong>
         <span
           className={cx("cursor-pointer", "ms-2")}
@@ -206,23 +220,52 @@ const LineHeightExampleCard: React.FC<{
         >
           <code>lh-{token}</code>
           {copied === token && (
-            <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+            <span className={cx("ms-1", "text-success")}>✓</span>
           )}
           {copied !== token && <CopyIcon />} | <strong>Value:</strong> {value} (
           {px})
         </span>{" "}
         | <strong>PX:</strong> {px} | <strong>REM:</strong> {rem}
       </div>
-      <div style={{ fontSize: "0.8rem", color: "#999", marginTop: 4 }}>
+      <div className={cx("text-muted", "mt-1")} style={{ fontSize: "0.8rem" }}>
         {description} (Bootstrap class: <code>.lh-{token}</code>)
       </div>
     </div>
   );
 };
 
+const SectionHeader: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <h2
+    className={cx(
+      "fw-bold",
+      "text-primary",
+      "border-bottom",
+      "border-primary",
+      "border-2",
+      "pb-2",
+      "mb-3"
+    )}
+  >
+    {children}
+  </h2>
+);
+
+const SectionDescription: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <p
+    className={cx("text-muted", "mb-4")}
+    style={{ fontSize: "14px", maxWidth: "800px" }}
+  >
+    {children}
+  </p>
+);
+
 const meta: Meta = {
   title: "Design Tokens/Fonts",
-  component: () => <div />, // Dummy component as we're rendering complex structure
+  component: () => <div />,
   parameters: {
     docs: {
       description: {
@@ -232,7 +275,6 @@ const meta: Meta = {
     },
     layout: "centered",
   },
-  tags: ["autodocs"],
 };
 
 export default meta;
@@ -241,22 +283,10 @@ type Story = StoryObj<typeof meta>;
 
 export const FontSystem: Story = {
   render: () => (
-    <div style={{ padding: 24, maxWidth: "1200px", margin: "0 auto" }}>
-      <section style={{ marginBottom: 48 }}>
-        <h2
-          style={{
-            fontFamily: "sans-serif",
-            fontWeight: 700,
-            fontSize: 20,
-            marginBottom: 16,
-            borderBottom: "2px solid #006e58",
-            paddingBottom: 6,
-            color: "#006e58",
-          }}
-        >
-          1. Core Typography
-        </h2>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+    <div className={cx("p-4", "mx-auto")} style={{ maxWidth: "1200px" }}>
+      <section className="mb-5">
+        <SectionHeader>1. Core Typography</SectionHeader>
+        <div className={cx("d-flex", "flex-wrap", "gap-3")}>
           {Object.entries(fontTokens.typography).map(([key, data]) => (
             <FontPropertyCard
               key={key}
@@ -279,78 +309,32 @@ export const FontSystem: Story = {
         </div>
       </section>
 
-      <section style={{ marginBottom: 48 }}>
-        <h2
-          style={{
-            fontFamily: "sans-serif",
-            fontWeight: 700,
-            fontSize: 20,
-            marginBottom: 16,
-            borderBottom: "2px solid #006e58",
-            paddingBottom: 6,
-            color: "#006e58",
-          }}
-        >
-          2. Font Sizes (Headings & Display)
-        </h2>
-        <p
-          style={{
-            fontFamily: "sans-serif",
-            fontSize: 14,
-            color: "#666",
-            marginBottom: 24,
-            maxWidth: 800,
-          }}
-        >
+      <section className="mb-5">
+        <SectionHeader>2. Font Sizes (Headings & Display)</SectionHeader>
+        <SectionDescription>
           These tokens define our scalable font sizes, directly mapping to
-          Bootstrap's `.fs-` classes for easy application.
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          {" "}
-          {/* Use column for distinct blocks */}
+          Bootstrap&apos;s `.fs-` classes for easy application.
+        </SectionDescription>
+        <div className={cx("d-flex", "flex-column", "gap-4")}>
           {Object.entries(fontTokens.fontSizes)
             .sort(([, a], [, b]) => parseFloat(b.px) - parseFloat(a.px))
-            .map(
-              (
-                [key, data] // Sort to show largest first
-              ) => (
-                <FontSizeExampleCard
-                  key={key}
-                  token={key}
-                  value={data.value}
-                  px={data.px}
-                />
-              )
-            )}
+            .map(([key, data]) => (
+              <FontSizeExampleCard
+                key={key}
+                token={key}
+                value={data.value}
+                px={data.px}
+              />
+            ))}
         </div>
       </section>
 
       <section>
-        <h2
-          style={{
-            fontFamily: "sans-serif",
-            fontWeight: 700,
-            fontSize: 20,
-            marginBottom: 16,
-            borderBottom: "2px solid #006e58",
-            paddingBottom: 6,
-            color: "#006e58",
-          }}
-        >
-          3. Line Heights
-        </h2>
-        <p
-          style={{
-            fontFamily: "sans-serif",
-            fontSize: 14,
-            color: "#666",
-            marginBottom: 24,
-            maxWidth: 800,
-          }}
-        >
-          These tokens map directly to Bootstrap's `.lh-` classes.
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <SectionHeader>3. Line Heights</SectionHeader>
+        <SectionDescription>
+          These tokens map directly to Bootstrap&apos;s `.lh-` classes.
+        </SectionDescription>
+        <div className={cx("d-flex", "flex-column", "gap-4")}>
           {Object.entries(fontTokens.lineHeight).map(([key, data]) => (
             <LineHeightExampleCard
               key={key}

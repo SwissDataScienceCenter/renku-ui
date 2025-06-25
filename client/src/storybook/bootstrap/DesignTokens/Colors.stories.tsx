@@ -243,7 +243,13 @@ const ColorCard: React.FC<{
   const bg = hex || rgb || "#fff";
   return (
     <div
-      className={cx("rounded-3", "shadow-sm", "overflow-hidden", "font-sans")}
+      className={cx(
+        "rounded-3",
+        "shadow-sm",
+        "border",
+        "overflow-hidden",
+        "font-sans"
+      )}
       style={{ width: 300, height: 280 }}
     >
       {/* Top section: Color display */}
@@ -333,6 +339,7 @@ const TextColorCard: React.FC<{
   return (
     <div
       className={cx(
+        "border",
         "rounded-3",
         "shadow-sm",
         "overflow-hidden",
@@ -342,11 +349,11 @@ const TextColorCard: React.FC<{
         "justify-content-between"
       )}
       style={{
-        width: 300,
+        width: 400,
         minHeight: 120,
         border: `1px solid ${
           bgColor === "#ffffff" ? "#dee2e6" : "transparent"
-        }`, // Keep inline for conditional styling
+        }`,
       }}
     >
       <div
@@ -390,9 +397,8 @@ const BorderColorCard: React.FC<{
   token: string;
   hex: string;
   rgb?: string;
-  notes?: string;
   borderSize: string;
-}> = ({ token, hex, rgb, notes, borderSize }) => {
+}> = ({ token, hex, rgb, borderSize }) => {
   const [copied, setCopied] = useState("");
   const borderColor = hex || rgb || "#fff"; // Use the color for the border
   const displayBg =
@@ -411,12 +417,9 @@ const BorderColorCard: React.FC<{
         token,
         borderSize
       )}
-      style={{ width: 400, height: 180, background: displayBg }}
+      style={{ width: 400, height: 120, background: displayBg }}
     >
-      <div
-        className={cx("p-3", "bg-white", "d-flex", "flex-column")}
-        style={{ height: 120 }}
-      >
+      <div className={cx("p-3", "bg-white", "d-flex", "flex-column")}>
         <div
           className={cx(
             "fs-6",
@@ -471,9 +474,6 @@ const BorderColorCard: React.FC<{
           </div>
         )}
       </div>
-      {notes && (
-        <div className={cx("px-3", "mt-3", "small", "text-muted")}>{notes}</div>
-      )}
     </div>
   );
 };
@@ -558,7 +558,7 @@ const SectionText: React.FC<{ title: string; tokens: { token: string }[] }> = ({
       className={cx("font-sans", "small", "text-muted", "mb-4")}
       style={{ maxWidth: 800 }}
     >
-      They directly correspond to Bootstrap's `.text-*` utility classes.
+      They directly correspond to Bootstrap&apos;s `.text-*` utility classes.
     </p>
     <div className={cx("d-flex", "flex-wrap", "gap-3")}>
       <TextColorCard
@@ -691,7 +691,6 @@ const meta: Meta = {
     },
     layout: "centered",
   },
-  tags: ["autodocs"],
   argTypes: {
     borderSize: {
       options: ["border-1", "border-2", "border-3", "border-4", "border-5"],
@@ -710,29 +709,40 @@ export const ColorPalette: Story = {
     borderSize: "border-1", // Default value for the control
   },
   render: (args) => {
+    const renderSection = (section: { title: string; tokens: any[] }) => {
+      //eslint-disable-line @typescript-eslint/no-explicit-any
+      switch (section.title) {
+        case "5. Text Colors":
+          return (
+            <SectionText
+              key={section.title}
+              title={section.title}
+              tokens={section.tokens}
+            />
+          );
+        case "9. Border Colors":
+        case "7. Subtle Border Colors":
+          return (
+            <SectionBorder
+              key={section.title}
+              title={section.title}
+              tokens={section.tokens}
+              borderSize={args.borderSize}
+            />
+          );
+        default:
+          return (
+            <Section
+              key={section.title}
+              title={section.title}
+              tokens={section.tokens}
+            />
+          );
+      }
+    };
     return (
-      <div className={cx("p-4", "mx-auto")} style={{ maxWidth: "1200px" }}>
-        {transformedSections.map((s) => {
-          if (s.title === "5. Text Colors") {
-            return (
-              <SectionText key={s.title} title={s.title} tokens={s.tokens} />
-            );
-          } else if (
-            s.title === "9. Border Colors" ||
-            s.title === "7. Subtle Border Colors"
-          ) {
-            return (
-              <SectionBorder
-                key={s.title}
-                title={s.title}
-                tokens={s.tokens}
-                borderSize={args.borderSize}
-              />
-            );
-          } else {
-            return <Section key={s.title} title={s.title} tokens={s.tokens} />;
-          }
-        })}
+      <div className="p-4 mx-auto" style={{ maxWidth: "1200px" }}>
+        {transformedSections.map(renderSection)}
       </div>
     );
   },

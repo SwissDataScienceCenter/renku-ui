@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx";
 
-// Define your opacity token data
 const opacityTokens = {
   "bg-opacity-0": {
     value: "0",
@@ -32,39 +31,42 @@ const opacityTokens = {
   },
 };
 
-// Helper component to visualize opacity
 const OpacityExampleCard: React.FC<{
   token: string;
   value: string;
   description: string;
-}> = ({ token, value, description }) => {
+  backgroundColor: string;
+}> = ({ token, value, backgroundColor }) => {
   const [copied, setCopied] = useState("");
   return (
     <div
+      className={cx(
+        "card",
+        "shadow-sm",
+        "overflow-hidden",
+        "font-sans",
+        "d-flex",
+        "flex-column",
+        "justify-content-between",
+        "align-items-center",
+        "p-3",
+        "position-relative"
+      )}
       style={{
         width: 250,
-        height: 230,
-        borderRadius: 8,
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-        overflow: "hidden",
-        fontFamily: "sans-serif",
+        height: 250,
         backgroundColor: "#fff", // Card background
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 16,
-        position: "relative", // For background image
       }}
     >
-      {/* Background for transparency demo */}
       <div
+        className={cx(
+          "position-absolute",
+          "top-0",
+          "start-0",
+          "w-100",
+          "h-100"
+        )}
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
           backgroundImage:
             "linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0)",
           backgroundSize: "20px 20px",
@@ -74,58 +76,60 @@ const OpacityExampleCard: React.FC<{
         }}
       ></div>
 
-      {/* The actual opaque layer */}
       <div
-        className={token} // Apply Bootstrap's bg-opacity class directly
+        className={cx(
+          "position-absolute",
+          "top-0",
+          "start-0",
+          "w-100",
+          "h-100",
+          token, // Apply Bootstrap's bg-opacity class directly
+          backgroundColor, // Apply the selected background color class here
+          "d-flex",
+          "align-items-center",
+          "justify-content-center",
+          value === "0" ? "text-dark" : "text-white", // Adjust text color for visibility on 0 opacity
+          "fw-bold",
+          "fs-5"
+        )}
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
           backgroundColor: "#006e58", // Your primary brand color
           borderRadius: "inherit",
           opacity: parseFloat(value), // Direct opacity for storybook render
           zIndex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: value === "0" ? "#343a40" : "#fff", // Adjust text color for visibility on 0 opacity
-          fontWeight: "bold",
-          fontSize: "1.2rem",
           textShadow: value === "0" ? "none" : "0 0 5px rgba(0,0,0,0.5)",
         }}
       >
         {`${parseFloat(value) * 100}%`}
       </div>
 
-      {/* Text overlay for token info */}
       <div
+        className={cx(
+          "position-relative",
+          "z-2",
+          "bg-white",
+          "rounded",
+          "p-2",
+          "mt-auto",
+          "text-center",
+          "text-dark"
+        )}
         style={{
-          position: "relative",
-          zIndex: 2,
           backgroundColor: "rgba(255,255,255,0.8)", // Semi-transparent white background for text
-          borderRadius: 4,
-          padding: "8px 12px",
-          marginTop: "auto", // Push to bottom
-          textAlign: "center",
-          color: "#343a40",
         }}
       >
-        <div style={{ fontWeight: 600, fontSize: 14 }}>{token}</div>
+        <div className={cx("fw-semibold", "fs-6")}>{token}</div>
         <div
           className={cx("mt-2", "small")}
           onClick={() => token && Copy(token, setCopied)}
         >
           <strong>Token:</strong> <code>{token}</code>
           {copied === token && (
-            <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+            <span className={cx("ms-1", "text-success")}>✓</span>
           )}
           {copied !== token && <CopyIcon />}
         </div>
-        <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>
-          Value: {value}
-        </div>
+        <div className={cx("fs-6", "text-muted", "mt-1")}>Value: {value}</div>
       </div>
     </div>
   );
@@ -143,7 +147,31 @@ const meta: Meta = {
     },
     layout: "centered",
   },
-  tags: ["autodocs"],
+  argTypes: {
+    backgroundColor: {
+      options: [
+        "bg-primary",
+        "bg-secondary",
+        "bg-navy",
+        "bg-success",
+        "bg-info",
+        "bg-warning",
+        "bg-danger",
+        "bg-primary-subtle",
+        "bg-secondary-subtle",
+        "bg-success-subtle",
+        "bg-info-subtle",
+        "bg-warning-subtle",
+        "bg-danger-subtle",
+        "bg-light-subtle",
+        "bg-dark-subtle",
+      ],
+      control: {
+        type: "select",
+      },
+      description: "Sets the base background color for the opaque layer.",
+    },
+  },
 };
 
 export default meta;
@@ -151,42 +179,39 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const OpacityLevels: Story = {
-  render: () => (
-    <div style={{ padding: 24, maxWidth: "1200px", margin: "0 auto" }}>
-      <section>
+  render: (args) => (
+    <div className={cx("p-4", "mx-auto")} style={{ maxWidth: "1200px" }}>
+      <section className="mb-5">
         <h2
-          style={{
-            fontFamily: "sans-serif",
-            fontWeight: 700,
-            fontSize: 20,
-            marginBottom: 16,
-            borderBottom: "2px solid #006e58",
-            paddingBottom: 6,
-            color: "#006e58",
-          }}
+          className={cx(
+            "font-sans",
+            "fw-bold",
+            "fs-5",
+            "mb-3",
+            "border-bottom",
+            "border-2",
+            "border-primary",
+            "pb-2",
+            "text-primary"
+          )}
         >
-          1. Background Opacity (bg-opacity-&lt;value&gt;)
+          Background Opacity (bg-opacity-*)
         </h2>
         <p
-          style={{
-            fontFamily: "sans-serif",
-            fontSize: 14,
-            color: "#666",
-            marginBottom: 24,
-            maxWidth: 800,
-          }}
+          className={cx("font-sans", "small", "text-muted", "mb-4")}
+          style={{ maxWidth: 800 }}
         >
           Visualize the effect of different opacity levels on a solid
           background, showcasing how elements can become more or less
           transparent.
         </p>
         <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 24,
-            justifyContent: "center",
-          }}
+          className={cx(
+            "d-flex",
+            "flex-wrap",
+            "gap-4",
+            "justify-content-center"
+          )}
         >
           {Object.entries(opacityTokens).map(([key, data]) => (
             <OpacityExampleCard
@@ -194,6 +219,7 @@ export const OpacityLevels: Story = {
               token={key}
               value={data.value}
               description={data.description}
+              backgroundColor={args.backgroundColor}
             />
           ))}
         </div>

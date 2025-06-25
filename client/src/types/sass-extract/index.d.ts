@@ -7,7 +7,7 @@ declare module "sass-extract" {
 
   export interface SassValue {
     type: string;
-    value: any;
+    value: unknown;
   }
 
   export interface ExtractedVariables {

@@ -1,25 +1,24 @@
-/// <reference path="../../types/sass-extract/index.d.ts" />
-
 import * as fs from "fs";
-import { renderSync } from "sass-extract";
+import { ExtractedVariables, renderSync } from "sass-extract";
+
 const sassFile = "./src/styles/renku_bootstrap.scss";
 
 function extractSassVariables() {
-  const result = renderSync({
+  return renderSync({
     file: sassFile,
   });
-  return result;
 }
 
 function formatShadowValue(
   shadowArray: any[] | undefined
 ): string | "NotFound" {
+  //eslint-disable-line
   const valueNotFound = "NotFound";
   if (!shadowArray || !Array.isArray(shadowArray)) {
     return valueNotFound;
   }
 
-  let shadowParts: string[] = [];
+  const shadowParts: string[] = [];
 
   shadowArray.forEach((part) => {
     if (part.type === "SassNumber") {
@@ -32,10 +31,12 @@ function formatShadowValue(
   return shadowParts.join(" ");
 }
 
-function mapVariablesToTokens(vars: Record<string, any>) {
-  const globalVars = vars.vars.global || {};
+function mapVariablesToTokens(allTokens: ExtractedVariables) {
+  //eslint-disable-next-line
+  const globalVars = (allTokens as Record<string, any>).vars.global || {};
   const valueNotFound = "NotFound";
   return {
+    //eslint-disable-next-line
     $figmaStyle: "true",
     color: {
       "brand colors": {
@@ -485,7 +486,7 @@ function mapVariablesToTokens(vars: Record<string, any>) {
     },
     lineHeight: {
       "1": {
-        value: 1, // Assuming this is hardcoded 1 for lh-1
+        value: 1,
         type: "lineHeight",
         description: "Tight line height (Bootstrap lh-1)",
         extensions: {
@@ -535,12 +536,16 @@ async function generateTokens() {
     const vars = extractSassVariables();
     const tokens = mapVariablesToTokens(vars);
     fs.writeFileSync(
+      //eslint-disable-next-line
       "src/styles/figma-design-tokens.json",
       JSON.stringify(tokens, null, 2),
+      //eslint-disable-next-line
       "utf8"
     );
+    //eslint-disable-next-line
     console.log("Design tokens JSON generated successfully.");
   } catch (err) {
+    //eslint-disable-next-line
     console.error("Error generating design tokens:", err);
   }
 }

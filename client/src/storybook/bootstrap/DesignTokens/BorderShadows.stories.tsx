@@ -1,8 +1,8 @@
+import cx from "classnames";
 import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx";
 
-// Define your border and shadow token data
 const tokenData = {
   border: {
     "border-width": { value: "1px" },
@@ -45,6 +45,9 @@ const tokenData = {
       value: "50%",
       type: "borderRadius",
       description: "Perfect circle border radius",
+      extensions: {
+        px: "",
+      },
     },
     "rounded-pill": {
       value: "50rem",
@@ -75,90 +78,102 @@ const tokenData = {
   },
 };
 
-// Helper component for generic property display
-const PropertyCard: React.FC<{
+interface PropertyCardProps {
   token: string;
   value: string;
   px?: string;
   notes?: string;
-}> = ({ token, value, px, notes }) => (
+}
+
+const PropertyCard: React.FC<PropertyCardProps> = ({
+  token,
+  value,
+  px,
+  notes,
+}) => (
   <div
-    style={{
-      width: 200,
-      minHeight: 120,
-      borderRadius: 8,
-      boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-      overflow: "hidden",
-      fontFamily: "sans-serif",
-      backgroundColor: "#fff",
-      padding: 16,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-    }}
+    className={cx(
+      "bg-white",
+      "p-3",
+      "border",
+      "rounded",
+      "shadow-sm",
+      "d-flex",
+      "flex-column",
+      "justify-content-between"
+    )}
   >
     <div>
       <div
-        style={{
-          fontWeight: 600,
-          fontSize: 14,
-          marginBottom: 4,
-          color: "#006e58",
-        }}
+        className={cx("fw-semibold", "text-primary", "mb-1")}
+        style={{ fontSize: "14px" }}
       >
         {token}
       </div>
-      <div style={{ fontSize: 13, color: "#333", marginBottom: 4 }}>
+      <div className={cx("text-dark", "mb-1")} style={{ fontSize: "13px" }}>
         Value: <strong>{value}</strong>
       </div>
-      {px && <div style={{ fontSize: 13, color: "#666" }}>PX: {px}</div>}
+      {px && (
+        <div className="text-muted" style={{ fontSize: "13px" }}>
+          PX: {px}
+        </div>
+      )}
     </div>
     {notes && (
-      <div style={{ fontSize: 11, color: "#999", marginTop: "auto" }}>
+      <div className={cx("text-muted", "mt-auto")} style={{ fontSize: "11px" }}>
         {notes}
       </div>
     )}
   </div>
 );
 
-// Helper component to visualize border radius
-const BorderRadiusExampleCard: React.FC<{
+interface BorderRadiusExampleCardProps {
   token: string;
   value: string;
   px: string;
-}> = ({ token, value, px }) => {
+}
+
+const BorderRadiusExampleCard: React.FC<BorderRadiusExampleCardProps> = ({
+  token,
+  value,
+  px,
+}) => {
   const [copied, setCopied] = useState("");
+  const isCircle = token === "rounded-circle";
+
   return (
     <div
+      className={cx(
+        "border",
+        "border-2",
+        "border-primary",
+        "bg-light",
+        "d-flex",
+        "align-items-center",
+        "justify-content-center",
+        "text-center",
+        "flex-column",
+        "shadow-sm",
+        token
+      )}
       style={{
-        width: 200,
-        height: token === "rounded-circle" ? 200 : 150,
-        border: "2px solid #006e58", // Primary brand color border
-        backgroundColor: "#f8f9fa", // Light background
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "sans-serif",
+        width: "200px",
+        height: isCircle ? "200px" : "150px",
         fontSize: "0.8rem",
-        color: "#343a40",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-        flexDirection: "column",
-        textAlign: "center",
       }}
-      className={token}
     >
-      <div style={{ fontWeight: 600 }}>{token}</div>
+      <div className="fw-semibold">{token}</div>
       <div>
         {value} ({px})
       </div>
       <div
-        style={{ fontSize: 13, marginBottom: 4, cursor: "pointer" }}
-        className="mt-3"
+        className={cx("mt-3", "cursor-pointer")}
+        style={{ fontSize: "13px" }}
         onClick={() => token && Copy(token, setCopied)}
       >
         <code>{token}</code>
         {copied === token && (
-          <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+          <span className={cx("ms-1", "text-success")}>✓</span>
         )}
         {copied !== token && <CopyIcon />}
       </div>
@@ -166,43 +181,53 @@ const BorderRadiusExampleCard: React.FC<{
   );
 };
 
-// Helper component to visualize shadows
-const ShadowExampleCard: React.FC<{
+interface ShadowExampleCardProps {
   token: string;
   value: string;
   description: string;
-  cssClass?: string; // For Bootstrap shadow classes
-}> = ({ token, value, description, cssClass }) => {
+  cssClass?: string;
+}
+
+const ShadowExampleCard: React.FC<ShadowExampleCardProps> = ({
+  token,
+  value,
+  description,
+}) => {
   const [copied, setCopied] = useState("");
+
   return (
     <div
+      className={cx(
+        "bg-white",
+        "rounded",
+        "border",
+        "border-light-subtle",
+        "d-flex",
+        "flex-column",
+        "align-items-center",
+        "justify-content-center",
+        "text-center",
+        "p-3"
+      )}
       style={{
-        width: 250,
-        height: 150,
-        borderRadius: 8,
-        backgroundColor: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "sans-serif",
+        width: "250px",
+        height: "150px",
         fontSize: "0.9rem",
-        color: "#343a40",
-        boxShadow: value, // Apply the actual shadow value
-        border: "1px solid #dee2e6", // Subtle border to define the card
-        padding: 16,
-        textAlign: "center",
+        boxShadow: value,
       }}
     >
-      <div style={{ fontWeight: 600, marginBottom: 5 }}>{token}</div>
-      <div style={{ fontSize: "0.85rem", color: "#6c757d" }}>{description}</div>
+      <div className={cx("fw-semibold", "mb-2")}>{token}</div>
+      <div className="text-muted" style={{ fontSize: "0.85rem" }}>
+        {description}
+      </div>
       <div
-        style={{ fontSize: "0.75rem", color: "#999", marginTop: 10 }}
+        className={cx("text-muted", "mt-2", "cursor-pointer")}
+        style={{ fontSize: "0.75rem" }}
         onClick={() => token && Copy(token, setCopied)}
       >
-        <code>{token || `Custom Shadow`}</code>
+        <code>{token || "Custom Shadow"}</code>
         {copied === token && (
-          <span style={{ marginLeft: 4, color: "green" }}>✓</span>
+          <span className={cx("ms-1", "text-success")}>✓</span>
         )}
         {copied !== token && <CopyIcon />}
       </div>
@@ -210,9 +235,38 @@ const ShadowExampleCard: React.FC<{
   );
 };
 
+const SectionHeader: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <h2
+    className={cx(
+      "fw-bold",
+      "text-primary",
+      "border-bottom",
+      "border-primary",
+      "border-2",
+      "pb-2",
+      "mb-3"
+    )}
+  >
+    {children}
+  </h2>
+);
+
+const SectionDescription: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <p
+    className="text-muted mb-4"
+    style={{ fontSize: "14px", maxWidth: "800px" }}
+  >
+    {children}
+  </p>
+);
+
 const meta: Meta = {
   title: "Design Tokens/Borders & Shadows",
-  component: () => <div />, // Dummy component as we're rendering complex structure
+  component: () => <div />,
   parameters: {
     docs: {
       description: {
@@ -222,7 +276,6 @@ const meta: Meta = {
     },
     layout: "centered",
   },
-  tags: ["autodocs"],
 };
 
 export default meta;
@@ -231,33 +284,13 @@ type Story = StoryObj<typeof meta>;
 
 export const BordersAndShadows: Story = {
   render: () => (
-    <div style={{ padding: 24, maxWidth: "1200px", margin: "0 auto" }}>
-      <section style={{ marginBottom: 48 }}>
-        <h2
-          style={{
-            fontFamily: "sans-serif",
-            fontWeight: 700,
-            fontSize: 20,
-            marginBottom: 16,
-            borderBottom: "2px solid #006e58",
-            paddingBottom: 6,
-            color: "#006e58",
-          }}
-        >
-          1. Core Borders
-        </h2>
-        <p
-          style={{
-            fontFamily: "sans-serif",
-            fontSize: 14,
-            color: "#666",
-            marginBottom: 24,
-            maxWidth: 800,
-          }}
-        >
+    <div className={cx("p-4", "mx-auto")} style={{ maxWidth: "1200px" }}>
+      <section className="mb-5">
+        <SectionHeader>1. Core Borders</SectionHeader>
+        <SectionDescription>
           Fundamental properties defining the default appearance of borders.
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+        </SectionDescription>
+        <div className={cx("d-flex", "flex-wrap", "gap-3")}>
           {Object.entries(tokenData.border).map(([key, data]) => (
             <PropertyCard
               key={key}
@@ -275,39 +308,19 @@ export const BordersAndShadows: Story = {
         </div>
       </section>
 
-      <section style={{ marginBottom: 48 }}>
-        <h2
-          style={{
-            fontFamily: "sans-serif",
-            fontWeight: 700,
-            fontSize: 20,
-            marginBottom: 16,
-            borderBottom: "2px solid #006e58",
-            paddingBottom: 6,
-            color: "#006e58",
-          }}
-        >
-          2. Border Radius
-        </h2>
-        <p
-          style={{
-            fontFamily: "sans-serif",
-            fontSize: 14,
-            color: "#666",
-            marginBottom: 24,
-            maxWidth: 800,
-          }}
-        >
-          Defines the roundness of element corners, aligning with Bootstrap's
-          `.rounded-*` classes for consistent visual softness.
-        </p>
+      <section className="mb-5">
+        <SectionHeader>2. Border Radius</SectionHeader>
+        <SectionDescription>
+          Defines the roundness of element corners, aligning with
+          Bootstrap&apos;s `.rounded-*` classes for consistent visual softness.
+        </SectionDescription>
         <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 24,
-            justifyContent: "center",
-          }}
+          className={cx(
+            "d-flex",
+            "flex-wrap",
+            "gap-4",
+            "justify-content-center"
+          )}
         >
           {Object.entries(tokenData.borderRadius).map(([key, data]) => (
             <BorderRadiusExampleCard
@@ -321,40 +334,19 @@ export const BordersAndShadows: Story = {
       </section>
 
       <section>
-        <h2
-          style={{
-            fontFamily: "sans-serif",
-            fontWeight: 700,
-            fontSize: 20,
-            marginBottom: 16,
-            borderBottom: "2px solid #006e58",
-            paddingBottom: 6,
-            color: "#006e58",
-          }}
-        >
-          3. Box Shadows
-        </h2>
-        <p
-          style={{
-            fontFamily: "sans-serif",
-            fontSize: 14,
-            color: "#666",
-            marginBottom: 24,
-            maxWidth: 800,
-          }}
-        >
+        <SectionHeader>3. Box Shadows</SectionHeader>
+        <SectionDescription>
           Adds depth and visual hierarchy using predefined shadow values,
-          directly corresponding to Bootstrap's `.shadow-*` classes.
-        </p>
+          directly corresponding to Bootstrap&apos;s `.shadow-*` classes.
+        </SectionDescription>
         <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 24,
-            justifyContent: "center",
-          }}
+          className={cx(
+            "d-flex",
+            "flex-wrap",
+            "gap-4",
+            "justify-content-center"
+          )}
         >
-          {/* Manually mapping to ensure correct Bootstrap classes are mentioned */}
           <ShadowExampleCard
             token="shadow-sm"
             value={tokenData.shadow["shadow-sm"].value}
@@ -377,7 +369,7 @@ export const BordersAndShadows: Story = {
             token="shadow-inset"
             value={tokenData.shadow["shadow-inset"].value}
             description={tokenData.shadow["shadow-inset"].description}
-            cssClass="shadow-inset " // Inset isn't a direct Bootstrap class
+            cssClass="shadow-inset"
           />
         </div>
       </section>
