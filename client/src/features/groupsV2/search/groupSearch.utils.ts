@@ -21,122 +21,18 @@ import {
   KEY_VALUE_SEPARATOR,
   TERM_SEPARATOR,
 } from "../../../features/searchV2/searchV2.constants";
-
-// TYPES
-interface FilterValue {
-  value: string;
-  label: string;
-}
-
-type FilterType = "string" | "enum" | "number";
-
-interface BaseFilter {
-  name: string;
-  label: string;
-  type: FilterType;
-}
-
-interface StringFilter extends BaseFilter {
-  type: "string";
-  defaultValue?: string;
-}
-
-interface EnumFilter extends BaseFilter {
-  type: "enum";
-  allowedValues: FilterValue[];
-  defaultValue?: string;
-}
-
-interface NumberFilter extends BaseFilter {
-  type: "number";
-  maxValues?: number;
-  minValues?: number;
-  defaultValue?: number;
-}
-
-export type Filter = StringFilter | EnumFilter | NumberFilter;
-
-// CONSTANTS
-const FILTER_PAGE: NumberFilter = {
-  name: "page",
-  label: "Page",
-  type: "number",
-  defaultValue: 1,
-  minValues: 1,
-};
-
-const FILTER_PER_PAGE: NumberFilter = {
-  name: "perPage",
-  label: "Per page",
-  type: "number",
-  defaultValue: 10,
-  minValues: 1,
-  maxValues: 100,
-};
-
-const FILTER_QUERY: StringFilter = {
-  name: "q",
-  label: "Query",
-  type: "string",
-  defaultValue: "",
-};
-
-const FILTER_CONTENT: EnumFilter = {
-  name: "type",
-  label: "Content",
-  type: "enum",
-  allowedValues: [
-    { value: "project", label: "Project" },
-    { value: "dataconnector", label: "Data Connector" },
-  ],
-  defaultValue: "project",
-};
-
-const FILTER_MEMBER: StringFilter = {
-  name: "member",
-  label: "Group member",
-  type: "string",
-};
-
-const FILTER_KEWORD: StringFilter = {
-  name: "keyword",
-  label: "Keyword",
-  type: "string",
-};
-
-const FILTER_VISIBILITY: EnumFilter = {
-  name: "visibility",
-  label: "Visibility",
-  type: "enum",
-  allowedValues: [
-    { value: "public", label: "Public" },
-    { value: "private", label: "Private" },
-  ],
-};
-
-const COMMON_FILTERS: Filter[] = [
+import { SearchQueryFilters } from "~/features/searchV2/searchV2.types";
+import { Filter } from "./groupSearch.types";
+import {
+  COMMON_FILTERS,
+  DATACONNECTORS_FILTERS,
   FILTER_CONTENT,
   FILTER_PAGE,
   FILTER_PER_PAGE,
   FILTER_QUERY,
-];
-
-export const PROJECT_FILTERS: Filter[] = [
-  FILTER_MEMBER,
-  FILTER_KEWORD,
-  FILTER_VISIBILITY,
-];
-
-export const DATACONNECTORS_FILTERS: Filter[] = [
-  FILTER_KEWORD,
-  FILTER_VISIBILITY,
-];
-
-export type SearchQueryFilters = Partial<Record<string, string | number>>;
-
-// export function parseSearchQuery(searchParams: URLSearchParams) {
-//   getSearchQueryFilters(searchParams, COMMON_FILTERS);
-// }
+  PROJECT_FILTERS,
+  SELECTABLE_FILTERS,
+} from "./groupsSearch.constants";
 
 export function getSearchQueryFilters(
   searchParams: URLSearchParams,
@@ -168,31 +64,31 @@ export function getSearchQueryMissingFilters(
 }
 
 export function generateQueryParams(
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
+  groupSlug?: string
 ): SearchQuery {
   const commonFilters = getSearchQueryFilters(searchParams, COMMON_FILTERS);
-  // const specificFilters = getSearchQueryFilters(
-  //   searchParams,
-  //   searchParams.get("type") === "dataconnector"
-  //     ? DATACONNECTORS_FILTERS
-  //     : PROJECT_FILTERS
-  // );
   const queryFilters = getSearchQueryFilters(searchParams, [
     FILTER_CONTENT,
     ...(searchParams.get("type") === "dataconnector"
       ? DATACONNECTORS_FILTERS
       : PROJECT_FILTERS),
   ]);
-
-  const queryFiltersProcessed = Object.entries(queryFilters).reduce<string[]>(
-    (acc, [key, value]) => {
-      if (value !== undefined) {
-        acc = [...acc, `${key}${KEY_VALUE_SEPARATOR}${value}`];
+  const queryFiltersForGroup = groupSlug
+    ? {
+        ...queryFilters,
+        namespace: groupSlug,
       }
-      return acc;
-    },
-    []
-  );
+    : queryFilters;
+
+  const queryFiltersProcessed = Object.entries(queryFiltersForGroup).reduce<
+    string[]
+  >((acc, [key, value]) => {
+    if (value !== undefined) {
+      acc = [...acc, `${key}${KEY_VALUE_SEPARATOR}${value}`];
+    }
+    return acc;
+  }, []);
 
   const query = [
     ...queryFiltersProcessed,
@@ -205,4 +101,21 @@ export function generateQueryParams(
     per_page: (commonFilters[FILTER_PER_PAGE.name] ??
       FILTER_PER_PAGE.defaultValue) as number,
   };
+}
+
+export function getQueryHumanReadable(
+  searchParams: URLSearchParams,
+  filters: Filter[] = SELECTABLE_FILTERS
+): string {
+  const queryFilters = getSearchQueryFilters(searchParams, filters);
+  const queryParts = Object.entries(queryFilters).reduce<string[]>(
+    (acc, [key, value]) => {
+      if (value !== undefined) {
+        acc.push(`${key}: ${value}`);
+      }
+      return acc;
+    },
+    []
+  );
+  return queryParts.join(", ");
 }

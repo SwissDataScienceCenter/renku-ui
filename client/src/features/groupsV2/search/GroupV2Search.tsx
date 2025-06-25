@@ -32,14 +32,23 @@ import {
   Row,
   UncontrolledAccordion,
 } from "reactstrap";
-// import { useGroup } from "../show/GroupPageContainer";
+import { useGroup } from "../show/GroupPageContainer";
 import { useSearchParams } from "react-router";
 import { Loader } from "~/components/Loader";
 import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api.ts";
 import {
   generateQueryParams,
+  getQueryHumanReadable,
   getSearchQueryMissingFilters,
 } from "./groupSearch.utils";
+import { Filter, GroupSearchEntity } from "./groupSearch.types";
+import {
+  FILTER_CONTENT,
+  FILTER_PAGE,
+  FILTER_PER_PAGE,
+  FILTER_VISIBILITY,
+} from "./groupsSearch.constants";
+import Pagination from "~/components/Pagination";
 
 export default function GroupV2Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -65,8 +74,11 @@ export default function GroupV2Search() {
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Row>
-        <Col>
+        <Col xs={12}>
           <GroupSearchQueryInput />
+        </Col>
+        <Col xs={12}>
+          <GroupSearchResultRecap />
         </Col>
       </Row>
       <Row>
@@ -104,6 +116,14 @@ function GroupSearchQueryInput() {
       const newParams = new URLSearchParams(searchParams);
       newParams.set("q", data.query);
       setSearchParams(newParams, { replace: true });
+
+      const page_default_value = (
+        FILTER_PAGE.defaultValue as number
+      ).toString();
+      if (newParams.get(FILTER_PAGE.name) !== page_default_value) {
+        newParams.set(FILTER_PAGE.name, page_default_value);
+      }
+      setSearchParams(newParams);
     },
     [searchParams, setSearchParams]
   );
@@ -143,55 +163,63 @@ function GroupSearchQueryInput() {
   );
 }
 
-// ! TODO: add this back
-{
-  /* <GroupSearchResultRecap
-        query={query}
-        total={data?.pagingInfo.totalResult}
-        isFetching={isFetching}
-      /> */
-}
+function GroupSearchResultRecap() {
+  // Get the query and results data
+  const [searchParams] = useSearchParams();
+  const { group } = useGroup();
+  const params = useMemo(
+    () => generateQueryParams(searchParams, group.slug),
+    [group.slug, searchParams]
+  );
 
-// interface GroupSearchResultRecapProps {
-//   query?: string;
-//   total?: number;
-//   isFetching: boolean;
-// }
-// function GroupSearchResultRecap({
-//   query,
-//   total,
-//   isFetching,
-// }: GroupSearchResultRecapProps) {
-//   return (
-//     <p className="mb-0">
-//       {isFetching ? (
-//         "Loading results"
-//       ) : (
-//         <>
-//           {total ? total : "No"} {total && total > 1 ? "results" : "result"}
-//         </>
-//       )}
-//       {query && (
-//         <>
-//           {" "}
-//           for <span className="fw-bold">{`"${query}"`}</span>
-//         </>
-//       )}
-//     </p>
-//   );
-// }
+  const { data, isFetching } = useGetSearchQueryQuery({
+    params,
+  });
+  const total = data?.pagingInfo.totalResult;
+
+  const filters = getQueryHumanReadable(searchParams);
+  const query = searchParams.get("q") ?? "";
+
+  return (
+    <p className="mb-0">
+      {isFetching ? (
+        "Fetching results"
+      ) : (
+        <>
+          {total ? total : "No"} {total && total > 1 ? "results" : "result"}
+        </>
+      )}
+      {query && (
+        <>
+          {" "}
+          for <span className="fw-semibold">{`"${query}"`}</span>
+        </>
+      )}
+      {filters && (
+        <>
+          {" "}
+          (filtered by <span className="fst-italic">{`"${filters}"`}</span>)
+        </>
+      )}
+    </p>
+  );
+}
 
 function GroupSearchFilters() {
   return (
-    <div>
-      <h4 className="d-sm-none">Filters</h4>
+    <div className={cx("d-flex", "flex-column", "gap-3", "mb-3")}>
+      <h4 className={cx("d-sm-none", "mb-0")}>Filters</h4>
 
-      <GroupSearchFilterContent />
+      <GroupSearchFilter filter={FILTER_CONTENT} />
+      <GroupSearchFilter filter={FILTER_VISIBILITY} />
     </div>
   );
 }
 
-function GroupSearchFilterContent() {
+interface GroupSearchFilterProps {
+  filter: Filter;
+}
+function GroupSearchFilter({ filter }: GroupSearchFilterProps) {
   return (
     <>
       <UncontrolledAccordion
@@ -201,66 +229,79 @@ function GroupSearchFilterContent() {
       >
         <AccordionItem data-cy="search-group-filter-content">
           <AccordionHeader targetId="search-group-filter-content">
-            <h6 className={cx("fw-semibold", "mb-0")}>Content</h6>
+            <h6 className={cx("fw-semibold", "mb-0")}>{filter.label}</h6>
           </AccordionHeader>
           <AccordionBody accordionId="search-group-filter-content">
-            <Row className={cx("g-3", "g-sm-0")}>
-              <GroupSearchFilterContentMain visualization="accordion" />
+            <Row className={cx("g-2", "g-sm-0")}>
+              <GroupSearchFilterContent
+                filter={filter}
+                visualization="accordion"
+              />
             </Row>
           </AccordionBody>
         </AccordionItem>
       </UncontrolledAccordion>
       <ListGroup flush className={cx("d-none", "d-sm-block")}>
         <ListGroupItem
-          className={cx("mb-3", "px-0", "pt-0")}
+          className={cx("border-bottom", "px-0", "pt-0")}
           data-cy="search-group-filter-content"
         >
-          <h6 className="fw-semibold">Content</h6>
-          <GroupSearchFilterContentMain visualization="list" />
+          <h6 className="fw-semibold">{filter.label}</h6>
+          <GroupSearchFilterContent filter={filter} visualization="list" />
         </ListGroupItem>
       </ListGroup>
     </>
   );
 }
 
-interface GroupSearchFilterPropsMain {
-  visualization: "accordion" | "list";
+interface GroupSearchFilterContentProps {
+  filter: Filter;
+  visualization?: "accordion" | "list";
 }
-function GroupSearchFilterContentMain({
-  visualization,
-}: GroupSearchFilterPropsMain) {
+function GroupSearchFilterContent({
+  filter,
+  visualization = "list",
+}: GroupSearchFilterContentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const current = searchParams.get("type") ?? "";
+  const current = searchParams.get(filter.name) ?? "";
 
   const onChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams);
-      params.set("type", value);
+      if (filter.type === "enum" && filter.doNotPassEmpty && !value) {
+        params.delete(filter.name);
+      } else {
+        params.set(filter.name, value);
+      }
+      const page_default_value = (
+        FILTER_PAGE.defaultValue as number
+      ).toString();
+      if (params.get(FILTER_PAGE.name) !== page_default_value) {
+        params.set(FILTER_PAGE.name, page_default_value);
+      }
       setSearchParams(params);
     },
-    [searchParams, setSearchParams]
+    [filter, searchParams, setSearchParams]
   );
 
-  return (
-    <div data-cy="group-search-filter-content">
-      <GroupSearchFilterRadioElement
-        identifier="group-search-filter-content-project"
-        isChecked={current === "project"}
-        visualization={visualization}
-        onChange={() => onChange("project")}
-      >
-        Project
-      </GroupSearchFilterRadioElement>
-      <GroupSearchFilterRadioElement
-        identifier="group-search-filter-content-dataconnector"
-        isChecked={current === "dataconnector"}
-        visualization={visualization}
-        onChange={() => onChange("dataconnector")}
-      >
-        Data
-      </GroupSearchFilterRadioElement>
-    </div>
-  );
+  const content =
+    filter.type === "enum" ? (
+      <>
+        {filter.allowedValues.map((radio) => (
+          <GroupSearchFilterRadioElement
+            key={radio.value}
+            identifier={`group-search-filter-content-${filter.name}-${radio.value}`}
+            isChecked={current === radio.value}
+            visualization={visualization}
+            onChange={() => onChange(radio.value)}
+          >
+            {radio.label}
+          </GroupSearchFilterRadioElement>
+        ))}
+      </>
+    ) : null;
+
+  return content;
 }
 
 interface GroupSearchFilterRadioElementProps {
@@ -278,25 +319,14 @@ function GroupSearchFilterRadioElement({
   visualization,
 }: GroupSearchFilterRadioElementProps) {
   return (
-    // <div>
-    //   <h6 className={cx("fw-semibold", "mb-0")}>Content</h6>
-    //   <div className={cx("form-check")}>
-    //     <input
-    //       className={cx("form-check-input")}
-    //       data-cy="group-search-filter-content"
-    //       id="group-search-filter-content"
-    //       type="checkbox"
-    //     />
-    //     <label
-    //       className={cx("form-check-label", "ps-2")}
-    //       htmlFor="group-search-filter-content"
-    //     >
-    //       Content Filter
-    //     </label>
-    //   </div>
-    // </div>
-
-    <div className={cx(visualization === "accordion" ? "w-100" : "d-flex")}>
+    <div
+      className={cx(
+        visualization === "accordion" ? "w-100" : "d-flex",
+        "p-1",
+        "rounded-2",
+        isChecked && "bg-body-secondary"
+      )}
+    >
       <input
         checked={isChecked}
         className={cx(
@@ -326,36 +356,62 @@ function GroupSearchFilterRadioElement({
 function GroupSearchResults() {
   // Load and visualize the search results
   const [searchParams] = useSearchParams();
+  const { group } = useGroup();
   const params = useMemo(
-    () => generateQueryParams(searchParams),
-    [searchParams]
+    () => generateQueryParams(searchParams, group.slug),
+    [group.slug, searchParams]
   );
 
   const { data } = useGetSearchQueryQuery({
     params,
   });
 
-  // ! TODO: Add some visualization
-
   return (
     <div>
-      <h4>Results</h4>
-      {data?.items?.length && (
-        <ul>
-          {data.items.map((item) => (
-            <li key={item.id}>
-              <p>{item.slug}</p>
-            </li>
-          ))}
-        </ul>
+      <h4 className={cx("d-block", "d-sm-none")}>Results</h4>
+
+      {data?.items?.length ? (
+        <>
+          <ListGroup className="mb-3">
+            {data.items.map((item) => {
+              return (
+                <SearchResultListItem
+                  key={item.id}
+                  item={item as GroupSearchEntity}
+                />
+              );
+            })}
+          </ListGroup>
+          <Pagination
+            currentPage={
+              (searchParams.get(FILTER_PAGE.name) ??
+                FILTER_PAGE.defaultValue) as number
+            }
+            perPage={
+              (searchParams.get(FILTER_PER_PAGE.name) ??
+                FILTER_PER_PAGE.defaultValue) as number
+            }
+            totalItems={data?.pagingInfo.totalResult ?? 0}
+            pageQueryParam="page"
+            showDescription={true}
+          />
+        </>
+      ) : (
+        <p className="text-muted">Nothing here. Try another search.</p>
       )}
     </div>
   );
 }
 
-// ! TODO: implement the useGetQuery hook to get the search query from the URL
-// ! Check what we do in the search page and, hopefully, re-use that
-// function useGetQuery(): string {
-//   const [searchParams] = useSearchParams();
-//   return searchParams.get("q") ?? "";
-// }
+interface SearchResultListItemProps {
+  item: GroupSearchEntity;
+}
+function SearchResultListItem({ item }: SearchResultListItemProps) {
+  return (
+    <ListGroupItem>
+      <h5 className="mb-1">{item.name}</h5>
+      <p>{item.path}</p>
+      <p>{item.slug}</p>
+    </ListGroupItem>
+  );
+}
