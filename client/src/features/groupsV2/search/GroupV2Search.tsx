@@ -268,7 +268,10 @@ function GroupSearchFilters() {
 
       <GroupSearchFilter filter={filterContentWithQuantities} />
       <GroupSearchFilter filter={FILTER_VISIBILITY} />
-      <GroupSearchFilter filter={filterKeywordWithQuantities} />
+      <GroupSearchFilter
+        defaultElementsToShow={10}
+        filter={filterKeywordWithQuantities}
+      />
     </div>
   );
 }
