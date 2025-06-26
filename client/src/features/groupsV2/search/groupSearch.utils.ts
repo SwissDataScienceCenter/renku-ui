@@ -32,6 +32,7 @@ import {
   FILTER_QUERY,
   PROJECT_FILTERS,
   SELECTABLE_FILTERS,
+  VALUE_SEPARATOR_AND,
 } from "./groupsSearch.constants";
 
 export function getSearchQueryFilters(
@@ -86,7 +87,13 @@ export function generateQueryParams(
     string[]
   >((acc, [key, value]) => {
     if (!ignoredParams.includes(key) && value !== undefined) {
-      acc = [...acc, `${key}${KEY_VALUE_SEPARATOR}${value}`];
+      const values =
+        typeof value === "string" && value.includes(VALUE_SEPARATOR_AND)
+          ? value.split(VALUE_SEPARATOR_AND)
+          : [value];
+      for (const value of values) {
+        acc = [...acc, `${key}${KEY_VALUE_SEPARATOR}${value}`];
+      }
     }
     return acc;
   }, []);
@@ -96,7 +103,7 @@ export function generateQueryParams(
     commonFilters[FILTER_QUERY.name],
   ].join(TERM_SEPARATOR);
   return {
-    q: query,
+    q: query.trim(),
     page: (commonFilters[FILTER_PAGE.name] ??
       (FILTER_PAGE.defaultValue as number)) as number,
     per_page: (commonFilters[FILTER_PER_PAGE.name] ??

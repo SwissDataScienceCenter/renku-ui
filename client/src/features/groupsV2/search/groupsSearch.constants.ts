@@ -23,6 +23,8 @@ import {
   StringFilter,
 } from "./groupSearch.types";
 
+export const VALUE_SEPARATOR_AND = "+";
+
 export const FILTER_PAGE: NumberFilter = {
   name: "page",
   label: "Page",
@@ -55,6 +57,7 @@ export const FILTER_CONTENT: EnumFilter = {
     { value: "Project", label: "Project" },
     { value: "DataConnector", label: "Data Connector" },
   ],
+  allowSelectMany: false,
   defaultValue: "Project",
 };
 
@@ -64,10 +67,13 @@ export const FILTER_MEMBER: StringFilter = {
   type: "string",
 };
 
-export const FILTER_KEYWORD: StringFilter = {
+export const FILTER_KEYWORD: EnumFilter = {
   name: "keyword",
   label: "Keyword",
-  type: "string",
+  type: "enum",
+  allowedValues: [],
+  allowSelectMany: true,
+  doNotPassEmpty: true,
 };
 
 export const FILTER_VISIBILITY: EnumFilter = {
@@ -79,6 +85,7 @@ export const FILTER_VISIBILITY: EnumFilter = {
     { value: "public", label: "Public" },
     { value: "private", label: "Private" },
   ],
+  allowSelectMany: false,
   doNotPassEmpty: true,
 };
 

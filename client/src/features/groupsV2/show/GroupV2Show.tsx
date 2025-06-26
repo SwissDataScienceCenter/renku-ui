@@ -44,7 +44,7 @@ export default function GroupV2Show() {
                   className={cx("btn", "btn-primary")}
                   to={{
                     pathname: RELATIVE_ROUTES.v2.groups.show.search,
-                    search: new URLSearchParams({ type: "project" }).toString(),
+                    search: new URLSearchParams({ type: "Project" }).toString(),
                   }}
                 >
                   View all the group projects
@@ -65,7 +65,7 @@ export default function GroupV2Show() {
                   to={{
                     pathname: RELATIVE_ROUTES.v2.groups.show.search,
                     search: new URLSearchParams({
-                      type: "dataconnector",
+                      type: "DataConnector",
                     }).toString(),
                   }}
                 >
