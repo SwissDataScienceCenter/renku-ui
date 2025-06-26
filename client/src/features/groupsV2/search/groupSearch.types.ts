@@ -19,35 +19,36 @@
 import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api";
 
 interface FilterValue {
-  value: string;
   label: string;
+  quantity?: number;
+  value: string;
 }
 
-type FilterType = "string" | "enum" | "number";
+type FilterType = "enum" | "number" | "string";
 
 interface BaseFilter {
-  name: string;
   label: string;
+  name: string;
   type: FilterType;
 }
 
 export interface StringFilter extends BaseFilter {
-  type: "string";
   defaultValue?: string;
+  type: "string";
 }
 
 export interface EnumFilter extends BaseFilter {
-  type: "enum";
   allowedValues: FilterValue[];
   defaultValue?: string;
   doNotPassEmpty?: boolean;
+  type: "enum";
 }
 
 export interface NumberFilter extends BaseFilter {
-  type: "number";
+  defaultValue?: number;
   maxValues?: number;
   minValues?: number;
-  defaultValue?: number;
+  type: "number";
 }
 
 export type Filter = StringFilter | EnumFilter | NumberFilter;

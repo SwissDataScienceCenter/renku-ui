@@ -19,10 +19,12 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { generatePath, Link, useSearchParams } from "react-router";
 import {
   AccordionBody,
   AccordionHeader,
   AccordionItem,
+  Badge,
   Button,
   Col,
   Form,
@@ -32,23 +34,24 @@ import {
   Row,
   UncontrolledAccordion,
 } from "reactstrap";
-import { useGroup } from "../show/GroupPageContainer";
-import { useSearchParams } from "react-router";
 import { Loader } from "~/components/Loader";
-import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api.ts";
+import Pagination from "~/components/Pagination";
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import { useGroupSearch } from "./groupSearch.hook";
+import { Filter, GroupSearchEntity } from "./groupSearch.types";
 import {
-  generateQueryParams,
   getQueryHumanReadable,
   getSearchQueryMissingFilters,
 } from "./groupSearch.utils";
-import { Filter, GroupSearchEntity } from "./groupSearch.types";
 import {
   FILTER_CONTENT,
+  FILTER_KEYWORD,
   FILTER_PAGE,
   FILTER_PER_PAGE,
   FILTER_VISIBILITY,
 } from "./groupsSearch.constants";
-import Pagination from "~/components/Pagination";
 
 export default function GroupV2Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -166,15 +169,8 @@ function GroupSearchQueryInput() {
 function GroupSearchResultRecap() {
   // Get the query and results data
   const [searchParams] = useSearchParams();
-  const { group } = useGroup();
-  const params = useMemo(
-    () => generateQueryParams(searchParams, group.slug),
-    [group.slug, searchParams]
-  );
+  const { data, isFetching } = useGroupSearch();
 
-  const { data, isFetching } = useGetSearchQueryQuery({
-    params,
-  });
   const total = data?.pagingInfo.totalResult;
 
   const filters = getQueryHumanReadable(searchParams);
@@ -206,12 +202,65 @@ function GroupSearchResultRecap() {
 }
 
 function GroupSearchFilters() {
+  const [searchParams] = useSearchParams();
+  const { data: search } = useGroupSearch();
+  const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
+
+  // Add numbers to the content types. Mind that this requires an additional request.
+  const hydratedFilterContentAllowedValues = useMemo(() => {
+    return FILTER_CONTENT.allowedValues.map((option) => ({
+      ...option,
+      quantity: searchAnyType?.facets?.entityType?.[option.value] ?? 0,
+    }));
+  }, [searchAnyType?.facets?.entityType]);
+  const filterContentWithQuantities = useMemo<Filter>(() => {
+    return {
+      ...FILTER_CONTENT,
+      allowedValues: hydratedFilterContentAllowedValues,
+    };
+  }, [hydratedFilterContentAllowedValues]);
+
+  // Create the enum element for keywords with quantities. We add the current keyword if missing.
+  const hydratedFilterKeywordAllowedValues = useMemo(() => {
+    return Object.entries(search?.facets?.keywords ?? {}).map(
+      ([value, quantity]) => ({
+        value,
+        label: value,
+        quantity,
+      })
+    );
+  }, [search?.facets?.keywords]);
+  if (
+    searchParams.get(FILTER_KEYWORD.name) &&
+    !hydratedFilterKeywordAllowedValues.some(
+      (v) => v.label === searchParams.get(FILTER_KEYWORD.name)
+    )
+  ) {
+    hydratedFilterKeywordAllowedValues.unshift({
+      value: searchParams.get(FILTER_KEYWORD.name) ?? "",
+      label: searchParams.get(FILTER_KEYWORD.name) ?? "",
+      quantity: 0,
+    });
+  }
+  const filterKeywordWithQuantities = useMemo<Filter>(() => {
+    return {
+      ...FILTER_KEYWORD,
+      type: "enum",
+      doNotPassEmpty: true,
+      allowedValues: [
+        { value: "", label: "Any" },
+        ...hydratedFilterKeywordAllowedValues,
+      ],
+    };
+  }, [hydratedFilterKeywordAllowedValues]);
+
   return (
     <div className={cx("d-flex", "flex-column", "gap-3", "mb-3")}>
       <h4 className={cx("d-sm-none", "mb-0")}>Filters</h4>
 
-      <GroupSearchFilter filter={FILTER_CONTENT} />
+      <GroupSearchFilter filter={filterContentWithQuantities} />
       <GroupSearchFilter filter={FILTER_VISIBILITY} />
+      <GroupSearchFilter filter={filterKeywordWithQuantities} />
     </div>
   );
 }
@@ -287,17 +336,22 @@ function GroupSearchFilterContent({
   const content =
     filter.type === "enum" ? (
       <>
-        {filter.allowedValues.map((radio) => (
-          <GroupSearchFilterRadioElement
-            key={radio.value}
-            identifier={`group-search-filter-content-${filter.name}-${radio.value}`}
-            isChecked={current === radio.value}
-            visualization={visualization}
-            onChange={() => onChange(radio.value)}
-          >
-            {radio.label}
-          </GroupSearchFilterRadioElement>
-        ))}
+        {filter.allowedValues.map((radio) => {
+          return (
+            <GroupSearchFilterRadioElement
+              key={radio.value}
+              identifier={`group-search-filter-content-${filter.name}-${radio.value}`}
+              isChecked={current === radio.value}
+              visualization={visualization}
+              onChange={() => onChange(radio.value)}
+            >
+              {radio.label}
+              {radio.quantity !== undefined ? (
+                <Badge className="ms-1">{radio.quantity}</Badge>
+              ) : null}
+            </GroupSearchFilterRadioElement>
+          );
+        })}
       </>
     ) : null;
 
@@ -356,15 +410,7 @@ function GroupSearchFilterRadioElement({
 function GroupSearchResults() {
   // Load and visualize the search results
   const [searchParams] = useSearchParams();
-  const { group } = useGroup();
-  const params = useMemo(
-    () => generateQueryParams(searchParams, group.slug),
-    [group.slug, searchParams]
-  );
-
-  const { data } = useGetSearchQueryQuery({
-    params,
-  });
+  const { data } = useGroupSearch();
 
   return (
     <div>
@@ -407,11 +453,50 @@ interface SearchResultListItemProps {
   item: GroupSearchEntity;
 }
 function SearchResultListItem({ item }: SearchResultListItemProps) {
+  const sortedKeywords = useMemo(() => {
+    if (!item.keywords) return [];
+    return item.keywords
+      .map((keyword) => keyword.trim())
+      .sort((a, b) => a.localeCompare(b));
+  }, [item.keywords]);
+
   return (
-    <ListGroupItem>
-      <h5 className="mb-1">{item.name}</h5>
-      <p>{item.path}</p>
-      <p>{item.slug}</p>
-    </ListGroupItem>
+    <Link
+      className={cx(
+        "link-primary",
+        "text-body",
+        "text-decoration-none",
+        "list-group-item",
+        "list-group-item-action"
+      )}
+      to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+        namespace: item.namespace?.path ?? "",
+        slug: item.slug,
+      })}
+    >
+      <ListGroupItem>
+        <h5 className="mb-1">{item.name}</h5>
+        <p>{item.path}</p>
+        <p>{item.slug}</p>
+        <KeywordContainer>
+          {sortedKeywords.map((keyword, index) => (
+            <KeywordBadge key={index}>{keyword}</KeywordBadge>
+          ))}
+        </KeywordContainer>
+      </ListGroupItem>
+    </Link>
   );
+
+  // return (
+  //   <ListGroupItem>
+  //     <h5 className="mb-1">{item.name}</h5>
+  //     <p>{item.path}</p>
+  //     <p>{item.slug}</p>
+  //     <KeywordContainer>
+  //       {sortedKeywords.map((keyword, index) => (
+  //         <KeywordBadge key={index}>{keyword}</KeywordBadge>
+  //       ))}
+  //     </KeywordContainer>
+  //   </ListGroupItem>
+  // );
 }

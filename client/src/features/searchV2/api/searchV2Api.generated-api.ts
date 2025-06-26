@@ -132,6 +132,7 @@ export type MapEntityTypeInt = {
 };
 export type FacetData = {
   entityType: MapEntityTypeInt;
+  keywords: MapEntityTypeInt;
 };
 export type PageDef = {
   limit: number;
