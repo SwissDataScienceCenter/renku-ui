@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { generatePath, Link, useSearchParams } from "react-router";
 import {
@@ -46,6 +46,7 @@ import {
   getSearchQueryMissingFilters,
 } from "./groupSearch.utils";
 import {
+  DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
   FILTER_KEYWORD,
   FILTER_PAGE,
@@ -273,9 +274,13 @@ function GroupSearchFilters() {
 }
 
 interface GroupSearchFilterProps {
+  defaultElementsToShow?: number;
   filter: Filter;
 }
-function GroupSearchFilter({ filter }: GroupSearchFilterProps) {
+function GroupSearchFilter({
+  defaultElementsToShow = DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
+  filter,
+}: GroupSearchFilterProps) {
   return (
     <>
       <UncontrolledAccordion
@@ -290,6 +295,7 @@ function GroupSearchFilter({ filter }: GroupSearchFilterProps) {
           <AccordionBody accordionId="search-group-filter-content">
             <Row className={cx("g-2", "g-sm-0")}>
               <GroupSearchFilterContent
+                defaultElementsToShow={defaultElementsToShow}
                 filter={filter}
                 visualization="accordion"
               />
@@ -303,7 +309,11 @@ function GroupSearchFilter({ filter }: GroupSearchFilterProps) {
           data-cy="search-group-filter-content"
         >
           <h6 className="fw-semibold">{filter.label}</h6>
-          <GroupSearchFilterContent filter={filter} visualization="list" />
+          <GroupSearchFilterContent
+            defaultElementsToShow={defaultElementsToShow}
+            filter={filter}
+            visualization="list"
+          />
         </ListGroupItem>
       </ListGroup>
     </>
@@ -311,14 +321,17 @@ function GroupSearchFilter({ filter }: GroupSearchFilterProps) {
 }
 
 interface GroupSearchFilterContentProps {
+  defaultElementsToShow?: number;
   filter: Filter;
   visualization?: "accordion" | "list";
 }
 function GroupSearchFilterContent({
+  defaultElementsToShow,
   filter,
   visualization = "list",
 }: GroupSearchFilterContentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showAll, setShowAll] = useState(false);
   const current = searchParams.get(filter.name) ?? "";
   const allowSelectMany = filter.type === "enum" && filter.allowSelectMany;
 
@@ -356,38 +369,57 @@ function GroupSearchFilterContent({
     [allowSelectMany, filter, searchParams, setSearchParams]
   );
 
-  const content =
-    filter.type === "enum" ? (
+  if (filter.type === "enum") {
+    const elementsToShow =
+      !defaultElementsToShow || showAll
+        ? filter.allowedValues
+        : filter.allowedValues.slice(0, defaultElementsToShow);
+    return (
       <>
-        {filter.allowedValues.length > 0 ? (
-          filter.allowedValues.map((element) => {
-            return (
-              <GroupSearchFilterRadioOrCheckboxElement
-                identifier={`group-search-filter-content-${filter.name}-${element.value}`}
-                isChecked={
-                  allowSelectMany
-                    ? current.split(VALUE_SEPARATOR_AND).includes(element.value)
-                    : current === element.value
-                }
-                key={element.value}
-                onChange={() => onChange(element.value)}
-                visualization={visualization}
-                type={filter.allowSelectMany ? "checkbox" : "radio"}
-              >
-                {element.label}
-                {element.quantity !== undefined ? (
-                  <Badge className="ms-1">{element.quantity}</Badge>
-                ) : null}
-              </GroupSearchFilterRadioOrCheckboxElement>
-            );
-          })
+        {elementsToShow.length > 0 ? (
+          <>
+            {elementsToShow.map((element) => {
+              return (
+                <GroupSearchFilterRadioOrCheckboxElement
+                  identifier={`group-search-filter-content-${filter.name}-${element.value}`}
+                  isChecked={
+                    allowSelectMany
+                      ? current
+                          .split(VALUE_SEPARATOR_AND)
+                          .includes(element.value)
+                      : current === element.value
+                  }
+                  key={element.value}
+                  onChange={() => onChange(element.value)}
+                  visualization={visualization}
+                  type={filter.allowSelectMany ? "checkbox" : "radio"}
+                >
+                  {element.label}
+                  {element.quantity !== undefined ? (
+                    <Badge className="ms-1">{element.quantity}</Badge>
+                  ) : null}
+                </GroupSearchFilterRadioOrCheckboxElement>
+              );
+            })}
+            {defaultElementsToShow &&
+              defaultElementsToShow < filter.allowedValues.length && (
+                <Button
+                  className={cx("m-1", "p-0")}
+                  color="link"
+                  onClick={() => setShowAll(!showAll)}
+                >
+                  {showAll ? "Show less" : "Show all"}
+                </Button>
+              )}
+          </>
         ) : (
           <p className={cx("fst-italic", "mb-0", "text-muted")}>None</p>
         )}
       </>
-    ) : null;
+    );
+  }
 
-  return content;
+  return null;
 }
 
 interface GroupSearchFilterRadioOrCheckboxElementProps {

@@ -25,6 +25,8 @@ import {
 
 export const VALUE_SEPARATOR_AND = "+";
 
+export const DEFAULT_ELEMENTS_LIMIT_IN_FILTERS = 5;
+
 export const FILTER_PAGE: NumberFilter = {
   name: "page",
   label: "Page",
