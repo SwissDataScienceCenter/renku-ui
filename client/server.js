@@ -1,6 +1,7 @@
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
+import { CONFIG_JSON, ROBOTS, SITEMAP } from "./server/constants.js";
 
 const BUILD_PATH = "./build/server/index.js";
 const DEVELOPMENT = process.env.NODE_ENV === "development";
@@ -25,6 +26,28 @@ app.use(
   "/assets",
   express.static("build/client/assets", { immutable: true, maxAge: "1y" })
 );
+
+//Configuration and miscellaneous files
+app.get("/config.json", (_, res) => {
+  res.json(CONFIG_JSON);
+});
+app.get("/sitemap.xml", (_, res) => {
+  res.setHeader("Content-Type", "application/xml");
+  res.send(SITEMAP);
+});
+app.get("/robots.txt", (_, res) => {
+  res.send(ROBOTS);
+});
+if (CONFIG_JSON.PRIVACY_BANNER_ENABLED) {
+  app.get("/privacy-statement.md", (_, res) => {
+    res.send(CONFIG_JSON.PRIVACY_BANNER_CONTENT);
+  });
+}
+if (CONFIG_JSON.TERMS_PAGES_ENABLED) {
+  app.get("/terms-of-use.md", (_, res) => {
+    res.send(CONFIG_JSON.TERMS_CONTENT);
+  });
+}
 
 // Logging
 app.use(morgan("tiny"));
