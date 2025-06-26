@@ -52,10 +52,10 @@ export const FILTER_CONTENT: EnumFilter = {
   label: "Content",
   type: "enum",
   allowedValues: [
-    { value: "project", label: "Project" },
-    { value: "dataconnector", label: "Data Connector" },
+    { value: "Project", label: "Project" },
+    { value: "DataConnector", label: "Data Connector" },
   ],
-  defaultValue: "project",
+  defaultValue: "Project",
 };
 
 export const FILTER_MEMBER: StringFilter = {

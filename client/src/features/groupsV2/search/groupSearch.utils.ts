@@ -65,7 +65,8 @@ export function getSearchQueryMissingFilters(
 
 export function generateQueryParams(
   searchParams: URLSearchParams,
-  groupSlug?: string
+  groupSlug?: string,
+  ignoredParams: string[] = []
 ): SearchQuery {
   const commonFilters = getSearchQueryFilters(searchParams, COMMON_FILTERS);
   const queryFilters = getSearchQueryFilters(searchParams, [
@@ -84,7 +85,7 @@ export function generateQueryParams(
   const queryFiltersProcessed = Object.entries(queryFiltersForGroup).reduce<
     string[]
   >((acc, [key, value]) => {
-    if (value !== undefined) {
+    if (!ignoredParams.includes(key) && value !== undefined) {
       acc = [...acc, `${key}${KEY_VALUE_SEPARATOR}${value}`];
     }
     return acc;
