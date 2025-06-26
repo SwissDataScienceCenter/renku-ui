@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
+import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
+import { RELATIVE_ROUTES } from "~/routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import { useGroup } from "./GroupPageContainer";
@@ -31,17 +34,45 @@ export default function GroupV2Show() {
         <Row className="g-4">
           <Col xs={12}>
             <ProjectV2ListDisplay
+              limit={2}
               namespace={group.slug}
               pageParam="projects_page"
               namespaceKind="group"
-            />
+            >
+              <div className="d-grid">
+                <Link
+                  className={cx("btn", "btn-primary")}
+                  to={{
+                    pathname: RELATIVE_ROUTES.v2.groups.show.search,
+                    search: new URLSearchParams({ type: "project" }).toString(),
+                  }}
+                >
+                  View all the group projects
+                </Link>
+              </div>
+            </ProjectV2ListDisplay>
           </Col>
           <Col className="order-3" xs={12}>
             <DataConnectorsBox
+              limit={2}
               namespace={group.slug}
               namespaceKind="group"
               pageParam="data_connectors_page"
-            />
+            >
+              <div className="d-grid">
+                <Link
+                  className={cx("btn", "btn-primary")}
+                  to={{
+                    pathname: RELATIVE_ROUTES.v2.groups.show.search,
+                    search: new URLSearchParams({
+                      type: "dataconnector",
+                    }).toString(),
+                  }}
+                >
+                  View all the group data connectors
+                </Link>
+              </div>
+            </DataConnectorsBox>
           </Col>
         </Row>
       </Col>
