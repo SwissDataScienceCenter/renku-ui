@@ -120,11 +120,18 @@ export function getQueryHumanReadable(
   searchParams: URLSearchParams,
   filters: Filter[] = SELECTABLE_FILTERS
 ): string {
+  const filterNamesToLabel = filters.reduce<Record<string, string>>(
+    (acc, filter) => {
+      acc[filter.name] = filter.label;
+      return acc;
+    },
+    {}
+  );
   const queryFilters = getSearchQueryFilters(searchParams, filters);
   const queryParts = Object.entries(queryFilters).reduce<string[]>(
     (acc, [key, value]) => {
       if (value !== undefined) {
-        acc.push(`${key}: ${value}`);
+        acc.push(`${filterNamesToLabel[key] ?? key}: ${value}`);
       }
       return acc;
     },
