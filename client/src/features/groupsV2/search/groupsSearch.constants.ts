@@ -67,6 +67,7 @@ export const FILTER_MEMBER: StringFilter = {
   name: "member",
   label: "Group member",
   type: "string",
+  mustQuote: true,
 };
 
 export const FILTER_KEYWORD: EnumFilter = {
@@ -76,6 +77,7 @@ export const FILTER_KEYWORD: EnumFilter = {
   allowedValues: [],
   allowSelectMany: true,
   doNotPassEmpty: true,
+  mustQuote: true,
 };
 
 export const FILTER_VISIBILITY: EnumFilter = {
@@ -110,6 +112,16 @@ export const DATACONNECTORS_FILTERS: Filter[] = [
 ];
 
 export const SELECTABLE_FILTERS: Filter[] = [
+  FILTER_CONTENT,
+  FILTER_MEMBER,
+  FILTER_KEYWORD,
+  FILTER_VISIBILITY,
+];
+
+export const ALL_FILTERS: Filter[] = [
+  FILTER_PAGE,
+  FILTER_PER_PAGE,
+  FILTER_QUERY,
   FILTER_CONTENT,
   FILTER_MEMBER,
   FILTER_KEYWORD,

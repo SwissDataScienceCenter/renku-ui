@@ -29,6 +29,7 @@ type FilterType = "enum" | "number" | "string";
 interface BaseFilter {
   doNotPassEmpty?: boolean;
   label: string;
+  mustQuote?: boolean;
   name: string;
   type: FilterType;
 }

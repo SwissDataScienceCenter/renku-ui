@@ -24,6 +24,7 @@ import {
 import { SearchQueryFilters } from "~/features/searchV2/searchV2.types";
 import { Filter } from "./groupSearch.types";
 import {
+  ALL_FILTERS,
   COMMON_FILTERS,
   DATACONNECTORS_FILTERS,
   FILTER_CONTENT,
@@ -82,17 +83,21 @@ export function generateQueryParams(
         namespace: groupSlug,
       }
     : queryFilters;
+  const mustQuoteFilters = ALL_FILTERS.filter((filter) => filter.mustQuote).map(
+    (filter) => filter.name
+  );
 
   const queryFiltersProcessed = Object.entries(queryFiltersForGroup).reduce<
     string[]
   >((acc, [key, value]) => {
     if (!ignoredParams.includes(key) && value !== undefined) {
+      const quote = mustQuoteFilters.includes(key) ? '"' : "";
       const values =
         typeof value === "string" && value.includes(VALUE_SEPARATOR_AND)
           ? value.split(VALUE_SEPARATOR_AND)
           : [value];
       for (const value of values) {
-        acc = [...acc, `${key}${KEY_VALUE_SEPARATOR}${value}`];
+        acc = [...acc, `${key}${KEY_VALUE_SEPARATOR}${quote}${value}${quote}`];
       }
     }
     return acc;
