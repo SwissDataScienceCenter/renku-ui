@@ -51,6 +51,7 @@ import {
   FILTER_PAGE,
   FILTER_PER_PAGE,
   FILTER_VISIBILITY,
+  VALUE_SEPARATOR_AND,
 } from "./groupsSearch.constants";
 
 export default function GroupV2Search() {
@@ -220,37 +221,43 @@ function GroupSearchFilters() {
     };
   }, [hydratedFilterContentAllowedValues]);
 
-  // Create the enum element for keywords with quantities. We add the current keyword if missing.
+  // Create the enum element for keywords with quantities.
   const hydratedFilterKeywordAllowedValues = useMemo(() => {
-    return Object.entries(search?.facets?.keywords ?? {}).map(
-      ([value, quantity]) => ({
+    return Object.entries(search?.facets?.keywords ?? {})
+      .map(([value, quantity]) => ({
         value,
         label: value,
         quantity,
-      })
-    );
+      }))
+      .sort((a, b) => {
+        // sort by quantity first, then by value
+        const qtyDiff = b.quantity - a.quantity;
+        if (qtyDiff !== 0) return qtyDiff;
+        return a.value.localeCompare(b.value);
+      });
   }, [search?.facets?.keywords]);
-  if (
-    searchParams.get(FILTER_KEYWORD.name) &&
-    !hydratedFilterKeywordAllowedValues.some(
-      (v) => v.label === searchParams.get(FILTER_KEYWORD.name)
-    )
-  ) {
-    hydratedFilterKeywordAllowedValues.unshift({
-      value: searchParams.get(FILTER_KEYWORD.name) ?? "",
-      label: searchParams.get(FILTER_KEYWORD.name) ?? "",
-      quantity: 0,
+  // Add the current keywords if missing so users can always de-select.
+  if (searchParams.get(FILTER_KEYWORD.name)) {
+    const existingKeywords =
+      searchParams.get(FILTER_KEYWORD.name)?.split(VALUE_SEPARATOR_AND) ?? [];
+    existingKeywords.forEach((keyword) => {
+      if (
+        !hydratedFilterKeywordAllowedValues.some(
+          (v) => v.label === keyword.trim()
+        )
+      ) {
+        hydratedFilterKeywordAllowedValues.unshift({
+          value: keyword.trim(),
+          label: keyword.trim(),
+          quantity: 0,
+        });
+      }
     });
   }
   const filterKeywordWithQuantities = useMemo<Filter>(() => {
     return {
       ...FILTER_KEYWORD,
-      type: "enum",
-      doNotPassEmpty: true,
-      allowedValues: [
-        { value: "", label: "Any" },
-        ...hydratedFilterKeywordAllowedValues,
-      ],
+      allowedValues: hydratedFilterKeywordAllowedValues,
     };
   }, [hydratedFilterKeywordAllowedValues]);
 
@@ -313,12 +320,28 @@ function GroupSearchFilterContent({
 }: GroupSearchFilterContentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const current = searchParams.get(filter.name) ?? "";
+  const allowSelectMany = filter.type === "enum" && filter.allowSelectMany;
 
   const onChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams);
-      if (filter.type === "enum" && filter.doNotPassEmpty && !value) {
+      if (filter.doNotPassEmpty && !value) {
         params.delete(filter.name);
+      } else if (allowSelectMany) {
+        // Move logic to handle multiple values to a utility function?
+        const currentValues =
+          params.get(filter.name)?.split(VALUE_SEPARATOR_AND) ?? [];
+        if (currentValues.includes(value)) {
+          const newValues = currentValues.filter((v) => v !== value);
+          if (newValues.length > 0) {
+            params.set(filter.name, newValues.join(VALUE_SEPARATOR_AND));
+          } else {
+            params.delete(filter.name);
+          }
+        } else {
+          currentValues.push(value);
+          params.set(filter.name, currentValues.join(VALUE_SEPARATOR_AND));
+        }
       } else {
         params.set(filter.name, value);
       }
@@ -330,48 +353,59 @@ function GroupSearchFilterContent({
       }
       setSearchParams(params);
     },
-    [filter, searchParams, setSearchParams]
+    [allowSelectMany, filter, searchParams, setSearchParams]
   );
 
   const content =
     filter.type === "enum" ? (
       <>
-        {filter.allowedValues.map((radio) => {
-          return (
-            <GroupSearchFilterRadioElement
-              key={radio.value}
-              identifier={`group-search-filter-content-${filter.name}-${radio.value}`}
-              isChecked={current === radio.value}
-              visualization={visualization}
-              onChange={() => onChange(radio.value)}
-            >
-              {radio.label}
-              {radio.quantity !== undefined ? (
-                <Badge className="ms-1">{radio.quantity}</Badge>
-              ) : null}
-            </GroupSearchFilterRadioElement>
-          );
-        })}
+        {filter.allowedValues.length > 0 ? (
+          filter.allowedValues.map((element) => {
+            return (
+              <GroupSearchFilterRadioOrCheckboxElement
+                identifier={`group-search-filter-content-${filter.name}-${element.value}`}
+                isChecked={
+                  allowSelectMany
+                    ? current.split(VALUE_SEPARATOR_AND).includes(element.value)
+                    : current === element.value
+                }
+                key={element.value}
+                onChange={() => onChange(element.value)}
+                visualization={visualization}
+                type={filter.allowSelectMany ? "checkbox" : "radio"}
+              >
+                {element.label}
+                {element.quantity !== undefined ? (
+                  <Badge className="ms-1">{element.quantity}</Badge>
+                ) : null}
+              </GroupSearchFilterRadioOrCheckboxElement>
+            );
+          })
+        ) : (
+          <p className={cx("fst-italic", "mb-0", "text-muted")}>None</p>
+        )}
       </>
     ) : null;
 
   return content;
 }
 
-interface GroupSearchFilterRadioElementProps {
+interface GroupSearchFilterRadioOrCheckboxElementProps {
   children: React.ReactNode;
   identifier: string;
   isChecked: boolean;
   onChange?: () => void;
+  type: "radio" | "checkbox";
   visualization: "accordion" | "list";
 }
-function GroupSearchFilterRadioElement({
+function GroupSearchFilterRadioOrCheckboxElement({
   children,
   identifier,
   isChecked,
   onChange,
+  type,
   visualization,
-}: GroupSearchFilterRadioElementProps) {
+}: GroupSearchFilterRadioOrCheckboxElementProps) {
   return (
     <div
       className={cx(
@@ -391,7 +425,7 @@ function GroupSearchFilterRadioElement({
         data-cy={identifier}
         id={identifier}
         onChange={onChange}
-        type="radio"
+        type={type}
       />
       <label
         className={cx(
@@ -486,17 +520,4 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
       </ListGroupItem>
     </Link>
   );
-
-  // return (
-  //   <ListGroupItem>
-  //     <h5 className="mb-1">{item.name}</h5>
-  //     <p>{item.path}</p>
-  //     <p>{item.slug}</p>
-  //     <KeywordContainer>
-  //       {sortedKeywords.map((keyword, index) => (
-  //         <KeywordBadge key={index}>{keyword}</KeywordBadge>
-  //       ))}
-  //     </KeywordContainer>
-  //   </ListGroupItem>
-  // );
 }

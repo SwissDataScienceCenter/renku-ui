@@ -27,6 +27,7 @@ interface FilterValue {
 type FilterType = "enum" | "number" | "string";
 
 interface BaseFilter {
+  doNotPassEmpty?: boolean;
   label: string;
   name: string;
   type: FilterType;
@@ -39,8 +40,8 @@ export interface StringFilter extends BaseFilter {
 
 export interface EnumFilter extends BaseFilter {
   allowedValues: FilterValue[];
+  allowSelectMany?: boolean;
   defaultValue?: string;
-  doNotPassEmpty?: boolean;
   type: "enum";
 }
 
