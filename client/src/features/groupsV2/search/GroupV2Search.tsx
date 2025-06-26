@@ -49,11 +49,14 @@ import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
   FILTER_KEYWORD,
+  FILTER_MEMBER,
   FILTER_PAGE,
   FILTER_PER_PAGE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
 } from "./groupsSearch.constants";
+import { useGroup } from "../show/GroupPageContainer";
+import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
 
 export default function GroupV2Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -207,6 +210,21 @@ function GroupSearchFilters() {
   const [searchParams] = useSearchParams();
   const { data: search } = useGroupSearch();
   const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
+  const { group } = useGroup();
+  const searchedType = searchParams.get("type");
+
+  const { data } = useGetGroupsByGroupSlugMembersQuery({
+    groupSlug: group.slug,
+  });
+  const groupMembers = useMemo(() => {
+    return (
+      data
+        ?.map((member) => member.namespace ?? "")
+        .sort((a, b) => {
+          return a.localeCompare(b);
+        }) ?? []
+    );
+  }, [data]);
 
   // Add numbers to the content types. Mind that this requires an additional request.
   const hydratedFilterContentAllowedValues = useMemo(() => {
@@ -255,6 +273,24 @@ function GroupSearchFilters() {
       }
     });
   }
+
+  // Create the enum element for group members
+  const hydratedFilterMembersAllowedValues = useMemo(() => {
+    return groupMembers?.map((member) => ({
+      value: `@${member}`,
+      label: member,
+    }));
+  }, [groupMembers]);
+  const filterMembersWithValues = useMemo<Filter>(() => {
+    return {
+      ...FILTER_MEMBER,
+      allowedValues: [
+        { value: "", label: "Any" },
+        ...hydratedFilterMembersAllowedValues,
+      ],
+    };
+  }, [hydratedFilterMembersAllowedValues]);
+
   const filterKeywordWithQuantities = useMemo<Filter>(() => {
     return {
       ...FILTER_KEYWORD,
@@ -267,11 +303,14 @@ function GroupSearchFilters() {
       <h4 className={cx("d-sm-none", "mb-0")}>Filters</h4>
 
       <GroupSearchFilter filter={filterContentWithQuantities} />
-      <GroupSearchFilter filter={FILTER_VISIBILITY} />
+      {searchedType === "Project" && (
+        <GroupSearchFilter filter={filterMembersWithValues} />
+      )}
       <GroupSearchFilter
         defaultElementsToShow={10}
         filter={filterKeywordWithQuantities}
       />
+      <GroupSearchFilter filter={FILTER_VISIBILITY} />
     </div>
   );
 }

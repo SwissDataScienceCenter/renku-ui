@@ -63,11 +63,14 @@ export const FILTER_CONTENT: EnumFilter = {
   defaultValue: "Project",
 };
 
-export const FILTER_MEMBER: StringFilter = {
-  name: "member",
+export const FILTER_MEMBER: EnumFilter = {
+  name: "direct_member",
   label: "Group member",
-  type: "string",
-  mustQuote: true,
+  type: "enum",
+  allowedValues: [],
+  allowSelectMany: false,
+  doNotPassEmpty: true,
+  mustQuote: false,
 };
 
 export const FILTER_KEYWORD: EnumFilter = {
