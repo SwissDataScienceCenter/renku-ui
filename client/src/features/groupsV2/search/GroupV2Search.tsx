@@ -212,19 +212,9 @@ function GroupSearchFilters() {
   const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
   const { group } = useGroup();
   const searchedType = searchParams.get("type");
-
-  const { data } = useGetGroupsByGroupSlugMembersQuery({
+  const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery({
     groupSlug: group.slug,
   });
-  const groupMembers = useMemo(() => {
-    return (
-      data
-        ?.map((member) => member.namespace ?? "")
-        .sort((a, b) => {
-          return a.localeCompare(b);
-        }) ?? []
-    );
-  }, [data]);
 
   // Add numbers to the content types. Mind that this requires an additional request.
   const hydratedFilterContentAllowedValues = useMemo(() => {
@@ -240,7 +230,7 @@ function GroupSearchFilters() {
     };
   }, [hydratedFilterContentAllowedValues]);
 
-  // Create the enum element for keywords with quantities.
+  // Create the enum filter for keywords with quantities.
   const hydratedFilterKeywordAllowedValues = useMemo(() => {
     return Object.entries(search?.facets?.keywords ?? {})
       .map(([value, quantity]) => ({
@@ -274,12 +264,13 @@ function GroupSearchFilters() {
     });
   }
 
-  // Create the enum element for group members
   const hydratedFilterMembersAllowedValues = useMemo(() => {
-    return groupMembers?.map((member) => ({
-      value: `@${member}`,
-      label: member,
-    }));
+    return (
+      groupMembers?.map((member) => ({
+        value: `@${member.namespace}`,
+        label: `${member.first_name} ${member.last_name}`,
+      })) ?? []
+    );
   }, [groupMembers]);
   const filterMembersWithValues = useMemo<Filter>(() => {
     return {
