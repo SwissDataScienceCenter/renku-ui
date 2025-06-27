@@ -70,6 +70,41 @@ import SessionUnavailable from "./SessionUnavailable";
 
 import styles from "../../session/components/ShowSession.module.scss";
 
+const SESSION_NOT_RUNNING_POLLING_INTERVAL = 5000;
+
+interface SessionContentProps {
+  isFetching: boolean;
+  isLoading: boolean;
+  thisSession?: SessionV2;
+  toggleModalLogs: () => void;
+}
+function SessionContent({
+  isFetching,
+  isLoading,
+  thisSession,
+  toggleModalLogs,
+}: SessionContentProps) {
+  const { height } = useWindowSize();
+  const iframeHeight = height ? height - 42 : 800;
+
+  if (!isLoading && !isFetching && !thisSession) return <SessionUnavailable />;
+  if (thisSession == null)
+    return <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />;
+  if (thisSession.status.state === "hibernated")
+    return <SessionPaused session={thisSession} />;
+  return (
+    <>
+      {thisSession.status.state !== "running" && (
+        <StartSessionProgressBarV2
+          session={thisSession}
+          toggleLogs={toggleModalLogs}
+        />
+      )}
+      <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
+    </>
+  );
+}
+
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
   const {
@@ -80,6 +115,9 @@ export default function ShowSessionPage() {
   const sessionName = sessionName_ ?? "";
 
   const navigate = useNavigate();
+  const [pollingInterval, setPollingInterval] = useState<number | undefined>(
+    SESSION_NOT_RUNNING_POLLING_INTERVAL
+  );
 
   const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: namespace ?? "",
@@ -90,7 +128,10 @@ export default function ShowSessionPage() {
     data: sessions,
     isLoading,
     isFetching,
-  } = useGetSessionsQuery(undefined, { refetchOnMountOrArgChange: true });
+  } = useGetSessionsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    pollingInterval,
+  });
 
   const thisSession = useMemo(() => {
     if (sessions == null) {
@@ -98,6 +139,16 @@ export default function ShowSessionPage() {
     }
     return sessions.find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
+
+  useEffect(() => {
+    if (thisSession?.status.state === "running") {
+      // If the session is running, we do not need to poll
+      setPollingInterval(undefined);
+    } else {
+      // If the session is not running,
+      setPollingInterval(SESSION_NOT_RUNNING_POLLING_INTERVAL);
+    }
+  }, [thisSession?.status.state]);
 
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
@@ -140,9 +191,6 @@ export default function ShowSessionPage() {
     );
   }, []);
 
-  const { height } = useWindowSize();
-  const iframeHeight = height ? height - 42 : 800;
-
   // Redirect to the sessions list if the session has failed
   useEffect(() => {
     if (thisSession?.status.state === "failed") {
@@ -162,24 +210,6 @@ export default function ShowSessionPage() {
     />
   );
   const logs = thisSession && <EnvironmentLogsV2 name={sessionName} />;
-  const content =
-    !isLoading && !isFetching && !thisSession ? (
-      <SessionUnavailable />
-    ) : thisSession?.status.state === "hibernated" ? (
-      <SessionPaused session={thisSession} />
-    ) : thisSession != null ? (
-      <>
-        {thisSession.status.state !== "running" && (
-          <StartSessionProgressBarV2
-            session={thisSession}
-            toggleLogs={toggleModalLogs}
-          />
-        )}
-        <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
-      </>
-    ) : (
-      <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />
-    );
 
   const backButton = (
     <Link
@@ -252,7 +282,12 @@ export default function ShowSessionPage() {
           className={cx(styles.fullscreenContent, "w-100")}
           data-cy="session-page"
         >
-          {content}
+          <SessionContent
+            isFetching={isFetching}
+            isLoading={isLoading}
+            thisSession={thisSession}
+            toggleModalLogs={toggleModalLogs}
+          />
         </div>
       </div>
       {/* modals */}
