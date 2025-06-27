@@ -18,9 +18,9 @@
 
 import cx from "classnames";
 import {
+  Binoculars,
   Briefcase,
   Database,
-  Eye,
   Folder2Open,
   Globe,
   Lock,
@@ -130,7 +130,7 @@ export const FILTER_VISIBILITY: EnumFilter = {
   name: "visibility",
   label: (
     <>
-      <Eye className={cx("bi", "me-1")} />
+      <Binoculars className={cx("bi", "me-1")} />
       Visibility
     </>
   ),
