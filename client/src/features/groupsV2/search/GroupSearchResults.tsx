@@ -171,9 +171,12 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
           )}
           <div
             className={cx(
-              "align-items-center",
+              "align-items-baseline",
+              "align-items-sm-center",
               "d-flex",
               "flex-wrap",
+              "flex-column",
+              "flex-sm-row",
               "gap-2",
               "justify-content-between"
             )}
