@@ -18,8 +18,13 @@
 
 import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api";
 
+export type GroupSearchEntity = Exclude<
+  SearchEntity,
+  { type: "Group" | "User" }
+>;
+
 interface FilterValue {
-  label: string;
+  label: React.ReactNode;
   quantity?: number;
   value: string;
 }
@@ -28,10 +33,11 @@ type FilterType = "enum" | "number" | "string";
 
 interface BaseFilter {
   doNotPassEmpty?: boolean;
-  label: string;
+  label: React.ReactNode;
   mustQuote?: boolean;
   name: string;
   type: FilterType;
+  validFor?: GroupSearchEntity["type"][];
 }
 
 export interface StringFilter extends BaseFilter {
@@ -54,7 +60,3 @@ export interface NumberFilter extends BaseFilter {
 }
 
 export type Filter = StringFilter | EnumFilter | NumberFilter;
-export type GroupSearchEntity = Exclude<
-  SearchEntity,
-  { type: "Group" | "User" }
->;

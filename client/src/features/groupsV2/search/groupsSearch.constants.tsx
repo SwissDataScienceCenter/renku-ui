@@ -16,6 +16,17 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
+import {
+  Briefcase,
+  Database,
+  Eye,
+  Folder2Open,
+  Globe,
+  Lock,
+  People,
+  Tag,
+} from "react-bootstrap-icons";
 import {
   EnumFilter,
   Filter,
@@ -53,11 +64,32 @@ export const FILTER_QUERY: StringFilter = {
 
 export const FILTER_CONTENT: EnumFilter = {
   name: "type",
-  label: "Content",
+  label: (
+    <>
+      <Briefcase className={cx("bi", "me-1")} />
+      Content
+    </>
+  ),
   type: "enum",
   allowedValues: [
-    { value: "Project", label: "Project" },
-    { value: "DataConnector", label: "Data Connector" },
+    {
+      value: "Project",
+      label: (
+        <>
+          <Folder2Open className={cx("bi", "me-1")} />
+          Project
+        </>
+      ),
+    },
+    {
+      value: "DataConnector",
+      label: (
+        <>
+          <Database className={cx("bi", "me-1")} />
+          Data
+        </>
+      ),
+    },
   ],
   allowSelectMany: false,
   defaultValue: "Project",
@@ -65,17 +97,28 @@ export const FILTER_CONTENT: EnumFilter = {
 
 export const FILTER_MEMBER: EnumFilter = {
   name: "direct_member",
-  label: "Group member",
+  label: (
+    <>
+      <People className={cx("bi", "me-1")} />
+      Group member
+    </>
+  ),
   type: "enum",
   allowedValues: [],
   allowSelectMany: false,
   doNotPassEmpty: true,
   mustQuote: false,
+  validFor: ["Project"],
 };
 
 export const FILTER_KEYWORD: EnumFilter = {
   name: "keyword",
-  label: "Keyword",
+  label: (
+    <>
+      <Tag className={cx("bi", "me-1")} />
+      Keyword
+    </>
+  ),
   type: "enum",
   allowedValues: [],
   allowSelectMany: true,
@@ -85,12 +128,33 @@ export const FILTER_KEYWORD: EnumFilter = {
 
 export const FILTER_VISIBILITY: EnumFilter = {
   name: "visibility",
-  label: "Visibility",
+  label: (
+    <>
+      <Eye className={cx("bi", "me-1")} />
+      Visibility
+    </>
+  ),
   type: "enum",
   allowedValues: [
     { value: "", label: "Any" },
-    { value: "public", label: "Public" },
-    { value: "private", label: "Private" },
+    {
+      value: "public",
+      label: (
+        <>
+          <Globe className={cx("bi", "me-1")} />
+          Public
+        </>
+      ),
+    },
+    {
+      value: "private",
+      label: (
+        <>
+          <Lock className={cx("bi", "me-1")} />
+          Private
+        </>
+      ),
+    },
   ],
   allowSelectMany: false,
   doNotPassEmpty: true,

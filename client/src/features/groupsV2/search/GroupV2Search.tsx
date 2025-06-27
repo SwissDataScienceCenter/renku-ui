@@ -52,11 +52,15 @@ import {
   FILTER_MEMBER,
   FILTER_PAGE,
   FILTER_PER_PAGE,
+  FILTER_QUERY,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
 } from "./groupsSearch.constants";
 import { useGroup } from "../show/GroupPageContainer";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
+import UserAvatar from "~/features/usersV2/show/UserAvatar";
+import { Search, XCircleFill } from "react-bootstrap-icons";
+import { ShowGlobalDataConnector } from "~/features/searchV2/components/SearchV2Results";
 
 export default function GroupV2Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -108,7 +112,7 @@ interface SearchBarForm {
 function GroupSearchQueryInput() {
   // Set the input properly
   const [searchParams, setSearchParams] = useSearchParams();
-  const query = searchParams.get("q") ?? "";
+  const query = searchParams.get(FILTER_QUERY.name) ?? "";
 
   const { control, register, handleSubmit, setFocus } = useForm<SearchBarForm>({
     defaultValues: { query },
@@ -119,10 +123,16 @@ function GroupSearchQueryInput() {
     setFocus("query");
   }, [setFocus]);
 
+  const onClick = useCallback(() => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set(FILTER_QUERY.name, "");
+    setSearchParams(newParams);
+  }, [searchParams, setSearchParams]);
+
   const onSubmit = useCallback(
     (data: SearchBarForm) => {
       const newParams = new URLSearchParams(searchParams);
-      newParams.set("q", data.query);
+      newParams.set(FILTER_QUERY.name, data.query);
       setSearchParams(newParams, { replace: true });
 
       const page_default_value = (
@@ -158,12 +168,27 @@ function GroupSearchQueryInput() {
             )}
           />
           <Button
+            color="outline-secondary"
+            className={cx(
+              "border-0",
+              "border-top",
+              "border-bottom",
+              "shadow-none"
+            )}
+            data-cy="group-search-button"
+            onClick={onClick}
+            id="group-search-button"
+            type="button"
+          >
+            <XCircleFill className={cx("bi")} />
+          </Button>
+          <Button
             color="primary"
             data-cy="group-search-button"
             id="group-search-button"
             type="submit"
           >
-            Search
+            <Search className={cx("bi", "me-1")} /> Search
           </Button>
         </InputGroup>
       </Form>
@@ -175,20 +200,18 @@ function GroupSearchResultRecap() {
   // Get the query and results data
   const [searchParams] = useSearchParams();
   const { data, isFetching } = useGroupSearch();
-
   const total = data?.pagingInfo.totalResult;
-
   const filters = getQueryHumanReadable(searchParams);
-  const query = searchParams.get("q") ?? "";
+  const query = searchParams.get(FILTER_QUERY.name) ?? "";
 
   return (
     <p className="mb-0">
       {isFetching ? (
         "Fetching results"
       ) : (
-        <>
+        <span className={cx("mb-0", "fw-semibold")}>
           {total ? total : "No"} {total && total > 1 ? "results" : "result"}
-        </>
+        </span>
       )}
       {query && (
         <>
@@ -199,10 +222,28 @@ function GroupSearchResultRecap() {
       {filters && (
         <>
           {" "}
-          (filtered by <span className="fst-italic">{`"${filters}"`}</span>)
+          (filtered by <>{filters}</>)
         </>
       )}
     </p>
+  );
+}
+
+interface GroupFilterKeywordRenderingProps {
+  label: string;
+  quantity: number;
+}
+function GroupFilterKeywordRendering({
+  label,
+  quantity,
+}: GroupFilterKeywordRenderingProps) {
+  return (
+    <div className={cx("align-items-center", "d-flex")}>
+      <div className="fs-5">
+        <KeywordBadge className="text-wrap">{label}</KeywordBadge>
+      </div>
+      <Badge className="ms-1">{quantity}</Badge>
+    </div>
   );
 }
 
@@ -211,7 +252,6 @@ function GroupSearchFilters() {
   const { data: search } = useGroupSearch();
   const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
   const { group } = useGroup();
-  const searchedType = searchParams.get("type");
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery({
     groupSlug: group.slug,
   });
@@ -235,12 +275,15 @@ function GroupSearchFilters() {
     return Object.entries(search?.facets?.keywords ?? {})
       .map(([value, quantity]) => ({
         value,
-        label: value,
-        quantity,
+        label: (
+          <GroupFilterKeywordRendering label={value} quantity={quantity} />
+        ),
+        _label: value,
+        _quantity: quantity,
       }))
       .sort((a, b) => {
         // sort by quantity first, then by value
-        const qtyDiff = b.quantity - a.quantity;
+        const qtyDiff = b._quantity - a._quantity;
         if (qtyDiff !== 0) return qtyDiff;
         return a.value.localeCompare(b.value);
       });
@@ -252,23 +295,38 @@ function GroupSearchFilters() {
     existingKeywords.forEach((keyword) => {
       if (
         !hydratedFilterKeywordAllowedValues.some(
-          (v) => v.label === keyword.trim()
+          (v) => v._label === keyword.trim()
         )
       ) {
         hydratedFilterKeywordAllowedValues.unshift({
           value: keyword.trim(),
-          label: keyword.trim(),
-          quantity: 0,
+          label: (
+            <GroupFilterKeywordRendering label={keyword.trim()} quantity={0} />
+          ),
+          _label: keyword.trim(),
+          _quantity: 0,
         });
       }
     });
   }
+  const filterKeywordWithQuantities = useMemo<Filter>(() => {
+    return {
+      ...FILTER_KEYWORD,
+      allowedValues: hydratedFilterKeywordAllowedValues,
+    };
+  }, [hydratedFilterKeywordAllowedValues]);
 
+  // Create the enum filter for members
   const hydratedFilterMembersAllowedValues = useMemo(() => {
     return (
       groupMembers?.map((member) => ({
         value: `@${member.namespace}`,
-        label: `${member.first_name} ${member.last_name}`,
+        label: (
+          <div className={cx("align-items-center", "d-flex", "gap-1")}>
+            <UserAvatar namespace={member.namespace ?? ""} />{" "}
+            {member.first_name} {member.last_name}
+          </div>
+        ),
       })) ?? []
     );
   }, [groupMembers]);
@@ -282,21 +340,12 @@ function GroupSearchFilters() {
     };
   }, [hydratedFilterMembersAllowedValues]);
 
-  const filterKeywordWithQuantities = useMemo<Filter>(() => {
-    return {
-      ...FILTER_KEYWORD,
-      allowedValues: hydratedFilterKeywordAllowedValues,
-    };
-  }, [hydratedFilterKeywordAllowedValues]);
-
   return (
     <div className={cx("d-flex", "flex-column", "gap-3", "mb-3")}>
       <h4 className={cx("d-sm-none", "mb-0")}>Filters</h4>
 
       <GroupSearchFilter filter={filterContentWithQuantities} />
-      {searchedType === "Project" && (
-        <GroupSearchFilter filter={filterMembersWithValues} />
-      )}
+      <GroupSearchFilter filter={filterMembersWithValues} />
       <GroupSearchFilter
         defaultElementsToShow={10}
         filter={filterKeywordWithQuantities}
@@ -314,6 +363,24 @@ function GroupSearchFilter({
   defaultElementsToShow = DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   filter,
 }: GroupSearchFilterProps) {
+  // Do not show invalid filter, but give the opportunity to reset it.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchedType = searchParams.get(FILTER_CONTENT.name);
+
+  const resetFilter = useCallback(() => {
+    const params = new URLSearchParams(searchParams);
+    params.delete(filter.name);
+    setSearchParams(params);
+  }, [filter.name, searchParams, setSearchParams]);
+
+  const isInvalid = useMemo(() => {
+    return (
+      filter.validFor &&
+      !filter.validFor.includes(searchedType as GroupSearchEntity["type"])
+    );
+  }, [filter.validFor, searchedType]);
+  if (isInvalid && searchParams.get(filter.name) === null) return null;
+
   return (
     <>
       <UncontrolledAccordion
@@ -323,15 +390,36 @@ function GroupSearchFilter({
       >
         <AccordionItem data-cy="search-group-filter-content">
           <AccordionHeader targetId="search-group-filter-content">
-            <h6 className={cx("fw-semibold", "mb-0")}>{filter.label}</h6>
+            <h6
+              className={cx("fw-semibold", "mb-0", isInvalid && "text-danger")}
+            >
+              {filter.label}
+            </h6>
           </AccordionHeader>
           <AccordionBody accordionId="search-group-filter-content">
             <Row className={cx("g-2", "g-sm-0")}>
-              <GroupSearchFilterContent
-                defaultElementsToShow={defaultElementsToShow}
-                filter={filter}
-                visualization="accordion"
-              />
+              {isInvalid ? (
+                <Col xs={12}>
+                  <p className={cx("fst-italic", "mb-3", "text-muted")}>
+                    This filter is set, not valid for the current Content.
+                  </p>
+                  <Button
+                    className="w-100"
+                    color="outline-danger"
+                    onClick={resetFilter}
+                    data-cy={`group-search-filter-${filter.name}-reset`}
+                  >
+                    <XCircleFill className={cx("bi", "me-1")} />
+                    Reset filter
+                  </Button>
+                </Col>
+              ) : (
+                <GroupSearchFilterContent
+                  defaultElementsToShow={defaultElementsToShow}
+                  filter={filter}
+                  visualization="accordion"
+                />
+              )}
             </Row>
           </AccordionBody>
         </AccordionItem>
@@ -342,11 +430,28 @@ function GroupSearchFilter({
           data-cy="search-group-filter-content"
         >
           <h6 className="fw-semibold">{filter.label}</h6>
-          <GroupSearchFilterContent
-            defaultElementsToShow={defaultElementsToShow}
-            filter={filter}
-            visualization="list"
-          />
+          {isInvalid ? (
+            <>
+              <p className={cx("fst-italic", "mb-2", "text-muted")}>
+                This filter is set, not valid for the current Content.
+              </p>
+              <Button
+                color="outline-danger"
+                onClick={resetFilter}
+                data-cy={`group-search-filter-${filter.name}-reset`}
+                size="sm"
+              >
+                <XCircleFill className={cx("bi", "me-1")} />
+                Reset filter
+              </Button>
+            </>
+          ) : (
+            <GroupSearchFilterContent
+              defaultElementsToShow={defaultElementsToShow}
+              filter={filter}
+              visualization="list"
+            />
+          )}
         </ListGroupItem>
       </ListGroup>
     </>
@@ -414,7 +519,7 @@ function GroupSearchFilterContent({
             {elementsToShow.map((element) => {
               return (
                 <GroupSearchFilterRadioOrCheckboxElement
-                  identifier={`group-search-filter-content-${filter.name}-${element.value}`}
+                  identifier={`group-search-filter-${filter.name}-${element.value}`}
                   isChecked={
                     allowSelectMany
                       ? current
@@ -485,7 +590,7 @@ function GroupSearchFilterRadioOrCheckboxElement({
         className={cx(
           visualization === "accordion"
             ? "btn-check"
-            : ["cursor-pointer", "form-check-input"]
+            : ["cursor-pointer", "form-check-input", "my-auto"]
         )}
         data-cy={identifier}
         id={identifier}
@@ -544,6 +649,7 @@ function GroupSearchResults() {
       ) : (
         <p className="text-muted">Nothing here. Try another search.</p>
       )}
+      <ShowGlobalDataConnector />
     </div>
   );
 }
@@ -559,6 +665,16 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
       .sort((a, b) => a.localeCompare(b));
   }, [item.keywords]);
 
+  const url =
+    item.type === "Project"
+      ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+          namespace: item.namespace?.path ?? "",
+          slug: item.slug,
+        })
+      : item.type === "DataConnector"
+      ? `${location.search}#data-connector-${item.id}`
+      : "";
+
   return (
     <Link
       className={cx(
@@ -568,10 +684,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
         "list-group-item",
         "list-group-item-action"
       )}
-      to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: item.namespace?.path ?? "",
-        slug: item.slug,
-      })}
+      to={url}
     >
       <ListGroupItem>
         <h5 className="mb-1">{item.name}</h5>
