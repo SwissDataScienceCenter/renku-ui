@@ -20,7 +20,7 @@ import { SearchQuery } from "~/features/searchV2/api/searchV2Api.generated-api";
 import {
   KEY_VALUE_SEPARATOR,
   TERM_SEPARATOR,
-} from "../../../features/searchV2/searchV2.constants";
+} from "../../searchV2/searchV2.constants";
 import { SearchQueryFilters } from "~/features/searchV2/searchV2.types";
 import { Filter } from "./groupSearch.types";
 import {
@@ -73,7 +73,7 @@ export function generateQueryParams(
   const commonFilters = getSearchQueryFilters(searchParams, COMMON_FILTERS);
   const queryFilters = getSearchQueryFilters(searchParams, [
     FILTER_CONTENT,
-    ...(searchParams.get("type") === "dataconnector"
+    ...(searchParams.get(FILTER_CONTENT.name) === "DataConnector"
       ? DATACONNECTORS_FILTERS
       : PROJECT_FILTERS),
   ]);
@@ -119,8 +119,8 @@ export function generateQueryParams(
 export function getQueryHumanReadable(
   searchParams: URLSearchParams,
   filters: Filter[] = SELECTABLE_FILTERS
-): string {
-  const filterNamesToLabel = filters.reduce<Record<string, string>>(
+): React.ReactNode {
+  const filterNamesToLabel = filters.reduce<Record<string, React.ReactNode>>(
     (acc, filter) => {
       acc[filter.name] = filter.label;
       return acc;
@@ -128,14 +128,15 @@ export function getQueryHumanReadable(
     {}
   );
   const queryFilters = getSearchQueryFilters(searchParams, filters);
-  const queryParts = Object.entries(queryFilters).reduce<string[]>(
-    (acc, [key, value]) => {
-      if (value !== undefined) {
-        acc.push(`${filterNamesToLabel[key] ?? key}: ${value}`);
-      }
-      return acc;
-    },
-    []
+  const validFilters = Object.entries(queryFilters).filter(
+    ([, value]) => value !== undefined
   );
-  return queryParts.join(", ");
+  const queryParts = validFilters.map(([key, value], index) => (
+    <span key={key}>
+      {filterNamesToLabel[key] ?? key}: {value}
+      {index < validFilters.length - 1 && <> + </>}
+    </span>
+  ));
+
+  return <>{queryParts}</>;
 }

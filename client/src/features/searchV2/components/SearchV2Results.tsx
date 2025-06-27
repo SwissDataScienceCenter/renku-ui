@@ -453,7 +453,6 @@ function SearchV2ResultDataConnector({
         namespace={namespace?.path ?? ""}
         namespaceUrl={namespaceUrl}
       />
-      {/* <CardBody /> */}
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
         {description && <ClampedParagraph>{description}</ClampedParagraph>}
         <div
@@ -499,7 +498,7 @@ function SearchV2ResultsUnknown() {
   );
 }
 
-function ShowGlobalDataConnector() {
+export function ShowGlobalDataConnector() {
   const [hash, setHash] = useLocationHash();
 
   const dataConnectorId = useMemo(
