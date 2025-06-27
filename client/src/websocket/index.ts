@@ -159,12 +159,6 @@ function setupWebSocket(
     );
   }
 
-  function startPullingSessionStatusV2(targetWebSocket: WebSocket) {
-    targetWebSocket.send(
-      JSON.stringify(new WsMessage({}, "pullSessionStatusV2"))
-    );
-  }
-
   function resumePendingKgActivation(model: any, socket: any) {
     const state = model?.reduxStore?.getState();
     if (state == null) return;
@@ -209,8 +203,6 @@ function setupWebSocket(
       model.setObject({ open: true, error: false, lastReceived: null });
       // request session status
       startPullingSessionStatus(webSocket);
-      // request session status V2
-      startPullingSessionStatusV2(webSocket);
       // resume running processes
       resumePendingProcesses(fullModel, webSocket);
     }
