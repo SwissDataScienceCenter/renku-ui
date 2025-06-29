@@ -193,6 +193,33 @@ export function DataConnectorModalContinueButton({
       </div>
     );
   }
+
+  if (
+    cloudStorageState.step === 2 &&
+    cloudStorageState.completedSteps >= 1 &&
+    hasStoredCredentialsInConfig &&
+    dataConnectorId
+  ) {
+    return (
+      <div className="d-inline-block">
+        <div
+          id="add-data-connector-continue-div"
+          className={cx("d-inline-block", "ms-2")}
+        >
+          <Button
+            color=""
+            id="add-data-connector-continue-button"
+            data-cy="add-data-connector-continue-button"
+            className={cx("btn-primary")}
+            onClick={addOrEditStorage}
+          >
+            <PencilSquare className={cx("bi", "me-1")} /> Update connector
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div id={`${continueButtonId}-div`} className="d-inline-block">
       <Button
