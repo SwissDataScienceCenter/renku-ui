@@ -20,8 +20,8 @@ import { Route, Routes } from "react-router";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyProjectList from "../../project/list/LazyProjectList";
-import LazyNewProject from "../../project/new/LazyNewProject";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
+import SunsetBanner from "../projectsV2/shared/SunsetV1Banner";
 
 export default function RootV1() {
   return (
@@ -54,7 +54,7 @@ export default function RootV1() {
         path={RELATIVE_ROUTES.v1.projects.new}
         element={
           <ContainerWrap>
-            <LazyNewProject />
+            <SunsetBanner />
           </ContainerWrap>
         }
       />

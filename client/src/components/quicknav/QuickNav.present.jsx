@@ -24,7 +24,7 @@ import { Link } from "react-router";
 
 // ? react-autosuggest styles are defined there q_q
 // ? also, the order of import matters here q_q
-import "../../project/new/Project.style.css";
+import "../../project/Project.style.css";
 import "./QuickNav.style.css";
 
 class QuickNavPresent extends Component {

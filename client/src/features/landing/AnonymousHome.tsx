@@ -52,11 +52,11 @@ import { BottomNav, TopNav } from "./components/anonymousHomeNav";
 
 // ? react-autosuggest styles are defined there q_q
 // ? also, the order of import matters here q_q
-import "../../project/new/Project.style.css";
+import "../../project/Project.style.css";
 // ? the "quick-nav" class is used in this file
 import "../../components/quicknav/QuickNav.style.css";
-import { GetStarted } from "./components/GetStarted/GetStarted.tsx";
-import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers.tsx";
+import { GetStarted } from "./components/GetStarted/GetStarted";
+import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 
 export default function AnonymousHome() {
   const { client, model, params } = useContext(AppContext);

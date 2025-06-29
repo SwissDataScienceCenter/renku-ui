@@ -24,6 +24,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import cx from "classnames";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Navigate, Route, Routes, useLocation } from "react-router";
@@ -31,12 +32,12 @@ import { ToastContainer } from "react-toastify";
 
 import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
-import LazyDatasetAddToProject from "./dataset/addtoproject/LazyDatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import LazyShowDataset from "./dataset/LazyShowDataset";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import { Favicon } from "./features/favicon/Favicon";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import SunsetBanner from "./features/projectsV2/shared/SunsetV1Banner";
 import LazyRootV1 from "./features/rootV1/LazyRootV1";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQuery } from "./features/usersV2/api/users.api";
@@ -94,7 +95,16 @@ function CentralContentContainer({ user }) {
         <Route
           path="/datasets/:identifier/add"
           element={
-            <LazyDatasetAddToProject insideProject={false} model={model} />
+            <div
+              className={cx(
+                "d-flex",
+                "flex-column",
+                "align-items-center",
+                "w-100"
+              )}
+            >
+              <SunsetBanner />
+            </div>
           }
         />
         <Route

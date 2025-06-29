@@ -297,7 +297,7 @@ function ErrorAfterCreation(props) {
   ) : null;
 }
 
-function AddToProjectButton({ insideKg, locked, logged, identifier }) {
+function AddToProjectButton({ identifier }) {
   const navigate = useNavigate();
 
   const addDatasetUrl = `/datasets/${identifier}/add`;
@@ -305,27 +305,18 @@ function AddToProjectButton({ insideKg, locked, logged, identifier }) {
     navigate(addDatasetUrl);
   };
 
-  const tooltip =
-    logged && locked ? (
-      <UncontrolledTooltip target="add-dataset-to-project-button">
-        Cannot add dataset to project until project modification finishes
-      </UncontrolledTooltip>
-    ) : insideKg === false ? (
-      <UncontrolledTooltip target="add-dataset-to-project-button">
-        Cannot add dataset to project, the project containing this dataset is
-        not indexed
-      </UncontrolledTooltip>
-    ) : (
-      <UncontrolledTooltip target="add-dataset-to-project-button">
-        Import Dataset in new or existing project
-      </UncontrolledTooltip>
-    );
+  const tooltip = (
+    <UncontrolledTooltip target="add-dataset-to-project-button">
+      Adding datasets to projects is no longer supported in the legacy Renku
+      interface
+    </UncontrolledTooltip>
+  );
 
   return (
     <span id="add-dataset-to-project-button">
       <Button
         data-cy="add-to-project-button"
-        disabled={insideKg === false || locked}
+        disabled={true}
         className="btn-outline-rk-pink icon-button"
         size="sm"
         onClick={() => goToAddToProject()}
