@@ -110,7 +110,7 @@ function ProjectDatasetsNav(props: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
+function EmptyDatasets({ locked, membership }: any) {
   return (
     <Alert timeout={0} color="primary">
       <p>No datasets found for this project.</p>
@@ -119,12 +119,6 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
           <p>
             <FontAwesomeIcon icon={faInfoCircle} /> If you recently activated
             the indexing or added datasets try refreshing the page.{" "}
-          </p>
-          <p>
-            You can also click on the button to{" "}
-            <Link className="btn btn-primary btn-sm" to={newDatasetUrl}>
-              Add a Dataset
-            </Link>
           </p>
         </div>
       ) : null}

@@ -307,7 +307,8 @@ function AddToProjectButton({ identifier }) {
 
   const tooltip = (
     <UncontrolledTooltip target="add-dataset-to-project-button">
-      Adding new datasets is no longer supported in the legacy Renku interface
+      Adding datasets to projects is no longer supported in the legacy Renku
+      interface
     </UncontrolledTooltip>
   );
 
