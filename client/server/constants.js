@@ -43,6 +43,7 @@ export const CONFIG_JSON = {
   PRIVACY_BANNER_LAYOUT: process.env.PRIVACY_BANNER_LAYOUT,
   TERMS_PAGES_ENABLED: process.env.TERMS_PAGES_ENABLED,
   TERMS_CONTENT: process.env.TERMS_CONTENT || "",
+  PRIVACY_CONTENT: process.env.PRIVACY_CONTENT || "",
   TEMPLATES: process.env.TEMPLATES,
   PREVIEW_THRESHOLD: process.env.PREVIEW_THRESHOLD,
   UPLOAD_THRESHOLD: process.env.UPLOAD_THRESHOLD,
@@ -54,3 +55,26 @@ export const CONFIG_JSON = {
   SESSION_CLASS_EMAIL_US: process.env.SESSION_CLASS_EMAIL_US,
   IMAGE_BUILDERS_ENABLED: process.env.IMAGE_BUILDERS_ENABLED,
 };
+
+export const SAMPLE_PRIVACY_CONTENT = `# Privacy statement
+The content of this page is only a template.
+## Information
+If you are reading this message, the Privacy page content has not been updated for this RenkuLab deployment.
+The following content is intended to be read by a RenkuLab admin.
+## Configure the Privacy Page
+You should customize the privacy statement in the Helm chart values file at \`ui.client.privacy.page.privacyPolicyContent\`.
+Any markdown formatted text works.
+If you do not wish to see this at all, then you can turn off this page and the terms of use page by setting \`ui.client.privacy.page.enabled\` to false.
+Consider changing the cookie banner content as well when the privacy page is not available.
+`;
+
+export const SAMPLE_TERMS_CONTENT = `# Terms of Use
+The content of this page is only a template.
+## Information
+If you are reading this message, the Terms of Use page content has not been updated for this RenkuLab deployment.
+The following content is intended to be read by a RenkuLab admin.
+## Configure the Terms of Use
+You should customize the terms of use content in the Helm chart values file at \`ui.client.privacy.page.termsContent\`.
+Any markdown formatted text works.
+If you do not wish to see this at all, then you can turn off this page and privacy statement page by setting \`ui.client.privacy.page.enabled\` to false.
+`;
