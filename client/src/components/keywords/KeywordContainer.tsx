@@ -16,29 +16,32 @@
  * limitations under the License.
  */
 
-import {
-  GetSearchQueryApiArg,
-  GetSearchQueryApiResponse,
-  searchV2GeneratedApi,
-} from "./searchV2Api.generated-api";
+import cx from "classnames";
 
-// Fixes some API endpoints
-export const searchV2Api = searchV2GeneratedApi.injectEndpoints({
-  overrideExisting: true,
-  endpoints: (build) => ({
-    getSearchQuery: build.query<
-      GetSearchQueryApiResponse,
-      GetSearchQueryApiArg
-    >({
-      query: ({ params }) => ({
-        url: "/search/query",
-        params,
-      }),
-      keepUnusedDataFor: 10,
-    }),
-  }),
-});
+interface KeywordContainerProps {
+  children?: React.ReactNode;
+  className?: string;
+  "data-cy"?: string;
+}
 
-export const { useGetSearchQueryQuery } = searchV2Api;
-
-export type * from "./searchV2Api.generated-api";
+export default function KeywordContainer({
+  children,
+  className,
+  "data-cy": dataCy,
+}: KeywordContainerProps) {
+  return (
+    <div
+      className={cx(
+        "align-items-center",
+        "d-flex",
+        "flex-wrap",
+        "fs-5",
+        "gap-1",
+        className
+      )}
+      data-cy={dataCy}
+    >
+      {children}
+    </div>
+  );
+}

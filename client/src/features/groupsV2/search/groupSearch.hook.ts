@@ -16,29 +16,20 @@
  * limitations under the License.
  */
 
-import {
-  GetSearchQueryApiArg,
-  GetSearchQueryApiResponse,
-  searchV2GeneratedApi,
-} from "./searchV2Api.generated-api";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router";
+import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api";
+import { useGroup } from "../show/GroupPageContainer";
+import { generateQueryParams } from "./groupSearch.utils";
 
-// Fixes some API endpoints
-export const searchV2Api = searchV2GeneratedApi.injectEndpoints({
-  overrideExisting: true,
-  endpoints: (build) => ({
-    getSearchQuery: build.query<
-      GetSearchQueryApiResponse,
-      GetSearchQueryApiArg
-    >({
-      query: ({ params }) => ({
-        url: "/search/query",
-        params,
-      }),
-      keepUnusedDataFor: 10,
-    }),
-  }),
-});
+export function useGroupSearch(ignoredParams?: string[]) {
+  const [searchParams] = useSearchParams();
+  const { group } = useGroup();
 
-export const { useGetSearchQueryQuery } = searchV2Api;
+  const params = useMemo(
+    () => generateQueryParams(searchParams, group.slug, ignoredParams),
+    [group.slug, ignoredParams, searchParams]
+  );
 
-export type * from "./searchV2Api.generated-api";
+  return useGetSearchQueryQuery({ params });
+}

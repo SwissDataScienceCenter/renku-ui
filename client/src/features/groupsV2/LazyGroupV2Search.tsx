@@ -16,29 +16,15 @@
  * limitations under the License.
  */
 
-import {
-  GetSearchQueryApiArg,
-  GetSearchQueryApiResponse,
-  searchV2GeneratedApi,
-} from "./searchV2Api.generated-api";
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-// Fixes some API endpoints
-export const searchV2Api = searchV2GeneratedApi.injectEndpoints({
-  overrideExisting: true,
-  endpoints: (build) => ({
-    getSearchQuery: build.query<
-      GetSearchQueryApiResponse,
-      GetSearchQueryApiArg
-    >({
-      query: ({ params }) => ({
-        url: "/search/query",
-        params,
-      }),
-      keepUnusedDataFor: 10,
-    }),
-  }),
-});
+const GroupV2Search = lazy(() => import("./search/GroupV2Search"));
 
-export const { useGetSearchQueryQuery } = searchV2Api;
-
-export type * from "./searchV2Api.generated-api";
+export default function LazyGroupV2Search() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <GroupV2Search />
+    </Suspense>
+  );
+}

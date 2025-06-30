@@ -57,6 +57,7 @@ export const ABSOLUTE_ROUTES = {
       show: {
         root: "/g/:slug",
         settings: "/g/:slug/settings",
+        search: "/g/:slug/search",
         splat: "/g/:slug/*",
       },
       beta: { splat: "/v2/groups/:slug/*" },
@@ -120,6 +121,7 @@ export const RELATIVE_ROUTES = {
       new: "new",
       show: {
         root: ":slug/*",
+        search: "search",
         settings: "settings",
       },
     },
