@@ -344,7 +344,6 @@ function ProjectsDashboard() {
             </Link>
             <UncontrolledTooltip target="add-project-v1-button">
               Creating new projects is no longer supported in Renku Legacy.
-              Switch to Renku 2.0 to continue creating and managing your work.
             </UncontrolledTooltip>
           </div>
         </div>

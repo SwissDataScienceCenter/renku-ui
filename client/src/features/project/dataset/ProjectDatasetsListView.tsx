@@ -87,8 +87,7 @@ function AddDatasetButton({ accessLevel }: AddDatasetButtonProps) {
         Add Dataset
       </Button>
       <UncontrolledTooltip target="add-dataset-button">
-        Creating new datasets is no longer supported in Renku Legacy. Switch to
-        Renku 2.0 to continue creating and managing your work.
+        Creating new datasets is no longer supported in Renku Legacy.
       </UncontrolledTooltip>
     </div>
   );

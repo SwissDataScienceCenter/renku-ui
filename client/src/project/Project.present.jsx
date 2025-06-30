@@ -146,8 +146,7 @@ class ForkProjectModal extends Component {
             showForkCount={false}
           />
           <UncontrolledTooltip target="fork-project-button">
-            Fork a project is no longer supported in Renku Legacy. Switch to
-            Renku 2.0 to continue creating and managing your work.
+            Fork a project is no longer supported in Renku Legacy.
           </UncontrolledTooltip>
         </div>
       ) : (
@@ -164,8 +163,7 @@ class ForkProjectModal extends Component {
             />
           </RoundButtonGroup>
           <UncontrolledTooltip target="fork-project-button">
-            Fork a project is no longer supported in Renku Legacy. Switch to
-            Renku 2.0 to continue creating and managing your work.
+            Fork a project is no longer supported in Renku Legacy.
           </UncontrolledTooltip>
         </div>
       );
