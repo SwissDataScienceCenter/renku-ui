@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
@@ -31,11 +32,9 @@ import {
   Input,
   Label,
 } from "reactstrap";
-
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import KeywordsInput from "../../../../components/form-field/KeywordsInput";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
@@ -47,13 +46,15 @@ import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescr
 import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
-
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
-import type { ProjectV2Metadata } from "../../settings/projectSettings.types";
+import type {
+  ProjectV2Metadata,
+  ProjectV2MetadataWithKeyword,
+} from "../../settings/projectSettings.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-
 import ProjectSessionSecrets from "../SessionSecrets/ProjectSessionSecrets";
 import ProjectPageDelete from "./ProjectDelete";
+import ProjectKeywordsFormField from "./ProjectKeywordsFormField";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
 
@@ -180,17 +181,19 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const {
     control,
     formState: { errors, isDirty },
+    getValues,
     handleSubmit,
     watch,
-    register,
     reset,
-  } = useForm<Required<ProjectV2Metadata>>({
+    setValue,
+  } = useForm<Required<ProjectV2MetadataWithKeyword>>({
     defaultValues: {
       description: project.description ?? "",
       name: project.name,
       namespace: project.namespace,
       visibility: project.visibility,
       keywords: project.keywords ?? [],
+      keyword: "",
       is_template: project.is_template ?? false,
     },
   });
@@ -199,7 +202,6 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const navigate = useNavigate();
   const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
   const { notifications } = useContext(AppContext);
-  const [areKeywordsDirty, setKeywordsDirty] = useState(false);
 
   const [
     updateProject,
@@ -209,13 +211,14 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const isUpdating = isLoading;
 
   const onSubmit = useCallback(
-    (data: ProjectV2Metadata) => {
+    (data: ProjectV2MetadataWithKeyword) => {
       const namespaceChanged = data.namespace !== project.namespace;
       setRedirectAfterUpdate(namespaceChanged);
+      const { keyword, ...editedData } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
-        projectPatch: data,
+        projectPatch: editedData as ProjectV2Metadata,
       });
     },
     [project, updateProject]
@@ -394,27 +397,24 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
         <PermissionsGuard
           disabled={null}
           enabled={
-            <KeywordsInput
-              hasError={errors.keywords != null}
-              help="Keywords are used to describe the project. To add one, type a keyword and press enter."
-              label="Keywords"
-              name="keywords"
-              register={register("keywords", {
-                validate: () => !areKeywordsDirty,
-              })}
-              setDirty={setKeywordsDirty}
-              value={project.keywords as string[]}
+            <ProjectKeywordsFormField
+              control={control}
+              getValues={getValues}
+              setValue={setValue}
             />
           }
           requestedPermission="write"
           userPermissions={permissions}
         />
+
         {error && <RtkErrorAlert error={error} />}
+
         {isSuccess && (
-          <SuccessAlert dismissible={false} timeout={0}>
+          <SuccessAlert className="mb-0" dismissible={false} timeout={0}>
             <p className="mb-0">The project has been successfully updated.</p>
           </SuccessAlert>
         )}
+
         <PermissionsGuard
           disabled={null}
           enabled={
