@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo, useRef } from "react";
@@ -29,12 +30,9 @@ import {
   PersonBadge,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
-import {
-  Badge,
-  Offcanvas,
-  OffcanvasBody,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Offcanvas, OffcanvasBody, UncontrolledTooltip } from "reactstrap";
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
@@ -432,6 +430,13 @@ function DataConnectorViewMetadata({
     [dataConnector.storage.configuration, scope]
   );
 
+  const sortedKeywords = useMemo(() => {
+    if (!dataConnector.keywords) return [];
+    return dataConnector.keywords
+      .map((keyword) => keyword.trim())
+      .sort((a, b) => a.localeCompare(b));
+  }, [dataConnector.keywords]);
+
   const dataConnectorSource = useGetDataConnectorSource(dataConnector);
 
   return (
@@ -544,13 +549,11 @@ function DataConnectorViewMetadata({
 
       {dataConnector.keywords && dataConnector.keywords.length > 0 && (
         <DataConnectorPropertyValue title="Keywords">
-          <div className={cx("d-flex", "flex-wrap", "gap-1", "my-1")}>
-            {dataConnector.keywords.map((keyword, index) => (
-              <Badge color="secondary" key={index}>
-                {keyword}
-              </Badge>
+          <KeywordContainer>
+            {sortedKeywords.map((keyword, index) => (
+              <KeywordBadge key={index}>{keyword}</KeywordBadge>
             ))}
-          </div>
+          </KeywordContainer>
         </DataConnectorPropertyValue>
       )}
 

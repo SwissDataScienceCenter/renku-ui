@@ -43,6 +43,7 @@ import type { DataConnectorConfiguration } from "./useDataConnectorConfiguration
 export type DataConnectorFlat = {
   // DataConnectorRead metadata fields
   dataConnectorId?: string;
+  keywords?: string[];
   name?: string;
   namespace?: string;
   slug?: string;
@@ -76,6 +77,7 @@ export const EMPTY_DATA_CONNECTOR_FLAT: DataConnectorFlat = {
   visibility: "private",
   mountPoint: undefined,
   readOnly: true,
+  keywords: undefined,
 };
 
 export function dataConnectorPostFromFlattened(
@@ -91,6 +93,7 @@ export function dataConnectorPostFromFlattened(
       flatDataConnector.visibility === "public"
         ? ("public" as const)
         : ("private" as const),
+    keywords: flatDataConnector.keywords,
   };
   const storage: CloudStorageCorePost = {
     configuration: { type: flatDataConnector.schema ?? null },
@@ -146,6 +149,7 @@ export function dataConnectorToFlattened(
   const { type, provider, ...options } = configurationOptions; // eslint-disable-line @typescript-eslint/no-unused-vars
   const flattened: DataConnectorFlat = {
     dataConnectorId: dataConnector.id,
+    keywords: dataConnector.keywords,
     name: dataConnector.name,
     namespace: dataConnector.namespace,
     slug: dataConnector.slug,

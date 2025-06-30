@@ -1,18 +1,18 @@
 import cx from "classnames";
 import { Meta, StoryObj } from "@storybook/react";
-import { Badge } from "reactstrap";
 import { CircleFill } from "react-bootstrap-icons";
 
 import { Loader } from "../../components/Loader";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 
 export default {
   args: {
-    children: "Info",
+    color: "light",
+    content: "Some text",
     loader: false,
-    status: "bg-light border-dark-subtle text-dark-emphasis",
   },
   argTypes: {
-    children: {
+    content: {
       description: "Content to display inside the badge.",
     },
     loader: {
@@ -21,31 +21,14 @@ export default {
         name: "boolean",
       },
     },
-    status: {
+    color: {
       description: "Color scheme to apply.",
       type: {
         name: "enum",
-        value: [
-          "bg-light border-dark-subtle text-dark-emphasis",
-          "bg-success-subtle border-success text-success-emphasis",
-          "bg-danger-subtle border-danger text-danger-emphasis",
-          "bg-warning-subtle border-warning text-warning-emphasis",
-        ],
+        value: ["light", "success", "warning", "danger"],
       },
       control: {
         type: "select",
-        labels: {
-          "bg-light border-dark-subtle text-dark-emphasis": "Neutral",
-          "bg-success-subtle border-success text-success-emphasis": "Success",
-          "bg-danger-subtle border-danger text-danger-emphasis": "Error",
-          "bg-warning-subtle border-warning text-warning-emphasis": "Warning",
-        },
-      },
-      mapping: {
-        Neutral: "bg-light border-dark-subtle text-dark-emphasis",
-        Success: "bg-success-subtle border-success text-success-emphasis",
-        Error: "bg-danger-subtle border-danger text-danger-emphasis",
-        Warning: "bg-warning-subtle border-warning text-warning-emphasis",
       },
     },
   },
@@ -53,32 +36,33 @@ export default {
     docs: {
       description: {
         component:
-          "Info Badges are a variation of the standard Badges, used in many places in the UI to convey readable information about the current status of a resource.",
+          "Renku Badges are a variation of the standard Badges, used in many places in the UI to convey readable information about the current status of a resource.",
       },
     },
   },
-  title: "Bootstrap/Badge/Info Badge",
+  title: "Bootstrap/Badge/Renku Badge",
 } as Meta;
 
-interface BadgeInfoProps extends React.HTMLAttributes<HTMLDivElement> {
+interface RenkuBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  color: "light" | "success" | "warning" | "danger";
+  content?: string;
   loader: boolean;
-  status: string;
 }
-type Story = StoryObj<BadgeInfoProps>;
+type Story = StoryObj<RenkuBadgeProps>;
 
 CircleFill.displayName = "CircleFill";
 
-export const BadgeInfo_: Story = {
+export const RenkuBadge_: Story = {
   render: (_args) => {
     return (
-      <Badge color="info" className={cx("border", _args.status)}>
+      <RenkuBadge color={_args.color}>
         {_args.loader ? (
           <Loader size={12} className="me-1" inline />
         ) : (
           <CircleFill className={cx("me-1", "bi")} />
         )}
-        {_args.children}
-      </Badge>
+        {_args.content}
+      </RenkuBadge>
     );
   },
 };
