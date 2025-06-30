@@ -18,13 +18,16 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Eye, Globe, Lock, Pencil } from "react-bootstrap-icons";
+import { Eye, Globe, Lock, Pencil, PlusLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
+  Button,
   ButtonGroup,
+  Col,
   Collapse,
   Input,
   Label,
+  Row,
 } from "reactstrap";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
@@ -50,7 +53,10 @@ import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.uti
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
-import type { DataConnectorSecret } from "../../api/data-connectors.api";
+import type {
+  DataConnectorRead,
+  DataConnectorSecret,
+} from "../../api/data-connectors.api";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 import DataConnectorModalResult from "./DataConnectorModalResult";
 import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo";
@@ -220,7 +226,6 @@ export function DataConnectorMount({
     control,
     formState: { dirtyFields, errors, touchedFields },
     setValue,
-    watch,
     getValues,
     watch,
   } = useForm<DataConnectorMountForm>({

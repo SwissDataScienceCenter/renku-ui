@@ -32,7 +32,6 @@ import {
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
 import {
-  Badge,
   Button,
   Offcanvas,
   OffcanvasBody,
