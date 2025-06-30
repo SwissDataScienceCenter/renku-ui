@@ -517,6 +517,54 @@ describe("Edit v2 project", () => {
     cy.contains("My projects");
     cy.contains("Project deleted").should("be.visible");
   });
+
+  it("changes project keywords", () => {
+    const keywords = ["keyword1", "keyword2"];
+    fixtures.readProjectV2().listNamespaceV2().updateProjectV2();
+    cy.contains("My projects").should("be.visible");
+    cy.getDataCy("dashboard-project-list")
+      .contains("a", "test 2 v2-project")
+      .should("be.visible")
+      .click();
+    cy.wait("@readProjectV2");
+    cy.contains("test 2 v2-project").should("be.visible");
+    cy.getDataCy("project-settings-link").click();
+
+    // No keywords and button disabled
+    cy.getDataCy("project-settings-keywords").should("not.exist");
+    cy.getDataCy("project-settings-keyword-button").should("be.disabled");
+
+    // Add keywords
+    cy.getDataCy("project-settings-keyword-input")
+      .should("be.visible")
+      .clear()
+      .type(keywords[0]);
+    cy.getDataCy("project-settings-keyword-button").click();
+    cy.getDataCy("project-settings-keywords")
+      .should("be.visible")
+      .contains(keywords[0]);
+    cy.getDataCy("project-settings-keyword-input")
+      .should("be.visible")
+      .should("be.empty")
+      .type(keywords[1])
+      .type("{enter}");
+    cy.getDataCy("project-settings-keywords")
+      .should("be.visible")
+      .should("contain", keywords[0])
+      .should("contain", keywords[1]);
+
+    // Check they stick after the update
+    fixtures.readProjectV2({
+      fixture: "projectV2/update-projectV2-metadata.json",
+      name: "readPostUpdate",
+    });
+    cy.getDataCy("project-update-button").should("be.visible").click();
+    cy.wait("@updateProjectV2");
+    cy.wait("@readPostUpdate");
+    cy.getDataCy("project-settings-keywords")
+      .should("contain", keywords[0])
+      .should("contain", keywords[1]);
+  });
 });
 
 describe("Editor cannot maintain members", () => {

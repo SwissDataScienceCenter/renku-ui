@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,10 +16,32 @@
  * limitations under the License.
  */
 
-import type { ProjectPatch } from "../../projectsV2/api/projectV2.api";
+import cx from "classnames";
 
-export type ProjectV2Metadata = Omit<ProjectPatch, "repositories">;
+interface KeywordContainerProps {
+  children?: React.ReactNode;
+  className?: string;
+  "data-cy"?: string;
+}
 
-export type ProjectV2MetadataWithKeyword = ProjectV2Metadata & {
-  keyword?: string;
-};
+export default function KeywordContainer({
+  children,
+  className,
+  "data-cy": dataCy,
+}: KeywordContainerProps) {
+  return (
+    <div
+      className={cx(
+        "align-items-center",
+        "d-flex",
+        "flex-wrap",
+        "fs-5",
+        "gap-1",
+        className
+      )}
+      data-cy={dataCy}
+    >
+      {children}
+    </div>
+  );
+}
