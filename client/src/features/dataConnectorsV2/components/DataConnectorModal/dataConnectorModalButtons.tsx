@@ -309,6 +309,10 @@ function TestConnectionAndContinueButtons({
   const [validateCloudStorageConnection, validationResult] =
     usePostStorageSchemaTestConnectionMutation();
 
+  const updateDataConnector = useCallback(() => {
+    if (editDataConnector) editDataConnector();
+  }, [editDataConnector]);
+
   useEffect(() => {
     if (
       !isActionOngoing &&
@@ -483,7 +487,7 @@ function TestConnectionAndContinueButtons({
           data-cy={buttonContinueId}
           className={cx(continueColorClass)}
           disabled={validationResult.isLoading}
-          onClick={() => editDataConnector()}
+          onClick={updateDataConnector}
         >
           {updateContent}
         </Button>

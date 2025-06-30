@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Globe, Lock } from "react-bootstrap-icons";
+import { Eye, Globe, Lock, Pencil } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   ButtonGroup,
@@ -486,62 +486,80 @@ export function DataConnectorMount({
       </div>
 
       <div className="mb-3">
-        <Controller
-          name="readOnly"
-          control={control}
-          render={({ field }) => (
-            <div className={cx("d-flex", "gap-2")}>
-              <Label className={cx("form-label", "mb-0")} for="readOnly">
-                Read-only
-              </Label>
-              <div
-                className={cx(
-                  "d-flex",
-                  "align-item-center",
-                  "form-check",
-                  "form-switch"
-                )}
-              >
-                <input
-                  id="readOnly"
-                  role="switch"
-                  type="checkbox"
-                  {...field}
-                  className={cx(
-                    "form-check-input",
-                    "rounded-pill",
-                    "my-auto",
-                    "me-2",
-                    errors.readOnly && "is-invalid"
-                  )}
-                  data-cy="data-connector-readonly-input"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    onFieldValueChange("readOnly", e.target.checked);
-                  }}
-                  value=""
-                  checked={flatDataConnector.readOnly ?? false}
-                />
-              </div>
+        <Label className="form-label" for="readOnly">
+          Access Mode
+        </Label>
+
+        <div>
+          <Controller
+            name="readOnly"
+            control={control}
+            render={({ field }) => (
+              <>
+                <ButtonGroup id="readOnly">
+                  <Input
+                    type="radio"
+                    className="btn-check"
+                    data-cy="data-connector-readonly-true"
+                    id="data-connector-readonly-true"
+                    {...field}
+                    value={"true"}
+                    checked={field.value === true}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      onFieldValueChange("readOnly", !!e.target.value);
+                    }}
+                  />
+                  <Label
+                    for="data-connector-readonly-true"
+                    className={cx("btn", "btn-outline-primary")}
+                  >
+                    <Eye className={cx("bi", "me-1")} />
+                    Read Only
+                  </Label>
+
+                  <Input
+                    type="radio"
+                    className="btn-check"
+                    data-cy="data-connector-readonly-false"
+                    id="data-connector-readonly-false"
+                    {...field}
+                    value={"false"}
+                    checked={field.value === false}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      onFieldValueChange("readOnly", false);
+                    }}
+                  />
+                  <Label
+                    for="data-connector-readonly-false"
+                    className={cx("btn", "btn-outline-primary")}
+                  >
+                    <Pencil className={cx("bi", "me-1")} />
+                    Read-Write
+                  </Label>
+                </ButtonGroup>
+              </>
+            )}
+            rules={{ required: true }}
+          />
+          {!flatDataConnector.readOnly && (
+            <div className="mt-1">
+              <WarnAlert dismissible={false}>
+                <p className="mb-0">
+                  You are mounting this storage in read-write mode. If you have
+                  read-only access, please select &quot;Read Only&quot; to
+                  prevent errors with some storage types.
+                </p>
+              </WarnAlert>
             </div>
           )}
-          rules={{ required: true }}
-        />
-        {!flatDataConnector.readOnly && (
-          <div className="mt-1">
-            <WarnAlert dismissible={false}>
-              <p className="mb-0">
-                You are mounting this storage in read-write mode. If you have
-                read-only access, please check the box to prevent errors with
-                some storage types.
-              </p>
-            </WarnAlert>
+          <div className={cx("form-text", "text-muted")}>
+            Select &quot;Read Only&quot; to mount the storage without write
+            access. You should always check this if you do not have credentials
+            to write. You can use this in any case to prevent accidental data
+            modifications.
           </div>
-        )}
-        <div className={cx("form-text", "text-muted")}>
-          Check this box to mount the storage in read-only mode. You should
-          always check this if you do not have credentials to write. You can use
-          this in any case to prevent accidental data modifications.
         </div>
       </div>
 
