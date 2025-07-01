@@ -60,7 +60,8 @@ import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
-import { useGetSessionsQuery } from "../api/sessionsV2.api";
+
+import usePollingGetSessionQuery from "../usePollingGetSessionQuery.hook";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
@@ -69,8 +70,6 @@ import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
 
 import styles from "../../session/components/ShowSession.module.scss";
-
-const SESSION_NOT_RUNNING_POLLING_INTERVAL = 5000;
 
 interface SessionContentProps {
   isFetching: boolean;
@@ -115,9 +114,6 @@ export default function ShowSessionPage() {
   const sessionName = sessionName_ ?? "";
 
   const navigate = useNavigate();
-  const [pollingInterval, setPollingInterval] = useState<number | undefined>(
-    SESSION_NOT_RUNNING_POLLING_INTERVAL
-  );
 
   const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: namespace ?? "",
@@ -125,30 +121,10 @@ export default function ShowSessionPage() {
   });
 
   const {
-    data: sessions,
-    isLoading,
     isFetching,
-  } = useGetSessionsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-    pollingInterval,
-  });
-
-  const thisSession = useMemo(() => {
-    if (sessions == null) {
-      return undefined;
-    }
-    return sessions.find(({ name }) => name === sessionName);
-  }, [sessionName, sessions]);
-
-  useEffect(() => {
-    if (thisSession?.status.state === "running") {
-      // If the session is running, we do not need to poll
-      setPollingInterval(undefined);
-    } else {
-      // If the session is not running,
-      setPollingInterval(SESSION_NOT_RUNNING_POLLING_INTERVAL);
-    }
-  }, [thisSession?.status.state]);
+    isLoading,
+    session: thisSession,
+  } = usePollingGetSessionQuery({ sessionName });
 
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
