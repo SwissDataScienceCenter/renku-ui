@@ -561,7 +561,7 @@ export function DataConnectorMount({
           )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
-            access. You should always check this if you do not have credentials
+            access. You should always select this if you do not have credentials
             to write. You can use this in any case to prevent accidental data
             modifications.
           </div>
