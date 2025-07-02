@@ -116,6 +116,7 @@ export default function DataConnectorBoxListDisplay({
         action
         className={cx("cursor-pointer", "link-primary", "text-body")}
         onClick={toggleDetails}
+        data-cy="data-connector-item"
       >
         <Row className={cx("align-items-center", "g-2")}>
           <Col className={cx("d-flex", "flex-column")}>

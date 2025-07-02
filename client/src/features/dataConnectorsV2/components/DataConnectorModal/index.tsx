@@ -52,6 +52,7 @@ export function DataConnectorModalBodyAndFooter({
   namespace,
   project,
   toggle,
+  initialStep,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
   // Fetch available schema when users open the modal
@@ -83,7 +84,7 @@ export function DataConnectorModalBodyAndFooter({
       dataConnector != null
         ? {
             ...EMPTY_CLOUD_STORAGE_STATE,
-            step: 2,
+            step: initialStep ?? 2,
             completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
           }
         : EMPTY_CLOUD_STORAGE_STATE;
@@ -94,7 +95,15 @@ export function DataConnectorModalBodyAndFooter({
         schemata: schemata ?? [],
       })
     );
-  }, [dataConnector, dispatch, isOpen, namespace, project, schemata]);
+  }, [
+    dataConnector,
+    dispatch,
+    isOpen,
+    namespace,
+    project,
+    schemata,
+    initialStep,
+  ]);
 
   // Visual elements
   return (
@@ -119,6 +128,7 @@ export function DataConnectorModalBodyAndFooter({
           isOpen={isOpen}
           project={project}
           toggle={toggle}
+          initialStep={initialStep}
         />
       </ModalFooter>
     </>
@@ -148,7 +158,8 @@ interface DataConnectorModalProps {
   isOpen: boolean;
   namespace?: string;
   project?: Project;
-  toggle: () => void;
+  toggle: (initialStep?: number) => void;
+  initialStep?: number;
 }
 export default function DataConnectorModal({
   dataConnector = null,
@@ -156,6 +167,7 @@ export default function DataConnectorModal({
   namespace,
   project,
   toggle: originalToggle,
+  initialStep,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
   const scope = getDataConnectorScope(dataConnector?.namespace);
@@ -182,7 +194,10 @@ export default function DataConnectorModal({
       toggle={toggle}
     >
       <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
-        <DataConnectorModalHeader dataConnectorId={dataConnectorId} />
+        <DataConnectorModalHeader
+          dataConnectorId={dataConnectorId}
+          initialStep={initialStep}
+        />
       </ModalHeader>
       {!isLoadingPermissions &&
       dataConnectorId != null &&
@@ -197,6 +212,7 @@ export default function DataConnectorModal({
                 namespace,
                 project,
                 toggle,
+                initialStep,
               }}
             />
           }
@@ -229,14 +245,17 @@ export default function DataConnectorModal({
 
 interface DataConnectorModalHeaderProps {
   dataConnectorId: string | null;
+  initialStep?: number;
 }
 export function DataConnectorModalHeader({
   dataConnectorId,
+  initialStep,
 }: DataConnectorModalHeaderProps) {
   return (
     <>
       <Database className={cx("bi", "me-1")} />{" "}
       {dataConnectorId ? "Edit" : "Add"} data connector
+      {!initialStep ? "" : initialStep === 2 ? " connection information" : ""}
     </>
   );
 }

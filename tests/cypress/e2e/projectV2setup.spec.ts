@@ -360,7 +360,6 @@ describe("Set up data connectors", () => {
     cy.getDataCy("project-data-controller-mode-link").click();
     cy.get("#data-connector-identifier").type("user1-uuid/example-storage");
     cy.getDataCy("link-data-connector-button").click();
-    cy.wait("@getDataConnectorByNamespaceAndSlugNotFound");
     cy.contains(
       "Data connector with identifier 'user1-uuid/example-storage' does not exist or you do not have access to it."
     ).should("be.visible");
@@ -505,10 +504,6 @@ describe("Set up data connectors", () => {
     cy.contains("example storage").should("be.visible").click();
     cy.getDataCy("data-connector-edit").should("be.visible").click();
     // Fill out the details
-    cy.getDataCy("test-data-connector-button").click();
-    cy.getDataCy("add-data-connector-continue-button")
-      .contains("Continue")
-      .click();
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@patchDataConnector");
     cy.getDataCy("data-connector-edit-body").should(

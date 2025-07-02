@@ -17,20 +17,21 @@
  */
 
 import cx from "classnames";
-import { useCallback } from "react";
-import { Globe, Lock, PlusLg } from "react-bootstrap-icons";
+import { useCallback, useEffect, useState } from "react";
+import { Eye, Globe, Lock, Pencil, PlusLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   ButtonGroup,
   Col,
-  FormText,
+  Collapse,
   Input,
   Label,
   Row,
 } from "reactstrap";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
@@ -51,6 +52,7 @@ import type {
 import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
+import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
 import type {
   DataConnectorRead,
   DataConnectorSecret,
@@ -85,12 +87,6 @@ export default function DataConnectorModalBody({
   if (schemata.length < 1) return <Loader />;
   return (
     <>
-      {!flatDataConnector.dataConnectorId && (
-        <p className="text-body-secondary">
-          Add published datasets from data repositories for use in your project.
-          Or, connect to cloud storage to read and write custom data.
-        </p>
-      )}
       <AddOrEditDataConnector
         dataConnector={dataConnector}
         project={project}
@@ -139,6 +135,12 @@ function AddOrEditDataConnector({
   if (CloudStorageContentByStep)
     return (
       <>
+        {!flatDataConnector.dataConnectorId && cloudStorageState.step <= 1 && (
+          <p className="text-body-secondary">
+            Add published datasets from data repositories for use in your
+            project. Or, connect to cloud storage to read and write custom data.
+          </p>
+        )}
         <div className={cx("d-flex", "justify-content-end")}>
           <AddStorageAdvancedToggle
             state={cloudStorageState}
@@ -165,12 +167,14 @@ function AddOrEditDataConnector({
   if (DataConnectorContentByStep)
     return (
       <>
-        <div className={cx("d-flex", "justify-content-end")}>
-          <AddStorageAdvancedToggle
-            state={cloudStorageState}
-            setState={setState}
-          />
-        </div>
+        {!flatDataConnector.dataConnectorId && (
+          <div className={cx("d-flex", "justify-content-end")}>
+            <AddStorageAdvancedToggle
+              state={cloudStorageState}
+              setState={setState}
+            />
+          </div>
+        )}
         <DataConnectorContentByStep
           dataConnector={dataConnector}
           project={project}
@@ -210,11 +214,19 @@ export function DataConnectorMount({
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
     (state) => state.dataConnectorFormSlice
   );
+  const [isAdvancedSettingOpen, setIsAdvancedSettingsOpen] = useState(false);
+  const toggleIsOpen = useCallback(
+    () =>
+      setIsAdvancedSettingsOpen(
+        (isAdvancedSettingOpen) => !isAdvancedSettingOpen
+      ),
+    []
+  );
   const {
     control,
-    formState: { errors, touchedFields },
-    getValues,
+    formState: { dirtyFields, errors, touchedFields },
     setValue,
+    getValues,
     watch,
   } = useForm<DataConnectorMountForm>({
     mode: "onChange",
@@ -296,10 +308,28 @@ export function DataConnectorMount({
     (o) => flatDataConnector.options && flatDataConnector.options[o.name]
   );
 
+  const currentName = watch("name");
+  const currentSlug = watch("slug");
+  useEffect(() => {
+    dispatch(
+      dataConnectorFormSlice.actions.setFlatDataConnector({
+        flatDataConnector: { ...getValues() },
+      })
+    );
+  }, [currentSlug, getValues, dispatch]);
+  const resetUrl = useCallback(() => {
+    setValue("slug", slugFromTitle(currentName, true, true), {
+      shouldValidate: true,
+    });
+  }, [setValue, currentName]);
+  const dataConnectorId = flatDataConnector.dataConnectorId;
+  const parentPath = `/${flatDataConnector.namespace}/`;
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
-      <h5>Final details</h5>
-      <p>We need a few more details to mount your data properly.</p>
+      {!dataConnectorId && <h5 className="fw-bold">Final details</h5>}
+      <p>
+        Set how your data connector displays in Renku and who can access it.
+      </p>
 
       <div className="mb-3">
         <Label className="form-label" for="name">
@@ -369,54 +399,21 @@ export function DataConnectorMount({
         <div className="invalid-feedback">
           {errors.name?.message?.toString()}
         </div>
-        {flatDataConnector.namespace && flatDataConnector.slug ? (
-          <div className={cx("form-text", "text-muted")}>
-            The url for this data connector will be{" "}
-            <b>{`${flatDataConnector.namespace}/${flatDataConnector.slug}`}</b>.
-          </div>
-        ) : (
-          <div className={cx("form-text", "text-muted")}>
-            The owner and slug together form the url for this data connector.
-          </div>
-        )}
       </div>
 
       <div className="mb-3">
-        <Label className="form-label" for="data-connector-slug">
-          Slug
-        </Label>
-        <Controller
+        <SlugPreviewFormField
+          compact={true}
           control={control}
+          errors={errors}
           name="slug"
-          render={({ field }) => (
-            <Input
-              aria-describedby="data-connector-SlugHelp"
-              className={cx("form-control", errors.slug && "is-invalid")}
-              data-cy="data-connector-slug-input"
-              id="data-connector-slug"
-              type="text"
-              {...field}
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("slug", e.target.value);
-              }}
-            />
-          )}
-          rules={{
-            required: true,
-            maxLength: 99,
-            pattern:
-              /^(?!.*\.git$|.*\.atom$|.*[-._][-._].*)[a-z0-9][a-z0-9\-_.]*$/,
-          }}
+          resetFunction={resetUrl}
+          slug={currentSlug}
+          dirtyFields={dirtyFields}
+          label="Project URL"
+          entityName="data-connector"
+          parentPath={parentPath}
         />
-        <div className="invalid-feedback">
-          Please provide a slug consisting of lowercase letters, numbers, and
-          hyphens.
-        </div>
-        <FormText id="data-connector-SlugHelp" className="input-hint">
-          A short, machine-readable identifier for the data connector,
-          restricted to lowercase letters, numbers, and hyphens.
-        </FormText>
       </div>
 
       <div className="mb-3">
@@ -494,81 +491,80 @@ export function DataConnectorMount({
       </div>
 
       <div className="mb-3">
-        <Label className="form-label" for="mountPoint">
-          Mount point
-        </Label>
-
-        <Controller
-          name="mountPoint"
-          control={control}
-          render={({ field }) => (
-            <input
-              id="mountPoint"
-              type="string"
-              {...field}
-              className={cx("form-control", errors.mountPoint && "is-invalid")}
-              data-cy="data-connector-mount-input"
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("mountPoint", e.target.value);
-              }}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a mount point.</div>
-        <div className={cx("form-text", "text-muted")}>
-          This is the name of the folder where you will find your external
-          storage in sessions. You should pick something different from the
-          folders used in the projects repository, and from folders mounted by
-          other storage services.
-        </div>
-      </div>
-
-      <div className="mb-3">
         <Label className="form-label" for="readOnly">
-          Read-only
+          Access Mode
         </Label>
 
-        <Controller
-          name="readOnly"
-          control={control}
-          render={({ field }) => (
-            <input
-              id="readOnly"
-              type="checkbox"
-              {...field}
-              className={cx(
-                "form-check-input",
-                "ms-1",
-                errors.readOnly && "is-invalid"
-              )}
-              data-cy="data-connector-readonly-input"
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("readOnly", e.target.checked);
-              }}
-              value=""
-              checked={flatDataConnector.readOnly ?? false}
-            />
+        <div>
+          <Controller
+            name="readOnly"
+            control={control}
+            render={({ field }) => (
+              <>
+                <ButtonGroup id="readOnly">
+                  <Input
+                    type="radio"
+                    className="btn-check"
+                    data-cy="data-connector-readonly-true"
+                    id="data-connector-readonly-true"
+                    {...field}
+                    value={"true"}
+                    checked={field.value === true}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      onFieldValueChange("readOnly", !!e.target.value);
+                    }}
+                  />
+                  <Label
+                    for="data-connector-readonly-true"
+                    className={cx("btn", "btn-outline-primary")}
+                  >
+                    <Eye className={cx("bi", "me-1")} />
+                    Read Only
+                  </Label>
+
+                  <Input
+                    type="radio"
+                    className="btn-check"
+                    data-cy="data-connector-readonly-false"
+                    id="data-connector-readonly-false"
+                    {...field}
+                    value={"false"}
+                    checked={field.value === false}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      onFieldValueChange("readOnly", false);
+                    }}
+                  />
+                  <Label
+                    for="data-connector-readonly-false"
+                    className={cx("btn", "btn-outline-primary")}
+                  >
+                    <Pencil className={cx("bi", "me-1")} />
+                    Read-Write
+                  </Label>
+                </ButtonGroup>
+              </>
+            )}
+            rules={{ required: true }}
+          />
+          {!flatDataConnector.readOnly && (
+            <div className="mt-1">
+              <WarnAlert dismissible={false}>
+                <p className="mb-0">
+                  You are mounting this storage in read-write mode. If you have
+                  read-only access, please select &quot;Read Only&quot; to
+                  prevent errors with some storage types.
+                </p>
+              </WarnAlert>
+            </div>
           )}
-          rules={{ required: true }}
-        />
-        {!flatDataConnector.readOnly && (
-          <div className="mt-1">
-            <WarnAlert dismissible={false}>
-              <p className="mb-0">
-                You are mounting this storage in read-write mode. If you have
-                read-only access, please check the box to prevent errors with
-                some storage types.
-              </p>
-            </WarnAlert>
+          <div className={cx("form-text", "text-muted")}>
+            Select &quot;Read Only&quot; to mount the storage without write
+            access. You should always select this if you do not have credentials
+            to write. You can use this in any case to prevent accidental data
+            modifications.
           </div>
-        )}
-        <div className={cx("form-text", "text-muted")}>
-          Check this box to mount the storage in read-only mode. You should
-          always check this if you do not have credentials to write. You can use
-          this in any case to prevent accidental data modifications.
         </div>
       </div>
 
@@ -681,11 +677,72 @@ export function DataConnectorMount({
       {flatDataConnector.dataConnectorId == null &&
         hasPasswordFieldWithInput &&
         validationResult?.isSuccess && (
-          <DataConnectorSaveCredentialsInfo
-            control={control}
-            onFieldValueChange={onFieldValueChange}
-          />
+          <div className="mb-3">
+            <DataConnectorSaveCredentialsInfo
+              control={control}
+              onFieldValueChange={onFieldValueChange}
+            />
+          </div>
         )}
+
+      <div className="mb-3">
+        <button
+          className={cx(
+            "d-flex",
+            "align-items-center",
+            "w-100",
+            "bg-transparent",
+            "border-0",
+            "fw-bold",
+            "px-0"
+          )}
+          type="button"
+          onClick={toggleIsOpen}
+        >
+          Advanced settings
+          <ChevronFlippedIcon
+            className="ms-1"
+            flipped={isAdvancedSettingOpen}
+          />
+        </button>
+      </div>
+
+      <Collapse isOpen={isAdvancedSettingOpen}>
+        <div className="mb-3">
+          <Label className="form-label" for="mountPoint">
+            Mount point
+          </Label>
+
+          <Controller
+            name="mountPoint"
+            control={control}
+            render={({ field }) => (
+              <input
+                id="mountPoint"
+                type="string"
+                {...field}
+                className={cx(
+                  "form-control",
+                  errors.mountPoint && "is-invalid"
+                )}
+                data-cy="data-connector-mount-input"
+                onChange={(e) => {
+                  field.onChange(e);
+                  onFieldValueChange("mountPoint", e.target.value);
+                }}
+              />
+            )}
+            rules={{ required: true }}
+          />
+          <div className="invalid-feedback">Please provide a mount point.</div>
+          <div className={cx("form-text", "text-muted")}>
+            This is the name of the folder where you will find your external
+            storage in sessions. You should pick something different from the
+            folders used in the projects repository, and from folders mounted by
+            other storage services.
+          </div>
+        </div>
+      </Collapse>
     </form>
   );
 }
