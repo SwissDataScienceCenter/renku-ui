@@ -256,6 +256,10 @@ function ProjectLinkDataConnectorBodyAndFooter({
 }: ProjectConnectDataConnectorsModalProps) {
   const dispatch = useAppDispatch();
 
+  const toggleModal = useCallback(() => {
+    dispatch(dataConnectorFormSlice.actions.resetTransientState());
+    toggle();
+  }, [dispatch, toggle]);
   const [fetchOnePartSlug, onePartSlugQuery] =
     dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug.useLazyQuery();
   const [fetchTwoPartsSlug, twoPartsSlugQuery] =
@@ -388,7 +392,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
-        <Button color="outline-primary" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggleModal}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -541,7 +545,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
-        <Button color="outline-primary" onClick={toggle}>
+        <Button color="outline-primary" onClick={() => toggle()}>
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
