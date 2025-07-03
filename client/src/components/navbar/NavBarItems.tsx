@@ -29,6 +29,7 @@ import {
   DropdownToggle,
   NavLink,
   UncontrolledDropdown,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import { LoginHelper } from "../../authentication";
@@ -57,26 +58,21 @@ export function RenkuToolbarItemPlus() {
   const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(
     location.pathname
   );
+
   const datasetDropdown = activeProjectPathWithNamespace ? (
-    <DropdownItem className="p-0">
-      <Link
-        className="dropdown-item"
-        id="navbar-dataset-new"
-        to={`/projects/${activeProjectPathWithNamespace}/datasets/new`}
-      >
-        Dataset
-      </Link>
+    <DropdownItem className="p-0" id="add-dataset-main-link">
+      <div className="dropdown-item disabled">Dataset</div>
+      <UncontrolledTooltip target="add-dataset-main-link" placement="right">
+        Creating new datasets is no longer supported in Renku Legacy.
+      </UncontrolledTooltip>
     </DropdownItem>
   ) : null;
   const projectDropdown = (
-    <DropdownItem className="p-0">
-      <Link
-        className="dropdown-item"
-        id="navbar-project-new"
-        to={ABSOLUTE_ROUTES.v1.projects.new}
-      >
-        Project
-      </Link>
+    <DropdownItem className="p-0" id="add-project-main-link">
+      <div className="dropdown-item disabled">Project</div>
+      <UncontrolledTooltip target="add-project-main-link" placement="right">
+        Creating new projects is no longer supported in Renku Legacy.
+      </UncontrolledTooltip>
     </DropdownItem>
   );
 

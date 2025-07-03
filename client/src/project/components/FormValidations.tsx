@@ -22,51 +22,9 @@
  *  FormValidation.tsx
  *  FormValidation components.
  */
-import { toCapitalized as capitalize } from "../../../utils/helpers/HelperFunctions";
-import {
-  ErrorLabel,
-  HelperLabel,
-} from "../../../components/formlabels/FormLabels";
-import { NewProjectInputs, NewProjectMeta } from "./newProject.types";
+import { ErrorLabel } from "../../components/formlabels/FormLabels";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-interface FormWarningsProps {
-  meta: NewProjectMeta | any;
-}
-
-const FormWarnings = ({ meta }: FormWarningsProps) => {
-  const warnings = Object.keys(meta.validation.warnings);
-
-  if (!warnings.length) return null;
-
-  let message = "";
-  for (const warningsKey of warnings)
-    message += `${meta.validation.warnings[warningsKey]}\n`;
-
-  return (
-    <div className="mt-1 d-flex justify-content-end">
-      <HelperLabel text={message} />
-    </div>
-  );
-};
-
-interface FormErrorsProps {
-  meta: NewProjectMeta | any;
-  input: NewProjectInputs | any;
-}
-const FormErrors = ({ meta, input }: FormErrorsProps) => {
-  const errorFields = meta.validation.errors
-    ? Object.keys(meta.validation.errors)
-        .filter((field) => !input[`${field}Pristine`]) // don't consider pristine fields
-        .map((field) => capitalize(field))
-    : [];
-
-  if (!errorFields.length) return null;
-
-  return <FormErrorFields errorFields={errorFields} />;
-};
-
 interface FormErrorFieldsProps {
   errorFields: string[];
 }
@@ -83,4 +41,4 @@ const FormErrorFields = ({ errorFields }: FormErrorFieldsProps) => {
   );
 };
 
-export { FormErrors, FormWarnings, FormErrorFields };
+export { FormErrorFields };

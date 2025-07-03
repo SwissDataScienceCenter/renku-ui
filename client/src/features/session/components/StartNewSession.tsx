@@ -32,7 +32,7 @@ import {
   useNavigate,
   type Location,
 } from "react-router";
-import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
+import { Button, Col, DropdownItem, Form, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
@@ -51,7 +51,6 @@ import ProgressStepsIndicator, {
 import { ShareLinkSessionModal } from "../../../components/shareLinkSession/ShareLinkSession";
 import { LockStatus, User } from "../../../model/renkuModels.types";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
-import { ForkProject } from "../../../project/new";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
@@ -677,9 +676,6 @@ function SessionSaveWarning() {
           save your work, consider one of the following:
         </p>
         <ul className="mb-0">
-          <li>
-            <ForkProjectModal /> and start a session from your fork.
-          </li>
           <li className="pt-1">
             <ExternalLink
               size="sm"
@@ -700,40 +696,6 @@ function SessionSaveWarning() {
   }
 
   return null;
-}
-
-function ForkProjectModal() {
-  const { client, model } = useContext(AppContext);
-
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
-
-  const { id, title, visibility } = useLegacySelector<
-    ProjectMetadata & { id?: number }
-  >((state) => state.stateModel.project.metadata);
-
-  return (
-    <>
-      <Button
-        color="primary"
-        id="fork-project"
-        onClick={toggleIsOpen}
-        size="sm"
-      >
-        Fork the project
-      </Button>
-      <Modal isOpen={isOpen} toggle={toggleIsOpen}>
-        <ForkProject
-          client={client}
-          forkedId={id ?? 0}
-          forkedTitle={title ?? ""}
-          model={model}
-          projectVisibility={visibility}
-          toggleModal={toggleIsOpen}
-        />
-      </Modal>
-    </>
-  );
 }
 
 function StartNewSessionOptions() {

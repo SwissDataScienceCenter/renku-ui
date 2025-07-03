@@ -1,5 +1,4 @@
-import { Fragment, useMemo, useRef } from "react";
-import { Link } from "react-router";
+import { Fragment, useMemo } from "react";
 import { Button, Col, Row, UncontrolledTooltip } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -75,40 +74,21 @@ type AddDatasetButtonProps = {
   newDatasetUrl: string;
 };
 
-function AddDatasetButton({
-  accessLevel,
-  locked,
-  newDatasetUrl,
-}: AddDatasetButtonProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
+function AddDatasetButton({ accessLevel }: AddDatasetButtonProps) {
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) return null;
-  if (locked) {
-    return (
-      <div id="add-dataset-button" ref={ref}>
-        <Button
-          data-cy="add-dataset-button"
-          className="btn-outline-rk-pink"
-          disabled={true}
-        >
-          Add Dataset
-        </Button>
-        <UncontrolledTooltip target={ref}>
-          Cannot add dataset until project modification finishes.
-        </UncontrolledTooltip>
-      </div>
-    );
-  }
 
   return (
-    <div>
-      <Link
-        className="btn btn-outline-rk-pink"
-        role="button"
-        to={newDatasetUrl}
+    <div id="add-dataset-button">
+      <Button
+        data-cy="add-dataset-button"
+        className="btn-outline-rk-pink"
+        disabled={true}
       >
         Add Dataset
-      </Link>
+      </Button>
+      <UncontrolledTooltip target="add-dataset-button">
+        Creating new datasets is no longer supported in Renku Legacy.
+      </UncontrolledTooltip>
     </div>
   );
 }

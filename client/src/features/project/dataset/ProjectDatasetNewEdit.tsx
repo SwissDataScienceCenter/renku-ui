@@ -26,7 +26,6 @@ import { Alert, Button, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import { Loader } from "../../../components/Loader";
-import AddDatasetButtons from "../../../components/addDatasetButtons/AddDatasetButtons";
 import FormSchema from "../../../components/formschema/FormSchema";
 import ProgressIndicator, {
   ProgressStyle,
@@ -35,7 +34,6 @@ import ProgressIndicator, {
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-import SunsetBanner from "../../projectsV2/shared/SunsetV1Banner";
 import type { IDatasetFiles, StateModelProject } from "../project.types";
 import type {
   DatasetModifyDisplayProps,
@@ -44,7 +42,7 @@ import type {
 } from "./DatasetModify";
 import DatasetModify from "./DatasetModify";
 import type { DatasetPostClient } from "./datasetCore.api";
-import { initializeForDataset, initializeForUser } from "./datasetForm.slice";
+import { initializeForDataset } from "./datasetForm.slice";
 
 type ChangeDatasetProps = {
   apiVersion: string | undefined;
@@ -68,23 +66,6 @@ type ProjectDatasetEditOnlyProps = {
   files: IDatasetFiles;
   datasetId: string;
 };
-
-function DatasetCreateHelp(props: ProjectDatasetNewOnlyProps) {
-  return (
-    <span>
-      Create a new dataset by providing metadata and content. Use&nbsp;
-      <Button
-        className="p-0"
-        style={{ verticalAlign: "baseline" }}
-        color="link"
-        onClick={props.toggleNewDataset}
-      >
-        <small>Import Dataset</small>
-      </Button>
-      &nbsp;to reuse an existing dataset.
-    </span>
-  );
-}
 
 type ProjectDatasetNewEditProps = ChangeDatasetProps &
   DatasetModifyDisplayProps &
@@ -192,61 +173,6 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
     />
   );
 }
-
-function ProjectDatasetNew(
-  props: Omit<ChangeDatasetProps, "submitting" | "setSubmitting"> &
-    ProjectDatasetNewOnlyProps
-) {
-  const location = useLocation();
-
-  const project = useLegacySelector<StateModelProject>(
-    (state) => state.stateModel.project
-  );
-  const projectPathWithNamespace = project.metadata.pathWithNamespace;
-  const user = useLegacySelector((state) => state.stateModel.user);
-  const dispatch = useAppDispatch();
-  React.useEffect(() => {
-    dispatch(initializeForUser({ location, projectPathWithNamespace, user }));
-  }, [dispatch, location, projectPathWithNamespace, user]);
-
-  const [submitting, setSubmitting] = React.useState(false);
-  return (
-    <FormSchema
-      showHeader={!submitting}
-      title="Add Dataset"
-      description={
-        <DatasetCreateHelp toggleNewDataset={props.toggleNewDataset} />
-      }
-    >
-      <div className="d-flex flex-column">
-        <SunsetBanner />
-        <div className="form-rk-pink d-flex flex-column">
-          <AddDatasetButtons
-            optionSelected="addDataset"
-            toggleNewDataset={props.toggleNewDataset}
-          />
-        </div>
-        <ProjectDatasetNewEdit
-          key="datasetCreate"
-          apiVersion={props.apiVersion}
-          client={props.client}
-          fetchDatasets={props.fetchDatasets}
-          metadataVersion={props.metadataVersion}
-          model={props.model}
-          notifications={props.notifications}
-          params={props.params}
-          setSubmitting={setSubmitting}
-          submitting={submitting}
-          submitButtonText="Create Dataset"
-          submitLoaderText="Creating dataset"
-          toggleNewDataset={props.toggleNewDataset}
-          versionUrl={props.versionUrl}
-        />
-      </div>
-    </FormSchema>
-  );
-}
-
 function ProjectDatasetEditForm(
   props: ChangeDatasetProps &
     DatasetModifyDisplayProps &
@@ -352,4 +278,4 @@ function ProjectDatasetEdit(props: ProjectDatasetEditProps) {
   );
 }
 
-export { ProjectDatasetEdit, ProjectDatasetNew };
+export { ProjectDatasetEdit };

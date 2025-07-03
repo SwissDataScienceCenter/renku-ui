@@ -39,11 +39,11 @@ import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
+import SunsetBanner from "../../projectsV2/shared/SunsetV1Banner";
 import { StateModelProject } from "../project.types";
 import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
-import ProjectDatasetImport from "./ProjectDatasetImport";
-import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
+import { ProjectDatasetEdit } from "./ProjectDatasetNewEdit";
 import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetListView from "./ProjectDatasetsListView";
 
@@ -110,42 +110,7 @@ function ProjectDatasetsNav(props: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ProjectAddDataset(props: any) {
-  const [newDataset, setNewDataset] = React.useState(true);
-  function toggleNewDataset() {
-    setNewDataset(!newDataset);
-  }
-
-  return (
-    <Col>
-      {newDataset ? (
-        <ProjectDatasetNew
-          apiVersion={props.apiVersion}
-          client={props.client}
-          fetchDatasets={props.fetchDatasets}
-          metadataVersion={props.metadataVersion}
-          model={props.model}
-          notifications={props.notifications}
-          params={props.params}
-          toggleNewDataset={toggleNewDataset}
-          versionUrl={props.versionUrl}
-        />
-      ) : (
-        <ProjectDatasetImport
-          client={props.client}
-          fetchDatasets={props.fetchDatasets}
-          model={props.model}
-          notifications={props.notifications}
-          params={props.params}
-          toggleNewDataset={toggleNewDataset}
-        />
-      )}
-    </Col>
-  );
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
+function EmptyDatasets({ locked, membership }: any) {
   return (
     <Alert timeout={0} color="primary">
       <p>No datasets found for this project.</p>
@@ -154,12 +119,6 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
           <p>
             <FontAwesomeIcon icon={faInfoCircle} /> If you recently activated
             the indexing or added datasets try refreshing the page.{" "}
-          </p>
-          <p>
-            You can also click on the button to{" "}
-            <Link className="btn btn-primary btn-sm" to={newDatasetUrl}>
-              Add a Dataset
-            </Link>
           </p>
         </div>
       ) : null}
@@ -368,19 +327,7 @@ function ProjectDatasetsView(props: any) {
           path="new"
           element={
             <>
-              <Col key="btn" md={12}>
-                <GoBackButton
-                  data-cy="go-back-dataset"
-                  label="Back to list"
-                  url={props.datasetsUrl}
-                />
-              </Col>
-              <ProjectAddDataset
-                {...props}
-                apiVersion={apiVersion}
-                metadataVersion={metadataVersion}
-                versionUrl={versionUrl}
-              />
+              <SunsetBanner />
             </>
           }
         />

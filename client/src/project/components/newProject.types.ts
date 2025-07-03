@@ -23,7 +23,7 @@
  *  New Project definitions
  */
 
-import { Visibilities } from "../../../components/visibility/Visibility";
+import { Visibilities } from "../../components/visibility/Visibility";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */

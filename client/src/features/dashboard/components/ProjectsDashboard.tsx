@@ -23,6 +23,7 @@ import cx from "classnames";
 import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
+import { UncontrolledTooltip } from "reactstrap";
 
 import { InfoAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
@@ -330,16 +331,21 @@ function ProjectsDashboard() {
           <h3 className="rk-dashboard-title" key="project-header">
             Projects
           </h3>
-          <Link
-            className="btn btn-rk-green btn-icon-text rk-dashboard-link"
-            role="button"
-            to={urlMap.projectNewUrl}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-            <span className="rk-dashboard-link--text">
-              Create a new project
-            </span>
-          </Link>
+          <div id="add-project-v1-button">
+            <Link
+              className="btn btn-rk-green btn-icon-text rk-dashboard-link text-white disabled"
+              role="button"
+              to={urlMap.projectNewUrl}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+              <span className="rk-dashboard-link--text">
+                Create a new project
+              </span>
+            </Link>
+            <UncontrolledTooltip target="add-project-v1-button">
+              Creating new projects is no longer supported in Renku Legacy.
+            </UncontrolledTooltip>
+          </div>
         </div>
 
         {content}
