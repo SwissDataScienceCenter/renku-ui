@@ -1,3 +1,15 @@
+// function safeJsonToObject(value: string | undefined) {
+function safeJsonToObject(value) {
+  if (value == null) return value;
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error("Failed to parse JSON string:", e);
+    return value;
+  }
+}
+
 export const BASE_URL = process.env.BASE_URL;
 export const SITEMAP = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -32,7 +44,7 @@ export const CONFIG_JSON = {
   GATEWAY_URL: process.env.GATEWAY_URL || "http://gateway.renku.build",
   UISERVER_URL: process.env.UISERVER_URL || "http://uiserver.renku.build",
   KEYCLOAK_REALM: process.env.KEYCLOAK_REALM || "Renku",
-  DASHBOARD_MESSAGE: process.env.DASHBOARD_MESSAGE,
+  DASHBOARD_MESSAGE: safeJsonToObject(process.env.DASHBOARD_MESSAGE),
   SENTRY_URL: process.env.SENTRY_URL,
   SENTRY_NAMESPACE: process.env.SENTRY_NAMESPACE,
   SENTRY_SAMPLE_RATE: process.env.SENTRY_SAMPLE_RATE,
@@ -40,19 +52,21 @@ export const CONFIG_JSON = {
   ANONYMOUS_SESSIONS: process.env.ANONYMOUS_SESSIONS,
   PRIVACY_BANNER_ENABLED: process.env.PRIVACY_BANNER_ENABLED,
   PRIVACY_BANNER_CONTENT: process.env.PRIVACY_BANNER_CONTENT,
-  PRIVACY_BANNER_LAYOUT: process.env.PRIVACY_BANNER_LAYOUT,
+  PRIVACY_BANNER_LAYOUT: safeJsonToObject(process.env.PRIVACY_BANNER_LAYOUT),
   TERMS_PAGES_ENABLED: process.env.TERMS_PAGES_ENABLED,
   TERMS_CONTENT: process.env.TERMS_CONTENT || "",
   PRIVACY_CONTENT: process.env.PRIVACY_CONTENT || "",
-  TEMPLATES: process.env.TEMPLATES,
-  PREVIEW_THRESHOLD: process.env.PREVIEW_THRESHOLD,
-  UPLOAD_THRESHOLD: process.env.UPLOAD_THRESHOLD,
+  TEMPLATES: safeJsonToObject(process.env.TEMPLATES),
+  PREVIEW_THRESHOLD: safeJsonToObject(process.env.PREVIEW_THRESHOLD),
+  UPLOAD_THRESHOLD: safeJsonToObject(process.env.UPLOAD_THRESHOLD),
   STATUSPAGE_ID: process.env.STATUSPAGE_ID,
-  HOMEPAGE: process.env.HOMEPAGE,
-  CORE_API_VERSION_CONFIG: process.env.CORE_API_VERSION_CONFIG,
+  HOMEPAGE: safeJsonToObject(process.env.HOMEPAGE),
+  CORE_API_VERSION_CONFIG: safeJsonToObject(
+    process.env.CORE_API_VERSION_CONFIG
+  ),
   USER_PREFERENCES_MAX_PINNED_PROJECTS:
     process.env.USER_PREFERENCES_MAX_PINNED_PROJECTS,
-  SESSION_CLASS_EMAIL_US: process.env.SESSION_CLASS_EMAIL_US,
+  SESSION_CLASS_EMAIL_US: safeJsonToObject(process.env.SESSION_CLASS_EMAIL_US),
   IMAGE_BUILDERS_ENABLED: process.env.IMAGE_BUILDERS_ENABLED,
 };
 
