@@ -22,6 +22,7 @@ if (DEVELOPMENT) {
   throw new Error("Can only run in production");
 }
 
+// eslint-disable-next-line no-console
 console.log("Starting production server");
 
 // Storybook
@@ -67,5 +68,6 @@ app.use(express.static("build/client"));
 app.use(await import(BUILD_PATH).then((mod) => mod.app));
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
