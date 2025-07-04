@@ -21,7 +21,7 @@ import { useCallback, useMemo, useState } from "react";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
+import usePollingGetProjectLauncherSessions from "../usePollingGetProjectLauncherSessions.hook";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
@@ -70,19 +70,10 @@ export function SessionLauncherDisplay({
     });
   }, [launcherHash, setHash]);
 
-  const { data: sessions } = useGetSessionsQueryV2();
-
-  const filteredSessions = useMemo(
-    () =>
-      sessions != null
-        ? sessions.filter(
-            (session) =>
-              session.launcher_id === launcher.id &&
-              session.project_id === project.id
-          )
-        : [],
-    [launcher.id, project.id, sessions]
-  );
+  const { sessions } = usePollingGetProjectLauncherSessions({
+    launcherId: launcher.id,
+    projectId: project.id,
+  });
 
   return (
     <>
@@ -91,7 +82,7 @@ export function SessionLauncherDisplay({
         launcher={launcher}
         name={name}
         project={project}
-        sessions={filteredSessions}
+        sessions={sessions}
         toggleUpdate={toggleUpdate}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleDelete={toggleDelete}
@@ -102,16 +93,16 @@ export function SessionLauncherDisplay({
         id={launcherHash}
         launcher={launcher}
         project={project}
-        sessions={filteredSessions}
+        sessions={sessions}
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
         toggleUpdate={toggleUpdate}
         toggleDelete={toggleDelete}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
       />
-      {filteredSessions &&
-        filteredSessions?.length > 0 &&
-        filteredSessions.map((session) => (
+      {sessions &&
+        sessions?.length > 0 &&
+        sessions.map((session) => (
           <EnvironmentLogsV2
             name={session.name}
             key={`session-logs-${session.name}`}
@@ -133,7 +124,7 @@ export function SessionLauncherDisplay({
             isOpen={isDeleteOpen}
             launcher={launcher}
             toggle={toggleDelete}
-            sessionsLength={filteredSessions?.length}
+            sessionsLength={sessions?.length}
           />
           <SessionLaunchLinkModal
             isOpen={isShareLinkOpen}
