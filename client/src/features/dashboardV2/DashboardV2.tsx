@@ -64,7 +64,7 @@ import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import SearchV2Bar from "../searchV2/components/SearchV2Bar";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
+import usePollingGetAllSessionsQuery from "../sessionsV2/usePollingGetAllSessions.hook";
 import { useGetUserQuery } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
@@ -545,7 +545,7 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
 }
 
 function SessionsDashboard() {
-  const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
+  const { sessions, error, isLoading } = usePollingGetAllSessionsQuery();
   const totalSessions = sessions ? sessions?.length : 0;
   return (
     <Card data-cy="sessions-container">

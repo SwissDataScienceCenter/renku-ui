@@ -34,6 +34,7 @@ export default function usePollingGetAllSessionsQuery() {
   );
   const {
     data: sessions,
+    error,
     isFetching,
     isLoading,
   } = useGetSessionsQuery(undefined, {
@@ -56,6 +57,7 @@ export default function usePollingGetAllSessionsQuery() {
   }, [sessions]);
 
   return {
+    error,
     isFetching,
     isLoading,
     sessions: sessions ?? [],
