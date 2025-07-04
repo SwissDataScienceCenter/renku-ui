@@ -60,7 +60,8 @@ import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
-import { useGetSessionsQuery } from "../api/sessionsV2.api";
+
+import usePollingGetSessionQuery from "../usePollingGetSessionQuery.hook";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
@@ -69,6 +70,39 @@ import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
 
 import styles from "../../session/components/ShowSession.module.scss";
+
+interface SessionContentProps {
+  isFetching: boolean;
+  isLoading: boolean;
+  thisSession?: SessionV2;
+  toggleModalLogs: () => void;
+}
+function SessionContent({
+  isFetching,
+  isLoading,
+  thisSession,
+  toggleModalLogs,
+}: SessionContentProps) {
+  const { height } = useWindowSize();
+  const iframeHeight = height ? height - 42 : 800;
+
+  if (!isLoading && !isFetching && !thisSession) return <SessionUnavailable />;
+  if (thisSession == null)
+    return <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />;
+  if (thisSession.status.state === "hibernated")
+    return <SessionPaused session={thisSession} />;
+  return (
+    <>
+      {thisSession.status.state !== "running" && (
+        <StartSessionProgressBarV2
+          session={thisSession}
+          toggleLogs={toggleModalLogs}
+        />
+      )}
+      <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
+    </>
+  );
+}
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -87,17 +121,10 @@ export default function ShowSessionPage() {
   });
 
   const {
-    data: sessions,
-    isLoading,
     isFetching,
-  } = useGetSessionsQuery(undefined, { refetchOnMountOrArgChange: true });
-
-  const thisSession = useMemo(() => {
-    if (sessions == null) {
-      return undefined;
-    }
-    return sessions.find(({ name }) => name === sessionName);
-  }, [sessionName, sessions]);
+    isLoading,
+    session: thisSession,
+  } = usePollingGetSessionQuery({ sessionName });
 
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
@@ -140,9 +167,6 @@ export default function ShowSessionPage() {
     );
   }, []);
 
-  const { height } = useWindowSize();
-  const iframeHeight = height ? height - 42 : 800;
-
   // Redirect to the sessions list if the session has failed
   useEffect(() => {
     if (thisSession?.status.state === "failed") {
@@ -162,24 +186,6 @@ export default function ShowSessionPage() {
     />
   );
   const logs = thisSession && <EnvironmentLogsV2 name={sessionName} />;
-  const content =
-    !isLoading && !isFetching && !thisSession ? (
-      <SessionUnavailable />
-    ) : thisSession?.status.state === "hibernated" ? (
-      <SessionPaused session={thisSession} />
-    ) : thisSession != null ? (
-      <>
-        {thisSession.status.state !== "running" && (
-          <StartSessionProgressBarV2
-            session={thisSession}
-            toggleLogs={toggleModalLogs}
-          />
-        )}
-        <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
-      </>
-    ) : (
-      <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />
-    );
 
   const backButton = (
     <Link
@@ -252,7 +258,12 @@ export default function ShowSessionPage() {
           className={cx(styles.fullscreenContent, "w-100")}
           data-cy="session-page"
         >
-          {content}
+          <SessionContent
+            isFetching={isFetching}
+            isLoading={isLoading}
+            thisSession={thisSession}
+            toggleModalLogs={toggleModalLogs}
+          />
         </div>
       </div>
       {/* modals */}

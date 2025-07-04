@@ -24,21 +24,17 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import cx from "classnames";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Navigate, Route, Routes, useLocation } from "react-router";
+import { Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 
 import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
-import { DatasetCoordinator } from "./dataset/Dataset.state";
-import LazyShowDataset from "./dataset/LazyShowDataset";
+
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import { Favicon } from "./features/favicon/Favicon";
 import { Unavailable } from "./features/maintenance/Maintenance";
-import SunsetBanner from "./features/projectsV2/shared/SunsetV1Banner";
-import LazyRootV1 from "./features/rootV1/LazyRootV1";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQuery } from "./features/usersV2/api/users.api";
 import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
@@ -46,10 +42,15 @@ import {
   FooterNavbar,
   RenkuNavBar,
 } from "./features/landing/components/NavBar/NavBar";
+import {
+  LegacyDatasetAddToProject,
+  LegacyDatasets,
+  LegacyProjectView,
+  LegacyRoot,
+  LegacyShowDataset,
+} from "./features/legacy";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
-import LazyProjectView from "./project/LazyProjectView";
-import { ABSOLUTE_ROUTES } from "./routing/routes.constants";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
@@ -65,8 +66,6 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 };
 
 function CentralContentContainer({ user }) {
-  const { model, client } = useContext(AppContext);
-
   const { data: userInfo } = useGetUserQuery(
     user.logged ? undefined : skipToken
   );
@@ -91,47 +90,17 @@ function CentralContentContainer({ user }) {
             )
           }
         />
-        <Route path="/projects/*" element={<LazyProjectView />} />
+        <Route path="/projects/*" element={<LegacyProjectView />} />
         <Route
           path="/datasets/:identifier/add"
-          element={
-            <div
-              className={cx(
-                "d-flex",
-                "flex-column",
-                "align-items-center",
-                "w-100"
-              )}
-            >
-              <SunsetBanner />
-            </div>
-          }
+          element={<LegacyDatasetAddToProject />}
         />
         <Route
           path="/datasets/:identifier"
-          element={
-            <LazyShowDataset
-              insideProject={false}
-              client={client}
-              projectsUrl="/projects"
-              datasetCoordinator={
-                new DatasetCoordinator(client, model.subModel("dataset"))
-              }
-              logged={user.logged}
-              model={model}
-            />
-          }
+          element={<LegacyShowDataset userInfo={userInfo} />}
         />
-        <Route
-          path="/datasets"
-          element={
-            <Navigate
-              to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`}
-              replace
-            />
-          }
-        />
-        <Route path="/v1/*" element={<LazyRootV1 />} />
+        <Route path="/datasets" element={<LegacyDatasets />} />
+        <Route path="/v1/*" element={<LegacyRoot />} />
         {userInfo?.isLoggedIn && userInfo.is_admin && (
           <Route
             path="/admin"

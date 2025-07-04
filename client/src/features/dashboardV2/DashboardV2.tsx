@@ -18,7 +18,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import {
   Calendar3Week,
   Eye,
@@ -43,6 +43,8 @@ import {
   Row,
 } from "reactstrap";
 
+import AppContext from "~/utils/context/appContext";
+
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
@@ -62,7 +64,7 @@ import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import SearchV2Bar from "../searchV2/components/SearchV2Bar";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
+import usePollingGetAllSessionsQuery from "../sessionsV2/usePollingGetAllSessions.hook";
 import { useGetUserQuery } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
@@ -73,6 +75,8 @@ export default function DashboardV2() {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
+  const { params } = useContext(AppContext);
+  const legacySupported = params?.LEGACY_SUPPORT.enabled ?? true;
 
   if (!userLogged) return <AnonymousDashboard />;
 
@@ -101,7 +105,7 @@ export default function DashboardV2() {
             >
               <SessionsDashboard />
               <ProjectsDashboard />
-              <ProjectMigrationBanner />
+              {legacySupported && <ProjectMigrationBanner />}
               <FooterDashboard />
             </Col>
           </Row>
@@ -541,7 +545,7 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
 }
 
 function SessionsDashboard() {
-  const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
+  const { sessions, error, isLoading } = usePollingGetAllSessionsQuery();
   const totalSessions = sessions ? sessions?.length : 0;
   return (
     <Card data-cy="sessions-container">

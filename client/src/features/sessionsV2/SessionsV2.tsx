@@ -44,7 +44,7 @@ import { SessionLauncherDisplay } from "./SessionList/SessionLauncherDisplay";
 import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
+import usePollingGetAllSessionsQuery from "./usePollingGetAllSessions.hook";
 import { SessionV2 } from "./sessionsV2.types";
 
 // Required for logs formatting
@@ -77,10 +77,10 @@ export default function SessionsV2({ project }: SessionsV2Props) {
   } = useGetProjectSessionLaunchersQuery({ projectId });
 
   const {
-    data: sessions,
+    sessions,
     error: sessionsError,
     isLoading: isLoadingSessions,
-  } = useGetSessionsQueryV2();
+  } = usePollingGetAllSessionsQuery();
 
   const isLoading = isLoadingLaunchers || isLoadingSessions;
   const error = launchersError || sessionsError;

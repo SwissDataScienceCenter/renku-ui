@@ -21,7 +21,7 @@ import { useCallback, useMemo } from "react";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
+import usePollingGetProjectLauncherSessions from "../usePollingGetProjectLauncherSessions.hook";
 import { SessionView } from "../SessionView/SessionView";
 import SessionItem from "./SessionItem";
 
@@ -48,23 +48,15 @@ export function SessionItemDisplay({
     });
   }, [launcherHash, setHash]);
 
-  const { data: sessions } = useGetSessionsQueryV2();
-  const filteredSessions = useMemo(
-    () =>
-      sessions != null
-        ? sessions.filter(
-            (session) =>
-              session.launcher_id === launcher.id &&
-              session.project_id === project.id
-          )
-        : [],
-    [launcher.id, project.id, sessions]
-  );
+  const { sessions } = usePollingGetProjectLauncherSessions({
+    launcherId: launcher.id,
+    projectId: project.id,
+  });
 
   return (
     <>
-      {filteredSessions?.length > 0 ? (
-        filteredSessions.map((session) => (
+      {sessions?.length > 0 ? (
+        sessions.map((session) => (
           <SessionItem
             key={`session-item-${session.name}`}
             launcher={launcher}
@@ -87,7 +79,7 @@ export function SessionItemDisplay({
         id={launcherHash}
         launcher={launcher}
         project={project}
-        sessions={filteredSessions}
+        sessions={sessions}
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
       />
