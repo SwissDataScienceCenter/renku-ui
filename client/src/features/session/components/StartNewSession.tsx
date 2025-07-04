@@ -230,6 +230,7 @@ function CheckingMigrationRedirect({
       navigate(
         {
           pathname,
+          search: `?autostartRedirect=true`,
         },
         {
           replace: true,
