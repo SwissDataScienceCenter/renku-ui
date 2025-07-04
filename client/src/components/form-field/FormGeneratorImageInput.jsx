@@ -46,7 +46,7 @@ import {
   InputLabel,
 } from "../formlabels/FormLabels";
 import ImageEditor, { CARD_IMAGE_DIMENSIONS } from "../imageEditor/ImageEditor";
-import { DESIRABLE_FINAL_IMAGE_SIZE } from "../../project/new/components/NewProjectAvatar";
+import { DESIRABLE_FINAL_IMAGE_SIZE } from "../../project/components/NewProjectAvatar";
 
 function userInputOption(options) {
   let userInput = options.find((o) => o[Prop.STOCK] === false);
