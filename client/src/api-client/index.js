@@ -65,6 +65,7 @@ class APIClient {
       coreApiVersionedUrlConfig
     );
     this.returnTypes = RETURN_TYPES;
+    this.supportsLegacy = true;
 
     addDatasetMethods(this);
     addGraphMethods(this);

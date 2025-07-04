@@ -36,3 +36,18 @@ describe("Add dataset to project", () => {
     );
   });
 });
+
+describe("No legacy support", () => {
+  beforeEach(() => {
+    fixtures.config({ fixture: "config-no-legacy.json" }).versions().userTest();
+    fixtures
+      .projects()
+      .landingUserProjects({ fixture: "projects/member-projects.json" });
+  });
+
+  it("displays warning when dataset doesn't exist", () => {
+    const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
+    cy.visit(`datasets/${datasetIdentifier}/add`);
+    cy.contains("Legacy not supported").should("be.visible");
+  });
+});
