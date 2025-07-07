@@ -111,7 +111,7 @@ export default function RootV2() {
   }, []);
 
   return (
-    <div className="w-100">
+    <div className="w-100" data-cy="hello-v2">
       <ProjectV2New />
       <GroupNew />
 
