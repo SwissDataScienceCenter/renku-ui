@@ -152,7 +152,6 @@ export default class ApiClientV2Compat {
   }
 
   async getUser() {
-    // return await this.getGitLabUser();
     return await this.getRenkuUser();
   }
 }
