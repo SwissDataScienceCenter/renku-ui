@@ -8,22 +8,21 @@ import "bootstrap";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import v1Styles from "./styles/index.scss?inline";
-import v2Styles from "./styles/renku_bootstrap.scss?inline";
 
 import App from "./App";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
-import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
 import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
+import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
+import StyleHandler from "./features/style/StyleHandler";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
-import { isRenkuLegacy } from "./utils/helpers/HelperFunctionsV2";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
 
@@ -157,25 +156,4 @@ function LoginHandler() {
 function FeatureFlagHandler() {
   useFeatureFlagSync();
   return null;
-}
-
-// interface StyleHandlerProps {
-//   forceV2Style: boolean;
-// }
-export function StyleHandler({ forceV2Style }) {
-  const location = useLocation();
-  if (forceV2Style) {
-    return (
-      <Helmet>
-        <style type="text/css">{v2Styles}</style>
-      </Helmet>
-    );
-  }
-  return (
-    <Helmet>
-      <style type="text/css">
-        {isRenkuLegacy(location.pathname) ? v1Styles : v2Styles}
-      </style>
-    </Helmet>
-  );
 }
