@@ -94,7 +94,7 @@ export default class ApiClientV2Compat {
   }
 
   doLogin() {
-    // This is invoked to check authentication.
+    // This is invoked to perform authentication.
     window.location.href = `${
       this.uiServerUrl
     }/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
