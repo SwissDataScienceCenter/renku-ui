@@ -15,7 +15,6 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
-// import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientWip";
 import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import { Maintenance } from "./features/maintenance/Maintenance";
