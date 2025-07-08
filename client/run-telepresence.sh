@@ -204,7 +204,7 @@ tee > ./public/config.json << EOF
 }
 EOF
 
-./scripts/generate_sitemap.sh "${BASE_URL}" "./public/sitemap.xml"
+# ./scripts/generate_sitemap.sh "${BASE_URL}" "./public/sitemap.xml"
 
 CURRENT_TELEPRESENCE_NAMESPACE=$( telepresence status | grep "Namespace" | cut -d ":" -f2 | tr -d " " )
 if [[ $NAMESPACE != $CURRENT_TELEPRESENCE_NAMESPACE ]]
