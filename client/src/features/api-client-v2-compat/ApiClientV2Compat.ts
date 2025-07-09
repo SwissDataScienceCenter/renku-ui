@@ -113,26 +113,6 @@ export default class ApiClientV2Compat {
     return new Headers(headers);
   }
 
-  async getGitLabUser() {
-    const headers = this.getBasicHeaders();
-    const response = await this.clientFetch(
-      `${this.baseUrl}/user`,
-      {
-        method: "GET",
-        headers: headers,
-      },
-      FETCH_DEFAULT.returnType,
-      false
-    );
-    if (!response || typeof response !== "object" || response == null)
-      return null;
-
-    if (!("data" in response)) {
-      return null;
-    }
-    return response.data;
-  }
-
   async getRenkuUser() {
     const headers = this.getBasicHeaders();
     // see features/usersV2/api/users.api

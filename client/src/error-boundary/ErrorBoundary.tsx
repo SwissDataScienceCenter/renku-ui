@@ -27,7 +27,7 @@ import rkOopsV2Img from "../styles/assets/oopsV2.svg";
 import AppContext from "../utils/context/appContext";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
-import { StyleHandler } from "../wrappedIndex";
+import StyleHandler from "~/features/rootV2/StyleHandler";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -58,7 +58,7 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 function ErrorPage() {
   const location = useLocation();
   const { params } = useContext(AppContext);
-  const forceV2Style = params && !params.LEGACY_SUPPORT.enabled;
+  const forceV2Style = (params && !params.LEGACY_SUPPORT.enabled) || false;
   const isLegacy = isRenkuLegacy(location.pathname, forceV2Style);
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (

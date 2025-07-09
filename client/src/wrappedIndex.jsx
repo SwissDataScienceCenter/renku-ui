@@ -16,7 +16,6 @@ import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
-import StyleHandler from "./features/style/StyleHandler";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
@@ -25,6 +24,8 @@ import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
+
+import StyleHandler from "~/features/rootV2/StyleHandler";
 
 let hasRendered = false;
 
