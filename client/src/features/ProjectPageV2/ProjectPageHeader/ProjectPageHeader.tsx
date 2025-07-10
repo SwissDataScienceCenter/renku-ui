@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { generatePath } from "react-router";
+import { generatePath, useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { UnderlineArrowLink } from "../../../components/buttons/Button";
@@ -24,6 +24,7 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
 
+import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
 import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
 
@@ -35,6 +36,10 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     namespace: project.namespace ?? "",
     slug: project.slug ?? "",
   });
+
+  const { search } = useLocation();
+  const isAutostartRedirect =
+    new URLSearchParams(search).get("autostartRedirect") === "true";
 
   return (
     <header>
@@ -73,6 +78,9 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
       <Row>
         <Col>
           {project.is_template && <ProjectCopyBanner project={project} />}
+          {isAutostartRedirect && (
+            <ProjectAutostartRedirectBanner project={project} />
+          )}
         </Col>
       </Row>
     </header>
