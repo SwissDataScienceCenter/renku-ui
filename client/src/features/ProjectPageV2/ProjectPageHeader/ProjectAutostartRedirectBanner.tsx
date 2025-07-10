@@ -28,38 +28,38 @@ import useProjectPermissions from "../utils/useProjectPermissions.hook";
 
 import LearnAboutV2Button from "~/features/projectsV2/shared/LearnAboutV2Button";
 
-function ProjectViewerAutostartRedirectInfoBanner() {
+function ProjectOwnerAutostartRedirectInfoContent() {
   return (
-    <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
-      <div
-        className={cx(
-          "d-flex",
-          "align-items-center",
-          "justify-content-between",
-          "flex-wrap",
-          "w-100"
-        )}
-      >
-        <div>
-          <div>
-            <b>Welcome to the New Renku!</b>
-          </div>
-          <div>
-            You have arrived here from an autostart link created on Renku
-            Legacy. This project has been migrated to the{" "}
-            <LearnAboutV2Button>new Renku platform</LearnAboutV2Button>.
-          </div>
-          <div>
-            <b>To launch a session</b>: Simply click &ldquo;Launch&rdquo; on any
-            of the session launchers on the project page.
-          </div>
-        </div>
+    <>
+      <div>
+        You have arrived here from an autostart link created on Renku Legacy.
       </div>
-    </PrimaryAlert>
+      <div>
+        You can generate new autostart links that directly launch sessions on
+        the updated platform by clicking the launcher dropdown menu and
+        selecting &ldquo;Share session launch link&rdquo;.
+      </div>
+    </>
   );
 }
 
-function ProjectOwnerAutostartRedirectInfoBanner() {
+function ProjectViewerAutostartRedirectInfoContent() {
+  return (
+    <>
+      <div>
+        You have arrived here from an autostart link created on Renku Legacy.
+        This project has been migrated to the{" "}
+        <LearnAboutV2Button>new Renku platform</LearnAboutV2Button>.
+      </div>
+      <div>
+        <b>To launch a session</b>: Simply click &ldquo;Launch&rdquo; on any of
+        the session launchers on the project page.
+      </div>
+    </>
+  );
+}
+
+function ProjectAutostartRedirectInfoBanner({ isOwner }: { isOwner: boolean }) {
   return (
     <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
       <div
@@ -75,15 +75,11 @@ function ProjectOwnerAutostartRedirectInfoBanner() {
           <div>
             <b>Welcome to the New Renku!</b>
           </div>
-          <div>
-            You have arrived here from an autostart link created on Renku
-            Legacy.
-          </div>
-          <div>
-            You can generate new autostart links that directly launch sessions
-            on the updated platform by clicking the launcher dropdown menu and
-            selecting &ldquo;Share session launch link&rdquo;.
-          </div>
+          {isOwner ? (
+            <ProjectOwnerAutostartRedirectInfoContent />
+          ) : (
+            <ProjectViewerAutostartRedirectInfoContent />
+          )}
         </div>
       </div>
     </PrimaryAlert>
@@ -101,8 +97,8 @@ export default function ProjectAutostartRedirectBanner({
   return (
     <>
       <PermissionsGuard
-        disabled={<ProjectViewerAutostartRedirectInfoBanner />}
-        enabled={<ProjectOwnerAutostartRedirectInfoBanner />}
+        disabled={<ProjectAutostartRedirectInfoBanner isOwner={false} />}
+        enabled={<ProjectAutostartRedirectInfoBanner isOwner={true} />}
         requestedPermission="write"
         userPermissions={userPermissions}
       />
