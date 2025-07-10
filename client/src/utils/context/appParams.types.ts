@@ -28,6 +28,7 @@ export interface AppParams {
   GATEWAY_URL: string;
   HOMEPAGE: HomepageParams;
   KEYCLOAK_REALM: string;
+  LEGACY_SUPPORT: LegacySupportParams;
   MAINTENANCE: string;
   PREVIEW_THRESHOLD: PreviewThresholdParams;
   PRIVACY_BANNER_CONTENT: string;
@@ -66,6 +67,10 @@ export type AppParamsNumbers = {
     ? K
     : never]: AppParams[K];
 };
+
+export interface LegacySupportParams {
+  enabled: boolean;
+}
 
 export interface PreviewThresholdParams {
   hard: number;

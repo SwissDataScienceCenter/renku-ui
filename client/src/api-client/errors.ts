@@ -17,7 +17,12 @@
  */
 
 class APIError extends Error {
-  constructor(arg) {
+  case: string | undefined;
+  response: Response | undefined;
+  error: unknown;
+  errorData: unknown;
+
+  constructor(arg: string | undefined = undefined) {
     super(arg || "Renku API error");
   }
 }
@@ -31,14 +36,14 @@ const API_ERRORS = {
   authExpired: "AUTH_EXPIRED",
 };
 
-function throwAuthError(response) {
-  let error = new APIError();
+function throwAuthError(response: Response) {
+  const error = new APIError();
   error.case = API_ERRORS.authExpired;
   error.response = response;
   return Promise.reject(error);
 }
 
-function throwErrorWithData(response, data) {
+function throwErrorWithData(response: Response, data: unknown) {
   let error;
   switch (response.status) {
     case 401:
@@ -65,7 +70,7 @@ function throwErrorWithData(response, data) {
   return Promise.reject(error);
 }
 
-function throwAPIErrors(response) {
+function throwAPIErrors(response: Response) {
   const contentType = response.headers.get("Content-Type");
   // TODO The default should be to check for type application/json
   // but I want to make a more minimal change to the code right now.
@@ -75,7 +80,7 @@ function throwAPIErrors(response) {
   return response.json().then((d) => throwErrorWithData(response, d));
 }
 
-function alertAPIErrors(error) {
+function alertAPIErrors(error: APIError) {
   switch (error.case) {
     case API_ERRORS.forbiddenError:
       throw Error(

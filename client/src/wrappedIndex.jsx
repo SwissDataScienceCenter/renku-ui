@@ -8,7 +8,6 @@ import "bootstrap";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import v1Styles from "./styles/index.scss?inline";
-import v2Styles from "./styles/renku_bootstrap.scss?inline";
 
 import App from "./App";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
@@ -16,15 +15,17 @@ import App from "./App";
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
+import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
-import { isRenkuLegacy } from "./utils/helpers/HelperFunctionsV2";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
+
+import StyleHandler from "~/features/rootV2/StyleHandler";
 
 let hasRendered = false;
 
@@ -48,20 +49,25 @@ function appIndexInner() {
 
       const params = validatedAppParams(params_);
 
-      // configure core api versioned url helper
-      const coreApiVersionedUrlConfig = createCoreApiVersionedUrlConfig(
-        params.CORE_API_VERSION_CONFIG
-      );
+      // configure core api versioned url helper (only used if legacy support is enabled)
+      const coreApiVersionedUrlConfig = params.LEGACY_SUPPORT.enabled
+        ? createCoreApiVersionedUrlConfig(params.CORE_API_VERSION_CONFIG)
+        : null;
 
       // configure base url
       Url.setBaseUrl(params.BASE_URL);
 
-      // create client to be passed to coordinators
-      const client = new APIClient(
-        `${params.UISERVER_URL}/api`,
-        params.UISERVER_URL,
-        coreApiVersionedUrlConfig
-      );
+      // create client to be passed to coordinators (only if legacy support is enabled)
+      const client = params.LEGACY_SUPPORT.enabled
+        ? new APIClient(
+            `${params.UISERVER_URL}/api`,
+            params.UISERVER_URL,
+            coreApiVersionedUrlConfig
+          )
+        : new ApiClientV2Compat(
+            `${params.UISERVER_URL}/api`,
+            params.UISERVER_URL
+          );
 
       // Create the global model containing the formal schema definition and the redux store
       const model = new StateModel(globalSchema);
@@ -81,11 +87,10 @@ function appIndexInner() {
       }
 
       // Query user data
-      const userCoordinator = new UserCoordinator(
-        client,
-        model.subModel("user")
-      );
-      let userPromise = userCoordinator.fetchUser();
+      const userCoordinator = client
+        ? new UserCoordinator(client, model.subModel("user"))
+        : null;
+      const userPromise = userCoordinator?.fetchUser();
 
       // configure Sentry
       let uiApplication = App;
@@ -112,6 +117,8 @@ function appIndexInner() {
         return { user: state.stateModel.user, ...ownProps };
       }
 
+      const forceV2Style = params && !params.LEGACY_SUPPORT.enabled;
+
       // Render UI application
       const VisibleApp = connect(mapStateToProps)(uiApplication);
       root.render(
@@ -120,7 +127,7 @@ function appIndexInner() {
             <AppErrorBoundary>
               <LoginHandler />
               <FeatureFlagHandler />
-              <StyleHandler />
+              <StyleHandler forceV2Style={forceV2Style} />
               <VisibleApp
                 client={client}
                 coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
@@ -150,15 +157,4 @@ function LoginHandler() {
 function FeatureFlagHandler() {
   useFeatureFlagSync();
   return null;
-}
-
-export function StyleHandler() {
-  const location = useLocation();
-  return (
-    <Helmet>
-      <style type="text/css">
-        {isRenkuLegacy(location.pathname) ? v1Styles : v2Styles}
-      </style>
-    </Helmet>
-  );
 }

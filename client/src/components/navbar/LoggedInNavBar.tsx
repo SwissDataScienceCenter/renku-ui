@@ -52,6 +52,7 @@ export default function LoggedInNavBar() {
   }, []);
   if (!params) return null;
   const uiShortSha = params?.UI_SHORT_SHA;
+  const isLegacySupported = !!params.LEGACY_SUPPORT.enabled;
 
   return (
     <>
@@ -124,9 +125,11 @@ export default function LoggedInNavBar() {
               <NavItem className="nav-item col-auto ms-sm-auto">
                 <RenkuToolbarItemPlus />
               </NavItem>
-              <NavItem className="nav-item col-auto">
-                <RenkuToolbarGitLabMenu />
-              </NavItem>
+              {isLegacySupported && (
+                <NavItem className="nav-item col-auto">
+                  <RenkuToolbarGitLabMenu />
+                </NavItem>
+              )}
               <NavItem className="nav-item col-auto">
                 <RenkuToolbarHelpMenu />
               </NavItem>
