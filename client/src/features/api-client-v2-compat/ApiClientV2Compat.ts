@@ -40,12 +40,12 @@ const FETCH_DEFAULT = {
 
 export default class ApiClientV2Compat {
   baseUrl: string;
-  uiServerUrl: string;
+  uiserverUrl: string;
   supportsLegacy = false;
 
-  constructor(baseUrl: string, uiServerUrl: string) {
+  constructor(baseUrl: string, uiserverUrl: string) {
     this.baseUrl = baseUrl;
-    this.uiServerUrl = uiServerUrl;
+    this.uiserverUrl = uiserverUrl;
   }
 
   async clientFetch(
@@ -96,13 +96,13 @@ export default class ApiClientV2Compat {
   doLogin() {
     // This is invoked to perform authentication.
     window.location.href = `${
-      this.uiServerUrl
+      this.uiserverUrl
     }/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   doLogout() {
     window.location.href = `${
-      this.uiServerUrl
+      this.uiserverUrl
     }/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
