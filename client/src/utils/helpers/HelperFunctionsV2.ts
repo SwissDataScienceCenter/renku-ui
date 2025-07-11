@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-export function isRenkuLegacy(pathname: string | undefined) {
+export function isRenkuLegacy(
+  pathname: string | undefined,
+  forceV2 = false
+): boolean {
+  if (forceV2) return false;
   return (
     typeof pathname === "string" &&
     (pathname.startsWith("/v1") ||

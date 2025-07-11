@@ -18,7 +18,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import {
   Calendar3Week,
   Eye,
@@ -42,6 +42,8 @@ import {
   ListGroup,
   Row,
 } from "reactstrap";
+
+import AppContext from "~/utils/context/appContext";
 
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
@@ -73,6 +75,8 @@ export default function DashboardV2() {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
+  const { params } = useContext(AppContext);
+  const legacySupported = params?.LEGACY_SUPPORT.enabled ?? true;
 
   if (!userLogged) return <AnonymousDashboard />;
 
@@ -101,7 +105,7 @@ export default function DashboardV2() {
             >
               <SessionsDashboard />
               <ProjectsDashboard />
-              <ProjectMigrationBanner />
+              {legacySupported && <ProjectMigrationBanner />}
               <FooterDashboard />
             </Col>
           </Row>
