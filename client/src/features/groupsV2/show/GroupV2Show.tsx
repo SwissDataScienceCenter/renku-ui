@@ -46,7 +46,7 @@ export default function GroupV2Show() {
                   search: new URLSearchParams({ type: "Project" }).toString(),
                 }}
               >
-                View all the group projects
+                View all group projects
               </Link>
             </ProjectV2ListDisplay>
           </Col>
@@ -66,7 +66,7 @@ export default function GroupV2Show() {
                   }).toString(),
                 }}
               >
-                View all the group data connectors
+                View all group data connectors
               </Link>
             </DataConnectorsBox>
           </Col>
