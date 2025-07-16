@@ -194,3 +194,5 @@ export const ALL_FILTERS: Filter[] = [
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
 ];
+
+export const SEARCH_DEBOUNCE_SECONDS = 1;

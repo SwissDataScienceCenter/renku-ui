@@ -22,6 +22,7 @@ import { Search, XCircleFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
+import { useGroupSearch } from "./groupSearch.hook";
 import { FILTER_PAGE, FILTER_QUERY } from "./groupsSearch.constants";
 
 interface SearchBarForm {
@@ -31,11 +32,11 @@ export default function GroupSearchBar() {
   // Set the input properly
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get(FILTER_QUERY.name) ?? "";
+  const { refetch } = useGroupSearch();
 
-  const { control, register, handleSubmit, reset, setFocus } =
-    useForm<SearchBarForm>({
-      defaultValues: { query },
-    });
+  const { control, handleSubmit, reset, setFocus } = useForm<SearchBarForm>({
+    defaultValues: { query },
+  });
 
   // Reset the input to match the URL query
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function GroupSearchBar() {
   }, [searchParams, setSearchParams]);
 
   const onSubmit = useCallback(
-    (data: SearchBarForm) => {
+    (data: SearchBarForm, forceRefresh = false) => {
       const newParams = new URLSearchParams(searchParams);
       newParams.set(FILTER_QUERY.name, data.query);
       const page_default_value = (
@@ -63,14 +64,24 @@ export default function GroupSearchBar() {
       if (newParams.get(FILTER_PAGE.name) !== page_default_value) {
         newParams.set(FILTER_PAGE.name, page_default_value);
       }
-      setSearchParams(newParams);
+
+      // force a refetch even for the same query if explicitly asked for
+      if (forceRefresh && searchParams.toString() === newParams.toString()) {
+        refetch();
+      } else {
+        setSearchParams(newParams);
+      }
     },
-    [searchParams, setSearchParams]
+    [refetch, searchParams, setSearchParams]
   );
 
   return (
     <>
-      <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
+      <Form
+        className="mb-3"
+        noValidate
+        onSubmit={handleSubmit((data) => onSubmit(data, true))}
+      >
         <InputGroup>
           <Controller
             control={control}
@@ -82,10 +93,8 @@ export default function GroupSearchBar() {
                 id="group-search-query-input"
                 type="text"
                 placeholder="Search..."
-                {...register("query", {
-                  onBlur: handleSubmit(onSubmit),
-                })}
                 {...field}
+                onBlur={handleSubmit((data) => onSubmit(data))}
               ></input>
             )}
           />

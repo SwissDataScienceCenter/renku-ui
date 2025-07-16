@@ -21,6 +21,7 @@ import { useSearchParams } from "react-router";
 import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api";
 import { useGroup } from "../show/GroupPageContainer";
 import { generateQueryParams } from "./groupSearch.utils";
+import { SEARCH_DEBOUNCE_SECONDS } from "./groupsSearch.constants";
 
 export function useGroupSearch(ignoredParams?: string[]) {
   const [searchParams] = useSearchParams();
@@ -31,5 +32,8 @@ export function useGroupSearch(ignoredParams?: string[]) {
     [group.slug, ignoredParams, searchParams]
   );
 
-  return useGetSearchQueryQuery({ params });
+  return useGetSearchQueryQuery(
+    { params },
+    { refetchOnMountOrArgChange: SEARCH_DEBOUNCE_SECONDS }
+  );
 }
