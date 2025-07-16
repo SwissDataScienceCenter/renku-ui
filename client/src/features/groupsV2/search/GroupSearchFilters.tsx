@@ -73,11 +73,17 @@ export default function GroupSearchFilters() {
 
   // Create the enum filter for keywords with quantities.
   const hydratedFilterKeywordAllowedValues = useMemo(() => {
+    const selected =
+      searchParams.get(FILTER_KEYWORD.name)?.split(VALUE_SEPARATOR_AND) ?? [];
     return Object.entries(search?.facets?.keywords ?? {})
       .map(([value, quantity]) => ({
         value,
         label: (
-          <GroupFilterKeywordRendering label={value} quantity={quantity} />
+          <GroupFilterKeywordRendering
+            label={value}
+            quantity={quantity}
+            selected={selected.includes(value)}
+          />
         ),
         _label: value,
         _quantity: quantity,
@@ -88,7 +94,7 @@ export default function GroupSearchFilters() {
         if (qtyDiff !== 0) return qtyDiff;
         return a.value.localeCompare(b.value);
       });
-  }, [search?.facets?.keywords]);
+  }, [search?.facets?.keywords, searchParams]);
   // Add the current keywords if missing so users can always de-select.
   if (searchParams.get(FILTER_KEYWORD.name)) {
     const existingKeywords =
@@ -150,6 +156,7 @@ export default function GroupSearchFilters() {
       <GroupSearchFilter
         defaultElementsToShow={10}
         filter={filterKeywordWithQuantities}
+        hiddenDecoration
       />
       <GroupSearchFilter filter={FILTER_VISIBILITY} />
     </div>
@@ -159,17 +166,30 @@ export default function GroupSearchFilters() {
 interface GroupFilterKeywordRenderingProps {
   label: string;
   quantity: number;
+  selected?: boolean;
 }
 function GroupFilterKeywordRendering({
   label,
   quantity,
+  selected = false,
 }: GroupFilterKeywordRenderingProps) {
   return (
     <div className={cx("align-items-center", "d-flex")}>
       <div className="fs-5">
-        <KeywordBadge className="text-wrap">{label}</KeywordBadge>
+        <KeywordBadge
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "gap-1",
+            "text-break",
+            "text-wrap"
+          )}
+          highlighted={selected}
+        >
+          <span>{label}</span>
+          <Badge>{quantity}</Badge>
+        </KeywordBadge>
       </div>
-      <Badge className="ms-1">{quantity}</Badge>
     </div>
   );
 }
@@ -177,10 +197,12 @@ function GroupFilterKeywordRendering({
 interface GroupSearchFilterProps {
   defaultElementsToShow?: number;
   filter: Filter;
+  hiddenDecoration?: boolean;
 }
 function GroupSearchFilter({
   defaultElementsToShow = DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   filter,
+  hiddenDecoration = false,
 }: GroupSearchFilterProps) {
   // Do not show invalid filter, but give the opportunity to reset it.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -236,6 +258,7 @@ function GroupSearchFilter({
                 <GroupSearchFilterContent
                   defaultElementsToShow={defaultElementsToShow}
                   filter={filter}
+                  hiddenDecoration={hiddenDecoration}
                   visualization="accordion"
                 />
               )}
@@ -268,6 +291,7 @@ function GroupSearchFilter({
             <GroupSearchFilterContent
               defaultElementsToShow={defaultElementsToShow}
               filter={filter}
+              hiddenDecoration={hiddenDecoration}
               visualization="list"
             />
           )}
@@ -280,11 +304,13 @@ function GroupSearchFilter({
 interface GroupSearchFilterContentProps {
   defaultElementsToShow?: number;
   filter: Filter;
+  hiddenDecoration?: boolean;
   visualization?: "accordion" | "list";
 }
 function GroupSearchFilterContent({
   defaultElementsToShow,
   filter,
+  hiddenDecoration,
   visualization = "list",
 }: GroupSearchFilterContentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -346,6 +372,7 @@ function GroupSearchFilterContent({
                           .includes(element.value)
                       : current === element.value
                   }
+                  hiddenDecoration={hiddenDecoration}
                   key={element.value}
                   onChange={() => onChange(element.value)}
                   visualization={visualization}
@@ -381,6 +408,7 @@ function GroupSearchFilterContent({
 
 interface GroupSearchFilterRadioOrCheckboxElementProps {
   children: React.ReactNode;
+  hiddenDecoration?: boolean;
   identifier: string;
   isChecked: boolean;
   onChange?: () => void;
@@ -389,6 +417,7 @@ interface GroupSearchFilterRadioOrCheckboxElementProps {
 }
 function GroupSearchFilterRadioOrCheckboxElement({
   children,
+  hiddenDecoration,
   identifier,
   isChecked,
   onChange,
@@ -401,13 +430,15 @@ function GroupSearchFilterRadioOrCheckboxElement({
         visualization === "accordion" ? "w-100" : "d-flex",
         "p-1",
         "rounded-2",
-        isChecked && "bg-body-secondary"
+        isChecked && !hiddenDecoration && "bg-body-secondary"
       )}
     >
       <input
         checked={isChecked}
         className={cx(
-          visualization === "accordion"
+          hiddenDecoration
+            ? "d-none"
+            : visualization === "accordion"
             ? "btn-check"
             : ["cursor-pointer", "form-check-input", "my-auto"]
         )}
@@ -418,7 +449,9 @@ function GroupSearchFilterRadioOrCheckboxElement({
       />
       <label
         className={cx(
-          visualization === "accordion"
+          hiddenDecoration
+            ? "cursor-pointer"
+            : visualization === "accordion"
             ? ["btn", "btn-outline-primary", "w-100"]
             : ["cursor-pointer", "form-check-label", "ps-2"]
         )}
