@@ -32,9 +32,15 @@ export default function GroupSearchQueryInput() {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get(FILTER_QUERY.name) ?? "";
 
-  const { control, register, handleSubmit, setFocus } = useForm<SearchBarForm>({
-    defaultValues: { query },
-  });
+  const { control, register, handleSubmit, reset, setFocus } =
+    useForm<SearchBarForm>({
+      defaultValues: { query },
+    });
+
+  // Reset the input to match the URL query
+  useEffect(() => {
+    reset({ query });
+  }, [query, reset]);
 
   // focus search input when loading the component
   useEffect(() => {
@@ -51,8 +57,6 @@ export default function GroupSearchQueryInput() {
     (data: SearchBarForm) => {
       const newParams = new URLSearchParams(searchParams);
       newParams.set(FILTER_QUERY.name, data.query);
-      setSearchParams(newParams, { replace: true });
-
       const page_default_value = (
         FILTER_PAGE.defaultValue as number
       ).toString();

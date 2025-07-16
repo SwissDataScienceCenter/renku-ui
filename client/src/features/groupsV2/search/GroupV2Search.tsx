@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useSearchParams } from "react-router";
 import { Col, Row } from "reactstrap";
 import { Loader } from "~/components/Loader";
@@ -31,7 +31,7 @@ export default function GroupV2Search() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Add any missing default parameter. There shouldn't be anything content-dependant.
-  useEffect(() => {
+  useLayoutEffect(() => {
     const missingParams = getSearchQueryMissingFilters(searchParams);
     if (Object.keys(missingParams).length > 0) {
       const newSearchParams = new URLSearchParams(searchParams);
