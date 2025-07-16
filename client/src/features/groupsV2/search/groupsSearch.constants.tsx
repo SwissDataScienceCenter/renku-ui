@@ -136,7 +136,7 @@ export const FILTER_VISIBILITY: EnumFilter = {
   ),
   type: "enum",
   allowedValues: [
-    { value: "", label: "Any" },
+    { value: "", label: "Any visibility" },
     {
       value: "public",
       label: (

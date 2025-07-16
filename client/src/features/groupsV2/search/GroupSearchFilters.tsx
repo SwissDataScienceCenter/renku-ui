@@ -135,7 +135,7 @@ export default function GroupSearchFilters() {
     return {
       ...FILTER_MEMBER,
       allowedValues: [
-        { value: "", label: "Any" },
+        { value: "", label: "All members" },
         ...hydratedFilterMembersAllowedValues,
       ],
     };
