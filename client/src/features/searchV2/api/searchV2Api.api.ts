@@ -34,7 +34,6 @@ export const searchV2Api = searchV2GeneratedApi.injectEndpoints({
         url: "/search/query",
         params,
       }),
-      keepUnusedDataFor: 10,
     }),
   }),
 });

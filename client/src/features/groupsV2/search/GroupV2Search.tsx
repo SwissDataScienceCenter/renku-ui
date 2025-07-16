@@ -23,7 +23,7 @@ import { Col, Row } from "reactstrap";
 import { Loader } from "~/components/Loader";
 import { getSearchQueryMissingFilters } from "./groupSearch.utils";
 import GroupSearchFilters from "./GroupSearchFilters";
-import GroupSearchQueryInput from "./GroupSearchQueryInput";
+import GroupSearchBar from "./GroupSearchBar";
 import GroupSearchResultRecap from "./GroupSearchResultRecap";
 import GroupSearchResults from "./GroupSearchResults";
 
@@ -52,7 +52,7 @@ export default function GroupV2Search() {
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Row>
         <Col xs={12}>
-          <GroupSearchQueryInput />
+          <GroupSearchBar />
         </Col>
         <Col xs={12}>
           <GroupSearchResultRecap />

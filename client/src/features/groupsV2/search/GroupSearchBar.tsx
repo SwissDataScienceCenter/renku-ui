@@ -27,7 +27,7 @@ import { FILTER_PAGE, FILTER_QUERY } from "./groupsSearch.constants";
 interface SearchBarForm {
   query: string;
 }
-export default function GroupSearchQueryInput() {
+export default function GroupSearchBar() {
   // Set the input properly
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get(FILTER_QUERY.name) ?? "";
@@ -47,7 +47,7 @@ export default function GroupSearchQueryInput() {
     setFocus("query");
   }, [setFocus]);
 
-  const onClick = useCallback(() => {
+  const onClear = useCallback(() => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set(FILTER_QUERY.name, "");
     setSearchParams(newParams);
@@ -98,7 +98,7 @@ export default function GroupSearchQueryInput() {
               "shadow-none"
             )}
             data-cy="group-search-button"
-            onClick={onClick}
+            onClick={onClear}
             id="group-search-button"
             type="button"
           >
