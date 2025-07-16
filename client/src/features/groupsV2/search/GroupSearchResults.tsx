@@ -38,6 +38,7 @@ import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { useGroupSearch } from "./groupSearch.hook";
 import { GroupSearchEntity } from "./groupSearch.types";
+import { useGroupSearchResultMembers } from "./groupSearchResultMembers.hook";
 import { FILTER_PAGE, FILTER_PER_PAGE } from "./groupsSearch.constants";
 
 export default function GroupSearchResults() {
@@ -123,15 +124,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-2")}>
           <h5 className="mb-0">{item.name}</h5>
-          {item.createdBy && (
-            <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
-              <span className="fst-italic">Created by</span>{" "}
-              <span className={cx("align-items-center", "d-flex", "gap-1")}>
-                <UserAvatar namespace={item.createdBy.slug} />{" "}
-                {item.createdBy.firstName} {item.createdBy.lastName}
-              </span>
-            </p>
-          )}
+          <SearchResultItemMembers item={item} />
           {item.description && <p className="mb-0">{item.description}</p>}
           {sortedKeywords.length > 0 && (
             <KeywordContainer>
@@ -213,4 +206,60 @@ function SearchResultListItemIcon({ item }: { item: GroupSearchEntity }) {
   ) : (
     <Question />
   );
+}
+
+interface SearchResultItemMembersProps {
+  item: GroupSearchEntity;
+}
+function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
+  const members = useGroupSearchResultMembers(item);
+
+  if (item.type === "Project") {
+    if (members?.isLoading) {
+      return (
+        <div className={cx("mb-0", "placeholder-glow")}>
+          <div className={cx("placeholder", "w-75")}>
+            <UserAvatar className="invisible" namespace="placeholder" />
+          </div>
+        </div>
+      );
+    }
+    // The following case should not happen, but the API theoretically allows for it, so we handle it gracefully
+    if (!members?.data?.length || members?.data?.length < 1) {
+      return (
+        <div className={cx("text-muted", "fst-italic")}>
+          There are no members in this project.
+        </div>
+      );
+    }
+    return (
+      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+        {members?.data?.map((member) => (
+          <div
+            key={member.id}
+            className={cx("align-items-center", "d-flex", "gap-1")}
+          >
+            <UserAvatar namespace={member.namespace ?? ""} />
+            <span className="text-truncate">
+              {member.first_name} {member.last_name}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (item.createdBy) {
+    return (
+      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+        <span className="fst-italic">Created by</span>{" "}
+        <span className={cx("align-items-center", "d-flex", "gap-1")}>
+          <UserAvatar namespace={item.createdBy.slug} />{" "}
+          {item.createdBy.firstName} {item.createdBy.lastName}
+        </span>
+      </div>
+    );
+  }
+
+  return null;
 }
