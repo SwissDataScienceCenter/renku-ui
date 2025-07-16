@@ -39,17 +39,15 @@ export default function GroupV2Show() {
               pageParam="projects_page"
               namespaceKind="group"
             >
-              <div className="d-grid">
-                <Link
-                  className={cx("btn", "btn-primary")}
-                  to={{
-                    pathname: RELATIVE_ROUTES.v2.groups.show.search,
-                    search: new URLSearchParams({ type: "Project" }).toString(),
-                  }}
-                >
-                  View all the group projects
-                </Link>
-              </div>
+              <Link
+                className={cx("btn", "btn-primary")}
+                to={{
+                  pathname: RELATIVE_ROUTES.v2.groups.show.search,
+                  search: new URLSearchParams({ type: "Project" }).toString(),
+                }}
+              >
+                View all the group projects
+              </Link>
             </ProjectV2ListDisplay>
           </Col>
           <Col className="order-3" xs={12}>
@@ -59,19 +57,17 @@ export default function GroupV2Show() {
               namespaceKind="group"
               pageParam="data_connectors_page"
             >
-              <div className="d-grid">
-                <Link
-                  className={cx("btn", "btn-primary")}
-                  to={{
-                    pathname: RELATIVE_ROUTES.v2.groups.show.search,
-                    search: new URLSearchParams({
-                      type: "DataConnector",
-                    }).toString(),
-                  }}
-                >
-                  View all the group data connectors
-                </Link>
-              </div>
+              <Link
+                className={cx("btn", "btn-primary")}
+                to={{
+                  pathname: RELATIVE_ROUTES.v2.groups.show.search,
+                  search: new URLSearchParams({
+                    type: "DataConnector",
+                  }).toString(),
+                }}
+              >
+                View all the group data connectors
+              </Link>
             </DataConnectorsBox>
           </Col>
         </Row>
