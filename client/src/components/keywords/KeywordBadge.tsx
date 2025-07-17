@@ -53,6 +53,8 @@ export default function KeywordBadge({
         "d-flex",
         "fw-semibold",
         "gap-1",
+        "text-break",
+        "text-wrap",
         highlighted && "bg-success-subtle",
         className
       )}
