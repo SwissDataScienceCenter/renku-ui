@@ -234,7 +234,7 @@ function DataConnectorBoxContent({
                   />
                 )
               )}
-              {limit && data.dataConnectors.length >= limit && (
+              {limit && data.total > limit && (
                 <ListGroupItem className="fst-italic">
                   And {data.total - data.dataConnectors.length} more...
                 </ListGroupItem>

@@ -147,7 +147,7 @@ export default function ProjectListDisplay({
                       project={project}
                     />
                   ))}
-                  {limit && data.projects.length >= limit && (
+                  {limit && data.total > limit && (
                     <ListGroupItem className="fst-italic">
                       And {data.total - data.projects.length} more...
                     </ListGroupItem>
