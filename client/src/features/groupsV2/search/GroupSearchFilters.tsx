@@ -72,9 +72,12 @@ export default function GroupSearchFilters() {
   }, [hydratedFilterContentAllowedValues]);
 
   // Create the enum filter for keywords with quantities.
+  const selectedKeywords = useMemo(() => {
+    return (
+      searchParams.get(FILTER_KEYWORD.name)?.split(VALUE_SEPARATOR_AND) ?? []
+    );
+  }, [searchParams]);
   const hydratedFilterKeywordAllowedValues = useMemo(() => {
-    const selected =
-      searchParams.get(FILTER_KEYWORD.name)?.split(VALUE_SEPARATOR_AND) ?? [];
     return Object.entries(search?.facets?.keywords ?? {})
       .map(([value, quantity]) => ({
         value,
@@ -82,7 +85,7 @@ export default function GroupSearchFilters() {
           <GroupFilterKeywordRendering
             label={value}
             quantity={quantity}
-            selected={selected.includes(value)}
+            selected={selectedKeywords.includes(value)}
           />
         ),
         _label: value,
@@ -94,7 +97,7 @@ export default function GroupSearchFilters() {
         if (qtyDiff !== 0) return qtyDiff;
         return a.value.localeCompare(b.value);
       });
-  }, [search?.facets?.keywords, searchParams]);
+  }, [search?.facets?.keywords, selectedKeywords]);
   // Add the current keywords if missing so users can always de-select.
   if (searchParams.get(FILTER_KEYWORD.name)) {
     const existingKeywords =
@@ -108,7 +111,11 @@ export default function GroupSearchFilters() {
         hydratedFilterKeywordAllowedValues.unshift({
           value: keyword.trim(),
           label: (
-            <GroupFilterKeywordRendering label={keyword.trim()} quantity={0} />
+            <GroupFilterKeywordRendering
+              label={keyword.trim()}
+              quantity={0}
+              selected={selectedKeywords.includes(keyword.trim())}
+            />
           ),
           _label: keyword.trim(),
           _quantity: 0,
