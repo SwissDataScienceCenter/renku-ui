@@ -94,7 +94,11 @@ export default function GroupSearchBar() {
                 type="text"
                 placeholder="Search..."
                 {...field}
-                onBlur={handleSubmit((data) => onSubmit(data))}
+                onBlur={(e) => {
+                  // Avoid triggering this on Enter key press by checking the target of the event
+                  if (!(e.relatedTarget?.getAttribute("type") === "submit"))
+                    handleSubmit((data) => onSubmit(data));
+                }}
               ></input>
             )}
           />
