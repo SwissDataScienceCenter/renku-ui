@@ -16,28 +16,11 @@
  * limitations under the License.
  */
 
+import type { SkipToken } from "@reduxjs/toolkit/query";
+
 import { usersApi } from "../usersV2/api/users.api";
 
-const ONE_MINUTE = 60 * 1_000; // milliseconds
-
-export default function LoginHandler() {
-  const { currentData: user, error } = usersApi.endpoints.getUser.useQuery(
-    undefined,
-    {
-      pollingInterval: ONE_MINUTE,
-      skipPollingIfUnfocused: true,
-      refetchOnReconnect: true,
-      refetchOnFocus: true,
-    }
-  );
-
-  if (error != null) {
-    return null;
-  }
-
-  if (user != null) {
-    return <div>{JSON.stringify(user, null, 2)}</div>;
-  }
-
-  return null;
+export default function useUserInfo(arg?: undefined | SkipToken) {
+  const state = usersApi.endpoints.getUser.useQueryState(arg);
+  return state;
 }

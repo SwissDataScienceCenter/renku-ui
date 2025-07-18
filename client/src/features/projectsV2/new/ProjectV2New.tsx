@@ -30,6 +30,7 @@ import {
   ModalFooter,
 } from "reactstrap";
 
+import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -38,7 +39,6 @@ import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
@@ -49,7 +49,7 @@ import { PROJECT_CREATION_HASH } from "./createProjectV2.constants";
 import { NewProjectForm } from "./projectV2New.types";
 
 export default function ProjectV2New() {
-  const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
+  const { data: userInfo, isLoading: userLoading } = useUserInfo();
 
   const [hash, setHash] = useLocationHash();
   const showProjectCreationModal = hash === PROJECT_CREATION_HASH;

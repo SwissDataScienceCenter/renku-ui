@@ -23,14 +23,13 @@ import { ArrowLeft, BoxArrowInRight } from "react-bootstrap-icons";
 import { Link, generatePath, useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
-// import { useGetUserQuery } from "../../user/dataServicesUser.api";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 export default function UserRedirect() {
   const navigate = useNavigate();
@@ -43,7 +42,7 @@ export default function UserRedirect() {
     data: user,
     isLoading,
     error,
-  } = useGetUserQuery(isUserLoggedIn ? undefined : skipToken);
+  } = useUserInfo(isUserLoggedIn ? undefined : skipToken);
 
   useEffect(() => {
     if (user?.isLoggedIn && user.username) {

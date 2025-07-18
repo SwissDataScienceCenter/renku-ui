@@ -33,6 +33,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -47,7 +48,6 @@ import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberMo
 import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
-import { useGetUserQuery } from "../../../usersV2/api/users.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 type MemberActionMenuProps = Omit<
@@ -111,7 +111,7 @@ function ProjectMemberAction({
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useGetUserQuery(logged ? undefined : skipToken);
+  } = useUserInfo(logged ? undefined : skipToken);
   const userMember = useMemo(() => {
     if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;

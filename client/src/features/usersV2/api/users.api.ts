@@ -182,7 +182,7 @@ export const usersApi = withTagHandling.injectEndpoints({
 
 export const {
   // "users" hooks
-  useGetUserQuery,
+  // useGetUserQuery,
   useGetUsersQuery,
   useGetUsersByUserIdQuery: useGetUserByIdQuery,
   useDeleteUsersByUserIdMutation: useDeleteUserMutation,
