@@ -600,7 +600,9 @@ export function DataConnectorMount({
                           const newValue = field.value.trim();
                           if (!currentKeywords.includes(newValue)) {
                             const newKeywords = [...currentKeywords, newValue];
-                            setValue("keywords", newKeywords);
+                            setValue("keywords", newKeywords, {
+                              shouldDirty: true,
+                            });
                           }
                           setValue("keyword", "");
                           onFieldValueChange("keyword", "");
@@ -616,7 +618,9 @@ export function DataConnectorMount({
                           const newValue = field.value.trim();
                           if (!currentKeywords.includes(newValue)) {
                             const newKeywords = [...currentKeywords, newValue];
-                            setValue("keywords", newKeywords);
+                            setValue("keywords", newKeywords, {
+                              shouldDirty: true,
+                            });
                           }
                           setValue("keyword", "");
                           onFieldValueChange("keyword", "");
@@ -652,7 +656,9 @@ export function DataConnectorMount({
                               const newKeywords = currentKeywords.filter(
                                 (k) => k !== keyword
                               );
-                              setValue("keywords", newKeywords);
+                              setValue("keywords", newKeywords, {
+                                shouldDirty: true,
+                              });
                               onFieldValueChange("keyword", "");
                             }}
                           >

@@ -180,7 +180,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const permissions = useProjectPermissions({ projectId: project.id });
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { errors, dirtyFields },
     getValues,
     handleSubmit,
     watch,
@@ -199,6 +199,10 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   });
   const currentNamespace = watch("namespace");
   const currentName = watch("name");
+  const isDirtyExceptKeyword = Object.keys(dirtyFields).some(
+    (f) => f !== "keyword"
+  );
+
   const navigate = useNavigate();
   const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
   const { notifications } = useContext(AppContext);
@@ -422,7 +426,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
               <Button
                 color="primary"
                 data-cy="project-update-button"
-                disabled={isUpdating || !isDirty}
+                disabled={isUpdating || !isDirtyExceptKeyword}
                 type="submit"
               >
                 {isUpdating ? (
