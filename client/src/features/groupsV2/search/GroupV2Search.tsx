@@ -17,35 +17,25 @@
  */
 
 import cx from "classnames";
-import { useLayoutEffect } from "react";
-import { useSearchParams } from "react-router";
+import { Navigate, useSearchParams } from "react-router";
 import { Col, Row } from "reactstrap";
-import { Loader } from "~/components/Loader";
 import { getSearchQueryMissingFilters } from "./groupSearch.utils";
-import GroupSearchFilters from "./GroupSearchFilters";
 import GroupSearchBar from "./GroupSearchBar";
+import GroupSearchFilters from "./GroupSearchFilters";
 import GroupSearchResultRecap from "./GroupSearchResultRecap";
 import GroupSearchResults from "./GroupSearchResults";
 
 export default function GroupV2Search() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  // Add any missing default parameter. There shouldn't be anything content-dependant.
-  useLayoutEffect(() => {
-    const missingParams = getSearchQueryMissingFilters(searchParams);
-    if (Object.keys(missingParams).length > 0) {
-      const newSearchParams = new URLSearchParams(searchParams);
-      Object.entries(missingParams).forEach(([key, value]) => {
-        newSearchParams.set(key, String(value));
-      });
-      setSearchParams(newSearchParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
-
-  // This prevents loading the page on semi-ready content and sending unnecessary requests.
+  // Replace the location whenever parameters are missing
   const missingParams = getSearchQueryMissingFilters(searchParams);
   if (Object.keys(missingParams).length > 0) {
-    return <Loader />;
+    const newSearchParams = new URLSearchParams(searchParams);
+    Object.entries(missingParams).forEach(([key, value]) => {
+      newSearchParams.set(key, String(value));
+    });
+    return <Navigate to={{ search: newSearchParams.toString() }} replace />;
   }
 
   return (
