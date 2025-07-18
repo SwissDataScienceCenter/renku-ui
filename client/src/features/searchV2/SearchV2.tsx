@@ -23,6 +23,7 @@ import SearchV2Header from "./components/SearchV2Header";
 import SearchV2Results from "./components/SearchV2Results";
 import useSearch from "./hooks/useSearch.hook";
 
+// ? Mind that SearchV2 components should be soon replaced by GroupV2Search components
 export default function SearchV2() {
   useSearch();
 

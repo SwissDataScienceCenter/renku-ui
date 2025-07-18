@@ -25,6 +25,8 @@ import GroupSearchFilters from "./GroupSearchFilters";
 import GroupSearchResultRecap from "./GroupSearchResultRecap";
 import GroupSearchResults from "./GroupSearchResults";
 
+// ? The GroupV2Search components should be re-used in the User namespace and later
+// ? replace the global search components. Mind to rename them at that point.
 export default function GroupV2Search() {
   const [searchParams] = useSearchParams();
 
