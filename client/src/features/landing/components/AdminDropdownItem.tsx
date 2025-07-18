@@ -18,7 +18,7 @@
 
 import { Link } from "react-router";
 import { DropdownItem } from "reactstrap";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
+import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
 export default function AdminDropdownItem() {
@@ -26,7 +26,7 @@ export default function AdminDropdownItem() {
     (state) => state.stateModel.user.logged
   );
 
-  const { data: userInfo } = useGetUserQuery();
+  const { data: userInfo } = useUserInfo();
 
   if (!userLogged || !userInfo?.isLoggedIn || !userInfo.is_admin) {
     return null;

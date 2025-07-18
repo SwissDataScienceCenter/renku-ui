@@ -24,8 +24,8 @@ import { Button, Card, CardBody, CardText, CardTitle } from "reactstrap";
 
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
-import { useGetUserQuery } from "../usersV2/api/users.api";
 
+import useUserInfo from "../loginHandler/useUserInfo.hook";
 import styles from "./ContactUsCard.module.scss";
 
 export default function ContactUsCard() {
@@ -34,7 +34,7 @@ export default function ContactUsCard() {
     params?.SESSION_CLASS_EMAIL_US ??
     DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
 
-  const { data: user } = useGetUserQuery(
+  const { data: user } = useUserInfo(
     SESSION_CLASS_EMAIL_US.enabled ? undefined : skipToken
   );
   const name = useMemo(

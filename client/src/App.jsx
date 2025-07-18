@@ -34,9 +34,6 @@ import { Loader } from "./components/Loader";
 
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import { Favicon } from "./features/favicon/Favicon";
-import { Unavailable } from "./features/maintenance/Maintenance";
-import LazyRootV2 from "./features/rootV2/LazyRootV2";
-import { useGetUserQuery } from "./features/usersV2/api/users.api";
 import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
 import {
   FooterNavbar,
@@ -49,6 +46,10 @@ import {
   LegacyRoot,
   LegacyShowDataset,
 } from "./features/legacy";
+import LoginHandler from "./features/loginHandler/LoginHandler";
+import useUserInfo from "./features/loginHandler/useUserInfo.hook";
+import { Unavailable } from "./features/maintenance/Maintenance";
+import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import AppContext from "./utils/context/appContext";
@@ -66,9 +67,7 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 };
 
 function CentralContentContainer({ user }) {
-  const { data: userInfo } = useGetUserQuery(
-    user.logged ? undefined : skipToken
-  );
+  const { data: userInfo } = useUserInfo(user.logged ? undefined : skipToken);
 
   return (
     <div className="d-flex flex-grow-1">
@@ -184,6 +183,7 @@ function App(props) {
         <RenkuNavBar user={user} />
         <CentralContentContainer user={user} socket={webSocket} />
         <FooterNavbar />
+        <LoginHandler />
       </AppContext.Provider>
       <Cookie />
       <ToastContainer />
