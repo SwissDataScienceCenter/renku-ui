@@ -27,7 +27,7 @@ export default function ProjectKeywordsFormField({
     const currentKeywords = getValues("keywords");
     if (!currentKeywords.includes(newValue)) {
       const newKeywords = [...currentKeywords, newValue];
-      setValue("keywords", newKeywords);
+      setValue("keywords", newKeywords, { shouldDirty: true });
     }
     setValue("keyword", "");
   };
@@ -97,7 +97,9 @@ export default function ProjectKeywordsFormField({
                         const newKeywords = field.value.filter(
                           (k) => k !== keyword
                         );
-                        setValue("keywords", newKeywords);
+                        setValue("keywords", newKeywords, {
+                          shouldDirty: true,
+                        });
                       }}
                     >
                       {keyword}

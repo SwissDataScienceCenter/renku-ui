@@ -133,11 +133,11 @@ export default function DataConnectorBoxListDisplay({
               )}
             >
               {scopeIcon}
-              <p className={cx("mb-0", "text-truncate", "text-muted")}>
+              <p className={cx("mb-0", "text-truncate")}>
                 {dataConnectorSource}
               </p>
             </div>
-            {extendedPreview && <div className="text-muted">{type}</div>}
+            {extendedPreview && <div>{type}</div>}
             <div
               className={cx(
                 "align-items-center",
