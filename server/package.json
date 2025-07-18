@@ -32,7 +32,7 @@
     "http-proxy-middleware": "^2.0.9",
     "ioredis": "^4.28.5",
     "jsonwebtoken": "^9.0.1",
-    "morgan": "^1.10.0",
+    "morgan": "^1.10.1",
     "openid-client": "^4.9.1",
     "uuid": "^8.3.2",
     "winston": "^3.10.0",
