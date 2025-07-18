@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { useEffect, useState } from "react";
+
 import { usersApi } from "../usersV2/api/users.api";
 
 const ONE_MINUTE = 60 * 1_000; // milliseconds
@@ -31,13 +33,27 @@ export default function LoginHandler() {
     }
   );
 
-  if (error != null) {
-    return null;
-  }
+  const [{ isLoggedIn }, setState] = useState<LoginState>({
+    isLoggedIn: false,
+  });
 
-  if (user != null) {
-    return <div>{JSON.stringify(user, null, 2)}</div>;
-  }
+  useEffect(() => {
+    if (error != null) {
+      setState({ isLoggedIn: false });
+    } else if (user != null) {
+      setState({ isLoggedIn: user.isLoggedIn });
+    }
+  }, [error, user]);
+
+  useEffect(() => {
+    if (isLoggedIn && (error != null || (user != null && !user.isLoggedIn))) {
+      window.location.reload();
+    }
+  }, [error, isLoggedIn, user]);
 
   return null;
+}
+
+interface LoginState {
+  isLoggedIn: boolean;
 }
