@@ -30,7 +30,7 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -49,7 +49,7 @@ import { PROJECT_CREATION_HASH } from "./createProjectV2.constants";
 import { NewProjectForm } from "./projectV2New.types";
 
 export default function ProjectV2New() {
-  const { data: userInfo, isLoading: userLoading } = useUserInfo();
+  const { data: userInfo, isLoading: userLoading } = useGetUserQueryState();
 
   const [hash, setHash] = useLocationHash();
   const showProjectCreationModal = hash === PROJECT_CREATION_HASH;

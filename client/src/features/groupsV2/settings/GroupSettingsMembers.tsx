@@ -31,7 +31,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { Loader } from "../../../components/Loader";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
@@ -274,7 +274,7 @@ function GroupMemberAction({
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useUserInfo(logged ? undefined : skipToken);
+  } = useGetUserQueryState(logged ? undefined : skipToken);
   const userMember = useMemo(() => {
     if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;

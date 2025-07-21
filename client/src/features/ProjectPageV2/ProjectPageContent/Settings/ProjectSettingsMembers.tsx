@@ -33,7 +33,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -111,7 +111,7 @@ function ProjectMemberAction({
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useUserInfo(logged ? undefined : skipToken);
+  } = useGetUserQueryState(logged ? undefined : skipToken);
   const userMember = useMemo(() => {
     if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;

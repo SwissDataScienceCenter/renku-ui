@@ -44,7 +44,6 @@ import {
 } from "reactstrap";
 
 import AppContext from "~/utils/context/appContext";
-
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
@@ -65,11 +64,11 @@ import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import SearchV2Bar from "../searchV2/components/SearchV2Bar";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
 import DashboardStyles from "./DashboardV2.module.scss";
-import useUserInfo from "../loginHandler/useUserInfo.hook";
 
 export default function DashboardV2() {
   const userLogged = useLegacySelector<boolean>(
@@ -343,7 +342,7 @@ function GroupsDashboard() {
 }
 
 function UserDashboard() {
-  const { data: userInfo, isLoading } = useUserInfo();
+  const { data: userInfo, isLoading } = useGetUserQueryState();
 
   if (!userInfo?.isLoggedIn || isLoading) {
     return null;

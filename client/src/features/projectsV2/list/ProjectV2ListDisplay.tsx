@@ -29,7 +29,7 @@ import {
   ListGroupItem,
 } from "reactstrap";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
@@ -239,7 +239,7 @@ function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
 }
 
 function AddButtonForUserNamespace({ namespace }: { namespace: string }) {
-  const { data: currentUser } = useUserInfo();
+  const { data: currentUser } = useGetUserQueryState();
   const location = useLocation();
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
@@ -280,7 +280,7 @@ function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
 }
 
 function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
-  const { data: currentUser } = useUserInfo();
+  const { data: currentUser } = useGetUserQueryState();
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (

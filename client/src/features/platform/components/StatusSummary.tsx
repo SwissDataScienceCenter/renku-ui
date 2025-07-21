@@ -31,7 +31,6 @@ import {
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
 import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -44,7 +43,7 @@ import {
   toHumanDateTime,
 } from "../../../utils/helpers/DateTimeUtils";
 import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
-import { usersApi } from "../../usersV2/api/users.api";
+import { useGetUserQueryState, usersApi } from "../../usersV2/api/users.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
   ScheduledMaintenance,
@@ -71,7 +70,9 @@ function NoStatusPage() {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
-  const { data: userInfo } = useUserInfo(userLogged ? undefined : skipToken);
+  const { data: userInfo } = useGetUserQueryState(
+    userLogged ? undefined : skipToken
+  );
 
   return (
     <WarnAlert dismissible={false}>

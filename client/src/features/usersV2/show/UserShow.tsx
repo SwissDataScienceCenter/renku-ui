@@ -23,7 +23,6 @@ import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
@@ -32,7 +31,11 @@ import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsB
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
-import { useGetUserByIdQuery, UserWithId } from "../api/users.api";
+import {
+  useGetUserByIdQuery,
+  useGetUserQueryState,
+  UserWithId,
+} from "../api/users.api";
 import UserAvatar, { AvatarTypeWrap } from "./UserAvatar";
 
 export default function UserShow() {
@@ -161,7 +164,7 @@ interface ItsYouBadgeProps {
 }
 
 function ItsYouBadge({ username }: ItsYouBadgeProps) {
-  const { data: currentUser } = useUserInfo();
+  const { data: currentUser } = useGetUserQueryState();
 
   if (currentUser?.isLoggedIn && currentUser.username === username) {
     return (

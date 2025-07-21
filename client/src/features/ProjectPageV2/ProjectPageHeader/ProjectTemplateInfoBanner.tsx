@@ -20,7 +20,7 @@ import { useCallback, useState } from "react";
 import { Diagram3Fill } from "react-bootstrap-icons";
 import { Button, ListGroup, ModalBody, ModalHeader } from "reactstrap";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import PrimaryAlert from "../../../components/PrimaryAlert";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -71,7 +71,7 @@ export function ProjectCopyListModal({
 }
 
 function ProjectTemplateEditorBanner({ project }: { project: Project }) {
-  const { data: currentUser } = useUserInfo();
+  const { data: currentUser } = useGetUserQueryState();
   const { data: copies } = useGetProjectsByProjectIdCopiesQuery({
     projectId: project.id,
   });
@@ -145,7 +145,7 @@ export default function ProjectTemplateInfoBanner({
 }: {
   project: Project;
 }) {
-  const { data: currentUser } = useUserInfo();
+  const { data: currentUser } = useGetUserQueryState();
   const userPermissions = useProjectPermissions({ projectId: project.id });
   if (currentUser == null) return null;
   if (project.template_id === null) return null;

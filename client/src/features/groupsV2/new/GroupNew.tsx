@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router";
 import { Button, Form, FormGroup, ModalBody, ModalFooter } from "reactstrap";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -40,7 +40,7 @@ import SlugPreviewFormField from "../../projectsV2/fields/SlugPreviewFormField";
 import { GROUP_CREATION_HASH } from "./createGroup.constants";
 
 export default function GroupNew() {
-  const { data: userInfo, isLoading: userLoading } = useUserInfo();
+  const { data: userInfo, isLoading: userLoading } = useGetUserQueryState();
 
   const [hash, setHash] = useLocationHash();
   const showGroupCreationModal = hash === GROUP_CREATION_HASH;

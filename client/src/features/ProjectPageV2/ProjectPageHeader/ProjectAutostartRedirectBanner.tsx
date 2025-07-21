@@ -18,8 +18,8 @@
 import cx from "classnames";
 import { Diagram3Fill } from "react-bootstrap-icons";
 
-import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
 import LearnAboutV2Button from "~/features/projectsV2/shared/LearnAboutV2Button";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import PrimaryAlert from "../../../components/PrimaryAlert";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
@@ -88,7 +88,7 @@ export default function ProjectAutostartRedirectBanner({
 }: {
   project: Project;
 }) {
-  const { data: currentUser } = useUserInfo();
+  const { data: currentUser } = useGetUserQueryState();
   const userPermissions = useProjectPermissions({ projectId: project.id });
   if (currentUser == null) return null;
   return (
