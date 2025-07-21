@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 import cx from "classnames";
-import { Eye, Sliders } from "react-bootstrap-icons";
+import { Eye, Search, Sliders } from "react-bootstrap-icons";
 import { Nav, NavItem } from "reactstrap";
 import RenkuNavLinkV2 from "./RenkuNavLinkV2";
 
 export interface PageNavOptions {
   overviewUrl: string;
+  searchUrl: string;
   settingsUrl: string;
 }
 export default function PageNav({ options }: { options: PageNavOptions }) {
@@ -33,7 +34,7 @@ export default function PageNav({ options }: { options: PageNavOptions }) {
             end
             to={options.overviewUrl}
             title="Overview"
-            data-cy="nav-link-overview"
+            data-cy="group-overview-link"
           >
             <Eye className={cx("bi", "me-1")} />
             Overview
@@ -42,9 +43,20 @@ export default function PageNav({ options }: { options: PageNavOptions }) {
         <NavItem>
           <RenkuNavLinkV2
             end
+            to={options.searchUrl}
+            title="Search"
+            data-cy="group-search-link"
+          >
+            <Search className={cx("bi", "me-1")} />
+            Search
+          </RenkuNavLinkV2>
+        </NavItem>
+        <NavItem>
+          <RenkuNavLinkV2
+            end
             to={options.settingsUrl}
             title="Settings"
-            data-cy="nav-link-settings"
+            data-cy="group-settings-link"
           >
             <Sliders className={cx("bi", "me-1")} />
             Settings

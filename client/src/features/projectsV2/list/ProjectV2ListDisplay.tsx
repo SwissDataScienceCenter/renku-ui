@@ -20,7 +20,14 @@ import cx from "classnames";
 import { useEffect, useMemo } from "react";
 import { Folder, PlusLg } from "react-bootstrap-icons";
 import { Link, useLocation, useSearchParams } from "react-router";
-import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  ListGroup,
+  ListGroupItem,
+} from "reactstrap";
 
 import useUserInfo from "~/features/loginHandler/useUserInfo.hook";
 import { Loader } from "../../../components/Loader";
@@ -37,6 +44,8 @@ const DEFAULT_PER_PAGE = 5;
 const DEFAULT_PAGE_PARAM = "page";
 
 interface ProjectListDisplayProps {
+  children?: React.ReactNode;
+  limit?: number;
   namespace?: string;
   pageParam?: string;
   perPage?: number;
@@ -44,6 +53,8 @@ interface ProjectListDisplayProps {
 }
 
 export default function ProjectListDisplay({
+  children,
+  limit,
   namespace: ns,
   pageParam: pageParam_,
   perPage: perPage_,
@@ -54,13 +65,14 @@ export default function ProjectListDisplay({
     [pageParam_]
   );
   const perPage = useMemo(
-    () => (perPage_ ? perPage_ : DEFAULT_PER_PAGE),
-    [perPage_]
+    () => (limit ? limit : perPage_ ? perPage_ : DEFAULT_PER_PAGE),
+    [limit, perPage_]
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   const page = useMemo(() => {
+    if (limit) return 1;
     const pageRaw = searchParams.get(pageParam);
     if (!pageRaw) {
       return 1;
@@ -71,7 +83,7 @@ export default function ProjectListDisplay({
     } catch {
       return 1;
     }
-  }, [pageParam, searchParams]);
+  }, [limit, pageParam, searchParams]);
 
   const { data, error, isLoading } = useGetProjectsQuery({
     params: {
@@ -136,17 +148,25 @@ export default function ProjectListDisplay({
                       project={project}
                     />
                   ))}
+                  {limit && data.total > limit && (
+                    <ListGroupItem className="fst-italic">
+                      And {data.total - data.projects.length} more...
+                    </ListGroupItem>
+                  )}
                 </ListGroup>
               </div>
-              <Pagination
-                className="mt-3"
-                currentPage={data.page}
-                pageQueryParam={pageParam}
-                perPage={perPage}
-                totalItems={data.total}
-              />
+              {!limit && (
+                <Pagination
+                  className="mt-3"
+                  currentPage={data.page}
+                  pageQueryParam={pageParam}
+                  perPage={perPage}
+                  totalItems={data.total}
+                />
+              )}
             </>
           )}
+          {children}
         </CardBody>
       </Card>
     </div>

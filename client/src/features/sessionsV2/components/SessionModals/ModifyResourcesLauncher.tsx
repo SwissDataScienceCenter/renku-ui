@@ -8,15 +8,14 @@ import {
   Input,
   InputGroup,
   InputGroupText,
+  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
-import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
@@ -141,7 +140,7 @@ export function ModifyResourcesLauncherModal({
   );
 
   return (
-    <ScrollableModal
+    <Modal
       centered
       fullscreen="lg"
       isOpen={isOpen}
@@ -271,7 +270,7 @@ export function ModifyResourcesLauncherModal({
           Modify resources
         </Button>
       </ModalFooter>
-    </ScrollableModal>
+    </Modal>
   );
 }
 

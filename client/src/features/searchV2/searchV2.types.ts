@@ -118,3 +118,5 @@ export interface SetInitialQueryParams {
   searchBarQuery: string;
   sortBy: SortBy;
 }
+
+export type SearchQueryFilters = Partial<Record<string, string | number>>;

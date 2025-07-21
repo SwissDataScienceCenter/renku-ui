@@ -30,11 +30,13 @@ import styles from "./UserAvatar.module.scss";
 type AvatarSize = "sm" | "md" | "lg";
 
 interface UserAvatarProps {
+  className?: string;
   namespace: string;
   size?: AvatarSize;
 }
 
 export default function UserAvatar({
+  className,
   namespace: namespaceSlug,
   size = "sm",
 }: UserAvatarProps) {
@@ -124,7 +126,8 @@ export default function UserAvatar({
         "text-black",
         styles.avatar,
         size === "lg" && styles.large,
-        size === "md" && styles.medium
+        size === "md" && styles.medium,
+        className
       )}
       style={{ backgroundColor: randomPastelColor }}
     >

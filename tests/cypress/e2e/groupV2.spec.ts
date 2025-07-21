@@ -162,7 +162,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.getDataCy("nav-link-settings").should("be.visible").click();
+    cy.getDataCy("group-settings-link").should("be.visible").click();
     cy.getDataCy("group-name-input").clear().type("new name");
     cy.getDataCy("group-slug-input").clear().type("new-slug");
     cy.getDataCy("group-description-input").clear().type("new description");
@@ -198,7 +198,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.getDataCy("nav-link-settings").should("be.visible").click();
+    cy.getDataCy("group-settings-link").should("be.visible").click();
     cy.contains("@user1").should("be.visible");
     cy.contains("user3-uuid").should("be.visible");
     fixtures
@@ -244,7 +244,7 @@ describe("Edit v2 group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.getDataCy("nav-link-settings").should("be.visible").click();
+    cy.getDataCy("group-settings-link").should("be.visible").click();
     cy.getDataCy("group-description-input").clear().type("new description");
     cy.get("button").contains("Delete").should("be.visible").click();
     cy.get("button")
@@ -539,7 +539,7 @@ describe("Create projects in a group", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("test 2 group-v2").should("be.visible");
-    cy.getDataCy("nav-link-settings").should("be.visible").click();
+    cy.getDataCy("group-settings-link").should("be.visible").click();
     cy.getDataCy("navbar-new-entity").click();
     cy.getDataCy("navbar-project-new").click();
     cy.contains("Create a new project").should("be.visible");
