@@ -80,9 +80,7 @@ function CentralContentContainer({ user }) {
           index
           element={
             user.logged ? (
-              <ContainerWrap fullSize={true}>
-                <LazyRootV2 />
-              </ContainerWrap>
+              <LazyRootV2 />
             ) : (
               <div className="w-100">
                 <LazyAnonymousHome />
