@@ -249,7 +249,13 @@ function CustomBuildEnvironmentValues({
   }
 
   const { build_parameters } = environment;
-  const { builder_variant, frontend_variant, repository } = build_parameters;
+  const {
+    builder_variant,
+    frontend_variant,
+    repository,
+    repository_revision,
+    context_dir,
+  } = build_parameters;
 
   return (
     <>
@@ -318,6 +324,18 @@ function CustomBuildEnvironmentValues({
         label="Built from code repository"
         value={repository || ""}
       />
+      {repository_revision && (
+        <EnvironmentRowWithLabel
+          label="Git revision"
+          value={repository_revision}
+        />
+      )}
+      {context_dir && (
+        <EnvironmentRowWithLabel
+          label="Context directory"
+          value={context_dir}
+        />
+      )}
       <EnvironmentRowWithLabel
         label="Environment type"
         value={builder_variant || ""}
