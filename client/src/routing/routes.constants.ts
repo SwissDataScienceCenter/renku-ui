@@ -68,7 +68,6 @@ export const ABSOLUTE_ROUTES = {
       release: "/help/release",
       tos: "/help/tos",
       privacy: "/help/privacy",
-      documentation: "/help/documentation",
     },
     projects: {
       show: {
@@ -131,7 +130,6 @@ export const RELATIVE_ROUTES = {
       release: "release",
       tos: "tos",
       privacy: "privacy",
-      documentation: "documentation",
     },
     projects: {
       root: "p/*",

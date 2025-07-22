@@ -26,7 +26,6 @@ import {
 } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
-
 import {
   ExternalDocsLink,
   ExternalIconLink,
@@ -35,10 +34,7 @@ import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
 import TermsOfService from "../../help/TermsOfService";
-import {
-  ABSOLUTE_ROUTES,
-  RELATIVE_ROUTES,
-} from "../../routing/routes.constants";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { isStatusConfigured } from "../../statuspage";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
@@ -58,11 +54,6 @@ function HelpNav({ statuspageId }: HelpNavProps) {
       <NavItem>
         <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v2.help.root}>
           Getting Help
-        </RenkuNavLinkV2>
-      </NavItem>
-      <NavItem>
-        <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v2.help.documentation}>
-          Documentation
         </RenkuNavLinkV2>
       </NavItem>
       {isStatusConfigured(statuspageId) && (
@@ -104,7 +95,48 @@ function HelpGetting() {
       </p>
       <Row className="g-3">
         <Col xs={12} md={6}>
-          <Card>
+          <Card className="h-100">
+            <CardHeader>
+              <h4 className="mb-0">
+                <ExternalIconLink
+                  url={Links.RENKU_2_DOCUMENTATION}
+                  icon={<FileEarmarkText className={cx("bi", "me-1")} />}
+                  text="RenkuLab Documentation"
+                />
+              </h4>
+            </CardHeader>
+            <CardBody>
+              <p className="mb-0">
+                Find tutorials, how-to guides, and reference materials for
+                learning how to use Renku.
+              </p>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col xs={12} md={6}>
+          <Card className="h-100">
+            <CardHeader>
+              <h4 className="mb-0">
+                <ExternalIconLink
+                  url={Links.RENKU_2_COMMUNITY_PORTAL}
+                  icon={<Share className={cx("bi", "me-1")} />}
+                  text="Renku Community Portal"
+                />
+              </h4>
+            </CardHeader>
+            <CardBody>
+              <p className="mb-0">
+                Find dedicated best practices for teaching, research and events
+                with Renku, information about community events, how to access
+                dedicated compute resources, the Renku roadmap, and much more.
+              </p>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col xs={12} md={6}>
+          <Card className="h-100">
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -126,7 +158,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card>
+          <Card className="h-100">
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -145,8 +177,9 @@ function HelpGetting() {
             </CardBody>
           </Card>
         </Col>
+
         <Col xs={12} md={6}>
-          <Card>
+          <Card className="h-100">
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -172,55 +205,6 @@ function HelpGetting() {
   );
 }
 
-function HelpDocumentation() {
-  return (
-    <div>
-      <p>Here is our documentation for RenkuLab.</p>
-      <Row className="g-3">
-        <Col xs={12} md={6}>
-          <Card>
-            <CardHeader>
-              <h4 className="mb-0">
-                <ExternalIconLink
-                  url={Links.RENKU_2_DOCUMENTATION}
-                  icon={<FileEarmarkText className={cx("bi", "me-1")} />}
-                  text="RenkuLab Documentation"
-                />
-              </h4>
-            </CardHeader>
-            <CardBody>
-              <p className="mb-0">
-                Find tutorials, how-to guides, and reference materials for
-                learning how to use Renku.
-              </p>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col xs={12} md={6}>
-          <Card>
-            <CardHeader>
-              <h4 className="mb-0">
-                <ExternalIconLink
-                  url={Links.RENKU_2_COMMUNITY_PORTAL}
-                  icon={<Share className={cx("bi", "me-1")} />}
-                  text="Renku Community Portal"
-                />
-              </h4>
-            </CardHeader>
-            <CardBody>
-              <p className="mb-0">
-                The Renku Community Portal is a place to find information about
-                the Renku project, including how to contribute, how to get
-                support, and what we plan to implement in the future.
-              </p>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
-  );
-}
-
 function HelpContent() {
   return (
     <Routes>
@@ -230,10 +214,6 @@ function HelpContent() {
       <Route path="release" element={<HelpRelease />} />
       <Route path="tos" element={<TermsOfService />} />
       <Route path="privacy" element={<PrivacyPolicy />} />
-      <Route
-        path={RELATIVE_ROUTES.v2.help.documentation}
-        element={<HelpDocumentation />}
-      />
     </Routes>
   );
 }
