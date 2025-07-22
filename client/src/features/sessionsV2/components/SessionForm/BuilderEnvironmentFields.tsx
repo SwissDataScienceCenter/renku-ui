@@ -32,6 +32,7 @@ import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
 import CodeRepositorySelector from "./CodeRepositorySelector";
+import CodeRepositoryAdvancedSettings from "./CodeRepositoryAdvancedSettings";
 
 interface BuilderEnvironmentFieldsProps {
   control: Control<SessionLauncherForm>;
@@ -93,11 +94,14 @@ export default function BuilderEnvironmentFields({
     </WarnAlert>
   ) : (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <CodeRepositorySelector
-        name="repository"
-        control={control}
-        repositoriesDetails={repositoriesDetails}
-      />
+      <div>
+        <CodeRepositorySelector
+          name="repository"
+          control={control}
+          repositoriesDetails={repositoriesDetails}
+        />
+        <CodeRepositoryAdvancedSettings control={control} />
+      </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
       <BuilderFrontendSelector name="frontend_variant" control={control} />
     </div>

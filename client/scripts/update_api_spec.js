@@ -24,7 +24,7 @@ import { parseDocument } from "yaml";
 
 const GH_BASE_URL = "https://raw.githubusercontent.com";
 const DATA_SERVICES_REPO = "SwissDataScienceCenter/renku-data-services";
-const DATA_SERVICES_RELEASE = "main";
+const DATA_SERVICES_RELEASE = "leafty/add-shipwright-source-options";
 
 async function main() {
   argv.forEach((arg) => {
@@ -36,6 +36,8 @@ async function main() {
       updateUsersApi();
     } else if (arg.trim() === "searchV2") {
       updateSearchV2Api();
+    } else if (arg.trim() === "sessionLaunchersV2") {
+      updateSessionLaunchersV2Api();
     }
   });
 }
@@ -69,6 +71,13 @@ async function updateSearchV2Api() {
   });
 }
 
+async function updateSessionLaunchersV2Api() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/session/api.spec.yaml",
+    destFile: "src/features/sessionsV2/api/sessionLaunchersV2.openapi.json",
+  });
+}
+
 async function updateApiFiles({ specFile, destFile }) {
   const API_SPEC_FILE = specFile;
   const DEST_FILE = destFile;
@@ -88,8 +97,12 @@ async function updateApiFiles({ specFile, destFile }) {
   const apiSpec = await res.text();
   const parsedSpec = parseDocument(apiSpec);
 
+  // Remove "discriminator" fields as they mess up code generation
+  const jsonSpec = JSON.parse(JSON.stringify(parsedSpec));
+  const cleanedSpec = removeDiscriminatorFields(jsonSpec);
+
   const fh = await open(DEST_FILE, "w", 0o622);
-  fh.writeFile(JSON.stringify(parsedSpec, null, 2));
+  fh.writeFile(JSON.stringify(cleanedSpec, null, 2));
 
   await new Promise((resolve, reject) => {
     const cp = exec(["npx", "prettier", "-w", DEST_FILE].join(" "));
@@ -100,6 +113,26 @@ async function updateApiFiles({ specFile, destFile }) {
       code == 0 ? resolve() : reject(new Error("failed to run prettier"));
     });
   });
+}
+
+function removeDiscriminatorFields(jsonSpec) {
+  if (typeof jsonSpec !== "object" || jsonSpec == null) {
+    return jsonSpec;
+  }
+  if (jsonSpec instanceof Array) {
+    const cleanedSpec = [];
+    for (let i = 0; i < jsonSpec.length; ++i) {
+      cleanedSpec[i] = removeDiscriminatorFields(jsonSpec[i]);
+    }
+    return cleanedSpec;
+  }
+  const cleanedSpec = {};
+  Object.keys(jsonSpec).forEach((key) => {
+    if (key.trim().toLowerCase() !== "discriminator") {
+      cleanedSpec[key] = removeDiscriminatorFields(jsonSpec[key]);
+    }
+  });
+  return cleanedSpec;
 }
 
 main();

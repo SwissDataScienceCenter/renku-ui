@@ -308,10 +308,14 @@ export type EnvironmentWithImageGet = Environment & {
 export type Repository = string;
 export type BuilderVariant = string;
 export type FrontendVariant = string;
+export type RepositoryRevision = string;
+export type BuildContextDir = string;
 export type BuildParameters = {
   repository: Repository;
   builder_variant: BuilderVariant;
   frontend_variant: FrontendVariant;
+  repository_revision?: RepositoryRevision;
+  context_dir?: BuildContextDir;
 };
 export type EnvironmentImageSourceBuild = "build";
 export type EnvironmentWithBuildGet = EnvironmentWithoutContainerImage & {
@@ -368,10 +372,14 @@ export type DiskStoragePatch = number | null;
 export type EnvironmentImageSource =
   | EnvironmentImageSourceImage
   | EnvironmentImageSourceBuild;
+export type RepositoryRevisionPatch = string;
+export type BuildContextDirPatch = string;
 export type BuildParametersPatch = {
   repository?: Repository;
   builder_variant?: BuilderVariant;
   frontend_variant?: FrontendVariant;
+  repository_revision?: RepositoryRevisionPatch;
+  context_dir?: BuildContextDirPatch;
 };
 export type EnvironmentPatchInLauncher = EnvironmentPatch & {
   environment_kind?: EnvironmentKind;

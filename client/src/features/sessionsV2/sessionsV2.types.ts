@@ -88,7 +88,11 @@ export interface SessionLauncherForm
     >,
     Pick<
       BuildParametersPost,
-      "builder_variant" | "frontend_variant" | "repository"
+      | "builder_variant"
+      | "frontend_variant"
+      | "repository"
+      | "repository_revision"
+      | "context_dir"
     > {
   resourceClass: ResourceClass;
 
