@@ -226,10 +226,12 @@ function SessionActions({ className, session }: SessionActionsProps) {
     skip: !isResuming,
   });
   useEffect(() => {
-    if (isSuccessResumeSession && !isWaitingForResumedSession) {
+    if (isResuming && isSuccessResumeSession && !isWaitingForResumedSession) {
+      setIsResuming(false);
       navigate({ pathname: showSessionUrl });
     }
   }, [
+    isResuming,
     isSuccessResumeSession,
     isWaitingForResumedSession,
     navigate,
