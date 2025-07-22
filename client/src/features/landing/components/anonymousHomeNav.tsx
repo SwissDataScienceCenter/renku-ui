@@ -27,6 +27,7 @@ import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Links } from "../../../utils/constants/Docs.js";
 import { Url } from "../../../utils/helpers/url";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants.js";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -185,7 +186,7 @@ function TopNav() {
           )}
         >
           <div className="d-none d-md-inline-block">
-            <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
+            <TopNavLink title="Help" to={ABSOLUTE_ROUTES.v2.help.root} />
           </div>
           <a
             className={cx("btn", "btn-outline-light", "text-decoration-none")}
