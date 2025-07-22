@@ -18,18 +18,15 @@
 
 import cx from "classnames";
 import { useCallback, useState } from "react";
-
 import { DropdownItem } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { SingleButtonWithMenu } from "../../../../components/buttons/Button";
 import BootstrapCopyIcon from "../../../../components/icons/BootstrapCopyIcon";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-import { useGetUserQuery } from "../../../usersV2/api/users.api";
-
-import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectCopyModal from "../../ProjectPageHeader/ProjectCopyModal";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 export default function ProjectInformationButton({
   project,
@@ -37,7 +34,7 @@ export default function ProjectInformationButton({
   userPermissions: ReturnType<typeof useProjectPermissions>;
   project: Project;
 }) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
   const [isCopyModalOpen, setCopyModalOpen] = useState(false);
   const toggleCopyModal = useCallback(() => {
     setCopyModalOpen((open) => !open);

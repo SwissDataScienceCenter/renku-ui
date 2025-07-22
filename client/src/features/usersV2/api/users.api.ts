@@ -180,9 +180,13 @@ export const usersApi = withTagHandling.injectEndpoints({
   }),
 });
 
+// Note: we do not export the `useGetUserQuery()` hook.
+// Instead, we export the `useGetUserQueryState()` hook which should be populated
+// by the <LoginHandler> component.
+export const useGetUserQueryState = usersApi.endpoints.getUser.useQueryState;
+
 export const {
   // "users" hooks
-  useGetUserQuery,
   useGetUsersQuery,
   useGetUsersByUserIdQuery: useGetUserByIdQuery,
   useDeleteUsersByUserIdMutation: useDeleteUserMutation,

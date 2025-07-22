@@ -20,10 +20,9 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Button } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import BootstrapCopyIcon from "../../../components/icons/BootstrapCopyIcon";
-
 import { type Project } from "../../projectsV2/api/projectV2.api";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 import ProjectCopyModal from "./ProjectCopyModal";
 
 export default function ProjectCopyButton({
@@ -33,7 +32,7 @@ export default function ProjectCopyButton({
   color: string;
   project: Project;
 }) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
   const buttonColor = `outline-${color}`;
 
   const [isModalOpen, setModalOpen] = useState(false);

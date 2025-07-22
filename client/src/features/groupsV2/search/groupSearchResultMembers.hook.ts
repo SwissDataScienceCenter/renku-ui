@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,29 +16,16 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router";
-import { DropdownItem } from "reactstrap";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetProjectsByProjectIdMembersQuery } from "~/features/projectsV2/api/projectV2.api";
+import { GroupSearchEntity } from "./groupSearch.types";
 
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-
-export default function AdminDropdownItem() {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
+export function useGroupSearchResultMembers(item: GroupSearchEntity) {
+  const projectMembers = useGetProjectsByProjectIdMembersQuery(
+    item.type === "Project" ? { projectId: item.id } : skipToken
   );
-
-  const { data: userInfo } = useGetUserQueryState();
-
-  if (!userLogged || !userInfo?.isLoggedIn || !userInfo.is_admin) {
-    return null;
+  if (item.type === "Project") {
+    return projectMembers;
   }
-
-  return (
-    <>
-      <DropdownItem divider />
-      <Link to="/admin" className="dropdown-item">
-        Admin Panel
-      </Link>
-    </>
-  );
+  return null;
 }

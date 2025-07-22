@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,29 +16,15 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router";
-import { DropdownItem } from "reactstrap";
+import { Suspense, lazy } from "react";
+import PageLoader from "../../components/PageLoader";
 
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+const GroupV2Search = lazy(() => import("./search/GroupV2Search"));
 
-export default function AdminDropdownItem() {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
-
-  const { data: userInfo } = useGetUserQueryState();
-
-  if (!userLogged || !userInfo?.isLoggedIn || !userInfo.is_admin) {
-    return null;
-  }
-
+export default function LazyGroupV2Search() {
   return (
-    <>
-      <DropdownItem divider />
-      <Link to="/admin" className="dropdown-item">
-        Admin Panel
-      </Link>
-    </>
+    <Suspense fallback={<PageLoader />}>
+      <GroupV2Search />
+    </Suspense>
   );
 }

@@ -33,7 +33,7 @@ import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import {
   useGetUserByIdQuery,
-  useGetUserQuery,
+  useGetUserQueryState,
   UserWithId,
 } from "../api/users.api";
 import UserAvatar, { AvatarTypeWrap } from "./UserAvatar";
@@ -164,7 +164,7 @@ interface ItsYouBadgeProps {
 }
 
 function ItsYouBadge({ username }: ItsYouBadgeProps) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
 
   if (currentUser?.isLoggedIn && currentUser.username === username) {
     return (

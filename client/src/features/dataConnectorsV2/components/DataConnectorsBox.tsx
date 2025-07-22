@@ -27,14 +27,16 @@ import {
   CardBody,
   CardHeader,
   ListGroup,
+  ListGroupItem,
 } from "reactstrap";
+
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { NamespaceKind } from "../../projectsV2/api/namespace.api";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 import {
   useGetDataConnectorsQuery,
   type GetDataConnectorsApiResponse,
@@ -76,7 +78,7 @@ function AddButtonForUserNamespace({
   namespace,
   toggleOpen,
 }: Pick<DataConnectorBoxHeaderProps, "namespace" | "toggleOpen">) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
@@ -94,6 +96,8 @@ function AddButtonForUserNamespace({
 }
 
 interface DataConnectorListDisplayProps {
+  children?: React.ReactNode;
+  limit?: number;
   namespace: string;
   namespaceKind: NamespaceKind;
   pageParam?: string;
@@ -101,6 +105,8 @@ interface DataConnectorListDisplayProps {
 }
 
 export default function DataConnectorsBox({
+  children,
+  limit,
   namespace: ns,
   namespaceKind,
   pageParam: pageParam_,
@@ -111,13 +117,14 @@ export default function DataConnectorsBox({
     [pageParam_]
   );
   const perPage = useMemo(
-    () => (perPage_ ? perPage_ : DEFAULT_PER_PAGE),
-    [perPage_]
+    () => (limit ? limit : perPage_ ? perPage_ : DEFAULT_PER_PAGE),
+    [limit, perPage_]
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   const page = useMemo(() => {
+    if (limit) return 1;
     const pageRaw = searchParams.get(pageParam);
     if (!pageRaw) {
       return 1;
@@ -128,7 +135,7 @@ export default function DataConnectorsBox({
     } catch {
       return 1;
     }
-  }, [pageParam, searchParams]);
+  }, [limit, pageParam, searchParams]);
 
   const { data, error, isLoading } = useGetDataConnectorsQuery({
     params: {
@@ -164,25 +171,32 @@ export default function DataConnectorsBox({
     <DataConnectorBoxContent
       data={data}
       isLoading={isLoading}
+      limit={limit}
       namespace={ns ?? ""}
       namespaceKind={namespaceKind}
       pageParam={pageParam}
       perPage={perPage}
-    />
+    >
+      {children}
+    </DataConnectorBoxContent>
   );
 }
 
 interface DataConnectorBoxContentProps {
+  children?: React.ReactNode;
   data: GetDataConnectorsApiResponse;
   isLoading: boolean;
+  limit?: number;
   namespace: string;
   namespaceKind: NamespaceKind;
   pageParam: string;
   perPage: number;
 }
 function DataConnectorBoxContent({
+  children,
   data,
   isLoading,
+  limit,
   namespace,
   namespaceKind,
   pageParam,
@@ -221,15 +235,23 @@ function DataConnectorBoxContent({
                   />
                 )
               )}
+              {limit && data.total > limit && (
+                <ListGroupItem className="fst-italic">
+                  And {data.total - data.dataConnectors.length} more...
+                </ListGroupItem>
+              )}
             </ListGroup>
           )}
-          <Pagination
-            className="mt-3"
-            currentPage={data.page}
-            pageQueryParam={pageParam}
-            perPage={perPage}
-            totalItems={data.total}
-          />
+          {!limit && (
+            <Pagination
+              className="mt-3"
+              currentPage={data.page}
+              pageQueryParam={pageParam}
+              perPage={perPage}
+              totalItems={data.total}
+            />
+          )}
+          {children}
         </CardBody>
       </Card>
       <DataConnectorModal
@@ -334,7 +356,7 @@ function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
 }
 
 function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
