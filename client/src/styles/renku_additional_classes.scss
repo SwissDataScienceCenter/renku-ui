@@ -14,3 +14,7 @@
 .cursor-pointer {
   cursor: pointer !important;
 }
+
+.link-bg-action:hover {
+  background-color: var(--bs-tertiary-bg) !important;
+}

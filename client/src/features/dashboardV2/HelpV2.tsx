@@ -106,6 +106,7 @@ function HelpCardBodyContent({ children, url }: HelpCardBodyContentProps) {
 }
 
 function HelpGetting() {
+  const cardClasses = cx("h-100", "link-bg-action");
   return (
     <div>
       <p>
@@ -114,7 +115,7 @@ function HelpGetting() {
       </p>
       <Row className="g-3">
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -136,7 +137,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -160,7 +161,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -182,7 +183,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -204,7 +205,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
