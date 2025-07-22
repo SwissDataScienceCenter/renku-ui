@@ -23,11 +23,10 @@ import { List } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants.js";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Links } from "../../../utils/constants/Docs.js";
-import { Url } from "../../../utils/helpers/url";
-import { ABSOLUTE_ROUTES } from "~/routing/routes.constants.js";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -98,7 +97,7 @@ function BottomNav() {
                 title="Get Started"
                 url={Links.RENKU_2_QUICK_START_TUTORIAL}
               />
-              <BottomNavLink title="Help" to={Url.get(Url.pages.help)} />
+              <BottomNavLink title="Help" to={ABSOLUTE_ROUTES.v2.help.root} />
             </BottomNavSection>
           </Col>
           <Col md={3}>
@@ -122,7 +121,7 @@ function BottomNav() {
             <BottomNavSection sectionTitle="About">
               <BottomNavLink
                 title="Renku version"
-                to={Url.get(Url.pages.help.release)}
+                to={ABSOLUTE_ROUTES.v2.help.release}
               />
               <BottomNavExternalLink
                 title="Why Renku?"
@@ -239,7 +238,7 @@ function TopNav() {
               <NavItem
                 className={cx("d-block", "d-md-none", "nav-item", "mb-2")}
               >
-                <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
+                <TopNavLink title="Help" to={ABSOLUTE_ROUTES.v2.help.root} />
               </NavItem>
             </Nav>
           </Navbar>

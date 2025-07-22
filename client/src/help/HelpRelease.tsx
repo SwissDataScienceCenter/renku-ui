@@ -19,13 +19,14 @@
 import { useContext } from "react";
 import { Col, Row } from "reactstrap";
 
+import { useLocation } from "react-router";
+import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import {
   useGetCoreVersionsQuery,
   useGetDataServicesVersionQuery,
   useGetKgVersionQuery,
-  useGetNotebooksVersionQuery,
 } from "../features/versions/versions.api";
 import { RenkuRepositories } from "../utils/constants/Repositories";
 import AppContext from "../utils/context/appContext";
@@ -119,22 +120,6 @@ function KgRelease() {
   );
 }
 
-function NotebookRelease() {
-  const { data, isFetching } = useGetNotebooksVersionQuery();
-  if (isFetching) {
-    return <Loader inline size={16} />;
-  }
-  const notebooksVersion = data?.version;
-  const { taggedVersion, devHash } = parseChartVersion(notebooksVersion);
-  return (
-    <ComponentAndDevVersion
-      componentUrl={RenkuRepositories.Notebooks}
-      devHash={devHash}
-      taggedVersion={taggedVersion}
-    />
-  );
-}
-
 function RenkuRelease() {
   const { params } = useContext(AppContext);
   const chartVersion =
@@ -165,6 +150,34 @@ function UiRelease() {
 }
 
 function ComponentDetails() {
+  const location = useLocation();
+  const isLegacy = isRenkuLegacy(location.pathname);
+
+  const { params } = useContext(AppContext);
+  const isLegacyEnabled = params?.LEGACY_SUPPORT.enabled;
+
+  if (isLegacy) {
+    return (
+      <>
+        <div className="fw-bold">Renku legacy component versions</div>
+        <ul>
+          <li>
+            UI: <UiRelease />
+          </li>
+          <li>
+            Core: <CoreRelease />
+          </li>
+          <li>
+            Data Services: <DataServicesRelease />
+          </li>
+          <li>
+            Knowledge Graph: <KgRelease />
+          </li>
+        </ul>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="fw-bold">Renku component versions</div>
@@ -173,18 +186,22 @@ function ComponentDetails() {
           UI: <UiRelease />
         </li>
         <li>
-          Core: <CoreRelease />
-        </li>
-        <li>
           Data Services: <DataServicesRelease />
         </li>
-        <li>
-          Knowledge Graph: <KgRelease />
-        </li>
-        <li>
-          Notebooks: <NotebookRelease />
-        </li>
       </ul>
+      {isLegacyEnabled && (
+        <>
+          <div className="fw-bold">Renku legacy component versions</div>
+          <ul>
+            <li>
+              Core: <CoreRelease />
+            </li>
+            <li>
+              Knowledge Graph: <KgRelease />
+            </li>
+          </ul>
+        </>
+      )}
     </>
   );
 }

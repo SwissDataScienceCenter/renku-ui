@@ -39,6 +39,7 @@ export const ABSOLUTE_ROUTES = {
     },
     help: {
       root: "/v1/help",
+      documentation: "/v1/help/docs",
       contact: "/v1/help/contact",
       status: "/v1/help/status",
       release: "/v1/help/release",
