@@ -43,7 +43,7 @@ import {
   toHumanDateTime,
 } from "../../../utils/helpers/DateTimeUtils";
 import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
-import { useGetUserQuery, usersApi } from "../../usersV2/api/users.api";
+import { useGetUserQueryState, usersApi } from "../../usersV2/api/users.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
   ScheduledMaintenance,
@@ -70,7 +70,7 @@ function NoStatusPage() {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
-  const { data: userInfo } = useGetUserQuery(
+  const { data: userInfo } = useGetUserQueryState(
     userLogged ? undefined : skipToken
   );
 

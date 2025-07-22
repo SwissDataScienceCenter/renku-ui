@@ -29,13 +29,14 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
+
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { NamespaceKind } from "../../projectsV2/api/namespace.api";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 import {
   useGetDataConnectorsQuery,
   type GetDataConnectorsApiResponse,
@@ -77,7 +78,7 @@ function AddButtonForUserNamespace({
   namespace,
   toggleOpen,
 }: Pick<DataConnectorBoxHeaderProps, "namespace" | "toggleOpen">) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
@@ -355,7 +356,7 @@ function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
 }
 
 function AddEmptyListForUserNamespace({ namespace }: { namespace: string }) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
 
   if (currentUser?.isLoggedIn && currentUser.username === namespace) {
     return (
