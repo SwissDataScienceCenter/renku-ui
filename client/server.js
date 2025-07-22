@@ -25,7 +25,7 @@ import {
   SAMPLE_PRIVACY_CONTENT,
   SAMPLE_TERMS_CONTENT,
   SITEMAP,
-} from "./server/constants.js";
+} from "./server/constants";
 import { env } from "node:process";
 
 const BUILD_PATH = "./build/server/index.js";

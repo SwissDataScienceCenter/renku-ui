@@ -1,37 +1,45 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
-    /* JavaScript support */
-    "allowJs": true,
-
-    /* New */
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    }
-  },
-  "include": ["src", "server/constants.ts"],
+  // "compilerOptions": {
+  //   "target": "ES2022",
+  //   "useDefineForClassFields": true,
+  //   "lib": ["ES2022", "DOM", "DOM.Iterable"],
+  //   "module": "ESNext",
+  //   "skipLibCheck": true,
+  //   /* Bundler mode */
+  //   "moduleResolution": "bundler",
+  //   "allowImportingTsExtensions": true,
+  //   "resolveJsonModule": true,
+  //   "isolatedModules": true,
+  //   "noEmit": true,
+  //   "jsx": "react-jsx",
+  //   /* Linting */
+  //   "strict": true,
+  //   "noUnusedLocals": true,
+  //   "noUnusedParameters": true,
+  //   "noFallthroughCasesInSwitch": true,
+  //   /* JavaScript support */
+  //   "allowJs": true,
+  //   /* New */
+  //   "baseUrl": ".",
+  //   "paths": {
+  //     "~/*": ["./src/*"]
+  //   }
+  // },
+  // "include": ["src", "server/constants.ts"],
+  "files": [],
   "references": [
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.vite.json" }
-  ]
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.vite.json"
+    }
+  ],
+  "compilerOptions": {
+    "checkJs": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true
+  }
 }
