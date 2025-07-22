@@ -251,10 +251,10 @@ function CustomBuildEnvironmentValues({
   const { build_parameters } = environment;
   const {
     builder_variant,
-    frontend_variant,
-    repository,
-    repository_revision,
     context_dir,
+    frontend_variant,
+    repository_revision,
+    repository,
   } = build_parameters;
 
   return (

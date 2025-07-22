@@ -46,7 +46,6 @@ export default function CodeRepositoryAdvancedSettings({
             "w-100",
             "bg-transparent",
             "border-0"
-            // "fw-bold"
           )}
           type="button"
           onClick={toggleIsOpen}
