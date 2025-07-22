@@ -231,6 +231,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
       navigate({ pathname: showSessionUrl });
     }
   }, [
+    isResuming,
     isSuccessResumeSession,
     isWaitingForResumedSession,
     navigate,
