@@ -25,7 +25,6 @@ import type { SessionLauncherForm } from "../../sessionsV2.types";
 
 interface CodeRepositoryAdvancedSettingsProps {
   control: Control<SessionLauncherForm>;
-  //   isEdit?: boolean;
 }
 
 export default function CodeRepositoryAdvancedSettings({
