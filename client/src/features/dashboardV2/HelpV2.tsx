@@ -26,10 +26,7 @@ import {
 } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
-import {
-  ExternalDocsLink,
-  ExternalIconLink,
-} from "../../components/ExternalLinks";
+import { ExternalIconLink } from "../../components/ExternalLinks";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
@@ -86,6 +83,28 @@ function HelpNav({ statuspageId }: HelpNavProps) {
   );
 }
 
+interface HelpCardBodyContentProps {
+  children: React.ReactNode;
+  url: string;
+}
+function HelpCardBodyContent({ children, url }: HelpCardBodyContentProps) {
+  return (
+    <a
+      className={cx(
+        "link-primary",
+        "stretched-link",
+        "text-body",
+        "text-decoration-none"
+      )}
+      href={url}
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      {children}
+    </a>
+  );
+}
+
 function HelpGetting() {
   return (
     <div>
@@ -106,10 +125,12 @@ function HelpGetting() {
               </h4>
             </CardHeader>
             <CardBody>
-              <p className="mb-0">
-                Find tutorials, how-to guides, and reference materials for
-                learning how to use Renku.
-              </p>
+              <HelpCardBodyContent url={Links.RENKU_2_DOCUMENTATION}>
+                <p className="mb-0">
+                  Find tutorials, how-to guides, and reference materials for
+                  learning how to use Renku.
+                </p>
+              </HelpCardBodyContent>
             </CardBody>
           </Card>
         </Col>
@@ -126,11 +147,14 @@ function HelpGetting() {
               </h4>
             </CardHeader>
             <CardBody>
-              <p className="mb-0">
-                Find dedicated best practices for teaching, research and events
-                with Renku, information about community events, how to access
-                dedicated compute resources, the Renku roadmap, and much more.
-              </p>
+              <HelpCardBodyContent url={Links.RENKU_2_COMMUNITY_PORTAL}>
+                <p className="mb-0">
+                  Find dedicated best practices for teaching, research and
+                  events with Renku, information about community events, how to
+                  access dedicated compute resources, the Renku roadmap, and
+                  much more.
+                </p>
+              </HelpCardBodyContent>
             </CardBody>
           </Card>
         </Col>
@@ -147,12 +171,12 @@ function HelpGetting() {
               </h4>
             </CardHeader>
             <CardBody>
-              <p className="mb-0">
-                We maintain a{" "}
-                <ExternalDocsLink url={Links.DISCOURSE} title="help forum" />{" "}
-                for discussion about Renku. This is a good place to ask
-                questions and find answers.
-              </p>
+              <HelpCardBodyContent url={Links.DISCOURSE}>
+                <p className="mb-0">
+                  We maintain a help forum for discussion about Renku. This is a
+                  good place to ask questions and find answers.
+                </p>
+              </HelpCardBodyContent>
             </CardBody>
           </Card>
         </Col>
@@ -169,11 +193,12 @@ function HelpGetting() {
               </h4>
             </CardHeader>
             <CardBody>
-              <p className="mb-0">
-                Want to reach out to the development team live? Contact us on{" "}
-                <ExternalDocsLink url={Links.GITTER} title="Gitter" />, we would
-                be happy to chat with you.
-              </p>
+              <HelpCardBodyContent url={Links.GITTER}>
+                <p className="mb-0">
+                  Want to reach out to the development team live? Contact us on
+                  Gitter, we would be happy to chat with you.
+                </p>
+              </HelpCardBodyContent>
             </CardBody>
           </Card>
         </Col>
@@ -190,13 +215,14 @@ function HelpGetting() {
               </h4>
             </CardHeader>
             <CardBody>
-              <p className="mb-0">
-                Renku is open source and being developed on{" "}
-                <ExternalDocsLink url={Links.GITHUB} title="GitHub" />. This is
-                the best place to report issues and ask for new features, but
-                feel free to contact us with questions, comments, or any kind of
-                feedback.
-              </p>
+              <HelpCardBodyContent url={Links.GITHUB}>
+                <p className="mb-0">
+                  Renku is open source and being developed on GitHub. This is
+                  the best place to report issues and ask for new features, but
+                  feel free to contact us with questions, comments, or any kind
+                  of feedback.
+                </p>
+              </HelpCardBodyContent>
             </CardBody>
           </Card>
         </Col>
