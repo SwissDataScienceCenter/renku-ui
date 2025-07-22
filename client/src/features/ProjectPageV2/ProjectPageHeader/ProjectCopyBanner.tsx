@@ -17,31 +17,30 @@
  */
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Button } from "reactstrap";
 import {
   ArrowRight,
   BoxArrowInRight,
   Diagram3Fill,
 } from "react-bootstrap-icons";
 import { Link, generatePath } from "react-router";
+import { Button } from "reactstrap";
 
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
+import BootstrapCopyIcon from "../../../components/icons/BootstrapCopyIcon";
 import { Loader } from "../../../components/Loader";
 import PrimaryAlert from "../../../components/PrimaryAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdCopiesQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
-
+import {
+  useGetUserQuery,
+  useGetUserQueryState,
+} from "../../usersV2/api/users.api";
 import useProjectPermissions from "../utils/useProjectPermissions.hook";
-
 import ProjectCopyModal from "./ProjectCopyModal";
 import { ProjectCopyListModal } from "./ProjectTemplateInfoBanner";
-
-import BootstrapCopyIcon from "../../../components/icons/BootstrapCopyIcon";
 
 interface ProjectCopyBannerComponentProps {
   currentUser: ReturnType<typeof useGetUserQuery>["data"];
@@ -273,7 +272,7 @@ function ProjectViewerCopyBanner({
 }
 
 export default function ProjectCopyBanner({ project }: { project: Project }) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
   const userPermissions = useProjectPermissions({ projectId: project.id });
 
   const [isModalOpen, setModalOpen] = useState(false);

@@ -31,6 +31,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { Loader } from "../../../components/Loader";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
@@ -42,7 +43,6 @@ import type {
   GroupResponse,
 } from "../../projectsV2/api/namespace.api";
 import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 import AddGroupMemberModal from "../fields/AddGroupMemberModal";
 import EditGroupMemberModal from "../fields/EditGroupMemberModal";
 import RemoveGroupMemberModal from "../fields/RemoveGroupMemberModal";
@@ -274,7 +274,7 @@ function GroupMemberAction({
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useGetUserQuery(logged ? undefined : skipToken);
+  } = useGetUserQueryState(logged ? undefined : skipToken);
   const userMember = useMemo(() => {
     if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;
