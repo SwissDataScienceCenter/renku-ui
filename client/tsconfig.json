@@ -30,5 +30,8 @@
     }
   },
   "include": ["src", "server/constants.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.vite.json" }
+  ]
 }

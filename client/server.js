@@ -1,3 +1,21 @@
+/*!
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
@@ -8,6 +26,7 @@ import {
   SAMPLE_TERMS_CONTENT,
   SITEMAP,
 } from "./server/constants.js";
+import { env } from "node:process";
 
 const BUILD_PATH = "./build/server/index.js";
 const DEVELOPMENT = process.env.NODE_ENV === "development";
@@ -59,7 +78,9 @@ if (CONFIG_JSON.TERMS_PAGES_ENABLED) {
 }
 
 // Logging
-app.use(morgan("tiny"));
+if (env.E2E_TESTS !== "1") {
+  app.use(morgan("tiny"));
+}
 
 // Client files
 app.use(express.static("build/client"));

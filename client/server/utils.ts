@@ -16,14 +16,13 @@
  * limitations under the License.
  */
 
-import "react-router";
-import { createRequestHandler } from "@react-router/express";
-import express from "express";
-
-export const app = express();
-
-app.use(
-  createRequestHandler({
-    build: () => import("virtual:react-router/server-build"),
-  })
-);
+export function safeJsonToObject(value: string | null | undefined): unknown {
+  if (value == null) return value;
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error("Failed to parse JSON string:", e);
+    return value;
+  }
+}
