@@ -20,9 +20,11 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { PauseCircle, Trash, XLg } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
+import { InfoAlert } from "~/components/Alert";
+import { toHumanRelativeDuration } from "~/utils/helpers/DurationUtils";
 import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
@@ -30,14 +32,14 @@ import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import styles from "../session/components/SessionModals.module.scss";
 import { useWaitForSessionStatusV2 } from "../session/useWaitForSessionStatus.hook";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
 } from "./api/sessionsV2.api";
+import ShutdownSessionContent from "./components/SessionModals/ShoutdownSessionContent";
 import { SessionV2 } from "./sessionsV2.types";
-
-import styles from "../session/components/SessionModals.module.scss";
 
 interface PauseOrDeleteSessionModalProps {
   action?: "pause" | "delete";
@@ -135,17 +137,20 @@ function AnonymousDeleteSessionModal({
 
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>Shut Down Session</ModalHeader>
+      <ModalHeader className="text-danger" toggle={toggleModal}>
+        Shut Down Session
+      </ModalHeader>
       <ModalBody>
         <p>Are you sure you want to shut down this session?</p>
       </ModalBody>
       <ModalFooter>
         <Button
-          color="outline-danger"
+          color="outline-primary"
           disabled={isStopping}
           onClick={toggleModal}
         >
-          Back to Session
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
         </Button>
         <Button
           color="danger"
@@ -160,7 +165,10 @@ function AnonymousDeleteSessionModal({
               Shutting down session
             </>
           ) : (
-            <>Shut down session</>
+            <>
+              <Trash className={cx("bi", "me-1")} />
+              Shut down session
+            </>
           )}
         </Button>
       </ModalFooter>
@@ -178,8 +186,11 @@ function LoggedPauseOrDeleteSessionModal({
 }: PauseOrDeleteSessionModalProps) {
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>
-        {action === "pause" ? "Pause Session" : "Shut Down Session"}
+      <ModalHeader
+        className={cx(action === "delete" ? "text-danger" : "")}
+        toggle={toggleModal}
+      >
+        {action === "pause" ? "Pause Session" : "Shut down session"}
       </ModalHeader>
       {action === "pause" ? (
         <PauseSessionModalContent
@@ -256,14 +267,13 @@ function PauseSessionModalContent({
     }
   }, [backUrl, isStopping, isSuccess, isWaiting, navigate]);
 
-  // TODO: Uncomment when hibernatedSecondsThreshold is available
-  // const now = DateTime.utc();
-  // const hibernationThreshold = session?.status?.hibernatedSecondsThreshold
-  //   ? toHumanRelativeDuration({
-  //       datetime: session?.status?.hibernatedSecondsThreshold,
-  //       now,
-  //     })
-  //   : 0;
+  const now = new Date();
+  const hibernateThreshold = session?.status?.will_hibernate_at
+    ? toHumanRelativeDuration({
+        datetime: session?.status?.will_hibernate_at,
+        now,
+      })
+    : 0;
   return (
     <>
       <ModalBody>
@@ -272,13 +282,12 @@ function PauseSessionModalContent({
           session (new and edited files) will be preserved while the session is
           paused.
         </p>
-        {/* TODO: Uncomment when hibernatedSecondsThreshold is available
-          { hibernationThreshold > 0 && (
-            <InfoAlert dismissible={false} timeout={0}>
-              Please note that paused sessions are deleted after{" "}
-              {hibernationThreshold} of inactivity.
-            </InfoAlert>
-          )} */}
+        {hibernateThreshold && (
+          <InfoAlert dismissible={false} timeout={0}>
+            Please note that the session will be automatically paused in{" "}
+            {hibernateThreshold} if you are inactive.
+          </InfoAlert>
+        )}
         <div className="my-2">
           <Button
             className={cx("float-right", "p-0")}
@@ -296,7 +305,8 @@ function PauseSessionModalContent({
           disabled={isStopping}
           onClick={toggleModal}
         >
-          Back to Session
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
         </Button>
         <Button
           color="primary"
@@ -311,7 +321,10 @@ function PauseSessionModalContent({
               Pausing session
             </>
           ) : (
-            <>Pause Session</>
+            <>
+              <PauseCircle className={cx("bi", "me-1")} />
+              Pause Session
+            </>
           )}
         </Button>
       </ModalFooter>
@@ -320,6 +333,7 @@ function PauseSessionModalContent({
 }
 
 function DeleteSessionModalContent({
+  session,
   sessionName,
   toggleAction,
   toggleModal,
@@ -369,10 +383,7 @@ function DeleteSessionModalContent({
   return (
     <>
       <ModalBody>
-        <p>Are you sure you want to shut down this session?</p>
-        <p className="fw-bold">
-          Shutting down a session will permanently remove any unsaved work.
-        </p>
+        <ShutdownSessionContent sessionProjectId={session?.project_id} />
         <div className="my-2">
           <Button
             className={cx("float-right", "p-0")}
@@ -386,11 +397,12 @@ function DeleteSessionModalContent({
       </ModalBody>
       <ModalFooter>
         <Button
-          color="outline-danger"
+          color="outline-primary"
           disabled={isStopping}
           onClick={toggleModal}
         >
-          Back to Session
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
         </Button>
         <Button
           color="danger"
@@ -405,7 +417,10 @@ function DeleteSessionModalContent({
               Shutting down session
             </>
           ) : (
-            <>Shut down session</>
+            <>
+              <Trash className={cx("bi", "me-1")} />
+              Shut down session
+            </>
           )}
         </Button>
       </ModalFooter>
