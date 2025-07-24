@@ -44,6 +44,7 @@ import StatusSummary from "../features/platform/components/StatusSummary";
 import HelpRelease from "./HelpRelease";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 
 type HelpNavProps = {
   statuspageId: string;
@@ -56,29 +57,39 @@ function HelpNav({ statuspageId }: HelpNavProps) {
   return (
     <Nav pills className={"nav-pills-underline"}>
       <NavItem>
-        <RenkuNavLinkV2 end to="/help">
+        <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v1.help.root}>
           Getting Help
         </RenkuNavLinkV2>
       </NavItem>
       <NavItem>
-        <RenkuNavLinkV2 to="/help/docs">Documentation</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.documentation}>
+          Documentation
+        </RenkuNavLinkV2>
       </NavItem>
       {isStatusConfigured(statuspageId) && (
         <NavItem>
-          <RenkuNavLinkV2 to="/help/status">Status</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.status}>
+            Status
+          </RenkuNavLinkV2>
         </NavItem>
       )}
       <NavItem>
-        <RenkuNavLinkV2 to="/help/release">Release Information</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.release}>
+          Release Information
+        </RenkuNavLinkV2>
       </NavItem>
       {termsConfigured && (
         <NavItem>
-          <RenkuNavLinkV2 to="/help/tos">Terms of Use</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.tos}>
+            Terms of Use
+          </RenkuNavLinkV2>
         </NavItem>
       )}
       {privacyPolicyConfigured && (
         <NavItem>
-          <RenkuNavLinkV2 to="/help/privacy">Privacy Policy</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.privacy}>
+            Privacy Policy
+          </RenkuNavLinkV2>
         </NavItem>
       )}
     </Nav>
