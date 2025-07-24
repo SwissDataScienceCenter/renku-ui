@@ -45,7 +45,6 @@ import {
 } from "../utils/helpers/HelperFunctions";
 import { ErrorAlert } from "./Alert";
 import { Loader } from "./Loader";
-import styles from "./Logs.module.scss";
 import ScrollableModal from "./modal/ScrollableModal";
 
 export interface ILogs {
@@ -472,20 +471,19 @@ function EnvironmentLogsPresent({
       }}
     >
       <ModalHeader
-        className={cx(styles.modalHeader, "header-multiline")}
+        className="header-multiline"
         toggle={() => {
           toggleLogs(name);
         }}
         tag="div"
       >
-        <h2 className="mb-0">{title}</h2>
+        <h2>{title}</h2>
         {sessionState && (
           <h3
             className={cx(
               "fs-6",
               "fst-italic",
               "mb-0",
-              "mt-2",
               getSessionStatusStyles({
                 status: { state: sessionState },
                 image: "url",
