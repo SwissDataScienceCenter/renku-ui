@@ -476,11 +476,13 @@ function EnvironmentLogsPresent({
         toggle={() => {
           toggleLogs(name);
         }}
+        tag="div"
       >
         <h2 className="mb-0">{title}</h2>
         {sessionState && (
-          <h6
+          <h3
             className={cx(
+              "fs-6",
               "fst-italic",
               "mb-0",
               "mt-2",
@@ -491,7 +493,7 @@ function EnvironmentLogsPresent({
             )}
           >
             Session status: {sessionState}
-          </h6>
+          </h3>
         )}
       </ModalHeader>
       <ModalBody className={cx("d-flex", "flex-column", "h-auto")}>
