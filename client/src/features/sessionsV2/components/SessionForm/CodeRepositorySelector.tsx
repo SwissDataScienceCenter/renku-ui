@@ -36,8 +36,8 @@ import Select, {
   components,
 } from "react-select";
 import { Label } from "reactstrap";
-import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 
+import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import type { RepositoryWithProbe } from "../../../repositories/repositories.types";
 
 import styles from "./Select.module.scss";
