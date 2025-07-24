@@ -30,7 +30,8 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
-
+import { getSessionStatusStyles } from "~/features/sessionsV2/components/SessionStatus/SessionStatus";
+import { SessionV2 } from "~/features/sessionsV2/sessionsV2.types";
 import { displaySlice } from "../features/display";
 import { NotebooksHelper } from "../notebooks";
 import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
@@ -42,10 +43,10 @@ import {
   capitalizeFirstLetter,
   generateZip,
 } from "../utils/helpers/HelperFunctions";
+import { ErrorAlert } from "./Alert";
 import { Loader } from "./Loader";
-import ScrollableModal from "./modal/ScrollableModal";
-
 import styles from "./Logs.module.scss";
+import ScrollableModal from "./modal/ScrollableModal";
 
 export interface ILogs {
   data: Record<string, string>;
@@ -273,8 +274,8 @@ function SessionLogsBody(props: LogBodyProps) {
   if (logs.fetching) return <Loader />;
   if (!logs.fetched) {
     return (
-      <p data-cy="logs-unavailable-message">
-        Logs unavailable. Please{" "}
+      <p data-cy="logs-unavailable-message" className="mb-0">
+        Logs unavailable. Please try to{" "}
         <Button
           color="primary"
           onClick={() => {
@@ -282,7 +283,7 @@ function SessionLogsBody(props: LogBodyProps) {
           }}
           size="sm"
         >
-          download
+          refresh
         </Button>{" "}
         them again.
       </p>
@@ -441,20 +442,24 @@ const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
  * @param {ReactNode | string} title - modal title
  */
 interface EnvironmentLogsPresentProps {
-  title: ReactNode;
+  defaultTab?: string;
   fetchLogs: IFetchableLogs["fetchLogs"];
   logs?: ILogs;
   name: string;
+  sessionState?: SessionV2["status"]["state"];
+  sessionError?: string;
+  title: ReactNode;
   toggleLogs: (name: string) => unknown;
-  defaultTab?: string;
 }
 function EnvironmentLogsPresent({
+  defaultTab,
+  fetchLogs,
   logs,
   name,
-  toggleLogs,
-  fetchLogs,
+  sessionState,
+  sessionError,
   title,
-  defaultTab,
+  toggleLogs,
 }: EnvironmentLogsPresentProps) {
   if (!logs?.show || logs?.show !== name || !logs) return null;
 
@@ -472,9 +477,25 @@ function EnvironmentLogsPresent({
           toggleLogs(name);
         }}
       >
-        {title}
+        <h2 className="mb-0">{title}</h2>
+        {sessionState && (
+          <h6
+            className={cx(
+              "fst-italic",
+              "mb-0",
+              "mt-2",
+              getSessionStatusStyles({
+                status: { state: sessionState },
+                image: "url",
+              })["textColorCard"]
+            )}
+          >
+            Session status: {sessionState}
+          </h6>
+        )}
       </ModalHeader>
       <ModalBody className={cx("d-flex", "flex-column", "h-auto")}>
+        {sessionError && <ErrorAlert>{sessionError}</ErrorAlert>}
         <SessionLogs
           fetchLogs={fetchLogs}
           logs={logs}

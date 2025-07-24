@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { useGetSessionsQuery } from "~/features/sessionsV2/api/sessionsV2.api";
 import { displaySlice } from "../features/display";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../utils/customHooks/useAppSelector.hook";
@@ -31,12 +32,13 @@ interface EnvironmentLogsPropsV2 {
   name: string;
 }
 export default function EnvironmentLogsV2({ name }: EnvironmentLogsPropsV2) {
+  // Get session information
+  const { data: sessions } = useGetSessionsQuery();
+  const currentSession = sessions?.find((s) => s.name === name);
+
+  // Handle modal
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
-  );
-  const { logs, fetchLogs } = useGetSessionLogsV2(
-    displayModal.targetServer,
-    displayModal.show
   );
   const dispatch = useAppDispatch();
   const toggleLogs = function (target: string) {
@@ -45,13 +47,25 @@ export default function EnvironmentLogsV2({ name }: EnvironmentLogsPropsV2) {
     );
   };
 
+  // Get logs
+  const { logs, fetchLogs } = useGetSessionLogsV2(
+    displayModal.targetServer,
+    displayModal.show
+  );
+
   return (
     <EnvironmentLogsPresent
       fetchLogs={fetchLogs}
-      toggleLogs={toggleLogs}
       logs={logs}
       name={name}
+      sessionState={currentSession?.status?.state}
+      sessionError={
+        currentSession?.status?.state === "failed"
+          ? currentSession?.status?.message
+          : undefined
+      }
       title="Logs"
+      toggleLogs={toggleLogs}
     />
   );
 }
