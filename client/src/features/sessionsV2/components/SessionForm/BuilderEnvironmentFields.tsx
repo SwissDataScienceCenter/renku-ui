@@ -94,7 +94,7 @@ export default function BuilderEnvironmentFields({
     </WarnAlert>
   ) : (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div>
+      <div className={cx("d-flex", "flex-column", "gap-1")}>
         <CodeRepositorySelector
           name="repository"
           control={control}
