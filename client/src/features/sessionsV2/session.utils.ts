@@ -95,6 +95,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     builder_variant,
     command,
     container_image,
+    context_dir: context_dir_,
     default_url,
     environmentId,
     environmentSelect,
@@ -103,6 +104,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     mount_directory,
     name,
     port,
+    repository_revision: repository_revision_,
     repository,
     uid,
     working_directory,
@@ -113,6 +115,8 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
   }
 
   if (environmentSelect === "custom + build") {
+    const context_dir = context_dir_?.trim();
+    const repository_revision = repository_revision_?.trim();
     return {
       success: true,
       data: {
@@ -120,6 +124,8 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
         builder_variant,
         frontend_variant,
         repository,
+        ...(context_dir ? { context_dir } : {}),
+        ...(repository_revision ? { repository_revision } : {}),
       },
     };
   }
@@ -175,7 +181,13 @@ export function getFormattedEnvironmentValuesForEdit(
     return getFormattedEnvironmentValues(data);
   }
 
-  const { builder_variant, frontend_variant, repository } = data;
+  const {
+    builder_variant,
+    context_dir,
+    frontend_variant,
+    repository_revision,
+    repository,
+  } = data;
 
   return {
     success: true,
@@ -186,6 +198,8 @@ export function getFormattedEnvironmentValuesForEdit(
         builder_variant,
         frontend_variant,
         repository,
+        repository_revision: repository_revision ?? "",
+        context_dir: context_dir ?? "",
       },
     },
   };
@@ -235,6 +249,14 @@ export function getLauncherDefaultValues(
     repository:
       launcher.environment.environment_image_source === "build"
         ? launcher.environment.build_parameters.repository
+        : "",
+    repository_revision:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.repository_revision ?? ""
+        : "",
+    context_dir:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.context_dir ?? ""
         : "",
   };
 }
