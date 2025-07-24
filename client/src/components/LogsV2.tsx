@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useGetSessionsQuery } from "~/features/sessionsV2/api/sessionsV2.api";
+import { useGetSessionsBySessionIdQuery } from "~/features/sessionsV2/api/sessionsV2.api";
 import { displaySlice } from "../features/display";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../utils/customHooks/useAppSelector.hook";
@@ -33,8 +33,12 @@ interface EnvironmentLogsPropsV2 {
 }
 export default function EnvironmentLogsV2({ name }: EnvironmentLogsPropsV2) {
   // Get session information
-  const { data: sessions } = useGetSessionsQuery();
-  const currentSession = sessions?.find((s) => s.name === name);
+  const { data: session } = useGetSessionsBySessionIdQuery(
+    { sessionId: name },
+    {
+      skip: !name,
+    }
+  );
 
   // Handle modal
   const displayModal = useAppSelector(
@@ -58,10 +62,10 @@ export default function EnvironmentLogsV2({ name }: EnvironmentLogsPropsV2) {
       fetchLogs={fetchLogs}
       logs={logs}
       name={name}
-      sessionState={currentSession?.status?.state}
+      sessionState={session?.status?.state}
       sessionError={
-        currentSession?.status?.state === "failed"
-          ? currentSession?.status?.message
+        session?.status?.state === "failed"
+          ? session?.status?.message
           : undefined
       }
       title="Logs"
