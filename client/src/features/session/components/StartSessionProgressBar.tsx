@@ -75,7 +75,7 @@ export function StartSessionProgressBarV2({
     statusData?.total_containers != null &&
     statusData?.total_containers > 0
       ? `${statusData.ready_containers} of ${statusData.total_containers} containers ready`
-      : "Loading containers status";
+      : "Requesting session resources";
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
