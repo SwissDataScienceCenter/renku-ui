@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useGetSessionsBySessionIdQuery } from "~/features/sessionsV2/api/sessionsV2.api";
 import { displaySlice } from "../features/display";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
@@ -34,10 +35,7 @@ interface EnvironmentLogsPropsV2 {
 export default function EnvironmentLogsV2({ name }: EnvironmentLogsPropsV2) {
   // Get session information
   const { data: session } = useGetSessionsBySessionIdQuery(
-    { sessionId: name },
-    {
-      skip: !name,
-    }
+    name ? { sessionId: name } : skipToken
   );
 
   // Handle modal
