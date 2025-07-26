@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query/react";
+import { useGetSessionsBySessionIdQuery } from "~/features/sessionsV2/api/sessionsV2.api";
 import { displaySlice } from "../features/display";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../utils/customHooks/useAppSelector.hook";
@@ -31,12 +33,14 @@ interface EnvironmentLogsPropsV2 {
   name: string;
 }
 export default function EnvironmentLogsV2({ name }: EnvironmentLogsPropsV2) {
+  // Get session information
+  const { data: session } = useGetSessionsBySessionIdQuery(
+    name ? { sessionId: name } : skipToken
+  );
+
+  // Handle modal
   const displayModal = useAppSelector(
     ({ display }) => display.modals.sessionLogs
-  );
-  const { logs, fetchLogs } = useGetSessionLogsV2(
-    displayModal.targetServer,
-    displayModal.show
   );
   const dispatch = useAppDispatch();
   const toggleLogs = function (target: string) {
@@ -45,13 +49,25 @@ export default function EnvironmentLogsV2({ name }: EnvironmentLogsPropsV2) {
     );
   };
 
+  // Get logs
+  const { logs, fetchLogs } = useGetSessionLogsV2(
+    displayModal.targetServer,
+    displayModal.show
+  );
+
   return (
     <EnvironmentLogsPresent
       fetchLogs={fetchLogs}
-      toggleLogs={toggleLogs}
       logs={logs}
       name={name}
+      sessionState={session?.status?.state}
+      sessionError={
+        session?.status?.state === "failed"
+          ? session?.status?.message
+          : undefined
+      }
       title="Logs"
+      toggleLogs={toggleLogs}
     />
   );
 }
