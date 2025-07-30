@@ -17,11 +17,16 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query/react";
-import { useMemo } from "react";
+import cx from "classnames";
+import { useCallback, useMemo, useState } from "react";
+import { Collapse } from "reactstrap";
+import CollapseBody from "~/components/container/CollapseBody";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { getRepositoryName } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import { useGetProjectsByProjectIdQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
+import shutdownSessionWarningImage from "./assets/renkuShutdownSessionWarning.svg";
 
 interface ShutdownSessionContentProps {
   sessionProjectId?: string;
@@ -74,6 +79,14 @@ export default function ShutdownSessionContent({
       .map((dc) => dc.storage.target_path);
   }, [dataConnectorsObjects]);
 
+  // Control collapsible element status
+  const [showDetails, setShowDetails] = useState(false);
+  const toggleShowDetails = useCallback(
+    () => setShowDetails((isAdvancedSettingOpen) => !isAdvancedSettingOpen),
+    []
+  );
+
+  // Render content
   if (!sessionProjectId) {
     return (
       <>
@@ -89,7 +102,11 @@ export default function ShutdownSessionContent({
   }
   return (
     <>
-      {/* // ! TODO: Add the image */}
+      <img
+        className={cx("d-flex", "mb-3", "mx-auto")}
+        src={shutdownSessionWarningImage}
+        alt="announcement for v2"
+      />
       <p>Are you sure you want to permanently shut down this session?</p>
       <p>
         <span className="fw-bold">
@@ -127,12 +144,56 @@ export default function ShutdownSessionContent({
         </p>
       )}
 
-      {/* // ! TODO Add collapsible section for:
-        - *How do I know I won't lose any files?*
-          - **Commit and push code changes:** Run `git commit` and `git push` in all repositories with unsaved changes
-          - **Move data files to external storage:** Copy files to <list DCs>
-          - **Check your workspace is clear:** Ensure no important files remain in `/home/jovyan/work/`.
-      */}
+      {(dataConnectors.length > 0 || codeRepositories.length > 0) && (
+        <>
+          <div>
+            <button
+              className={cx(
+                "align-items-center",
+                "bg-transparent",
+                "border-0",
+                "d-flex",
+                "fw-bold",
+                "w-100"
+              )}
+              type="button"
+              onClick={toggleShowDetails}
+            >
+              How do I know I won{"'"}t lose any files?
+              <ChevronFlippedIcon className="ms-1" flipped={showDetails} />
+            </button>
+          </div>
+          <Collapse isOpen={showDetails}>
+            <CollapseBody>
+              <ul className="mb-0">
+                {codeRepositories.length > 0 && (
+                  <li>
+                    Commit and push code changes: Run <code>git commit</code>{" "}
+                    and <code>git push</code> in all repositories (
+                    <span className="fst-italic">
+                      {codeRepositories.join(", ")}
+                    </span>
+                    ) with unsaved changes.
+                  </li>
+                )}
+                {dataConnectors.length > 0 && (
+                  <li>
+                    Move data files to external storage: Copy files to{" "}
+                    <span className="fst-italic">
+                      {dataConnectors.join(", ")}
+                    </span>
+                  </li>
+                )}
+                <li>
+                  Check your workspace is clear: Ensure no important files
+                  remain in
+                  <code>/home/jovyan/work/</code>.
+                </li>
+              </ul>
+            </CollapseBody>
+          </Collapse>
+        </>
+      )}
     </>
   );
 }
