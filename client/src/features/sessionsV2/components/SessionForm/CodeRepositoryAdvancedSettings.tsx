@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Controller, type Control } from "react-hook-form";
 import { Collapse, Input, Label } from "reactstrap";
+import CollapseBody from "~/components/container/CollapseBody";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 
@@ -54,18 +55,7 @@ export default function CodeRepositoryAdvancedSettings({
         </button>
       </div>
       <Collapse isOpen={isOpen}>
-        <div
-          className={cx(
-            "d-flex",
-            "flex-column",
-            "gap-1",
-            "ms-1",
-            "ps-2",
-            "border-3",
-            "border-start",
-            "border-dark-subtle"
-          )}
-        >
+        <CollapseBody className={cx("d-flex", "flex-column", "gap-1")}>
           <div>
             <Label
               className="mb-1"
@@ -111,7 +101,7 @@ export default function CodeRepositoryAdvancedSettings({
               rules={{ required: false, maxLength: 500 }}
             />
           </div>
-        </div>
+        </CollapseBody>
       </Collapse>
     </>
   );
