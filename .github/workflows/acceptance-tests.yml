@@ -8,19 +8,12 @@ on:
     types:
       - opened
       - edited
-      - synchronize
-      - reopened
       - closed
-    paths:
-      - client/**
-      - helm-chart/**
-      - tests/**
-      - server/**
-      - .github/workflows/**
-      - chartpress.yaml
+      - reopened
+      - synchronize
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -28,7 +21,7 @@ jobs:
     name: Analyze deploy string
     runs-on: ubuntu-24.04
     outputs:
-      pr-contains-string: ${{ steps.deploy-comment.outputs.pr-contains-string }}
+      deploy: ${{ steps.deploy-comment.outputs.pr-contains-string }}
       renku: ${{ steps.deploy-comment.outputs.renku}}
       renku-core: ${{ steps.deploy-comment.outputs.renku-core}}
       renku-gateway: ${{ steps.deploy-comment.outputs.renku-gateway}}
@@ -41,7 +34,8 @@ jobs:
       test-legacy-enabled: ${{ steps.deploy-comment.outputs.test-legacy-enabled}}
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
-      - id: deploy-comment
+      - name: Check PR description
+        id: deploy-comment
         uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.18.2
         with:
           pr_ref: ${{ github.event.number }}
@@ -52,16 +46,19 @@ jobs:
     needs: [check-deploy]
     permissions:
       pull-requests: write
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
+      id-token: write
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.deploy == 'true'
     environment:
       name: renku-ci-ui-${{ github.event.number }}
-      url: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
+      url: https://renku-ci-ui-${{ github.event.number }}.dev.azure.renku.ch
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout renku repository
+        uses: actions/checkout@v4
         with:
           repository: SwissDataScienceCenter/renku
           sparse-checkout: |
             minimal-deployment
+
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v3
         id: deploymentUrlMessage
@@ -69,6 +66,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "RenkuBot"
           body-includes: "You can access the deployment of this PR at"
+
       - name: Create comment deployment url
         if: steps.deploymentUrlMessage.outputs.comment-id == 0
         uses: peter-evans/create-or-update-comment@v4
@@ -76,7 +74,29 @@ jobs:
           token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
+            You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.azure.renku.ch
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CI_RENKU_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set AKS context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: "renku-dev"
+          cluster-name: "aks-switzerlandnorth-renku-dev"
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials --resource-group renku-dev --name aks-switzerlandnorth-renku-dev --file "${{ github.workspace }}/renkubot-kube.config"
+          chmod 600 "${{ github.workspace }}/renkubot-kube.config"
+          echo "RENKUBOT_KUBECONFIG<<EOF" >> $GITHUB_ENV
+          cat "${{ github.workspace }}/renkubot-kube.config" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Build and deploy
         uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.18.2
         env:
@@ -88,8 +108,9 @@ jobs:
           RENKU_VALUES_FILE: ${{ github.workspace }}/values.yaml
           RENKU_VALUES: minimal-deployment/minimal-deployment-values.yaml
           RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
-          RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
           TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
+          KUBERNETES_CLUSTER_FQDN: "dev.azure.renku.ch"
+          RENKU_ANONYMOUS_SESSIONS: "true"
           renku_ui: "@${{ github.head_ref }}"
           renku: "${{ needs.check-deploy.outputs.renku }}"
           renku_core: "${{ needs.check-deploy.outputs.renku-core }}"
@@ -105,7 +126,7 @@ jobs:
     name: Legacy Cypress tests
     runs-on: ubuntu-24.04
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-legacy-enabled == 'true'
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.deploy == 'true' && needs.check-deploy.outputs.test-legacy-enabled == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -131,7 +152,7 @@ jobs:
     name: Cypress tests
     runs-on: ubuntu-24.04
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.deploy == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -158,7 +179,7 @@ jobs:
     name: Cleanup
     runs-on: ubuntu-24.04
     needs: check-deploy
-    if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
+    if: github.event.action == 'closed' && needs.check-deploy.outputs.deploy == 'true'
     permissions:
       pull-requests: write
     steps:
