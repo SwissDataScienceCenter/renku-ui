@@ -93,9 +93,6 @@ jobs:
         run: |
           az aks get-credentials --resource-group renku-dev --name aks-switzerlandnorth-renku-dev --file "${{ github.workspace }}/renkubot-kube.config"
           chmod 600 "${{ github.workspace }}/renkubot-kube.config"
-          echo "RENKUBOT_KUBECONFIG<<EOF" >> $GITHUB_ENV
-          cat "${{ github.workspace }}/renkubot-kube.config" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
 
       - name: Build and deploy
         uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.18.2
