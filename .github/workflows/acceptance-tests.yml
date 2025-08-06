@@ -48,9 +48,9 @@ jobs:
       pull-requests: write
       id-token: write
     if: github.event.action != 'closed' && needs.check-deploy.outputs.deploy == 'true'
-    environment:
-      name: renku-ci-ui-${{ github.event.number }}
-      url: https://renku-ci-ui-${{ github.event.number }}.dev.azure.renku.ch
+    # environment:
+    #   name: renku-ci-ui-${{ github.event.number }}
+    #   url: https://renku-ci-ui-${{ github.event.number }}.dev.azure.renku.ch
     steps:
       - name: Checkout renku repository
         uses: actions/checkout@v4
