@@ -74,7 +74,7 @@ jobs:
           token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.azure.renku.ch
+            You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
 
       - name: Azure login
         uses: azure/login@v2
@@ -104,9 +104,8 @@ jobs:
           RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
           RENKU_VALUES_FILE: ${{ github.workspace }}/values.yaml
           RENKU_VALUES: minimal-deployment/minimal-deployment-values.yaml
-          RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
           TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
-          KUBERNETES_CLUSTER_FQDN: "dev.azure.renku.ch"
+          KUBERNETES_CLUSTER_FQDN: "dev.renku.ch"
           RENKU_ANONYMOUS_SESSIONS: "true"
           renku_ui: "@${{ github.head_ref }}"
           renku: "${{ needs.check-deploy.outputs.renku }}"
