@@ -89,13 +89,13 @@ jobs:
           resource-group: "renku-dev"
           cluster-name: "aks-switzerlandnorth-renku-dev"
 
-      - name: Get AKS credentials
+      # See: https://github.com/orgs/community/discussions/168949
+      # It is easier to have the kube config in {{ github.workspace }}.
+      - name: Setup kubeconfig
         run: |
-          touch "${KUBECONFIG}"
           mv "${KUBECONFIG}" "${{ github.workspace }}/renkubot-kube.config"
           export KUBECONFIG="${{ github.workspace }}/renkubot-kube.config"
           echo "KUBECONFIG=${KUBECONFIG}" >> "$GITHUB_ENV"
-          az aks get-credentials --resource-group renku-dev --name aks-switzerlandnorth-renku-dev
 
       - name: Build and deploy
         uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.19.0
