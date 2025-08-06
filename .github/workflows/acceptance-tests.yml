@@ -48,9 +48,10 @@ jobs:
       pull-requests: write
       id-token: write
     if: github.event.action != 'closed' && needs.check-deploy.outputs.deploy == 'true'
+    # NOTE: using GitHub deploy environments does not work with Azure at the moment
     # environment:
     #   name: renku-ci-ui-${{ github.event.number }}
-    #   url: https://renku-ci-ui-${{ github.event.number }}.dev.azure.renku.ch
+    #   url: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     steps:
       - name: Checkout renku repository
         uses: actions/checkout@v4
@@ -180,6 +181,7 @@ jobs:
     if: github.event.action == 'closed' && needs.check-deploy.outputs.deploy == 'true'
     permissions:
       pull-requests: write
+      id-token: write
     steps:
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v3
@@ -188,6 +190,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "RenkuBot"
           body-includes: "Tearing down the temporary RenkuLab deplyoment"
+
       - name: Create comment deployment url
         if: steps.deploymentUrlMessage.outputs.comment-id == 0
         uses: peter-evans/create-or-update-comment@v4
@@ -196,11 +199,32 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             Tearing down the temporary RenkuLab deplyoment for this PR.
-      - name: renku teardown
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CI_RENKU_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set AKS context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: "renku-dev"
+          cluster-name: "aks-switzerlandnorth-renku-dev"
+
+      # See: https://github.com/orgs/community/discussions/168949
+      # It is easier to have the kube config in {{ github.workspace }}.
+      - name: Setup kubeconfig
+        run: |
+          mv "${KUBECONFIG}" "${{ github.workspace }}/renkubot-kube.config"
+          export KUBECONFIG="${{ github.workspace }}/renkubot-kube.config"
+          echo "KUBECONFIG=${KUBECONFIG}" >> "$GITHUB_ENV"
+
+      - name: Renku teardown
         uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v1.19.0
         env:
           HELM_RELEASE_REGEX: "^renku-ci-ui-${{ github.event.number }}$"
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
-          RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
           MAX_AGE_SECONDS: 0
           DELETE_NAMESPACE: "true"
