@@ -70,10 +70,6 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "IMAGE_BUILDERS_ENABLED"
   );
-  const SUPPORT_LEGACY_SESSIONS = validateBoolean(
-    params_,
-    "SUPPORT_LEGACY_SESSIONS"
-  );
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -113,7 +109,6 @@ export function validatedAppParams(params: unknown): AppParams {
     SENTRY_URL,
     SESSION_CLASS_EMAIL_US,
     STATUSPAGE_ID,
-    SUPPORT_LEGACY_SESSIONS,
     TEMPLATES,
     TERMS_PAGES_ENABLED,
     UI_SHORT_SHA,
@@ -273,14 +268,19 @@ function validateLegacySupport(params: RawAppParams): LegacySupportParams {
     [key: string]: unknown;
   };
 
-  const enabled = !!rawLegacySupportParams.enabled;
-  1;
-  if (rawLegacySupportParams.enabled != null)
-    return {
-      enabled,
-    };
+  const enabled =
+    rawLegacySupportParams.enabled != null
+      ? !!rawLegacySupportParams.enabled
+      : DEFAULT_APP_PARAMS["LEGACY_SUPPORT"].enabled;
+  const supportLegacySessions =
+    rawLegacySupportParams.supportLegacySessions != null
+      ? !!rawLegacySupportParams.supportLegacySessions
+      : DEFAULT_APP_PARAMS["LEGACY_SUPPORT"].supportLegacySessions;
 
-  return DEFAULT_APP_PARAMS["LEGACY_SUPPORT"];
+  return {
+    enabled,
+    supportLegacySessions,
+  };
 }
 
 function validatePreviewThreshold(

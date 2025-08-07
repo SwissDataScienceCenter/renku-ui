@@ -27,6 +27,7 @@ export interface AppParams {
   DASHBOARD_MESSAGE: DashboardMessageParams;
   GATEWAY_URL: string;
   HOMEPAGE: HomepageParams;
+  IMAGE_BUILDERS_ENABLED: boolean;
   KEYCLOAK_REALM: string;
   LEGACY_SUPPORT: LegacySupportParams;
   MAINTENANCE: string;
@@ -34,21 +35,19 @@ export interface AppParams {
   PRIVACY_BANNER_CONTENT: string;
   PRIVACY_BANNER_ENABLED: boolean;
   PRIVACY_BANNER_LAYOUT: PrivacyBannerLayoutParams | null;
-  TERMS_PAGES_ENABLED: boolean;
   RENKU_CHART_VERSION: string;
   SENTRY_NAMESPACE: string;
   SENTRY_SAMPLE_RATE: string; // TODO: convert to number type
   SENTRY_URL: string;
   SESSION_CLASS_EMAIL_US: SessionClassEmailUsParams;
   STATUSPAGE_ID: string;
-  SUPPORT_LEGACY_SESSIONS: boolean;
   TEMPLATES: TemplatesParams;
-  UISERVER_URL: string;
+  TERMS_PAGES_ENABLED: boolean;
   UI_SHORT_SHA: string;
   UI_VERSION: string;
+  UISERVER_URL: string;
   UPLOAD_THRESHOLD: UploadThresholdParams;
   USER_PREFERENCES_MAX_PINNED_PROJECTS: number;
-  IMAGE_BUILDERS_ENABLED: boolean;
 }
 
 export type AppParamsStrings = {
@@ -71,6 +70,7 @@ export type AppParamsNumbers = {
 
 export interface LegacySupportParams {
   enabled: boolean;
+  supportLegacySessions: boolean;
 }
 
 export interface PreviewThresholdParams {
