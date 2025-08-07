@@ -135,9 +135,6 @@ export default function useSessionLauncherState({
       initialDataConnectorConfigs &&
       isReadyDataConnectorConfigs
     ) {
-      console.log("dispatch: setCloudStorage", {
-        initialDataConnectorConfigs,
-      });
       dispatch(
         startSessionOptionsV2Slice.actions.setCloudStorage(
           initialDataConnectorConfigs
