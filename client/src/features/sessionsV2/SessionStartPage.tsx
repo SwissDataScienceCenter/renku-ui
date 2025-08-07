@@ -468,6 +468,29 @@ function StartSessionFromLauncher({
     !isFetchingOrLoadingStorages &&
     !isFetchingSessionSecrets;
 
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log({
+      containerImage,
+      isFetchingOrLoadingStorages,
+      isPendingResourceClass,
+      isFetchingSessionSecrets,
+      sessionSecretSlotsWithSecrets,
+      needsCredentials,
+      shouldSaveCredentials,
+      allDataFetched,
+    });
+  }, [
+    allDataFetched,
+    containerImage,
+    isFetchingOrLoadingStorages,
+    isFetchingSessionSecrets,
+    isPendingResourceClass,
+    needsCredentials,
+    sessionSecretSlotsWithSecrets,
+    shouldSaveCredentials,
+  ]);
+
   // set favicon during session launch
   useEffect(() => {
     if (!allDataFetched || needsCredentials) {
