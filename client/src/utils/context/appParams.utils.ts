@@ -70,6 +70,10 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "IMAGE_BUILDERS_ENABLED"
   );
+  const SUPPORT_LEGACY_SESSIONS = validateBoolean(
+    params_,
+    "SUPPORT_LEGACY_SESSIONS"
+  );
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -95,6 +99,7 @@ export function validatedAppParams(params: unknown): AppParams {
     DASHBOARD_MESSAGE,
     GATEWAY_URL,
     HOMEPAGE,
+    IMAGE_BUILDERS_ENABLED,
     KEYCLOAK_REALM,
     LEGACY_SUPPORT,
     MAINTENANCE,
@@ -102,20 +107,20 @@ export function validatedAppParams(params: unknown): AppParams {
     PRIVACY_BANNER_CONTENT,
     PRIVACY_BANNER_ENABLED,
     PRIVACY_BANNER_LAYOUT,
-    TERMS_PAGES_ENABLED,
     RENKU_CHART_VERSION,
     SENTRY_NAMESPACE,
     SENTRY_SAMPLE_RATE,
     SENTRY_URL,
     SESSION_CLASS_EMAIL_US,
     STATUSPAGE_ID,
+    SUPPORT_LEGACY_SESSIONS,
     TEMPLATES,
-    UISERVER_URL,
+    TERMS_PAGES_ENABLED,
     UI_SHORT_SHA,
     UI_VERSION,
+    UISERVER_URL,
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
-    IMAGE_BUILDERS_ENABLED,
   };
 }
 

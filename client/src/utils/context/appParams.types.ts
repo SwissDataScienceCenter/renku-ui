@@ -41,6 +41,7 @@ export interface AppParams {
   SENTRY_URL: string;
   SESSION_CLASS_EMAIL_US: SessionClassEmailUsParams;
   STATUSPAGE_ID: string;
+  SUPPORT_LEGACY_SESSIONS: boolean;
   TEMPLATES: TemplatesParams;
   UISERVER_URL: string;
   UI_SHORT_SHA: string;
