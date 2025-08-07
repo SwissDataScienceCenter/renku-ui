@@ -17,10 +17,11 @@
  */
 
 import cx from "classnames";
+import { ReactNode } from "react";
 
 interface CollapseBodyProps {
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 export default function CollapseBody({
   className,

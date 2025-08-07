@@ -32,7 +32,6 @@ import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import styles from "../session/components/SessionModals.module.scss";
 import { useWaitForSessionStatusV2 } from "../session/useWaitForSessionStatus.hook";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
@@ -40,6 +39,8 @@ import {
 } from "./api/sessionsV2.api";
 import ShutdownSessionContent from "./components/SessionModals/ShoutdownSessionContent";
 import { SessionV2 } from "./sessionsV2.types";
+
+import styles from "../session/components/SessionModals.module.scss";
 
 interface PauseOrDeleteSessionModalProps {
   action?: "pause" | "delete";
@@ -187,7 +188,7 @@ function LoggedPauseOrDeleteSessionModal({
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader
-        className={cx(action === "delete" ? "text-danger" : "")}
+        className={cx(action === "delete" && "text-danger")}
         toggle={toggleModal}
       >
         {action === "pause" ? "Pause Session" : "Shut down session"}
@@ -282,7 +283,7 @@ function PauseSessionModalContent({
           session (new and edited files) will be preserved while the session is
           paused.
         </p>
-        {hibernateThreshold && (
+        {hibernateThreshold != null && (
           <InfoAlert dismissible={false} timeout={0}>
             Please note that the session will be automatically paused in{" "}
             {hibernateThreshold} if you are inactive.
