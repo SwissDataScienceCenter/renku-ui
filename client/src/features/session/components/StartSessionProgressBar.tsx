@@ -50,7 +50,7 @@ export default function StartSessionProgressBar({
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
       <ProgressStepsIndicator
-        description="Starting the containers for your session"
+        description="Starting session services"
         type={ProgressType.Determinate}
         style={ProgressStyle.Light}
         title={includeStepInTitle ? `Step 2 of 2: ${title}` : title}
@@ -74,14 +74,14 @@ export function StartSessionProgressBarV2({
     statusData?.ready_containers != null &&
     statusData?.total_containers != null &&
     statusData?.total_containers > 0
-      ? `${statusData.ready_containers} of ${statusData.total_containers} containers ready`
+      ? `${statusData.ready_containers} of ${statusData.total_containers} session services ready`
       : "Requesting session resources";
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
       <div data-cy="session-status-starting">
         <h4 className="fw-bold">Launching Session</h4>
-        <p className="pb-2">Starting the containers for your session</p>
+        <p className="pb-2">Starting session services</p>
         <div className={cx("d-flex", "gap-3")}>
           <Loader inline={true} size={24} />
           <div>{description}</div>
