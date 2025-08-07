@@ -141,7 +141,12 @@ export default function useSessionLauncherState({
         )
       );
     }
-  }, [initialDataConnectorConfigs, isReadyDataConnectorConfigs, dispatch]);
+  }, [
+    dispatch,
+    initialDataConnectorConfigs,
+    isFetchingOrLoadingStorages,
+    isReadyDataConnectorConfigs,
+  ]);
 
   return {
     containerImage,
