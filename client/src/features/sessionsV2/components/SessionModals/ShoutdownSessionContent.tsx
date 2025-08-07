@@ -154,6 +154,7 @@ export default function ShutdownSessionContent({
                 "border-0",
                 "d-flex",
                 "fw-bold",
+                "p-0",
                 "w-100"
               )}
               type="button"
