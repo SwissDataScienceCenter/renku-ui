@@ -398,7 +398,7 @@ function DeleteSessionModalContent({
       </ModalBody>
       <ModalFooter>
         <Button
-          color="outline-primary"
+          color="outline-danger"
           disabled={isStopping}
           onClick={toggleModal}
         >
