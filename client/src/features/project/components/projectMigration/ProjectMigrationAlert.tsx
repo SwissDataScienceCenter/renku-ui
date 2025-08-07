@@ -80,7 +80,11 @@ export default function ProjectMigrationAlert({
   return (
     <>
       <WarnAlert>
-        <p>This project can be migrated to Renku 2.0</p>
+        <p>
+          Migrate this project before October 2025 in order to continue using
+          it. Renku Legacy will be shut down in October 2025, after which this
+          page will no longer be accessible.
+        </p>
         <div className={cx("d-flex", "flex-row", "gap-2")}>
           <Button size="sm" color="warning" onClick={toggle}>
             Migrate this project to Renku 2.0
