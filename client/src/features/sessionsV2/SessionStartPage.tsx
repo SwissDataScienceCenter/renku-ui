@@ -465,6 +465,7 @@ function StartSessionFromLauncher({
   const allDataFetched =
     containerImage &&
     startSessionOptionsV2.sessionClass !== 0 &&
+    startSessionOptionsV2.cloudStorage != null &&
     !isFetchingOrLoadingStorages &&
     !isFetchingSessionSecrets;
 
