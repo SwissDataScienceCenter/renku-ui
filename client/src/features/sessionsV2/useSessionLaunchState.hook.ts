@@ -122,8 +122,22 @@ export default function useSessionLauncherState({
     isReadyDataConnectorConfigs,
   } = useDataConnectorConfiguration({ dataConnectors });
 
+  const isFetchingOrLoadingStorages =
+    isFetchingDataConnectorLinks ||
+    isLoadingDataConnectorLinks ||
+    isLoadingDataConnectors ||
+    isFetchingDataConnectors ||
+    !isReadyDataConnectorConfigs;
+
   useEffect(() => {
-    if (initialDataConnectorConfigs && isReadyDataConnectorConfigs) {
+    if (
+      !isFetchingOrLoadingStorages &&
+      initialDataConnectorConfigs &&
+      isReadyDataConnectorConfigs
+    ) {
+      console.log("dispatch: setCloudStorage", {
+        initialDataConnectorConfigs,
+      });
       dispatch(
         startSessionOptionsV2Slice.actions.setCloudStorage(
           initialDataConnectorConfigs
@@ -135,12 +149,7 @@ export default function useSessionLauncherState({
   return {
     containerImage,
     defaultSessionClass,
-    isFetchingOrLoadingStorages:
-      isFetchingDataConnectorLinks ||
-      isLoadingDataConnectorLinks ||
-      isLoadingDataConnectors ||
-      isFetchingDataConnectors ||
-      !isReadyDataConnectorConfigs,
+    isFetchingOrLoadingStorages,
     resourcePools,
     isPendingResourceClass,
     setResourceClass,

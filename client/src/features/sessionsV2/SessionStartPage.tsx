@@ -465,6 +465,7 @@ function StartSessionFromLauncher({
   const allDataFetched =
     containerImage &&
     startSessionOptionsV2.sessionClass !== 0 &&
+    startSessionOptionsV2.cloudStorage != null &&
     !isFetchingOrLoadingStorages &&
     !isFetchingSessionSecrets;
 
@@ -479,6 +480,7 @@ function StartSessionFromLauncher({
       needsCredentials,
       shouldSaveCredentials,
       allDataFetched,
+      cloudStorage: startSessionOptionsV2.cloudStorage,
     });
   }, [
     allDataFetched,
@@ -489,6 +491,7 @@ function StartSessionFromLauncher({
     needsCredentials,
     sessionSecretSlotsWithSecrets,
     shouldSaveCredentials,
+    startSessionOptionsV2.cloudStorage,
   ]);
 
   // set favicon during session launch
