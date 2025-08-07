@@ -24,7 +24,7 @@ import { PauseCircle, Trash, XLg } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { InfoAlert } from "~/components/Alert";
-import { toHumanRelativeDuration } from "~/utils/helpers/DurationUtils";
+import { TimeCaption } from "~/components/TimeCaption";
 import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
@@ -268,13 +268,8 @@ function PauseSessionModalContent({
     }
   }, [backUrl, isStopping, isSuccess, isWaiting, navigate]);
 
-  const now = new Date();
-  const hibernateThreshold = session?.status?.will_hibernate_at
-    ? toHumanRelativeDuration({
-        datetime: session?.status?.will_hibernate_at,
-        now,
-      })
-    : 0;
+  const hibernateThreshold = session?.status?.will_hibernate_at ?? "";
+
   return (
     <>
       <ModalBody>
@@ -283,10 +278,16 @@ function PauseSessionModalContent({
           session (new and edited files) will be preserved while the session is
           paused.
         </p>
-        {hibernateThreshold != null && (
+        {hibernateThreshold && (
           <InfoAlert dismissible={false} timeout={0}>
             Please note that the session will be automatically paused in{" "}
-            {hibernateThreshold} if you are inactive.
+            <TimeCaption
+              datetime={hibernateThreshold}
+              noCaption
+              prefix=""
+              enableTooltip
+            />{" "}
+            if you are inactive.
           </InfoAlert>
         )}
         <div className="my-2">
