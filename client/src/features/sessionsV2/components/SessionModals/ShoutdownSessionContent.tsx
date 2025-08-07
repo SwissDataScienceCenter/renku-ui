@@ -187,8 +187,7 @@ export default function ShutdownSessionContent({
                 )}
                 <li>
                   Check your workspace is clear: Ensure no important files
-                  remain in
-                  <code>/home/jovyan/work/</code>.
+                  remain in <code>/home/jovyan/work/</code>.
                 </li>
               </ul>
             </CollapseBody>
