@@ -38,6 +38,8 @@ import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import StatusSummary from "../platform/components/StatusSummary";
 
+import HelpV2Styles from "./HelpV2.module.scss";
+
 type HelpNavProps = {
   statuspageId: string;
 };
@@ -106,7 +108,7 @@ function HelpCardBodyContent({ children, url }: HelpCardBodyContentProps) {
 }
 
 function HelpGetting() {
-  const cardClasses = cx("h-100", "link-bg-action");
+  const cardClasses = cx("h-100", HelpV2Styles.linkBgAction);
   return (
     <div>
       <p>
