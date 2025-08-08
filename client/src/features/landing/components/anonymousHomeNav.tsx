@@ -23,7 +23,7 @@ import { List } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
-import { ABSOLUTE_ROUTES } from "~/routing/routes.constants.js";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Links } from "../../../utils/constants/Docs.js";
