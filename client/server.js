@@ -1,13 +1,14 @@
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
+
 import {
   CONFIG_JSON,
   ROBOTS,
   SAMPLE_PRIVACY_CONTENT,
   SAMPLE_TERMS_CONTENT,
   SITEMAP,
-} from "./server/constants.js";
+} from "./server/constants";
 
 const BUILD_PATH = "./build/server/index.js";
 const DEVELOPMENT = process.env.NODE_ENV === "development";

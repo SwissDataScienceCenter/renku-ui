@@ -30,6 +30,6 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["src", "server/constants.ts"],
+  "include": [".react-router/types", "src", "server"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
