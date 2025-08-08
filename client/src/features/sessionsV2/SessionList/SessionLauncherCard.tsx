@@ -123,6 +123,7 @@ export default function SessionLauncherCard({
       )}
       data-cy="session-launcher-item"
       onClick={toggleSessionView}
+      tabIndex={0}
     >
       <CardBody className={cx("p-0")}>
         <div className={cx(hasSession && "border-bottom", "p-3")}>

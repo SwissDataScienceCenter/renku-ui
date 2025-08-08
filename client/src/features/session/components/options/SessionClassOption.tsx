@@ -29,6 +29,7 @@ import Select, {
   ClassNamesConfig,
   GroupBase,
   GroupHeadingProps,
+  MenuListProps,
   OptionProps,
   SelectComponentsConfig,
   SingleValue,
@@ -680,6 +681,19 @@ const selectComponentsV2: SelectComponentsConfig<
           <span> (paused after {props.data.maxIdle} of inactivity)</span>
         )}
       </components.GroupHeading>
+    );
+  },
+  MenuList: (props: MenuListProps<ResourceClass, false, OptionGroup>) => {
+    return (
+      <components.MenuList
+        {...props}
+        innerProps={{
+          ...props.innerProps,
+          onClick: (e) => {
+            e.stopPropagation();
+          },
+        }}
+      />
     );
   },
 };
