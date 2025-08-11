@@ -255,9 +255,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getProjectsByProjectIdCopies: {
       providesTags: ["Project"],
     },
-    // getProjectsByProjectIdDataConnectorLinks: {
-    //   providesTags: ["DataConnectors"],
-    // },
     getProjectsByProjectIdMembers: {
       providesTags: ["ProjectMembers"],
     },
@@ -397,9 +394,6 @@ export const {
   useDeleteSessionSecretSlotsBySlotIdMutation,
   useGetProjectsByProjectIdSessionSecretsQuery,
   usePatchProjectsByProjectIdSessionSecretsMutation,
-
-  // data connector hooks
-  // useGetProjectsByProjectIdDataConnectorLinksQuery,
 
   // group hooks
   useGetGroupsPagedQuery: useGetGroupsQuery,
