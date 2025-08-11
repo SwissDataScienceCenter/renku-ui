@@ -36,7 +36,11 @@ interface AppErrorBoundaryProps {
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
   // Handle chunk load errors by reloading the page
   const onError = useCallback((error: Error) => {
-    if (error.name === "ChunkLoadError") {
+    if (
+      (error instanceof TypeError &&
+        error.message.toLowerCase().includes("module")) ||
+      error.name === "ChunkLoadError"
+    ) {
       const url = new URL(window.location.href);
       const hasReloaded = !!+(
         url.searchParams.get("reloadForChunkError") ?? ""
