@@ -87,7 +87,7 @@ await import(BUILD_PATH).then(
 
 // Logging
 // Note: do not activate logging in CI
-if (process.env.CI !== "true") {
+if (process.env.CI !== "1") {
   app.use(
     morgan((tokens, req, res) => {
       const log = {
