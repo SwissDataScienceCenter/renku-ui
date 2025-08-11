@@ -40,12 +40,14 @@ async function main() {
       updateProjectCloudStorageApi();
     } else if (arg.trim() === "projectV2") {
       updateProjectV2Api();
-    } else if (arg.trim() === "users") {
-      updateUsersApi();
     } else if (arg.trim() === "searchV2") {
       updateSearchV2Api();
     } else if (arg.trim() === "sessionLaunchersV2") {
       updateSessionLaunchersV2Api();
+    } else if (arg.trim() === "sessionsV2") {
+      updateSessionsV2Api();
+    } else if (arg.trim() === "users") {
+      updateUsersApi();
     }
   });
 }
@@ -94,13 +96,6 @@ async function updateProjectV2Api() {
   });
 }
 
-async function updateUsersApi() {
-  updateApiFiles({
-    specFile: "components/renku_data_services/users/api.spec.yaml",
-    destFile: "src/features/usersV2/api/users.openapi.json",
-  });
-}
-
 async function updateSearchV2Api() {
   updateApiFiles({
     specFile: "components/renku_data_services/search/api.spec.yaml",
@@ -112,6 +107,20 @@ async function updateSessionLaunchersV2Api() {
   updateApiFiles({
     specFile: "components/renku_data_services/session/api.spec.yaml",
     destFile: "src/features/sessionsV2/api/sessionLaunchersV2.openapi.json",
+  });
+}
+
+async function updateSessionsV2Api() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/notebooks/api.spec.yaml",
+    destFile: "src/features/sessionsV2/api/sessionsV2.openapi.json",
+  });
+}
+
+async function updateUsersApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/users/api.spec.yaml",
+    destFile: "src/features/usersV2/api/users.openapi.json",
   });
 }
 
