@@ -34,6 +34,8 @@ async function main() {
       updateDataConnectorsApi();
     } else if (arg.trim() === "namespaceV2") {
       updateNamespaceV2Api();
+    } else if (arg.trim() === "platform") {
+      updatePlatformApi();
     } else if (arg.trim() === "projectCloudStorage") {
       updateProjectCloudStorageApi();
     } else if (arg.trim() === "projectV2") {
@@ -67,6 +69,13 @@ async function updateNamespaceV2Api() {
   updateApiFiles({
     specFile: "components/renku_data_services/namespace/api.spec.yaml",
     destFile: "src/features/projectsV2/api/namespace.openapi.json",
+  });
+}
+
+async function updatePlatformApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/platform/api.spec.yaml",
+    destFile: "src/features/platform/api/platform.openapi.json",
   });
 }
 
