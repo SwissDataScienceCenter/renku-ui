@@ -102,7 +102,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         name = "createGroupV2",
       } = args ?? {};
       const response = { fixture, statusCode: 201 };
-      cy.intercept("POST", "/ui-server/api/data/groups", response).as(name);
+      cy.intercept("POST", "/api/data/groups", response).as(name);
       return this;
     }
 
@@ -110,11 +110,9 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       const { name = "deleteGroupV2", groupSlug = "test-2-group-v2" } =
         args ?? {};
       const response = { statusCode: 204 };
-      cy.intercept(
-        "DELETE",
-        `/ui-server/api/data/groups/${groupSlug}`,
-        response
-      ).as(name);
+      cy.intercept("DELETE", `/api/data/groups/${groupSlug}`, response).as(
+        name
+      );
       return this;
     }
 
@@ -128,7 +126,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "DELETE",
-        `/ui-server/api/data/groups/${groupSlug}/members/${userId}`,
+        `/api/data/groups/${groupSlug}/members/${userId}`,
         response
       ).as(name);
       return this;
@@ -136,7 +134,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
 
     listManyGroupV2(args?: ListManyGroupArgs) {
       const { numberOfGroups = 50, name = "listGroupV2" } = args ?? {};
-      cy.intercept("GET", `/ui-server/api/data/groups?*`, (req) => {
+      cy.intercept("GET", `/api/data/groups?*`, (req) => {
         const page = +req.query["page"] || 1;
         // TODO the request parameter is per_page, the result is per-page. These should be the same.
         const perPage = +req.query["per_page"] || 20;
@@ -161,7 +159,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
 
     listManyNamespaceV2(args?: ListManyNamespacesArgs) {
       const { numberOfNamespaces = 50, name = "listNamespaceV2" } = args ?? {};
-      cy.intercept("GET", `/ui-server/api/data/namespaces?*`, (req) => {
+      cy.intercept("GET", `/api/data/namespaces?*`, (req) => {
         const pageRaw = +req.query["page"];
         const page = isNaN(pageRaw) ? 1 : pageRaw;
         // TODO the request parameter is per_page, the result is per-page. These should be the same.
@@ -190,7 +188,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       const { fixture = "groupV2/list-groupV2.json", name = "listGroupV2" } =
         args ?? {};
       const response = { fixture };
-      cy.intercept("GET", `/ui-server/api/data/groups?*`, response).as(name);
+      cy.intercept("GET", `/api/data/groups?*`, response).as(name);
       return this;
     }
 
@@ -200,9 +198,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         name = "listNamespaceV2",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", `/ui-server/api/data/namespaces?*`, response).as(
-        name
-      );
+      cy.intercept("GET", `/api/data/namespaces?*`, response).as(name);
       return this;
     }
 
@@ -215,7 +211,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/groups/${groupSlug}/permissions`,
+        `/api/data/groups/${groupSlug}/permissions`,
         response
       ).as(name);
       return this;
@@ -237,7 +233,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         const response = { body: result };
         cy.intercept(
           "GET",
-          `/ui-server/api/data/groups/${groupSlug}/members`,
+          `/api/data/groups/${groupSlug}/members`,
           response
         ).as(name);
       });
@@ -253,7 +249,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "PATCH",
-        `/ui-server/api/data/groups/${groupSlug}/members`,
+        `/api/data/groups/${groupSlug}/members`,
         response
       ).as(name);
       return this;
@@ -271,11 +267,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         },
         statusCode: 404,
       };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/groups/${groupSlug}`,
-        response
-      ).as(name);
+      cy.intercept("GET", `/api/data/groups/${groupSlug}`, response).as(name);
       return this;
     }
 
@@ -290,7 +282,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
           ...group_,
           slug: groupSlug,
         };
-        cy.intercept("GET", `/ui-server/api/data/groups/${groupSlug}`, {
+        cy.intercept("GET", `/api/data/groups/${groupSlug}`, {
           body: group,
         }).as(name);
       });
@@ -309,7 +301,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
           slug: groupSlug,
           path: groupSlug,
         };
-        cy.intercept("GET", `/ui-server/api/data/namespaces/${groupSlug}`, {
+        cy.intercept("GET", `/api/data/namespaces/${groupSlug}`, {
           body: namespace,
         }).as(name);
       });
@@ -323,11 +315,9 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         username = "user1-uuid",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept(
-        "GET",
-        `/ui-server/api/data/namespaces/${username}`,
-        response
-      ).as(name);
+      cy.intercept("GET", `/api/data/namespaces/${username}`, response).as(
+        name
+      );
       return this;
     }
 
@@ -338,11 +328,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         groupSlug = "test-2-group-v2",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept(
-        "PATCH",
-        `/ui-server/api/data/groups/${groupSlug}`,
-        response
-      ).as(name);
+      cy.intercept("PATCH", `/api/data/groups/${groupSlug}`, response).as(name);
       return this;
     }
   };

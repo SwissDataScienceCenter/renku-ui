@@ -30,7 +30,7 @@ export function Admin<T extends FixturesConstructor>(Parent: T) {
       userId = "user-1",
       realm = "Renku"
     ) {
-      cy.intercept(`/ui-server/api/kc/admin/realms/${realm}/users/${userId}`, {
+      cy.intercept(`/api/kc/admin/realms/${realm}/users/${userId}`, {
         fixture,
       }).as(name);
       return this;
