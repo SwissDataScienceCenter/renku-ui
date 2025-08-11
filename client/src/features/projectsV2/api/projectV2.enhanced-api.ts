@@ -181,7 +181,6 @@ const injectedApi = api.injectEndpoints({
 
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: [
-    "DataConnectors",
     "Group",
     "GroupMembers",
     "Namespace",
