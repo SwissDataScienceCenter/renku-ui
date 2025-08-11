@@ -28,10 +28,16 @@ const DATA_SERVICES_RELEASE = "main";
 
 async function main() {
   argv.forEach((arg) => {
-    if (arg.trim() === "dataConnectors") {
+    if (arg.trim() === "connectedServices") {
+      updateConnectedServicesApi();
+    } else if (arg.trim() === "dataConnectors") {
       updateDataConnectorsApi();
+    } else if (arg.trim() === "namespaceV2") {
+      updateNamespaceV2Api();
     } else if (arg.trim() === "projectCloudStorage") {
       updateProjectCloudStorageApi();
+    } else if (arg.trim() === "projectV2") {
+      updateProjectV2Api();
     } else if (arg.trim() === "users") {
       updateUsersApi();
     } else if (arg.trim() === "searchV2") {
@@ -42,10 +48,25 @@ async function main() {
   });
 }
 
+async function updateConnectedServicesApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/connected_services/api.spec.yaml",
+    destFile:
+      "src/features/connectedServices/api/connectedServices.openapi.json",
+  });
+}
+
 async function updateDataConnectorsApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/data_connectors/api.spec.yaml",
     destFile: "src/features/dataConnectorsV2/api/data-connectors.openapi.json",
+  });
+}
+
+async function updateNamespaceV2Api() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/namespace/api.spec.yaml",
+    destFile: "src/features/projectsV2/api/namespace.openapi.json",
   });
 }
 
@@ -54,6 +75,13 @@ async function updateProjectCloudStorageApi() {
     specFile: "components/renku_data_services/storage/api.spec.yaml",
     destFile:
       "src/features/project/components/cloudStorage/api/projectCloudStorage.openapi.json",
+  });
+}
+
+async function updateProjectV2Api() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/project/api.spec.yaml",
+    destFile: "src/features/projectsV2/api/projectV2.openapi.json",
   });
 }
 

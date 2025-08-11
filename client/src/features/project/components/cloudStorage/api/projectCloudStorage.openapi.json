@@ -654,6 +654,7 @@
               "int",
               "bool",
               "string",
+              "stringArray",
               "Time",
               "Duration",
               "MultiEncoder",

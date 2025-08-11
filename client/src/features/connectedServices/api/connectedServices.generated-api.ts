@@ -142,7 +142,12 @@ export type GetOauth2ConnectionsByConnectionIdInstallationsApiArg = {
   params?: PaginationRequest;
 };
 export type ProviderId = string;
-export type ProviderKind = "gitlab" | "github";
+export type ProviderKind =
+  | "gitlab"
+  | "github"
+  | "drive"
+  | "onedrive"
+  | "dropbox";
 export type ApplicationSlug = string;
 export type ClientId = string;
 export type ClientSecret = string;

@@ -93,6 +93,14 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({ url: `/namespaces/${queryArg.namespaceSlug}` }),
     }),
+    getNamespacesByFirstSlugAndSecondSlug: build.query<
+      GetNamespacesByFirstSlugAndSecondSlugApiResponse,
+      GetNamespacesByFirstSlugAndSecondSlugApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/namespaces/${queryArg.firstSlug}/${queryArg.secondSlug}`,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -168,16 +176,22 @@ export type GetNamespacesByNamespaceSlugApiResponse =
 export type GetNamespacesByNamespaceSlugApiArg = {
   namespaceSlug: Slug;
 };
+export type GetNamespacesByFirstSlugAndSecondSlugApiResponse =
+  /** status 200 The namespace */ NamespaceResponse;
+export type GetNamespacesByFirstSlugAndSecondSlugApiArg = {
+  firstSlug: Slug;
+  secondSlug: Slug;
+};
 export type Ulid = string;
 export type NamespaceName = string;
-export type Slug = string;
+export type SlugResponse = string;
 export type CreationDate = string;
 export type KeycloakId = string;
 export type Description = string;
 export type GroupResponse = {
   id: Ulid;
   name: NamespaceName;
-  slug: Slug;
+  slug: SlugResponse;
   creation_date: CreationDate;
   created_by: KeycloakId;
   description?: Description;
@@ -192,6 +206,7 @@ export type ErrorResponse = {
 };
 export type PaginationRequestPage = number;
 export type PaginationRequestPerPage = number;
+export type Slug = string;
 export type GroupPostRequest = {
   name: NamespaceName;
   slug: Slug;
@@ -227,15 +242,14 @@ export type GroupPermissions = {
   change_membership?: boolean;
 };
 export type NamespaceKind = "group" | "user" | "project";
-export type OneOrTwoSlugs = string;
 export type NamespaceResponse = {
   id: Ulid;
   name?: NamespaceName;
-  slug: Slug;
+  slug: SlugResponse;
   creation_date?: CreationDate;
   created_by?: KeycloakId;
   namespace_kind: NamespaceKind;
-  path: OneOrTwoSlugs;
+  path: SlugResponse;
 };
 export type NamespaceResponseList = NamespaceResponse[];
 export type NamespaceGetQueryKind = NamespaceKind[];
@@ -251,4 +265,5 @@ export const {
   useGetGroupsByGroupSlugPermissionsQuery,
   useGetNamespacesQuery,
   useGetNamespacesByNamespaceSlugQuery,
+  useGetNamespacesByFirstSlugAndSecondSlugQuery,
 } = injectedRtkApi;

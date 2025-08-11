@@ -8,9 +8,6 @@
   "servers": [
     {
       "url": "/api/data"
-    },
-    {
-      "url": "/ui-server/api/data"
     }
   ],
   "paths": {
@@ -557,7 +554,7 @@
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]{26}$"
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
       "ProviderId": {
         "description": "ID of a OAuth2 provider, e.g. \"gitlab.com\".",
@@ -566,7 +563,7 @@
       },
       "ProviderKind": {
         "type": "string",
-        "enum": ["gitlab", "github"],
+        "enum": ["gitlab", "github", "drive", "onedrive", "dropbox"],
         "example": "gitlab"
       },
       "ApplicationSlug": {
