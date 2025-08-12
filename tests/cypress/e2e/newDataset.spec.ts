@@ -42,7 +42,7 @@ describe("Project new dataset", () => {
   it("new dataset not supported", () => {
     cy.getDataCy("sunset-banner").should(
       "contain",
-      "Project creation no longer available"
+      "project and dataset creation are no longer available"
     );
   });
 });

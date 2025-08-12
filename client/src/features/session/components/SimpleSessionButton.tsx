@@ -19,10 +19,17 @@
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { MouseEvent, useCallback, useEffect, useState } from "react";
+import {
+  MouseEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Link, useNavigate } from "react-router";
-import { Button } from "reactstrap";
-
+import { Button, UncontrolledTooltip } from "reactstrap";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { Loader } from "../../../components/Loader";
 import { NotebooksHelper } from "../../../notebooks";
 import { Url } from "../../../utils/helpers/url";
@@ -70,6 +77,11 @@ export default function SimpleSessionButton({
     ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
     : null;
 
+  const { params } = useContext(AppContext);
+  const supportLegacySessions =
+    params?.LEGACY_SUPPORT.supportLegacySessions ??
+    DEFAULT_APP_PARAMS.LEGACY_SUPPORT.supportLegacySessions;
+
   if (isLoading) {
     return (
       <Button className={className} disabled>
@@ -80,19 +92,31 @@ export default function SimpleSessionButton({
 
   if (!runningSession) {
     return (
-      <Link
-        className={className}
-        to={{
-          pathname: sessionNewUrl,
-          search: new URLSearchParams({
-            autostart: "1",
-            ...(fromLanding ? { fromLanding: "1" } : {}),
-          }).toString(),
-        }}
-        target={fromLanding ? "_blank" : "_self"}
-      >
-        <FontAwesomeIcon icon={faPlay} /> Start
-      </Link>
+      <div className="d-inline-flex" id="start-legacy-session-container">
+        <Link
+          className={cx(
+            className,
+            !supportLegacySessions && ["disabled", "text-white"]
+          )}
+          data-cy="start-legacy-session"
+          to={{
+            pathname: sessionNewUrl,
+            search: new URLSearchParams({
+              autostart: "1",
+              ...(fromLanding ? { fromLanding: "1" } : {}),
+            }).toString(),
+          }}
+          target={fromLanding ? "_blank" : "_self"}
+        >
+          <FontAwesomeIcon icon={faPlay} /> Start
+        </Link>
+        {!supportLegacySessions && (
+          <UncontrolledTooltip target="start-legacy-session-container">
+            Starting sessions is no longer supported in Renku Legacy. Migrate to
+            Renku 2.0 to continue creating and managing your work.
+          </UncontrolledTooltip>
+        )}
+      </div>
     );
   }
 

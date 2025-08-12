@@ -44,7 +44,6 @@ USER node
 WORKDIR /app
 
 COPY package.json package-lock.json server.js /app/
-COPY server/constants.js /app/server/constants.js
 COPY --from=dependencies /app/node_modules /app/node_modules
 COPY --from=builder /app/build /app/build
 COPY --from=builder /app/storybook-static /app/storybook-static
