@@ -150,7 +150,7 @@ export default function SessionButton({
           <Link
             className={cx(
               "dropdown-item",
-              !supportLegacySessions && "disabled"
+              !supportLegacySessions && ["disabled", "text-white"]
             )}
             data-cy="start-legacy-session-with-options"
             to={sessionStartUrl}

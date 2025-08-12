@@ -94,7 +94,10 @@ export default function SimpleSessionButton({
     return (
       <div className="d-inline-block" id="start-legacy-session-container">
         <Link
-          className={cx(className, !supportLegacySessions && "disabled")}
+          className={cx(
+            className,
+            !supportLegacySessions && ["disabled", "text-white"]
+          )}
           data-cy="start-legacy-session"
           to={{
             pathname: sessionNewUrl,
