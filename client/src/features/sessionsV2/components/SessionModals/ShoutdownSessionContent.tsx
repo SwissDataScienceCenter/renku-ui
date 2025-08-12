@@ -199,10 +199,10 @@ export default function ShutdownSessionContent({
                   Check your workspace is clear: Ensure no important files
                   remain
                   {launcherMountDirectory && (
-                    <span>
+                    <>
                       {" "}
                       in <code>{launcherMountDirectory}</code>
-                    </span>
+                    </>
                   )}
                   .
                 </li>
