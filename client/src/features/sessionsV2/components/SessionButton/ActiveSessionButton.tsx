@@ -642,14 +642,14 @@ function ModifySessionModalContent({
         <Row>
           <Col>
             {message}
-            <p>
+            <div className="mb-3">
               <span className={cx("fw-bold", "me-3")}>Current resources:</span>
               <span>
                 <SessionRowResourceRequests
                   resourceRequests={resources?.requests}
                 />
               </span>
-            </p>
+            </div>
             <div className="field-group">{selector}</div>
           </Col>
         </Row>
