@@ -38,6 +38,8 @@ import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import StatusSummary from "../platform/components/StatusSummary";
 
+import HelpV2Styles from "./HelpV2.module.scss";
+
 type HelpNavProps = {
   statuspageId: string;
 };
@@ -106,6 +108,7 @@ function HelpCardBodyContent({ children, url }: HelpCardBodyContentProps) {
 }
 
 function HelpGetting() {
+  const cardClasses = cx("h-100", HelpV2Styles.linkBgAction);
   return (
     <div>
       <p>
@@ -114,7 +117,7 @@ function HelpGetting() {
       </p>
       <Row className="g-3">
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -136,7 +139,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -160,7 +163,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -182,7 +185,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
@@ -204,7 +207,7 @@ function HelpGetting() {
         </Col>
 
         <Col xs={12} md={6}>
-          <Card className="h-100">
+          <Card className={cardClasses}>
             <CardHeader>
               <h4 className="mb-0">
                 <ExternalIconLink
