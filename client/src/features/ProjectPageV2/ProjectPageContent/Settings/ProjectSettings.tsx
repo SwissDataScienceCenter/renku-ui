@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { generatePath, useLocation, useNavigate } from "react-router";
@@ -57,6 +57,7 @@ import ProjectPageDelete from "./ProjectDelete";
 import ProjectKeywordsFormField from "./ProjectKeywordsFormField";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
+import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,
@@ -99,6 +100,24 @@ function ProjectReadOnlyNamespaceField({ namespace }: { namespace: string }) {
         id="project-namespace"
         type="text"
         value={namespace}
+        disabled={true}
+        readOnly
+      />
+    </div>
+  );
+}
+
+function ProjectReadOnlySlugField({ slug }: { slug: string }) {
+  return (
+    <div>
+      <Label className="form-label" for="project-slug">
+        Slug
+      </Label>
+      <Input
+        className="form-control"
+        id="project-slug"
+        type="text"
+        value={slug}
         disabled={true}
         readOnly
       />
@@ -191,6 +210,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
       description: project.description ?? "",
       name: project.name,
       namespace: project.namespace,
+      slug: project.slug,
       visibility: project.visibility,
       keywords: project.keywords ?? [],
       keyword: "",
@@ -228,12 +248,29 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
     [project, updateProject]
   );
 
+  const { params } = useContext(AppContext);
+  const baseUrl = params?.BASE_URL ?? window.location.origin;
+  const groupPath = useMemo(() => {
+    return generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+      namespace: currentNamespace,
+      slug: "",
+    });
+  }, [currentNamespace]);
+  const url = `${baseUrl}${groupPath}/`;
+
+  const resetUrl = useCallback(() => {
+    setValue("slug", project.slug, {
+      shouldValidate: true,
+    });
+  }, [setValue, project.slug]);
+
   useEffect(() => {
     if (isSuccess && updatedProject != null) {
       reset({
         description: updatedProject.description ?? "",
         name: updatedProject.name,
         namespace: updatedProject.namespace,
+        slug: updatedProject.slug,
         visibility: updatedProject.visibility,
         keywords: updatedProject.keywords ?? [],
         is_template: updatedProject.is_template ?? false,
@@ -313,6 +350,35 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
             change is saved, it will redirect to the updated project URL.
           </RenkuAlert>
         )}
+
+        <PermissionsGuard
+          disabled={<ProjectReadOnlySlugField slug={project.slug} />}
+          enabled={
+            <div>
+              <Label className="form-label" for="group-slug">
+                Slug
+              </Label>
+              <SlugFormField
+                compact={true}
+                control={control}
+                entityName="project"
+                errors={errors}
+                name="slug"
+                resetFunction={resetUrl}
+                url={url}
+              />
+              {errors.slug && dirtyFields.slug && (
+                <div className={cx("d-block", "invalid-feedback")}>
+                  <p className="mb-1">
+                    {errors?.slug?.message?.toString() ?? ""}
+                  </p>
+                </div>
+              )}
+            </div>
+          }
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
 
         <PermissionsGuard
           disabled={
