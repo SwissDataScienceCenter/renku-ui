@@ -79,7 +79,7 @@ export default function ProjectMigrationAlert({
 
   return (
     <>
-      <WarnAlert>
+      <WarnAlert data-cy="sunset-project-banner">
         <h4>Renku Legacy will be discontinued in October 2025</h4>
         <p className="mb-2">
           Migrate your projects to Renku 2.0 to continue creating and managing
