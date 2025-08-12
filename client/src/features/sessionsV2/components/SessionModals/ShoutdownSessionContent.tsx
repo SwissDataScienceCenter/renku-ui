@@ -27,11 +27,14 @@ import { useGetDataConnectorsListByDataConnectorIdsQuery } from "~/features/data
 import { getRepositoryName } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import { useGetProjectsByProjectIdQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import shutdownSessionWarningImage from "./assets/renkuShutdownSessionWarning.svg";
+import { useGetSessionLaunchersByLauncherIdQuery } from "../../api/sessionLaunchersV2.api";
 
 interface ShutdownSessionContentProps {
+  sessionLauncherId?: string;
   sessionProjectId?: string;
 }
 export default function ShutdownSessionContent({
+  sessionLauncherId,
   sessionProjectId,
 }: ShutdownSessionContentProps) {
   // fetch data connectors and code repositories metadata
@@ -64,6 +67,13 @@ export default function ShutdownSessionContent({
     () => Object.values(dataConnectorMetadata.data ?? {}),
     [dataConnectorMetadata.data]
   );
+
+  const { data } = useGetSessionLaunchersByLauncherIdQuery(
+    sessionLauncherId ? { launcherId: sessionLauncherId } : skipToken
+  );
+  const launcherMountDirectory = useMemo(() => {
+    return data?.environment.mount_directory;
+  }, [data?.environment.mount_directory]);
 
   // store code repositories and data connectors names
   const codeRepositories = useMemo(() => {
@@ -187,7 +197,14 @@ export default function ShutdownSessionContent({
                 )}
                 <li>
                   Check your workspace is clear: Ensure no important files
-                  remain in <code>/home/jovyan/work/</code>.
+                  remain
+                  {launcherMountDirectory && (
+                    <span>
+                      {" "}
+                      in <code>{launcherMountDirectory}</code>
+                    </span>
+                  )}
+                  .
                 </li>
               </ul>
             </CollapseBody>

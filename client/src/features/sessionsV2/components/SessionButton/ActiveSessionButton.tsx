@@ -445,6 +445,7 @@ export default function ActiveSessionButton({
         onStopSession={onStopSession}
         sessionName={session.name}
         sessionProjectId={session.project_id}
+        sessionLauncherId={session.launcher_id}
         status={status}
         toggleModal={toggleStopSession}
       />
@@ -465,6 +466,7 @@ interface ConfirmDeleteModalProps {
   isStopping: boolean;
   onStopSession: () => void;
   sessionName: string;
+  sessionLauncherId?: string;
   sessionProjectId: string;
   status: SessionStatusState;
   toggleModal: () => void;
@@ -473,6 +475,7 @@ function ConfirmDeleteModal({
   isOpen,
   isStopping,
   onStopSession,
+  sessionLauncherId,
   sessionProjectId,
   toggleModal,
 }: ConfirmDeleteModalProps) {
@@ -487,7 +490,10 @@ function ConfirmDeleteModal({
         Shut Down Session
       </ModalHeader>
       <ModalBody>
-        <ShutdownSessionContent sessionProjectId={sessionProjectId} />
+        <ShutdownSessionContent
+          sessionLauncherId={sessionLauncherId}
+          sessionProjectId={sessionProjectId}
+        />
       </ModalBody>
       <ModalFooter>
         <Button

@@ -385,7 +385,10 @@ function DeleteSessionModalContent({
   return (
     <>
       <ModalBody>
-        <ShutdownSessionContent sessionProjectId={session?.project_id} />
+        <ShutdownSessionContent
+          sessionLauncherId={session?.launcher_id}
+          sessionProjectId={session?.project_id}
+        />
         <div className="my-2">
           <Button
             className={cx("float-right", "p-0")}
