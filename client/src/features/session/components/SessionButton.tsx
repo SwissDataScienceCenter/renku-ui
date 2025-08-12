@@ -40,8 +40,9 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
-
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
@@ -116,6 +117,11 @@ export default function SessionButton({
       ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
       : null;
 
+  const { params } = useContext(AppContext);
+  const supportLegacySessions =
+    params?.LEGACY_SUPPORT.supportLegacySessions ??
+    DEFAULT_APP_PARAMS.LEGACY_SUPPORT.supportLegacySessions;
+
   if (isLoading) {
     return (
       <Button className={cx("btn-sm", className)} disabled>
@@ -140,14 +146,27 @@ export default function SessionButton({
         isPrincipal
         size="sm"
       >
-        <li>
-          <Link className="dropdown-item" to={sessionStartUrl}>
+        <li id="start-legacy-session-with-options-container">
+          <Link
+            className={cx(
+              "dropdown-item",
+              !supportLegacySessions && ["disabled", "text-white"]
+            )}
+            data-cy="start-legacy-session-with-options"
+            to={sessionStartUrl}
+          >
             <img
               src={rkIconStartWithOptions}
               className="rk-icon rk-icon-md me-2"
             />
             Start with options
           </Link>
+          {!supportLegacySessions && (
+            <UncontrolledTooltip target="start-legacy-session-with-options-container">
+              Starting sessions is no longer supported in Renku Legacy. Migrate
+              to Renku 2.0 to continue creating and managing your work.
+            </UncontrolledTooltip>
+          )}
         </li>
         {gitUrl && branch && (
           <SshDropdown fullPath={fullPath} gitUrl={gitUrl} branch={branch} />
