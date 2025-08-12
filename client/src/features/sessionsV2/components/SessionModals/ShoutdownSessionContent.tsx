@@ -26,8 +26,8 @@ import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dat
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { getRepositoryName } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import { useGetProjectsByProjectIdQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
-import shutdownSessionWarningImage from "./assets/renkuShutdownSessionWarning.svg";
 import { useGetSessionLaunchersByLauncherIdQuery } from "../../api/sessionLaunchersV2.api";
+import shutdownSessionWarningImage from "./assets/renkuShutdownSessionWarning.svg";
 
 interface ShutdownSessionContentProps {
   sessionLauncherId?: string;
