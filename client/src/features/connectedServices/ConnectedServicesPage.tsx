@@ -223,7 +223,7 @@ export function ConnectButton({
     return here.href;
   }, [id, kind]);
 
-  const authorizeUrl = `/ui-server/api/data/oauth2/providers/${id}/authorize`;
+  const authorizeUrl = `/api/data/oauth2/providers/${id}/authorize`;
   const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
 
   const text = connectionStatus === "connected" ? "Reconnect" : "Connect";

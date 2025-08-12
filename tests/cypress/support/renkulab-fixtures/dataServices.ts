@@ -44,9 +44,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
         name = "getResourcePools",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/data/resource_pools*", response).as(
-        name
-      );
+      cy.intercept("GET", "/api/data/resource_pools*", response).as(name);
       return this;
     }
 
@@ -54,10 +52,10 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       name = "getAdminResourcePoolUsers",
       fixture = "dataServices/resource-pool-users.json"
     ) {
-      cy.intercept("/ui-server/api/data/users", {
+      cy.intercept("/api/data/users", {
         fixture,
       }).as(name);
-      cy.intercept("/ui-server/api/data/resource_pools/*/users", {
+      cy.intercept("/api/data/resource_pools/*/users", {
         fixture,
       });
       return this;
@@ -81,7 +79,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
         name = "getResourceClass",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/data/classes/*", response).as(name);
+      cy.intercept("GET", "/api/data/classes/*", response).as(name);
       return this;
     }
   };

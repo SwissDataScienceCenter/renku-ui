@@ -35,15 +35,11 @@ import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
-import {
-  projectV2Api,
-  useGetNamespacesByNamespaceProjectsAndSlugQuery,
-} from "../../projectsV2/api/projectV2.enhanced-api";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 
 import type {
   DataConnectorRead,
@@ -56,8 +52,8 @@ import {
 } from "../api/data-connectors.enhanced-api";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 
-import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 import { getDataConnectorScope } from "./dataConnector.utils";
+import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 
 interface DataConnectorRemoveModalProps {
   dataConnector: DataConnectorRead;
@@ -76,7 +72,6 @@ function DataConnectorRemoveDeleteModal({
   const { permissions, isLoading: isLoadingPermissions } =
     useDataConnectorPermissions({ dataConnectorId: dataConnector.id });
 
-  const dispatch = useAppDispatch();
   const {
     data: dataConnectorLinks,
     isLoading: isLoadingLinks,
@@ -97,10 +92,9 @@ function DataConnectorRemoveDeleteModal({
 
   useEffect(() => {
     if (isSuccess && isOpen) {
-      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       onDelete();
     }
-  }, [dispatch, isOpen, isSuccess, onDelete]);
+  }, [isOpen, isSuccess, onDelete]);
   const onDeleteDataCollector = useCallback(() => {
     deleteDataConnector({
       dataConnectorId: dataConnector.id,
@@ -243,7 +237,6 @@ function DataConnectorRemoveUnlinkModal({
   toggleModal,
   isOpen,
 }: DataConnectorRemoveUnlinkModalProps) {
-  const dispatch = useAppDispatch();
   const [
     unlinkDataConnector,
     { isLoading: isLoadingUnlink, isSuccess, error },
@@ -259,10 +252,9 @@ function DataConnectorRemoveUnlinkModal({
 
   useEffect(() => {
     if (isSuccess && isOpen) {
-      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       onDelete();
     }
-  }, [dispatch, isOpen, isSuccess, onDelete]);
+  }, [isOpen, isSuccess, onDelete]);
 
   const onDeleteDataCollector = useCallback(() => {
     if (!linkId) return;

@@ -28,23 +28,27 @@ import {
   ListGroup,
   UncontrolledTooltip,
 } from "reactstrap";
+
+import {
+  type DataConnectorToProjectLink,
+  type GetProjectsByProjectIdDataConnectorLinksApiResponse,
+} from "~/features/dataConnectorsV2/api/data-connectors.api";
+import {
+  useGetDataConnectorsByDataConnectorIdQuery,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
+} from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery } from "../../../dataConnectorsV2/api/data-connectors.api";
-import { useGetDataConnectorsByDataConnectorIdQuery } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import DataConnectorBoxListDisplay, {
   DataConnectorBoxListDisplayPlaceholder,
 } from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
-import type {
-  DataConnectorToProjectLink,
-  GetProjectsByProjectIdDataConnectorLinksApiResponse,
-  Project,
-} from "../../../projectsV2/api/projectV2.api";
-import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
+import type { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
+
 interface DataConnectorListDisplayProps {
   project: Project;
 }

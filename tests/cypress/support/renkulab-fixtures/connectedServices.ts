@@ -41,9 +41,7 @@ export function ConnectedServices<T extends FixturesConstructor>(Parent: T) {
       cy.fixture(fixture).then((repoMetadata) => {
         cy.intercept(
           "GET",
-          `/ui-server/api/data/repositories/${encodeURIComponent(
-            repositoryUrl
-          )}`,
+          `/api/data/repositories/${encodeURIComponent(repositoryUrl)}`,
           {
             body: repoMetadata,
             statusCode,
@@ -61,12 +59,12 @@ export function ConnectedServices<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
 
       if (empty) {
-        cy.intercept("GET", "/ui-server/api/data/oauth2/providers", {
+        cy.intercept("GET", "/api/data/oauth2/providers", {
           body: [],
         }).as(name);
       } else {
         cy.fixture(fixture).then((providers) => {
-          cy.intercept("GET", "/ui-server/api/data/oauth2/providers", {
+          cy.intercept("GET", "/api/data/oauth2/providers", {
             body: providers,
           }).as(name);
         });
@@ -82,12 +80,12 @@ export function ConnectedServices<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
 
       if (empty) {
-        cy.intercept("GET", "/ui-server/api/data/oauth2/connections", {
+        cy.intercept("GET", "/api/data/oauth2/connections", {
           body: [],
         }).as(name);
       } else {
         cy.fixture(fixture).then((connections) => {
-          cy.intercept("GET", "/ui-server/api/data/oauth2/connections", {
+          cy.intercept("GET", "/api/data/oauth2/connections", {
             body: connections,
           }).as(name);
         });
@@ -101,7 +99,7 @@ export function ConnectedServices<T extends FixturesConstructor>(Parent: T) {
         name = "listAccount",
         empty = false,
       } = args ?? {};
-      const url = "/ui-server/api/data/oauth2/connections/**/account";
+      const url = "/api/data/oauth2/connections/**/account";
 
       if (empty) {
         cy.intercept("GET", url, {
@@ -123,7 +121,7 @@ export function ConnectedServices<T extends FixturesConstructor>(Parent: T) {
         name = "listInstallations",
         empty = false,
       } = args ?? {};
-      const url = "/ui-server/api/data/oauth2/connections/**/installations*";
+      const url = "/api/data/oauth2/connections/**/installations*";
 
       if (empty) {
         cy.intercept("GET", url, {

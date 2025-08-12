@@ -28,17 +28,35 @@ const DATA_SERVICES_RELEASE = "main";
 
 async function main() {
   argv.forEach((arg) => {
-    if (arg.trim() === "dataConnectors") {
+    if (arg.trim() === "connectedServices") {
+      updateConnectedServicesApi();
+    } else if (arg.trim() === "dataConnectors") {
       updateDataConnectorsApi();
+    } else if (arg.trim() === "namespaceV2") {
+      updateNamespaceV2Api();
+    } else if (arg.trim() === "platform") {
+      updatePlatformApi();
     } else if (arg.trim() === "projectCloudStorage") {
       updateProjectCloudStorageApi();
-    } else if (arg.trim() === "users") {
-      updateUsersApi();
+    } else if (arg.trim() === "projectV2") {
+      updateProjectV2Api();
     } else if (arg.trim() === "searchV2") {
       updateSearchV2Api();
     } else if (arg.trim() === "sessionLaunchersV2") {
       updateSessionLaunchersV2Api();
+    } else if (arg.trim() === "sessionsV2") {
+      updateSessionsV2Api();
+    } else if (arg.trim() === "users") {
+      updateUsersApi();
     }
+  });
+}
+
+async function updateConnectedServicesApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/connected_services/api.spec.yaml",
+    destFile:
+      "src/features/connectedServices/api/connectedServices.openapi.json",
   });
 }
 
@@ -46,6 +64,20 @@ async function updateDataConnectorsApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/data_connectors/api.spec.yaml",
     destFile: "src/features/dataConnectorsV2/api/data-connectors.openapi.json",
+  });
+}
+
+async function updateNamespaceV2Api() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/namespace/api.spec.yaml",
+    destFile: "src/features/projectsV2/api/namespace.openapi.json",
+  });
+}
+
+async function updatePlatformApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/platform/api.spec.yaml",
+    destFile: "src/features/platform/api/platform.openapi.json",
   });
 }
 
@@ -57,10 +89,10 @@ async function updateProjectCloudStorageApi() {
   });
 }
 
-async function updateUsersApi() {
+async function updateProjectV2Api() {
   updateApiFiles({
-    specFile: "components/renku_data_services/users/api.spec.yaml",
-    destFile: "src/features/usersV2/api/users.openapi.json",
+    specFile: "components/renku_data_services/project/api.spec.yaml",
+    destFile: "src/features/projectsV2/api/projectV2.openapi.json",
   });
 }
 
@@ -75,6 +107,20 @@ async function updateSessionLaunchersV2Api() {
   updateApiFiles({
     specFile: "components/renku_data_services/session/api.spec.yaml",
     destFile: "src/features/sessionsV2/api/sessionLaunchersV2.openapi.json",
+  });
+}
+
+async function updateSessionsV2Api() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/notebooks/api.spec.yaml",
+    destFile: "src/features/sessionsV2/api/sessionsV2.openapi.json",
+  });
+}
+
+async function updateUsersApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/users/api.spec.yaml",
+    destFile: "src/features/usersV2/api/users.openapi.json",
   });
 }
 

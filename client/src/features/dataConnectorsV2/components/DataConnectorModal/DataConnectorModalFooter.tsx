@@ -38,7 +38,6 @@ import {
 } from "../../../project/utils/projectCloudStorage.utils";
 
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 import {
@@ -278,9 +277,6 @@ function DataConnectorCreateFooter({
   ]);
 
   useEffect(() => {
-    if (createProjectLinkResult.isSuccess) {
-      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
-    }
     if (projectLinkStatus === "success" || projectLinkStatus === "failure") {
       return;
     }
@@ -306,8 +302,8 @@ function DataConnectorCreateFooter({
     createProjectLinkResult,
     dataConnectorResultId,
     dispatch,
-    projectLinkStatus,
     project?.id,
+    projectLinkStatus,
   ]);
 
   // Visual elements
