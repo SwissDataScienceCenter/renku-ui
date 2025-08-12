@@ -51,21 +51,33 @@ export default function ProjectPageContainer() {
 
   useEffect(() => {
     if (namespace && currentData && currentData.namespace !== namespace) {
-      navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: currentData.namespace,
+      const previousBasePath = generatePath(
+        ABSOLUTE_ROUTES.v2.projects.show.root,
+        {
+          namespace: namespace,
           slug: currentData.slug,
-        }),
-        { replace: true }
+        }
       );
+      const deltaUrl = location.pathname.slice(previousBasePath.length);
+      const newUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+        namespace: currentData.namespace,
+        slug: currentData.slug,
+      });
+      navigate(newUrl + deltaUrl, { replace: true });
     } else if (slug && currentData && currentData.slug !== slug) {
-      navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+      const previousBasePath = generatePath(
+        ABSOLUTE_ROUTES.v2.projects.show.root,
+        {
           namespace: currentData.namespace,
-          slug: currentData.slug,
-        }),
-        { replace: true }
+          slug: slug,
+        }
       );
+      const deltaUrl = location.pathname.slice(previousBasePath.length);
+      const newUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+        namespace: currentData.namespace,
+        slug: currentData.slug,
+      });
+      navigate(newUrl + deltaUrl, { replace: true });
     }
   }, [currentData, namespace, navigate, slug]);
 
