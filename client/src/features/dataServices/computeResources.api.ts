@@ -37,7 +37,7 @@ import {
 
 const computeResourcesApi = createApi({
   reducerPath: "computeResourcesApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
   tagTypes: ["ResourcePool", "ResourcePoolUser", "ResourceClass"],
   endpoints: (builder) => ({
     getResourcePools: builder.query<ResourcePool[], ResourcePoolsQueryParams>({

@@ -8,9 +8,6 @@
   "servers": [
     {
       "url": "/api/data"
-    },
-    {
-      "url": "/ui-server/api/data"
     }
   ],
   "paths": {

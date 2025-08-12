@@ -33,10 +33,14 @@ import {
   type Location,
 } from "react-router";
 import { Button, Col, DropdownItem, Form, Row } from "reactstrap";
-
 import { ACCESS_LEVELS } from "../../../api-client";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
-import { InfoAlert, RenkuAlert, WarnAlert } from "../../../components/Alert";
+import {
+  ErrorAlert,
+  InfoAlert,
+  RenkuAlert,
+  WarnAlert,
+} from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import {
@@ -88,6 +92,9 @@ export default function StartNewSession() {
   const { params } = useContext(AppContext);
   const anonymousSessionsEnabled =
     params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
+  const supportLegacySessions =
+    params?.LEGACY_SUPPORT.supportLegacySessions ??
+    DEFAULT_APP_PARAMS.LEGACY_SUPPORT.supportLegacySessions;
 
   const location = useLocation();
   const searchParams = useMemo(
@@ -110,6 +117,13 @@ export default function StartNewSession() {
   const { starting, error } = useAppSelector(
     ({ startSession }) => startSession
   );
+
+  const accessLevel = useLegacySelector<number | null>(
+    (state) => state.stateModel.project.metadata.accessLevel ?? null
+  );
+  const devAccess = accessLevel
+    ? accessLevel >= ACCESS_LEVELS.DEVELOPER
+    : false;
 
   const dispatch = useAppDispatch();
 
@@ -159,6 +173,21 @@ export default function StartNewSession() {
     );
   }
 
+  const newSessionContent = supportLegacySessions ? (
+    <StartNewSessionContent />
+  ) : (
+    <ErrorAlert timeout={0}>
+      <p className="mb-0">
+        Starting sessions is no longer supported in Renku Legacy.
+      </p>
+      {devAccess && (
+        <p className={cx("mb-0", "mt-2")}>
+          Migrate to Renku 2.0 to continue creating and managing your work.
+        </p>
+      )}
+    </ErrorAlert>
+  );
+
   return (
     <>
       <BackButton />
@@ -168,7 +197,7 @@ export default function StartNewSession() {
         </Col>
         <Col sm={12} md={9} lg={8}>
           <SessionStartError />
-          <StartNewSessionContent />
+          {newSessionContent}
         </Col>
       </Row>
     </>

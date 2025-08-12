@@ -31,7 +31,7 @@ import {
 const adminSessionsApi = createApi({
   reducerPath: "adminSessionsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data",
+    baseUrl: "/api/data",
   }),
   tagTypes: ["Environment"],
   endpoints: (builder) => ({

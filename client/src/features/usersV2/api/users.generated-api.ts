@@ -273,9 +273,9 @@ export type SecretPatch = {
 export type Version = {
   version: string;
 };
-export type ProjectSlug = string;
+export type ProjectSlugResponse = string;
 export type PinnedProjects = {
-  project_slugs?: ProjectSlug[];
+  project_slugs?: ProjectSlugResponse[];
 };
 export type ShowProjectMigrationBanner = boolean;
 export type UserPreferences = {
@@ -283,6 +283,7 @@ export type UserPreferences = {
   pinned_projects: PinnedProjects;
   show_project_migration_banner?: ShowProjectMigrationBanner;
 };
+export type ProjectSlug = string;
 export type AddPinnedProject = {
   project_slug: ProjectSlug;
 };

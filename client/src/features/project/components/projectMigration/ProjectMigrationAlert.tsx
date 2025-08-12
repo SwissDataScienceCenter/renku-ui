@@ -9,8 +9,8 @@ import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { Links } from "../../../../utils/constants/Docs";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetRenkuV1ProjectsByV1IdMigrationsQuery } from "../../../projectsV2/api/projectV2.api";
-import { ProjectMetadata } from "./ProjectMigration.types";
 import MigrationV1Modal from "./MigrationV1Modal";
+import { ProjectMetadata } from "./ProjectMigration.types";
 
 interface ProjectMigrationAlertProps {
   projectId: number;
@@ -79,8 +79,16 @@ export default function ProjectMigrationAlert({
 
   return (
     <>
-      <WarnAlert>
-        <p>This project can be migrated to Renku 2.0</p>
+      <WarnAlert data-cy="sunset-project-banner">
+        <h4>Renku Legacy will be discontinued in October 2025</h4>
+        <p className="mb-2">
+          Migrate your projects to Renku 2.0 to continue creating and managing
+          your work.
+        </p>
+        <p>
+          Renku Legacy will be shut down in October 2025, after which this page
+          will no longer be accessible.
+        </p>
         <div className={cx("d-flex", "flex-row", "gap-2")}>
           <Button size="sm" color="warning" onClick={toggle}>
             Migrate this project to Renku 2.0
