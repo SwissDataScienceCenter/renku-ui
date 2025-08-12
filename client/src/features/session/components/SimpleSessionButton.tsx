@@ -92,7 +92,7 @@ export default function SimpleSessionButton({
 
   if (!runningSession) {
     return (
-      <div className="d-inline-block" id="start-legacy-session-container">
+      <div className="d-inline-flex" id="start-legacy-session-container">
         <Link
           className={cx(
             className,
