@@ -43,6 +43,12 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getRenkuV1ProjectsMigrations: build.query<
+      GetRenkuV1ProjectsMigrationsApiResponse,
+      GetRenkuV1ProjectsMigrationsApiArg
+    >({
+      query: () => ({ url: `/renku_v1_projects/migrations` }),
+    }),
     getRenkuV1ProjectsByV1IdMigrations: build.query<
       GetRenkuV1ProjectsByV1IdMigrationsApiResponse,
       GetRenkuV1ProjectsByV1IdMigrationsApiArg
@@ -60,12 +66,6 @@ const injectedRtkApi = api.injectEndpoints({
         method: "POST",
         body: queryArg.projectMigrationPost,
       }),
-    }),
-    getRenkuV1ProjectsMigrations: build.query<
-      GetRenkuV1ProjectsMigrationsApiResponse,
-      GetRenkuV1ProjectsMigrationsApiArg
-    >({
-      query: () => ({ url: `/renku_v1_projects/migrations` }),
     }),
     getNamespacesByNamespaceProjectsAndSlug: build.query<
       GetNamespacesByNamespaceProjectsAndSlugApiResponse,
@@ -134,14 +134,6 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/projects/${queryArg.projectId}/permissions`,
-      }),
-    }),
-    getProjectsByProjectIdDataConnectorLinks: build.query<
-      GetProjectsByProjectIdDataConnectorLinksApiResponse,
-      GetProjectsByProjectIdDataConnectorLinksApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/projects/${queryArg.projectId}/data_connector_links`,
       }),
     }),
     getProjectsByProjectIdSessionSecretSlots: build.query<
@@ -251,6 +243,9 @@ export type DeleteProjectsByProjectIdApiResponse =
 export type DeleteProjectsByProjectIdApiArg = {
   projectId: Ulid;
 };
+export type GetRenkuV1ProjectsMigrationsApiResponse =
+  /** status 200 List of project migrations */ ProjectMigrationList;
+export type GetRenkuV1ProjectsMigrationsApiArg = void;
 export type GetRenkuV1ProjectsByV1IdMigrationsApiResponse =
   /** status 200 Project exists in v2 and has been migrated */ Project;
 export type GetRenkuV1ProjectsByV1IdMigrationsApiArg = {
@@ -260,13 +255,10 @@ export type GetRenkuV1ProjectsByV1IdMigrationsApiArg = {
 export type PostRenkuV1ProjectsByV1IdMigrationsApiResponse =
   /** status 201 The project was created */ Project;
 export type PostRenkuV1ProjectsByV1IdMigrationsApiArg = {
-  /** The ID of the project in Renku v1 */
+  /** The ID of the Gitlab repository that represents the project in Renku v1 */
   v1Id: number;
   projectMigrationPost: ProjectMigrationPost;
 };
-export type GetRenkuV1ProjectsMigrationsApiResponse =
-  /** status 200 List of project migrations */ ProjectMigrationList;
-export type GetRenkuV1ProjectsMigrationsApiArg = void;
 export type GetNamespacesByNamespaceProjectsAndSlugApiResponse =
   /** status 200 The project */ Project;
 export type GetNamespacesByNamespaceProjectsAndSlugApiArg = {
@@ -315,12 +307,6 @@ export type GetProjectsByProjectIdPermissionsApiResponse =
 export type GetProjectsByProjectIdPermissionsApiArg = {
   projectId: Ulid;
 };
-export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
-  /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
-export type GetProjectsByProjectIdDataConnectorLinksApiArg = {
-  /** the ID of the project */
-  projectId: Ulid;
-};
 export type GetProjectsByProjectIdSessionSecretSlotsApiResponse =
   /** status 200 The list of session secret slots */ SessionSecretSlotList;
 export type GetProjectsByProjectIdSessionSecretSlotsApiArg = {
@@ -367,8 +353,7 @@ export type DeleteSessionSecretSlotsBySlotIdApiArg = {
 };
 export type Ulid = string;
 export type ProjectName = string;
-export type Slug = string;
-export type LegacySlug = string;
+export type SlugResponse = string;
 export type CreationDate = string;
 export type UserId = string;
 export type UpdatedAt = string;
@@ -385,8 +370,8 @@ export type SecretsMountDirectory = string;
 export type Project = {
   id: Ulid;
   name: ProjectName;
-  namespace: Slug;
-  slug: LegacySlug;
+  namespace: SlugResponse;
+  slug: SlugResponse;
   creation_date: CreationDate;
   created_by: UserId;
   updated_at?: UpdatedAt;
@@ -420,6 +405,7 @@ export type ProjectGetQuery = PaginationRequest & {
   /** A flag to filter projects where the user is a direct member. */
   direct_member?: boolean;
 };
+export type Slug = string;
 export type ProjectPost = {
   name: ProjectName;
   namespace: Slug;
@@ -436,6 +422,7 @@ export type SecretsMountDirectoryPatch = string;
 export type ProjectPatch = {
   name?: ProjectName;
   namespace?: Slug;
+  slug?: Slug;
   repositories?: RepositoriesList;
   visibility?: Visibility;
   description?: Description;
@@ -446,6 +433,13 @@ export type ProjectPatch = {
   is_template?: IsTemplate;
   secrets_mount_directory?: SecretsMountDirectoryPatch;
 };
+export type ProjectMigrationInfo = {
+  project_id: Ulid;
+  /** The id of the project in v1 */
+  v1_id: number;
+  launcher_id?: Ulid;
+};
+export type ProjectMigrationList = ProjectMigrationInfo[];
 export type SessionName = string;
 export type ContainerImage = string;
 export type DefaultUrl = string;
@@ -462,18 +456,11 @@ export type ProjectMigrationPost = {
   project: ProjectPost;
   session_launcher?: MigrationSessionLauncherPost;
 };
-export type ProjectMigrationInfo = {
-  project_id: Ulid;
-  /** The id of the project in v1 */
-  v1_id: number;
-  launcher_id?: Ulid;
-};
-export type ProjectMigrationList = ProjectMigrationInfo[];
 export type UserFirstLastName = string;
 export type Role = "viewer" | "editor" | "owner";
 export type ProjectMemberResponse = {
   id: UserId;
-  namespace?: LegacySlug;
+  namespace?: SlugResponse;
   first_name?: UserFirstLastName;
   last_name?: UserFirstLastName;
   role: Role;
@@ -492,14 +479,6 @@ export type ProjectPermissions = {
   /** The user can manage project members */
   change_membership?: boolean;
 };
-export type DataConnectorToProjectLink = {
-  id: Ulid;
-  data_connector_id: Ulid;
-  project_id: Ulid;
-  creation_date: CreationDate;
-  created_by: UserId;
-};
-export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
 export type SecretSlotName = string;
 export type SecretSlotFileName = string;
 export type SessionSecretSlot = {
@@ -544,9 +523,9 @@ export const {
   useGetProjectsByProjectIdQuery,
   usePatchProjectsByProjectIdMutation,
   useDeleteProjectsByProjectIdMutation,
+  useGetRenkuV1ProjectsMigrationsQuery,
   useGetRenkuV1ProjectsByV1IdMigrationsQuery,
   usePostRenkuV1ProjectsByV1IdMigrationsMutation,
-  useGetRenkuV1ProjectsMigrationsQuery,
   useGetNamespacesByNamespaceProjectsAndSlugQuery,
   useGetProjectsByProjectIdCopiesQuery,
   usePostProjectsByProjectIdCopiesMutation,
@@ -555,7 +534,6 @@ export const {
   usePatchProjectsByProjectIdMembersMutation,
   useDeleteProjectsByProjectIdMembersAndMemberIdMutation,
   useGetProjectsByProjectIdPermissionsQuery,
-  useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
   useGetProjectsByProjectIdSessionSecretsQuery,
   usePatchProjectsByProjectIdSessionSecretsMutation,

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,11 +16,29 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import cx from "classnames";
+import { ReactNode } from "react";
 
-// initialize an empty api service that we'll inject endpoints into later as needed
-export const connectedServicesEmptyApi = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
-  endpoints: () => ({}),
-  reducerPath: "connectedServicesApi",
-});
+interface CollapseBodyProps {
+  className?: string;
+  children: ReactNode;
+}
+export default function CollapseBody({
+  className,
+  children,
+}: CollapseBodyProps) {
+  return (
+    <div
+      className={cx(
+        "border-3",
+        "border-dark-subtle",
+        "border-start",
+        "ms-1",
+        "ps-2",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}

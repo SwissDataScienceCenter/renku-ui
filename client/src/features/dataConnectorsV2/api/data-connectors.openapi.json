@@ -1128,6 +1128,7 @@
               "int",
               "bool",
               "string",
+              "stringArray",
               "Time",
               "Duration",
               "MultiEncoder",
@@ -1217,8 +1218,7 @@
         "description": "A single keyword",
         "type": "string",
         "minLength": 1,
-        "maxLength": 99,
-        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
+        "maxLength": 99
       },
       "DataConnectorName": {
         "description": "Renku data connector name",

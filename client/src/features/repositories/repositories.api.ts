@@ -28,7 +28,7 @@ import {
 const repositoriesApi = createApi({
   reducerPath: "repositoriesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data/repositories",
+    baseUrl: "/api/data/repositories",
   }),
   tagTypes: ["Repository", "RepositoryProbe"],
   endpoints: (builder) => ({

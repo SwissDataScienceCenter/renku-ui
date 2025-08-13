@@ -32,7 +32,7 @@ describe("Add dataset to project", () => {
     cy.wait("@getUser");
     cy.getDataCy("sunset-banner").should(
       "contain",
-      "Project creation no longer available"
+      "project and dataset creation are no longer available"
     );
   });
 });

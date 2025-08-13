@@ -36,6 +36,9 @@ import {
   ModalFooter,
 } from "reactstrap";
 
+import DataConnectorModal, {
+  DataConnectorModalBodyAndFooter,
+} from "~/features/dataConnectorsV2/components/DataConnectorModal";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
@@ -49,14 +52,10 @@ import {
   usePostDataConnectorsGlobalMutation,
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import { DATA_CONNECTORS_DOI_DOCS_URL } from "../../../dataConnectorsV2/components/dataConnector.constants";
-import DataConnectorModal, {
-  DataConnectorModalBodyAndFooter,
-} from "../../../dataConnectorsV2/components/DataConnectorModal/index";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
 
-import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
+import styles from "~/features/dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -336,11 +335,10 @@ function ProjectLinkDataConnectorBodyAndFooter({
 
   useEffect(() => {
     if (isSuccess) {
-      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       reset();
       toggle();
     }
-  }, [dispatch, isSuccess, reset, toggle]);
+  }, [isSuccess, reset, toggle]);
 
   const error = currentQuery?.error ?? linkDataConnectorError;
 
@@ -422,8 +420,6 @@ function ProjectDoiDataConnectorBodyAndFooter({
   project,
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
-  const dispatch = useAppDispatch();
-
   const [
     postDataConnector,
     {
@@ -496,11 +492,10 @@ function ProjectDoiDataConnectorBodyAndFooter({
   // Close the modal and reset the Form if linking was successful
   useEffect(() => {
     if (linkDataConnectorSuccess) {
-      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       reset();
       toggle();
     }
-  }, [dispatch, linkDataConnectorSuccess, reset, toggle]);
+  }, [linkDataConnectorSuccess, reset, toggle]);
 
   return (
     <Form noValidate onSubmit={handleSubmit(onSubmit)}>
