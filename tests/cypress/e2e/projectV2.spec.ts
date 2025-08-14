@@ -376,11 +376,11 @@ describe("Edit v2 project", () => {
     fixtures
       .deleteProjectV2Member({ memberId: projectMemberToRemove })
       .listProjectV2Members({ removeMemberId: projectMemberToRemove });
-    cy.getDataCy("project-member-actions-1")
+    cy.getDataCy("project-member-actions-2")
       .find('[data-cy="button-with-menu-dropdown"]')
       .click();
-    cy.getDataCy("project-member-actions-1").contains("Remove").click();
-    cy.getDataCy("remove-member-form").should("be.visible");
+    cy.getDataCy("project-member-actions-2").contains("Remove").click();
+    cy.getDataCy("remove-member-form").should("be.visible").contains("@user3");
     cy.contains("Remove member").should("be.visible").click();
     cy.contains("@user3").should("not.exist");
   });
