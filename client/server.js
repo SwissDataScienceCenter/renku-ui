@@ -86,7 +86,23 @@ await import(BUILD_PATH).then(
 );
 
 // Logging
-app.use(morgan("tiny"));
+// Note: do not activate logging in CI
+if (process.env.CI !== "1") {
+  app.use(
+    morgan((tokens, req, res) => {
+      const log = {
+        time: tokens.date(req, res, "iso"),
+        msg: "Request",
+        method: tokens.method(req, res),
+        url: tokens.url(req, res),
+        status: tokens.status(req, res),
+        responseTime: `${tokens["response-time"](req, res)}ms`,
+        requestID: tokens.req(req, res, "X-Request-Id"),
+      };
+      return JSON.stringify(log);
+    })
+  );
+}
 
 // Client files
 app.use(express.static("build/client"));
