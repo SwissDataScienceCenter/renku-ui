@@ -754,6 +754,10 @@
         "type": "string",
         "enum": ["general", "storage"]
       },
+      "ShowProjectMigrationBanner": {
+        "description": "Should display project migration banner",
+        "type": "boolean"
+      },
       "UserPreferences": {
         "type": "object",
         "description": "The object containing user preferences",
@@ -771,10 +775,6 @@
         },
         "required": ["user_id", "pinned_projects"]
       },
-      "ShowProjectMigrationBanner": {
-        "description": "Should display project migration banner",
-        "type": "boolean"
-      },
       "PinnedProjects": {
         "type": "object",
         "description": "The list of projects a user has pinned on their dashboard",
@@ -782,7 +782,7 @@
           "project_slugs": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ProjectSlug"
+              "$ref": "#/components/schemas/ProjectSlugResponse"
             }
           }
         }
@@ -793,6 +793,12 @@
         "minLength": 3,
         "example": "user/my-project",
         "pattern": "^[a-zA-Z0-9]+([_.\\-/][a-zA-Z0-9]+)*[_.\\-/]?[a-zA-Z0-9]$"
+      },
+      "ProjectSlugResponse": {
+        "type": "string",
+        "description": "The slug used to identify a project",
+        "minLength": 3,
+        "example": "user/my-project"
       },
       "AddPinnedProject": {
         "type": "object",

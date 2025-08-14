@@ -8,9 +8,6 @@
   "servers": [
     {
       "url": "/api/data"
-    },
-    {
-      "url": "/ui-server/api/data"
     }
   ],
   "paths": {
@@ -496,6 +493,55 @@
         },
         "tags": ["namespaces"]
       }
+    },
+    "/namespaces/{first_slug}/{second_slug}": {
+      "get": {
+        "summary": "Get a namespace",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "first_slug",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Slug"
+            }
+          },
+          {
+            "in": "path",
+            "name": "second_slug",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The namespace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamespaceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The namespace does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["namespaces"]
+      }
     }
   },
   "components": {
@@ -518,7 +564,7 @@
             "$ref": "#/components/schemas/NamespaceName"
           },
           "slug": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "creation_date": {
             "$ref": "#/components/schemas/CreationDate"
@@ -594,13 +640,11 @@
         "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*$",
         "example": "a-slug-example"
       },
-      "OneOrTwoSlugs": {
-        "description": "A command-line/url friendly name for a single slug or two slugs separated by /",
+      "SlugResponse": {
+        "description": "A command-line/url friendly name for a namespace",
         "type": "string",
         "minLength": 1,
-        "maxLength": 200,
-        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*(?<!\\.git)(?<!\\.atom)(?:/[a-z0-9][a-z0-9\\-_.]*){0,1}$",
-        "example": "user1/project-1"
+        "example": "a-slug-example"
       },
       "CreationDate": {
         "description": "The date and time the resource was created (in UTC and ISO-8601 format)",
@@ -732,7 +776,7 @@
             "$ref": "#/components/schemas/NamespaceName"
           },
           "slug": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "creation_date": {
             "$ref": "#/components/schemas/CreationDate"
@@ -744,7 +788,7 @@
             "$ref": "#/components/schemas/NamespaceKind"
           },
           "path": {
-            "$ref": "#/components/schemas/OneOrTwoSlugs"
+            "$ref": "#/components/schemas/SlugResponse"
           }
         },
         "required": ["id", "namespace_kind", "slug", "path"],

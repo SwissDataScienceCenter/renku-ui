@@ -241,6 +241,7 @@ export type EnvironmentPort = number;
 export type EnvironmentCommand = string[];
 export type EnvironmentArgs = string[];
 export type IsArchived = boolean;
+export type StripPathPrefix = boolean;
 export type EnvironmentWithoutContainerImage = {
   id: Ulid;
   name: SessionName;
@@ -255,6 +256,7 @@ export type EnvironmentWithoutContainerImage = {
   command?: EnvironmentCommand;
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
+  strip_path_prefix?: StripPathPrefix;
 };
 export type ContainerImage = string;
 export type Environment = EnvironmentWithoutContainerImage & {
@@ -283,6 +285,7 @@ export type EnvironmentPost = {
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
   environment_image_source: EnvironmentImageSourceImage;
+  strip_path_prefix?: StripPathPrefix;
 };
 export type EnvironmentWorkingDirectoryPatch = string;
 export type EnvironmentMountDirectoryPatch = string;
@@ -299,6 +302,7 @@ export type EnvironmentPatch = {
   command?: EnvironmentCommand;
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
+  strip_path_prefix?: StripPathPrefix;
 };
 export type EnvironmentKind = "GLOBAL" | "CUSTOM";
 export type EnvironmentWithImageGet = Environment & {

@@ -95,6 +95,7 @@ export function validatedAppParams(params: unknown): AppParams {
     DASHBOARD_MESSAGE,
     GATEWAY_URL,
     HOMEPAGE,
+    IMAGE_BUILDERS_ENABLED,
     KEYCLOAK_REALM,
     LEGACY_SUPPORT,
     MAINTENANCE,
@@ -102,7 +103,6 @@ export function validatedAppParams(params: unknown): AppParams {
     PRIVACY_BANNER_CONTENT,
     PRIVACY_BANNER_ENABLED,
     PRIVACY_BANNER_LAYOUT,
-    TERMS_PAGES_ENABLED,
     RENKU_CHART_VERSION,
     SENTRY_NAMESPACE,
     SENTRY_SAMPLE_RATE,
@@ -110,12 +110,12 @@ export function validatedAppParams(params: unknown): AppParams {
     SESSION_CLASS_EMAIL_US,
     STATUSPAGE_ID,
     TEMPLATES,
-    UISERVER_URL,
+    TERMS_PAGES_ENABLED,
     UI_SHORT_SHA,
     UI_VERSION,
+    UISERVER_URL,
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
-    IMAGE_BUILDERS_ENABLED,
   };
 }
 
@@ -268,14 +268,19 @@ function validateLegacySupport(params: RawAppParams): LegacySupportParams {
     [key: string]: unknown;
   };
 
-  const enabled = !!rawLegacySupportParams.enabled;
-  1;
-  if (rawLegacySupportParams.enabled != null)
-    return {
-      enabled,
-    };
+  const enabled =
+    rawLegacySupportParams.enabled != null
+      ? !!rawLegacySupportParams.enabled
+      : DEFAULT_APP_PARAMS["LEGACY_SUPPORT"].enabled;
+  const supportLegacySessions =
+    rawLegacySupportParams.supportLegacySessions != null
+      ? !!rawLegacySupportParams.supportLegacySessions
+      : DEFAULT_APP_PARAMS["LEGACY_SUPPORT"].supportLegacySessions;
 
-  return DEFAULT_APP_PARAMS["LEGACY_SUPPORT"];
+  return {
+    enabled,
+    supportLegacySessions,
+  };
 }
 
 function validatePreviewThreshold(

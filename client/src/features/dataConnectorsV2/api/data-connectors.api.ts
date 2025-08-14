@@ -326,6 +326,7 @@ export type RCloneOption = {
     | "int"
     | "bool"
     | "string"
+    | "stringArray"
     | "Time"
     | "Duration"
     | "MultiEncoder"

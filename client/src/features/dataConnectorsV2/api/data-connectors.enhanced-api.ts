@@ -152,6 +152,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug: {
       providesTags: ["DataConnectors"],
     },
+    getProjectsByProjectIdDataConnectorLinks: {
+      providesTags: ["DataConnectorsProjectLinks"],
+    },
     patchDataConnectorsByDataConnectorId: {
       invalidatesTags: ["DataConnectors"],
     },
@@ -190,4 +193,6 @@ export const {
   usePostDataConnectorsMutation,
   usePostDataConnectorsGlobalMutation,
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
 } = enhancedApi;

@@ -40,7 +40,7 @@ describe("Add new project", () => {
       .updateProject({ projectPath: newProjectPath });
     cy.getDataCy("sunset-banner").should(
       "contain",
-      "Project creation no longer available"
+      "project and dataset creation are no longer available"
     );
   });
 });

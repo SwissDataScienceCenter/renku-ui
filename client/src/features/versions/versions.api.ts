@@ -32,7 +32,7 @@ import {
 
 export const versionsApi = createApi({
   reducerPath: "versionsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/" }),
   tagTypes: ["Version"],
   keepUnusedDataFor: 60,
   endpoints: (builder) => ({
