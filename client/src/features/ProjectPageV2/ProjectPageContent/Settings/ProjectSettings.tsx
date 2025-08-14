@@ -376,7 +376,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
               )}
             </div>
           }
-          requestedPermission="delete" // NOTE: "write" is not enough
+          requestedPermission="delete"
           userPermissions={permissions}
         />
 
