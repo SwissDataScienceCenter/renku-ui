@@ -29,14 +29,13 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { usePostEnvironmentsMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
+import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
-// import { useAddSessionEnvironmentMutation } from "./adminSessions.api";
-import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
-import { usePostEnvironmentsMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 
 export default function AddSessionEnvironmentButton() {
   const [isOpen, setIsOpen] = useState(false);

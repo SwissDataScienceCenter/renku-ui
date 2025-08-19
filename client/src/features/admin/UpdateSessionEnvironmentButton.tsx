@@ -28,17 +28,18 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import ButtonStyles from "../../components/buttons/Buttons.module.scss";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
 import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { usePatchEnvironmentsByEnvironmentIdMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
+import { getSessionEnvironmentValues } from "./adminSessions.utils";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
-// import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
-import { getSessionEnvironmentValues } from "./adminSessions.utils";
+
+import ButtonStyles from "~/components/buttons/Buttons.module.scss";
 
 interface UpdateSessionEnvironmentButtonProps {
   environment: SessionEnvironment;
@@ -114,11 +115,8 @@ function UpdateSessionEnvironmentModal({
             port: data.port ?? undefined,
             uid: data.uid ?? undefined,
             working_directory: data.working_directory?.trim() || undefined,
-
-            // ...(),
-
-            // command: commandParsed.data,
-            // args: argsParsed.data,
+            ...(commandParsed.data ? { command: commandParsed.data } : {}),
+            ...(argsParsed.data ? { args: argsParsed.data } : {}),
           },
         });
     },
