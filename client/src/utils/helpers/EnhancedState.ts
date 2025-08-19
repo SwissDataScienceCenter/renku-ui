@@ -29,7 +29,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
-import adminSessionsApi from "../../features/admin/adminSessions.api";
+// import adminSessionsApi from "../../features/admin/adminSessions.api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -89,7 +89,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
-    [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
+    // [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
     [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
@@ -127,7 +127,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         serializableCheck: false,
       })
         .concat(adminKeycloakApi.middleware)
-        .concat(adminSessionsApi.middleware)
+        // .concat(adminSessionsApi.middleware)
         .concat(computeResourcesApi.middleware)
         .concat(connectedServicesApi.middleware)
         .concat(dataConnectorsApi.middleware)

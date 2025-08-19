@@ -32,11 +32,12 @@ import { Loader } from "../../components/Loader";
 import ButtonStyles from "../../components/buttons/Buttons.module.scss";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
+import { usePatchEnvironmentsByEnvironmentIdMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
-import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
+// import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
 import { getSessionEnvironmentValues } from "./adminSessions.utils";
 
 interface UpdateSessionEnvironmentButtonProps {
@@ -86,7 +87,7 @@ function UpdateSessionEnvironmentModal({
   toggle,
 }: UpdateSessionEnvironmentModalProps) {
   const [updateSessionEnvironment, result] =
-    useUpdateSessionEnvironmentMutation();
+    usePatchEnvironmentsByEnvironmentIdMutation();
 
   const {
     control,
@@ -103,17 +104,22 @@ function UpdateSessionEnvironmentModal({
       if (commandParsed.parsed && argsParsed.parsed)
         updateSessionEnvironment({
           environmentId: environment.id,
-          container_image: data.container_image,
-          name: data.name,
-          default_url: data.default_url?.trim() || "",
-          description: data.description?.trim() || "",
-          port: data.port ?? undefined,
-          working_directory: data.working_directory?.trim() || undefined,
-          mount_directory: data.mount_directory?.trim() || undefined,
-          uid: data.uid ?? undefined,
-          gid: data.gid ?? undefined,
-          command: commandParsed.data,
-          args: argsParsed.data,
+          environmentPatch: {
+            container_image: data.container_image,
+            default_url: data.default_url?.trim() || "",
+            description: data.description?.trim() || "",
+            gid: data.gid ?? undefined,
+            mount_directory: data.mount_directory?.trim() || undefined,
+            name: data.name,
+            port: data.port ?? undefined,
+            uid: data.uid ?? undefined,
+            working_directory: data.working_directory?.trim() || undefined,
+
+            // ...(),
+
+            // command: commandParsed.data,
+            // args: argsParsed.data,
+          },
         });
     },
     [environment.id, updateSessionEnvironment]

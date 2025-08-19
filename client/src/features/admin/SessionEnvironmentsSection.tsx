@@ -39,7 +39,8 @@ import { safeStringify } from "../sessionsV2/session.utils";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
-import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
+import { useGetEnvironmentsQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
+// import { useGetSessionEnvironmentsQuery } from "./adminSessions.api";
 
 export default function SessionEnvironmentsSection() {
   return (
@@ -51,11 +52,7 @@ export default function SessionEnvironmentsSection() {
 }
 
 function SessionEnvironments() {
-  const {
-    data: environments,
-    error,
-    isLoading,
-  } = useGetSessionEnvironmentsQuery();
+  const { data: environments, error, isLoading } = useGetEnvironmentsQuery({});
 
   if (isLoading) {
     return <Loader />;
