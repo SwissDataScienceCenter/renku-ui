@@ -64,7 +64,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       <html lang="en">
         <head>
           <link rel="stylesheet" type="text/css" href={v2Styles} />
-          <title>Renku -- Page Not Found</title>
+          <title>Page Not Found | Renku</title>
           <Links />
         </head>
         <body>
@@ -77,15 +77,13 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       <html lang="en">
         <head>
           <link rel="stylesheet" type="text/css" href={v2Styles} />
-          <title>Renku -- Error</title>
+          <title>Error | Renku</title>
           <Links />
         </head>
         <body>
           <div>
             <h1>Error</h1>
             <p>{error.message}</p>
-            {/* <p>The stack trace is:</p>
-        <pre>{error.stack}</pre> */}
           </div>
         </body>
       </html>
