@@ -56,6 +56,7 @@ import {
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
 import ContactUsCard from "./ContactUsCard";
+import { getSettingsUrl } from "./connectedServices.utils";
 
 const CHECK_STATUS_QUERY_PARAM = "check-status";
 
@@ -340,12 +341,10 @@ function GitHubAppInstallations({
     "This application"
   );
 
-  const settingsUrl = provider.app_slug
-    ? safeNewUrl(
-        `apps/${provider.app_slug}/installations/select_target`,
-        provider.url
-      )
-    : null;
+  const settingsUrl = getSettingsUrl({
+    app_slug: provider.app_slug,
+    url: provider.url,
+  });
 
   const refreshInstallationsButton = (
     <Button
