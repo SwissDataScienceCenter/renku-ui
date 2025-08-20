@@ -115,8 +115,18 @@ function UpdateSessionEnvironmentModal({
             port: data.port ?? undefined,
             uid: data.uid ?? undefined,
             working_directory: data.working_directory?.trim() || undefined,
-            ...(commandParsed.data ? { command: commandParsed.data } : {}),
-            ...(argsParsed.data ? { args: argsParsed.data } : {}),
+            // TODO: The API spec needs to be fixed to described value resets here
+            // TODO: See https://github.com/SwissDataScienceCenter/renku-data-services/issues/985
+            ...(commandParsed.data
+              ? { command: commandParsed.data }
+              : data.command.trim() === ""
+              ? ({ command: null } as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+              : {}),
+            ...(argsParsed.data
+              ? { args: argsParsed.data }
+              : data.args.trim() === ""
+              ? ({ args: null } as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+              : {}),
           },
         });
     },
