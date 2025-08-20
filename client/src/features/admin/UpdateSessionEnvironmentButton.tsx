@@ -115,7 +115,7 @@ function UpdateSessionEnvironmentModal({
             port: data.port ?? undefined,
             uid: data.uid ?? undefined,
             working_directory: data.working_directory?.trim() || undefined,
-            // TODO: The API spec needs to be fixed to described value resets here
+            // TODO: The API spec needs to be fixed to describe value resets here
             // TODO: See https://github.com/SwissDataScienceCenter/renku-data-services/issues/985
             ...(commandParsed.data
               ? { command: commandParsed.data }
