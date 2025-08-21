@@ -148,7 +148,7 @@ describe("display latex in markdown", () => {
       // eslint-disable-next-line max-len
       '<span title="\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><mrow><mo>∫</mo><mi>f</mi><mo>(</mo><mi mathvariant="bold">x</mi><mo>)</mo><mi mathvariant="normal">d</mi><mi>u</mi><mo>(</mo><mi mathvariant="bold">x</mi><mo>)</mo><mo separator="true">,</mo></mrow>\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\n' +
       // eslint-disable-next-line max-len
-      '</math></span><span aria-hidden="true" class="katex-html"><span class="base"><span style="height:2.22225em;vertical-align:-0.86225em;" class="strut"></span><span style="margin-right:0.44445em;position:relative;top:-0.0011249999999999316em;" class="mop op-symbol large-op">∫</span><span style="margin-right:0.16666666666666666em;" class="mspace"></span><span style="margin-right:0.10764em;" class="mord mathdefault">f</span><span class="mopen">(</span><span class="mord"><span class="mord mathbf">x</span></span><span class="mclose">)</span><span class="mord"><span class="mord"><span class="mord mathrm">d</span></span></span><span class="mord mathdefault">u</span><span class="mopen">(</span><span class="mord"><span class="mord mathbf">x</span></span><span class="mclose">)</span><span class="mpunct">,</span></span></span></span></span></span>';
+      '</math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.22225em;vertical-align:-0.86225em;"></span><span class="mop op-symbol large-op" style="margin-right:0.44445em;position:relative;top:-0.0011249999999999316em;">∫</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mopen">(</span><span class="mord"><span class="mord mathbf">x</span></span><span class="mclose">)</span><span class="mord"><span class="mord"><span class="mord mathrm">d</span></span></span><span class="mord mathdefault">u</span><span class="mopen">(</span><span class="mord"><span class="mord mathbf">x</span></span><span class="mclose">)</span><span class="mpunct">,</span></span></span></span></span></span>';
 
     expect(html).toEqual(resultExpected);
   });
@@ -166,7 +166,7 @@ describe("display latex in markdown", () => {
       "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
       "<p><strong>Expression 1</strong></p>\n" +
       // eslint-disable-next-line max-len
-      '<span title="\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;"><span style="color:var(--bs-danger)" title="ParseError: KaTeX parse error: Expected \'EOF\', got \'&amp;\' at position 41: …}u(\\mathbf{x}),&amp;̲" class="katex-error">\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\n' +
+      '<span title="\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;"><span class="katex-error" title="ParseError: KaTeX parse error: Expected \'EOF\', got \'&amp;\' at position 41: …}u(\\mathbf{x}),&amp;̲" style="color:var(--bs-danger)">\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\n' +
       "</span></span>";
     expect(html).toEqual(resultExpected);
   });

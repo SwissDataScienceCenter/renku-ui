@@ -21,9 +21,9 @@ import { useCallback, useEffect, useState } from "react";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
-import { useDeleteSessionEnvironmentMutation } from "./adminSessions.api";
+import { useDeleteEnvironmentsByEnvironmentIdMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 
 interface DeleteSessionEnvironmentButtonProps {
   environment: SessionEnvironment;
@@ -64,7 +64,7 @@ function DeleteSessionEnvironmentModal({
   toggle,
 }: DeleteSessionEnvironmentModalProps) {
   const [deleteSessionEnvironment, result] =
-    useDeleteSessionEnvironmentMutation();
+    useDeleteEnvironmentsByEnvironmentIdMutation();
 
   const onDelete = useCallback(() => {
     deleteSessionEnvironment({
