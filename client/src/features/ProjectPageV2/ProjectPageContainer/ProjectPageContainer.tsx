@@ -20,20 +20,20 @@ import { useEffect } from "react";
 import {
   generatePath,
   Outlet,
+  useLocation,
   useNavigate,
   useOutletContext,
   useParams,
 } from "react-router";
 import { Col, Row } from "reactstrap";
-
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
+import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 export default function ProjectPageContainer() {
   const { namespace, slug } = useParams<{
@@ -48,6 +48,7 @@ export default function ProjectPageContainer() {
     });
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     if (namespace && currentData && currentData.namespace !== namespace) {
@@ -58,7 +59,7 @@ export default function ProjectPageContainer() {
           slug: currentData.slug,
         }
       );
-      const deltaUrl = location.pathname.slice(previousBasePath.length);
+      const deltaUrl = pathname.slice(previousBasePath.length);
       const newUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: currentData.namespace,
         slug: currentData.slug,
@@ -72,14 +73,14 @@ export default function ProjectPageContainer() {
           slug: slug,
         }
       );
-      const deltaUrl = location.pathname.slice(previousBasePath.length);
+      const deltaUrl = pathname.slice(previousBasePath.length);
       const newUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: currentData.namespace,
         slug: currentData.slug,
       });
       navigate(newUrl + deltaUrl, { replace: true });
     }
-  }, [currentData, namespace, navigate, slug]);
+  }, [currentData, namespace, navigate, pathname, slug]);
 
   if (isLoading) return <Loader className="align-self-center" />;
 
