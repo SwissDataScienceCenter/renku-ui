@@ -125,6 +125,13 @@ export const BUILDER_FRONTENDS = [
       "Web-based interactive development environment for Jupyter notebooks, code and data.",
     /* eslint-enable spellcheck/spell-checker */
   },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "ttyd",
+    label: "ttyd",
+    description: "Web-based terminal, with minimalist interface.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
 ] as readonly BuilderSelectorOption[];
 
 export const IMAGE_BUILD_DOCS =

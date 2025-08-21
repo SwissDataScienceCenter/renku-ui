@@ -35,7 +35,7 @@ describe("display the home page", () => {
 describe("404 page", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
-    cy.visit("/xzy");
+    cy.visit("/xzy", { failOnStatusCode: false });
   });
 
   it("show error page", () => {

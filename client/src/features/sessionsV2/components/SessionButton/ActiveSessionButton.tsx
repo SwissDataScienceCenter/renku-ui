@@ -43,7 +43,6 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
 import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
@@ -73,6 +72,7 @@ import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
 } from "../SessionModals/ResourceClassWarning";
+import ShutdownSessionContent from "../SessionModals/ShoutdownSessionContent";
 
 interface ActiveSessionButtonProps {
   className?: string;
@@ -444,6 +444,8 @@ export default function ActiveSessionButton({
         isStopping={isStopping}
         onStopSession={onStopSession}
         sessionName={session.name}
+        sessionProjectId={session.project_id}
+        sessionLauncherId={session.launcher_id}
         status={status}
         toggleModal={toggleStopSession}
       />
@@ -464,14 +466,17 @@ interface ConfirmDeleteModalProps {
   isStopping: boolean;
   onStopSession: () => void;
   sessionName: string;
+  sessionLauncherId?: string;
+  sessionProjectId: string;
   status: SessionStatusState;
   toggleModal: () => void;
 }
-
 function ConfirmDeleteModal({
   isOpen,
   isStopping,
   onStopSession,
+  sessionLauncherId,
+  sessionProjectId,
   toggleModal,
 }: ConfirmDeleteModalProps) {
   const onClick = useCallback(() => {
@@ -485,16 +490,10 @@ function ConfirmDeleteModal({
         Shut Down Session
       </ModalHeader>
       <ModalBody>
-        <Row>
-          <Col>
-            <p className="mb-1">
-              Are you sure you want to shut down this session?
-            </p>
-            <p className="fw-bold">
-              Shutting down a session will permanently remove any unsaved work.
-            </p>
-          </Col>
-        </Row>
+        <ShutdownSessionContent
+          sessionLauncherId={sessionLauncherId}
+          sessionProjectId={sessionProjectId}
+        />
       </ModalBody>
       <ModalFooter>
         <Button
@@ -512,7 +511,8 @@ function ConfirmDeleteModal({
           type="submit"
           onClick={onClick}
         >
-          <Trash className={cx("bi", "me-1")} /> Shut down this session
+          <Trash className={cx("bi", "me-1")} />
+          Shut down session
         </Button>
       </ModalFooter>
     </Modal>
