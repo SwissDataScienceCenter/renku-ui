@@ -50,8 +50,12 @@ const getDatasetUrl = (links: KgSearchResultLink[]) => {
 };
 
 const getProjectUrl = (path: string) => {
+  const v1Prefix = "/v1";
   const projectBase = Url.pages.projects.base.get();
-  return `${projectBase}/${path}`;
+  const currentProjectBase = projectBase.startsWith(v1Prefix)
+    ? projectBase.substring(v1Prefix.length)
+    : projectBase;
+  return `${currentProjectBase}/${path}`;
 };
 
 export const mapSearchResultToEntity = (
