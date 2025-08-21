@@ -54,6 +54,7 @@ export default function KeywordBadge({
         "fw-semibold",
         "gap-1",
         "text-break",
+        "text-start",
         "text-wrap",
         highlighted && "bg-success-subtle",
         className
