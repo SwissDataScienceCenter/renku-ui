@@ -58,6 +58,16 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
             ]
           : ["Environment"],
     },
+    postEnvironments: {
+      invalidatesTags: ["Environment"],
+    },
+    patchEnvironmentsByEnvironmentId: {
+      invalidatesTags: (result) =>
+        result ? [{ id: result.id, type: "Environment" }] : ["Environment"],
+    },
+    deleteEnvironmentsByEnvironmentId: {
+      invalidatesTags: ["Environment"],
+    },
     getSessionLaunchersByLauncherId: {
       providesTags: (result) =>
         result
@@ -125,6 +135,9 @@ export const sessionLaunchersV2Api = withTagHandling.injectEndpoints({
 export const {
   // "environments" hooks
   useGetEnvironmentsQuery,
+  usePostEnvironmentsMutation,
+  usePatchEnvironmentsByEnvironmentIdMutation,
+  useDeleteEnvironmentsByEnvironmentIdMutation,
   // "launchers" hooks
   useGetSessionLaunchersByLauncherIdQuery,
   usePostSessionLaunchersMutation,
