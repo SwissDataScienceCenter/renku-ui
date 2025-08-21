@@ -28,16 +28,18 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import ButtonStyles from "../../components/buttons/Buttons.module.scss";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
 import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
+import { usePatchEnvironmentsByEnvironmentIdMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
+import { getSessionEnvironmentValues } from "./adminSessions.utils";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
-import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
-import { getSessionEnvironmentValues } from "./adminSessions.utils";
+
+import ButtonStyles from "~/components/buttons/Buttons.module.scss";
 
 interface UpdateSessionEnvironmentButtonProps {
   environment: SessionEnvironment;
@@ -86,7 +88,7 @@ function UpdateSessionEnvironmentModal({
   toggle,
 }: UpdateSessionEnvironmentModalProps) {
   const [updateSessionEnvironment, result] =
-    useUpdateSessionEnvironmentMutation();
+    usePatchEnvironmentsByEnvironmentIdMutation();
 
   const {
     control,
@@ -103,17 +105,29 @@ function UpdateSessionEnvironmentModal({
       if (commandParsed.parsed && argsParsed.parsed)
         updateSessionEnvironment({
           environmentId: environment.id,
-          container_image: data.container_image,
-          name: data.name,
-          default_url: data.default_url?.trim() || "",
-          description: data.description?.trim() || "",
-          port: data.port ?? undefined,
-          working_directory: data.working_directory?.trim() || undefined,
-          mount_directory: data.mount_directory?.trim() || undefined,
-          uid: data.uid ?? undefined,
-          gid: data.gid ?? undefined,
-          command: commandParsed.data,
-          args: argsParsed.data,
+          environmentPatch: {
+            container_image: data.container_image,
+            default_url: data.default_url?.trim() || "",
+            description: data.description?.trim() || "",
+            gid: data.gid ?? undefined,
+            mount_directory: data.mount_directory?.trim() || undefined,
+            name: data.name,
+            port: data.port ?? undefined,
+            uid: data.uid ?? undefined,
+            working_directory: data.working_directory?.trim() || undefined,
+            // TODO: The API spec needs to be fixed to describe value resets here
+            // TODO: See https://github.com/SwissDataScienceCenter/renku-data-services/issues/985
+            ...(commandParsed.data
+              ? { command: commandParsed.data }
+              : data.command.trim() === ""
+              ? ({ command: null } as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+              : {}),
+            ...(argsParsed.data
+              ? { args: argsParsed.data }
+              : data.args.trim() === ""
+              ? ({ args: null } as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+              : {}),
+          },
         });
     },
     [environment.id, updateSessionEnvironment]
