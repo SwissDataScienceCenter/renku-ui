@@ -289,7 +289,7 @@ export function AdvancedSettingsFields<
         <div className={cx("col-12")}>
           <FormField<T>
             control={control}
-            name={"stripPathPrefix" as Path<T>}
+            name={"strip_path_prefix" as Path<T>}
             label="Strip session URL path prefix"
             info={ENVIRONMENT_VALUES_DESCRIPTION.stripPathPrefix}
             errors={errors}
