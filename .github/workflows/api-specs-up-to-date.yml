@@ -39,6 +39,7 @@ jobs:
       - name: Update the API specs
         run: |
           npm run update-api
+          npm run generate-api
           npm run format
       - name: Check if any spec is out of date
         run: |
