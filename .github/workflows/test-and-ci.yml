@@ -11,6 +11,30 @@ permissions:
   contents: read
 
 jobs:
+  temp-so-that-it-runs-in-pr:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Set up node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install client dependencies
+        run: npm clean-install
+      - name: Update the API specs
+        run: |
+          npm run update-api
+          npm run format
+      - name: Check if any spec is out of date
+        run: |
+          result="$(git status --porcelain)"
+          echo "$result"
+          test -z "$result"
+
   test-client:
     runs-on: ubuntu-24.04
     defaults:
