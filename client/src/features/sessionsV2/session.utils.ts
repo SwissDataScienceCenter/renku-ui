@@ -240,8 +240,7 @@ export function getLauncherDefaultValues(
     gid: launcher.environment?.gid,
     command: getJSONStringArray(launcher.environment?.command),
     args: getJSONStringArray(launcher.environment?.args),
-    strip_path_prefix:
-      launcher.environment?.strip_path_prefix ?? false,
+    strip_path_prefix: launcher.environment?.strip_path_prefix ?? false,
     builder_variant:
       launcher.environment.environment_image_source === "build"
         ? launcher.environment.build_parameters.builder_variant
