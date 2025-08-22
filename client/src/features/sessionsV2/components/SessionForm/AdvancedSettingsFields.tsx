@@ -78,16 +78,28 @@ function FormField<T extends FieldValues>({
         control={control}
         name={name}
         rules={rules}
-        render={({ field }) => (
-          <Input
-            className={cx(errors?.[name] && "is-invalid")}
-            data-cy={`session-launcher-field-${name}`}
-            id={`addSessionLauncher${name}`}
-            placeholder={placeholder}
-            type={type}
-            {...field}
-          />
-        )}
+        render={({ field }) =>
+          type === "checkbox" ? (
+            <Input
+              className={cx(errors?.[name] && "is-invalid")}
+              data-cy={`session-launcher-field-${name}`}
+              id={`addSessionLauncher${name}`}
+              placeholder={placeholder}
+              type={type}
+              checked={field.value}
+              {...field}
+            />
+          ) : (
+            <Input
+              className={cx(errors?.[name] && "is-invalid")}
+              data-cy={`session-launcher-field-${name}`}
+              id={`addSessionLauncher${name}`}
+              placeholder={placeholder}
+              type={type}
+              {...field}
+            />
+          )
+        }
       />
       {errors?.[name] && (
         <div className={cx("d-block", "invalid-feedback")}>
