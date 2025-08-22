@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "Renku Data Services API",
+    "title": "Renkuu Data Services API",
     "description": "Service that allows creating, updating, deleting, and managing Renku native projects.\nAll errors have the same format as the schema called ErrorResponse.\n",
     "version": "v1"
   },
