@@ -73,7 +73,7 @@ function FormField<T extends FieldValues>({
       </Label>
       <MoreInfo>
         <LazyRenkuMarkdown markdownText={info} />
-      </MoreInfo>{" "}
+      </MoreInfo>
       <Controller
         control={control}
         name={name}
