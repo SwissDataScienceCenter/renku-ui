@@ -291,6 +291,7 @@ export function AdvancedSettingsFields<
             control={control}
             name={"strip_path_prefix" as Path<T>}
             label="Strip session URL path prefix"
+            isOptional={true}
             info={ENVIRONMENT_VALUES_DESCRIPTION.stripPathPrefix}
             errors={errors}
             type="checkbox"
