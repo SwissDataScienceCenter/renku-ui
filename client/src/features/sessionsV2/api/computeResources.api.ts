@@ -37,6 +37,15 @@ export const computeResourcesApi =
       postResourcePools: {
         invalidatesTags: ["ResourcePool", "ResourceClass"],
       },
+      patchResourcePoolsByResourcePoolId: {
+        invalidatesTags: (result, _error, { resourcePoolId }) =>
+          result
+            ? [{ id: resourcePoolId, type: "ResourcePool" }, "ResourceClass"]
+            : ["ResourcePool", "ResourceClass"],
+      },
+      deleteResourcePoolsByResourcePoolId: {
+        invalidatesTags: ["ResourcePool", "ResourceClass"],
+      },
       getClassesByClassId: {
         providesTags: ["ResourceClass"],
       },
@@ -58,6 +67,8 @@ export const {
   // "resource pools" hooks
   useGetResourcePoolsQuery,
   usePostResourcePoolsMutation,
+  usePatchResourcePoolsByResourcePoolIdMutation,
+  useDeleteResourcePoolsByResourcePoolIdMutation,
 
   // "resource classes" hooks
   useGetClassesByClassIdQuery,
