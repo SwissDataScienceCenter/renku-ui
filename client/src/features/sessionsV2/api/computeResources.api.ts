@@ -18,7 +18,38 @@
 
 import { computeResourcesGeneratedApi } from "./computeResources.generated-api";
 
-export const computeResourcesApi = computeResourcesGeneratedApi;
+// Adds tag handling for cache management
+export const computeResourcesApi =
+  computeResourcesGeneratedApi.enhanceEndpoints({
+    addTagTypes: ["ResourceClass", "ResourcePool", "ResourcePoolUser"],
+    endpoints: {
+      getResourcePools: {
+        providesTags: (result) =>
+          result
+            ? [
+                ...result.map(({ id }) => ({
+                  id,
+                  type: "ResourcePool" as const,
+                })),
+              ]
+            : ["ResourcePool"],
+      },
+      postResourcePools: {
+        invalidatesTags: ["ResourcePool", "ResourceClass"],
+      },
+      postResourcePoolsByResourcePoolIdClasses: {
+        invalidatesTags: (_result, _error, { resourcePoolId }) => [
+          { id: resourcePoolId, type: "ResourcePool" },
+          "ResourceClass",
+        ],
+      },
+      postResourcePoolsByResourcePoolIdUsers: {
+        invalidatesTags: (_result, _error, { resourcePoolId }) => [
+          { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
+        ],
+      },
+    },
+  });
 
 export const {
   // "resource pools" hooks
@@ -26,9 +57,12 @@ export const {
   usePostResourcePoolsMutation,
 
   // "resource classes" hooks
-  useGetClassesByClassIdQuery,
-  useGetResourcePoolsByResourcePoolIdClassesQuery,
+  // useGetClassesByClassIdQuery,
+  // useGetResourcePoolsByResourcePoolIdClassesQuery,
   usePostResourcePoolsByResourcePoolIdClassesMutation,
+
+  // "users" hooks
+  usePostResourcePoolsByResourcePoolIdUsersMutation,
 
   //   useGetResourcePoolsByResourcePoolIdClassesAndClassIdQuery,
 
