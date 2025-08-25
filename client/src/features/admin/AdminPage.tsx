@@ -30,39 +30,52 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import { ErrorAlert } from "../../components/Alert";
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
-import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
-import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
+// import { ErrorAlert } from "../../components/Alert";
+// import { Loader } from "../../components/Loader";
+// import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+// import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
+// import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
+// import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
+// import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
+// import {
+//   ResourceClass,
+//   ResourcePool,
+// } from "../dataServices/dataServices.types";
+
+import { ErrorAlert } from "~/components/Alert";
+import { Loader } from "~/components/Loader";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
+import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
-  useDeleteResourcePoolMutation,
-  useGetResourcePoolUsersQuery,
+  type ResourcePoolWithId,
   useGetResourcePoolsQuery,
-  useGetUsersQuery,
-  useRemoveUserFromResourcePoolMutation,
-} from "../dataServices/computeResources.api";
-import {
-  ResourceClass,
-  ResourcePool,
-} from "../dataServices/dataServices.types";
+} from "../sessionsV2/api/computeResources.api";
+import { useGetUsersQuery } from "../usersV2/api/users.api";
+import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
+import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
-import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
-import ConnectedServicesSection from "./ConnectedServicesSection";
+
+// import { ResourcePoolUser } from "./adminComputeResources.types";
+// import {
+//   useDeleteResourcePoolMutation,
+//   useGetResourcePoolUsersQuery,
+//   useGetResourcePoolsQuery,
+//   useGetUsersQuery,
+//   useRemoveUserFromResourcePoolMutation,
+// } from "../dataServices/computeResources.api";
 
 export default function AdminPage() {
   return (
@@ -89,7 +102,7 @@ function AdminComputeResourcesOverview() {
     data: rawUsers,
     error: rawUsersError,
     isLoading: rawUsersIsLoading,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery({});
   const {
     data: resourcePools,
     error: resourcePoolsError,
@@ -156,7 +169,7 @@ function ResourcePoolsList() {
 }
 
 interface ResourcePoolItemProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
@@ -319,7 +332,7 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
 
 interface ResourceClassListProps {
   classes: ResourceClass[];
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
