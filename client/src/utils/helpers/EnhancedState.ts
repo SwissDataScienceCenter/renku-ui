@@ -34,7 +34,7 @@ import { dashboardMessageSlice } from "../../features/dashboard/message/dashboar
 import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { doiResolverEmptyApi as doiResolverApi } from "../../features/dataConnectorsV2/api/doiResolver.empty-api";
 import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataConnectors.slice";
-import computeResourcesApi from "../../features/dataServices/computeResources.api";
+// import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
@@ -88,7 +88,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
-    [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
+    // [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
@@ -125,7 +125,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         serializableCheck: false,
       })
         .concat(adminKeycloakApi.middleware)
-        .concat(computeResourcesApi.middleware)
+        // .concat(computeResourcesApi.middleware)
         .concat(connectedServicesApi.middleware)
         .concat(dataConnectorsApi.middleware)
         .concat(datasetsCoreApi.middleware)

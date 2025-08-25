@@ -28,7 +28,9 @@ const DATA_SERVICES_RELEASE = "main";
 
 async function main() {
   argv.forEach((arg) => {
-    if (arg.trim() === "connectedServices") {
+    if (arg.trim() === "computeResources") {
+      updateComputeResourcesApi();
+    } else if (arg.trim() === "connectedServices") {
       updateConnectedServicesApi();
     } else if (arg.trim() === "dataConnectors") {
       updateDataConnectorsApi();
@@ -49,6 +51,13 @@ async function main() {
     } else if (arg.trim() === "users") {
       updateUsersApi();
     }
+  });
+}
+
+async function updateComputeResourcesApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/crc/api.spec.yaml",
+    destFile: "src/features/sessionsV2/api/computeResources.openapi.json",
   });
 }
 
