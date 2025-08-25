@@ -18,76 +18,123 @@
 
 import { ResourceClass, Resources } from "../dataServices/dataServices.types";
 
-export interface ResourcePoolUser {
-  id: string;
-}
+// export interface ResourcePoolUser {
+//   id: string;
+// }
 
-export interface GetResourcePoolUsersParams {
-  resourcePoolId: number;
-}
+// export interface GetResourcePoolUsersParams {
+//   resourcePoolId: number;
+// }
 
-export interface AddResourcePoolParams {
+// export interface AddResourcePoolParams {
+//   name: string;
+//   public: boolean;
+//   classes: ResourceClassDefinition[];
+//   quota: Resources;
+//   idle_threshold?: number;
+//   hibernation_threshold?: number;
+// }
+
+// type ResourceClassDefinition = Omit<ResourceClass, "id" | "matching">;
+
+// export interface UpdateResourcePoolParams {
+//   resourcePoolId: number;
+
+//   name?: string;
+//   public?: boolean;
+//   quota?: Resources;
+//   default?: boolean;
+//   idle_threshold?: number;
+//   hibernation_threshold?: number;
+// }
+
+// export interface DeleteResourcePoolParams {
+//   resourcePoolId: number;
+// }
+
+// export interface AddResourceClassParams extends ResourceClassDefinition {
+//   resourcePoolId: number;
+// }
+
+// export interface UpdateResourceClassParams
+//   extends Partial<ResourceClassDefinition> {
+//   resourcePoolId: number;
+//   resourceClassId: number;
+// }
+
+// export interface DeleteResourceClassParams {
+//   resourcePoolId: number;
+//   resourceClassId: number;
+// }
+
+// export interface AddUsersToResourcePoolParams {
+//   resourcePoolId: number;
+//   userIds: string[];
+// }
+
+// export interface RemoveUserFromResourcePoolParams {
+//   resourcePoolId: number;
+//   userId: string;
+// }
+
+// export interface AddResourcePoolForm {
+//   name: string;
+//   public: boolean;
+//   quotaCpu: number;
+//   quotaMemory: number;
+//   quotaGpu: number;
+//   idleThresholdMinutes?: number;
+//   hibernationThresholdMinutes?: number;
+// }
+
+export interface AddResourcePoolFormV2 {
   name: string;
   public: boolean;
-  classes: ResourceClassDefinition[];
-  quota: Resources;
-  idle_threshold?: number;
-  hibernation_threshold?: number;
+  quota: AddResourcePoolFormV2Quota;
+  hibernationThresholdMinutes?: number;
+  idleThresholdMinutes?: number;
 }
 
-type ResourceClassDefinition = Omit<ResourceClass, "id" | "matching">;
-
-export interface UpdateResourcePoolParams {
-  resourcePoolId: number;
-
-  name?: string;
-  public?: boolean;
-  quota?: Resources;
-  default?: boolean;
-  idle_threshold?: number;
-  hibernation_threshold?: number;
+export interface AddResourcePoolFormV2Quota {
+  cpu: number;
+  memory: number;
+  gpu: number;
 }
 
-export interface DeleteResourcePoolParams {
-  resourcePoolId: number;
-}
-
-export interface AddResourceClassParams extends ResourceClassDefinition {
-  resourcePoolId: number;
-}
-
-export interface UpdateResourceClassParams
-  extends Partial<ResourceClassDefinition> {
-  resourcePoolId: number;
-  resourceClassId: number;
-}
-
-export interface DeleteResourceClassParams {
-  resourcePoolId: number;
-  resourceClassId: number;
-}
-
-export interface AddUsersToResourcePoolParams {
-  resourcePoolId: number;
-  userIds: string[];
-}
-
-export interface RemoveUserFromResourcePoolParams {
-  resourcePoolId: number;
-  userId: string;
-}
-
-export interface AddResourcePoolForm {
+export interface AddResourceClassFormV2 {
   name: string;
-  public: boolean;
-  quotaCpu: number;
-  quotaMemory: number;
-  quotaGpu: number;
-  idleThresholdMinutes?: number;
-  hibernationThresholdMinutes?: number;
+  cpu: number;
+  memory: number;
+  gpu: number;
+  max_storage: number;
+  default_storage: number;
+  default: boolean;
+  tolerations: AddResourceClassFormV2Toleration[];
+  node_affinities: AddResourceClassFormV2NodeAffinity[];
 }
 
-export interface UpdateResourcePoolThresholdsForm {
-  idleThresholdMinutes?: number;
-  hibernationThresholdMinutes?: number;
+export interface AddResourceClassFormV2Toleration {
+  label: string;
 }
+
+export interface AddResourceClassFormV2NodeAffinity {
+  key: string;
+  required_during_scheduling?: boolean;
+}
+
+// export type ResourceClass = {
+//   name: Name;
+//   cpu: Cpu;
+//   memory: Memory;
+//   gpu: Gpu;
+//   max_storage: Storage;
+//   default_storage: Storage;
+//   default: DefaultFlag;
+//   tolerations?: K8SLabelList;
+//   node_affinities?: NodeAffinityList;
+// };
+
+// export interface UpdateResourcePoolThresholdsForm {
+//   idleThresholdMinutes?: number;
+//   hibernationThresholdMinutes?: number;
+// }

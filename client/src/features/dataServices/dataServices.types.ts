@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+// TODO: delete this file?
+
 export interface ResourcePool {
   classes: ResourceClass[];
   default: boolean;

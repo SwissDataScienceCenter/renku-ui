@@ -31,15 +31,15 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
+import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
-  useAddResourcePoolMutation,
   useGetResourcePoolsQuery,
-} from "../dataServices/computeResources.api";
+  usePostResourcePoolsMutation,
+} from "../sessionsV2/api/computeResources.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
-import { AddResourcePoolForm } from "./adminComputeResources.types";
+import type { AddResourcePoolFormV2 } from "./adminComputeResources.types";
 
 export default function AddResourcePoolButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -92,22 +92,24 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<AddResourcePoolForm>({
+  } = useForm<AddResourcePoolFormV2>({
     defaultValues: {
       name: "",
       public: false,
-      quotaCpu: defaultQuota.cpu,
-      quotaMemory: defaultQuota.memory,
-      quotaGpu: defaultQuota.gpu,
+      quota: {
+        cpu: defaultQuota.cpu,
+        memory: defaultQuota.memory,
+        gpu: defaultQuota.gpu,
+      },
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
     },
   });
 
   // Handle invoking API to add resource pools
-  const [addResourcePool, result] = useAddResourcePoolMutation();
+  const [addResourcePool, result] = usePostResourcePoolsMutation();
   const onSubmit = useCallback(
-    (data: AddResourcePoolForm) => {
+    (data: AddResourcePoolFormV2) => {
       const populatedClass = defaultSessionClass
         ? {
             name: defaultSessionClass.name,
@@ -120,20 +122,19 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           }
         : null;
       addResourcePool({
-        name: data.name,
-        public: data.public,
-        classes: populatedClass ? [populatedClass] : [],
-        quota: {
-          cpu: data.quotaCpu,
-          memory: data.quotaMemory,
-          gpu: data.quotaGpu,
+        resourcePool: {
+          classes: populatedClass ? [populatedClass] : [],
+          default: false,
+          hibernation_threshold: data.hibernationThresholdMinutes
+            ? data.hibernationThresholdMinutes * 60
+            : undefined,
+          idle_threshold: data.idleThresholdMinutes
+            ? data.idleThresholdMinutes * 60
+            : undefined,
+          name: data.name,
+          public: data.public,
+          quota: data.quota,
         },
-        idle_threshold: data.idleThresholdMinutes
-          ? data.idleThresholdMinutes * 60
-          : undefined,
-        hibernation_threshold: data.hibernationThresholdMinutes
-          ? data.hibernationThresholdMinutes * 60
-          : undefined,
       });
     },
     [addResourcePool, defaultSessionClass]
@@ -143,9 +144,11 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
     reset({
       name: "",
       public: false,
-      quotaCpu: defaultQuota.cpu,
-      quotaMemory: defaultQuota.memory,
-      quotaGpu: defaultQuota.gpu,
+      quota: {
+        cpu: defaultQuota.cpu,
+        memory: defaultQuota.memory,
+        gpu: defaultQuota.gpu,
+      },
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
     });
