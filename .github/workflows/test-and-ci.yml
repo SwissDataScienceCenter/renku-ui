@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: "../**/package-lock.json"
+          cache-dependency-path: "**/package-lock.json"
       - name: Install client dependencies
         run: npm clean-install
       - name: Run test client
@@ -60,34 +60,35 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
-  # test-server:
-  #   runs-on: ubuntu-24.04
-  #   needs: [setup-cache]
-  #   defaults:
-  #     run:
-  #       working-directory: ./server
-  #   steps:
-  #     - uses: actions/checkout@v5
-  #     - name: Set up node LTS
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: "22"
-  #         cache: npm
-  #     - name: Install server dependencies
-  #       run: npm clean-install
-  #     - name: Build server
-  #       run: npm run build
-  #       env:
-  #         NODE_OPTIONS: "--max-old-space-size=4096"
-  #     - name: Run test server
-  #       run: npm test
-  #       env:
-  #         CI: true
-  #         NODE_OPTIONS: "--max-old-space-size=4096"
-  #     - name: Run format server
-  #       run: npm run format-check
-  #     - name: Run lint server
-  #       run: npm run lint
+  test-server:
+    runs-on: ubuntu-24.04
+    needs: [setup-cache]
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: "**/package-lock.json"
+      - name: Install server dependencies
+        run: npm clean-install
+      - name: Build server
+        run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Run test server
+        run: npm test
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Run format server
+        run: npm run format-check
+      - name: Run lint server
+        run: npm run lint
 
   # test-storybook:
   #   timeout-minutes: 60
