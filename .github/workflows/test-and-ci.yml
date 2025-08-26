@@ -22,10 +22,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
       - name: Install client dependencies
         run: npm clean-install
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Run test client
         run: npm run test
         env:
@@ -51,6 +50,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
       - name: Install server dependencies
         run: npm clean-install
       - name: Build server
@@ -78,6 +78,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
       - name: Install dependencies
         run: npm clean-install
       - name: Install Playwright
@@ -96,6 +97,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
       - name: Install project e2e dependencies
         run: npm clean-install
       - name: Run format e2e
