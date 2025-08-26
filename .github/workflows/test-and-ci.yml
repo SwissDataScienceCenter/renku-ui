@@ -11,6 +11,24 @@ permissions:
   contents: read
 
 jobs:
+  setup-cache:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: "**/package-lock.json"
+      - name: Install everything
+        run: |
+          npm clean-install
+          npm --prefix client clean-install
+          npm --prefix server clean-install
+          npm --prefix tests clean-install
+
   test-client:
     runs-on: ubuntu-24.04
     defaults:
@@ -46,7 +64,7 @@ jobs:
         working-directory: ./server
     steps:
       - uses: actions/checkout@v5
-      - name: Set up node ${{ matrix.node-version }}
+      - name: Set up node LTS
         uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -75,7 +93,8 @@ jobs:
         working-directory: ./client
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: Set up node LTS
+        uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
@@ -93,7 +112,7 @@ jobs:
         working-directory: ./tests
     steps:
       - uses: actions/checkout@v5
-      - name: Set up node ${{ matrix.node-version }}
+      - name: Set up node LTS
         uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -111,6 +130,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+      - name: Set up node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
       - name: Install client
         uses: cypress-io/github-action@v6
         with:
