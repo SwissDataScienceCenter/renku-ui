@@ -32,9 +32,9 @@ jobs:
   test-client:
     runs-on: ubuntu-24.04
     needs: [setup-cache]
-    # defaults:
-    #   run:
-    #     working-directory: ./client
+    defaults:
+      run:
+        working-directory: ./client
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -43,19 +43,20 @@ jobs:
         with:
           node-version: "22"
           cache: npm
+          cache-dependency-path: "../**/package-lock.json"
       - name: Install client dependencies
-        run: npm --prefix client clean-install
+        run: npm clean-install
       - name: Run test client
-        run: npm --prefix client run test
+        run: npm run test
         env:
           CI: true
         timeout-minutes: 1
       - name: Run format client
-        run: npm --prefix client run format-check
+        run: npm run format-check
       - name: Run lint client
-        run: npm --prefix client run lint
+        run: npm run lint
       - name: Build client
-        run: npm --prefix client run build
+        run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
