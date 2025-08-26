@@ -39,7 +39,7 @@ import {
   usePostResourcePoolsMutation,
 } from "../sessionsV2/api/computeResources.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
-import type { AddResourcePoolFormV2 } from "./adminComputeResources.types";
+import type { ResourcePoolForm } from "./adminComputeResources.types";
 
 export default function AddResourcePoolButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -92,7 +92,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<AddResourcePoolFormV2>({
+  } = useForm<ResourcePoolForm>({
     defaultValues: {
       name: "",
       public: false,
@@ -109,7 +109,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
   // Handle invoking API to add resource pools
   const [addResourcePool, result] = usePostResourcePoolsMutation();
   const onSubmit = useCallback(
-    (data: AddResourcePoolFormV2) => {
+    (data: ResourcePoolForm) => {
       const populatedClass = defaultSessionClass
         ? {
             name: defaultSessionClass.name,

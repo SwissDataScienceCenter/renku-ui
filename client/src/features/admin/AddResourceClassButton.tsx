@@ -56,7 +56,7 @@ import {
   usePostResourcePoolsByResourcePoolIdClassesMutation,
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
-import type { AddResourceClassFormV2 } from "./adminComputeResources.types";
+import type { ResourceClassForm } from "./adminComputeResources.types";
 
 interface AddResourceClassButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -105,7 +105,7 @@ function AddResourceClassModal({
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm<AddResourceClassFormV2>({
+  } = useForm<ResourceClassForm>({
     defaultValues: {
       cpu: 0.1,
       default: false,
@@ -130,7 +130,7 @@ function AddResourceClassModal({
     remove: affinitiesRemove,
   } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
-    (data: AddResourceClassFormV2) => {
+    (data: ResourceClassForm) => {
       const tolerations = data.tolerations.map(({ label }) => label);
       addResourceClass({
         resourcePoolId: resourcePool.id,
