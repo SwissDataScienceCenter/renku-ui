@@ -31,21 +31,21 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import ScrollableModal from "../../components/modal/ScrollableModal";
-import { useUpdateResourceClassMutation } from "../dataServices/computeResources.api";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
-  NodeAffinity,
-  ResourceClass,
-  ResourcePool,
-} from "../dataServices/dataServices.types";
+  type ResourceClassWithId,
+  type ResourcePoolWithId,
+  usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
+} from "../sessionsV2/api/computeResources.api";
+import { AddResourceClassFormV2 } from "./adminComputeResources.types";
 
 import styles from "./UpdateResourceClassButton.module.scss";
 
 interface UpdateResourceClassButtonProps {
-  resourceClass: ResourceClass;
-  resourcePool: ResourcePool;
+  resourceClass: ResourceClassWithId;
+  resourcePool: ResourcePoolWithId;
 }
 
 export default function UpdateResourceClassButton({
@@ -74,8 +74,8 @@ export default function UpdateResourceClassButton({
 
 interface UpdateResourceClassModalProps {
   isOpen: boolean;
-  resourceClass: ResourceClass;
-  resourcePool: ResourcePool;
+  resourceClass: ResourceClassWithId;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -88,14 +88,15 @@ function UpdateResourceClassModal({
   const { id } = resourceClass;
   const { quota } = resourcePool;
 
-  const [updateResourceClass, result] = useUpdateResourceClassMutation();
+  const [updateResourceClass, result] =
+    usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation();
 
   const {
     control,
     formState: { errors, isDirty },
     handleSubmit,
     reset,
-  } = useForm<UpdateResourceClassForm>({
+  } = useForm<AddResourceClassFormV2>({
     defaultValues: {
       cpu: resourceClass.cpu,
       default: resourceClass.default,
@@ -124,13 +125,15 @@ function UpdateResourceClassModal({
     remove: affinitiesRemove,
   } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
-    (data: UpdateResourceClassForm) => {
+    (data: AddResourceClassFormV2) => {
       const tolerations = data.tolerations.map(({ label }) => label);
       updateResourceClass({
         resourcePoolId: resourcePool.id,
-        resourceClassId: resourceClass.id,
-        ...data,
-        tolerations,
+        classId: `${resourceClass.id}`,
+        resourceClassPatch: {
+          ...data,
+          tolerations,
+        },
       });
     },
     [resourceClass.id, resourcePool.id, updateResourceClass]
@@ -465,20 +468,4 @@ function UpdateResourceClassModal({
       </ModalFooter>
     </ScrollableModal>
   );
-}
-
-interface UpdateResourceClassForm {
-  name: string;
-  cpu: number;
-  memory: number;
-  gpu: number;
-  default_storage: number;
-  max_storage: number;
-  default: boolean;
-  tolerations: TolerationField[];
-  node_affinities: NodeAffinity[];
-}
-
-interface TolerationField {
-  label: string;
 }

@@ -55,6 +55,18 @@ export const computeResourcesApi =
           "ResourceClass",
         ],
       },
+      patchResourcePoolsByResourcePoolIdClassesAndClassId: {
+        invalidatesTags: (_result, _error, { resourcePoolId }) => [
+          { id: resourcePoolId, type: "ResourcePool" },
+          "ResourceClass",
+        ],
+      },
+      deleteResourcePoolsByResourcePoolIdClassesAndClassId: {
+        invalidatesTags: (_result, _error, { resourcePoolId }) => [
+          { id: resourcePoolId, type: "ResourcePool" },
+          "ResourceClass",
+        ],
+      },
       postResourcePoolsByResourcePoolIdUsers: {
         invalidatesTags: (_result, _error, { resourcePoolId }) => [
           { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
@@ -74,6 +86,8 @@ export const {
   useGetClassesByClassIdQuery,
   // useGetResourcePoolsByResourcePoolIdClassesQuery,
   usePostResourcePoolsByResourcePoolIdClassesMutation,
+  usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
+  useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
 
   // "users" hooks
   usePostResourcePoolsByResourcePoolIdUsersMutation,

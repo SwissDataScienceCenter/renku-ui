@@ -106,8 +106,8 @@ export interface AddResourceClassFormV2 {
   cpu: number;
   memory: number;
   gpu: number;
-  max_storage: number;
   default_storage: number;
+  max_storage: number;
   default: boolean;
   tolerations: AddResourceClassFormV2Toleration[];
   node_affinities: AddResourceClassFormV2NodeAffinity[];
@@ -121,6 +121,22 @@ export interface AddResourceClassFormV2NodeAffinity {
   key: string;
   required_during_scheduling?: boolean;
 }
+
+// interface UpdateResourceClassForm {
+//   name: string;
+//   cpu: number;
+//   memory: number;
+//   gpu: number;
+//   default_storage: number;
+//   max_storage: number;
+//   default: boolean;
+//   tolerations: TolerationField[];
+//   node_affinities: NodeAffinity[];
+// }
+
+// interface TolerationField {
+//   label: string;
+// }
 
 // export type ResourceClass = {
 //   name: Name;
