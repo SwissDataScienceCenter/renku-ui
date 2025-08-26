@@ -31,6 +31,7 @@ jobs:
 
   test-client:
     runs-on: ubuntu-24.04
+    needs: [setup-cache]
     defaults:
       run:
         working-directory: ./client
@@ -59,6 +60,7 @@ jobs:
 
   test-server:
     runs-on: ubuntu-24.04
+    needs: [setup-cache]
     defaults:
       run:
         working-directory: ./server
@@ -88,6 +90,7 @@ jobs:
   test-storybook:
     timeout-minutes: 60
     runs-on: ubuntu-24.04
+    needs: [setup-cache]
     defaults:
       run:
         working-directory: ./client
@@ -107,6 +110,7 @@ jobs:
 
   lint-e2e:
     runs-on: ubuntu-24.04
+    needs: [setup-cache]
     defaults:
       run:
         working-directory: ./tests
@@ -127,6 +131,7 @@ jobs:
   run-e2e:
     needs: lint-e2e
     runs-on: ubuntu-24.04
+    needs: [setup-cache]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
