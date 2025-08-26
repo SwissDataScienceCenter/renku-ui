@@ -100,7 +100,7 @@ function UpdateResourcePoolQuotaModal({
   const onSubmit = useCallback(
     (data: UpdateResourcePoolQuotaForm) => {
       updateResourcePool({
-        resourcePoolId: resourcePool.id,
+        resourcePoolId: id,
         resourcePoolPatch: {
           quota: { ...data },
           idle_threshold: idle_threshold,
