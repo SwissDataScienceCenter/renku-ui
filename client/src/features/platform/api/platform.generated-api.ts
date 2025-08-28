@@ -18,6 +18,43 @@ const injectedRtkApi = api.injectEndpoints({
         headers: { "If-Match": queryArg["If-Match"] },
       }),
     }),
+    getPlatformRedirects: build.query<
+      GetPlatformRedirectsApiResponse,
+      GetPlatformRedirectsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/platform/redirects`,
+        params: { params: queryArg.params },
+      }),
+    }),
+    postPlatformRedirects: build.mutation<
+      PostPlatformRedirectsApiResponse,
+      PostPlatformRedirectsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/platform/redirects`,
+        method: "POST",
+        body: queryArg.urlRedirectPlanPost,
+      }),
+    }),
+    getPlatformRedirectsBySourceUrl: build.query<
+      GetPlatformRedirectsBySourceUrlApiResponse,
+      GetPlatformRedirectsBySourceUrlApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/platform/redirects/${queryArg.sourceUrl}`,
+      }),
+    }),
+    patchPlatformRedirectsBySourceUrl: build.mutation<
+      PatchPlatformRedirectsBySourceUrlApiResponse,
+      PatchPlatformRedirectsBySourceUrlApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/platform/redirects/${queryArg.sourceUrl}`,
+        method: "PATCH",
+        body: queryArg.urlRedirectPlanPost,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -31,6 +68,30 @@ export type PatchPlatformConfigApiArg = {
   /** If-Match header, for avoiding mid-air collisions */
   "If-Match": ETag;
   platformConfigPatch: PlatformConfigPatch;
+};
+export type GetPlatformRedirectsApiResponse =
+  /** status 200 A list of redirect plans */ UrlRedirectPlanList;
+export type GetPlatformRedirectsApiArg = {
+  /** query parameters */
+  params?: UrlRedirectPlansGetQuery;
+};
+export type PostPlatformRedirectsApiResponse =
+  /** status 201 The redirect info was created */ UrlRedirectPlan;
+export type PostPlatformRedirectsApiArg = {
+  urlRedirectPlanPost: UrlRedirectPlanPost;
+};
+export type GetPlatformRedirectsBySourceUrlApiResponse =
+  /** status 200 The redirect plan */ UrlRedirectPlan;
+export type GetPlatformRedirectsBySourceUrlApiArg = {
+  /** The url-encoded source URL */
+  sourceUrl: string;
+};
+export type PatchPlatformRedirectsBySourceUrlApiResponse =
+  /** status 200 The redirect info was updated */ UrlRedirectPlan;
+export type PatchPlatformRedirectsBySourceUrlApiArg = {
+  /** The url-encoded (original) source URL */
+  sourceUrl: string;
+  urlRedirectPlanPost: UrlRedirectPlanPost;
 };
 export type ETag = string;
 export type IncidentBanner = string;
@@ -48,5 +109,32 @@ export type ErrorResponse = {
 export type PlatformConfigPatch = {
   incident_banner?: IncidentBanner;
 };
-export const { useGetPlatformConfigQuery, usePatchPlatformConfigMutation } =
-  injectedRtkApi;
+export type UrlRedirectPlan = {
+  etag: ETag;
+  /** The protocol-relative URL to redirect */
+  source_url: string;
+  /** The protocol-relative URL to redirect to */
+  target_url: string;
+};
+export type UrlRedirectPlanList = UrlRedirectPlan[];
+export type PaginationRequest = {
+  /** Result's page number starting from 1 */
+  page?: number;
+  /** The number of results per page */
+  per_page?: number;
+};
+export type UrlRedirectPlansGetQuery = PaginationRequest;
+export type UrlRedirectPlanPost = {
+  /** The protocol-relative URL to redirect */
+  source_url: string;
+  /** The protocol-relative URL to redirect to */
+  target_url: string;
+};
+export const {
+  useGetPlatformConfigQuery,
+  usePatchPlatformConfigMutation,
+  useGetPlatformRedirectsQuery,
+  usePostPlatformRedirectsMutation,
+  useGetPlatformRedirectsBySourceUrlQuery,
+  usePatchPlatformRedirectsBySourceUrlMutation,
+} = injectedRtkApi;
