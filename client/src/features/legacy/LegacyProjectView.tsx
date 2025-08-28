@@ -21,12 +21,12 @@ import { useContext } from "react";
 import LazyProjectView from "../../project/LazyProjectView";
 import AppContext from "../../utils/context/appContext";
 
-import NoLegacySupport from "./NoLegacySupport";
+import CheckForRedirect from "./CheckForRedirect";
 
 export default function LegacyProjectView() {
   const { params } = useContext(AppContext);
   if (params && !params.LEGACY_SUPPORT.enabled) {
-    return <NoLegacySupport />;
+    return <CheckForRedirect />;
   }
 
   return <LazyProjectView />;
