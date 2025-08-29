@@ -34,19 +34,19 @@ import { GlobalEnvironmentFields } from "./GlobalEnvironmentFields";
 export interface EnvironmentFieldsProps {
   control: Control<SessionLauncherForm, unknown>;
   errors: FieldErrors<SessionLauncherForm>;
-  watch: UseFormWatch<SessionLauncherForm>;
+  setValue: UseFormSetValue<SessionLauncherForm>;
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;
-  setValue: UseFormSetValue<SessionLauncherForm>;
+  watch: UseFormWatch<SessionLauncherForm>;
 }
 
 export function EnvironmentFields({
-  watch,
   control,
   errors,
-  touchedFields,
   setValue,
+  touchedFields,
+  watch,
 }: EnvironmentFieldsProps) {
   const watchEnvironmentSelect = watch("environmentSelect");
   return (
@@ -59,22 +59,22 @@ export function EnvironmentFields({
       </div>
       <div className={cx(watchEnvironmentSelect !== "global" && "d-none")}>
         <GlobalEnvironmentFields
-          errors={errors}
-          touchedFields={touchedFields}
           control={control}
-          watch={watch}
+          errors={errors}
           setValue={setValue}
+          touchedFields={touchedFields}
+          watch={watch}
         />
       </div>
       <div
         className={cx(watchEnvironmentSelect !== "custom + image" && "d-none")}
       >
         <CustomEnvironmentFields
-          errors={errors}
-          touchedFields={touchedFields}
           control={control}
-          watch={watch}
+          errors={errors}
           setValue={setValue}
+          touchedFields={touchedFields}
+          watch={watch}
         />
       </div>
       {watchEnvironmentSelect === "custom + build" && (

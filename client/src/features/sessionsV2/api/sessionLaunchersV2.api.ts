@@ -23,6 +23,7 @@ import {
   type EnvironmentPostInLauncher,
   type GetEnvironmentsApiArg,
   type GetEnvironmentsApiResponse,
+  GetProjectsByProjectIdSessionLaunchersApiResponse,
   sessionLaunchersV2GeneratedApi,
 } from "./sessionLaunchersV2.generated-api";
 
@@ -92,6 +93,44 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
               "Launcher",
             ]
           : ["Launcher"],
+
+      transformResponse: (
+        response: GetProjectsByProjectIdSessionLaunchersApiResponse
+      ) => {
+        return [
+          ...response,
+          {
+            id: "01JW94Q7BVDSBC8NZQSB8YVZJF",
+            project_id: "01K3KCSAVGE4X970SXQDCSEYPC",
+            name: "Custom launcher",
+            creation_date: "2025-05-27T15:10:34Z",
+            environment: {
+              id: "01JW94Q7ABBZN0HP2KNGP1W89H",
+              name: "Python environment",
+              creation_date: "2025-05-27T15:10:34Z",
+              description: "Generated environment for Python environment",
+              default_url: "/lab",
+              uid: 1000,
+              gid: 1000,
+              working_directory: "/home/renku/work",
+              mount_directory: "/home/renku/work",
+              port: 8888,
+              is_archived: false,
+              strip_path_prefix: false,
+              container_image: "image:unknown-at-the-moment",
+              build_parameters: {
+                repository:
+                  "https://gitlab.dev.renku.ch/flora.thiebaut/python-simple",
+                builder_variant: "python",
+                frontend_variant: "jupyterLab",
+              },
+              environment_image_source: "build" as const,
+              environment_kind: "CUSTOM" as const,
+            },
+            resource_class_id: 4,
+          },
+        ];
+      },
     },
     getBuildsByBuildId: {
       providesTags: (result) =>

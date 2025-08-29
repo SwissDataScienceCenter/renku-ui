@@ -58,7 +58,7 @@ export default function UpdateConnectedServiceButton({
 
   return (
     <>
-      <Button color="outline-rk-green" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PencilSquare className={cx("bi", "me-1")} />
         Edit
       </Button>
@@ -99,6 +99,7 @@ function UpdateConnectedServiceModal({
       display_name: "",
       scope: "",
       url: "",
+      image_registry_url: "",
       use_pkce: false,
     },
   });
@@ -114,6 +115,7 @@ function UpdateConnectedServiceModal({
           display_name: data.display_name,
           scope: data.scope,
           url: data.url,
+          image_registry_url: data.image_registry_url,
           use_pkce: data.use_pkce,
         },
       });
@@ -143,6 +145,7 @@ function UpdateConnectedServiceModal({
       display_name: provider.display_name,
       scope: provider.scope,
       url: provider.url,
+      image_registry_url: provider.image_registry_url,
       use_pkce: provider.use_pkce,
       ...(provider.client_secret &&
         provider.client_secret !== "redacted" && {
@@ -165,7 +168,7 @@ function UpdateConnectedServiceModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Update provider</ModalHeader>
+        <ModalHeader toggle={toggle}>Update intergation</ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
 
@@ -186,17 +189,21 @@ function UpdateConnectedServiceModal({
           <ConnectedServiceFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading || !isDirty} type="submit">
+          <Button
+            color="primary"
+            disabled={result.isLoading || !isDirty}
+            type="submit"
+          >
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
               <CheckLg className={cx("bi", "me-1")} />
             )}
-            Update provider
+            Update integration
           </Button>
         </ModalFooter>
       </Form>

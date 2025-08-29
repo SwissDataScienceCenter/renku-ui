@@ -125,6 +125,31 @@ export default function ConnectedServiceFormContent({
       </div>
 
       <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceImageRegistryUrl">
+          Image Registry URL (optional)
+        </Label>
+        <Controller
+          control={control}
+          name="image_registry_url"
+          render={({ field }) => (
+            <Input
+              className={cx(
+                "form-control",
+                errors.image_registry_url && "is-invalid"
+              )}
+              id="addConnectedServiceImageRegistryUrl"
+              placeholder="URL"
+              type="text"
+              {...field}
+            />
+          )}
+        />
+        <div className="invalid-feedback">
+          Please provide a valid image registry URL
+        </div>
+      </div>
+
+      <div className="mb-3">
         <Controller
           control={control}
           name="use_pkce"
