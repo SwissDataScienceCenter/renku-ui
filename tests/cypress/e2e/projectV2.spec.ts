@@ -912,6 +912,24 @@ describe("Project templates and copies", () => {
     cy.contains("Copied from:").should("be.visible");
   });
 
+  it("show a copied project, no access to source", () => {
+    fixtures
+      .readProjectV2({
+        overrides: {
+          template_id: "TEMPLATE-ULID",
+        },
+      })
+      .readProjectV2ById({
+        projectId: "TEMPLATE-ULID",
+        statusCode: 404,
+      })
+      .readUserV2Namespace();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2ById");
+    cy.contains("Copied from:").should("not.exist");
+  });
+
   it("break the template link", () => {
     fixtures
       .readProjectV2({
