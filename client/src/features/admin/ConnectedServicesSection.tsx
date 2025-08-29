@@ -43,7 +43,7 @@ import UpdateConnectedServiceButton from "./UpdateConnectedServiceButton";
 export default function ConnectedServicesSection() {
   return (
     <section className="mt-4">
-      <h2 className="fs-4">Connected Services - Renku 2.0</h2>
+      <h2 className="fs-4">Integrations</h2>
       <ConnectedServices />
     </section>
   );
@@ -135,6 +135,12 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
               Application slug: {provider.app_slug}
             </CardText>
             <CardText className="mb-2">URL: {provider.url}</CardText>
+            <CardText className="mb-2">
+              Image Registry URL:{" "}
+              {provider.image_registry_url ?? (
+                <span className="fst-italic">Not configured</span>
+              )}
+            </CardText>
             <CardText className="mb-2">
               Client ID: {provider.client_id}
             </CardText>

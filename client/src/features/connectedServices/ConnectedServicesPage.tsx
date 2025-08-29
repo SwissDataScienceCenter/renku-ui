@@ -19,9 +19,16 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BoxArrowUpRight, CircleFill, XLg } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router";
 import {
+  BoxArrowUpRight,
+  CircleFill,
+  HandIndexThumb,
+  Plugin,
+  XLg,
+} from "react-bootstrap-icons";
+import { Link, useSearchParams } from "react-router";
+import {
+  Alert,
   Badge,
   Button,
   Card,
@@ -33,7 +40,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { InfoAlert, WarnAlert } from "../../components/Alert";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/ExternalLinks";
@@ -55,8 +61,8 @@ import {
   type ProviderKind,
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
-import ContactUsCard from "./ContactUsCard";
 import { getSettingsUrl } from "./connectedServices.utils";
+import ContactUsCard from "./ContactUsCard";
 
 const CHECK_STATUS_QUERY_PARAM = "check-status";
 
@@ -64,6 +70,9 @@ export default function ConnectedServicesPage() {
   const isUserLoggedIn = useLegacySelector(
     (state) => state.stateModel.user.logged
   );
+  const [searchParams] = useSearchParams();
+  const targetProviderId = searchParams.get("targetProvider");
+  const source = searchParams.get("source");
 
   const {
     data: providers,
@@ -72,6 +81,15 @@ export default function ConnectedServicesPage() {
   } = useGetOauth2ProvidersQuery(isUserLoggedIn ? undefined : skipToken);
   const { isLoading: isLoadingConnections, error: connectionsError } =
     useGetOauth2ConnectionsQuery(isUserLoggedIn ? undefined : skipToken);
+
+  const targetProvider = useMemo(() => {
+    return providers?.find((provider) => provider.id === targetProviderId);
+  }, [providers, targetProviderId]);
+  const sortedProviders = useMemo(() => {
+    if (!providers) return [];
+    if (!targetProvider) return providers;
+    return [targetProvider, ...providers.filter((p) => p !== targetProvider)];
+  }, [providers, targetProvider]);
 
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
@@ -93,8 +111,15 @@ export default function ConnectedServicesPage() {
     </>
   ) : (
     <div className={cx("row", "g-3")}>
-      {providers.map((provider) => (
-        <ConnectedServiceCard key={provider.id} provider={provider} />
+      {sortedProviders.map((provider) => (
+        <ConnectedServiceCard
+          key={provider.id}
+          highlighted={provider.id === targetProviderId}
+          provider={provider}
+          source={
+            provider.id === targetProviderId && source ? source : undefined
+          }
+        />
       ))}
       <ContactUsCard />
     </div>
@@ -102,8 +127,13 @@ export default function ConnectedServicesPage() {
 
   return (
     <div data-cy="connected-services-page">
-      <h1>Integrations</h1>
-      <p>These integrations are only supported in Renku 2.0</p>
+      <h1 className="fs-2">
+        <Plugin className={cx("bi", "me-1")} /> Integrations
+      </h1>
+      <p>
+        Integrations with external services allow you to connect your Renku
+        projects with external private repositories and images.
+      </p>
       {content}
     </div>
   );
@@ -150,10 +180,16 @@ function ConnectedServiceStatus({ connection }: ConnectedServiceStatusProps) {
 }
 
 interface ConnectedServiceCardProps {
+  highlighted?: boolean;
   provider: Provider;
+  source?: string;
 }
 
-function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
+function ConnectedServiceCard({
+  highlighted = false,
+  provider,
+  source,
+}: ConnectedServiceCardProps) {
   const { id, display_name, kind, url } = provider;
 
   const { data: connections } =
@@ -166,8 +202,31 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
 
   return (
     <div data-cy="connected-services-card" className={cx("col-12", "col-lg-6")}>
-      <Card className="h-100">
+      <Card
+        className={cx("h-100", highlighted && ["bg-primary", "bg-opacity-10"])}
+      >
         <CardBody>
+          {highlighted && (
+            <Alert
+              color="warning"
+              className={cx("border-warning", "shadow-sm")}
+            >
+              <p className="mb-0">
+                <HandIndexThumb className={cx("bi", "me-1")} />
+                Action required. Please connect to this integration
+                {source && (
+                  <span>
+                    {" "}
+                    and then{" "}
+                    <Link to={source} className={cx("primary")}>
+                      go back to your project
+                    </Link>
+                  </span>
+                )}
+                .
+              </p>
+            </Alert>
+          )}
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
               <h4 className="pe-2">{display_name}</h4>
