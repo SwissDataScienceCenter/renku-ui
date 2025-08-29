@@ -28,10 +28,23 @@
         ],
         "responses": {
           "200": {
-            "description": "The Docker image is available."
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageCheckResponse"
+                }
+              }
+            }
           },
-          "404": {
-            "description": "The Docker image is not available."
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The image url is malformed."
           }
         },
         "tags": ["notebooks"]
@@ -540,7 +553,7 @@
     },
     "/sessions/images": {
       "get": {
-        "summary": "Check if a session image exists",
+        "description": "Check if a session image exists",
         "parameters": [
           {
             "description": "The Docker image URL (tag included) that should be fetched.",
@@ -555,24 +568,27 @@
         ],
         "responses": {
           "200": {
-            "description": "The docker image can be found"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageCheckResponse"
+                }
+              }
+            }
           },
-          "404": {
-            "description": "The docker image cannot be found or the user does not have permissions to access it",
+          "422": {
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
+            },
+            "description": "The image url is malformed."
           }
-        },
-        "tags": ["sessions"]
-      }
+        }
+      },
+      "tags": ["sessions"]
     }
   },
   "components": {
@@ -1429,9 +1445,48 @@
         "maxLength": 50,
         "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
         "example": "d185e68d-d43-renku-2-b9ac279a4e8a85ac28d08"
+      },
+      "ImageCheckResponse": {
+        "type": "object",
+        "properties": {
+          "accessible": {
+            "type": "boolean",
+            "description": "Whether the image is accessible or not."
+          },
+          "connection": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageConnectionStatus"
+              },
+              {
+                "description": "Whether an oauth2 connection is or can be used to access the image. If null indicates that there is no oauth2 connection we can use to access the requested image."
+              }
+            ]
+          }
+        },
+        "required": ["accessible"]
+      },
+      "ImageConnection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ImageConnectionStatus"
+          }
+        },
+        "required": ["id", "status"]
+      },
+      "ImageConnectionStatus": {
+        "type": "string",
+        "enum": ["connected", "pending", "disconnected"]
       }
     },
     "responses": {
+      "ImageCheckResponse": {
+        "description": "Information about whether a docker image is available or not and if there is a connected service then which connected service can be used to access the image."
+      },
       "Error": {
         "description": "The schema for all 4xx and 5xx responses",
         "content": {
