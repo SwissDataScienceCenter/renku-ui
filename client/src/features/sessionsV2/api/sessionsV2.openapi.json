@@ -28,10 +28,23 @@
         ],
         "responses": {
           "200": {
-            "description": "The Docker image is available."
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageCheckResponse"
+                }
+              }
+            }
           },
-          "404": {
-            "description": "The Docker image is not available."
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The image url is malformed."
           }
         },
         "tags": ["notebooks"]
@@ -555,10 +568,17 @@
         ],
         "responses": {
           "200": {
-            "description": "The docker image can be found"
+            "description": "Information about the accessibility of the image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageCheckResponse"
+                }
+              }
+            }
           },
-          "404": {
-            "description": "The docker image cannot be found or the user does not have permissions to access it",
+          "422": {
+            "description": "The image url is malformed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -566,9 +586,6 @@
                 }
               }
             }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
           }
         },
         "tags": ["sessions"]
@@ -1429,9 +1446,62 @@
         "maxLength": 50,
         "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
         "example": "d185e68d-d43-renku-2-b9ac279a4e8a85ac28d08"
+      },
+      "ImageCheckResponse": {
+        "type": "object",
+        "properties": {
+          "accessible": {
+            "type": "boolean",
+            "description": "Whether the image is accessible or not."
+          },
+          "connection": {
+            "$ref": "#/components/schemas/ImageConnection"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ImageProvider"
+          }
+        },
+        "required": ["accessible"]
+      },
+      "ImageConnection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "provider_id": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ImageConnectionStatus"
+          }
+        },
+        "required": ["id", "provider_id", "status"]
+      },
+      "ImageConnectionStatus": {
+        "type": "string",
+        "enum": ["connected", "pending", "invalid_credentials"]
+      },
+      "ImageProvider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "url"]
       }
     },
     "responses": {
+      "ImageCheckResponse": {
+        "description": "Information about whether a docker image is available or not and if there is a connected service then which connected service can be used to access the image."
+      },
       "Error": {
         "description": "The schema for all 4xx and 5xx responses",
         "content": {

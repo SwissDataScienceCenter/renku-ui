@@ -54,7 +54,7 @@ export default function UpdateConnectedServiceButton({
 
   return (
     <>
-      <Button color="outline-rk-green" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PencilSquare className={cx("bi", "me-1")} />
         Edit
       </Button>
@@ -83,7 +83,7 @@ function UpdateConnectedServiceModal({
 
   const {
     control,
-    formState: { isDirty },
+    formState: { errors, isDirty },
     handleSubmit,
     reset,
   } = useForm<ProviderForm>({
@@ -146,7 +146,7 @@ function UpdateConnectedServiceModal({
       scope: provider.scope,
       url: provider.url,
       use_pkce: provider.use_pkce,
-      image_registry_url: provider.image_registry_url ?? "",
+      image_registry_url: provider.image_registry_url,
       oidc_issuer_url: provider.oidc_issuer_url ?? "",
       ...(provider.client_secret &&
         provider.client_secret !== "redacted" && {
@@ -169,7 +169,7 @@ function UpdateConnectedServiceModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Update provider</ModalHeader>
+        <ModalHeader toggle={toggle}>Update intergation</ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
 
@@ -187,20 +187,24 @@ function UpdateConnectedServiceModal({
             />
           </div>
 
-          <ConnectedServiceFormContent control={control} />
+          <ConnectedServiceFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading || !isDirty} type="submit">
+          <Button
+            color="primary"
+            disabled={result.isLoading || !isDirty}
+            type="submit"
+          >
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
               <CheckLg className={cx("bi", "me-1")} />
             )}
-            Update provider
+            Update integration
           </Button>
         </ModalFooter>
       </Form>

@@ -30,6 +30,7 @@ const initialState: StartSessionOptionsV2 = {
   cloudStorage: undefined,
   defaultUrl: "",
   environmentVariables: [],
+  imageReady: false,
   lfsAutoFetch: false,
   repositories: [],
   sessionClass: 0,
@@ -70,6 +71,9 @@ const startSessionOptionsV2Slice = createSlice({
     },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
+    },
+    setImageReady: (state, action: PayloadAction<boolean>) => {
+      state.imageReady = action.payload;
     },
     setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
       state.lfsAutoFetch = action.payload;

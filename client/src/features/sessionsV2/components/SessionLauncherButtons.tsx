@@ -15,21 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import cx from "classnames";
-import { ReactNode } from "react";
-import { PlayCircle } from "react-bootstrap-icons";
+import { ReactNode, useCallback, useMemo } from "react";
+import { Gear, PlayCircle } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
-import { ButtonGroup, UncontrolledTooltip } from "reactstrap";
-
+import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
+import { Loader } from "~/components/Loader";
+import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import {
   Build,
   SessionLauncher,
 } from "../api/sessionLaunchersV2.generated-api";
+import { useGetSessionsImagesQuery } from "../api/sessionsV2.api";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "../session.constants";
 import BuildLauncherButtons from "./BuildLauncherButtons";
-import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 
 interface SessionLauncherButtonsProps {
   hasSession?: boolean;
@@ -49,10 +52,21 @@ export function SessionLauncherButtons({
   slug,
   useOldImage,
 }: SessionLauncherButtonsProps) {
+  const [, setHash] = useLocationHash();
   const environment = launcher?.environment;
   const permissions = useProjectPermissions({ projectId: launcher.project_id });
-  const isBuildEnvironment =
+  const isCodeEnvironment =
     environment && environment.environment_image_source === "build";
+  const isExternalImageEnvironment =
+    environment?.environment_kind === "CUSTOM" &&
+    environment?.environment_image_source === "image";
+  const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
+  const toggleLauncherView = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === launcherHash;
+      return isOpen ? "" : launcherHash;
+    });
+  }, [launcherHash, setHash]);
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
@@ -61,13 +75,20 @@ export function SessionLauncherButtons({
       slug,
     }
   );
+  const { data, isLoading } = useGetSessionsImagesQuery(
+    environment &&
+      environment.environment_kind === "CUSTOM" &&
+      environment.container_image
+      ? { imageUrl: environment.container_image }
+      : skipToken
+  );
   const onClickFix = (e: React.MouseEvent) => e.stopPropagation();
   const displayLaunchSession =
-    !isBuildEnvironment ||
-    (isBuildEnvironment && lastBuild?.status === "succeeded") ||
+    !isCodeEnvironment ||
+    (isCodeEnvironment && lastBuild?.status === "succeeded") ||
     useOldImage;
 
-  const buildActions = isBuildEnvironment &&
+  const buildActions = isCodeEnvironment &&
     permissions.write &&
     (useOldImage || lastBuild?.status !== "succeeded") && (
       <BuildLauncherButtons
@@ -95,14 +116,44 @@ export function SessionLauncherButtons({
     </span>
   );
 
+  const openPanelAction = displayLaunchSession &&
+    isExternalImageEnvironment &&
+    !data?.accessible && (
+      <span id={`open-panel-btn-${launcher.id}`}>
+        <Button
+          className="rounded-end-0"
+          color="outline-primary"
+          size="sm"
+          onClick={toggleLauncherView}
+          data-cy="open-panel-button"
+        >
+          <Gear className={cx("bi", "me-1")} />
+          Show launcher details
+        </Button>
+      </span>
+    );
+
+  const loadingPlaceholder = isLoading && (
+    <Button color="outline-primary" className={cx("disabled")} size="sm">
+      <Loader size={12} inline /> Checking launcher
+    </Button>
+  );
+
   const defaultAction = buildActions ? (
     <ButtonGroup onClick={onClickFix}>
       {buildActions}
       {launchAction}
     </ButtonGroup>
-  ) : launchAction ? (
+  ) : launchAction && (!isExternalImageEnvironment || data?.accessible) ? (
     launchAction
-  ) : null;
+  ) : (isExternalImageEnvironment && !isLoading) ||
+    (!isExternalImageEnvironment && !data?.accessible) ? (
+    openPanelAction
+  ) : (
+    loadingPlaceholder
+  );
+
+  const force = defaultAction === openPanelAction;
 
   const customizeLaunch = displayLaunchSession && (
     <Link
@@ -116,7 +167,18 @@ export function SessionLauncherButtons({
       data-cy="start-custom-session-button"
     >
       <PlayCircle className={cx("bi", "me-1")} />
-      Custom launch
+      {force ? "Force custom launch" : "Custom launch"}
+    </Link>
+  );
+
+  const launchAnyway = displayLaunchSession && (
+    <Link
+      className={cx("dropdown-item", hasSession && "disabled")}
+      to={startUrl}
+      data-cy="start-session-button"
+    >
+      <PlayCircle className={cx("bi", "me-1")} />
+      {force ? "Force launch" : "Launch"}
     </Link>
   );
 
@@ -131,14 +193,15 @@ export function SessionLauncherButtons({
         disabled={hasSession}
         isDisabledDropdownToggle={false}
       >
+        {isExternalImageEnvironment && !data?.accessible && launchAnyway}
         {customizeLaunch}
         {otherActions}
       </ButtonWithMenuV2>
-      {hasSession && displayLaunchSession ? (
+      {hasSession && displayLaunchSession && !data?.accessible === false ? (
         <UncontrolledTooltip target={`launch-btn-${launcher.id}`}>
           Cannot launch more than 1 session per session launcher.
         </UncontrolledTooltip>
-      ) : useOldImage ? (
+      ) : useOldImage && !data?.accessible === false ? (
         <UncontrolledTooltip target={`launch-btn-${launcher.id}`}>
           Launch session using an older image
         </UncontrolledTooltip>
