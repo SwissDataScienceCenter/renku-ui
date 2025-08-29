@@ -19,7 +19,7 @@
 import { platformGeneratedApi } from "./platform.generated-api";
 
 export const platformApi = platformGeneratedApi.enhanceEndpoints({
-  addTagTypes: ["PlatformConfig"],
+  addTagTypes: ["PlatformConfig", "UrlRedirectPlan"],
   endpoints: {
     getPlatformConfig: {
       providesTags: ["PlatformConfig"],
@@ -27,8 +27,47 @@ export const platformApi = platformGeneratedApi.enhanceEndpoints({
     patchPlatformConfig: {
       invalidatesTags: ["PlatformConfig"],
     },
+    getPlatformRedirects: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ source_url }) => ({
+                source_url,
+                type: "UrlRedirectPlan" as const,
+              })),
+              "UrlRedirectPlan",
+            ]
+          : ["UrlRedirectPlan"],
+    },
+    getPlatformRedirectsBySourceUrl: {
+      providesTags: (result) =>
+        result
+          ? [
+              {
+                source_url: result.source_url,
+                type: "UrlRedirectPlan" as const,
+              },
+              "UrlRedirectPlan",
+            ]
+          : ["UrlRedirectPlan"],
+    },
+    patchPlatformRedirectsBySourceUrl: {
+      invalidatesTags: (result) =>
+        result
+          ? [
+              {
+                source_url: result.source_url,
+                type: "UrlRedirectPlan" as const,
+              },
+              "UrlRedirectPlan",
+            ]
+          : ["UrlRedirectPlan"],
+    },
   },
 });
-export const { useGetPlatformConfigQuery, usePatchPlatformConfigMutation } =
-  platformApi;
+export const {
+  useGetPlatformConfigQuery,
+  useGetPlatformRedirectsBySourceUrlQuery,
+  usePatchPlatformConfigMutation,
+} = platformApi;
 export type * from "./platform.generated-api";
