@@ -134,7 +134,8 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as sessionsV2GeneratedApi };
-export type GetNotebooksImagesApiResponse = unknown;
+export type GetNotebooksImagesApiResponse =
+  /** status 200 undefined */ ImageCheckResponse;
 export type GetNotebooksImagesApiArg = {
   /** The Docker image URL (tag included) that should be fetched. */
   imageUrl: string;
@@ -223,14 +224,16 @@ export type GetSessionsBySessionIdLogsApiArg = {
   maxLines?: number;
 };
 export type GetSessionsImagesApiResponse =
-  /** status 200 The docker image can be found */ void;
+  /** status 200 undefined */ ImageCheckResponse;
 export type GetSessionsImagesApiArg = {
   /** The Docker image URL (tag included) that should be fetched. */
   imageUrl: string;
 };
-export type ServerLogs = {
-  "jupyter-server"?: string;
-  [key: string]: any;
+export type ImageConnectionStatus = "connected" | "pending" | "disconnected";
+export type ImageCheckResponse = {
+  /** Whether the image is accessible or not. */
+  accessible: boolean;
+  connection?: ImageConnectionStatus & any;
 };
 export type ErrorResponse = {
   error: {
@@ -238,6 +241,10 @@ export type ErrorResponse = {
     detail?: string;
     message: string;
   };
+};
+export type ServerLogs = {
+  "jupyter-server"?: string;
+  [key: string]: any;
 };
 export type ServerName = string;
 export type Generated = {
