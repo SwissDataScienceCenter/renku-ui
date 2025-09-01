@@ -64,6 +64,7 @@ interface ProjectV2CreateArgs extends SimpleFixture {
 interface ProjectV2IdArgs extends SimpleFixture {
   projectId?: string;
   overrides?: Partial<ProjectOverrides>;
+  statusCode?: number;
 }
 
 interface ProjectV2CopyFixture extends ProjectV2IdArgs {
@@ -445,11 +446,12 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
         name = "readProjectV2ById",
         projectId = "THEPROJECTULID26CHARACTERS",
         overrides = {},
+        statusCode = 200,
       } = args ?? {};
       cy.fixture(fixture).then((project) => {
         cy.intercept("GET", `/api/data/projects/${projectId}*`, (req) => {
           const response = { ...project, ...overrides, id: projectId };
-          req.reply({ body: response, delay: 1000 });
+          req.reply({ body: response, delay: 1000, statusCode });
         }).as(name);
       });
       return this;

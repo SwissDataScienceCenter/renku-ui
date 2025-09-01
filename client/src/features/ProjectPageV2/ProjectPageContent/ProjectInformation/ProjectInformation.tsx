@@ -76,28 +76,8 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
   if (!project.template_id) return null;
   if (isLoadingTemplateInformation) return <Loader />;
   if (!templateProject || !templateProjectNamespace) {
-    const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
-      id: project.template_id,
-    });
-    return (
-      <ProjectInformationBox
-        icon={<Diagram3Fill className="bi" />}
-        title="Copied from:"
-      >
-        <div className="mb-0">
-          <div>
-            <Link
-              color="outline-secondary"
-              className={cx("d-flex", "align-items-center")}
-              data-cy="copy-project-template-link"
-              to={projectUrl}
-            >
-              {project.template_id}
-            </Link>
-          </div>
-        </div>
-      </ProjectInformationBox>
-    );
+    // The user does not have access to this project
+    return null;
   }
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: templateProject.namespace,
