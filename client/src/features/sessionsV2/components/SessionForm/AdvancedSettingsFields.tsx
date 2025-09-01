@@ -59,6 +59,22 @@ function FormField<T extends FieldValues>({
   type: InputType;
   isOptional?: boolean;
 }) {
+  if (type === "checkbox" || type === "radio") {
+    return (
+      <CheckboxOrRadioFormField
+        control={control}
+        errors={errors}
+        info={info}
+        label={label}
+        name={name}
+        placeholder={placeholder}
+        rules={rules}
+        type={type}
+        isOptional={isOptional}
+      />
+    );
+  }
+
   return (
     <>
       <Label
@@ -97,6 +113,70 @@ function FormField<T extends FieldValues>({
         </div>
       )}
     </>
+  );
+}
+
+// NOTE: checkbox and radio inputs require a different layout.
+function CheckboxOrRadioFormField<T extends FieldValues>({
+  control,
+  errors,
+  info,
+  label,
+  name,
+  placeholder,
+  rules,
+  type = "text",
+  isOptional,
+}: {
+  control: Control<T>;
+  errors?: FieldErrors<T>;
+  info: string;
+  label: ReactNode;
+  name: Path<T>;
+  placeholder?: string;
+  rules?: ControllerProps<T>["rules"];
+  type: InputType;
+  isOptional?: boolean;
+}) {
+  return (
+    <div className="form-check">
+      <Controller
+        control={control}
+        name={name}
+        rules={rules}
+        render={({ field }) => (
+          <Input
+            className={cx(errors?.[name] && "is-invalid")}
+            data-cy={`session-launcher-field-${name}`}
+            id={`addSessionLauncher${name}`}
+            placeholder={placeholder}
+            type={type}
+            checked={field.value}
+            {...field}
+          />
+        )}
+      />
+      <Label
+        for={`addSessionLauncher${name}`}
+        className={cx("form-label", "me-2")}
+        aria-required={isOptional ? "false" : "true"}
+      >
+        {label}
+        {isOptional && (
+          <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+        )}
+      </Label>
+      <MoreInfo>
+        <LazyRenkuMarkdown markdownText={info} />
+      </MoreInfo>
+      {errors?.[name] && (
+        <div className={cx("d-block", "invalid-feedback")}>
+          {errors[name]?.message
+            ? errors[name]?.message?.toString()
+            : `Please provide a valid value for ${name}`}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -282,6 +362,19 @@ export function AdvancedSettingsFields<
             info={ENVIRONMENT_VALUES_DESCRIPTION.args}
             errors={errors}
             helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className={cx("col-12")}>
+          <FormField<T>
+            control={control}
+            name={"strip_path_prefix" as Path<T>}
+            label="Strip session URL path prefix"
+            isOptional={true}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.stripPathPrefix}
+            errors={errors}
+            type="checkbox"
           />
         </div>
       </div>
