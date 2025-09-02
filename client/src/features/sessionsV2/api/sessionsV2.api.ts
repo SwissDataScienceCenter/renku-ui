@@ -58,6 +58,30 @@ const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
       },
       keepUnusedDataFor: 0,
     },
+    getSessionsImages: {
+      transformResponse: (_1, _2, arg) => {
+        return {
+          accessible:
+            arg.imageUrl.includes("false") ||
+            arg.imageUrl.includes("error") ||
+            arg.imageUrl.includes("fake")
+              ? false
+              : true,
+          // "connected" | "pending" | "disconnected"
+          connection: arg.imageUrl.includes("pending")
+            ? "pending"
+            : arg.imageUrl.includes("disconnected")
+            ? "disconnected"
+            : "connected",
+        };
+      },
+      transformErrorResponse: () => {
+        return {
+          accessible: false,
+          connection: "pending",
+        };
+      },
+    },
   },
 });
 

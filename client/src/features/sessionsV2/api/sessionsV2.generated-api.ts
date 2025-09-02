@@ -128,6 +128,9 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/sessions/images`,
         params: { image_url: queryArg.imageUrl },
+        validateStatus: (response) =>
+          (response.status >= 200 && response.status < 300) ||
+          response.status === 404,
       }),
     }),
   }),
