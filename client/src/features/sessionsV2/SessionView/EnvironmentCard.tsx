@@ -104,7 +104,7 @@ export default function EnvironmentCard({
               ) : (
                 <>
                   <EnvironmentIcon type="custom" size={16} />
-                  Custom image environment
+                  External image environment
                 </>
               )}
             </EnvironmentRow>
