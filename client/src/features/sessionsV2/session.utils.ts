@@ -108,6 +108,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     repository,
     uid,
     working_directory,
+    strip_path_prefix,
   } = data;
 
   if (environmentSelect === "global") {
@@ -150,6 +151,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
       gid,
       command: commandFormatted.data ?? undefined,
       args: argsFormatted.data ?? undefined,
+      strip_path_prefix: strip_path_prefix ?? false,
     },
   };
 }
@@ -238,6 +240,7 @@ export function getLauncherDefaultValues(
     gid: launcher.environment?.gid,
     command: getJSONStringArray(launcher.environment?.command),
     args: getJSONStringArray(launcher.environment?.args),
+    strip_path_prefix: launcher.environment?.strip_path_prefix ?? false,
     builder_variant:
       launcher.environment.environment_image_source === "build"
         ? launcher.environment.build_parameters.builder_variant

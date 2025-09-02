@@ -110,6 +110,7 @@ export interface SessionLauncherForm
 
   args: string;
   command: string;
+  strip_path_prefix: boolean;
 }
 
 export interface SessionResources {
