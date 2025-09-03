@@ -88,6 +88,7 @@ Default: \`1000\`.`,
   mountDirectory: `Renku will provide persistent storage for your session even when you pause or resume it. Set the location where this storage should be mounted. It should be the same as or a parent of the working directory to avoid data loss. Defaults to the working directory if not specified.`,
   command: `The command that will be run i.e. will overwrite the image Dockerfile \`ENTRYPOINT\`.`,
   args: `The arguments that will follow the command, i.e. will overwrite the image Dockerfile \`CMD\`.`,
+  stripPathPrefix: `When this is activated then the server that is running in the session container will receive all requests with the path prefix stripped out. Note that this is an advanced feature which usually requires the server application running inside the session to be made aware that a proxy is rewriting the URL paths and also to be informed of the real path prefix that is being stripped.`,
 };
 
 export const CONTAINER_IMAGE_PATTERN =
