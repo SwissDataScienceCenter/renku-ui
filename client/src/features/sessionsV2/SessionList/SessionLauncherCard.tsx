@@ -70,14 +70,12 @@ export default function SessionLauncherCard({
   toggleSessionView,
   toggleShareLink,
 }: SessionLauncherCardProps) {
-  const environment = launcher?.environment;
   const { params } = useContext(AppContext);
+  const environment = launcher?.environment;
   const imageBuildersEnabled =
     params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
-
   const isCodeEnvironment =
     environment && environment.environment_image_source === "build";
-
   const isExternalImageEnvironment =
     environment?.environment_kind === "CUSTOM" &&
     environment?.environment_image_source === "image";
@@ -256,8 +254,10 @@ export default function SessionLauncherCard({
                       color={
                         containerImage?.accessible
                           ? "success"
-                          : containerImage?.accessible === false
+                          : containerImage?.connection === "connected"
                           ? "danger"
+                          : containerImage?.connection
+                          ? "warning"
                           : "light"
                       }
                       className="fw-normal"
@@ -274,7 +274,9 @@ export default function SessionLauncherCard({
                             ? "available"
                             : containerImage?.connection === "connected"
                             ? "unavailable"
-                            : "requires authentication"}
+                            : containerImage?.connection
+                            ? "requires credentials"
+                            : "status unknown"}
                         </>
                       )}
                     </RenkuBadge>
