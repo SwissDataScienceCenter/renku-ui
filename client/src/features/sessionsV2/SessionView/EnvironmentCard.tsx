@@ -112,9 +112,11 @@ export default function EnvironmentCard({
               <>
                 <EnvironmentRow>
                   {environment?.description ? (
-                    <p>{environment.description}</p>
+                    <p className={cx("text-truncate", "text-wrap")}>
+                      {environment.description}
+                    </p>
                   ) : (
-                    <p className="fst-italic mb-0">No description</p>
+                    <p className={cx("fst-italic", "mb-0")}>No description</p>
                   )}
                 </EnvironmentRow>
                 <EnvironmentRowWithLabel
