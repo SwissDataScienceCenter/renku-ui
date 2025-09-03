@@ -155,6 +155,7 @@ export type DisplayName = string;
 export type ApiScope = string;
 export type ProviderUrl = string;
 export type UsePkce = boolean;
+export type ImageRegistryUrl = string;
 export type Provider = {
   id: ProviderId;
   kind: ProviderKind;
@@ -165,6 +166,7 @@ export type Provider = {
   scope: ApiScope;
   url: ProviderUrl;
   use_pkce: UsePkce;
+  image_registry_url?: ImageRegistryUrl;
 };
 export type ProviderList = Provider[];
 export type ErrorResponse = {
@@ -184,6 +186,7 @@ export type ProviderPost = {
   scope: ApiScope;
   url: ProviderUrl;
   use_pkce?: UsePkce;
+  image_registry_url?: ImageRegistryUrl;
 };
 export type ProviderPatch = {
   kind?: ProviderKind;
@@ -194,6 +197,7 @@ export type ProviderPatch = {
   scope?: ApiScope;
   url?: ProviderUrl;
   use_pkce?: UsePkce;
+  image_registry_url?: ImageRegistryUrl;
 };
 export type Ulid = string;
 export type ConnectionStatus = "connected" | "pending";
