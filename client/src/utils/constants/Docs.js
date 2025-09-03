@@ -62,7 +62,7 @@ const Links = {
   RENKU_2_EVENTS:
     "https://renku.notion.site/Renku-for-Events-18c0df2efafc800bb26ae93333b4318d",
   RENKU_2_QUICK_START_TUTORIAL:
-    "https://renku.notion.site/Quick-Start-tutorial-1460df2efafc80998204c1f61e333e63",
+    "https://renku.notion.site/Get-started-with-Renku-1a50df2efafc800f8554e30fd7458fa6",
   RENKU_2_GET_HELP:
     "https://renku.notion.site/Get-help-1a2b4b7b0e4746769e246c0328d3d3ad",
   RENKU_2_WHY_RENKU:
