@@ -26,14 +26,16 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ProjectStatistics } from "../../../../notebooks/components/session.types";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { useGetConfigQuery } from "../../../project/projectCoreApi";
-import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import { useGetConfigQuery } from "~/features/project/projectCoreApi";
+import { useCoreSupport } from "~/features/project/useProjectCoreSupport";
+import {
+  type ResourceClassWithId,
+  useGetResourcePoolsQuery,
+} from "~/features/sessionsV2/api/computeResources.api";
+import { ProjectStatistics } from "~/notebooks/components/session.types";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -89,11 +91,12 @@ export const SessionStorageOption = () => {
   } = useGetResourcePoolsQuery(
     projectConfig
       ? {
-          cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
-          gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
-          memoryRequest:
-            projectConfig.config.sessions?.legacyConfig?.memoryRequest,
-          storageRequest: projectConfig.config.sessions?.storage,
+          resourcePoolsParams: {
+            cpu: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+            gpu: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+            memory: projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+            max_storage: projectConfig.config.sessions?.storage,
+          },
         }
       : skipToken
   );
@@ -173,7 +176,7 @@ export const SessionStorageOption = () => {
 };
 
 interface StorageSelectorProps {
-  currentSessionClass?: ResourceClass | undefined;
+  currentSessionClass?: ResourceClassWithId | undefined;
   currentStorage?: number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,10 +16,17 @@
  * limitations under the License.
  */
 
-export interface DataServicesError {
-  error: {
-    code: number;
-    detail?: string;
-    message: string;
-  };
-}
+// Run `npm run generate-api:computeResources` to generate the API
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
+import path from "path";
+
+const config: ConfigFile = {
+  apiFile: "./computeResources.empty-api.ts",
+  apiImport: "computeResourcesEmptyApi",
+  outputFile: "./computeResources.generated-api.ts",
+  exportName: "computeResourcesGeneratedApi",
+  hooks: true,
+  schemaFile: path.join(__dirname, "computeResources.openapi.json"),
+};
+
+export default config;

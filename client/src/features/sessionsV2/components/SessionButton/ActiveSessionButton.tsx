@@ -43,22 +43,25 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { WarnAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
-import { User } from "../../../../model/renkuModels.types";
-import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../../../notifications/notifications.types";
-import AppContext from "../../../../utils/context/appContext";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
+
+import { WarnAlert } from "~/components/Alert";
+import { Loader } from "~/components/Loader";
+import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { User } from "~/model/renkuModels.types";
+import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
+import { NotificationsManager } from "~/notifications/notifications.types";
+import AppContext from "~/utils/context/appContext";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import { SessionStatusState } from "../../../session/sessions.types";
 import { useWaitForSessionStatusV2 } from "../../../session/useWaitForSessionStatus.hook";
+import {
+  type ResourceClassWithId,
+  useGetResourcePoolsQuery,
+} from "../../api/computeResources.api";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
@@ -580,10 +583,10 @@ function ModifySessionModalContent({
   } = useGetResourcePoolsQuery({});
 
   const [currentSessionClass, setCurrentSessionClass] = useState<
-    ResourceClass | undefined
+    ResourceClassWithId | undefined
   >(undefined);
 
-  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
+  const onChange = useCallback((newValue: SingleValue<ResourceClassWithId>) => {
     if (newValue) {
       setCurrentSessionClass(newValue);
     }

@@ -42,25 +42,28 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+
+import { WarnAlert } from "~/components/Alert";
+import { Loader } from "~/components/Loader";
+import { ButtonWithMenu } from "~/components/buttons/Button";
+import SessionPausedIcon from "~/components/icons/SessionPausedIcon";
+import { SshDropdown } from "~/components/ssh/ssh";
+import {
+  type ResourceClassWithId,
+  useGetResourcePoolsQuery,
+} from "~/features/sessionsV2/api/computeResources.api";
+import { User } from "~/model/renkuModels.types";
+import { NotebooksHelper } from "~/notebooks";
+import { NotebookAnnotations } from "~/notebooks/components/session.types";
+import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
+import { NotificationsManager } from "~/notifications/notifications.types";
+import rkIconStartWithOptions from "~/styles/icons/start-with-options.svg";
+import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
-import { WarnAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
-import { ButtonWithMenu } from "../../../components/buttons/Button";
-import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
-import { SshDropdown } from "../../../components/ssh/ssh";
-import { User } from "../../../model/renkuModels.types";
-import { NotebooksHelper } from "../../../notebooks";
-import { NotebookAnnotations } from "../../../notebooks/components/session.types";
-import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../../notifications/notifications.types";
-import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
-import AppContext from "../../../utils/context/appContext";
-import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
-import { Url } from "../../../utils/helpers/url";
-import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
-import { ResourceClass } from "../../dataServices/dataServices.types";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+import RtkQueryErrorsContext from "~/utils/helpers/RtkQueryErrorsContext";
+import { Url } from "~/utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -713,10 +716,10 @@ function ModifySessionModalContent({
   } = useGetResourcePoolsQuery({});
 
   const [currentSessionClass, setCurrentSessionClass] = useState<
-    ResourceClass | undefined
+    ResourceClassWithId | undefined
   >(undefined);
 
-  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
+  const onChange = useCallback((newValue: SingleValue<ResourceClassWithId>) => {
     if (newValue) {
       setCurrentSessionClass(newValue);
     }

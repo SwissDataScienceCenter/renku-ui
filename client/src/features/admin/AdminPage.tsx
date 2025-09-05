@@ -30,39 +30,37 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import { ErrorAlert } from "../../components/Alert";
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
-import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
-import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
+import { ErrorAlert } from "~/components/Alert";
+import { Loader } from "~/components/Loader";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
+import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
-  useDeleteResourcePoolMutation,
-  useGetResourcePoolUsersQuery,
+  type PoolUserWithId,
+  type ResourceClassWithId,
+  type ResourcePoolWithId,
+  useDeleteResourcePoolsByResourcePoolIdMutation,
+  useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
+  useGetResourcePoolsByResourcePoolIdUsersQuery,
   useGetResourcePoolsQuery,
-  useGetUsersQuery,
-  useRemoveUserFromResourcePoolMutation,
-} from "../dataServices/computeResources.api";
-import {
-  ResourceClass,
-  ResourcePool,
-} from "../dataServices/dataServices.types";
+} from "../sessionsV2/api/computeResources.api";
+import { useGetUsersQuery } from "../usersV2/api/users.api";
+import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
+import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
-import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
-import ConnectedServicesSection from "./ConnectedServicesSection";
 
 export default function AdminPage() {
   return (
@@ -89,7 +87,7 @@ function AdminComputeResourcesOverview() {
     data: rawUsers,
     error: rawUsersError,
     isLoading: rawUsersIsLoading,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery({});
   const {
     data: resourcePools,
     error: resourcePoolsError,
@@ -156,7 +154,7 @@ function ResourcePoolsList() {
 }
 
 interface ResourcePoolItemProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
@@ -318,8 +316,8 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
 }
 
 interface ResourceClassListProps {
-  classes: ResourceClass[];
-  resourcePool: ResourcePool;
+  classes: ResourceClassWithId[];
+  resourcePool: ResourcePoolWithId;
 }
 
 function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
@@ -343,8 +341,8 @@ function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
 }
 
 interface ResourceClassItemProps {
-  resourceClass: ResourceClass;
-  resourcePool: ResourcePool;
+  resourceClass: ResourceClassWithId;
+  resourcePool: ResourcePoolWithId;
 }
 
 function ResourceClassItem({
@@ -430,7 +428,7 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
     data: resourcePoolUsers,
     error: resourcePoolUsersError,
     isLoading: resourcePoolUsersIsLoading,
-  } = useGetResourcePoolUsersQuery({ resourcePoolId: id });
+  } = useGetResourcePoolsByResourcePoolIdUsersQuery({ resourcePoolId: id });
 
   const isLoading = resourcePoolUsersIsLoading;
   const error = resourcePoolUsersError;
@@ -465,8 +463,8 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
 }
 
 interface ResourcePoolUsersListProps {
-  resourcePool: ResourcePool;
-  resourcePoolUsers: ResourcePoolUser[];
+  resourcePool: ResourcePoolWithId;
+  resourcePoolUsers: PoolUserWithId[];
 }
 
 function ResourcePoolUsersList({
@@ -487,8 +485,8 @@ function ResourcePoolUsersList({
 }
 
 interface ResourcePoolUserItemProps {
-  resourcePool: ResourcePool;
-  resourcePoolUser: ResourcePoolUser;
+  resourcePool: ResourcePoolWithId;
+  resourcePoolUser: PoolUserWithId;
 }
 
 function ResourcePoolUserItem({
@@ -534,7 +532,7 @@ function ResourcePoolUserItem({
 }
 
 interface RemoveUserFromResourcePoolButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   user: KeycloakUser;
 }
 
@@ -565,7 +563,7 @@ function RemoveUserFromResourcePoolButton({
 
 interface RemoveUserFromResourcePoolModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
   user: KeycloakUser;
 }
@@ -577,7 +575,7 @@ function RemoveUserFromResourcePoolModal({
   user,
 }: RemoveUserFromResourcePoolModalProps) {
   const [removeUserFromResourcePool, result] =
-    useRemoveUserFromResourcePoolMutation();
+    useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation();
   const onRemove = useCallback(() => {
     removeUserFromResourcePool({
       resourcePoolId: resourcePool.id,
@@ -622,7 +620,7 @@ function RemoveUserFromResourcePoolModal({
 }
 
 interface DeleteResourcePoolButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 function DeleteResourcePoolButton({
@@ -656,7 +654,7 @@ function DeleteResourcePoolButton({
 
 interface DeleteResourcePoolModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -667,7 +665,8 @@ function DeleteResourcePoolModal({
 }: DeleteResourcePoolModalProps) {
   const { id, name } = resourcePool;
 
-  const [deleteResourcePool, result] = useDeleteResourcePoolMutation();
+  const [deleteResourcePool, result] =
+    useDeleteResourcePoolsByResourcePoolIdMutation();
   const onDelete = useCallback(() => {
     deleteResourcePool({ resourcePoolId: id });
   }, [deleteResourcePool, id]);

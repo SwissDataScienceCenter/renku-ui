@@ -19,20 +19,20 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 
-import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
-import { ProjectStatistics } from "../../../../notebooks/components/session.types";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { useGetStorageQuery } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
-import { useGetConfigQuery } from "../../../project/projectCoreApi";
+import { StatusStepProgressBar } from "~/components/progress/ProgressSteps";
+import { useGetStorageQuery } from "~/features/project/components/cloudStorage/api/projectCloudStorage.api";
+import { useGetConfigQuery } from "~/features/project/projectCoreApi";
 import {
   useGetAllRepositoryBranchesQuery,
   useGetAllRepositoryCommitsQuery,
-} from "../../../project/projectGitLab.api";
-import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
+} from "~/features/project/projectGitLab.api";
+import { useCoreSupport } from "~/features/project/useProjectCoreSupport";
+import { useGetResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.api";
+import { useGetNotebooksVersionQuery } from "~/features/versions/versions.api";
+import { ProjectStatistics } from "~/notebooks/components/session.types";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import useDefaultCloudStorageOption from "../../hooks/options/useDefaultCloudStorageOption.hook";
@@ -164,11 +164,13 @@ function useAutostartSessionOptions(): void {
     useGetResourcePoolsQuery(
       projectConfig
         ? {
-            cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
-            gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
-            memoryRequest:
-              projectConfig.config.sessions?.legacyConfig?.memoryRequest,
-            storageRequest: projectConfig.config.sessions?.storage,
+            resourcePoolsParams: {
+              cpu: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+              gpu: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+              memory:
+                projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+              max_storage: projectConfig.config.sessions?.storage,
+            },
           }
         : skipToken
     );

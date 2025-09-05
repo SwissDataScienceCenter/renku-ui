@@ -27,16 +27,17 @@ import {
   Label,
   UncontrolledTooltip,
 } from "reactstrap";
-import { WarnAlert } from "../../../../components/Alert";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import { Loader } from "../../../../components/Loader";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
-import { SessionLauncherForm } from "../../sessionsV2.types";
+
+import { WarnAlert } from "~/components/Alert";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../session/startSessionOptions.constants";
+} from "~/features/session/startSessionOptions.constants";
+import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 
 interface LauncherDetailsFieldsProps {
   control: Control<SessionLauncherForm>;
