@@ -312,14 +312,17 @@ describe("visit V1 project urls without legacy support", () => {
     cy.url().should("contain", "/p/user1-uuid/test-2-v2-project");
   });
 
-  it("show error message for non-migrated project", () => {
-    fixtures.urlRedirect({
-      sourceUrl: encodeURIComponent(projectUrl),
-      targetUrl: null,
-    });
+  it("show migration instructions for non-migrated project", () => {
+    fixtures
+      .urlRedirect({
+        sourceUrl: encodeURIComponent(projectUrl),
+        targetUrl: null,
+      })
+      .listNamespaceV2();
     cy.visit(`${projectUrl}`);
     cy.contains("Checking for redirect").should("be.visible");
     cy.wait("@getUrlRedirect");
-    cy.contains("Legacy not supported").should("be.visible");
+    cy.contains("Legacy is no longer supported").should("be.visible");
+    cy.contains("Create a project").click();
   });
 });

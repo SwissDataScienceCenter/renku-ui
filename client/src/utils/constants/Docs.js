@@ -69,6 +69,9 @@ const Links = {
     "https://renku.notion.site/Why-Renku-1900df2efafc80839b26cbad43f24778",
   RENKU_2_HANDS_ON_TUTORIAL:
     "https://renku.notion.site/Hands-On-Tutorial-1a50df2efafc800f8554e30fd7458fa6",
+  RENKU_2_SUNSET: "https://blog.renkulab.io/sunsetting-legacy/",
+  RENKU_2_CREATE_PROJECT:
+    "https://www.notion.so/renku/How-to-create-a-new-project-eea72bea221848d7bd0b3338dd859504#eea72bea221848d7bd0b3338dd859504",
 };
 
 const GitlabLinks = {

@@ -25,7 +25,7 @@ import ContainerWrap from "~/components/container/ContainerWrap";
 import { useGetPlatformRedirectsBySourceUrlQuery } from "~/features/platform/api/platform.api";
 import { locationPathnameToSourceUrl } from "~/features/platform/api/platform.utils";
 
-import NoLegacySupport from "./NoLegacySupport";
+import NoLegacySupportForProjects from "./NoLegacySupportForProjects";
 
 function CheckingForRedirect() {
   return (
@@ -84,5 +84,5 @@ export default function CheckForRedirect() {
   if (isFetchingRedirects && sourceUrl != null) {
     return <CheckingForRedirect />;
   }
-  return <NoLegacySupport />;
+  return <NoLegacySupportForProjects />;
 }
