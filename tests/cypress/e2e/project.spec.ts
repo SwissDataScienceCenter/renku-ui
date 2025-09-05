@@ -312,7 +312,7 @@ describe("visit V1 project urls without legacy support", () => {
     cy.url().should("contain", "/p/user1-uuid/test-2-v2-project");
   });
 
-  it("show error message for non-migrated project", () => {
+  it("show migration instructions for non-migrated project", () => {
     fixtures.urlRedirect({
       sourceUrl: encodeURIComponent(projectUrl),
       targetUrl: null,
