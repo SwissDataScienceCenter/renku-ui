@@ -20,8 +20,10 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useContext, useEffect } from "react";
 import { CircleFill, Clock } from "react-bootstrap-icons";
+import { Link } from "react-router";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
-
+import { ErrorAlert, WarnAlert } from "~/components/Alert";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { Loader } from "../../../components/Loader";
@@ -34,15 +36,17 @@ import {
   sessionLaunchersV2Api,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
 } from "../api/sessionLaunchersV2.api";
-import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
-import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
-import { safeStringify } from "../session.utils";
+import { useGetSessionsImagesQuery } from "../api/sessionsV2.api";
 import {
   BuildActions,
   BuildErrorReason,
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
+import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
+import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
+import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
+import { safeStringify } from "../session.utils";
 
 export default function EnvironmentCard({
   launcher,
@@ -162,12 +166,57 @@ function CustomImageEnvironmentValues({
 }) {
   const environment = launcher.environment;
 
+  const { data, isLoading } = useGetSessionsImagesQuery(
+    environment &&
+      environment.environment_kind === "CUSTOM" &&
+      environment.container_image
+      ? { imageUrl: environment.container_image }
+      : skipToken
+  );
+
   if (environment.environment_kind !== "CUSTOM") {
     return null;
   }
 
   return (
     <>
+      <div className="mb-2">
+        <SessionImageBadge data={data} loading={isLoading} />
+        {!isLoading && data?.accessible === false && (
+          <div className="mt-2">
+            {!data.connection || data.connection?.status === "connected" ? (
+              <ErrorAlert className="mb-0" dismissible={false}>
+                <p className="mb-0">Cannot access the container image.</p>
+                {data.connection?.provider_id && (
+                  <p className={cx("mb-0", "mt-2")}>
+                    The URL leads to a registry where you have an account. If
+                    you think you should have access, you can{" "}
+                    <Link
+                      className={cx("btn", "btn-outline-danger", "btn-sm")}
+                      to={ABSOLUTE_ROUTES.v2.integrations}
+                    >
+                      check the connection details
+                    </Link>
+                  </p>
+                )}
+              </ErrorAlert>
+            ) : (
+              <WarnAlert className="mb-0" dismissible={false}>
+                <p className="mb-2">Cannot access the container image.</p>
+                <p className="mb-0">
+                  If the image is private, you can gain access by{" "}
+                  <Link
+                    className={cx("btn", "btn-warning", "btn-sm")}
+                    to={ABSOLUTE_ROUTES.v2.integrations}
+                  >
+                    logging in to an external provider
+                  </Link>
+                </p>
+              </WarnAlert>
+            )}
+          </div>
+        )}
+      </div>
       <EnvironmentRowWithLabel
         label="Container image"
         value={environment?.container_image || ""}
