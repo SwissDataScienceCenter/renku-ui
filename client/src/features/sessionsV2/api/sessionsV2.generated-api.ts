@@ -236,7 +236,11 @@ export type ImageConnectionStatus = "connected" | "pending" | "disconnected";
 export type ImageCheckResponse = {
   /** Whether the image is accessible or not. */
   accessible: boolean;
-  connection?: ImageConnectionStatus & any;
+  connection?: {
+    id?: string;
+    provider_id: string;
+    status: ImageConnectionStatus | "invalid";
+  } & any;
 };
 export type ErrorResponse = {
   error: {
