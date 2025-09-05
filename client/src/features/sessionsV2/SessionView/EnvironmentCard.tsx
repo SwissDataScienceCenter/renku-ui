@@ -18,9 +18,9 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useContext, useEffect } from "react";
+import { ReactNode, useContext, useEffect, useMemo } from "react";
 import { CircleFill, Clock } from "react-bootstrap-icons";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
@@ -164,6 +164,7 @@ function CustomImageEnvironmentValues({
 }: {
   launcher: SessionLauncher;
 }) {
+  const { pathname, hash } = useLocation();
   const environment = launcher.environment;
 
   const { data, isLoading } = useGetSessionsImagesQuery(
@@ -173,11 +174,16 @@ function CustomImageEnvironmentValues({
       ? { imageUrl: environment.container_image }
       : skipToken
   );
+  const search = useMemo(() => {
+    return `?${new URLSearchParams({
+      targetProvider: data?.connection?.provider_id ?? "",
+      source: `${pathname}${hash}`,
+    }).toString()}`;
+  }, [data, pathname, hash]);
 
   if (environment.environment_kind !== "CUSTOM") {
     return null;
   }
-
   return (
     <>
       <div className="mb-2">
@@ -193,7 +199,10 @@ function CustomImageEnvironmentValues({
                     you think you should have access, you can{" "}
                     <Link
                       className={cx("btn", "btn-outline-danger", "btn-sm")}
-                      to={ABSOLUTE_ROUTES.v2.integrations}
+                      to={{
+                        pathname: ABSOLUTE_ROUTES.v2.integrations,
+                        search,
+                      }}
                     >
                       check the connection details
                     </Link>
@@ -207,7 +216,10 @@ function CustomImageEnvironmentValues({
                   If the image is private, you can gain access by{" "}
                   <Link
                     className={cx("btn", "btn-warning", "btn-sm")}
-                    to={ABSOLUTE_ROUTES.v2.integrations}
+                    to={{
+                      pathname: ABSOLUTE_ROUTES.v2.integrations,
+                      search,
+                    }}
                   >
                     logging in to an external provider
                   </Link>

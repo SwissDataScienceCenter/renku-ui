@@ -33,7 +33,9 @@ export default function SessionImageBadge({
   return (
     <RenkuBadge
       color={
-        data?.accessible
+        loading
+          ? "light"
+          : data?.accessible
           ? "success"
           : !data?.connection || data?.connection?.status === "connected"
           ? "danger"
