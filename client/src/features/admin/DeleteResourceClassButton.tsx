@@ -38,16 +38,17 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import { useDeleteResourceClassMutation } from "../dataServices/computeResources.api";
+
+import { Loader } from "~/components/Loader";
 import {
-  ResourceClass,
-  ResourcePool,
-} from "../dataServices/dataServices.types";
+  useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
+  type ResourceClassWithId,
+  type ResourcePoolWithId,
+} from "../sessionsV2/api/computeResources.api";
 
 interface DeleteResourceClassButtonProps {
-  resourceClass: ResourceClass;
-  resourcePool: ResourcePool;
+  resourceClass: ResourceClassWithId;
+  resourcePool: ResourcePoolWithId;
 }
 
 export default function DeleteResourceClassButton({
@@ -83,8 +84,8 @@ export default function DeleteResourceClassButton({
 
 interface DeleteResourceClassModalProps {
   isOpen: boolean;
-  resourceClass: ResourceClass;
-  resourcePool: ResourcePool;
+  resourceClass: ResourceClassWithId;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -96,11 +97,12 @@ function DeleteResourceClassModal({
 }: DeleteResourceClassModalProps) {
   const { id, name } = resourceClass;
 
-  const [deleteResourceClass, result] = useDeleteResourceClassMutation();
+  const [deleteResourceClass, result] =
+    useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation();
   const onDelete = useCallback(() => {
     deleteResourceClass({
-      resourceClassId: id,
       resourcePoolId: resourcePool.id,
+      classId: `${id}`,
     });
   }, [deleteResourceClass, id, resourcePool.id]);
 

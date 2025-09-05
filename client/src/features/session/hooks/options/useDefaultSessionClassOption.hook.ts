@@ -17,13 +17,14 @@
  */
 
 import { useEffect, useMemo } from "react";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import { ResourcePool } from "../../../dataServices/dataServices.types";
+
+import type { ResourcePoolWithIdFiltered } from "~/features/sessionsV2/api/computeResources.api";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { setError } from "../../startSession.slice";
 import { setSessionClass } from "../../startSessionOptionsSlice";
 
 interface UseDefaultSessionClassOptionArgs {
-  resourcePools: ResourcePool[] | undefined;
+  resourcePools: ResourcePoolWithIdFiltered[] | undefined;
 }
 
 export default function useDefaultSessionClassOption({

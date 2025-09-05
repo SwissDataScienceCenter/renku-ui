@@ -30,15 +30,19 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { useUpdateResourcePoolMutation } from "../dataServices/computeResources.api";
-import { ResourcePool } from "../dataServices/dataServices.types";
+
+import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import {
+  usePatchResourcePoolsByResourcePoolIdMutation,
+  type ResourcePoolWithId,
+} from "../sessionsV2/api/computeResources.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import { ResourcePoolDefaultThreshold } from "./AddResourcePoolButton";
-import { UpdateResourcePoolThresholdsForm } from "./adminComputeResources.types";
+import type { UpdateResourcePoolThresholdsForm } from "./adminComputeResources.types";
+
 interface UpdateResourcePoolThresholdsButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 export default function UpdateResourcePoolThresholdsButton({
@@ -71,7 +75,7 @@ export default function UpdateResourcePoolThresholdsButton({
 
 interface UpdateResourcePoolThresholdsModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -103,17 +107,20 @@ function UpdateResourcePoolThresholdsModal({
   });
 
   // Handle invoking API to update resource pools
-  const [updateResourcePool, result] = useUpdateResourcePoolMutation();
+  const [updateResourcePool, result] =
+    usePatchResourcePoolsByResourcePoolIdMutation();
   const onSubmit = useCallback(
     (data: UpdateResourcePoolThresholdsForm) => {
       updateResourcePool({
         resourcePoolId: id,
-        idle_threshold: data.idleThresholdMinutes
-          ? data.idleThresholdMinutes * 60
-          : undefined,
-        hibernation_threshold: data.hibernationThresholdMinutes
-          ? data.hibernationThresholdMinutes * 60
-          : undefined,
+        resourcePoolPatch: {
+          idle_threshold: data.idleThresholdMinutes
+            ? data.idleThresholdMinutes * 60
+            : undefined,
+          hibernation_threshold: data.hibernationThresholdMinutes
+            ? data.hibernationThresholdMinutes * 60
+            : undefined,
+        },
       });
     },
     [id, updateResourcePool]

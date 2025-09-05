@@ -19,13 +19,13 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
-import useDefaultBranchOption from "../../session/hooks/options/useDefaultBranchOption.hook";
-import useDefaultCommitOption from "../../session/hooks/options/useDefaultCommitOption.hook";
+import useDefaultBranchOption from "~/features/session/hooks/options/useDefaultBranchOption.hook";
+import useDefaultCommitOption from "~/features/session/hooks/options/useDefaultCommitOption.hook";
+import { useGetResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.api";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
   projectCoreApi,
-  ProjectMetadataParams,
+  type ProjectMetadataParams,
   useGetConfigQuery,
 } from "../projectCoreApi";
 import projectGitLabApi, {
@@ -91,11 +91,13 @@ export function useGetSessionLauncherData(
     useGetResourcePoolsQuery(
       projectConfig
         ? {
-            cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
-            gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
-            memoryRequest:
-              projectConfig.config.sessions?.legacyConfig?.memoryRequest,
-            storageRequest: projectConfig.config.sessions?.storage,
+            resourcePoolsParams: {
+              cpu: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+              gpu: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+              memory:
+                projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+              max_storage: projectConfig.config.sessions?.storage,
+            },
           }
         : skipToken
     );

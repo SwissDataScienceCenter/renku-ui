@@ -48,15 +48,15 @@ import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepos
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import {
-  useGetResourceClassByIdQuery,
-  useGetResourcePoolsQuery,
-} from "../../dataServices/computeResources.api";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
 import StartSessionButton from "../StartSessionButton";
+import {
+  useGetClassesByClassIdQuery,
+  useGetResourcePoolsQuery,
+} from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
@@ -247,7 +247,11 @@ export function SessionView({
   const {
     data: launcherResourceClass,
     isLoading: isLoadingLauncherResourceClass,
-  } = useGetResourceClassByIdQuery(launcher?.resource_class_id ?? skipToken);
+  } = useGetClassesByClassIdQuery(
+    launcher?.resource_class_id
+      ? { classId: `${launcher.resource_class_id}` }
+      : skipToken
+  );
 
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";

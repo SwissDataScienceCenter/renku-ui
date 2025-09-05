@@ -49,13 +49,17 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useAddResourceClassMutation } from "../dataServices/computeResources.api";
-import { NodeAffinity, ResourcePool } from "../dataServices/dataServices.types";
+
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import {
+  usePostResourcePoolsByResourcePoolIdClassesMutation,
+  type ResourcePoolWithId,
+} from "../sessionsV2/api/computeResources.api";
+import type { ResourceClassForm } from "./adminComputeResources.types";
 
 interface AddResourceClassButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 export default function AddResourceClassButton({
@@ -83,7 +87,7 @@ export default function AddResourceClassButton({
 
 interface AddResourceClassModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -94,13 +98,14 @@ function AddResourceClassModal({
 }: AddResourceClassModalProps) {
   const { id, quota } = resourcePool;
 
-  const [addResourceClass, result] = useAddResourceClassMutation();
+  const [addResourceClass, result] =
+    usePostResourcePoolsByResourcePoolIdClassesMutation();
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm<AddResourceClassForm>({
+  } = useForm<ResourceClassForm>({
     defaultValues: {
       cpu: 0.1,
       default: false,
@@ -125,12 +130,14 @@ function AddResourceClassModal({
     remove: affinitiesRemove,
   } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
-    (data: AddResourceClassForm) => {
+    (data: ResourceClassForm) => {
       const tolerations = data.tolerations.map(({ label }) => label);
       addResourceClass({
         resourcePoolId: resourcePool.id,
-        ...data,
-        tolerations,
+        resourceClass: {
+          ...data,
+          tolerations,
+        },
       });
     },
     [addResourceClass, resourcePool.id]
@@ -450,20 +457,4 @@ function AddResourceClassModal({
       </ModalFooter>
     </Modal>
   );
-}
-
-interface AddResourceClassForm {
-  name: string;
-  cpu: number;
-  memory: number;
-  gpu: number;
-  default_storage: number;
-  max_storage: number;
-  default: boolean;
-  tolerations: TolerationField[];
-  node_affinities: NodeAffinity[];
-}
-
-interface TolerationField {
-  label: string;
 }

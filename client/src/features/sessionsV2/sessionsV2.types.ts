@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
-import { ReactNode } from "react";
-import { ResourceClass } from "../dataServices/dataServices.types";
-import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type { ReactNode } from "react";
+
+import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type { ResourceClassWithId } from "./api/computeResources.generated-api";
 import type {
   BuildParametersPost,
   DefaultUrl,
@@ -94,7 +95,7 @@ export interface SessionLauncherForm
       | "repository_revision"
       | "repository"
     > {
-  resourceClass: ResourceClass;
+  resourceClass: ResourceClassWithId;
 
   // Substitute for Environment Kind and Environment Image Source in forms
   environmentSelect: "global" | "custom + image" | "custom + build";

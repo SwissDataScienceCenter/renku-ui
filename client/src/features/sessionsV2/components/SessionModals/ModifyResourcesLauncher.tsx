@@ -1,3 +1,21 @@
+/*!
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
@@ -14,15 +32,18 @@ import {
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
-import { SuccessAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+
+import { SuccessAlert } from "~/components/Alert";
+import { Loader } from "~/components/Loader";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../session/startSessionOptions.constants";
+} from "~/features/session/startSessionOptions.constants";
+import {
+  type ResourceClassWithId,
+  useGetResourcePoolsQuery,
+} from "../../api/computeResources.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../../api/sessionLaunchersV2.api";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -275,6 +296,6 @@ export function ModifyResourcesLauncherModal({
 }
 
 interface ModifyResourcesLauncherForm {
-  resourceClass: ResourceClass | undefined;
+  resourceClass: ResourceClassWithId | undefined;
   diskStorage: number | undefined;
 }

@@ -19,15 +19,15 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
   useGetDataConnectorsListByDataConnectorIdsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
 } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
-import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
 import type { Project } from "../projectsV2/api/projectV2.api";
+import { useGetResourcePoolsQuery } from "./api/computeResources.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { DEFAULT_URL } from "./session.constants";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";

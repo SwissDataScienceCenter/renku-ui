@@ -35,17 +35,17 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import {
-  useGetResourceClassByIdQuery,
-  useGetResourcePoolsQuery,
-} from "../../../dataServices/computeResources.api";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../session/startSessionOptions.constants";
+} from "~/features/session/startSessionOptions.constants";
+import {
+  useGetClassesByClassIdQuery,
+  useGetResourcePoolsQuery,
+  type ResourceClassWithIdFiltered,
+} from "../../api/computeResources.api";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
@@ -53,7 +53,10 @@ import {
 
 interface SelectResourceClassModalProps {
   isOpen: boolean;
-  onContinue: (env: ResourceClass, diskStorage: number | undefined) => void;
+  onContinue: (
+    env: ResourceClassWithIdFiltered,
+    diskStorage: number | undefined
+  ) => void;
   projectUrl: string;
   resourceClassId?: number | null;
   isCustom: boolean;
@@ -72,7 +75,9 @@ export function SelectResourceClassModal({
   } = useGetResourcePoolsQuery({});
 
   const { data: launcherClass, isLoading: isLoadingLauncherClass } =
-    useGetResourceClassByIdQuery(resourceClassId ?? skipToken);
+    useGetClassesByClassIdQuery(
+      resourceClassId ? { classId: `${resourceClassId}` } : skipToken
+    );
 
   const {
     control,
@@ -264,6 +269,6 @@ export function SelectResourceClassModal({
 }
 
 interface SelectResourceClassForm {
-  resourceClass: ResourceClass | undefined;
+  resourceClass: ResourceClassWithIdFiltered | undefined;
   diskStorage: number | undefined;
 }

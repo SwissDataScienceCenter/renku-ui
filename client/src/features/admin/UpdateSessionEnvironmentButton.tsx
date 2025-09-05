@@ -120,14 +120,10 @@ function UpdateSessionEnvironmentModal({
             // TODO: See https://github.com/SwissDataScienceCenter/renku-data-services/issues/985
             ...(commandParsed.data
               ? { command: commandParsed.data }
-              : data.command.trim() === ""
-              ? ({ command: null } as any) // eslint-disable-line @typescript-eslint/no-explicit-any
-              : {}),
+              : ({ command: null } as any)), // eslint-disable-line @typescript-eslint/no-explicit-any
             ...(argsParsed.data
               ? { args: argsParsed.data }
-              : data.args.trim() === ""
-              ? ({ args: null } as any) // eslint-disable-line @typescript-eslint/no-explicit-any
-              : {}),
+              : ({ args: null } as any)), // eslint-disable-line @typescript-eslint/no-explicit-any
           },
         });
     },
