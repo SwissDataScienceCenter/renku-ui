@@ -67,18 +67,26 @@ const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
             arg.imageUrl.includes("fake")
               ? false
               : true,
-          // "connected" | "pending" | "disconnected"
-          connection: arg.imageUrl.includes("pending")
-            ? "pending"
-            : arg.imageUrl.includes("disconnected")
-            ? "disconnected"
-            : "connected",
+          connection: arg.imageUrl.includes("connection")
+            ? {
+                id: "example-connection-id",
+                provider_id: "example-provider-id",
+                status: arg.imageUrl.includes("pending")
+                  ? "pending"
+                  : arg.imageUrl.includes("not_connected") ||
+                    arg.imageUrl.includes("disconnected")
+                  ? "not_connected"
+                  : arg.imageUrl.includes("invalid")
+                  ? "invalid"
+                  : "connected",
+              }
+            : undefined,
         };
       },
       transformErrorResponse: () => {
         return {
           accessible: false,
-          connection: "pending",
+          connection: undefined,
         };
       },
     },
