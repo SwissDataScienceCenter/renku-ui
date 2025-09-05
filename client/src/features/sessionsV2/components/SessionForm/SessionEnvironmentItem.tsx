@@ -26,12 +26,12 @@ import {
 } from "react-hook-form";
 import { SingleValue } from "react-select";
 import { Card, CardBody, Input, Label, ListGroupItem } from "reactstrap";
-import { TimeCaption } from "../../../../components/TimeCaption";
+import { TimeCaption } from "~/components/TimeCaption";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
-  ResourceClass,
-  ResourcePool,
-} from "../../../dataServices/dataServices.types";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+  type ResourceClassWithId,
+  type ResourcePoolWithId,
+} from "../../api/computeResources.api";
 import type { Environment as SessionEnvironment } from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentIcon } from "./LauncherEnvironmentIcon";
@@ -42,12 +42,14 @@ interface SessionEnvironmentItemProps {
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;
-  resourcePools?: ResourcePool[];
+  resourcePools?: ResourcePoolWithId[];
   isLoadingResourcesPools?: boolean;
-  onChangeResourceClass?: (resourceClass: SingleValue<ResourceClass>) => void;
+  onChangeResourceClass?: (
+    resourceClass: SingleValue<ResourceClassWithId>
+  ) => void;
   errors: FieldErrors<SessionLauncherForm>;
   control: Control<SessionLauncherForm, unknown>;
-  defaultSessionClass?: ResourceClass;
+  defaultSessionClass?: ResourceClassWithId;
 }
 
 export function SessionEnvironmentItem({

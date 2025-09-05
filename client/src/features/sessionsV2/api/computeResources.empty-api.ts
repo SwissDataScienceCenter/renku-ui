@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-export interface DataServicesError {
-  error: {
-    code: number;
-    detail?: string;
-    message: string;
-  };
-}
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const computeResourcesEmptyApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
+  endpoints: () => ({}),
+  reducerPath: "computeResources",
+});

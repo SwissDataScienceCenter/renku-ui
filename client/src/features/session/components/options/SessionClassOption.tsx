@@ -36,30 +36,30 @@ import Select, {
   SingleValueProps,
   components,
 } from "react-select";
-import { useGetNotebooksVersionQuery } from "../../../versions/versions.api.ts";
 
-import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import { User } from "../../../../model/renkuModels.types";
-import { ProjectStatistics } from "../../../../notebooks/components/session.types";
-import AppContext from "../../../../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
+import { ErrorAlert, WarnAlert } from "~/components/Alert";
+import { ExternalLink } from "~/components/ExternalLinks";
 import {
-  ResourceClass,
-  ResourcePool,
-} from "../../../dataServices/dataServices.types";
+  useGetResourcePoolsQuery,
+  type ResourceClassWithIdFiltered,
+  type ResourcePoolWithIdFiltered,
+} from "~/features/sessionsV2/api/computeResources.api";
+import { User } from "~/model/renkuModels.types";
+import { ProjectStatistics } from "~/notebooks/components/session.types";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+import { toHumanDuration } from "~/utils/helpers/DurationUtils";
 import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import { FetchingResourcePools } from "../../../sessionsV2/components/SessionModals/ResourceClassWarning";
+import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
 import { setSessionClass } from "../../startSessionOptionsSlice";
 import { computeStorageSizes } from "../../utils/sessionOptions.utils";
 
-import { toHumanDuration } from "../../../../utils/helpers/DurationUtils";
-import { FetchingResourcePools } from "../../../sessionsV2/components/SessionModals/ResourceClassWarning";
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {
@@ -112,12 +112,13 @@ export const SessionClassOption = () => {
   } = useGetResourcePoolsQuery(
     projectConfig
       ? {
-          cpuRequest: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
-          gpuRequest: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
-          memoryRequest:
-            projectConfig.config.sessions?.legacyConfig?.memoryRequest,
-          storageRequest:
-            projectConfig.config.sessions?.storage ?? minimumStorageGb,
+          resourcePoolsParams: {
+            cpu: projectConfig.config.sessions?.legacyConfig?.cpuRequest,
+            gpu: projectConfig.config.sessions?.legacyConfig?.gpuRequest,
+            memory: projectConfig.config.sessions?.legacyConfig?.memoryRequest,
+            max_storage:
+              projectConfig.config.sessions?.storage ?? minimumStorageGb,
+          },
         }
       : skipToken
   );
@@ -143,7 +144,7 @@ export const SessionClassOption = () => {
 
   const dispatch = useAppDispatch();
   const onChange = useCallback(
-    (newValue: SingleValue<ResourceClass>) => {
+    (newValue: SingleValue<ResourceClassWithIdFiltered>) => {
       if (newValue?.id) {
         dispatch(setSessionClass(newValue?.id));
       }
@@ -223,10 +224,10 @@ export const SessionClassOption = () => {
 };
 
 interface SessionClassThresholdsProps {
-  currentSessionClass?: ResourceClass;
+  currentSessionClass?: ResourceClassWithIdFiltered;
   defaultHibernation?: number;
   defaultIdle?: number;
-  resourcePools: ResourcePool[];
+  resourcePools: ResourcePoolWithIdFiltered[];
 }
 
 function SessionClassThresholds({
@@ -277,11 +278,11 @@ function SessionClassThresholds({
 }
 
 interface SessionRequirementsProps {
-  currentSessionClass?: ResourceClass | undefined;
+  currentSessionClass?: ResourceClassWithIdFiltered | undefined;
   minimumStorageGb: number | undefined;
   projectConfig: ProjectConfig | undefined;
   recommendedStorageGb: number | undefined;
-  resourcePools: ResourcePool[];
+  resourcePools: ResourcePoolWithIdFiltered[];
 }
 
 function SessionRequirements({
@@ -384,7 +385,7 @@ function SessionRequirements({
 }
 
 interface SessionClassWarningProps {
-  currentSessionClass?: ResourceClass | undefined;
+  currentSessionClass?: ResourceClassWithIdFiltered | undefined;
 }
 
 function SessionClassWarning({
@@ -449,12 +450,12 @@ function AskForComputeResources() {
 }
 
 interface SessionClassSelectorProps {
-  currentSessionClass?: ResourceClass | undefined;
-  defaultSessionClass?: ResourceClass | undefined;
+  currentSessionClass?: ResourceClassWithIdFiltered | undefined;
+  defaultSessionClass?: ResourceClassWithIdFiltered | undefined;
   disabled?: boolean;
   id?: string;
-  onChange?: (newValue: SingleValue<ResourceClass>) => void;
-  resourcePools: ResourcePool[];
+  onChange?: (newValue: SingleValue<ResourceClassWithIdFiltered>) => void;
+  resourcePools: ResourcePoolWithIdFiltered[];
 }
 export const SessionClassSelector = ({
   id,
@@ -503,15 +504,15 @@ export const SessionClassSelector = ({
   );
 };
 
-interface OptionGroup extends GroupBase<ResourceClass> {
+interface OptionGroup extends GroupBase<ResourceClassWithIdFiltered> {
   label: string;
-  pool: ResourcePool;
+  pool: ResourcePoolWithIdFiltered;
   maxIdle: string;
-  options: readonly ResourceClass[];
+  options: readonly ResourceClassWithIdFiltered[];
 }
 
 const makeGroupedOptions = (
-  resourcePools: ResourcePool[],
+  resourcePools: ResourcePoolWithIdFiltered[],
   defaultIdleThreshold?: number
 ): OptionGroup[] =>
   resourcePools.map((pool) => ({
@@ -526,7 +527,11 @@ const makeGroupedOptions = (
     options: pool.classes,
   }));
 
-const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
+const selectClassNames: ClassNamesConfig<
+  ResourceClassWithIdFiltered,
+  false,
+  OptionGroup
+> = {
   control: ({ menuIsOpen }) =>
     cx(
       menuIsOpen ? "rounded-top" : "rounded",
@@ -555,7 +560,7 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
 };
 
 const selectComponents: SelectComponentsConfig<
-  ResourceClass,
+  ResourceClassWithIdFiltered,
   false,
   OptionGroup
 > = {
@@ -566,7 +571,9 @@ const selectComponents: SelectComponentsConfig<
       </components.DropdownIndicator>
     );
   },
-  Option: (props: OptionProps<ResourceClass, false, OptionGroup>) => {
+  Option: (
+    props: OptionProps<ResourceClassWithIdFiltered, false, OptionGroup>
+  ) => {
     const { data: sessionClass } = props;
     return (
       <components.Option {...props}>
@@ -574,7 +581,9 @@ const selectComponents: SelectComponentsConfig<
       </components.Option>
     );
   },
-  SingleValue: (props: SingleValueProps<ResourceClass, false, OptionGroup>) => {
+  SingleValue: (
+    props: SingleValueProps<ResourceClassWithIdFiltered, false, OptionGroup>
+  ) => {
     const { data: sessionClass } = props;
     return (
       <components.SingleValue {...props}>
@@ -583,7 +592,7 @@ const selectComponents: SelectComponentsConfig<
     );
   },
   GroupHeading: (
-    props: GroupHeadingProps<ResourceClass, false, OptionGroup>
+    props: GroupHeadingProps<ResourceClassWithIdFiltered, false, OptionGroup>
   ) => {
     return (
       <components.GroupHeading {...props}>
@@ -644,7 +653,7 @@ export const SessionClassSelectorV2 = ({
 };
 
 const selectComponentsV2: SelectComponentsConfig<
-  ResourceClass,
+  ResourceClassWithIdFiltered,
   false,
   OptionGroup
 > = {
@@ -655,7 +664,9 @@ const selectComponentsV2: SelectComponentsConfig<
       </components.DropdownIndicator>
     );
   },
-  Option: (props: OptionProps<ResourceClass, false, OptionGroup>) => {
+  Option: (
+    props: OptionProps<ResourceClassWithIdFiltered, false, OptionGroup>
+  ) => {
     const { data: sessionClass } = props;
     return (
       <components.Option {...props}>
@@ -663,7 +674,9 @@ const selectComponentsV2: SelectComponentsConfig<
       </components.Option>
     );
   },
-  SingleValue: (props: SingleValueProps<ResourceClass, false, OptionGroup>) => {
+  SingleValue: (
+    props: SingleValueProps<ResourceClassWithIdFiltered, false, OptionGroup>
+  ) => {
     const { data: sessionClass } = props;
     return (
       <components.SingleValue {...props}>
@@ -672,7 +685,7 @@ const selectComponentsV2: SelectComponentsConfig<
     );
   },
   GroupHeading: (
-    props: GroupHeadingProps<ResourceClass, false, OptionGroup>
+    props: GroupHeadingProps<ResourceClassWithIdFiltered, false, OptionGroup>
   ) => {
     return (
       <components.GroupHeading {...props}>
@@ -683,7 +696,9 @@ const selectComponentsV2: SelectComponentsConfig<
       </components.GroupHeading>
     );
   },
-  MenuList: (props: MenuListProps<ResourceClass, false, OptionGroup>) => {
+  MenuList: (
+    props: MenuListProps<ResourceClassWithIdFiltered, false, OptionGroup>
+  ) => {
     return (
       <components.MenuList
         {...props}
@@ -698,35 +713,38 @@ const selectComponentsV2: SelectComponentsConfig<
   },
 };
 
-const selectClassNamesV2: ClassNamesConfig<ResourceClass, false, OptionGroup> =
-  {
-    control: ({ menuIsOpen }) =>
-      cx(
-        menuIsOpen ? "rounded-top" : "rounded",
-        "bg-white",
-        "border",
-        "cursor-pointer",
-        styles.control2
-      ),
-    dropdownIndicator: () => cx("pe-2"),
-    groupHeading: () => cx("px-2", styles.groupHeading),
-    menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
-    menuList: () => cx("d-grid", "gap-2"),
-    option: ({ isFocused, isSelected }) =>
-      cx(
-        "d-grid",
-        "gap-1",
-        "p-2",
-        styles.option,
-        isFocused && styles.optionIsFocused,
-        !isFocused && isSelected && styles.optionIsSelected
-      ),
-    placeholder: () => cx("px-2"),
-    singleValue: () => cx("d-grid", "gap-1", "px-2", styles.singleValue),
-  };
+const selectClassNamesV2: ClassNamesConfig<
+  ResourceClassWithIdFiltered,
+  false,
+  OptionGroup
+> = {
+  control: ({ menuIsOpen }) =>
+    cx(
+      menuIsOpen ? "rounded-top" : "rounded",
+      "bg-white",
+      "border",
+      "cursor-pointer",
+      styles.control2
+    ),
+  dropdownIndicator: () => cx("pe-2"),
+  groupHeading: () => cx("px-2", styles.groupHeading),
+  menu: () => cx("bg-white", "rounded-bottom", "border", "border-top-0"),
+  menuList: () => cx("d-grid", "gap-2"),
+  option: ({ isFocused, isSelected }) =>
+    cx(
+      "d-grid",
+      "gap-1",
+      "p-2",
+      styles.option,
+      isFocused && styles.optionIsFocused,
+      !isFocused && isSelected && styles.optionIsSelected
+    ),
+  placeholder: () => cx("px-2"),
+  singleValue: () => cx("d-grid", "gap-1", "px-2", styles.singleValue),
+};
 
 interface OptionOrSingleValueContentProps {
-  sessionClass: ResourceClass;
+  sessionClass: ResourceClassWithIdFiltered;
 }
 
 const OptionOrSingleValueContent = ({
