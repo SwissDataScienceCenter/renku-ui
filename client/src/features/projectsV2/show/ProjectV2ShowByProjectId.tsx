@@ -17,7 +17,12 @@
  */
 
 import { useEffect } from "react";
-import { generatePath, useNavigate, useParams } from "react-router";
+import {
+  generatePath,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router";
 
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -29,6 +34,7 @@ export default function ProjectV2ShowByProjectId() {
     id: string | undefined;
   }>();
 
+  const location = useLocation();
   const navigate = useNavigate();
 
   const {
@@ -41,15 +47,19 @@ export default function ProjectV2ShowByProjectId() {
 
   useEffect(() => {
     if (project && project.namespace && project.slug) {
+      const search = location.search;
       navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: project.namespace,
-          slug: project.slug,
-        }),
+        {
+          pathname: generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+            namespace: project.namespace,
+            slug: project.slug,
+          }),
+          search,
+        },
         { replace: true }
       );
     }
-  }, [navigate, project]);
+  }, [location, navigate, project]);
 
   if (isLoading) return <Loader className="align-self-center" />;
 

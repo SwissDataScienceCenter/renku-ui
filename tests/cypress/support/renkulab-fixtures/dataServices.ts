@@ -32,6 +32,11 @@ interface ExactUser {
   last_name?: string;
 }
 
+interface UrlRedirectFixture extends NameOnlyFixture {
+  sourceUrl: string;
+  targetUrl: string | null;
+}
+
 /**
  * Fixtures for Data Services
  */
@@ -80,6 +85,19 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("GET", "/api/data/classes/*", response).as(name);
+      return this;
+    }
+
+    urlRedirect(args: UrlRedirectFixture) {
+      const { sourceUrl, targetUrl, name = "getUrlRedirect" } = args;
+      const response = {
+        source_url: sourceUrl,
+        target_url: targetUrl,
+      };
+      cy.intercept("GET", `/api/data/platform/redirects/${sourceUrl}`, {
+        body: response,
+        statusCode: targetUrl ? 200 : 404,
+      }).as(name);
       return this;
     }
   };
