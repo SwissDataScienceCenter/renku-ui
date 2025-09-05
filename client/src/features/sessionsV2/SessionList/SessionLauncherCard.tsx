@@ -20,7 +20,6 @@ import cx from "classnames";
 import { useContext } from "react";
 import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
-import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -42,6 +41,7 @@ import {
   LauncherEnvironmentIcon,
 } from "../components/SessionForm/LauncherEnvironmentIcon";
 import { SessionLauncherButtons } from "../components/SessionLauncherButtons";
+import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionCard from "./SessionCard";
@@ -250,36 +250,10 @@ export default function SessionLauncherCard({
               {isExternalImageEnvironment && (
                 <Row>
                   <Col>
-                    <RenkuBadge
-                      color={
-                        containerImage?.accessible
-                          ? "success"
-                          : containerImage?.connection === "connected"
-                          ? "danger"
-                          : containerImage?.connection
-                          ? "warning"
-                          : "light"
-                      }
-                      className="fw-normal"
-                      pill
-                    >
-                      {loadingContainerImage ? (
-                        <>
-                          <Loader size={12} inline /> Checking image status.
-                        </>
-                      ) : (
-                        <>
-                          <CircleFill className="bi" /> Image{" "}
-                          {containerImage?.accessible
-                            ? "available"
-                            : containerImage?.connection === "connected"
-                            ? "unavailable"
-                            : containerImage?.connection
-                            ? "requires credentials"
-                            : "status unknown"}
-                        </>
-                      )}
-                    </RenkuBadge>
+                    <SessionImageBadge
+                      data={containerImage}
+                      loading={loadingContainerImage}
+                    />
                   </Col>
                 </Row>
               )}
