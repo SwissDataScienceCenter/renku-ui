@@ -99,6 +99,7 @@ function UpdateConnectedServiceModal({
       display_name: "",
       scope: "",
       url: "",
+      image_registry_url: "",
       use_pkce: false,
     },
   });
@@ -114,6 +115,7 @@ function UpdateConnectedServiceModal({
           display_name: data.display_name,
           scope: data.scope,
           url: data.url,
+          image_registry_url: data.image_registry_url,
           use_pkce: data.use_pkce,
         },
       });
@@ -143,6 +145,7 @@ function UpdateConnectedServiceModal({
       display_name: provider.display_name,
       scope: provider.scope,
       url: provider.url,
+      image_registry_url: provider.image_registry_url,
       use_pkce: provider.use_pkce,
       ...(provider.client_secret &&
         provider.client_secret !== "redacted" && {
