@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useContext, useEffect, useMemo } from "react";
-import { CircleFill, Clock } from "react-bootstrap-icons";
+import { CircleFill, Clock, Plugin } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
@@ -204,6 +204,7 @@ function CustomImageEnvironmentValues({
                         search,
                       }}
                     >
+                      <Plugin className={cx("bi", "me-1")} />
                       check the connection details
                     </Link>
                   </p>
@@ -215,12 +216,13 @@ function CustomImageEnvironmentValues({
                 <p className="mb-0">
                   If the image is private, you can gain access by{" "}
                   <Link
-                    className={cx("btn", "btn-warning", "btn-sm")}
+                    className={cx("btn", "btn-primary", "btn-sm")}
                     to={{
                       pathname: ABSOLUTE_ROUTES.v2.integrations,
                       search,
                     }}
                   >
+                    <Plugin className={cx("bi", "me-1")} />
                     logging in to an external provider
                   </Link>
                 </p>

@@ -19,7 +19,12 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BoxArrowUpRight, CircleFill, XLg } from "react-bootstrap-icons";
+import {
+  BoxArrowUpRight,
+  CircleFill,
+  Plugin,
+  XLg,
+} from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
 import {
   Badge,
@@ -120,8 +125,13 @@ export default function ConnectedServicesPage() {
 
   return (
     <div data-cy="connected-services-page">
-      <h1>Integrations</h1>
-      <p>These integrations are only supported in Renku 2.0</p>
+      <h1 className="fs-2">
+        <Plugin className={cx("bi", "me-1")} /> Integrations
+      </h1>
+      <p>
+        Integrations with external services allow you to connect your Renku
+        projects with external private repositories and images.
+      </p>
       {content}
     </div>
   );
