@@ -21,6 +21,7 @@ import { ReactNode, useCallback, useMemo } from "react";
 import { Gear, PlayCircle } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
+import { Loader } from "~/components/Loader";
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -74,7 +75,7 @@ export function SessionLauncherButtons({
       slug,
     }
   );
-  const { data } = useGetSessionsImagesQuery(
+  const { data, isLoading } = useGetSessionsImagesQuery(
     environment &&
       environment.environment_kind === "CUSTOM" &&
       environment.container_image
@@ -132,6 +133,12 @@ export function SessionLauncherButtons({
       </span>
     );
 
+  const loadingPlaceholder = isLoading && (
+    <Button color="outline-primary" className={cx("disabled")} size="sm">
+      <Loader size={12} inline /> Checking launcher
+    </Button>
+  );
+
   const defaultAction = buildActions ? (
     <ButtonGroup onClick={onClickFix}>
       {buildActions}
@@ -139,9 +146,12 @@ export function SessionLauncherButtons({
     </ButtonGroup>
   ) : launchAction && (!isExternalImageEnvironment || data?.accessible) ? (
     launchAction
-  ) : isExternalImageEnvironment || data?.accessible ? (
+  ) : (isExternalImageEnvironment && !isLoading) ||
+    (!isExternalImageEnvironment && !data?.accessible) ? (
     openPanelAction
-  ) : null;
+  ) : (
+    loadingPlaceholder
+  );
 
   const customizeLaunch = displayLaunchSession && (
     <Link
