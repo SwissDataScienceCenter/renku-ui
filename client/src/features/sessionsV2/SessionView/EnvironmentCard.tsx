@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useContext, useEffect, useMemo } from "react";
-import { CircleFill, Clock, Plugin } from "react-bootstrap-icons";
+import { CircleFill, Clock, Plugin, Send } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
@@ -190,42 +190,76 @@ function CustomImageEnvironmentValues({
         <SessionImageBadge data={data} loading={isLoading} />
         {!isLoading && data?.accessible === false && (
           <div className="mt-2">
-            {!data.connection || data.connection?.status === "connected" ? (
+            {!data.connection ? (
               <ErrorAlert className="mb-0" dismissible={false}>
-                <p className="mb-0">Cannot access the container image.</p>
-                {data.connection?.provider_id && (
-                  <p className={cx("mb-0", "mt-2")}>
-                    The URL leads to a registry where you have an account. If
-                    you think you should have access, you can{" "}
-                    <Link
-                      className={cx("btn", "btn-outline-danger", "btn-sm")}
-                      to={{
-                        pathname: ABSOLUTE_ROUTES.v2.integrations,
-                        search,
-                      }}
-                    >
-                      <Plugin className={cx("bi", "me-1")} />
-                      check the connection details
-                    </Link>
-                  </p>
-                )}
-              </ErrorAlert>
-            ) : (
-              <WarnAlert className="mb-0" dismissible={false}>
-                <p className="mb-2">Cannot access the container image.</p>
-                <p className="mb-0">
-                  If the image is private, you can gain access by{" "}
+                <p className="mb-2">
+                  The image URL is invalid or points to an unsupported registry.
+                  Please verify the URL and check if the registry is in the
+                  currently supported{" "}
                   <Link
-                    className={cx("btn", "btn-primary", "btn-sm")}
                     to={{
                       pathname: ABSOLUTE_ROUTES.v2.integrations,
                       search,
                     }}
                   >
                     <Plugin className={cx("bi", "me-1")} />
-                    logging in to an external provider
+                    integrations
                   </Link>
+                  . If you{"'"}re certain the URL is correct and points to a
+                  registry we don{"'"}t currently support,{" "}
+                  <a
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    href="mailto:hello@renku.io"
+                  >
+                    <Send className={cx("bi", "me-1")} />
+                    contact us
+                  </a>{" "}
+                  about adding an integration.
                 </p>
+              </ErrorAlert>
+            ) : data.connection?.status === "connected" ? (
+              <ErrorAlert className="mb-0" dismissible={false}>
+                <p className="mb-0">
+                  Either the image does not exist, or you do not have access to
+                  it.
+                </p>
+                {data.connection?.provider_id && (
+                  <>
+                    <p className={cx("mb-2", "mt-2")}>
+                      If you think you should have access, check your
+                      integration configuration.
+                    </p>
+                    <Link
+                      className={cx("btn", "btn-primary", "btn-sm")}
+                      to={{
+                        pathname: ABSOLUTE_ROUTES.v2.integrations,
+                        search,
+                      }}
+                    >
+                      <Plugin className={cx("bi", "me-1")} />
+                      View integration
+                    </Link>
+                  </>
+                )}
+              </ErrorAlert>
+            ) : (
+              <WarnAlert className="mb-0" dismissible={false}>
+                <p className="mb-2">
+                  This image is from a supported registry, but you haven{"'"}t
+                  activated the integration yet. Activate the integration to
+                  check if you have access to this image.
+                </p>
+                <Link
+                  className={cx("btn", "btn-primary", "btn-sm")}
+                  to={{
+                    pathname: ABSOLUTE_ROUTES.v2.integrations,
+                    search,
+                  }}
+                >
+                  <Plugin className={cx("bi", "me-1")} />
+                  Go to Integration
+                </Link>
               </WarnAlert>
             )}
           </div>

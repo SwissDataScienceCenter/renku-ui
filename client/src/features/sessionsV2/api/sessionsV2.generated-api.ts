@@ -128,9 +128,6 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/sessions/images`,
         params: { image_url: queryArg.imageUrl },
-        validateStatus: (response) =>
-          (response.status >= 200 && response.status < 300) ||
-          response.status === 404,
       }),
     }),
   }),
@@ -227,20 +224,24 @@ export type GetSessionsBySessionIdLogsApiArg = {
   maxLines?: number;
 };
 export type GetSessionsImagesApiResponse =
-  /** status 200 undefined */ ImageCheckResponse;
+  /** status 200 Information about the accessibility of the image */ ImageCheckResponse;
 export type GetSessionsImagesApiArg = {
   /** The Docker image URL (tag included) that should be fetched. */
   imageUrl: string;
 };
-export type ImageConnectionStatus = "connected" | "pending" | "disconnected";
+export type ImageConnectionStatus =
+  | "connected"
+  | "pending"
+  | "invalid_credentials";
+export type ImageConnection = {
+  id: string;
+  provider_id: string;
+  status: ImageConnectionStatus;
+};
 export type ImageCheckResponse = {
   /** Whether the image is accessible or not. */
   accessible: boolean;
-  connection?: {
-    id?: string;
-    provider_id: string;
-    status: ImageConnectionStatus | "invalid";
-  } & any;
+  connection?: ImageConnection;
 };
 export type ErrorResponse = {
   error: {

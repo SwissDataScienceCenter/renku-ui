@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { sessionsV2GeneratedApi } from "./sessionsV2.generated-api";
+import {
+  ImageCheckResponse,
+  sessionsV2GeneratedApi,
+} from "./sessionsV2.generated-api";
 
 // Adds tag handling for cache management
 const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
@@ -59,29 +62,28 @@ const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
       keepUnusedDataFor: 0,
     },
     getSessionsImages: {
-      transformResponse: (_1, _2, arg) => {
-        return {
-          accessible:
-            arg.imageUrl.includes("false") ||
-            arg.imageUrl.includes("error") ||
-            arg.imageUrl.includes("fake")
-              ? false
-              : true,
-          connection: arg.imageUrl.includes("connection")
-            ? {
-                id: "example-connection-id",
-                provider_id: "example-provider-id",
-                status: arg.imageUrl.includes("pending")
-                  ? "pending"
-                  : arg.imageUrl.includes("not_connected") ||
-                    arg.imageUrl.includes("disconnected")
-                  ? "not_connected"
-                  : arg.imageUrl.includes("invalid")
-                  ? "invalid"
-                  : "connected",
-              }
-            : undefined,
-        };
+      transformResponse: (response, _2, arg) => {
+        if (arg.imageUrl.includes("mocked") || arg.imageUrl.includes("mock"))
+          return {
+            accessible:
+              arg.imageUrl.includes("false") ||
+              arg.imageUrl.includes("error") ||
+              arg.imageUrl.includes("fake")
+                ? false
+                : true,
+            connection: arg.imageUrl.includes("connection")
+              ? {
+                  id: "example-connection-id",
+                  provider_id: "example-provider-id",
+                  status: arg.imageUrl.includes("pending")
+                    ? "pending"
+                    : arg.imageUrl.includes("invalid_credentials")
+                    ? "invalid_credentials"
+                    : "connected",
+                }
+              : undefined,
+          } as ImageCheckResponse;
+        return response as ImageCheckResponse;
       },
       transformErrorResponse: () => {
         return {

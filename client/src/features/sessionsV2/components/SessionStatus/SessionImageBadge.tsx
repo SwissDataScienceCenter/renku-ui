@@ -52,14 +52,14 @@ export default function SessionImageBadge({
         </>
       ) : (
         <>
-          <CircleFill className="bi" /> Image{" "}
+          <CircleFill className="bi" />{" "}
           {data?.accessible
-            ? "available"
+            ? "Image accessible"
             : !data?.connection || data?.connection?.status === "connected"
-            ? "unavailable"
+            ? "Image inaccessible"
             : data?.connection
-            ? "requires credentials"
-            : "status unknown"}
+            ? "Integration required"
+            : "Image status unknown"}
         </>
       )}
     </RenkuBadge>
