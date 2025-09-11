@@ -22,11 +22,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   CircleFill,
+  HandIndexThumb,
   Plugin,
   XLg,
 } from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
 import {
+  Alert,
   Badge,
   Button,
   Card,
@@ -205,17 +207,22 @@ function ConnectedServiceCard({
       >
         <CardBody>
           {highlighted && (
-            <>
+            <Alert color="warning" className={cx("border-warning")}>
               <p className="mb-2">
-                Action required TMP -- then{" "}
-                <Link
-                  to={source ?? ""}
-                  className={cx("btn", "btn-primary", "btn-sm")}
-                >
-                  bring me back
-                </Link>
+                <HandIndexThumb className={cx("bi", "me-1")} />
+                Action required. Please connect to this integration.
               </p>
-            </>
+
+              {source && (
+                <p className="mb-0">
+                  Once finished, you can{" "}
+                  <Link to={source} className={cx("primary")}>
+                    go back to your project
+                  </Link>
+                  .
+                </p>
+              )}
+            </Alert>
           )}
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
