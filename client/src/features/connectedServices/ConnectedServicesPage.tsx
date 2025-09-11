@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BoxArrowUpRight, CircleFill, XLg } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import {
   Badge,
   Button,
@@ -33,7 +33,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { InfoAlert, WarnAlert } from "../../components/Alert";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/ExternalLinks";
@@ -55,8 +54,8 @@ import {
   type ProviderKind,
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
-import ContactUsCard from "./ContactUsCard";
 import { getSettingsUrl } from "./connectedServices.utils";
+import ContactUsCard from "./ContactUsCard";
 
 const CHECK_STATUS_QUERY_PARAM = "check-status";
 
@@ -64,6 +63,9 @@ export default function ConnectedServicesPage() {
   const isUserLoggedIn = useLegacySelector(
     (state) => state.stateModel.user.logged
   );
+  const [searchParams] = useSearchParams();
+  const targetProviderId = searchParams.get("targetProvider");
+  const source = searchParams.get("source");
 
   const {
     data: providers,
@@ -72,6 +74,15 @@ export default function ConnectedServicesPage() {
   } = useGetOauth2ProvidersQuery(isUserLoggedIn ? undefined : skipToken);
   const { isLoading: isLoadingConnections, error: connectionsError } =
     useGetOauth2ConnectionsQuery(isUserLoggedIn ? undefined : skipToken);
+
+  const targetProvider = useMemo(() => {
+    return providers?.find((provider) => provider.id === targetProviderId);
+  }, [providers, targetProviderId]);
+  const sortedProviders = useMemo(() => {
+    if (!providers) return [];
+    if (!targetProvider) return providers;
+    return [targetProvider, ...providers.filter((p) => p !== targetProvider)];
+  }, [providers, targetProvider]);
 
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
@@ -93,8 +104,15 @@ export default function ConnectedServicesPage() {
     </>
   ) : (
     <div className={cx("row", "g-3")}>
-      {providers.map((provider) => (
-        <ConnectedServiceCard key={provider.id} provider={provider} />
+      {sortedProviders.map((provider) => (
+        <ConnectedServiceCard
+          key={provider.id}
+          highlighted={provider.id === targetProviderId}
+          provider={provider}
+          source={
+            provider.id === targetProviderId && source ? source : undefined
+          }
+        />
       ))}
       <ContactUsCard />
     </div>
@@ -150,10 +168,16 @@ function ConnectedServiceStatus({ connection }: ConnectedServiceStatusProps) {
 }
 
 interface ConnectedServiceCardProps {
+  highlighted?: boolean;
   provider: Provider;
+  source?: string;
 }
 
-function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
+function ConnectedServiceCard({
+  highlighted = false,
+  provider,
+  source,
+}: ConnectedServiceCardProps) {
   const { id, display_name, kind, url } = provider;
 
   const { data: connections } =
@@ -166,8 +190,23 @@ function ConnectedServiceCard({ provider }: ConnectedServiceCardProps) {
 
   return (
     <div data-cy="connected-services-card" className={cx("col-12", "col-lg-6")}>
-      <Card className="h-100">
+      <Card
+        className={cx("h-100", highlighted && ["bg-primary", "bg-opacity-10"])}
+      >
         <CardBody>
+          {highlighted && (
+            <>
+              <p className="mb-2">
+                Action required TMP -- then{" "}
+                <Link
+                  to={source ?? ""}
+                  className={cx("btn", "btn-primary", "btn-sm")}
+                >
+                  bring me back
+                </Link>
+              </p>
+            </>
+          )}
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
               <h4 className="pe-2">{display_name}</h4>
