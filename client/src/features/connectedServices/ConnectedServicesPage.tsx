@@ -207,7 +207,10 @@ function ConnectedServiceCard({
       >
         <CardBody>
           {highlighted && (
-            <Alert color="warning" className={cx("border-warning")}>
+            <Alert
+              color="warning"
+              className={cx("border-warning", "shadow-sm")}
+            >
               <p className="mb-2">
                 <HandIndexThumb className={cx("bi", "me-1")} />
                 Action required. Please connect to this integration.
