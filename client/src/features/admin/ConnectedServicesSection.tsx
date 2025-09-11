@@ -137,7 +137,9 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
             <CardText className="mb-2">URL: {provider.url}</CardText>
             <CardText className="mb-2">
               Image Registry URL:{" "}
-              {<span className="fst-italic">Not configured</span>}
+              {provider.image_registry_url ?? (
+                <span className="fst-italic">Not configured</span>
+              )}
             </CardText>
             <CardText className="mb-2">
               Client ID: {provider.client_id}
