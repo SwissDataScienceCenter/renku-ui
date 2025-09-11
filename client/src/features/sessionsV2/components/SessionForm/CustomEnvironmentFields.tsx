@@ -111,9 +111,9 @@ export function CustomEnvironmentFields({
         </div>
         {!errors.container_image?.message && data?.accessible === false && (
           <div className={cx("mt-1", "small", "text-warning-emphasis")}>
-            <ExclamationTriangle className="bi" /> Access to this image may
-            require connecting an additional integration after creating this
-            launcher.
+            <ExclamationTriangle className="bi" /> Image not found. Access to
+            this image may require connecting an additional integration after
+            creating this launcher.
           </div>
         )}
       </div>
