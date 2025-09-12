@@ -176,7 +176,7 @@ function CustomImageEnvironmentValues({
   );
   const search = useMemo(() => {
     return `?${new URLSearchParams({
-      targetProvider: data?.connection?.provider_id ?? "",
+      targetProvider: data?.provider?.id ?? "",
       source: `${pathname}${hash}`,
     }).toString()}`;
   }, [data, pathname, hash]);
@@ -224,7 +224,7 @@ function CustomImageEnvironmentValues({
                   Either the image does not exist, or you do not have access to
                   it.
                 </p>
-                {data.connection?.provider_id && (
+                {data?.provider?.id && (
                   <>
                     <p className={cx("mb-2", "mt-2")}>
                       If you think you should have access, check your
