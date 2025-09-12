@@ -211,20 +211,20 @@ function ConnectedServiceCard({
               color="warning"
               className={cx("border-warning", "shadow-sm")}
             >
-              <p className="mb-2">
+              <p className="mb-0">
                 <HandIndexThumb className={cx("bi", "me-1")} />
-                Action required. Please connect to this integration.
+                Action required. Please connect to this integration
+                {source && (
+                  <span>
+                    {" "}
+                    and then{" "}
+                    <Link to={source} className={cx("primary")}>
+                      go back to your project
+                    </Link>
+                  </span>
+                )}
+                .
               </p>
-
-              {source && (
-                <p className="mb-0">
-                  Once finished, you can{" "}
-                  <Link to={source} className={cx("primary")}>
-                    go back to your project
-                  </Link>
-                  .
-                </p>
-              )}
             </Alert>
           )}
           <CardTitle>
