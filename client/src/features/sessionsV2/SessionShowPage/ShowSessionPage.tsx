@@ -30,6 +30,7 @@ import {
   Link45deg,
   PauseCircle,
   Trash,
+  Activity,
 } from "react-bootstrap-icons";
 import { Link, generatePath, useNavigate, useParams } from "react-router";
 import {
@@ -69,6 +70,7 @@ import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
 
 import styles from "../../session/components/ShowSession.module.scss";
+import { PrometheusQueryBox } from "../../../components/prometheusModal/prometheusModal";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -113,7 +115,9 @@ export default function ShowSessionPage() {
 
   const toggleModalLogs = useCallback(() => {
     dispatch(
-      displaySlice.actions.toggleSessionLogsModal({ targetServer: sessionName })
+      displaySlice.actions.toggleSessionLogsModal({
+        targetServer: sessionName,
+      })
     );
   }, [dispatch, sessionName]);
 
@@ -121,6 +125,12 @@ export default function ShowSessionPage() {
     useState(false);
   const togglePauseOrDeleteSession = useCallback(
     () => setShowModalPauseOrDeleteSession((show) => !show),
+    []
+  );
+
+  const [showPrometheusQuery, setShowPrometheusQuery] = useState(false);
+  const togglePrometheusQuery = useCallback(
+    () => setShowPrometheusQuery((show) => !show),
     []
   );
   const [pauseOrDeleteAction, setPauseOrDeleteAction] = useState<
@@ -218,6 +228,7 @@ export default function ShowSessionPage() {
           >
             {backButton}
             <LogsBtn toggle={toggleModalLogs} />
+            <PrometheusBtn toggle={togglePrometheusQuery} />
             <PauseSessionBtn openPauseSession={openPauseSession} />
             <DeleteSessionBtn openDeleteSession={openDeleteSession} />
             <ShareSessionLinkButton
@@ -252,6 +263,45 @@ export default function ShowSessionPage() {
           className={cx(styles.fullscreenContent, "w-100")}
           data-cy="session-page"
         >
+          {showPrometheusQuery && (
+            <div
+              className={cx("position-absolute", "top-0", "end-0", "m-3")}
+              style={{ zIndex: 1000, maxWidth: "400px" }}
+            >
+              <PrometheusQueryBox
+                predefinedQueries={[
+                  {
+                    label: "CPU",
+                    query: `container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}`,
+                    description: "CPU usage for this session",
+                    icon: "cpu",
+                    unit: "cores",
+                  },
+                  {
+                    label: "CPU %",
+                    query: `rate(container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}[5m]) * 100`,
+                    description: "CPU usage percentage for this session",
+                    icon: "cpu",
+                    unit: "%",
+                  },
+                  {
+                    label: "Memory",
+                    query: `container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"}`,
+                    description: "Memory usage in bytes for this session",
+                    icon: "memory",
+                    unit: "bytes",
+                  },
+                  {
+                    label: "Memory %",
+                    query: `(container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100`,
+                    description: "Memory usage percentage for this session",
+                    icon: "memory",
+                    unit: "%",
+                  },
+                ]}
+              />
+            </div>
+          )}
           {content}
         </div>
       </div>
@@ -288,6 +338,37 @@ function LogsBtn({ toggle }: LogsBtnProps) {
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         Get logs
+      </UncontrolledTooltip>
+    </div>
+  );
+}
+
+interface PrometheusBtnProps {
+  toggle: () => void;
+}
+function PrometheusBtn({ toggle }: PrometheusBtnProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  return (
+    <div>
+      <Button
+        className={cx(
+          "bg-transparent",
+          "border-0",
+          "no-focus",
+          "p-0",
+          "shadow-none",
+          "text-dark"
+        )}
+        data-cy="prometheus-button"
+        id="prometheus-button"
+        innerRef={ref}
+        onClick={toggle}
+      >
+        <Activity className="bi" />
+      </Button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        Toggle metrics
       </UncontrolledTooltip>
     </div>
   );
