@@ -89,6 +89,7 @@
         "skipWords": [
           "accessor",
           "allowfullscreen",
+          "amalthea",
           "amazonaws",
           "apiversion",
           "ascii",
@@ -220,6 +221,7 @@
           "presentational",
           "profiler",
           "progressbar",
+          "prometheus",
           "proxying",
           "Pupikofer",
           "pygments",

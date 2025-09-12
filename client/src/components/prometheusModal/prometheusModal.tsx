@@ -20,7 +20,7 @@
 import cx from "classnames";
 import { useCallback, useState, useEffect, useRef } from "react";
 import { Activity, Search, Cpu, Memory } from "react-bootstrap-icons";
-import { Alert, Button, Card, CardBody, Input, InputGroup } from "reactstrap";
+import { Alert, Button, Card, CardBody } from "reactstrap";
 
 interface PrometheusQueryResult {
   status: string;
@@ -45,7 +45,7 @@ function usePrometheusWebSocket() {
       string,
       {
         resolve: (result: PrometheusQueryResult) => void;
-        reject: (error: any) => void;
+        reject: (error: Error) => void;
       }
     >
   >(new Map());
@@ -177,10 +177,6 @@ export function PrometheusQueryBox({
     },
     [sendPrometheusQuery]
   );
-
-  const handleSubmit = useCallback(() => {
-    executeQuery(inputValue);
-  }, [inputValue, executeQuery]);
 
   const handlePredefinedQuery = useCallback(
     (predefinedQuery: string) => {
