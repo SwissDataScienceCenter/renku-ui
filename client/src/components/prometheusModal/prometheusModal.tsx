@@ -200,7 +200,7 @@ export function PrometheusQueryBox({
           */
   }
 
-  const hasResults = queryResult?.data?.result?.length > 0;
+  const hasResults = queryResult?.data?.result?.length ? queryResult.data.result.length > 0 : false;
 
   return (
     <Card className={cx("border-secondary-subtle", className)}>
@@ -211,10 +211,10 @@ export function PrometheusQueryBox({
             Prometheus Query
           </h6>
 
-          {predefinedQueries.length > 0 && (
+          {predefinedQueries && predefinedQueries.length > 0 && (
             <div className="mb-2">
               <div className="d-flex flex-wrap gap-1">
-                {predefinedQueries.map((pq, index) => (
+                {predefinedQueries?.map((pq, index) => (
                   <Button
                     key={index}
                     color="outline-secondary"
@@ -287,7 +287,7 @@ export function PrometheusQueryBox({
               className={cx("small", "font-monospace")}
               style={{ maxHeight: "200px", overflowY: "auto" }}
             >
-              {queryResult.data.result.map((result, index) => (
+              {queryResult?.data?.result?.map((result, index) => (
                 <div key={index} className="mb-1">
                   <div className="text-success">
                     {result.value
