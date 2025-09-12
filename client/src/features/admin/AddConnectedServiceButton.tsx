@@ -97,8 +97,10 @@ function AddConnectedServiceModal({
           display_name: data.display_name,
           scope: data.scope ?? "",
           url: data.url,
-          image_registry_url: data.image_registry_url,
           use_pkce: data.use_pkce,
+          ...(data.image_registry_url && {
+            image_registry_url: data.image_registry_url,
+          }),
         },
       });
     },
