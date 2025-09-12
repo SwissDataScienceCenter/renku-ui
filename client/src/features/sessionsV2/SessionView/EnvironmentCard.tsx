@@ -190,7 +190,7 @@ function CustomImageEnvironmentValues({
         <SessionImageBadge data={data} loading={isLoading} />
         {!isLoading && data?.accessible === false && (
           <div className="mt-2">
-            {!data.connection ? (
+            {!data.connection && !data.provider ? (
               <ErrorAlert className="mb-0" dismissible={false}>
                 <p className="mb-2">
                   The image URL is invalid or points to an unsupported registry.

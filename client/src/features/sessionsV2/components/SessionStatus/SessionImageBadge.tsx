@@ -37,11 +37,10 @@ export default function SessionImageBadge({
           ? "light"
           : data?.accessible
           ? "success"
-          : !data?.connection || data?.connection?.status === "connected"
-          ? "danger"
-          : data?.connection
+          : data?.provider?.id &&
+            (!data?.connection || data?.connection?.status !== "connected")
           ? "warning"
-          : "light"
+          : "danger"
       }
       className="fw-normal"
       pill
@@ -55,10 +54,11 @@ export default function SessionImageBadge({
           <CircleFill className="bi" />{" "}
           {data?.accessible
             ? "Image accessible"
-            : !data?.connection || data?.connection?.status === "connected"
-            ? "Image inaccessible"
-            : data?.connection
+            : data?.provider?.id &&
+              (!data?.connection || data?.connection?.status !== "connected")
             ? "Integration required"
+            : data?.connection?.status === "connected"
+            ? "Image inaccessible"
             : "Image status unknown"}
         </>
       )}
