@@ -26,6 +26,7 @@ import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/Proje
 
 import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
+import ProjectGitLabWarnBanner from "../../legacy/ProjectGitLabWarnBanner";
 import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
 
 interface ProjectPageHeaderProps {
@@ -73,6 +74,11 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
               )}
             </div>
           </Col>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ProjectGitLabWarnBanner project={project} />
         </Col>
       </Row>
       <Row>

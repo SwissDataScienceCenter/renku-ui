@@ -30,6 +30,7 @@ interface ProjectOverrides {
   template_id?: string;
   is_template?: boolean;
   documentation: string | null | undefined;
+  repositories: string[];
 }
 
 /**
