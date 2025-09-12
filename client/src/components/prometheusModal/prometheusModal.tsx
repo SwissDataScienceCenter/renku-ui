@@ -200,7 +200,9 @@ export function PrometheusQueryBox({
           */
   }
 
-  const hasResults = queryResult?.data?.result?.length ? queryResult.data.result.length > 0 : false;
+  const hasResults = queryResult?.data?.result?.length
+    ? queryResult.data.result.length > 0
+    : false;
 
   return (
     <Card className={cx("border-secondary-subtle", className)}>
