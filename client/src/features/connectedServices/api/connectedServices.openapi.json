@@ -402,6 +402,9 @@
           },
           "use_pkce": {
             "$ref": "#/components/schemas/UsePKCE"
+          },
+          "image_registry_url": {
+            "$ref": "#/components/schemas/ImageRegistryUrl"
           }
         },
         "required": [
@@ -445,6 +448,9 @@
           },
           "use_pkce": {
             "$ref": "#/components/schemas/UsePKCE"
+          },
+          "image_registry_url": {
+            "$ref": "#/components/schemas/ImageRegistryUrl"
           }
         },
         "required": ["id", "kind", "client_id", "display_name", "scope", "url"]
@@ -476,6 +482,9 @@
           },
           "use_pkce": {
             "$ref": "#/components/schemas/UsePKCE"
+          },
+          "image_registry_url": {
+            "$ref": "#/components/schemas/ImageRegistryUrl"
           }
         }
       },
@@ -631,6 +640,11 @@
             "default": 20
           }
         }
+      },
+      "ImageRegistryUrl": {
+        "type": "string",
+        "description": "This should contain no paths, just the domain for the registry and the scheme\n(http or https) to access the image registry API.\n",
+        "example": "https://registry.gitlab.com"
       },
       "ErrorResponse": {
         "type": "object",
