@@ -238,10 +238,16 @@ export type ImageConnection = {
   provider_id: string;
   status: ImageConnectionStatus;
 };
+export type ImageProvider = {
+  id: string;
+  name: string;
+  url: string;
+};
 export type ImageCheckResponse = {
   /** Whether the image is accessible or not. */
   accessible: boolean;
   connection?: ImageConnection;
+  provider?: ImageProvider;
 };
 export type ErrorResponse = {
   error: {

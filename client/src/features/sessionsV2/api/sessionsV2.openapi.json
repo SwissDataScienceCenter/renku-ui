@@ -1456,6 +1456,9 @@
           },
           "connection": {
             "$ref": "#/components/schemas/ImageConnection"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ImageProvider"
           }
         },
         "required": ["accessible"]
@@ -1478,6 +1481,21 @@
       "ImageConnectionStatus": {
         "type": "string",
         "enum": ["connected", "pending", "invalid_credentials"]
+      },
+      "ImageProvider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "url"]
       }
     },
     "responses": {

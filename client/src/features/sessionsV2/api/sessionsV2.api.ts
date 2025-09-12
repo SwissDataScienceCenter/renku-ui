@@ -16,10 +16,7 @@
  * limitations under the License.
  */
 
-import {
-  ImageCheckResponse,
-  sessionsV2GeneratedApi,
-} from "./sessionsV2.generated-api";
+import { sessionsV2GeneratedApi } from "./sessionsV2.generated-api";
 
 // Adds tag handling for cache management
 const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
@@ -60,37 +57,6 @@ const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
           : result;
       },
       keepUnusedDataFor: 0,
-    },
-    getSessionsImages: {
-      transformResponse: (response, _2, arg) => {
-        if (arg.imageUrl.includes("mocked") || arg.imageUrl.includes("mock"))
-          return {
-            accessible:
-              arg.imageUrl.includes("false") ||
-              arg.imageUrl.includes("error") ||
-              arg.imageUrl.includes("fake")
-                ? false
-                : true,
-            connection: arg.imageUrl.includes("connection")
-              ? {
-                  id: "example-connection-id",
-                  provider_id: "example-provider-id",
-                  status: arg.imageUrl.includes("pending")
-                    ? "pending"
-                    : arg.imageUrl.includes("invalid_credentials")
-                    ? "invalid_credentials"
-                    : "connected",
-                }
-              : undefined,
-          } as ImageCheckResponse;
-        return response as ImageCheckResponse;
-      },
-      transformErrorResponse: () => {
-        return {
-          accessible: false,
-          connection: undefined,
-        };
-      },
     },
   },
 });
