@@ -271,34 +271,29 @@ export default function ShowSessionPage() {
               <PrometheusQueryBox
                 predefinedQueries={[
                   {
-                    label: "CPU",
-                    query: `container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}`,
-                    description: "CPU usage for this session",
-                    icon: "cpu",
-                    unit: "cores",
-                  },
-                  {
-                    label: "CPU %",
-                    query: `rate(container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}[5m]) * 100`,
+                    label: "CPU Usage",
+                    query: `round(rate(container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}[5m]) * 100, 0.1)`,
                     description: "CPU usage percentage for this session",
                     icon: "cpu",
                     unit: "%",
                   },
                   {
-                    label: "Memory",
-                    query: `container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"}`,
-                    description: "Memory usage in bytes for this session",
+                    label: "Memory Usage",
+                    query: `round(container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / 1024 / 1024, 1)`,
+                    description:
+                      "Memory usage for this session (automatically scales to MB/GB)",
                     icon: "memory",
-                    unit: "bytes",
+                    unit: "MB",
                   },
                   {
-                    label: "Memory %",
-                    query: `(container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100`,
+                    label: "Memory Usage %",
+                    query: `round((container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100, 0.01)`,
                     description: "Memory usage percentage for this session",
                     icon: "memory",
                     unit: "%",
                   },
                 ]}
+                onClose={togglePrometheusQuery}
               />
             </div>
           )}

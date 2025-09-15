@@ -20,7 +20,7 @@
 import cx from "classnames";
 import { useCallback, useState, useEffect, useRef } from "react";
 import { Activity, Search, Cpu, Memory } from "react-bootstrap-icons";
-import { Alert, Button, Card, CardBody } from "reactstrap";
+import { Alert, Button, Card, CardBody, CloseButton } from "reactstrap";
 
 interface PrometheusQueryResult {
   status: string;
@@ -36,7 +36,6 @@ interface PrometheusQueryResult {
   error?: string;
 }
 
-// Hook to manage WebSocket connection and Prometheus queries
 function usePrometheusWebSocket() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -51,7 +50,6 @@ function usePrometheusWebSocket() {
   >(new Map());
 
   useEffect(() => {
-    // Connect to existing WebSocket server
     const wsUrl = `wss://${window.location.host}/ui-server/ws`;
     const websocket = new WebSocket(wsUrl);
 
@@ -64,7 +62,6 @@ function usePrometheusWebSocket() {
       try {
         const message = JSON.parse(event.data);
 
-        // Handle Prometheus query responses
         if (message.type === "prometheusQuery" && message.data?.requestId) {
           const pending = pendingRequests.current.get(message.data.requestId);
           if (pending) {
@@ -76,9 +73,7 @@ function usePrometheusWebSocket() {
             }
           }
         }
-      } catch (error) {
-        // Ignore parsing errors for non-Prometheus messages
-      }
+      } catch (error) {}
     };
 
     websocket.onerror = () => {
@@ -104,10 +99,8 @@ function usePrometheusWebSocket() {
       const requestId = `prometheus-${Date.now()}-${Math.random()}`;
 
       return new Promise((resolve, reject) => {
-        // Store promise handlers
         pendingRequests.current.set(requestId, { resolve, reject });
 
-        // Set timeout
         setTimeout(() => {
           if (pendingRequests.current.has(requestId)) {
             pendingRequests.current.delete(requestId);
@@ -115,7 +108,6 @@ function usePrometheusWebSocket() {
           }
         }, 10000);
 
-        // Send message in the expected WsClientMessage format
         const message = {
           timestamp: new Date(),
           type: "prometheusQuery",
@@ -143,11 +135,13 @@ interface PrometheusQueryBoxProps {
     icon?: string;
     unit?: string;
   }>;
+  onClose?: () => void;
 }
 
 export function PrometheusQueryBox({
   className,
   predefinedQueries,
+  onClose,
 }: PrometheusQueryBoxProps) {
   const [inputValue, setInputValue] = useState("");
   const [queryResult, setQueryResult] = useState<PrometheusQueryResult | null>(
@@ -200,6 +194,17 @@ export function PrometheusQueryBox({
           */
   }
 
+  const handleCloseButton = useCallback(() => {
+    setInputValue("");
+    setQueryResult(null);
+    setError(null);
+    setIsLoading(false);
+
+    if (onClose) {
+      onClose();
+    }
+  }, []);
+
   const hasResults = queryResult?.data?.result?.length
     ? queryResult.data.result.length > 0
     : false;
@@ -210,8 +215,13 @@ export function PrometheusQueryBox({
         <div className="mb-3">
           <h6 className={cx("mb-2", "d-flex", "align-items-center")}>
             <Activity className={cx("me-2", "bi")} />
-            Prometheus Query
+            Prometheus Metrics
           </h6>
+
+          <CloseButton
+            className="position-absolute top-0 end-0 m-2"
+            onClick={handleCloseButton}
+          />
 
           {predefinedQueries && predefinedQueries.length > 0 && (
             <div className="mb-2">
