@@ -215,7 +215,7 @@ export function PrometheusQueryBox({
         <div className="mb-3">
           <h6 className={cx("mb-2", "d-flex", "align-items-center")}>
             <Activity className={cx("me-2", "bi")} />
-            Prometheus Metrics
+            Metrics
           </h6>
 
           <CloseButton
@@ -303,7 +303,7 @@ export function PrometheusQueryBox({
                 <div key={index} className="mb-1">
                   <div className="text-success">
                     {result.value
-                      ? `Value: ${result.value[1]}`
+                      ? `${result.value[1]}`
                       : result.values
                       ? `${result.values.length} time series points`
                       : "No value"}

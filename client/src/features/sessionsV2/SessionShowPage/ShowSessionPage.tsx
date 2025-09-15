@@ -280,8 +280,7 @@ export default function ShowSessionPage() {
                   {
                     label: "Memory Usage",
                     query: `round(container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / 1024 / 1024, 1)`,
-                    description:
-                      "Memory usage for this session (automatically scales to MB/GB)",
+                    description: "Memory usage for this session in GB",
                     icon: "memory",
                     unit: "MB",
                   },
