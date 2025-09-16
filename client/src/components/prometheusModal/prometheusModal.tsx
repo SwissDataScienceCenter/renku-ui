@@ -133,7 +133,7 @@ interface PrometheusQueryBoxProps {
     icon?: string;
     unit?: string;
   }>;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 export function PrometheusQueryBox({
