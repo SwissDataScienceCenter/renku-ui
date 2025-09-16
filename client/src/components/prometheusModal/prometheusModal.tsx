@@ -59,21 +59,19 @@ function usePrometheusWebSocket() {
     };
 
     websocket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
+      const message = JSON.parse(event.data);
 
-        if (message.type === "prometheusQuery" && message.data?.requestId) {
-          const pending = pendingRequests.current.get(message.data.requestId);
-          if (pending) {
-            pendingRequests.current.delete(message.data.requestId);
-            if (message.data.error) {
-              pending.reject(new Error(message.data.error));
-            } else {
-              pending.resolve(message.data);
-            }
+      if (message.type === "prometheusQuery" && message.data?.requestId) {
+        const pending = pendingRequests.current.get(message.data.requestId);
+        if (pending) {
+          pendingRequests.current.delete(message.data.requestId);
+          if (message.data.error) {
+            pending.reject(new Error(message.data.error));
+          } else {
+            pending.resolve(message.data);
           }
         }
-      } catch (error) {}
+      }
     };
 
     websocket.onerror = () => {
