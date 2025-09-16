@@ -197,11 +197,8 @@ export function PrometheusQueryBox({
     setQueryResult(null);
     setError(null);
     setIsLoading(false);
-
-    if (onClose) {
-      onClose();
-    }
-  }, []);
+    onClose();
+  }, [onClose]);
 
   const hasResults = queryResult?.data?.result?.length
     ? queryResult.data.result.length > 0
