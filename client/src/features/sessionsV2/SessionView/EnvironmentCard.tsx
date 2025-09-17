@@ -18,10 +18,12 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useContext, useEffect } from "react";
-import { CircleFill, Clock } from "react-bootstrap-icons";
+import { ReactNode, useContext, useEffect, useMemo } from "react";
+import { CircleFill, Clock, Plugin, Send } from "react-bootstrap-icons";
+import { Link, useLocation } from "react-router";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
-
+import { ErrorAlert, WarnAlert } from "~/components/Alert";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { Loader } from "../../../components/Loader";
@@ -34,15 +36,17 @@ import {
   sessionLaunchersV2Api,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
 } from "../api/sessionLaunchersV2.api";
-import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
-import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
-import { safeStringify } from "../session.utils";
+import { useGetSessionsImagesQuery } from "../api/sessionsV2.api";
 import {
   BuildActions,
   BuildErrorReason,
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
+import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
+import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
+import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
+import { safeStringify } from "../session.utils";
 
 export default function EnvironmentCard({
   launcher,
@@ -104,7 +108,7 @@ export default function EnvironmentCard({
               ) : (
                 <>
                   <EnvironmentIcon type="custom" size={16} />
-                  Custom image environment
+                  External image environment
                 </>
               )}
             </EnvironmentRow>
@@ -160,14 +164,107 @@ function CustomImageEnvironmentValues({
 }: {
   launcher: SessionLauncher;
 }) {
+  const { pathname, hash } = useLocation();
   const environment = launcher.environment;
+
+  const { data, isLoading } = useGetSessionsImagesQuery(
+    environment &&
+      environment.environment_kind === "CUSTOM" &&
+      environment.container_image
+      ? { imageUrl: environment.container_image }
+      : skipToken
+  );
+  const search = useMemo(() => {
+    return `?${new URLSearchParams({
+      targetProvider: data?.provider?.id ?? "",
+      source: `${pathname}${hash}`,
+    }).toString()}`;
+  }, [data, pathname, hash]);
 
   if (environment.environment_kind !== "CUSTOM") {
     return null;
   }
-
   return (
     <>
+      <div className="mb-2">
+        <SessionImageBadge data={data} loading={isLoading} />
+        {!isLoading && data?.accessible === false && (
+          <div className="mt-2">
+            {!data.connection && !data.provider ? (
+              <ErrorAlert className="mb-0" dismissible={false}>
+                <p className="mb-2">
+                  The image URL is invalid or points to an unsupported registry.
+                  Please verify the URL and check if the registry is in the
+                  currently supported{" "}
+                  <Link
+                    to={{
+                      pathname: ABSOLUTE_ROUTES.v2.integrations,
+                      search,
+                    }}
+                  >
+                    <Plugin className={cx("bi", "me-1")} />
+                    integrations
+                  </Link>
+                  . If you{"'"}re certain the URL is correct and points to a
+                  registry we don{"'"}t currently support,{" "}
+                  <a
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    href="mailto:hello@renku.io"
+                  >
+                    <Send className={cx("bi", "me-1")} />
+                    contact us
+                  </a>{" "}
+                  about adding an integration.
+                </p>
+              </ErrorAlert>
+            ) : data.connection?.status === "connected" ? (
+              <ErrorAlert className="mb-0" dismissible={false}>
+                <p className="mb-0">
+                  Either the image does not exist, or you do not have access to
+                  it.
+                </p>
+                {data?.provider?.id && (
+                  <>
+                    <p className={cx("mb-2", "mt-2")}>
+                      If you think you should have access, check your
+                      integration configuration.
+                    </p>
+                    <Link
+                      className={cx("btn", "btn-primary", "btn-sm")}
+                      to={{
+                        pathname: ABSOLUTE_ROUTES.v2.integrations,
+                        search,
+                      }}
+                    >
+                      <Plugin className={cx("bi", "me-1")} />
+                      View integration
+                    </Link>
+                  </>
+                )}
+              </ErrorAlert>
+            ) : (
+              <WarnAlert className="mb-0" dismissible={false}>
+                <p className="mb-2">
+                  This image is from a supported registry, but you haven{"'"}t
+                  activated the integration yet. Activate the integration to
+                  check if you have access to this image.
+                </p>
+                <Link
+                  className={cx("btn", "btn-primary", "btn-sm")}
+                  to={{
+                    pathname: ABSOLUTE_ROUTES.v2.integrations,
+                    search,
+                  }}
+                >
+                  <Plugin className={cx("bi", "me-1")} />
+                  Go to Integration
+                </Link>
+              </WarnAlert>
+            )}
+          </div>
+        )}
+      </div>
       <EnvironmentRowWithLabel
         label="Container image"
         value={environment?.container_image || ""}

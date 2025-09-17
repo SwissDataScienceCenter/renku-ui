@@ -221,11 +221,11 @@ export default function NewSessionLauncherModal({
               {result.error && <RtkOrNotebooksError error={result.error} />}
               {step === "environment" && (
                 <EnvironmentFields
-                  errors={errors}
-                  touchedFields={touchedFields}
                   control={control}
-                  watch={watch}
+                  errors={errors}
                   setValue={setValue}
+                  touchedFields={touchedFields}
+                  watch={watch}
                 />
               )}
               {step === "launcherDetails" && (
