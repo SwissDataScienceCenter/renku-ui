@@ -26,6 +26,7 @@ import { Links } from "~/utils/constants/Docs";
 import { PROJECT_CREATION_HASH } from "~/features/projectsV2/new/createProjectV2.constants";
 import { ExternalLink } from "~/components/ExternalLinks";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
+import TakeActionAlert from "~/components/TakeActionAlert";
 
 import CreateProject from "./CreateProject.svg";
 import MigrateRepo from "./MigrateRepo.svg";
@@ -35,34 +36,20 @@ import Background from "./Background.svg";
 import styles from "./NoLegacySupportForProjects.module.css";
 
 function ProjectNoLegacySupportHeader() {
-  const homeLink = "/";
   return (
-    <div
-      className={cx("m-auto", "d-flex", "flex-column", "align-items-center")}
-    >
-      <div className={cx("mt-0", "mb-3")}>
-        <h3 data-cy="not-found-title" className={cx("fw-bold")}>
-          Since October 2025, Renku Legacy is no longer supported.
-        </h3>
+    <TakeActionAlert className="rounded-0">
+      <div
+        className={cx("d-flex", "flex-column", "align-items-center", "gap-3")}
+      >
+        <h1 className="fw-bold">
+          CRITICAL: DATA REMOVAL DEADLINE &mdash; JANUARY 2026
+        </h1>
+        <h4 className="fw-normal">
+          The RenkuLab GitLab will be shut down &mdash; All code repositories
+          will be removed
+        </h4>
       </div>
-      <div className="mb-3" data-cy="not-found-description">
-        What you need to do:
-      </div>
-      <div className={cx("d-flex", "gap-3", "mb-3")}>
-        <Link to={homeLink} className={cx("btn", "btn-primary")}>
-          <Send className={cx("bi", "me-1")} />
-          Go to Renku 2.0
-        </Link>
-        <ExternalLink
-          color="outline-primary"
-          customIcon={<BookmarkStar className={cx("bi", "me-1")} />}
-          role="button"
-          showLinkIcon={true}
-          title="Learn more"
-          url={Links.RENKU_2_SUNSET}
-        />
-      </div>
-    </div>
+    </TakeActionAlert>
   );
 }
 
@@ -212,18 +199,11 @@ export default function NoLegacySupportForProjects() {
       style={backgroundImage}
     >
       <ProjectV2New />
-      <div
-        className={cx([
-          "bg-white",
-          "container-xxl",
-          "py-5",
-          "px-3",
-          "px-sm-4",
-          "px-xxl-5",
-        ])}
-      >
+      <div className={cx(["bg-white", "container-xxl", "py-0", "px-0"])}>
         <ProjectNoLegacySupportHeader />
-        <ProjectNoLegacySupportDetails />
+        <div className={cx(["py-5", "px-3", "px-sm-4", "px-xxl-5"])}>
+          <ProjectNoLegacySupportDetails />
+        </div>
       </div>
     </div>
   );
