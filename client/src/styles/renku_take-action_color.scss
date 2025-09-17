@@ -1,0 +1,9 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/mixins";
+
+:root,
+[data-bs-theme="light"] {
+  --#{$prefix}take-action-text-emphasis: #{$white};
+  --#{$prefix}take-action-bg-subtle: #{$take-action};
+  --#{$prefix}take-action-border-subtle: #{$take-action};
+}
