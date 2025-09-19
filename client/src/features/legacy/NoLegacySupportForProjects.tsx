@@ -20,7 +20,7 @@ import cx from "classnames";
 import { type CSSProperties } from "react";
 import { Link, useLocation } from "react-router";
 import { PlusSquare } from "react-bootstrap-icons";
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { Col, Row } from "reactstrap";
 
 import { Links } from "~/utils/constants/Docs";
 import { PROJECT_CREATION_HASH } from "~/features/projectsV2/new/createProjectV2.constants";
@@ -28,9 +28,7 @@ import { ExternalLink } from "~/components/ExternalLinks";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import TakeActionAlert from "~/components/TakeActionAlert";
 
-import CreateProject from "./CreateProject.svg";
 import MigrateRepo from "./MigrateRepo.svg";
-import RegisterRedirect from "./RegisterRedirect.svg";
 import Background from "./Background.svg";
 
 import styles from "./NoLegacySupportForProjects.module.css";
@@ -73,6 +71,20 @@ function GitLabShutDownIcon() {
         d="M24.6033 36.7184C31.2022 36.7184 36.5516 31.3689 36.5516 24.7701C36.5516 18.1712 31.2022 12.8218 24.6033 12.8218C18.0045 12.8218 12.655 18.1712 12.655 24.7701C12.655 31.3689 18.0045 36.7184 24.6033 36.7184ZM18.8479 20.5082C19.1395 20.2166 19.6123 20.2166 19.904 20.5082L20.8695 21.4737L21.835 20.5082C22.1266 20.2166 22.5994 20.2166 22.891 20.5082C23.1827 20.7998 23.1827 21.2727 22.891 21.5643L21.9256 22.5298L22.891 23.4953C23.1827 23.7869 23.1827 24.2597 22.891 24.5514C22.5994 24.843 22.1266 24.843 21.835 24.5514L20.8695 23.5859L19.904 24.5514C19.6123 24.843 19.1395 24.843 18.8479 24.5514C18.5563 24.2597 18.5563 23.7869 18.8479 23.4953L19.8134 22.5298L18.8479 21.5643C18.5563 21.2727 18.5563 20.7998 18.8479 20.5082ZM26.3156 20.5082C26.6072 20.2166 27.08 20.2166 27.3717 20.5082L28.3371 21.4737L29.3026 20.5082C29.5943 20.2166 30.0671 20.2166 30.3587 20.5082C30.6504 20.7998 30.6504 21.2727 30.3587 21.5643L29.3932 22.5298L30.3587 23.4953C30.6504 23.7869 30.6504 24.2597 30.3587 24.5514C30.0671 24.843 29.5943 24.843 29.3026 24.5514L28.3371 23.5859L27.3717 24.5514C27.08 24.843 26.6072 24.843 26.3156 24.5514C26.0239 24.2597 26.0239 23.7869 26.3156 23.4953L27.2811 22.5298L26.3156 21.5643C26.0239 21.2727 26.0239 20.7998 26.3156 20.5082ZM24.6033 32.2378C22.9536 32.2378 21.6162 30.9004 21.6162 29.2507C21.6162 27.601 22.9536 26.2636 24.6033 26.2636C26.253 26.2636 27.5904 27.601 27.5904 29.2507C27.5904 30.9004 26.253 32.2378 24.6033 32.2378Z"
         fill="white"
       />
+    </svg>
+  );
+}
+
+function Arrow() {
+  return (
+    <svg
+      width="100"
+      height="100"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 175 40"
+    >
+      <rect y="20" width="150" height="10" />
+      <polygon points="175 25 150 40 150 10 175 25" />
     </svg>
   );
 }
@@ -128,6 +140,9 @@ function LegacyNotSupportedHeader() {
           <div>Frontend closed </div>
           <div>October 2025</div>
         </div>
+        <div>
+          <Arrow />
+        </div>
         <div
           className={cx(
             "fw-bold",
@@ -147,63 +162,147 @@ function LegacyNotSupportedHeader() {
   );
 }
 
+function LegacyNotSupportedFooter() {
+  const homeLink = "/";
+  return (
+    <div className={cx("border-top", "border-dark", "mt-4", "p-0", "pt-4")}>
+      <Row>
+        <Col>
+          Not your project?{" "}
+          <Link className={cx("btn", "btn-outline-primary")} to={homeLink}>
+            Try out Renku 2.0
+          </Link>{" "}
+          or learn{" "}
+          <ExternalLink
+            className="text-dark"
+            role="text"
+            title="How is Renku 2.0 different from Renku Legacy?"
+            url={Links.RENKU_2_WHY_RENKU}
+          />
+        </Col>
+      </Row>
+      <Row className="mt-3">
+        <Col>
+          For more information{" "}
+          <ExternalLink
+            className="text-dark"
+            role="text"
+            title="contact us"
+            url={Links.CONTACT_US}
+          />{" "}
+          or read our blog post about{" "}
+          <ExternalLink
+            className="text-dark"
+            role="text"
+            title="Sunsetting Renku Legacy."
+            url={Links.RENKU_2_SUNSET}
+          />
+        </Col>
+      </Row>
+    </div>
+  );
+}
+
 function ProjectNoLegacyMigrateStep1() {
   const location = useLocation();
   const locationPath = location.pathname;
   const gitlabProjectPath = locationPath.replace("/projects/", "");
   const gitlabProjectUrl = `https://gitlab.renkulab.io/${gitlabProjectPath}`;
   return (
-    <Card>
-      <CardHeader>
-        <h5>Move repo to new host</h5>
-        <div className={cx("text-center", "mt-4")}>
+    <div
+      className={cx(
+        "border",
+        "border-2",
+        "border-take-action",
+        "rounded-2",
+        "p-0"
+      )}
+    >
+      <h4
+        className={cx("fw-bold", "bg-take-action", "p-3", "m-0", "text-light")}
+      >
+        If this is your project: Migrate your code repository now to prevent
+        data removal.
+      </h4>
+      <div
+        className={cx(
+          "mx-3",
+          "d-flex",
+          "flex-row",
+          "align-items-center",
+          "gap-5"
+        )}
+      >
+        <div className="my-3 pe-2">
+          <div className="fw-bold">
+            1. Migrate your GitLab repo to an external provider
+          </div>
+          <div className="mt-4 mb-2">
+            Transfer repositories from RenkuLab GitLab to external providers for
+            continued integration with Renku 2.0.
+          </div>
+          <div className="mb-2">
+            <span className="me-2">
+              <ExternalLink
+                role="button"
+                showLinkIcon={true}
+                title="Go to GitLab repo"
+                url={gitlabProjectUrl}
+              />
+            </span>
+            <ExternalLink
+              role="text"
+              title="or follow step-by-step instructions"
+              url={
+                Links.RENKU_2_SUNSET +
+                "#how-to-move-a-code-repository-to-an-external-provider"
+              }
+            />
+          </div>
+        </div>
+        <div className={cx("text-center", "my-3")}>
           <img src={MigrateRepo} alt="Migrate your GitLab repo" />
         </div>
-      </CardHeader>
-      <CardBody>
-        <div className="mt-4 mb-2">
-          The RenkuLab GitLab instance will be decommissioned in January 2026.
-          Please move your repositories to a new host, such as GitHub or
-          GitLab.com.
-        </div>
-        <div className="mb-2">
-          <ExternalLink
-            role="button"
-            showLinkIcon={true}
-            title="Go to GitLab repo"
-            url={gitlabProjectUrl}
-          />
-        </div>
-        <div>
-          <ExternalLink
-            role="text"
-            title="Step-by-step instructions"
-            url={
-              Links.RENKU_2_SUNSET +
-              "#how-to-move-a-code-repository-to-an-external-provider"
-            }
-          />
-        </div>
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 }
 
 function ProjectNoLegacyMigrateStep2() {
   return (
-    <Card>
-      <CardHeader>
-        <h5>Create a Renku 2.0 project</h5>
-        <div className={cx("text-center", "mt-4")}>
-          <img src={CreateProject} alt="Create a Renku 2.0 project" />
+    <div
+      className={cx(
+        "border",
+        "border-2",
+        "border-gray-300",
+        "rounded-2",
+        "p-0"
+      )}
+    >
+      <div
+        className={cx(
+          "mx-3",
+          "d-flex",
+          "flex-row",
+          "align-items-center",
+          "justify-content-between",
+          "gap-5"
+        )}
+      >
+        <div className="my-3 pe-2">
+          <div>
+            <b>2. Create a new project in Renku 2.0</b> and connect your new
+            code repository
+          </div>
         </div>
-      </CardHeader>
-      <CardBody>
-        <div className="mt-4 mb-2">
-          Work in Renku is organized around projects. Create a new Renku 2.0
-          project and add your code repository to it.
-        </div>
-        <div className="mb-2">
+        <div className={cx("text-center", "my-3")}>
+          <span className="me-2">
+            <ExternalLink
+              role="text"
+              title="Step-by-step instructions"
+              url={Links.RENKU_2_CREATE_PROJECT}
+            />
+          </span>
           <Link
             to={{ hash: PROJECT_CREATION_HASH }}
             className={cx("btn", "btn-primary")}
@@ -212,45 +311,51 @@ function ProjectNoLegacyMigrateStep2() {
             Create a project
           </Link>
         </div>
-        <div>
-          <ExternalLink
-            role="text"
-            title="Step-by-step instructions"
-            url={Links.RENKU_2_CREATE_PROJECT}
-          />
-        </div>
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 }
 
 function ProjectNoLegacyMigrateStep3() {
   return (
-    <Card>
-      <CardHeader>
-        <h5>Redirect legacy URLs</h5>
-        <div className={cx("text-center", "mt-4")}>
-          <img src={RegisterRedirect} alt="Register a redirect" />
-        </div>
-      </CardHeader>
-      <CardBody>
-        <div className="mt-4 mb-2">
-          Do you have links to Renku Legacy projects or Renku GitLab
-          repositories that you would like to continue to work? Register where
-          you would like these links to automatically redirect to.
-        </div>
-        <div className="mb-2">
-          <div className="mb-2">
-            <ExternalLink
-              role="button"
-              showLinkIcon={true}
-              title="Register a redirect (coming soon)"
-              url={Links.RENKU_2_SUNSET}
-            />
+    <div
+      className={cx(
+        "border",
+        "border-2",
+        "border-gray-300",
+        "rounded-2",
+        "p-0"
+      )}
+    >
+      <div
+        className={cx(
+          "mx-3",
+          "d-flex",
+          "flex-row",
+          "align-items-center",
+          "justify-content-between",
+          "gap-5"
+        )}
+      >
+        <div className="my-3 pe-2">
+          <div>
+            <b>
+              3. Want this page to automatically redirect to your new Renku 2.0
+              project?
+            </b>{" "}
+            (Optional)
           </div>
         </div>
-      </CardBody>
-    </Card>
+        <div className={cx("text-center", "my-3")}>
+          <ExternalLink
+            role="button"
+            showLinkIcon={true}
+            title="Register a redirect"
+            url={Links.RENKU_2_REGISTER_REDIRECT}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -259,13 +364,17 @@ function ProjectNoLegacySupportDetails() {
     <div className={cx("m-auto", "d-flex", "flex-column")}>
       <LegacyNotSupportedHeader />
       <Row>
-        <Col md={4}>
+        <Col>
           <ProjectNoLegacyMigrateStep1 />
         </Col>
-        <Col md={4}>
+      </Row>
+      <Row className="mt-4">
+        <Col>
           <ProjectNoLegacyMigrateStep2 />
         </Col>
-        <Col md={4}>
+      </Row>
+      <Row className="mt-4">
+        <Col>
           <ProjectNoLegacyMigrateStep3 />
         </Col>
       </Row>
@@ -293,6 +402,7 @@ export default function NoLegacySupportForProjects() {
         <DeadlineAlert />
         <div className={cx(["pb-5", "px-3", "px-sm-4", "px-xxl-5"])}>
           <ProjectNoLegacySupportDetails />
+          <LegacyNotSupportedFooter />
         </div>
       </div>
     </div>
