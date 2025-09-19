@@ -92,6 +92,9 @@ const PROMETHEUS = {
     (process.env.PROMETHEUS_ENABLED ?? "").toLowerCase()
   ),
   path: "/metrics",
+  url:
+    process.env.PROMETHEUS_URL ||
+    "http://prometheus-server.monitoring.svc.cluster.local",
 };
 
 const config = {
