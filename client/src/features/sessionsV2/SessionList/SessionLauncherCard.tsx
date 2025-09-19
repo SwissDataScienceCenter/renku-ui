@@ -21,6 +21,8 @@ import { useContext } from "react";
 import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
+import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
+
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -181,6 +183,11 @@ export default function SessionLauncherCard({
                       <span className="fst-italic">Orphan session</span>
                     )}
                   </span>
+                </Col>
+              </Row>
+              <Row>
+                <Col data-cy="session-gitlab-warning" xs={12}>
+                  <SessionEnvironmentGitLabWarningBadge launcher={launcher} />
                 </Col>
               </Row>
               {isBuildEnvironment && (
