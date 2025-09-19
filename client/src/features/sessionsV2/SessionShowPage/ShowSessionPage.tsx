@@ -263,39 +263,48 @@ export default function ShowSessionPage() {
           className={cx(styles.fullscreenContent, "w-100")}
           data-cy="session-page"
         >
-          {showPrometheusQuery && (
-            <div
-              className={cx("position-absolute", "top-0", "end-0", "m-3")}
-              style={{ zIndex: 1000, maxWidth: "400px" }}
-            >
-              <PrometheusQueryBox
-                predefinedQueries={[
-                  {
-                    label: "CPU Usage",
-                    query: `round(rate(container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}[5m]) * 100, 0.1)`,
-                    description: "CPU usage percentage for this session",
-                    icon: "cpu",
-                    unit: "%",
-                  },
-                  {
-                    label: "Memory Usage",
-                    query: `round(container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / 1024 / 1024, 1)`,
-                    description: "Memory usage for this session in GB",
-                    icon: "memory",
-                    unit: "MB",
-                  },
-                  {
-                    label: "Memory Usage %",
-                    query: `round((container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100, 0.01)`,
-                    description: "Memory usage percentage for this session",
-                    icon: "memory",
-                    unit: "%",
-                  },
-                ]}
-                onClose={togglePrometheusQuery}
-              />
-            </div>
-          )}
+          <div
+            className={cx("position-absolute", "top-0", "end-0", "m-3")}
+            style={{ zIndex: 1000, maxWidth: "400px" }}
+          >
+            <PrometheusQueryBox
+              predefinedQueries={[
+                {
+                  label: "CPU Usage",
+                  query: `round(rate(container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}[5m]) / on(pod) kube_pod_container_resource_requests{resource="cpu",container="amalthea-session"} * 100,  0.1) > 80`,
+                  description: "CPU usage percentage for this session",
+                  icon: "cpu",
+                  unit: "%",
+                  alertThreshold: 0,
+                },
+                {
+                  label: "Memory Usage",
+                  query: `round((container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100, 0.01) > 80`,
+                  description: "Memory usage percentage for this session",
+                  icon: "memory",
+                  unit: "%",
+                  alertThreshold: 0,
+                },
+                {
+                  label: "Disk Usage %",
+                  query: `round((kubelet_volume_stats_used_bytes{persistentvolumeclaim="${sessionName}"} / kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="${sessionName}"}) * 100, 0.01) > 80`,
+                  description: "Disk usage percentage for this session",
+                  icon: "memory",
+                  unit: "%",
+                  alertThreshold: 0,
+                },
+                {
+                  label: "OOMKilled",
+                  query: `sum by (namespace, pod, container) (rate(kube_pod_container_status_restarts_total{pod="${sessionName}.*"}[60m])) * on(namespace, pod, container) group_left(reason) kube_pod_container_status_last_terminated_reason{reason="OOMKilled", pod="${sessionName}.*"} > 0`,
+                  description: "Disk usage percentage for this session",
+                  icon: "memory",
+                  unit: "%",
+                  alertThreshold: 0,
+                },
+              ]}
+              onClose={togglePrometheusQuery}
+            />
+          </div>
           {content}
         </div>
       </div>

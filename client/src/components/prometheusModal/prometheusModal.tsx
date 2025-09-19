@@ -19,8 +19,8 @@
 /* eslint-disable spellcheck/spell-checker */
 import cx from "classnames";
 import { useCallback, useState, useEffect, useRef } from "react";
-import { Activity, Search, Cpu, Memory } from "react-bootstrap-icons";
-import { Alert, Button, Card, CardBody, CloseButton } from "reactstrap";
+import { Activity } from "react-bootstrap-icons";
+import { Alert, Card, CardBody, CloseButton } from "reactstrap";
 
 interface PrometheusQueryResult {
   status: string;
@@ -34,6 +34,19 @@ interface PrometheusQueryResult {
   };
   requestId?: string;
   error?: string;
+}
+
+interface PrometheusQueryBoxProps {
+  className?: string;
+  predefinedQueries?: Array<{
+    label: string;
+    query: string;
+    description?: string;
+    icon?: string;
+    unit?: string;
+    alertThreshold?: number;
+  }>;
+  onClose: () => void;
 }
 
 function usePrometheusWebSocket() {
@@ -124,43 +137,31 @@ function usePrometheusWebSocket() {
   return { sendPrometheusQuery, isConnected };
 }
 
-interface PrometheusQueryBoxProps {
-  className?: string;
-  predefinedQueries?: Array<{
-    label: string;
-    query: string;
-    description?: string;
-    icon?: string;
-    unit?: string;
-  }>;
-  onClose: () => void;
-}
-
 export function PrometheusQueryBox({
   className,
   predefinedQueries,
   onClose,
 }: PrometheusQueryBoxProps) {
-  const [inputValue, setInputValue] = useState("");
   const [queryResult, setQueryResult] = useState<PrometheusQueryResult | null>(
     null
   );
+  const [queryResults, setQueryResults] = useState<PrometheusQueryResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const { sendPrometheusQuery, isConnected } = usePrometheusWebSocket();
 
   const executeQuery = useCallback(
-    async (query: string) => {
-      if (!query.trim()) return;
+    async (predefinedQuery: Array) => {
+      if (!predefinedQuery.query.trim()) return;
 
       setIsLoading(true);
       setError(null);
       setQueryResult(null);
 
       try {
-        const result = await sendPrometheusQuery(query.trim());
-        setQueryResult(result);
+        const result = await sendPrometheusQuery(predefinedQuery.query.trim());
+        return result;
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
@@ -170,39 +171,42 @@ export function PrometheusQueryBox({
     [sendPrometheusQuery]
   );
 
-  const handlePredefinedQuery = useCallback(
-    (predefinedQuery: string) => {
-      setInputValue(predefinedQuery);
-      executeQuery(predefinedQuery);
-    },
-    [executeQuery]
-  );
+  const getAllQueryResults = useCallback(async () => {
+    setQueryResults([]);
+    const filteredResults = [];
 
-  {
-    /* 
-  const handleKeyPress = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        handleSubmit();
+    for (const pq of predefinedQueries || []) {
+      const result = await executeQuery(pq);
+
+      if (result?.data?.result?.length > 0) {
+        filteredResults.push({ ...result, predefinedQuery: pq });
       }
-    },
-    [handleSubmit]
-  );
-          */
-  }
+    }
+    setQueryResults(filteredResults);
+  }, [executeQuery, predefinedQueries]);
 
   const handleCloseButton = useCallback(() => {
-    setInputValue("");
     setQueryResult(null);
     setError(null);
     setIsLoading(false);
     onClose();
   }, [onClose]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("Re-executing query");
+      getAllQueryResults();
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [executeQuery]);
+
   const hasResults = queryResult?.data?.result?.length
     ? queryResult.data.result.length > 0
     : false;
+
+  if (queryResults.length === 0) {
+    return null;
+  }
 
   return (
     <Card className={cx("border-secondary-subtle", className)}>
@@ -217,51 +221,6 @@ export function PrometheusQueryBox({
             className="position-absolute top-0 end-0 m-2"
             onClick={handleCloseButton}
           />
-
-          {predefinedQueries && predefinedQueries.length > 0 && (
-            <div className="mb-2">
-              <div className="d-flex flex-wrap gap-1">
-                {predefinedQueries?.map((pq, index) => (
-                  <Button
-                    key={index}
-                    color="outline-secondary"
-                    size="sm"
-                    onClick={() => handlePredefinedQuery(pq.query)}
-                    title={pq.description}
-                  >
-                    {pq.icon === "memory" ? (
-                      <Memory className="me-1 bi" />
-                    ) : pq.icon === "cpu" ? (
-                      <Cpu className="me-1 bi" />
-                    ) : (
-                      <Search className="me-1 bi" />
-                    )}
-                    {pq.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 
-          <InputGroup size="sm">
-            <Input
-              type="text"
-              placeholder="Enter custom Prometheus query or use buttons above"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <Button
-              color="primary"
-              onClick={handleSubmit}
-              disabled={!inputValue.trim() || isLoading}
-              size="sm"
-            >
-              <Search className="bi" />
-            </Button>
-          </InputGroup>
-          */}
         </div>
 
         {!isConnected && (
@@ -288,38 +247,29 @@ export function PrometheusQueryBox({
           </Alert>
         )}
 
-        {hasResults && (
-          <div className={cx("mt-2", "border-top", "pt-2")}>
-            <div
-              className={cx("small", "font-monospace")}
-              style={{ maxHeight: "200px", overflowY: "auto" }}
-            >
-              {queryResult?.data?.result?.map((result, index) => (
-                <div key={index} className="mb-1">
-                  <div className="text-success">
-                    {result.value
-                      ? `${result.value[1]}`
-                      : result.values
-                      ? `${result.values.length} time series points`
-                      : "No value"}
-                    {predefinedQueries &&
-                      predefinedQueries.length > 0 &&
-                      predefinedQueries.map((pq) => {
-                        if (
-                          pq.query === inputValue.trim() &&
-                          pq.unit &&
-                          result.value
-                        ) {
-                          return ` ${pq.unit}`;
-                        }
-                        return "";
-                      })}
-                  </div>
-                </div>
-              ))}
+        {queryResults.map((qr, idx) => (
+          <div key={idx} className="mb-2">
+            <div className="fw-bold">
+              {qr.predefinedQuery?.label || `Result ${qr.requestId}`}
+              {qr.predefinedQuery?.unit && ` (${qr.predefinedQuery.unit})`}
+            </div>
+            <div className="mb-1">
+              <div className="text-warning">
+                {qr.data.result[0]?.value
+                  ? `${qr.data.result[0].value[1]}${
+                      qr.predefinedQuery?.unit
+                        ? ` ${qr.predefinedQuery.unit}`
+                        : ""
+                    }`
+                  : qr.data.result[0]?.values
+                  ? `${qr.data.result[0].values.length} time series points`
+                  : qr.data.result.length === 0
+                  ? "No data"
+                  : "No value"}
+              </div>
             </div>
           </div>
-        )}
+        ))}
       </CardBody>
     </Card>
   );
