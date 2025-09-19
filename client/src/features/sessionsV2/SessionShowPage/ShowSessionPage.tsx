@@ -275,7 +275,7 @@ export default function ShowSessionPage() {
                   description: "CPU usage percentage for this session",
                   icon: "cpu",
                   unit: "%",
-                  alertThreshold: 0,
+                  alertThreshold: 90,
                 },
                 {
                   label: "Memory Usage",
@@ -283,7 +283,7 @@ export default function ShowSessionPage() {
                   description: "Memory usage percentage for this session",
                   icon: "memory",
                   unit: "%",
-                  alertThreshold: 0,
+                  alertThreshold: 90,
                 },
                 {
                   label: "Disk Usage %",
@@ -291,7 +291,7 @@ export default function ShowSessionPage() {
                   description: "Disk usage percentage for this session",
                   icon: "memory",
                   unit: "%",
-                  alertThreshold: 0,
+                  alertThreshold: 90,
                 },
                 {
                   label: "OOMKilled",

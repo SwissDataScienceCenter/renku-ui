@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -20,7 +20,7 @@
 import cx from "classnames";
 import { useCallback, useState, useEffect, useRef } from "react";
 import { Activity } from "react-bootstrap-icons";
-import { Alert, Card, CardBody, CloseButton } from "reactstrap";
+import { Card, CardBody, CloseButton } from "reactstrap";
 
 interface PrometheusQueryResult {
   status: string;
@@ -43,8 +43,8 @@ interface PrometheusQueryBoxProps {
     query: string;
     description?: string;
     icon?: string;
-    unit?: string;
-    alertThreshold?: number;
+    unit: string;
+    alertThreshold: number;
   }>;
   onClose: () => void;
 }
@@ -200,10 +200,6 @@ export function PrometheusQueryBox({
     return () => clearInterval(interval);
   }, [executeQuery]);
 
-  const hasResults = queryResult?.data?.result?.length
-    ? queryResult.data.result.length > 0
-    : false;
-
   if (queryResults.length === 0) {
     return null;
   }
@@ -223,48 +219,20 @@ export function PrometheusQueryBox({
           />
         </div>
 
-        {!isConnected && (
-          <Alert color="warning" className="mb-0">
-            <small>WebSocket not connected</small>
-          </Alert>
-        )}
-
-        {isLoading && (
-          <div className="text-center">
-            <small className="text-muted">Querying Prometheus...</small>
-          </div>
-        )}
-
-        {error && (
-          <Alert color="warning" className="mb-0">
-            <small>Could not query Prometheus: {error}</small>
-          </Alert>
-        )}
-
-        {queryResult && !hasResults && (
-          <Alert color="info" className="mb-0">
-            <small>No data returned from Prometheus</small>
-          </Alert>
-        )}
-
         {queryResults.map((qr, idx) => (
           <div key={idx} className="mb-2">
-            <div className="fw-bold">
-              {qr.predefinedQuery?.label || `Result ${qr.requestId}`}
-              {qr.predefinedQuery?.unit && ` (${qr.predefinedQuery.unit})`}
-            </div>
+            <div className="fw-bold">{qr.predefinedQuery.label}</div>
             <div className="mb-1">
-              <div className="text-warning">
+              <div
+                className={
+                  qr.data.result[0]?.value[1] >
+                  qr.predefinedQuery.alertThreshold
+                    ? "text-danger"
+                    : "text-warning"
+                }
+              >
                 {qr.data.result[0]?.value
-                  ? `${qr.data.result[0].value[1]}${
-                      qr.predefinedQuery?.unit
-                        ? ` ${qr.predefinedQuery.unit}`
-                        : ""
-                    }`
-                  : qr.data.result[0]?.values
-                  ? `${qr.data.result[0].values.length} time series points`
-                  : qr.data.result.length === 0
-                  ? "No data"
+                  ? `${qr.data.result[0].value[1]}${qr.predefinedQuery?.unit}`
                   : "No value"}
               </div>
             </div>
