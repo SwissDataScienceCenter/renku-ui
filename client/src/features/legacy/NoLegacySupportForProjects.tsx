@@ -252,7 +252,7 @@ function ProjectNoLegacyMigrateStep1() {
             </span>
             <ExternalLink
               role="text"
-              title="or follow step-by-step instructions"
+              title="and follow step-by-step instructions"
               url={
                 Links.RENKU_2_SUNSET +
                 "#how-to-move-a-code-repository-to-an-external-provider"
