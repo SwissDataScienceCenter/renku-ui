@@ -889,7 +889,7 @@ function RepositoryPermissionsAlert({
       <Col xs={12}>
         <WarnAlert className="mb-0" dismissible={false} timeout={0}>
           <p className="mb-0">
-            You are not allowed to push on this repository.
+            You are not allowed to push to this repository.
           </p>
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
