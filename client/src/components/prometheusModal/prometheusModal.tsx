@@ -47,6 +47,8 @@ interface PrometheusQueryBoxProps {
     alertThreshold: number;
   }>;
   onClose: () => void;
+  setPrometheusQueryBtnColor: (color: string) => void;
+  showPrometheusQuery: boolean;
 }
 
 function usePrometheusWebSocket() {
@@ -141,66 +143,64 @@ export function PrometheusQueryBox({
   className,
   predefinedQueries,
   onClose,
+  setPrometheusQueryBtnColor,
+  showPrometheusQuery,
 }: PrometheusQueryBoxProps) {
-  const [queryResult, setQueryResult] = useState<PrometheusQueryResult | null>(
-    null
-  );
   const [queryResults, setQueryResults] = useState<PrometheusQueryResult[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const { sendPrometheusQuery, isConnected } = usePrometheusWebSocket();
+  const { sendPrometheusQuery } = usePrometheusWebSocket();
 
   const executeQuery = useCallback(
     async (predefinedQuery: Array) => {
       if (!predefinedQuery.query.trim()) return;
 
-      setIsLoading(true);
-      setError(null);
-      setQueryResult(null);
-
       try {
         const result = await sendPrometheusQuery(predefinedQuery.query.trim());
         return result;
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        setIsLoading(false);
+        return null;
       }
     },
     [sendPrometheusQuery]
   );
 
   const getAllQueryResults = useCallback(async () => {
-    setQueryResults([]);
     const filteredResults = [];
+    let newColor = "text-dark";
 
     for (const pq of predefinedQueries || []) {
       const result = await executeQuery(pq);
 
       if (result?.data?.result?.length > 0) {
         filteredResults.push({ ...result, predefinedQuery: pq });
+        if (
+          result.data.result[0]?.value[1] > pq.alertThreshold &&
+          newColor !== "text-danger"
+        ) {
+          newColor = "text-danger";
+        } else {
+          if (newColor !== "text-danger") {
+            newColor = "text-warning";
+          }
+        }
       }
     }
+    setPrometheusQueryBtnColor(newColor);
     setQueryResults(filteredResults);
-  }, [executeQuery, predefinedQueries]);
+  }, [executeQuery, predefinedQueries, setPrometheusQueryBtnColor]);
 
   const handleCloseButton = useCallback(() => {
-    setQueryResult(null);
-    setError(null);
-    setIsLoading(false);
     onClose();
   }, [onClose]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("Re-executing query");
       getAllQueryResults();
     }, 15000);
     return () => clearInterval(interval);
-  }, [executeQuery]);
+  }, [getAllQueryResults]);
 
-  if (queryResults.length === 0) {
+  if (queryResults.length === 0 || showPrometheusQuery === false) {
     return null;
   }
 

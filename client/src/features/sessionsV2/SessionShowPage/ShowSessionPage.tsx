@@ -20,6 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Activity,
   ArrowLeft,
   Box,
   Briefcase,
@@ -30,7 +31,6 @@ import {
   Link45deg,
   PauseCircle,
   Trash,
-  Activity,
 } from "react-bootstrap-icons";
 import { Link, generatePath, useNavigate, useParams } from "react-router";
 import {
@@ -128,7 +128,9 @@ export default function ShowSessionPage() {
     []
   );
 
-  const [showPrometheusQuery, setShowPrometheusQuery] = useState(false);
+  const [showPrometheusQuery, setShowPrometheusQuery] = useState(true);
+  const [prometheusQueryBtnColor, setPrometheusQueryBtnColor] =
+    useState("text-dark");
   const togglePrometheusQuery = useCallback(
     () => setShowPrometheusQuery((show) => !show),
     []
@@ -228,13 +230,16 @@ export default function ShowSessionPage() {
           >
             {backButton}
             <LogsBtn toggle={toggleModalLogs} />
-            <PrometheusBtn toggle={togglePrometheusQuery} />
             <PauseSessionBtn openPauseSession={openPauseSession} />
             <DeleteSessionBtn openDeleteSession={openDeleteSession} />
             <ShareSessionLinkButton
               session={thisSession}
               namespace={namespace}
               slug={slug}
+            />
+            <PrometheusBtn
+              toggle={togglePrometheusQuery}
+              color={prometheusQueryBtnColor}
             />
           </div>
           <div
@@ -303,6 +308,8 @@ export default function ShowSessionPage() {
                 },
               ]}
               onClose={togglePrometheusQuery}
+              setPrometheusQueryBtnColor={setPrometheusQueryBtnColor}
+              showPrometheusQuery={showPrometheusQuery}
             />
           </div>
           {content}
@@ -348,20 +355,22 @@ function LogsBtn({ toggle }: LogsBtnProps) {
 
 interface PrometheusBtnProps {
   toggle: () => void;
+  color: string;
 }
-function PrometheusBtn({ toggle }: PrometheusBtnProps) {
+function PrometheusBtn({ toggle, color }: PrometheusBtnProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   return (
     <div>
       <Button
+        enabled={false}
         className={cx(
           "bg-transparent",
           "border-0",
           "no-focus",
           "p-0",
           "shadow-none",
-          "text-dark"
+          color
         )}
         data-cy="prometheus-button"
         id="prometheus-button"
