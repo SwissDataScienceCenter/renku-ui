@@ -867,7 +867,7 @@ function RepositoryPermissionsAlert({
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               You need to <a href={loginUrl.href}>log in</a> to perform pushes
-              on git repositories.
+              to git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
@@ -894,7 +894,7 @@ function RepositoryPermissionsAlert({
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               You need to <a href={loginUrl.href}>log in</a> to perform pushes
-              on git repositories.
+              to git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
