@@ -34,6 +34,14 @@ interface PrometheusQueryResult {
   };
   requestId?: string;
   error?: string;
+  predefinedQuery?: {
+    label: string;
+    query: string;
+    description?: string;
+    icon?: string;
+    unit: string;
+    alertThreshold: number;
+  };
 }
 
 interface PrometheusQueryBoxProps {
@@ -151,7 +159,14 @@ export function PrometheusQueryBox({
   const { sendPrometheusQuery } = usePrometheusWebSocket();
 
   const executeQuery = useCallback(
-    async (predefinedQuery: Array) => {
+    async (predefinedQuery: {
+      label: string;
+      query: string;
+      description?: string;
+      icon?: string;
+      unit: string;
+      alertThreshold: number;
+    }) => {
       if (!predefinedQuery.query.trim()) return;
 
       try {
@@ -171,10 +186,11 @@ export function PrometheusQueryBox({
     for (const pq of predefinedQueries || []) {
       const result = await executeQuery(pq);
 
-      if (result?.data?.result?.length > 0) {
+      if (result?.data?.result?.length && result.data.result.length > 0) {
         filteredResults.push({ ...result, predefinedQuery: pq });
         if (
-          result.data.result[0]?.value[1] > pq.alertThreshold &&
+          result.data.result[0]?.value?.[1] &&
+          parseFloat(result.data.result[0].value[1]) > pq.alertThreshold &&
           newColor !== "text-danger"
         ) {
           newColor = "text-danger";
@@ -221,17 +237,19 @@ export function PrometheusQueryBox({
 
         {queryResults.map((qr, idx) => (
           <div key={idx} className="mb-2">
-            <div className="fw-bold">{qr.predefinedQuery.label}</div>
+            <div className="fw-bold">{qr.predefinedQuery?.label}</div>
             <div className="mb-1">
               <div
                 className={
-                  qr.data.result[0]?.value[1] >
-                  qr.predefinedQuery.alertThreshold
+                  qr.data?.result?.[0]?.value?.[1] &&
+                  qr.predefinedQuery &&
+                  parseFloat(qr.data.result[0].value[1]) >
+                    qr.predefinedQuery.alertThreshold
                     ? "text-danger"
                     : "text-warning"
                 }
               >
-                {qr.data.result[0]?.value
+                {qr.data?.result?.[0]?.value
                   ? `${qr.data.result[0].value[1]}${qr.predefinedQuery?.unit}`
                   : "No value"}
               </div>

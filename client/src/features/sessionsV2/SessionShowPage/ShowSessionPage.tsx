@@ -276,7 +276,7 @@ export default function ShowSessionPage() {
               predefinedQueries={[
                 {
                   label: "CPU Usage",
-                  query: `round(rate(container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}[5m]) / on(pod) kube_pod_container_resource_requests{resource="cpu",container="amalthea-session"} * 100,  0.1) > 80`,
+                  query: `round(rate(container_cpu_usage_seconds_total{pod=~"${sessionName}.*",container="amalthea-session"}[5m]) / on(pod) kube_pod_container_resource_requests{resource="cpu",container="amalthea-session"} * 100,  0.1) > 80`, // eslint-disable-line spellcheck/spell-checker
                   description: "CPU usage percentage for this session",
                   icon: "cpu",
                   unit: "%",
@@ -292,7 +292,7 @@ export default function ShowSessionPage() {
                 },
                 {
                   label: "Disk Usage %",
-                  query: `round((kubelet_volume_stats_used_bytes{persistentvolumeclaim="${sessionName}"} / kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="${sessionName}"}) * 100, 0.01) > 80`,
+                  query: `round((kubelet_volume_stats_used_bytes{persistentvolumeclaim="${sessionName}"} / kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="${sessionName}"}) * 100, 0.01) > 80`, // eslint-disable-line spellcheck/spell-checker
                   description: "Disk usage percentage for this session",
                   icon: "memory",
                   unit: "%",
@@ -300,7 +300,7 @@ export default function ShowSessionPage() {
                 },
                 {
                   label: "OOMKilled",
-                  query: `sum by (namespace, pod, container) (rate(kube_pod_container_status_restarts_total{pod="${sessionName}.*"}[60m])) * on(namespace, pod, container) group_left(reason) kube_pod_container_status_last_terminated_reason{reason="OOMKilled", pod="${sessionName}.*"} > 0`,
+                  query: `sum by (namespace, pod, container) (rate(kube_pod_container_status_restarts_total{pod="${sessionName}.*"}[60m])) * on(namespace, pod, container) group_left(reason) kube_pod_container_status_last_terminated_reason{reason="OOMKilled", pod="${sessionName}.*"} > 0`, // eslint-disable-line spellcheck/spell-checker
                   description: "Disk usage percentage for this session",
                   icon: "memory",
                   unit: "%",
