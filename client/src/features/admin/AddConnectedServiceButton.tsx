@@ -81,6 +81,10 @@ function AddConnectedServiceModal({
   });
   const onSubmit = useCallback(
     (data: ProviderForm) => {
+      const oidc_issuer_url =
+        data.kind === "generic_oidc" && data.oidc_issuer_url
+          ? data.oidc_issuer_url
+          : undefined;
       createProvider({
         providerPost: {
           id: data.id,
@@ -92,8 +96,8 @@ function AddConnectedServiceModal({
           scope: data.scope ?? "",
           url: data.url,
           use_pkce: data.use_pkce,
-          image_registry_url: data.image_registry_url,
-          oidc_issuer_url: data.oidc_issuer_url,
+          image_registry_url: data.image_registry_url || undefined,
+          oidc_issuer_url: oidc_issuer_url,
         },
       });
     },

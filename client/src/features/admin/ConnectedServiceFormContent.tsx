@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Control, Controller } from "react-hook-form";
+import { Control, Controller, useWatch } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
@@ -28,6 +28,8 @@ export interface ConnectedServiceFormContentProps {
 export default function ConnectedServiceFormContent({
   control,
 }: ConnectedServiceFormContentProps) {
+  const watchKind = useWatch({ control, name: "kind" });
+
   return (
     <>
       <div className="mb-3">
@@ -47,6 +49,7 @@ export default function ConnectedServiceFormContent({
               >
                 <option value="gitlab">GitLab</option>
                 <option value="github">GitHub</option>
+                <option value="generic_oidc">Generic OIDC</option>
               </Input>
             </>
           )}
@@ -232,27 +235,29 @@ export default function ConnectedServiceFormContent({
         </div>
       </div>
 
-      <div className="mb-3">
-        <Label className="form-label" for="addConnectedServiceOidcIssuerUrl">
-          OIDC Issuer URL (optional, for OIDC integrations)
-        </Label>
-        <Controller
-          control={control}
-          name="oidc_issuer_url"
-          render={({ field, fieldState: { error } }) => (
-            <Input
-              className={cx("form-control", error && "is-invalid")}
-              id="addConnectedServiceOidcIssuerUrl"
-              placeholder="OIDC Issuer URL"
-              type="text"
-              {...field}
-            />
-          )}
-        />
-        <div className="invalid-feedback">
-          Please provide a valid URL or leave it empty
+      {watchKind === "generic_oidc" && (
+        <div className="mb-3">
+          <Label className="form-label" for="addConnectedServiceOidcIssuerUrl">
+            OpenID Connect Issuer URL (optional, for OIDC integrations)
+          </Label>
+          <Controller
+            control={control}
+            name="oidc_issuer_url"
+            render={({ field, fieldState: { error } }) => (
+              <Input
+                className={cx("form-control", error && "is-invalid")}
+                id="addConnectedServiceOidcIssuerUrl"
+                placeholder="OIDC Issuer URL"
+                type="text"
+                {...field}
+              />
+            )}
+          />
+          <div className="invalid-feedback">
+            Please provide a valid URL or leave it empty
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
