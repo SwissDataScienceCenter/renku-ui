@@ -16,24 +16,45 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 import { InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Links } from "../../../../utils/constants/Docs";
-
+import { useGetSessionsImagesQuery } from "../../api/sessionsV2.api";
 import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
+import { ExclamationTriangle } from "react-bootstrap-icons";
 
 export function CustomEnvironmentFields({
-  watch,
   control,
   errors,
+  watch,
 }: EnvironmentFieldsProps) {
   const watchEnvironmentSelect = watch("environmentSelect");
+  const watchContainerImage = watch("container_image");
+  const [debouncedContainerImage, setDebouncedContainerImage] =
+    useState<string>();
+  const [inputModified, setInputModified] = useState(false);
+
+  const { data, isFetching } = useGetSessionsImagesQuery(
+    watchEnvironmentSelect === "custom + image" && debouncedContainerImage
+      ? { imageUrl: debouncedContainerImage }
+      : skipToken
+  );
+
+  useEffect(() => {
+    if (debouncedContainerImage !== watchContainerImage) {
+      setInputModified(true);
+    } else {
+      setInputModified(false);
+    }
+  }, [debouncedContainerImage, watchContainerImage]);
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -54,13 +75,23 @@ export function CustomEnvironmentFields({
           name="container_image"
           render={({ field }) => (
             <Input
-              className={cx(errors.container_image && "is-invalid")}
+              autoFocus={true}
+              className={cx(
+                errors.container_image && "is-invalid",
+                !errors.container_image &&
+                  data?.accessible === true &&
+                  !isFetching &&
+                  !inputModified &&
+                  "is-valid"
+              )}
+              data-cy="custom-image-input"
               id="addSessionLauncherContainerImage"
               placeholder="image:tag"
               type="text"
-              autoFocus={true}
-              data-cy="custom-image-input"
               {...field}
+              onBlur={() => {
+                setDebouncedContainerImage(field.value);
+              }}
             />
           )}
           rules={{
@@ -78,8 +109,14 @@ export function CustomEnvironmentFields({
           {errors.container_image?.message ??
             "Please provide a valid container image."}
         </div>
+        {!errors.container_image?.message && data?.accessible === false && (
+          <div className={cx("mt-1", "small", "text-warning-emphasis")}>
+            <ExclamationTriangle className="bi" /> Image not found. Access to
+            this image may require connecting an additional integration after
+            creating this launcher.
+          </div>
+        )}
       </div>
-
       <div className={cx("fw-bold", "w-100")}>Advanced settings</div>
 
       <InfoAlert dismissible={false} timeout={0}>

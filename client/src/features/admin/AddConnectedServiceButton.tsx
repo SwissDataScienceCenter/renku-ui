@@ -47,9 +47,9 @@ export default function AddConnectedServiceButton() {
 
   return (
     <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
+      <Button color="primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Service Provider
+        Add Integration
       </Button>
       <AddConnectedServiceModal isOpen={isOpen} toggle={toggle} />
     </>
@@ -81,6 +81,7 @@ function AddConnectedServiceModal({
       display_name: "",
       scope: "",
       url: "",
+      image_registry_url: "",
       use_pkce: false,
     },
   });
@@ -97,6 +98,9 @@ function AddConnectedServiceModal({
           scope: data.scope ?? "",
           url: data.url,
           use_pkce: data.use_pkce,
+          ...(data.image_registry_url && {
+            image_registry_url: data.image_registry_url,
+          }),
         },
       });
     },
@@ -131,7 +135,7 @@ function AddConnectedServiceModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Add provider</ModalHeader>
+        <ModalHeader toggle={toggle}>Add integration</ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
 
@@ -158,17 +162,17 @@ function AddConnectedServiceModal({
           <ConnectedServiceFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading} type="submit">
+          <Button color="primary" disabled={result.isLoading} type="submit">
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
               <PlusLg className={cx("bi", "me-1")} />
             )}
-            Add provider
+            Add integration
           </Button>
         </ModalFooter>
       </Form>
