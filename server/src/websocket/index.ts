@@ -44,6 +44,7 @@ import {
   handlerRequestSessionStatusV2,
   heartbeatRequestSessionStatusV2,
 } from "./handlers/sessionsV2";
+import { handlerPrometheusQuery } from "./handlers/prometheus";
 
 // *** Channels ***
 // No need to store data in Redis since it's used only locally. We can modify this if necessary.
@@ -85,6 +86,13 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
       required: null,
       optional: null,
       handler: handlerRequestSessionStatusV2,
+    } as MessageData,
+  ],
+  prometheusQuery: [
+    {
+      required: ["query", "requestId"],
+      optional: null,
+      handler: handlerPrometheusQuery,
     } as MessageData,
   ],
   ping: [
