@@ -30,14 +30,12 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import {
-  ConnectedServiceForm,
-  CreateProviderParams,
-} from "../connectedServices/api/connectedServices.types";
+
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
+import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
+import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 
 export default function AddConnectedServiceButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,12 +64,7 @@ function AddConnectedServiceModal({
 }: AddConnectedServiceModalProps) {
   const [createProvider, result] = usePostOauth2ProvidersMutation();
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<ConnectedServiceForm>({
+  const { control, handleSubmit, reset } = useForm<ProviderForm>({
     defaultValues: {
       id: "",
       kind: "gitlab",
@@ -82,10 +75,12 @@ function AddConnectedServiceModal({
       scope: "",
       url: "",
       use_pkce: false,
+      image_registry_url: "",
+      oidc_issuer_url: "",
     },
   });
   const onSubmit = useCallback(
-    (data: CreateProviderParams) => {
+    (data: ProviderForm) => {
       createProvider({
         providerPost: {
           id: data.id,
@@ -97,6 +92,8 @@ function AddConnectedServiceModal({
           scope: data.scope ?? "",
           url: data.url,
           use_pkce: data.use_pkce,
+          image_registry_url: data.image_registry_url,
+          oidc_issuer_url: data.oidc_issuer_url,
         },
       });
     },
@@ -142,9 +139,9 @@ function AddConnectedServiceModal({
             <Controller
               control={control}
               name="id"
-              render={({ field }) => (
+              render={({ field, fieldState: { error } }) => (
                 <Input
-                  className={cx("form-control", errors.id && "is-invalid")}
+                  className={cx("form-control", error && "is-invalid")}
                   id="addConnectedServiceId"
                   placeholder="Provider id"
                   type="text"
@@ -155,7 +152,7 @@ function AddConnectedServiceModal({
             />
           </div>
 
-          <ConnectedServiceFormContent control={control} errors={errors} />
+          <ConnectedServiceFormContent control={control} />
         </ModalBody>
         <ModalFooter>
           <Button className="btn-outline-rk-green" onClick={toggle}>

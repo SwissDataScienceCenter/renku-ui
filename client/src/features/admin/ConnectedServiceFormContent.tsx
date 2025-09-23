@@ -17,18 +17,16 @@
  */
 
 import cx from "classnames";
-import { Control, Controller, FieldErrors } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
-import { ConnectedServiceForm } from "../connectedServices/api/connectedServices.types";
+import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 
 export interface ConnectedServiceFormContentProps {
-  control: Control<ConnectedServiceForm, unknown>;
-  errors: FieldErrors<ConnectedServiceForm>;
+  control: Control<ProviderForm, unknown>;
 }
 export default function ConnectedServiceFormContent({
   control,
-  errors,
 }: ConnectedServiceFormContentProps) {
   return (
     <>
@@ -39,10 +37,10 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="kind"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <>
               <Input
-                className={cx("form-control", errors.kind && "is-invalid")}
+                className={cx("form-control", error && "is-invalid")}
                 id="addConnectedServiceKind"
                 type="select"
                 {...field}
@@ -64,9 +62,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="app_slug"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx("form-control", errors.app_slug && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceApplicationSlug"
               placeholder="Application slug"
               type="text"
@@ -86,12 +84,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="display_name"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx(
-                "form-control",
-                errors.display_name && "is-invalid"
-              )}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceDisplayName"
               placeholder="Display name"
               type="text"
@@ -110,9 +105,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="url"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx("form-control", errors.url && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceUrl"
               placeholder="URL"
               type="text"
@@ -128,12 +123,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="use_pkce"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx(
-                "form-check-input",
-                errors.use_pkce && "is-invalid"
-              )}
+              className={cx("form-check-input", error && "is-invalid")}
               id="addConnectedServiceUsePkce"
               type="checkbox"
               checked={field.value}
@@ -158,10 +150,10 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="client_id"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               autoComplete="section-connected-service username"
-              className={cx("form-control", errors.client_id && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceClientId"
               placeholder="Client ID"
               type="text"
@@ -180,13 +172,10 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="client_secret"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               autoComplete="section-connected-service current-password"
-              className={cx(
-                "form-control",
-                errors.client_secret && "is-invalid"
-              )}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceClientSecret"
               placeholder="Client Secret"
               type="password"
@@ -206,9 +195,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="scope"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx("form-control", errors.scope && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceScope"
               placeholder="Scope"
               type="text"

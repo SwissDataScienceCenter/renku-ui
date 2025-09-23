@@ -33,17 +33,13 @@ import {
 
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-
-import {
-  ConnectedServiceForm,
-  UpdateProviderParams,
-} from "../connectedServices/api/connectedServices.types";
-import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 import {
   Provider,
   ProviderKind,
   usePatchOauth2ProvidersByProviderIdMutation,
 } from "../connectedServices/api/connectedServices.api";
+import { ProviderForm } from "../connectedServices/api/connectedServices.types";
+import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 
 interface UpdateConnectedServiceButtonProps {
   provider: Provider;
@@ -87,10 +83,10 @@ function UpdateConnectedServiceModal({
 
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { isDirty },
     handleSubmit,
     reset,
-  } = useForm<ConnectedServiceForm>({
+  } = useForm<ProviderForm>({
     defaultValues: {
       kind: undefined,
       app_slug: "",
@@ -100,10 +96,14 @@ function UpdateConnectedServiceModal({
       scope: "",
       url: "",
       use_pkce: false,
+      image_registry_url: "",
+      oidc_issuer_url: "",
     },
   });
   const onSubmit = useCallback(
-    (data: UpdateProviderParams) => {
+    (data: ProviderForm) => {
+      const oidc_issuer_url =
+        data.kind === "generic_oidc" ? data.oidc_issuer_url : "";
       updateProvider({
         providerId: provider.id,
         providerPatch: {
@@ -115,6 +115,8 @@ function UpdateConnectedServiceModal({
           scope: data.scope,
           url: data.url,
           use_pkce: data.use_pkce,
+          image_registry_url: data.image_registry_url,
+          oidc_issuer_url: oidc_issuer_url,
         },
       });
     },
@@ -144,6 +146,8 @@ function UpdateConnectedServiceModal({
       scope: provider.scope,
       url: provider.url,
       use_pkce: provider.use_pkce,
+      image_registry_url: provider.image_registry_url ?? "",
+      oidc_issuer_url: provider.oidc_issuer_url ?? "",
       ...(provider.client_secret &&
         provider.client_secret !== "redacted" && {
           client_secret: provider.client_secret,
@@ -183,7 +187,7 @@ function UpdateConnectedServiceModal({
             />
           </div>
 
-          <ConnectedServiceFormContent control={control} errors={errors} />
+          <ConnectedServiceFormContent control={control} />
         </ModalBody>
         <ModalFooter>
           <Button className="btn-outline-rk-green" onClick={toggle}>
