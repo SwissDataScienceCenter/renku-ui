@@ -209,6 +209,50 @@ export default function ConnectedServiceFormContent({
           Please provide a valid scope or leave it empty
         </div>
       </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceImageRegistryUrl">
+          Image registry URL (optional, for GitLab integrations)
+        </Label>
+        <Controller
+          control={control}
+          name="image_registry_url"
+          render={({ field, fieldState: { error } }) => (
+            <Input
+              className={cx("form-control", error && "is-invalid")}
+              id="addConnectedServiceImageRegistryUrl"
+              placeholder="Image registry URL"
+              type="text"
+              {...field}
+            />
+          )}
+        />
+        <div className="invalid-feedback">
+          Please provide a valid URL or leave it empty
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceOidcIssuerUrl">
+          OIDC Issuer URL (optional, for OIDC integrations)
+        </Label>
+        <Controller
+          control={control}
+          name="oidc_issuer_url"
+          render={({ field, fieldState: { error } }) => (
+            <Input
+              className={cx("form-control", error && "is-invalid")}
+              id="addConnectedServiceOidcIssuerUrl"
+              placeholder="OIDC Issuer URL"
+              type="text"
+              {...field}
+            />
+          )}
+        />
+        <div className="invalid-feedback">
+          Please provide a valid URL or leave it empty
+        </div>
+      </div>
     </>
   );
 }

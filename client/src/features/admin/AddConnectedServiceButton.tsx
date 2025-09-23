@@ -25,12 +25,12 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
 
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
@@ -115,7 +115,7 @@ function AddConnectedServiceModal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -169,6 +169,6 @@ function AddConnectedServiceModal({
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }
