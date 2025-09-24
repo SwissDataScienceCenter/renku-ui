@@ -21,10 +21,7 @@ import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPerm
 import { SessionLauncher } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 
 import InternalGitLabReferenceWarnBadge from "./InternalGitLabWarnBadge";
-import {
-  DEFAULT_INTERNAL_GITLAB_HOSTS,
-  doesProjectReferenceRenkulabGitLab,
-} from "./legacy.utils";
+import { doesProjectReferenceRenkulabGitLab } from "./legacy.utils";
 
 type SessionEnvironmentGitLabWarningBadgeForLauncherProps = {
   launcher: SessionLauncher;
@@ -54,14 +51,7 @@ export default function SessionEnvironmentGitLabWarningBadge({
   launcher,
 }: SessionEnvironmentGitLabWarningBadgeProps) {
   if (!launcher) return null;
-  if (
-    !doesProjectReferenceRenkulabGitLab(
-      undefined,
-      [launcher],
-      DEFAULT_INTERNAL_GITLAB_HOSTS
-    )
-  )
-    return null;
+  if (!doesProjectReferenceRenkulabGitLab(undefined, [launcher])) return null;
   return (
     <SessionEnvironmentGitLabWarningBadgeForLauncher launcher={launcher} />
   );

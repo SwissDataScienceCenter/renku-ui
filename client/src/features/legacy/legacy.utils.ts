@@ -19,38 +19,46 @@
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import type { SessionLaunchersList } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 
-interface InternalGitLabHosts {
-  repository: string;
-  images: string;
-}
-
-export const DEFAULT_INTERNAL_GITLAB_HOSTS: InternalGitLabHosts = {
+const DEFAULT_INTERNAL_GITLAB_HOSTS = {
   repository: "gitlab.renkulab.io",
   images: "registry.renkulab.io",
 };
 
+// exported for testing
+export function doesUrlHostMatchHost(url: string, host: string) {
+  const urlString = /^https?:\/\//.test(url) ? url : "http://" + url;
+  try {
+    const parsedUrl = new URL(urlString);
+    return parsedUrl.host === host;
+  } catch (e) {
+    return false;
+  }
+}
+
 export function doesProjectReferenceRenkulabGitLab(
   allRepositories: Project["repositories"],
-  allLaunchers: SessionLaunchersList,
-  hosts: InternalGitLabHosts
+  allLaunchers: SessionLaunchersList
 ) {
   const { repositories, launchers } = projectReferencesToRenkulabGitLab(
     allRepositories,
-    allLaunchers,
-    hosts
+    allLaunchers
   );
   return repositories.length > 0 || launchers.length > 0;
 }
 
 function projectReferencesToRenkulabGitLab(
   allRepositories: Project["repositories"],
-  allLaunchers: SessionLaunchersList,
-  hosts: InternalGitLabHosts
+  allLaunchers: SessionLaunchersList
 ) {
+  const hosts = DEFAULT_INTERNAL_GITLAB_HOSTS;
   const repositories =
-    allRepositories?.filter((repo) => repo.includes(hosts.repository)) ?? [];
+    allRepositories?.filter((repo) =>
+      doesUrlHostMatchHost(repo, hosts.repository)
+    ) ?? [];
   const launchers = allLaunchers.filter((launcher) =>
-    launcher.environment.container_image?.includes(hosts.images)
+    launcher.environment.container_image == null
+      ? false
+      : doesUrlHostMatchHost(launcher.environment.container_image, hosts.images)
   );
   return { repositories, launchers };
 }

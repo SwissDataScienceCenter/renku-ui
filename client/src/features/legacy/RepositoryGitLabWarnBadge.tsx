@@ -21,10 +21,7 @@ import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPerm
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
 
 import InternalGitLabReferenceWarnBadge from "./InternalGitLabWarnBadge";
-import {
-  DEFAULT_INTERNAL_GITLAB_HOSTS,
-  doesProjectReferenceRenkulabGitLab,
-} from "./legacy.utils";
+import { doesProjectReferenceRenkulabGitLab } from "./legacy.utils";
 
 interface RepositoryGitLabWarnBadgeProps {
   project: Project;
@@ -50,13 +47,7 @@ function RepositoryGitLabWarnBadgeForProject({
 export default function RepositoryGitLabWarnBadge({
   project,
 }: RepositoryGitLabWarnBadgeProps) {
-  if (
-    !doesProjectReferenceRenkulabGitLab(
-      project.repositories,
-      [],
-      DEFAULT_INTERNAL_GITLAB_HOSTS
-    )
-  )
+  if (!doesProjectReferenceRenkulabGitLab(project.repositories, []))
     return null;
 
   return <RepositoryGitLabWarnBadgeForProject project={project} />;

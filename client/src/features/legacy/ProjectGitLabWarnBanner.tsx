@@ -27,10 +27,7 @@ import { useGetProjectsByProjectIdSessionLaunchersQuery } from "~/features/sessi
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { Links } from "~/utils/constants/Docs";
 
-import {
-  DEFAULT_INTERNAL_GITLAB_HOSTS,
-  doesProjectReferenceRenkulabGitLab,
-} from "./legacy.utils";
+import { doesProjectReferenceRenkulabGitLab } from "./legacy.utils";
 
 function ProjectEditorWarnBanner() {
   return (
@@ -82,13 +79,7 @@ export default function ProjectGitLabWarnBanner({
   } = useGetProjectsByProjectIdSessionLaunchersQuery({ projectId: project.id });
   if (currentUser == null) return null;
   if (isLoadingLaunchers || launchersError || launchers == null) return null;
-  if (
-    !doesProjectReferenceRenkulabGitLab(
-      project.repositories,
-      launchers,
-      DEFAULT_INTERNAL_GITLAB_HOSTS
-    )
-  )
+  if (!doesProjectReferenceRenkulabGitLab(project.repositories, launchers))
     return null;
   return (
     <PermissionsGuard
