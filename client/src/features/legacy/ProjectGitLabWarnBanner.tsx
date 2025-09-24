@@ -25,6 +25,7 @@ import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetProjectsByProjectIdSessionLaunchersQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { Links } from "~/utils/constants/Docs";
 
 import {
   DEFAULT_INTERNAL_GITLAB_HOSTS,
@@ -55,7 +56,7 @@ function ProjectEditorWarnBanner() {
                 data-cy="help-save-work-button"
                 role="button"
                 showLinkIcon={true}
-                url="https://renku.notion.site/How-to-migrate-out-of-RenkuLab-GitLab-2700df2efafc80c2b442c3ad981d86fc"
+                url={Links.RENKU_2_MIGRATE_AWAY_FROM_GITLAB}
               >
                 Help me save my work
               </ExternalLink>
@@ -74,7 +75,6 @@ export default function ProjectGitLabWarnBanner({
 }) {
   const { data: currentUser } = useGetUserQueryState();
   const userPermissions = useProjectPermissions({ projectId: project.id });
-  // There is no way to determine these hosts dynamically
   const {
     data: launchers,
     error: launchersError,

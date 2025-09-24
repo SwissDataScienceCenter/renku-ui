@@ -27,9 +27,7 @@ import {
 } from "./legacy.utils";
 
 type SessionEnvironmentGitLabWarningBadgeForLauncherProps = {
-  [K in keyof SessionEnvironmentGitLabWarningBadgeProps]-?: NonNullable<
-    SessionEnvironmentGitLabWarningBadgeProps[K]
-  >;
+  launcher: SessionLauncher;
 };
 function SessionEnvironmentGitLabWarningBadgeForLauncher({
   launcher,

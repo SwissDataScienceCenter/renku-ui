@@ -69,6 +69,8 @@ const Links = {
     "https://renku.notion.site/Why-Renku-1900df2efafc80839b26cbad43f24778",
   RENKU_2_HANDS_ON_TUTORIAL:
     "https://renku.notion.site/Hands-On-Tutorial-1a50df2efafc800f8554e30fd7458fa6",
+  RENKU_2_MIGRATE_AWAY_FROM_GITLAB:
+    "https://renku.notion.site/How-to-migrate-out-of-RenkuLab-GitLab-2700df2efafc80c2b442c3ad981d86fc",
 };
 
 const GitlabLinks = {
