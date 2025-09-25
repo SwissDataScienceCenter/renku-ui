@@ -39,8 +39,8 @@ import {
   RenkuNavBar,
 } from "./features/landing/components/NavBar/NavBar";
 
-import LegacyDatasets from "./features/legacy/datasets/LegacyDatasets";
-import LegacyDatasetAddToProject from "./features/legacy/datasets/LegacyDatasetAddToProject";
+import LegacyDatasets from "./features/legacy/LegacyDatasets";
+import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
 import LegacyRoot from "./features/legacy/LegacyRoot";
 import LegacyProjectView from "./features/legacy/LegacyProjectView";
 import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
