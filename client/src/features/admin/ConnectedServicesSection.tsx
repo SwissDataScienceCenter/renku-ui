@@ -142,7 +142,19 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
               Client secret: {provider.client_secret}
             </CardText>
             <CardText className="mb-2">Scope: {provider.scope}</CardText>
-            <CardText>Use PKCE: {provider.use_pkce.toString()}</CardText>
+            <CardText className="mb-2">
+              Use PKCE: {provider.use_pkce.toString()}
+            </CardText>
+            {provider.image_registry_url && (
+              <CardText className="mb-2">
+                Image registry URL: {provider.image_registry_url}
+              </CardText>
+            )}
+            {provider.oidc_issuer_url && (
+              <CardText>
+                OpenID Connect Issuer URL: {provider.oidc_issuer_url}
+              </CardText>
+            )}
           </CardBody>
 
           <CardBody
