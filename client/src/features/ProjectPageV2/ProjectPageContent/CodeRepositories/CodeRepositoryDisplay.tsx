@@ -48,6 +48,8 @@ import {
   Row,
 } from "reactstrap";
 
+import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
+
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import {
   ErrorAlert,
@@ -507,6 +509,11 @@ export function RepositoryItem({
               </Col>
             </>
           )}
+        </Row>
+        <Row>
+          <Col data-cy="repo-gitlab-warning">
+            <RepositoryGitLabWarnBadge project={project} />
+          </Col>
         </Row>
       </ListGroupItem>
       {!readonly && (
