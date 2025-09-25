@@ -55,8 +55,10 @@ function projectReferencesToRenkulabGitLab(
     allRepositories?.filter((repo) =>
       doesUrlHostMatchHost(repo, hosts.repository)
     ) ?? [];
-  const launchers = allLaunchers.filter((launcher) =>
-    launcher.environment.container_image != null && doesUrlHostMatchHost(launcher.environment.container_image, hosts.images)
+  const launchers = allLaunchers.filter(
+    (launcher) =>
+      launcher.environment.container_image != null &&
+      doesUrlHostMatchHost(launcher.environment.container_image, hosts.images)
   );
   return { repositories, launchers };
 }
