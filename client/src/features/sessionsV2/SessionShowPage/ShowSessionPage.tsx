@@ -300,7 +300,7 @@ export default function ShowSessionPage() {
                 },
                 {
                   label: "OOMKilled",
-                  query: `sum by (namespace, pod, container) (rate(kube_pod_container_status_restarts_total{pod="${sessionName}.*"}[60m])) * on(namespace, pod, container) group_left(reason) kube_pod_container_status_last_terminated_reason{reason="OOMKilled", pod="${sessionName}.*"} > 0`, // eslint-disable-line spellcheck/spell-checker
+                  query: `rate(kube_pod_container_status_restarts_total[1h]) * on (namespace, pod, container) group_left (reason) kube_pod_container_status_last_terminated_reason{reason="OOMKilled", pod=~"${sessionName}.*"} > 0`, // eslint-disable-line spellcheck/spell-checker
                   description: "Disk usage percentage for this session",
                   icon: "memory",
                   unit: "%",
