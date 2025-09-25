@@ -266,3 +266,65 @@ describe("fork a project", () => {
     cy.get("#fork-project").should("be.disabled");
   });
 });
+
+describe("visit V1 project urls without legacy support", () => {
+  const projectUrl = "/projects/e2e/local-test-project";
+  beforeEach(() => {
+    fixtures
+      .config({ fixture: "config-no-legacy.json" })
+      .versions()
+      .projects()
+      .landingUserProjects();
+    fixtures.projectTest().projectMigrationUpToDate();
+    fixtures
+      .sessionServersEmpty()
+      .renkuIni()
+      .sessionServerOptions()
+      .projectLockStatus()
+      .resourcePoolsTest()
+      .newSessionImages();
+    fixtures.userTest();
+  });
+
+  it("visit redirects to migrated project", () => {
+    fixtures
+      .urlRedirect({
+        sourceUrl: encodeURIComponent(projectUrl),
+        targetUrl: "/p/THEPROJECTULID26CHARACTERS",
+      })
+      .readProjectV2ById()
+      .readProjectV2();
+    cy.visit(`${projectUrl}`);
+    cy.contains("Checking for redirect").should("be.visible");
+    cy.wait("@getUrlRedirect");
+    cy.wait("@readProjectV2ById");
+    cy.url().should("contain", "/p/user1-uuid/test-2-v2-project");
+  });
+
+  it("visit redirects to migrated project (namespace/slug)", () => {
+    fixtures.readProjectV2().urlRedirect({
+      sourceUrl: encodeURIComponent(projectUrl),
+      targetUrl: "/p/user1-uuid/test-2-v2-project",
+    });
+    cy.visit(`${projectUrl}`);
+    cy.wait("@getUrlRedirect");
+    cy.contains("Checking for redirect").should("be.visible");
+    cy.url().should("contain", "/p/user1-uuid/test-2-v2-project");
+  });
+
+  it("show migration instructions for non-migrated project", () => {
+    fixtures
+      .urlRedirect({
+        sourceUrl: encodeURIComponent(projectUrl),
+        targetUrl: null,
+      })
+      .listNamespaceV2();
+    cy.visit(`${projectUrl}`);
+    cy.contains("Checking for redirect").should("be.visible");
+    cy.wait("@getUrlRedirect");
+    cy.contains("Legacy is no longer supported").should("be.visible");
+    cy.contains("A Renku project groups together data,").should("not.exist");
+    cy.contains("Create a project").click();
+    cy.contains("A Renku project groups together data,").should("be.visible");
+  });
+});

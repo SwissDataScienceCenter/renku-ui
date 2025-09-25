@@ -119,22 +119,32 @@ describe("launch autostart sessions without legacy support", () => {
     fixtures.userTest();
   });
 
-  it("autostart session redirects to migrated project [broken]", () => {
-    fixtures.readProjectV1Migration().readProjectV2();
+  it("autostart session redirects to migrated project", () => {
+    fixtures
+      .urlRedirect({
+        sourceUrl: encodeURIComponent(projectUrl),
+        targetUrl: "/p/THEPROJECTULID26CHARACTERS",
+      })
+      .readProjectV2ById()
+      .readProjectV2();
     cy.visit(`${projectUrl}/sessions/new?autostart=1`);
-    // TODO: this should redirect to the migrated project, but the backend does not support this yet
-    // cy.wait("@readProjectV1Migration");
-    // cy.contains("Checking if project has been migrated").should("be.visible");
-    // cy.url().should("contain", "/p/user1-uuid/test-2-v2-project");
-    cy.contains("Legacy not supported").should("be.visible");
+    cy.contains("Checking for redirect").should("be.visible");
+    cy.wait("@getUrlRedirect");
+    cy.wait("@readProjectV2ById");
+    cy.url().should(
+      "contain",
+      "/p/user1-uuid/test-2-v2-project?autostartRedirect=true"
+    );
   });
 
   it("autostart session shows not supported for non-migrated project", () => {
-    fixtures.readProjectV1MigrationError();
+    fixtures.urlRedirect({
+      sourceUrl: encodeURIComponent(projectUrl),
+      targetUrl: null,
+    });
     cy.visit(`${projectUrl}/sessions/new?autostart=1`);
-    // TODO: once supported, wait for a call to see if this project should redirect
-    // cy.contains("Checking if project has been migrated").should("be.visible");
-    // cy.wait("@readProjectV1Migration");
-    cy.contains("Legacy not supported").should("be.visible");
+    cy.contains("Checking for redirect").should("be.visible");
+    cy.wait("@getUrlRedirect");
+    cy.contains("Renku Legacy is no longer supported").should("be.visible");
   });
 });

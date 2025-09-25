@@ -66,6 +66,179 @@
         },
         "tags": ["platform"]
       }
+    },
+    "/platform/redirects": {
+      "get": {
+        "summary": "Return a list of redirects from old URLs to new locations",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/UrlRedirectPlansGetQuery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of redirect plans",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UrlRedirectPlanList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      },
+      "post": {
+        "summary": "Create a new redirect plan",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UrlRedirectPlanPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The redirect info was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UrlRedirectPlan"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      }
+    },
+    "/platform/redirects/{source_url}": {
+      "get": {
+        "summary": "Return a redirect info for the specified source URL",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "source_url",
+            "required": true,
+            "description": "The url-encoded source URL",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The redirect plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UrlRedirectPlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No redirect for the source URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      },
+      "patch": {
+        "summary": "Update a redirect plan",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "source_url",
+            "required": true,
+            "description": "The url-encoded (original) source URL",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UrlRedirectPlanPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The redirect info was updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UrlRedirectPlan"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      },
+      "delete": {
+        "summary": "Delete a redirect plan",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "source_url",
+            "required": true,
+            "description": "The url-encoded (original) source URL",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The redirect plan was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      }
     }
   },
   "components": {
@@ -94,6 +267,74 @@
         },
         "additionalProperties": false
       },
+      "SourceUrl": {
+        "description": "The URL that should be redirected. Must begin with `/projects` or\n`https://gitlab.renkulab.io/`\n",
+        "type": "string",
+        "examples": [
+          "/projects/ns/slug",
+          "https://gitlab.renkulab.io/user/project"
+        ]
+      },
+      "TargetUrl": {
+        "description": "The URL that should be redirected to. Must begin with `https://` or\nhave the structure `/p/[ULID]`\n",
+        "type": "string",
+        "examples": ["/p/project-ulid", "https://github.com/user/project"]
+      },
+      "UrlRedirectPlanList": {
+        "description": "A list of redirect info objects",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UrlRedirectPlan"
+        }
+      },
+      "UrlRedirectPlan": {
+        "description": "A mapping from src URLs to targets, either Renku entities or URLs",
+        "type": "object",
+        "properties": {
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
+          },
+          "source_url": {
+            "$ref": "#/components/schemas/SourceUrl"
+          },
+          "target_url": {
+            "$ref": "#/components/schemas/TargetUrl"
+          }
+        },
+        "required": ["etag", "source_url", "target_url"]
+      },
+      "UrlRedirectPlansGetQuery": {
+        "description": "Query params for redirect list get request",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          }
+        ]
+      },
+      "UrlRedirectPlanPatch": {
+        "description": "Schema for updating a redirect info",
+        "type": "object",
+        "properties": {
+          "target_url": {
+            "$ref": "#/components/schemas/TargetUrl"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UrlRedirectPlanPost": {
+        "description": "Schema for creating a new redirect info",
+        "type": "object",
+        "properties": {
+          "source_url": {
+            "$ref": "#/components/schemas/SourceUrl"
+          },
+          "target_url": {
+            "$ref": "#/components/schemas/TargetUrl"
+          }
+        },
+        "required": ["source_url", "target_url"],
+        "additionalProperties": false
+      },
       "ETag": {
         "type": "string",
         "description": "Entity Tag",
@@ -103,6 +344,25 @@
         "type": "string",
         "description": "The contents of the incident banner.\nThis value accepts content written using Markdown.\n",
         "example": "RenkuLab is experiencing issues, some features may be unavailable."
+      },
+      "PaginationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "description": "Result's page number starting from 1",
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "per_page": {
+            "description": "The number of results per page",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
       },
       "ErrorResponse": {
         "type": "object",
