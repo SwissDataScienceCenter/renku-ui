@@ -153,6 +153,8 @@ export function SessionLauncherButtons({
     loadingPlaceholder
   );
 
+  const force = defaultAction === openPanelAction;
+
   const customizeLaunch = displayLaunchSession && (
     <Link
       className={cx("dropdown-item", hasSession && "disabled")}
@@ -165,7 +167,7 @@ export function SessionLauncherButtons({
       data-cy="start-custom-session-button"
     >
       <PlayCircle className={cx("bi", "me-1")} />
-      Custom launch
+      {force ? "Force custom launch" : "Custom launch"}
     </Link>
   );
 
@@ -176,7 +178,7 @@ export function SessionLauncherButtons({
       data-cy="start-session-button"
     >
       <PlayCircle className={cx("bi", "me-1")} />
-      Launch
+      {force ? "Force launch" : "Launch"}
     </Link>
   );
 
