@@ -23,7 +23,6 @@ import {
   type EnvironmentPostInLauncher,
   type GetEnvironmentsApiArg,
   type GetEnvironmentsApiResponse,
-  GetProjectsByProjectIdSessionLaunchersApiResponse,
   sessionLaunchersV2GeneratedApi,
 } from "./sessionLaunchersV2.generated-api";
 
