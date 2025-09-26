@@ -29,8 +29,15 @@ export function handlerPrometheusQuery(
   channel: Channel,
   socket: ws
 ): void {
-  const { query, requestId } = data;
+  const { query, fullPath, requestId } = data;
 
+  // If fullPath is provided, use it directly
+  if (fullPath && typeof fullPath === "string") {
+    executePrometheusFullPath(fullPath as string, requestId as string, socket);
+    return;
+  }
+
+  // Otherwise, fall back to the original query logic
   if (!config.prometheus.url) {
     const errorMessage = new WsMessage(
       {
@@ -47,7 +54,7 @@ export function handlerPrometheusQuery(
   if (!query || typeof query !== "string") {
     const errorMessage = new WsMessage(
       {
-        error: "Missing required 'query' parameter",
+        error: "Missing required 'query' or 'fullPath' parameter",
         requestId,
       },
       "user",
@@ -58,6 +65,68 @@ export function handlerPrometheusQuery(
   }
 
   executePrometheusQuery(query as string, requestId as string, socket);
+}
+
+async function executePrometheusFullPath(
+  fullPath: string,
+  requestId: string,
+  socket: ws
+): Promise<void> {
+  try {
+    logger.info(`🔗 Making request to full path: ${fullPath}`);
+    logger.info(`🆔 Request ID: ${requestId}`);
+
+    const prometheusResponse = await fetch(fullPath, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    logger.info(`📊 Response status: ${prometheusResponse.status}`);
+
+    if (!prometheusResponse.ok) {
+      logger.error(
+        `Prometheus query failed with status ${prometheusResponse.status}`
+      );
+      const errorMessage = new WsMessage(
+        {
+          error: `Prometheus server error: ${prometheusResponse.statusText}`,
+          requestId,
+        },
+        "user",
+        "prometheusQuery"
+      ).toString();
+      socket.send(errorMessage);
+      return;
+    }
+
+    const responseData = await prometheusResponse.json();
+    logger.info(`📈 Response data:`, JSON.stringify(responseData, null, 2));
+
+    const successMessage = new WsMessage(
+      {
+        ...responseData,
+        requestId,
+      },
+      "user",
+      "prometheusQuery"
+    ).toString();
+    socket.send(successMessage);
+  } catch (error) {
+    logger.error("Error executing Prometheus query:", error);
+
+    const failureMessage = new WsMessage(
+      {
+        error: "Error executing Prometheus query",
+        details: error.message,
+        requestId,
+      },
+      "user",
+      "prometheusQuery"
+    ).toString();
+    socket.send(failureMessage);
+  }
 }
 
 async function executePrometheusQuery(

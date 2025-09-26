@@ -37,6 +37,7 @@ interface PrometheusQueryResult {
   predefinedQuery?: {
     label: string;
     query: string;
+    path?: string;
     description?: string;
     icon?: string;
     unit: string;
@@ -85,20 +86,26 @@ function usePrometheusWebSocket() {
     websocket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
+        console.log("📥 Received WebSocket message:", message);
 
         if (message.type === "prometheusQuery" && message.data?.requestId) {
+          console.log("🎯 Processing prometheus response for ID:", message.data.requestId);
           const pending = pendingRequests.current.get(message.data.requestId);
           if (pending) {
             pendingRequests.current.delete(message.data.requestId);
             if (message.data.error) {
+              console.error("❌ Server returned error:", message.data.error);
               pending.reject(new Error(message.data.error));
             } else {
+              console.log("✅ Resolving with data:", message.data);
               pending.resolve(message.data);
             }
+          } else {
+            console.warn("⚠️ No pending request found for ID:", message.data.requestId);
           }
         }
       } catch (error) {
-        // Ignore parsing errors
+        console.error("❌ Failed to parse WebSocket message:", error);
       }
     };
 
@@ -148,12 +155,14 @@ function usePrometheusWebSocket() {
   }, [connect]);
 
   const sendPrometheusQuery = useCallback(
-    async (query: string): Promise<PrometheusQueryResult> => {
+    async (queryOrPath: string): Promise<PrometheusQueryResult> => {
       if (!ws || !isConnected) {
+        console.error("❌ WebSocket not connected");
         throw new Error("WebSocket not connected");
       }
 
       const requestId = `prometheus-${Date.now()}-${Math.random()}`;
+      console.log("🆔 Generated request ID:", requestId);
 
       return new Promise((resolve, reject) => {
         pendingRequests.current.set(requestId, { resolve, reject });
@@ -161,22 +170,36 @@ function usePrometheusWebSocket() {
         setTimeout(() => {
           if (pendingRequests.current.has(requestId)) {
             pendingRequests.current.delete(requestId);
+            console.error("⏰ Request timeout for ID:", requestId);
             reject(new Error("Request timeout"));
           }
         }, 10000);
+
+        // Check if this is a full path (starts with http) or just a query
+        const isFullPath =
+          queryOrPath.startsWith("http://") ||
+          queryOrPath.startsWith("https://");
+
+        console.log("🔍 Is full path:", isFullPath);
 
         const message = {
           timestamp: new Date(),
           type: "prometheusQuery",
           data: {
-            query,
+            ...(isFullPath
+              ? { fullPath: queryOrPath }
+              : { query: queryOrPath }),
             requestId,
           },
         };
 
+        console.log("📨 Sending WebSocket message:", JSON.stringify(message, null, 2));
+
         try {
           ws.send(JSON.stringify(message));
+          console.log("✅ Message sent successfully");
         } catch (error) {
+          console.error("❌ Failed to send WebSocket message:", error);
           pendingRequests.current.delete(requestId);
           reject(error);
         }
@@ -200,17 +223,20 @@ export function PrometheusQueryBox({
   const { sendPrometheusQuery } = usePrometheusWebSocket();
 
   // Hardcoded query definition wrapped in useMemo
-  const hardcodedQuery = useMemo(
-    () => ({
+  const hardcodedQuery = useMemo(() => {
+    const query = `round((container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100, 0.01) > 80`;
+    return {
       label: "Memory Usage",
-      query: `round((container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100, 0.01) > 80`,
+      query,
+      path: `http://prometheus-server.monitoring.svc.cluster.local/api/v1/query?query=${encodeURIComponent(
+        query
+      )}`,
       description: "Memory usage percentage for this session",
       icon: "memory",
       unit: "%",
       alertThreshold: 90,
-    }),
-    [sessionName]
-  );
+    };
+  }, [sessionName]);
 
   // Use refs to keep stable references to current values
   const setPrometheusQueryBtnColorRef = useRef(setPrometheusQueryBtnColor);
@@ -229,17 +255,20 @@ export function PrometheusQueryBox({
     async (predefinedQuery: {
       label: string;
       query: string;
+      path?: string;
       description?: string;
       icon?: string;
       unit: string;
       alertThreshold: number;
     }) => {
-      if (!predefinedQuery.query.trim()) return;
+      if (!predefinedQuery.query.trim() && !predefinedQuery.path?.trim())
+        return;
+
+      const queryToSend = predefinedQuery.path?.trim() || predefinedQuery.query.trim();
+      console.log("📤 Sending query:", queryToSend);
 
       try {
-        const result = await sendPrometheusQueryRef.current(
-          predefinedQuery.query.trim()
-        );
+        const result = await sendPrometheusQueryRef.current(queryToSend);
         return result;
       } catch (err) {
         return null;
@@ -249,29 +278,37 @@ export function PrometheusQueryBox({
   );
 
   const getAllQueryResults = useCallback(async () => {
+    console.log("🔄 Executing Prometheus query for session:", sessionName);
     let newColor = "text-dark";
 
     const result = await executeQuery(hardcodedQuery);
+    console.log("📊 Query result:", result);
 
     if (result?.data?.result?.length && result.data.result.length > 0) {
       const filteredResults = [{ ...result, predefinedQuery: hardcodedQuery }];
+      const currentValue = result.data.result[0]?.value?.[1];
+      console.log(
+        `📈 Current value: ${currentValue}, threshold: ${hardcodedQuery.alertThreshold}`
+      );
 
       if (
-        result.data.result[0]?.value?.[1] &&
-        parseFloat(result.data.result[0].value[1]) >
-          hardcodedQuery.alertThreshold
+        currentValue &&
+        parseFloat(currentValue) > hardcodedQuery.alertThreshold
       ) {
         newColor = "text-danger";
+        console.log("🚨 Alert threshold exceeded - setting danger color");
       } else {
         newColor = "text-warning";
+        console.log("⚠️ Value detected - setting warning color");
       }
 
       setPrometheusQueryBtnColorRef.current(newColor);
       setQueryResults(filteredResults);
     } else {
+      console.log("❌ No results found - clearing query results");
       setQueryResults([]);
     }
-  }, [executeQuery, hardcodedQuery]);
+  }, [executeQuery, hardcodedQuery, sessionName]);
 
   const handleCloseButton = useCallback(() => {
     onClose();

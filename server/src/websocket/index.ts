@@ -90,8 +90,8 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
   ],
   prometheusQuery: [
     {
-      required: ["query", "requestId"],
-      optional: null,
+      required: ["requestId"],
+      optional: ["query", "fullPath"],
       handler: handlerPrometheusQuery,
     } as MessageData,
   ],
