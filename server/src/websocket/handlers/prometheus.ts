@@ -29,19 +29,12 @@ export function handlerPrometheusQuery(
   channel: Channel,
   socket: ws
 ): void {
-  const { query, fullPath, requestId } = data;
+  const { fullPath, requestId } = data;
 
-  // If fullPath is provided, use it directly
-  if (fullPath && typeof fullPath === "string") {
-    executePrometheusFullPath(fullPath as string, requestId as string, socket);
-    return;
-  }
-
-  // Otherwise, fall back to the original query logic
-  if (!config.prometheus.url) {
+  if (!fullPath || typeof fullPath !== "string") {
     const errorMessage = new WsMessage(
       {
-        error: "Prometheus server not configured",
+        error: "Missing required 'fullPath' parameter",
         requestId,
       },
       "user",
@@ -51,20 +44,7 @@ export function handlerPrometheusQuery(
     return;
   }
 
-  if (!query || typeof query !== "string") {
-    const errorMessage = new WsMessage(
-      {
-        error: "Missing required 'query' or 'fullPath' parameter",
-        requestId,
-      },
-      "user",
-      "prometheusQuery"
-    ).toString();
-    socket.send(errorMessage);
-    return;
-  }
-
-  executePrometheusQuery(query as string, requestId as string, socket);
+  executePrometheusFullPath(fullPath as string, requestId as string, socket);
 }
 
 async function executePrometheusFullPath(

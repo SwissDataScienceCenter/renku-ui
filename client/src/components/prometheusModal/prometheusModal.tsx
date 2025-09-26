@@ -89,7 +89,10 @@ function usePrometheusWebSocket() {
         console.log("📥 Received WebSocket message:", message);
 
         if (message.type === "prometheusQuery" && message.data?.requestId) {
-          console.log("🎯 Processing prometheus response for ID:", message.data.requestId);
+          console.log(
+            "🎯 Processing prometheus response for ID:",
+            message.data.requestId
+          );
           const pending = pendingRequests.current.get(message.data.requestId);
           if (pending) {
             pendingRequests.current.delete(message.data.requestId);
@@ -101,7 +104,10 @@ function usePrometheusWebSocket() {
               pending.resolve(message.data);
             }
           } else {
-            console.warn("⚠️ No pending request found for ID:", message.data.requestId);
+            console.warn(
+              "⚠️ No pending request found for ID:",
+              message.data.requestId
+            );
           }
         }
       } catch (error) {
@@ -175,25 +181,19 @@ function usePrometheusWebSocket() {
           }
         }, 10000);
 
-        // Check if this is a full path (starts with http) or just a query
-        const isFullPath =
-          queryOrPath.startsWith("http://") ||
-          queryOrPath.startsWith("https://");
-
-        console.log("🔍 Is full path:", isFullPath);
-
         const message = {
           timestamp: new Date(),
           type: "prometheusQuery",
           data: {
-            ...(isFullPath
-              ? { fullPath: queryOrPath }
-              : { query: queryOrPath }),
+            fullPath: queryOrPath,
             requestId,
           },
         };
 
-        console.log("📨 Sending WebSocket message:", JSON.stringify(message, null, 2));
+        console.log(
+          "📨 Sending WebSocket message:",
+          JSON.stringify(message, null, 2)
+        );
 
         try {
           ws.send(JSON.stringify(message));
@@ -224,17 +224,17 @@ export function PrometheusQueryBox({
 
   // Hardcoded query definition wrapped in useMemo
   const hardcodedQuery = useMemo(() => {
-    const query = `round((container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100, 0.01) > 80`;
+    const query = `ALERTS`;
     return {
-      label: "Memory Usage",
+      label: "Alerts for this session",
       query,
       path: `http://prometheus-server.monitoring.svc.cluster.local/api/v1/query?query=${encodeURIComponent(
         query
       )}`,
-      description: "Memory usage percentage for this session",
+      description: "Alerts for this session",
       icon: "memory",
-      unit: "%",
-      alertThreshold: 90,
+      unit: "",
+      alertThreshold: 0,
     };
   }, [sessionName]);
 
@@ -255,20 +255,20 @@ export function PrometheusQueryBox({
     async (predefinedQuery: {
       label: string;
       query: string;
-      path?: string;
+      path: string;
       description?: string;
       icon?: string;
       unit: string;
       alertThreshold: number;
     }) => {
-      if (!predefinedQuery.query.trim() && !predefinedQuery.path?.trim())
-        return;
+      if (!predefinedQuery.path?.trim()) return;
 
-      const queryToSend = predefinedQuery.path?.trim() || predefinedQuery.query.trim();
-      console.log("📤 Sending query:", queryToSend);
+      console.log("📤 Sending full path:", predefinedQuery.path);
 
       try {
-        const result = await sendPrometheusQueryRef.current(queryToSend);
+        const result = await sendPrometheusQueryRef.current(
+          predefinedQuery.path
+        );
         return result;
       } catch (err) {
         return null;
@@ -310,6 +310,16 @@ export function PrometheusQueryBox({
     }
   }, [executeQuery, hardcodedQuery, sessionName]);
 
+  const getAlertDetails = useCallback(() => {
+    if (queryResults.length === 0) return null;
+    const result = queryResults[0];
+    if (result.data.result.length === 0) return null;
+
+    const alertInfo = result.data.result[0].metric;
+    const alertName = alertInfo.name;
+    return alertName;
+  }, [queryResults]);
+
   const handleCloseButton = useCallback(() => {
     onClose();
   }, [onClose]);
@@ -320,6 +330,8 @@ export function PrometheusQueryBox({
 
     const interval = setInterval(() => {
       getAllQueryResults();
+      let alertDetails = getAlertDetails();
+      console.log("🚨 Alert details:", alertDetails);
     }, 15000);
 
     return () => {
