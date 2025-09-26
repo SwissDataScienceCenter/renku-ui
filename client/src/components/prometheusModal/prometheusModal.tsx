@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable spellcheck/spell-checker, no-console */
+/* eslint-disable spellcheck/spell-checker */
 import cx from "classnames";
 import { useCallback, useState, useEffect, useRef } from "react";
 import { Activity } from "react-bootstrap-icons";
@@ -102,14 +102,14 @@ function usePrometheusWebSocket() {
             } else {
               pending.resolve(message.data);
             }
-          } else {
           }
-        } else {
         }
-      } catch (error) {}
+      } catch (error) {
+        // Ignore parsing errors
+      }
     };
 
-    websocket.onerror = (error) => {
+    websocket.onerror = () => {
       setIsConnected(false);
     };
 
@@ -117,10 +117,9 @@ function usePrometheusWebSocket() {
       setIsConnected(false);
       setWs(null);
 
-      // Log any pending requests that will fail
+      // Reject all pending requests
       if (pendingRequests.current.size > 0) {
-        // Reject all pending requests
-        pendingRequests.current.forEach((pending, requestId) => {
+        pendingRequests.current.forEach((pending) => {
           pending.reject(new Error("WebSocket connection closed"));
         });
         pendingRequests.current.clear();
@@ -137,7 +136,6 @@ function usePrometheusWebSocket() {
           reconnectAttempts.current++;
           connect();
         }, delay);
-      } else if (reconnectAttempts.current >= maxReconnectAttempts) {
       }
     };
 
@@ -269,7 +267,6 @@ export function PrometheusQueryBox({
             newColor = "text-warning";
           }
         }
-      } else {
       }
     }
     setPrometheusQueryBtnColorRef.current(newColor);
