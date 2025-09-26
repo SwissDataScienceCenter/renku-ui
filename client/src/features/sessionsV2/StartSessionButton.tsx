@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import cx from "classnames";
 import { ReactNode } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
@@ -23,6 +24,7 @@ import { Link, generatePath } from "react-router";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
+import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 
 interface StartSessionButtonProps {
@@ -48,15 +50,34 @@ export default function StartSessionButton({
       slug,
     }
   );
+  const environment = launcher?.environment;
+  const isExternalImageEnvironment =
+    environment?.environment_kind === "CUSTOM" &&
+    environment?.environment_image_source === "image";
+  const { data, isLoading } = useGetSessionsImagesQuery(
+    environment &&
+      environment.environment_kind === "CUSTOM" &&
+      environment.container_image
+      ? { imageUrl: environment.container_image }
+      : skipToken
+  );
+
+  const force = isExternalImageEnvironment && !isLoading && !data?.accessible;
+
   const launchAction = (
     <span id={`launch-btn-${launcher.id}`}>
       <Link
-        className={cx("btn", "btn-sm", "btn-primary", "rounded-end-0")}
+        className={cx(
+          "btn",
+          "btn-sm",
+          force ? "btn-outline-primary" : "btn-primary",
+          "rounded-end-0"
+        )}
         to={startUrl}
         data-cy="start-session-button"
       >
         <PlayCircle className={cx("bi", "me-1")} />
-        Launch
+        {force ? "Force launch" : "Launch"}
       </Link>
     </span>
   );
@@ -73,7 +94,7 @@ export default function StartSessionButton({
       data-cy="start-custom-session-button"
     >
       <PlayCircle className={cx("bi", "me-1")} />
-      Custom launch
+      {force ? "Force custom launch" : "Custom launch"}
     </Link>
   );
 
