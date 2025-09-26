@@ -18,7 +18,7 @@
 
 /* eslint-disable spellcheck/spell-checker */
 import cx from "classnames";
-import { useCallback, useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect, useRef, useMemo } from "react";
 import { Activity } from "react-bootstrap-icons";
 import { Card, CardBody, CloseButton } from "reactstrap";
 
@@ -46,14 +46,7 @@ interface PrometheusQueryResult {
 
 interface PrometheusQueryBoxProps {
   className?: string;
-  predefinedQueries?: Array<{
-    label: string;
-    query: string;
-    description?: string;
-    icon?: string;
-    unit: string;
-    alertThreshold: number;
-  }>;
+  sessionName: string;
   onClose: () => void;
   setPrometheusQueryBtnColor: (color: string) => void;
   showPrometheusQuery: boolean;
@@ -197,7 +190,7 @@ function usePrometheusWebSocket() {
 
 export function PrometheusQueryBox({
   className,
-  predefinedQueries,
+  sessionName,
   onClose,
   setPrometheusQueryBtnColor,
   showPrometheusQuery,
@@ -206,16 +199,24 @@ export function PrometheusQueryBox({
 
   const { sendPrometheusQuery } = usePrometheusWebSocket();
 
+  // Hardcoded query definition wrapped in useMemo
+  const hardcodedQuery = useMemo(
+    () => ({
+      label: "Memory Usage",
+      query: `round((container_memory_usage_bytes{pod=~"${sessionName}.*",container="amalthea-session"} / container_spec_memory_limit_bytes{pod=~"${sessionName}.*",container="amalthea-session"}) * 100, 0.01) > 80`,
+      description: "Memory usage percentage for this session",
+      icon: "memory",
+      unit: "%",
+      alertThreshold: 90,
+    }),
+    [sessionName]
+  );
+
   // Use refs to keep stable references to current values
-  const predefinedQueriesRef = useRef(predefinedQueries);
   const setPrometheusQueryBtnColorRef = useRef(setPrometheusQueryBtnColor);
   const sendPrometheusQueryRef = useRef(sendPrometheusQuery);
 
   // Update refs when values change
-  useEffect(() => {
-    predefinedQueriesRef.current = predefinedQueries;
-  }, [predefinedQueries]);
-
   useEffect(() => {
     setPrometheusQueryBtnColorRef.current = setPrometheusQueryBtnColor;
   }, [setPrometheusQueryBtnColor]);
@@ -248,30 +249,29 @@ export function PrometheusQueryBox({
   );
 
   const getAllQueryResults = useCallback(async () => {
-    const filteredResults = [];
     let newColor = "text-dark";
 
-    for (const pq of predefinedQueriesRef.current || []) {
-      const result = await executeQuery(pq);
+    const result = await executeQuery(hardcodedQuery);
 
-      if (result?.data?.result?.length && result.data.result.length > 0) {
-        filteredResults.push({ ...result, predefinedQuery: pq });
-        if (
-          result.data.result[0]?.value?.[1] &&
-          parseFloat(result.data.result[0].value[1]) > pq.alertThreshold &&
-          newColor !== "text-danger"
-        ) {
-          newColor = "text-danger";
-        } else {
-          if (newColor !== "text-danger") {
-            newColor = "text-warning";
-          }
-        }
+    if (result?.data?.result?.length && result.data.result.length > 0) {
+      const filteredResults = [{ ...result, predefinedQuery: hardcodedQuery }];
+
+      if (
+        result.data.result[0]?.value?.[1] &&
+        parseFloat(result.data.result[0].value[1]) >
+          hardcodedQuery.alertThreshold
+      ) {
+        newColor = "text-danger";
+      } else {
+        newColor = "text-warning";
       }
+
+      setPrometheusQueryBtnColorRef.current(newColor);
+      setQueryResults(filteredResults);
+    } else {
+      setQueryResults([]);
     }
-    setPrometheusQueryBtnColorRef.current(newColor);
-    setQueryResults(filteredResults);
-  }, [executeQuery]);
+  }, [executeQuery, hardcodedQuery]);
 
   const handleCloseButton = useCallback(() => {
     onClose();
