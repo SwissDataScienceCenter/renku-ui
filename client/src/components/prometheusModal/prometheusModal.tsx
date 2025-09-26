@@ -22,8 +22,6 @@ import { useCallback, useState, useEffect, useRef } from "react";
 import { Activity } from "react-bootstrap-icons";
 import { Card, CardBody, CloseButton } from "reactstrap";
 
-const DEBUG_PROMETHEUS = process.env.NODE_ENV === "development";
-
 interface PrometheusQueryResult {
   status: string;
   data: {
@@ -82,96 +80,47 @@ function usePrometheusWebSocket() {
 
   const connect = useCallback(() => {
     const wsUrl = `wss://${window.location.host}/ui-server/ws`;
-    DEBUG_PROMETHEUS &&
-      DEBUG_PROMETHEUS &&
-      console.log(
-        `[WebSocket Debug] Attempting to connect to: ${wsUrl} (attempt ${
-          reconnectAttempts.current + 1
-        })`
-      );
 
     const websocket = new WebSocket(wsUrl);
 
     websocket.onopen = () => {
-      DEBUG_PROMETHEUS &&
-        console.log("[WebSocket Debug] Connection opened successfully");
       setIsConnected(true);
       setWs(websocket);
       reconnectAttempts.current = 0; // Reset reconnect attempts on successful connection
     };
 
     websocket.onmessage = (event) => {
-      DEBUG_PROMETHEUS &&
-        console.log("[WebSocket Debug] Message received:", event.data);
       try {
         const message = JSON.parse(event.data);
 
         if (message.type === "prometheusQuery" && message.data?.requestId) {
-          DEBUG_PROMETHEUS &&
-            console.log(
-              `[WebSocket Debug] Prometheus query response for request: ${message.data.requestId}`
-            );
           const pending = pendingRequests.current.get(message.data.requestId);
           if (pending) {
             pendingRequests.current.delete(message.data.requestId);
             if (message.data.error) {
-              DEBUG_PROMETHEUS &&
-                console.log(
-                  `[WebSocket Debug] Query error: ${message.data.error}`
-                );
               pending.reject(new Error(message.data.error));
             } else {
-              DEBUG_PROMETHEUS &&
-                console.log(
-                  `[WebSocket Debug] Query successful, resolving request`
-                );
               pending.resolve(message.data);
             }
           } else {
-            DEBUG_PROMETHEUS &&
-              console.log(
-                `[WebSocket Debug] No pending request found for ID: ${message.data.requestId}`
-              );
           }
         } else {
-          DEBUG_PROMETHEUS &&
-            console.log(
-              "[WebSocket Debug] Non-prometheus message received:",
-              message.type
-            );
         }
-      } catch (error) {
-        DEBUG_PROMETHEUS &&
-          console.error("[WebSocket Debug] Error parsing message:", error);
-      }
+      } catch (error) {}
     };
 
     websocket.onerror = (error) => {
-      DEBUG_PROMETHEUS &&
-        console.error("[WebSocket Debug] WebSocket error:", error);
       setIsConnected(false);
     };
 
     websocket.onclose = (event) => {
-      DEBUG_PROMETHEUS &&
-        console.log(
-          `[WebSocket Debug] Connection closed. Code: ${event.code}, Reason: ${event.reason}, Clean: ${event.wasClean}`
-        );
       setIsConnected(false);
       setWs(null);
 
       // Log any pending requests that will fail
       if (pendingRequests.current.size > 0) {
-        DEBUG_PROMETHEUS &&
-          console.log(
-            `[WebSocket Debug] Connection closed with ${pendingRequests.current.size} pending requests`
-          );
         // Reject all pending requests
         pendingRequests.current.forEach((pending, requestId) => {
-          DEBUG_PROMETHEUS &&
-            console.log(
-              `[WebSocket Debug] Rejecting pending request: ${requestId}`
-            );
           pending.reject(new Error("WebSocket connection closed"));
         });
         pendingRequests.current.clear();
@@ -183,22 +132,12 @@ function usePrometheusWebSocket() {
           baseDelay * Math.pow(2, reconnectAttempts.current),
           maxDelay
         );
-        DEBUG_PROMETHEUS &&
-          console.log(
-            `[WebSocket Debug] Scheduling reconnection attempt ${
-              reconnectAttempts.current + 1
-            }/${maxReconnectAttempts} in ${delay}ms`
-          );
 
         reconnectTimeout.current = setTimeout(() => {
           reconnectAttempts.current++;
           connect();
         }, delay);
       } else if (reconnectAttempts.current >= maxReconnectAttempts) {
-        DEBUG_PROMETHEUS &&
-          console.log(
-            "[WebSocket Debug] Max reconnection attempts reached, giving up"
-          );
       }
     };
 
@@ -209,8 +148,6 @@ function usePrometheusWebSocket() {
     const websocket = connect();
 
     return () => {
-      DEBUG_PROMETHEUS &&
-        console.log("[WebSocket Debug] Cleaning up WebSocket connection");
       if (reconnectTimeout.current) {
         clearTimeout(reconnectTimeout.current);
         reconnectTimeout.current = null;
@@ -222,35 +159,16 @@ function usePrometheusWebSocket() {
   const sendPrometheusQuery = useCallback(
     async (query: string): Promise<PrometheusQueryResult> => {
       if (!ws || !isConnected) {
-        DEBUG_PROMETHEUS &&
-          console.log(
-            `[WebSocket Debug] Query failed - WebSocket not connected (ws: ${!!ws}, connected: ${isConnected})`
-          );
         throw new Error("WebSocket not connected");
       }
 
       const requestId = `prometheus-${Date.now()}-${Math.random()}`;
-      DEBUG_PROMETHEUS &&
-        console.log(
-          `[WebSocket Debug] Sending query with ID: ${requestId}, Query: ${query.substring(
-            0,
-            100
-          )}...`
-        );
 
       return new Promise((resolve, reject) => {
         pendingRequests.current.set(requestId, { resolve, reject });
-        DEBUG_PROMETHEUS &&
-          console.log(
-            `[WebSocket Debug] Added to pending requests. Total pending: ${pendingRequests.current.size}`
-          );
 
         setTimeout(() => {
           if (pendingRequests.current.has(requestId)) {
-            DEBUG_PROMETHEUS &&
-              console.log(
-                `[WebSocket Debug] Request ${requestId} timed out after 10 seconds`
-              );
             pendingRequests.current.delete(requestId);
             reject(new Error("Request timeout"));
           }
@@ -267,13 +185,7 @@ function usePrometheusWebSocket() {
 
         try {
           ws.send(JSON.stringify(message));
-          DEBUG_PROMETHEUS &&
-            console.log(
-              `[WebSocket Debug] Message sent successfully for request: ${requestId}`
-            );
         } catch (error) {
-          DEBUG_PROMETHEUS &&
-            console.error(`[WebSocket Debug] Failed to send message:`, error);
           pendingRequests.current.delete(requestId);
           reject(error);
         }
@@ -338,23 +250,13 @@ export function PrometheusQueryBox({
   );
 
   const getAllQueryResults = useCallback(async () => {
-    DEBUG_PROMETHEUS &&
-      console.log(
-        `[Prometheus Debug] Starting query execution at ${new Date().toLocaleTimeString()}`
-      );
     const filteredResults = [];
     let newColor = "text-dark";
 
     for (const pq of predefinedQueriesRef.current || []) {
-      DEBUG_PROMETHEUS &&
-        console.log(`[Prometheus Debug] Executing query: ${pq.label}`);
       const result = await executeQuery(pq);
 
       if (result?.data?.result?.length && result.data.result.length > 0) {
-        DEBUG_PROMETHEUS &&
-          console.log(
-            `[Prometheus Debug] Query "${pq.label}" returned ${result.data.result.length} results`
-          );
         filteredResults.push({ ...result, predefinedQuery: pq });
         if (
           result.data.result[0]?.value?.[1] &&
@@ -362,34 +264,14 @@ export function PrometheusQueryBox({
           newColor !== "text-danger"
         ) {
           newColor = "text-danger";
-          DEBUG_PROMETHEUS &&
-            console.log(
-              `[Prometheus Debug] Query "${pq.label}" triggered alert (value: ${result.data.result[0].value[1]}, threshold: ${pq.alertThreshold})`
-            );
         } else {
           if (newColor !== "text-danger") {
             newColor = "text-warning";
           }
-          DEBUG_PROMETHEUS &&
-            console.log(
-              `[Prometheus Debug] Query "${
-                pq.label
-              }" returned warning level (value: ${
-                result.data.result[0]?.value?.[1] || "N/A"
-              })`
-            );
         }
       } else {
-        DEBUG_PROMETHEUS &&
-          console.log(
-            `[Prometheus Debug] Query "${pq.label}" returned no results or failed`
-          );
       }
     }
-    DEBUG_PROMETHEUS &&
-      console.log(
-        `[Prometheus Debug] Setting button color to: ${newColor}, found ${filteredResults.length} results`
-      );
     setPrometheusQueryBtnColorRef.current(newColor);
     setQueryResults(filteredResults);
   }, [executeQuery]);
@@ -399,24 +281,14 @@ export function PrometheusQueryBox({
   }, [onClose]);
 
   useEffect(() => {
-    DEBUG_PROMETHEUS &&
-      console.log(
-        "[Prometheus Debug] Setting up interval - executing immediately"
-      );
     // Execute immediately on mount
     getAllQueryResults();
 
-    DEBUG_PROMETHEUS &&
-      console.log("[Prometheus Debug] Setting up 15-second interval");
     const interval = setInterval(() => {
-      DEBUG_PROMETHEUS &&
-        console.log("[Prometheus Debug] Interval tick - executing queries");
       getAllQueryResults();
     }, 15000);
 
     return () => {
-      DEBUG_PROMETHEUS &&
-        console.log("[Prometheus Debug] Cleaning up interval");
       clearInterval(interval);
     };
   }, [getAllQueryResults]);
