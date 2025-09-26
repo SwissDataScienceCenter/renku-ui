@@ -17,15 +17,17 @@
  */
 
 import cx from "classnames";
-import { Control, Controller, useWatch } from "react-hook-form";
+import { Control, Controller, FieldErrors, useWatch } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 
 export interface ConnectedServiceFormContentProps {
   control: Control<ProviderForm, unknown>;
+  errors: FieldErrors<ProviderForm>;
 }
 export default function ConnectedServiceFormContent({
+  errors,
   control,
 }: ConnectedServiceFormContentProps) {
   const watchKind = useWatch({ control, name: "kind" });

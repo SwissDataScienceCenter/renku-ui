@@ -64,7 +64,12 @@ function AddConnectedServiceModal({
 }: AddConnectedServiceModalProps) {
   const [createProvider, result] = usePostOauth2ProvidersMutation();
 
-  const { control, handleSubmit, reset } = useForm<ProviderForm>({
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<ProviderForm>({
     defaultValues: {
       id: "",
       kind: "gitlab",
@@ -74,7 +79,6 @@ function AddConnectedServiceModal({
       display_name: "",
       scope: "",
       url: "",
-      image_registry_url: "",
       use_pkce: false,
       image_registry_url: "",
       oidc_issuer_url: "",
@@ -157,7 +161,7 @@ function AddConnectedServiceModal({
             />
           </div>
 
-          <ConnectedServiceFormContent control={control} />
+          <ConnectedServiceFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggle}>

@@ -83,7 +83,7 @@ function UpdateConnectedServiceModal({
 
   const {
     control,
-    formState: { isDirty },
+    formState: { errors, isDirty },
     handleSubmit,
     reset,
   } = useForm<ProviderForm>({
@@ -95,7 +95,6 @@ function UpdateConnectedServiceModal({
       display_name: "",
       scope: "",
       url: "",
-      image_registry_url: "",
       use_pkce: false,
       image_registry_url: "",
       oidc_issuer_url: "",
@@ -115,7 +114,6 @@ function UpdateConnectedServiceModal({
           display_name: data.display_name,
           scope: data.scope,
           url: data.url,
-          image_registry_url: data.image_registry_url,
           use_pkce: data.use_pkce,
           image_registry_url: data.image_registry_url,
           oidc_issuer_url: oidc_issuer_url,
@@ -147,9 +145,8 @@ function UpdateConnectedServiceModal({
       display_name: provider.display_name,
       scope: provider.scope,
       url: provider.url,
-      image_registry_url: provider.image_registry_url,
       use_pkce: provider.use_pkce,
-      image_registry_url: provider.image_registry_url ?? "",
+      image_registry_url: provider.image_registry_url,
       oidc_issuer_url: provider.oidc_issuer_url ?? "",
       ...(provider.client_secret &&
         provider.client_secret !== "redacted" && {
@@ -190,7 +187,7 @@ function UpdateConnectedServiceModal({
             />
           </div>
 
-          <ConnectedServiceFormContent control={control} />
+          <ConnectedServiceFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggle}>
