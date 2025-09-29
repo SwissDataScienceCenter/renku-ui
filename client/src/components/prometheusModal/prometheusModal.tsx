@@ -396,7 +396,7 @@ export function PrometheusQueryBox({
 
         {alerts.map((alert, idx) => (
           <div key={idx} className="mb-2">
-            <div className="fw-normal text-dark medium">
+            <div className="fw-normal text-dark medium text-truncate">
               {alert.description || alert.alertName}
             </div>
             <div
@@ -407,6 +407,7 @@ export function PrometheusQueryBox({
             >
               {alert.value}
             </div>
+            {idx < alerts.length - 1 && <hr className="my-2" />}
           </div>
         ))}
       </CardBody>
