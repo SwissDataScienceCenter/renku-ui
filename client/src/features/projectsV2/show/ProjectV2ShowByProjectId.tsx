@@ -61,7 +61,8 @@ export default function ProjectV2ShowByProjectId() {
     }
   }, [location, navigate, project]);
 
-  if (isLoading) return <Loader className="align-self-center" />;
+  if (isLoading || (project && project.namespace && project.slug))
+    return <Loader className="align-self-center" />;
 
   return <ProjectNotFound error={error} />;
 }
