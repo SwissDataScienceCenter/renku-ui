@@ -53,6 +53,12 @@ interface PrometheusQueryBoxProps {
   showPrometheusQuery: boolean;
 }
 
+interface AlertDetails {
+  alertName: string;
+  severity: string;
+  value: number;
+}
+
 function usePrometheusWebSocket() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -219,6 +225,7 @@ export function PrometheusQueryBox({
   showPrometheusQuery,
 }: PrometheusQueryBoxProps) {
   const [queryResults, setQueryResults] = useState<PrometheusQueryResult[]>([]);
+  const [alerts, setAlerts] = useState<AlertDetails[]>([]);
 
   const { sendPrometheusQuery } = usePrometheusWebSocket();
 
@@ -316,6 +323,7 @@ export function PrometheusQueryBox({
     if (result.data.result.length === 0) return null;
 
     const alertInfo = result.data.result[0].metric;
+    console.log("alertName: ", alertInfo.name);
     const alertName = alertInfo.name;
     return alertName;
   }, [queryResults]);
@@ -330,14 +338,54 @@ export function PrometheusQueryBox({
 
     const interval = setInterval(() => {
       getAllQueryResults();
-      let alertDetails = getAlertDetails();
-      console.log("🚨 Alert details:", alertDetails);
     }, 15000);
 
     return () => {
       clearInterval(interval);
     };
   }, [getAllQueryResults]);
+
+  useEffect(() => {
+    let alertDetails = getAlertDetails();
+    console.log("🚨 Alert details:", alertDetails);
+    getAllAlertDetails(alertDetails);
+  }, [queryResults]);
+
+  async function getAllAlertDetails(alertName: string) {
+    const detailsQuery = {
+      label: "Alerts for this session",
+      path: `http://prometheus-server.monitoring.svc.cluster.local/api/v1/alerts`,
+      description: "Alerts for this session",
+      icon: "memory",
+      unit: "",
+      alertThreshold: 0,
+    };
+
+    const result = await executeQuery(detailsQuery);
+    console.log("📊 Alert details query result:", result?.data.alerts[0].value);
+    if (result?.data?.alerts?.length && result.data.alerts.length > 0) {
+      const alert = result.data.alerts.find((a) => a.labels.name === alertName);
+      if (alert) {
+        const severity = alert.labels.severity || "unknown";
+        const value = parseFloat(alert.value) || 0;
+        console.log(
+          `🚨 Alert found - Name: ${alert.labels.alertname}, Severity: ${severity}, Value: ${value}`
+        );
+        const newAlert: AlertDetails = {
+          alertName: alert.labels.alertname,
+          severity,
+          value,
+        };
+        setAlerts([newAlert]);
+      } else {
+        console.log(`ℹ️ No alert found with name: ${alertName}`);
+      }
+    }
+  }
+
+  useEffect(() => {
+    console.log("🚨 Alerts:", alerts);
+  }, [alerts]);
 
   if (queryResults.length === 0 || showPrometheusQuery === false) {
     return null;
@@ -358,23 +406,16 @@ export function PrometheusQueryBox({
           />
         </div>
 
-        {queryResults.map((qr, idx) => (
+        {alerts.map((alert, idx) => (
           <div key={idx} className="mb-2">
-            <div className="fw-bold">{qr.predefinedQuery?.label}</div>
+            <div className="fw-bold">{alert.alertName}</div>
             <div className="mb-1">
               <div
                 className={
-                  qr.data?.result?.[0]?.value?.[1] &&
-                  qr.predefinedQuery &&
-                  parseFloat(qr.data.result[0].value[1]) >
-                    qr.predefinedQuery.alertThreshold
-                    ? "text-danger"
-                    : "text-warning"
+"text-warning"
                 }
               >
-                {qr.data?.result?.[0]?.value
-                  ? `${qr.data.result[0].value[1]}${qr.predefinedQuery?.unit}`
-                  : "No value"}
+                Severity: {alert.severity}, Value: {alert.value}
               </div>
             </div>
           </div>
