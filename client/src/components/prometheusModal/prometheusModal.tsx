@@ -339,14 +339,15 @@ export function PrometheusQueryBox({
     };
 
     const result = await executeQuery(detailsQuery);
+
     console.log("📊 Alert details query result:", result?.data.alerts);
     console.log("Total alerts fetched:", result?.data.alerts?.length || 0);
-
     console.log("🔍 Filtering alerts for names:", alertNames);
 
     if (result?.data?.alerts?.length && result.data.alerts.length > 0) {
       const relevantAlerts = result.data.alerts.filter((alert) =>
-        alertNames.includes(alert.labels.name)
+        alertNames.includes(alert.labels.name) &&
+        alert.labels.purpose === "renku-session"
       );
 
       let buttonColor = "text-warning";
