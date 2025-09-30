@@ -356,7 +356,7 @@ export function PrometheusQueryBox({
         const value = parseFloat(alert.value) || 0;
 
         if (alert.labels.criticalAt) {
-          if (value > alert.labels.criticalAt) {
+          if (value >= alert.labels.criticalAt) {
             severity = "critical";
             buttonColor = "text-danger";
           }
