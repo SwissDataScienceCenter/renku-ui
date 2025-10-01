@@ -25,7 +25,12 @@ export default function NoLegacySupportForProjects() {
   const [isRenkulabIo, setIsRenkulabIo] = useState(false);
   useEffect(() => {
     const hostname = window.location.hostname;
-    if (hostname === "renkulab.io" || hostname.endsWith(".renkulab.io")) {
+    if (
+      hostname === "renkulab.io" ||
+      hostname.endsWith(".renkulab.io") ||
+      hostname === "dev.renku.ch" ||
+      hostname.endsWith(".dev.renku.ch")
+    ) {
       setIsRenkulabIo(true);
     }
   }, []);
