@@ -145,6 +145,6 @@ describe("launch autostart sessions without legacy support", () => {
     cy.visit(`${projectUrl}/sessions/new?autostart=1`);
     cy.contains("Checking for redirect").should("be.visible");
     cy.wait("@getUrlRedirect");
-    cy.contains("Renku Legacy is no longer supported").should("be.visible");
+    cy.contains("Legacy not supported").should("be.visible");
   });
 });
