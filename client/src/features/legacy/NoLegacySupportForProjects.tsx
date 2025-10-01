@@ -16,18 +16,28 @@
  * limitations under the License.
  */
 
-import { useContext } from "react";
+import { useEffect, useState } from "react";
 
-import LazyProjectView from "../../project/LazyProjectView";
-import AppContext from "../../utils/context/appContext";
+import NoLegacySupport from "./NoLegacySupport";
+import NoLegacySupportForProjectsRenkulabIo from "./NoLegacySupportForProjectsRenkulabIo";
 
-import CheckForRedirect from "./CheckForRedirect";
+export default function NoLegacySupportForProjects() {
+  const [isRenkulabIo, setIsRenkulabIo] = useState(false);
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    if (
+      hostname === "renkulab.io" ||
+      hostname.endsWith(".renkulab.io") ||
+      hostname === "dev.renku.ch" ||
+      hostname.endsWith(".dev.renku.ch")
+    ) {
+      setIsRenkulabIo(true);
+    }
+  }, []);
 
-export default function LegacyProjectView() {
-  const { params } = useContext(AppContext);
-  if (params && !params.LEGACY_SUPPORT.enabled) {
-    return <CheckForRedirect />;
-  }
-
-  return <LazyProjectView />;
+  return isRenkulabIo ? (
+    <NoLegacySupportForProjectsRenkulabIo />
+  ) : (
+    <NoLegacySupport />
+  );
 }
