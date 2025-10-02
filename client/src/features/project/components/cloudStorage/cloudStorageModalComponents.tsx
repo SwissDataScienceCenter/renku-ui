@@ -249,9 +249,7 @@ export function AddCloudStorageContinueButton({
             placement="top"
             target={`${continueButtonId}-div`}
           >
-            {!storageDetails.schema
-              ? "Please select a storage type"
-              : "Please select a provider or change storage type"}
+            Please fill out all fields labeled as required
           </UncontrolledTooltip>
         )}
       </div>

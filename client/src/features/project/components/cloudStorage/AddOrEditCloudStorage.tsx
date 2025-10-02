@@ -34,6 +34,7 @@ import {
 } from "react-bootstrap-icons";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import {
+  Badge,
   Button,
   Input,
   InputGroup,
@@ -50,6 +51,7 @@ import type { DataConnectorSecret } from "../../../dataConnectorsV2/api/data-con
 import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils";
 import {
   convertFromAdvancedConfig,
+  getSchema,
   getSchemaOptions,
   getSchemaProviders,
   getSchemaStorage,
@@ -233,6 +235,15 @@ export function AddStorageAdvanced({
     <form className="form-rk-green" data-cy="cloud-storage-edit-advanced">
       <AddStorageAdvancedToggle state={state} setState={setState} />
       <div className="mb-3">
+        <Label className="form-label" for="sourcePath">
+          {sourcePathHelp.label}
+          <Badge
+            className={cx("rounded-pill", "align-top", "ms-1")}
+            color="primary"
+          >
+            required
+          </Badge>
+        </Label>
         <Controller
           name="sourcePath"
           control={control}
@@ -251,9 +262,6 @@ export function AddStorageAdvanced({
             />
           )}
         />
-        <Label className="form-label" for="sourcePath">
-          Source path
-        </Label>
         <div className={cx("form-text", "text-muted")}>
           {sourcePathHelp.help}
         </div>
@@ -436,7 +444,7 @@ function PasswordOptionItem({
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <>
-      <label htmlFor={option.name}>
+      <Label htmlFor={option.name}>
         {option.friendlyName ?? option.name}{" "}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
@@ -444,6 +452,16 @@ function PasswordOptionItem({
             className={cx("bi", "ms-1", "text-warning")}
           />
         </div>
+        {option.required ? (
+          <Badge
+            className={cx("rounded-pill", "align-top", "ms-1")}
+            color="primary"
+          >
+            required
+          </Badge>
+        ) : (
+          <></>
+        )}
         <UncontrolledTooltip placement="top" target={tooltipContainerId}>
           {isV2 ? (
             <span>
@@ -460,7 +478,7 @@ function PasswordOptionItem({
             </span>
           )}
         </UncontrolledTooltip>
-      </label>
+      </Label>
 
       <InputGroup>
         <Controller
@@ -584,8 +602,19 @@ function InputOptionItem({
       : option.friendlyName ?? option.name;
   return (
     <>
-      <label htmlFor={option.name}>{inputName}</label>
-
+      <Label htmlFor={option.name}>
+        {inputName}
+        {option.required ? (
+          <Badge
+            className={cx("rounded-pill", "align-top", "ms-1")}
+            color="primary"
+          >
+            required
+          </Badge>
+        ) : (
+          <></>
+        )}
+      </Label>
       <Controller
         name={option.name}
         control={control}
@@ -657,11 +686,8 @@ export function AddStorageType({
     () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
     [schema, state.showAllSchema, storage.schema]
   );
-  const setFinalSchema = (schema: CloudStorageSchema) => {
-    setStorage({
-      schema: schema.prefix,
-      convenientMode: schema.convenientMode,
-    });
+  const setFinalSchema = (value: string) => {
+    setStorage({ schema: value });
     if (state.showAllSchema) setState({ showAllSchema: false });
     (hasProviderShortlist(value) ||
       STORAGES_WITH_ACCESS_MODE.includes(value)) &&
@@ -679,7 +705,7 @@ export function AddStorageType({
         key={s.name}
         value={s.prefix}
         tag="div"
-        onClick={() => setFinalSchema(s)}
+        onClick={() => setFinalSchema(s.prefix)}
         data-cy={`data-storage-${s.prefix}`}
       >
         <p className="mb-0">
@@ -1010,14 +1036,30 @@ export function AddStorageOptions({
       <div className={cx("form-text", "text-muted")}>{sourcePathHelp.help}</div>
     </div>
   );
-  const selectedSchema = useMemo(
-    () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
-    [schema, state.showAllSchema, storage.schema]
-  ).find((s) => s.prefix === storage.schema);
 
   const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
     storage.schema ?? ""
   );
+
+  const moreOptionsThanInTheShortList = () => {
+    const allOptions = getSchemaOptions(
+      schema,
+      false,
+      storage.schema,
+      storage.provider
+    );
+    const shortListOptions = getSchemaOptions(
+      schema,
+      true,
+      storage.schema,
+      storage.provider
+    );
+    return (
+      allOptions &&
+      shortListOptions &&
+      allOptions.length > shortListOptions.length
+    );
+  };
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-options">
@@ -1027,13 +1069,10 @@ export function AddStorageOptions({
         that the specific fields required depend on your storage configuration.
       </p>
       <AddStorageAdvancedToggle state={state} setState={setState} />
-      {sourcePath}
+      {!hasAccessMode && sourcePath}
       {optionItems}
       {hasAccessMode && sourcePath}
-      {(selectedSchema &&
-        "convenientMode" in selectedSchema &&
-        selectedSchema.convenientMode) ||
-        advancedOptions}
+      {!moreOptionsThanInTheShortList() || advancedOptions}
     </form>
   );
 }
@@ -1114,11 +1153,14 @@ export function AddStorageMount({
     (o) => storage.options && storage.options[o.name]
   );
 
-  const selectedSchema = useMemo(
-    () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
-    [schema, state.showAllSchema, storage.schema]
-  ).find((s) => s.prefix === storage.schema);
-  if (selectedSchema && selectedSchema.readOnly) {
+  const selectedSchema = getSchema(
+    useMemo(
+      () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
+      [schema, state.showAllSchema, storage.schema]
+    ),
+    storage.schema
+  );
+  if (selectedSchema && selectedSchema.forceReadOnly) {
     storage.readOnly = true;
   }
 
@@ -1220,14 +1262,16 @@ export function AddStorageMount({
               }}
               value=""
               checked={storage.readOnly ?? false}
-              readOnly={(selectedSchema && selectedSchema.readOnly) ?? false}
+              readOnly={
+                (selectedSchema && selectedSchema.forceReadOnly) ?? false
+              }
             />
           )}
           rules={{ required: true }}
         />
-        {(selectedSchema && selectedSchema.readOnly && (
+        {(selectedSchema?.forceReadOnly && (
           <div className="mt-1">
-            <InfoAlert dismissible={false}>
+            <InfoAlert dismissible={false} timeout={0}>
               <p className="mb-0">
                 This cloud storage only supports read-only access.
               </p>

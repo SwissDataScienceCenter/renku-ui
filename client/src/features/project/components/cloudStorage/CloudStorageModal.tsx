@@ -28,6 +28,7 @@ import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import {
   findSensitive,
   getCurrentStorageDetails,
+  getSchemaOptions,
   getSchemaProviders,
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
@@ -341,11 +342,19 @@ export default function CloudStorageModal({
       (!storageDetails.schema ||
         (schemaRequiresProvider && !storageDetails.provider))) ||
     (state.step === 2 &&
-      storageDetails.convenientMode &&
       !(
-        storageDetails.sourcePath &&
-        storageDetails.options &&
-        Object.values(storageDetails.options).every((v) => v)
+        schema &&
+        getSchemaOptions(
+          schema,
+          true,
+          storageDetails.schema,
+          storageDetails.provider
+        )?.every((o) => {
+          return (
+            !o.required ||
+            (storageDetails.options && storageDetails.options[o.name])
+          );
+        })
       )) ||
     false;
 

@@ -34,6 +34,7 @@ import {
 
 import {
   findSensitive,
+  getSchemaOptions,
   hasProviderShortlist,
 } from "../../../project/utils/projectCloudStorage.utils";
 
@@ -312,15 +313,18 @@ function DataConnectorCreateFooter({
       (!flatDataConnector.schema ||
         (schemaRequiresProvider && !flatDataConnector.provider))) ||
     (cloudStorageState.step === 2 &&
-      flatDataConnector.convenientMode &&
-      !(
-        flatDataConnector.sourcePath &&
-        flatDataConnector.options &&
-        Object.values(flatDataConnector.options).every((v) => v)
-      )) ||
+      !getSchemaOptions(
+        schemata,
+        true,
+        flatDataConnector.schema,
+        flatDataConnector.provider
+      )?.every((o) => {
+        return (
+          !o.required ||
+          (flatDataConnector.options && flatDataConnector.options[o.name])
+        );
+      })) ||
     false;
-
-  console.log("disableContinueButton", disableContinueButton);
 
   const isAddResultLoading = createResult.isLoading;
   const actionError = createResult.error;
@@ -501,9 +505,22 @@ function DataConnectorEditFooter({
 
   // Visual elements
   const disableContinueButton =
-    cloudStorageState.step === 1 &&
-    (!flatDataConnector.schema ||
-      (schemaRequiresProvider && !flatDataConnector.provider));
+    (cloudStorageState.step === 1 &&
+      (!flatDataConnector.schema ||
+        (schemaRequiresProvider && !flatDataConnector.provider))) ||
+    (cloudStorageState.step === 2 &&
+      !getSchemaOptions(
+        schemata,
+        true,
+        flatDataConnector.schema,
+        flatDataConnector.provider
+      )?.every((o) => {
+        return (
+          !o.required ||
+          (flatDataConnector.options && flatDataConnector.options[o.name])
+        );
+      })) ||
+    false;
 
   const isModifyResultLoading = updateResult.isLoading;
   const actionError = updateResult.error;

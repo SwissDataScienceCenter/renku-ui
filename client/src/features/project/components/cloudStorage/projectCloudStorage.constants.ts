@@ -75,9 +75,8 @@ export const CLOUD_STORAGE_OVERRIDE = {
       position: 4,
     },
     openbis: {
-      position: 3,
-      convenientMode: true,
-      readOnly: true,
+      forceReadOnly: true,
+      position: 6,
     },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
@@ -228,12 +227,12 @@ export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
   polybox: {
     help: "Specify a path to a sub folder to connect to. When left blank, the connection will be made to the default (root) folder.",
     placeholder: "'/' or 'optional-sub-folder(s)/'",
-    label: "Sub path (optional)",
+    label: "Sub path",
   },
   switchDrive: {
     help: "Specify a path to a sub folder to connect to. When left blank, the connection will be made to the default (root) folder.",
     placeholder: "'/' or 'optional-sub-folder(s)/'",
-    label: "Sub path (optional)",
+    label: "Sub path",
   },
   generic: {
     help:

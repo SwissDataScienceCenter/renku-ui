@@ -77,16 +77,6 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    cloudStorageStar(args?: SimpleFixture) {
-      const {
-        fixture = "cloudStorage/cloud-storage.json",
-        name = "getCloudStorage",
-      } = args ?? {};
-      const response = { fixture };
-      cy.intercept("GET", "/api/data/storage*", response).as(name);
-      return this;
-    }
-
     cloudStorageSPecific(args?: SimpleFixture) {
       const {
         fixture = "cloudStorage/cloud-storage.json",

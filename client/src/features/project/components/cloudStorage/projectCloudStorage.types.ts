@@ -63,8 +63,7 @@ export interface CloudStorageSchemaOption extends RCloneOption {
 export interface CloudStorageSchema extends RCloneEntry {
   hide?: boolean;
   position?: number;
-  convenientMode?: boolean; // ? Disables the Rclone full options list, ...
-  readOnly?: boolean; // ? Forces read-only access e.g. for storage that do not support write access
+  forceReadOnly?: boolean; // ? Forces read-only access e.g. for storage that do not support write access
   options: CloudStorageSchemaOption[];
 }
 
@@ -102,7 +101,6 @@ export type CloudStorageDetails = {
   sourcePath?: string;
   mountPoint?: string;
   readOnly?: boolean;
-  convenientMode?: boolean;
 };
 
 export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";

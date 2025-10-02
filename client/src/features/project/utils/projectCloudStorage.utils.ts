@@ -155,8 +155,7 @@ export function getSchemaStorage(
             name: override.name ?? element.name,
             description: override.description ?? element.description,
             position: override.position ?? element.position,
-            convenientMode: override.convenientMode ?? element.convenientMode,
-            readOnly: override.readOnly ?? element.readOnly,
+            forceReadOnly: override.forceReadOnly ?? element.forceReadOnly,
           });
         }
       } else {
@@ -242,6 +241,22 @@ export function hasProviderShortlist(targetProvider?: string): boolean {
   return false;
 }
 
+export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
+  if (!targetSchema) return;
+  const currentSchema = schema.find((s) => s.prefix === targetSchema);
+  const override = CLOUD_STORAGE_OVERRIDE.storage[targetSchema];
+  if (currentSchema && !override.hide) {
+    return {
+      ...currentSchema,
+      name: override.name ?? currentSchema.name,
+      description: override.description ?? currentSchema.description,
+      position: override.position ?? currentSchema.position,
+      forceReadOnly: override.forceReadOnly ?? currentSchema.forceReadOnly,
+    };
+  }
+  return currentSchema;
+}
+
 export function getSchemaOptions(
   schema: CloudStorageSchema[],
   shortList = false,
@@ -249,8 +264,7 @@ export function getSchemaOptions(
   targetProvider?: string,
   flags = { override: true, convertType: true, filterHidden: true }
 ): CloudStorageSchemaOption[] | undefined {
-  if (!targetSchema) return;
-  const storage = schema.find((s) => s.prefix === targetSchema);
+  const storage = getSchema(schema, targetSchema);
   if (!storage) return;
 
   const optionsOverridden = flags.override
