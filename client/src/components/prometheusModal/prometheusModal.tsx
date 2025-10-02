@@ -91,34 +91,18 @@ function usePrometheusWebSocket() {
     };
 
     websocket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        console.log("📥 Received WebSocket message:", message);
+      const message = JSON.parse(event.data);
 
-        if (message.type === "prometheusQuery" && message.data?.requestId) {
-          console.log(
-            "🎯 Processing prometheus response for ID:",
-            message.data.requestId
-          );
-          const pending = pendingRequests.current.get(message.data.requestId);
-          if (pending) {
-            pendingRequests.current.delete(message.data.requestId);
-            if (message.data.error) {
-              console.error("❌ Server returned error:", message.data.error);
-              pending.reject(new Error(message.data.error));
-            } else {
-              console.log("✅ Resolving with data:", message.data);
-              pending.resolve(message.data);
-            }
+      if (message.type === "prometheusQuery" && message.data?.requestId) {
+        const pending = pendingRequests.current.get(message.data.requestId);
+        if (pending) {
+          pendingRequests.current.delete(message.data.requestId);
+          if (message.data.error) {
+            pending.reject(new Error(message.data.error));
           } else {
-            console.warn(
-              "⚠️ No pending request found for ID:",
-              message.data.requestId
-            );
+            pending.resolve(message.data);
           }
         }
-      } catch (error) {
-        console.error("❌ Failed to parse WebSocket message:", error);
       }
     };
 
@@ -168,7 +152,6 @@ function usePrometheusWebSocket() {
   const sendPrometheusQuery = useCallback(
     async (queryOrPath: string): Promise<PrometheusQueryResult> => {
       if (!ws || !isConnected) {
-        console.error("❌ WebSocket not connected");
         throw new Error("WebSocket not connected");
       }
 
@@ -180,7 +163,6 @@ function usePrometheusWebSocket() {
         setTimeout(() => {
           if (pendingRequests.current.has(requestId)) {
             pendingRequests.current.delete(requestId);
-            console.error("⏰ Request timeout for ID:", requestId);
             reject(new Error("Request timeout"));
           }
         }, 10000);
@@ -194,16 +176,9 @@ function usePrometheusWebSocket() {
           },
         };
 
-        console.log(
-          "📨 Sending WebSocket message:",
-          JSON.stringify(message, null, 2)
-        );
-
         try {
           ws.send(JSON.stringify(message));
-          console.log("✅ Message sent successfully");
         } catch (error) {
-          console.error("❌ Failed to send WebSocket message:", error);
           pendingRequests.current.delete(requestId);
           reject(error);
         }
@@ -276,8 +251,6 @@ export function PrometheusQueryBox({
   );
 
   const getAllQueryResults = useCallback(async () => {
-    console.log("🔄 Executing Prometheus query for session:", sessionName);
-
     const result = await executeQuery(hardcodedQuery);
 
     if (result?.data?.result?.length && result.data.result.length > 0) {
@@ -285,10 +258,9 @@ export function PrometheusQueryBox({
 
       setQueryResults(filteredResults);
     } else {
-      console.log("❌ No results found - clearing query results");
       setQueryResults([]);
     }
-  }, [executeQuery, hardcodedQuery, sessionName]);
+  }, [executeQuery, hardcodedQuery]);
 
   const getAlertDetails = useCallback(() => {
     if (queryResults.length === 0) return [];
@@ -298,7 +270,6 @@ export function PrometheusQueryBox({
     const alertNames = result.data.result.map(
       (alertResult) => alertResult.metric.name
     );
-    console.log("Alert names from ALERTS query: ", alertNames);
     return alertNames;
   }, [queryResults]);
 
@@ -319,69 +290,60 @@ export function PrometheusQueryBox({
   }, [getAllQueryResults]);
 
   useEffect(() => {
-    const alertNames = getAlertDetails();
-    console.log("🚨 Alert names:", alertNames);
-    getAllAlertDetails(alertNames);
-  }, [queryResults, getAlertDetails]);
+    async function getAllAlertDetails(alertNames: string[]) {
+      if (!alertNames || alertNames.length === 0) {
+        setAlerts([]);
+        setPrometheusQueryBtnColorRef.current("text-dark");
+        return;
+      }
 
-  async function getAllAlertDetails(alertNames: string[]) {
-    if (!alertNames || alertNames.length === 0) {
-      setAlerts([]);
-      setPrometheusQueryBtnColorRef.current("text-dark");
-      return;
-    }
+      const detailsQuery = {
+        label: "Alerts for this session",
+        path: `http://prometheus-server.monitoring.svc.cluster.local/api/v1/alerts`,
+        description: "Alerts for this session",
+        icon: "memory",
+        unit: "",
+      };
 
-    const detailsQuery = {
-      label: "Alerts for this session",
-      path: `http://prometheus-server.monitoring.svc.cluster.local/api/v1/alerts`,
-      description: "Alerts for this session",
-      icon: "memory",
-      unit: "",
-    };
+      const result = await executeQuery(detailsQuery);
 
-    const result = await executeQuery(detailsQuery);
+      if (result?.data?.alerts?.length && result.data.alerts.length > 0) {
+        const relevantAlerts = result.data.alerts.filter(
+          (alert) =>
+            alertNames.includes(alert.labels.name) &&
+            alert.labels.purpose === "renku-session"
+        );
 
-    console.log("📊 Alert details query result:", result?.data.alerts);
-    console.log("Total alerts fetched:", result?.data.alerts?.length || 0);
-    console.log("🔍 Filtering alerts for names:", alertNames);
+        let buttonColor = "text-warning";
 
-    if (result?.data?.alerts?.length && result.data.alerts.length > 0) {
-      const relevantAlerts = result.data.alerts.filter((alert) =>
-        alertNames.includes(alert.labels.name) &&
-        alert.labels.purpose === "renku-session"
-      );
+        const alertDetails: AlertDetails[] = relevantAlerts.map((alert) => {
+          let severity = alert.labels.severity || "unknown";
+          const value = parseFloat(alert.value) || 0;
 
-      let buttonColor = "text-warning";
-
-      const alertDetails: AlertDetails[] = relevantAlerts.map((alert) => {
-        let severity = alert.labels.severity || "unknown";
-        const value = parseFloat(alert.value) || 0;
-
-        if (alert.labels.criticalAt) {
-          if (value >= alert.labels.criticalAt) {
-            severity = "critical";
-            buttonColor = "text-danger";
+          if (alert.labels.criticalAt) {
+            if (value >= alert.labels.criticalAt) {
+              severity = "critical";
+              buttonColor = "text-danger";
+            }
           }
-        }
-        return {
-          alertName: alert.labels.alertname,
-          severity,
-          value,
-          description: alert.annotations?.description || "",
-          unit: alert.labels.unit ? alert.labels.unit : "",
-        };
-      });
-      setAlerts(alertDetails);
-      setPrometheusQueryBtnColorRef.current(buttonColor);
-    } else {
-      console.log(`ℹ️ No alerts found`);
-      setAlerts([]);
+          return {
+            alertName: alert.labels.alertname,
+            severity,
+            value,
+            description: alert.annotations?.description || "",
+            unit: alert.labels.unit ? alert.labels.unit : "",
+          };
+        });
+        setAlerts(alertDetails);
+        setPrometheusQueryBtnColorRef.current(buttonColor);
+      } else {
+        setAlerts([]);
+      }
     }
-  }
 
-  useEffect(() => {
-    console.log("🚨 Alerts:", alerts);
-  }, [alerts]);
+    const alertNames = getAlertDetails();
+    getAllAlertDetails(alertNames);
+  }, [queryResults, getAlertDetails, executeQuery]);
 
   if (queryResults.length === 0 || showPrometheusQuery === false) {
     return null;
