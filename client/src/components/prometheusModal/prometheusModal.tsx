@@ -297,8 +297,10 @@ export function PrometheusQueryBox({
         return;
       }
 
+      const query = "ALERTS";
       const detailsQuery = {
         label: "Alerts for this session",
+        query,
         path: `http://prometheus-server.monitoring.svc.cluster.local/api/v1/alerts`,
         description: "Alerts for this session",
         icon: "memory",
@@ -307,16 +309,16 @@ export function PrometheusQueryBox({
 
       const result = await executeQuery(detailsQuery);
 
-      if (result?.data?.alerts?.length && result.data.alerts.length > 0) {
-        const relevantAlerts = result.data.alerts.filter(
-          (alert) =>
-            alertNames.includes(alert.labels.name) &&
-            alert.labels.purpose === "renku-session"
+      if (result?.data?.result?.length && result.data.result.length > 0) {
+        const relevantAlerts = result.data.result.filter(
+          (alert: any) =>
+            alertNames.includes(alert.labels?.name) &&
+            alert.labels?.purpose === "renku-session"
         );
 
         let buttonColor = "text-warning";
 
-        const alertDetails: AlertDetails[] = relevantAlerts.map((alert) => {
+        const alertDetails: AlertDetails[] = relevantAlerts.map((alert: any) => {
           let severity = alert.labels.severity || "unknown";
           const value = parseFloat(alert.value) || 0;
 
