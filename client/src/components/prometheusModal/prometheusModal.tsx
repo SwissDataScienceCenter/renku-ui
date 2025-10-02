@@ -60,20 +60,6 @@ interface AlertDetails {
   unit?: string;
 }
 
-interface PrometheusAlert {
-  labels: {
-    name?: string;
-    purpose?: string;
-    severity?: string;
-    alertname?: string;
-    unit?: string;
-    criticalAt?: number;
-  };
-  annotations?: {
-    description?: string;
-  };
-  value?: string | number;
-}
 
 function usePrometheusWebSocket() {
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -326,30 +312,33 @@ export function PrometheusQueryBox({
 
       if (result?.data?.result?.length && result.data.result.length > 0) {
         const relevantAlerts = result.data.result.filter(
-          (alert: PrometheusAlert) =>
-            alertNames.includes(alert.labels?.name) &&
-            alert.labels?.purpose === "renku-session"
+          (alert) =>
+            alert.metric.name &&
+            alertNames.includes(alert.metric.name) &&
+            alert.metric.purpose === "renku-session"
         );
 
         let buttonColor = "text-warning";
 
         const alertDetails: AlertDetails[] = relevantAlerts.map(
-          (alert: PrometheusAlert) => {
-            let severity = alert.labels.severity || "unknown";
-            const value = parseFloat(alert.value) || 0;
+          (alert) => {
+            let severity = alert.metric.severity || "unknown";
+            const alertValue = alert.value?.[1] || alert.values?.[0]?.[1] || "0";
+            const value = parseFloat(alertValue) || 0;
 
-            if (alert.labels.criticalAt) {
-              if (value >= alert.labels.criticalAt) {
+            if (alert.metric.criticalAt) {
+              const criticalThreshold = parseFloat(alert.metric.criticalAt);
+              if (value >= criticalThreshold) {
                 severity = "critical";
                 buttonColor = "text-danger";
               }
             }
             return {
-              alertName: alert.labels.alertname,
+              alertName: alert.metric.alertname || alert.metric.name || "Unknown Alert",
               severity,
               value,
-              description: alert.annotations?.description || "",
-              unit: alert.labels.unit ? alert.labels.unit : "",
+              description: alert.metric.description || "",
+              unit: alert.metric.unit || "",
             };
           }
         );
