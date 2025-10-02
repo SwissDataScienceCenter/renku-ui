@@ -60,6 +60,21 @@ interface AlertDetails {
   unit?: string;
 }
 
+interface PrometheusAlert {
+  labels: {
+    name?: string;
+    purpose?: string;
+    severity?: string;
+    alertname?: string;
+    unit?: string;
+    criticalAt?: number;
+  };
+  annotations?: {
+    description?: string;
+  };
+  value?: string | number;
+}
+
 function usePrometheusWebSocket() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -311,7 +326,7 @@ export function PrometheusQueryBox({
 
       if (result?.data?.result?.length && result.data.result.length > 0) {
         const relevantAlerts = result.data.result.filter(
-          (alert: any) =>
+          (alert: PrometheusAlert) =>
             alertNames.includes(alert.labels?.name) &&
             alert.labels?.purpose === "renku-session"
         );
@@ -319,7 +334,7 @@ export function PrometheusQueryBox({
         let buttonColor = "text-warning";
 
         const alertDetails: AlertDetails[] = relevantAlerts.map(
-          (alert: any) => {
+          (alert: PrometheusAlert) => {
             let severity = alert.labels.severity || "unknown";
             const value = parseFloat(alert.value) || 0;
 
