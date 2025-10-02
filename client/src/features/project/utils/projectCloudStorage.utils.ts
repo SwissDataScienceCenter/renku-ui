@@ -264,6 +264,7 @@ export function getSchemaOptions(
   targetProvider?: string,
   flags = { override: true, convertType: true, filterHidden: true }
 ): CloudStorageSchemaOption[] | undefined {
+  if (!targetSchema) return;
   const storage = getSchema(schema, targetSchema);
   if (!storage) return;
 
