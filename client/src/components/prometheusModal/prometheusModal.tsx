@@ -318,24 +318,26 @@ export function PrometheusQueryBox({
 
         let buttonColor = "text-warning";
 
-        const alertDetails: AlertDetails[] = relevantAlerts.map((alert: any) => {
-          let severity = alert.labels.severity || "unknown";
-          const value = parseFloat(alert.value) || 0;
+        const alertDetails: AlertDetails[] = relevantAlerts.map(
+          (alert: any) => {
+            let severity = alert.labels.severity || "unknown";
+            const value = parseFloat(alert.value) || 0;
 
-          if (alert.labels.criticalAt) {
-            if (value >= alert.labels.criticalAt) {
-              severity = "critical";
-              buttonColor = "text-danger";
+            if (alert.labels.criticalAt) {
+              if (value >= alert.labels.criticalAt) {
+                severity = "critical";
+                buttonColor = "text-danger";
+              }
             }
+            return {
+              alertName: alert.labels.alertname,
+              severity,
+              value,
+              description: alert.annotations?.description || "",
+              unit: alert.labels.unit ? alert.labels.unit : "",
+            };
           }
-          return {
-            alertName: alert.labels.alertname,
-            severity,
-            value,
-            description: alert.annotations?.description || "",
-            unit: alert.labels.unit ? alert.labels.unit : "",
-          };
-        });
+        );
         setAlerts(alertDetails);
         setPrometheusQueryBtnColorRef.current(buttonColor);
       } else {
