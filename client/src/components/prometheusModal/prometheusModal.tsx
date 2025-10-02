@@ -60,7 +60,6 @@ interface AlertDetails {
   unit?: string;
 }
 
-
 function usePrometheusWebSocket() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -320,28 +319,27 @@ export function PrometheusQueryBox({
 
         let buttonColor = "text-warning";
 
-        const alertDetails: AlertDetails[] = relevantAlerts.map(
-          (alert) => {
-            let severity = alert.metric.severity || "unknown";
-            const alertValue = alert.value?.[1] || alert.values?.[0]?.[1] || "0";
-            const value = parseFloat(alertValue) || 0;
+        const alertDetails: AlertDetails[] = relevantAlerts.map((alert) => {
+          let severity = alert.metric.severity || "unknown";
+          const alertValue = alert.value?.[1] || alert.values?.[0]?.[1] || "0";
+          const value = parseFloat(alertValue) || 0;
 
-            if (alert.metric.criticalAt) {
-              const criticalThreshold = parseFloat(alert.metric.criticalAt);
-              if (value >= criticalThreshold) {
-                severity = "critical";
-                buttonColor = "text-danger";
-              }
+          if (alert.metric.criticalAt) {
+            const criticalThreshold = parseFloat(alert.metric.criticalAt);
+            if (value >= criticalThreshold) {
+              severity = "critical";
+              buttonColor = "text-danger";
             }
-            return {
-              alertName: alert.metric.alertname || alert.metric.name || "Unknown Alert",
-              severity,
-              value,
-              description: alert.metric.description || "",
-              unit: alert.metric.unit || "",
-            };
           }
-        );
+          return {
+            alertName:
+              alert.metric.alertname || alert.metric.name || "Unknown Alert",
+            severity,
+            value,
+            description: alert.metric.description || "",
+            unit: alert.metric.unit || "",
+          };
+        });
         setAlerts(alertDetails);
         setPrometheusQueryBtnColorRef.current(buttonColor);
       } else {
