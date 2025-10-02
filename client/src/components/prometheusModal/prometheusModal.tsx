@@ -57,6 +57,7 @@ interface AlertDetails {
   severity: string;
   value: number;
   description: string;
+  unit?: string;
 }
 
 function usePrometheusWebSocket() {
@@ -367,6 +368,7 @@ export function PrometheusQueryBox({
           severity,
           value,
           description: alert.annotations?.description || "",
+          unit: alert.labels.unit ? alert.labels.unit : "",
         };
       });
       setAlerts(alertDetails);
@@ -411,7 +413,7 @@ export function PrometheusQueryBox({
                 alert.severity === "warning" ? "text-warning" : "text-danger"
               )}
             >
-              {alert.value}
+              {alert.value} {alert.unit}
             </div>
             {idx < alerts.length - 1 && <hr className="my-2" />}
           </div>
