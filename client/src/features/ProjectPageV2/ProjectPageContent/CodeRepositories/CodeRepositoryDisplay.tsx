@@ -395,7 +395,7 @@ function CodeRepositoryActions({
 
 interface CodeRepositoryErrorProps {
   error: FetchBaseQueryError | SerializedError;
-  provider: Pick<Provider, "id" | "kind"> | undefined;
+  provider: Pick<Provider, "id" | "kind" | "image_registry_url"> | undefined;
 }
 
 function CodeRepositoryError({ error, provider }: CodeRepositoryErrorProps) {
@@ -434,6 +434,7 @@ function CodeRepositoryError({ error, provider }: CodeRepositoryErrorProps) {
             connectionStatus="connected"
             id={provider.id}
             kind={provider.kind}
+            registryUrl={provider.image_registry_url}
           />
         </div>
       </WarnAlert>

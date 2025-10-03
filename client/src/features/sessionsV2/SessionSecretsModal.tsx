@@ -145,7 +145,8 @@ export default function SessionSecretsModal({
           Cancel
         </Button>
         <Button color="outline-primary" onClick={onSkip}>
-          Skip <SkipForward className={cx("bi", "me-1")} />
+          <SkipForward className={cx("bi", "me-1")} />
+          Skip
         </Button>
       </ModalFooter>
     </ScrollableModal>

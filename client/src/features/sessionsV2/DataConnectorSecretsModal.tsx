@@ -622,7 +622,8 @@ function SkipConnectionTestButton({
     <>
       <span ref={skipButtonRef}>
         <Button color="outline-primary" className={cx("ms-2")} onClick={onSkip}>
-          Skip <SkipForward className={cx("bi", "me-1")} />
+          <SkipForward className={cx("bi", "me-1")} />
+          Skip
         </Button>
       </span>
       <UncontrolledTooltip target={skipButtonRef}>
