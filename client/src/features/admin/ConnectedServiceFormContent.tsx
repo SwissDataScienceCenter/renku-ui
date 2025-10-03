@@ -135,12 +135,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="image_registry_url"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx(
-                "form-control",
-                errors.image_registry_url && "is-invalid"
-              )}
+              className={cx("form-control", errors && "is-invalid")}
               id="addConnectedServiceImageRegistryUrl"
               placeholder="URL"
               type="text"
@@ -149,8 +146,14 @@ export default function ConnectedServiceFormContent({
           )}
         />
         <div className="invalid-feedback">
-          Please provide a valid image registry URL
+          Please provide a valid URL or leave it empty
         </div>
+        {watchKind === "github" && !!watchImageRegistryUrl && (
+          <InfoAlert className={cx("mb-0", "mt-2")}>
+            For GitHub integrations, we only support the image registry for
+            OAuth Apps and not GitHub Apps.
+          </InfoAlert>
+        )}
       </div>
 
       <div className="mb-3">
@@ -242,34 +245,6 @@ export default function ConnectedServiceFormContent({
         <div className="invalid-feedback">
           Please provide a valid scope or leave it empty
         </div>
-      </div>
-
-      <div className="mb-0">
-        <Label className="form-label" for="addConnectedServiceImageRegistryUrl">
-          Image registry URL (optional, for GitLab integrations)
-        </Label>
-        <Controller
-          control={control}
-          name="image_registry_url"
-          render={({ field, fieldState: { error } }) => (
-            <Input
-              className={cx("form-control", error && "is-invalid")}
-              id="addConnectedServiceImageRegistryUrl"
-              placeholder="Image registry URL"
-              type="text"
-              {...field}
-            />
-          )}
-        />
-        <div className="invalid-feedback">
-          Please provide a valid URL or leave it empty
-        </div>
-        {watchKind === "github" && !!watchImageRegistryUrl && (
-          <InfoAlert className={cx("mb-0", "mt-2")}>
-            For GitHub integrations, we only support the image registry for
-            OAuth Apps and not GitHub Apps.
-          </InfoAlert>
-        )}
       </div>
 
       {watchKind === "generic_oidc" && (
