@@ -236,6 +236,7 @@ function ConnectedServiceCard({
                   id={id}
                   connectionStatus={connection?.status}
                   kind={kind}
+                  registryUrl={provider.image_registry_url}
                 />
                 <DisconnectButton
                   connectionStatus={connection?.status}
@@ -274,6 +275,7 @@ interface ConnectButtonParams {
   connectionStatus?: ConnectionStatus;
   id: string;
   kind?: ProviderKind;
+  registryUrl?: string;
 }
 
 export function ConnectButton({
@@ -281,14 +283,15 @@ export function ConnectButton({
   className,
   id,
   kind,
+  registryUrl,
 }: ConnectButtonParams) {
   const hereUrl = useMemo(() => {
     const here = new URL(window.location.href);
-    if (kind === "github") {
+    if (kind === "github" && !registryUrl) {
       here.searchParams.append(CHECK_STATUS_QUERY_PARAM, id);
     }
     return here.href;
-  }, [id, kind]);
+  }, [id, kind, registryUrl]);
 
   const authorizeUrl = `/api/data/oauth2/providers/${id}/authorize`;
   const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
@@ -386,14 +389,17 @@ function GitHubAppInstallations({
   connection,
   provider,
 }: GitHubAppInstallationsProps) {
+  const hasImageRegistry = !!provider.image_registry_url;
   const {
     data: account,
     isLoading: isLoadingAccount,
     error: accountError,
   } = connectedServicesApi.endpoints.getOauth2ConnectionsByConnectionIdAccount.useQueryState(
-    {
-      connectionId: connection.id,
-    }
+    hasImageRegistry
+      ? skipToken
+      : {
+          connectionId: connection.id,
+        }
   );
 
   const {
@@ -401,10 +407,14 @@ function GitHubAppInstallations({
     isFetching: isFetchingInstallations,
     error: installationsError,
     refetch: refetchInstallations,
-  } = useGetOauth2ConnectionsByConnectionIdInstallationsQuery({
-    connectionId: connection.id,
-    params: { per_page: 100 },
-  });
+  } = useGetOauth2ConnectionsByConnectionIdInstallationsQuery(
+    hasImageRegistry
+      ? skipToken
+      : {
+          connectionId: connection.id,
+          params: { per_page: 100 },
+        }
+  );
 
   const isLoading = isLoadingAccount || isFetchingInstallations;
   const error = accountError ?? installationsError;
@@ -421,6 +431,9 @@ function GitHubAppInstallations({
       </CardText>
     );
   }
+
+  // ? We currently support image registries only for oAuth apps where we don't have additional info/customization
+  if (hasImageRegistry) return null;
 
   if (error) {
     return <RtkOrNotebooksError error={error} dismissible={false} />;
