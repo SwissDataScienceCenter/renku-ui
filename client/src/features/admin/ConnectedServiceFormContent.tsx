@@ -17,17 +17,15 @@
  */
 
 import cx from "classnames";
-import { Control, Controller, FieldErrors, useWatch } from "react-hook-form";
+import { Control, Controller, useWatch } from "react-hook-form";
 import { Input, Label } from "reactstrap";
-import { InfoAlert, WarnAlert } from "~/components/Alert";
+import { InfoAlert } from "~/components/Alert";
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 
 export interface ConnectedServiceFormContentProps {
   control: Control<ProviderForm, unknown>;
-  errors: FieldErrors<ProviderForm>;
 }
 export default function ConnectedServiceFormContent({
-  errors,
   control,
 }: ConnectedServiceFormContentProps) {
   const watchKind = useWatch({ control, name: "kind" });
@@ -137,7 +135,7 @@ export default function ConnectedServiceFormContent({
           name="image_registry_url"
           render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx("form-control", errors && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceImageRegistryUrl"
               placeholder="URL"
               type="text"

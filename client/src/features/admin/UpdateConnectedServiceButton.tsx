@@ -83,7 +83,7 @@ function UpdateConnectedServiceModal({
 
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { isDirty },
     handleSubmit,
     reset,
   } = useForm<ProviderForm>({
@@ -187,7 +187,7 @@ function UpdateConnectedServiceModal({
             />
           </div>
 
-          <ConnectedServiceFormContent control={control} errors={errors} />
+          <ConnectedServiceFormContent control={control} />
         </ModalBody>
         <ModalFooter>
           <Button color="outline-primary" onClick={toggle}>
