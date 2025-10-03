@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { Control, Controller, FieldErrors, useWatch } from "react-hook-form";
 import { Input, Label } from "reactstrap";
-
+import { InfoAlert, WarnAlert } from "~/components/Alert";
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 
 export interface ConnectedServiceFormContentProps {
@@ -31,6 +31,10 @@ export default function ConnectedServiceFormContent({
   control,
 }: ConnectedServiceFormContentProps) {
   const watchKind = useWatch({ control, name: "kind" });
+  const watchImageRegistryUrl = useWatch({
+    control,
+    name: "image_registry_url",
+  });
 
   return (
     <>
@@ -240,7 +244,7 @@ export default function ConnectedServiceFormContent({
         </div>
       </div>
 
-      <div className="mb-3">
+      <div className="mb-0">
         <Label className="form-label" for="addConnectedServiceImageRegistryUrl">
           Image registry URL (optional, for GitLab integrations)
         </Label>
@@ -260,6 +264,12 @@ export default function ConnectedServiceFormContent({
         <div className="invalid-feedback">
           Please provide a valid URL or leave it empty
         </div>
+        {watchKind === "github" && !!watchImageRegistryUrl && (
+          <InfoAlert className={cx("mb-0", "mt-2")}>
+            For GitHub integrations, we only support the image registry for
+            OAuth Apps and not GitHub Apps.
+          </InfoAlert>
+        )}
       </div>
 
       {watchKind === "generic_oidc" && (
