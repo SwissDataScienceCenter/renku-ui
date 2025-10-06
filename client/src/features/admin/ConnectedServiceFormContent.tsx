@@ -17,19 +17,19 @@
  */
 
 import cx from "classnames";
-import { Control, Controller, FieldErrors } from "react-hook-form";
+import { Control, Controller, useWatch } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
-import { ConnectedServiceForm } from "../connectedServices/api/connectedServices.types";
+import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 
 export interface ConnectedServiceFormContentProps {
-  control: Control<ConnectedServiceForm, unknown>;
-  errors: FieldErrors<ConnectedServiceForm>;
+  control: Control<ProviderForm, unknown>;
 }
 export default function ConnectedServiceFormContent({
   control,
-  errors,
 }: ConnectedServiceFormContentProps) {
+  const watchKind = useWatch({ control, name: "kind" });
+
   return (
     <>
       <div className="mb-3">
@@ -39,16 +39,17 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="kind"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <>
               <Input
-                className={cx("form-control", errors.kind && "is-invalid")}
+                className={cx("form-control", error && "is-invalid")}
                 id="addConnectedServiceKind"
                 type="select"
                 {...field}
               >
                 <option value="gitlab">GitLab</option>
                 <option value="github">GitHub</option>
+                <option value="generic_oidc">Generic OIDC</option>
               </Input>
             </>
           )}
@@ -64,9 +65,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="app_slug"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx("form-control", errors.app_slug && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceApplicationSlug"
               placeholder="Application slug"
               type="text"
@@ -86,12 +87,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="display_name"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx(
-                "form-control",
-                errors.display_name && "is-invalid"
-              )}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceDisplayName"
               placeholder="Display name"
               type="text"
@@ -110,9 +108,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="url"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx("form-control", errors.url && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceUrl"
               placeholder="URL"
               type="text"
@@ -128,12 +126,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="use_pkce"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx(
-                "form-check-input",
-                errors.use_pkce && "is-invalid"
-              )}
+              className={cx("form-check-input", error && "is-invalid")}
               id="addConnectedServiceUsePkce"
               type="checkbox"
               checked={field.value}
@@ -158,10 +153,10 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="client_id"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               autoComplete="section-connected-service username"
-              className={cx("form-control", errors.client_id && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceClientId"
               placeholder="Client ID"
               type="text"
@@ -180,13 +175,10 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="client_secret"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               autoComplete="section-connected-service current-password"
-              className={cx(
-                "form-control",
-                errors.client_secret && "is-invalid"
-              )}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceClientSecret"
               placeholder="Client Secret"
               type="password"
@@ -206,9 +198,9 @@ export default function ConnectedServiceFormContent({
         <Controller
           control={control}
           name="scope"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
-              className={cx("form-control", errors.scope && "is-invalid")}
+              className={cx("form-control", error && "is-invalid")}
               id="addConnectedServiceScope"
               placeholder="Scope"
               type="text"
@@ -220,6 +212,52 @@ export default function ConnectedServiceFormContent({
           Please provide a valid scope or leave it empty
         </div>
       </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="addConnectedServiceImageRegistryUrl">
+          Image registry URL (optional, for GitLab integrations)
+        </Label>
+        <Controller
+          control={control}
+          name="image_registry_url"
+          render={({ field, fieldState: { error } }) => (
+            <Input
+              className={cx("form-control", error && "is-invalid")}
+              id="addConnectedServiceImageRegistryUrl"
+              placeholder="Image registry URL"
+              type="text"
+              {...field}
+            />
+          )}
+        />
+        <div className="invalid-feedback">
+          Please provide a valid URL or leave it empty
+        </div>
+      </div>
+
+      {watchKind === "generic_oidc" && (
+        <div className="mb-3">
+          <Label className="form-label" for="addConnectedServiceOidcIssuerUrl">
+            OpenID Connect Issuer URL (optional, for OIDC integrations)
+          </Label>
+          <Controller
+            control={control}
+            name="oidc_issuer_url"
+            render={({ field, fieldState: { error } }) => (
+              <Input
+                className={cx("form-control", error && "is-invalid")}
+                id="addConnectedServiceOidcIssuerUrl"
+                placeholder="OIDC Issuer URL"
+                type="text"
+                {...field}
+              />
+            )}
+          />
+          <div className="invalid-feedback">
+            Please provide a valid URL or leave it empty
+          </div>
+        </div>
+      )}
     </>
   );
 }

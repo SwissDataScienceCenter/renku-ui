@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,20 +16,15 @@
  * limitations under the License.
  */
 
-import type {
-  Pagination as BasePagination,
-  PaginatedResponse,
-} from "~/utils/types/pagination.types";
-import type { AppInstallation, ProviderPost } from "./connectedServices.api";
+import cx from "classnames";
+import { EmojiDizzyFill } from "react-bootstrap-icons";
+import { Badge } from "reactstrap";
 
-export type Pagination = Required<
-  Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
-> &
-  BasePagination;
-
-export type AppInstallationsPaginated = PaginatedResponse<
-  AppInstallation,
-  Pagination
->;
-
-export type ProviderForm = ProviderPost;
+export default function InternalGitLabReferenceWarnBadge() {
+  return (
+    <Badge pill color="take-action">
+      <EmojiDizzyFill className={cx("bi", "me-1")} />
+      Migration needed
+    </Badge>
+  );
+}

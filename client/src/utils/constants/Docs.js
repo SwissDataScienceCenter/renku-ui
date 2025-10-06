@@ -34,6 +34,8 @@ const Docs = {
 };
 
 const Links = {
+  CONTACT_US:
+    "https://renku.notion.site/Contact-dd098db288ff433893a4d4d429da99c1",
   DISCOURSE: "https://renku.discourse.group",
   GITTER: "https://gitter.im/SwissDataScienceCenter/renku",
   GITHUB: "https://github.com/SwissDataScienceCenter/renku",
@@ -69,6 +71,13 @@ const Links = {
     "https://renku.notion.site/Why-Renku-1900df2efafc80839b26cbad43f24778",
   RENKU_2_HANDS_ON_TUTORIAL:
     "https://renku.notion.site/Hands-On-Tutorial-1a50df2efafc800f8554e30fd7458fa6",
+  RENKU_2_MIGRATE_AWAY_FROM_GITLAB:
+    "https://renku.notion.site/How-to-migrate-out-of-RenkuLab-GitLab-2700df2efafc80c2b442c3ad981d86fc",
+  RENKU_2_SUNSET: "https://blog.renkulab.io/sunsetting-legacy/",
+  RENKU_2_CREATE_PROJECT:
+    "https://www.notion.so/renku/How-to-create-a-new-project-eea72bea221848d7bd0b3338dd859504#eea72bea221848d7bd0b3338dd859504",
+  RENKU_2_REGISTER_REDIRECT:
+    "https://www.notion.so/renku/2540df2efafc80c5ac36c6ecf6a375a0?v=2540df2efafc80b1ae2b000cee3e5a3c#2540df2efafc80c5ac36c6ecf6a375a0",
 };
 
 const GitlabLinks = {

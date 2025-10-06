@@ -258,6 +258,27 @@
           }
         },
         "tags": ["oauth2"]
+      },
+      "delete": {
+        "summary": "Delete an OAuth2 connection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "If deleted successfully"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
       }
     },
     "/oauth2/connections/{connection_id}/account": {
@@ -405,6 +426,9 @@
           },
           "image_registry_url": {
             "$ref": "#/components/schemas/ImageRegistryUrl"
+          },
+          "oidc_issuer_url": {
+            "$ref": "#/components/schemas/OidcIssuerUrl"
           }
         },
         "required": [
@@ -451,6 +475,9 @@
           },
           "image_registry_url": {
             "$ref": "#/components/schemas/ImageRegistryUrl"
+          },
+          "oidc_issuer_url": {
+            "$ref": "#/components/schemas/OidcIssuerUrl"
           }
         },
         "required": ["id", "kind", "client_id", "display_name", "scope", "url"]
@@ -485,6 +512,9 @@
           },
           "image_registry_url": {
             "$ref": "#/components/schemas/ImageRegistryUrl"
+          },
+          "oidc_issuer_url": {
+            "$ref": "#/components/schemas/OidcIssuerUrl"
           }
         }
       },
@@ -572,7 +602,14 @@
       },
       "ProviderKind": {
         "type": "string",
-        "enum": ["gitlab", "github", "drive", "onedrive", "dropbox"],
+        "enum": [
+          "gitlab",
+          "github",
+          "drive",
+          "onedrive",
+          "dropbox",
+          "generic_oidc"
+        ],
         "example": "gitlab"
       },
       "ApplicationSlug": {
@@ -645,6 +682,11 @@
         "type": "string",
         "description": "This should contain no paths, just the domain for the registry and the scheme\n(http or https) to access the image registry API.\n",
         "example": "https://registry.gitlab.com"
+      },
+      "OidcIssuerUrl": {
+        "type": "string",
+        "description": "The URL for OpenID Connect client discovery. Used for providers of kind 'generic_oidc'.\n",
+        "example": "https://renkulab.io/auth/realms/Renku"
       },
       "ErrorResponse": {
         "type": "object",

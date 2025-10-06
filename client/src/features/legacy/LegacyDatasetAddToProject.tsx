@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,20 +16,23 @@
  * limitations under the License.
  */
 
-import type {
-  Pagination as BasePagination,
-  PaginatedResponse,
-} from "~/utils/types/pagination.types";
-import type { AppInstallation, ProviderPost } from "./connectedServices.api";
+import cx from "classnames";
+import { useContext } from "react";
 
-export type Pagination = Required<
-  Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
-> &
-  BasePagination;
+import AppContext from "../../utils/context/appContext";
 
-export type AppInstallationsPaginated = PaginatedResponse<
-  AppInstallation,
-  Pagination
->;
+import SunsetBanner from "../projectsV2/shared/SunsetV1Banner";
 
-export type ProviderForm = ProviderPost;
+import NoLegacySupport from "./NoLegacySupport";
+
+export default function LegacyDatasetAddToProject() {
+  const { params } = useContext(AppContext);
+  if (params && !params.LEGACY_SUPPORT.enabled) {
+    return <NoLegacySupport />;
+  }
+  return (
+    <div className={cx("d-flex", "flex-column", "align-items-center", "w-100")}>
+      <SunsetBanner />
+    </div>
+  );
+}

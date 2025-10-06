@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,20 +16,31 @@
  * limitations under the License.
  */
 
-import type {
-  Pagination as BasePagination,
-  PaginatedResponse,
-} from "~/utils/types/pagination.types";
-import type { AppInstallation, ProviderPost } from "./connectedServices.api";
+import cx from "classnames";
+import { Alert } from "reactstrap";
 
-export type Pagination = Required<
-  Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
-> &
-  BasePagination;
-
-export type AppInstallationsPaginated = PaginatedResponse<
-  AppInstallation,
-  Pagination
->;
-
-export type ProviderForm = ProviderPost;
+interface TakeActionAlertProps {
+  children: React.ReactNode;
+  "data-cy"?: string;
+  icon?: React.ReactNode;
+  className?: string;
+}
+export default function TakeActionAlert({
+  children,
+  icon,
+  ...props
+}: TakeActionAlertProps) {
+  return (
+    <Alert
+      color="take-action"
+      isOpen
+      data-cy={props["data-cy"]}
+      className={cx(props.className, "overflow-y-auto")}
+    >
+      <div className={cx("d-flex", "gap-3")}>
+        {icon && <div>{icon}</div>}
+        <div className={cx("my-auto", "w-100")}>{children}</div>
+      </div>
+    </Alert>
+  );
+}

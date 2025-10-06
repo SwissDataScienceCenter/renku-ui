@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,20 +16,22 @@
  * limitations under the License.
  */
 
-import type {
-  Pagination as BasePagination,
-  PaginatedResponse,
-} from "~/utils/types/pagination.types";
-import type { AppInstallation, ProviderPost } from "./connectedServices.api";
+import { useContext } from "react";
+import { Navigate } from "react-router";
 
-export type Pagination = Required<
-  Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
-> &
-  BasePagination;
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import AppContext from "../../utils/context/appContext";
 
-export type AppInstallationsPaginated = PaginatedResponse<
-  AppInstallation,
-  Pagination
->;
-
-export type ProviderForm = ProviderPost;
+export default function LegacyDatasets() {
+  const { params } = useContext(AppContext);
+  if (params && !params.LEGACY_SUPPORT.enabled) {
+    return (
+      <Navigate
+        // eslint-disable-next-line spellcheck/spell-checker
+        to={`${ABSOLUTE_ROUTES.v2.search}?q=type%3Adataconnector`}
+        replace
+      />
+    );
+  }
+  return <Navigate to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`} replace />;
+}
