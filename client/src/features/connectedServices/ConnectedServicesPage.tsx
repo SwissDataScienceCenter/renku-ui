@@ -62,6 +62,10 @@ import {
   type ProviderKind,
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
+import {
+  SEARCH_PARAM_PROVIDER,
+  SEARCH_PARAM_SOURCE,
+} from "./connectedServices.constants";
 import { getSettingsUrl } from "./connectedServices.utils";
 import ContactUsCard from "./ContactUsCard";
 
@@ -72,8 +76,8 @@ export default function ConnectedServicesPage() {
     (state) => state.stateModel.user.logged
   );
   const [searchParams] = useSearchParams();
-  const targetProviderId = searchParams.get("targetProvider");
-  const source = searchParams.get("source");
+  const targetProviderId = searchParams.get(SEARCH_PARAM_PROVIDER);
+  const source = searchParams.get(SEARCH_PARAM_SOURCE);
 
   const {
     data: providers,
@@ -216,13 +220,13 @@ function ConnectedServiceCard({
                 <HandIndexThumb className={cx("bi", "me-1")} />
                 Action required. Please connect to this integration
                 {source && (
-                  <span>
+                  <>
                     {" "}
                     and then{" "}
                     <Link to={source} className={cx("primary")}>
                       go back to your project
                     </Link>
-                  </span>
+                  </>
                 )}
                 .
               </p>

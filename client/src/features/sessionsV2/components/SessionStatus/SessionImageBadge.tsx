@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { CircleFill } from "react-bootstrap-icons";
 import { Loader } from "~/components/Loader";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
@@ -47,11 +48,12 @@ export default function SessionImageBadge({
     >
       {loading ? (
         <>
-          <Loader size={12} inline /> Checking image status.
+          <Loader className="me-1" size={12} inline />
+          Checking image status.
         </>
       ) : (
         <>
-          <CircleFill className="bi" />{" "}
+          <CircleFill className={cx("bi", "me-1")} />
           {data?.accessible
             ? "Image accessible"
             : data?.provider?.id &&

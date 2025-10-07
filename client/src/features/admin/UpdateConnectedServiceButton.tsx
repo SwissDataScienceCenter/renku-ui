@@ -146,7 +146,7 @@ function UpdateConnectedServiceModal({
       scope: provider.scope,
       url: provider.url,
       use_pkce: provider.use_pkce,
-      image_registry_url: provider.image_registry_url,
+      image_registry_url: provider.image_registry_url ?? "",
       oidc_issuer_url: provider.oidc_issuer_url ?? "",
       ...(provider.client_secret &&
         provider.client_secret !== "redacted" && {
