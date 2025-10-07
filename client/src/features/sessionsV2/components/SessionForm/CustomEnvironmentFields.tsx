@@ -18,7 +18,15 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useState } from "react";
+import { debounce, type DebounceSettings, type DebouncedFunc } from "lodash";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
+import { ExclamationTriangle } from "react-bootstrap-icons";
 import { Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 import { InfoAlert } from "../../../../components/Alert";
@@ -29,7 +37,27 @@ import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
-import { ExclamationTriangle } from "react-bootstrap-icons";
+
+function useDebouncedState<S>(
+  initialState: S | (() => S),
+  wait?: number,
+  options?: DebounceSettings
+): [S, DebouncedFunc<Dispatch<SetStateAction<S>>>] {
+  const [state, setState] = useState(initialState);
+
+  const debouncedSet = useMemo<DebouncedFunc<Dispatch<SetStateAction<S>>>>(
+    () => debounce(setState, wait, options),
+    [wait, options]
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedSet.cancel();
+    };
+  }, [debouncedSet]);
+
+  return [state, debouncedSet];
+}
 
 export function CustomEnvironmentFields({
   control,
@@ -39,22 +67,19 @@ export function CustomEnvironmentFields({
   const watchEnvironmentSelect = watch("environmentSelect");
   const watchContainerImage = watch("container_image");
   const [debouncedContainerImage, setDebouncedContainerImage] =
-    useState<string>();
-  const [inputModified, setInputModified] = useState(false);
+    useDebouncedState<string>(watchContainerImage ?? "", 1_000);
+
+  useEffect(() => {
+    setDebouncedContainerImage(watchContainerImage ?? "");
+  }, [watchContainerImage, setDebouncedContainerImage]);
+
+  const inputModified = watchContainerImage !== debouncedContainerImage;
 
   const { data, isFetching } = useGetSessionsImagesQuery(
     watchEnvironmentSelect === "custom + image" && debouncedContainerImage
       ? { imageUrl: debouncedContainerImage }
       : skipToken
   );
-
-  useEffect(() => {
-    if (debouncedContainerImage !== watchContainerImage) {
-      setInputModified(true);
-    } else {
-      setInputModified(false);
-    }
-  }, [debouncedContainerImage, watchContainerImage]);
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -89,9 +114,6 @@ export function CustomEnvironmentFields({
               placeholder="image:tag"
               type="text"
               {...field}
-              onBlur={() => {
-                setDebouncedContainerImage(field.value);
-              }}
             />
           )}
           rules={{
