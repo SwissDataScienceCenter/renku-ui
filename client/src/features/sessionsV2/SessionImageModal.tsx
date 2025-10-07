@@ -80,11 +80,11 @@ export default function SessionImageModal({
         {!data.connection && !data.provider ? (
           <>
             <p className="mb-2">
-              The image reference <code>{containerImage}</code> is invalid or
-              points to an unsupported registry.
+              The container image reference <code>{containerImage}</code> is
+              invalid or points to an unsupported registry.
             </p>
             <p className="mb-0">
-              Please verify the reference and check if the registry is in the
+              Please verify the image and check if the registry is in the
               currently supported{" "}
               <Link
                 to={{
@@ -95,8 +95,8 @@ export default function SessionImageModal({
                 <Plugin className={cx("bi", "me-1")} />
                 integrations
               </Link>
-              . If you{"'"}re certain the reference is correct and points to a
-              registry we don{"'"}t currently support,{" "}
+              . If you&apos;re certain the reference is correct and points to a
+              registry we don&apos;t currently support,{" "}
               <a
                 target="_blank"
                 rel="noreferrer noopener"
@@ -111,8 +111,8 @@ export default function SessionImageModal({
         ) : data.connection?.status === "connected" ? (
           <>
             <p className="mb-0">
-              Either the image reference does not exist, or you do not have
-              access to it.
+              Either the container image reference does not exist, or you do not
+              have access to it.
             </p>
             {data?.provider?.id && (
               <>
@@ -136,9 +136,9 @@ export default function SessionImageModal({
         ) : (
           <>
             <p className="mb-2">
-              This image reference is from a supported registry, but you haven
-              {"'"}t activated the integration yet. Activate the integration to
-              check if you have access to this image.
+              This container image reference is from a supported registry, but
+              you haven &apos;t activated the integration yet. Activate the
+              integration to check if you have access to this image.
             </p>
             <Link
               className={cx("btn", "btn-primary", "btn-sm")}
