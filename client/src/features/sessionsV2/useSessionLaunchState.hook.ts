@@ -88,9 +88,11 @@ export default function useSessionLauncherState({
         : skipToken
     );
   const sessionImage = useMemo(() => {
-    if (isLoadingSessionImage) return undefined;
-    return dataSessionImage ?? { accessible: true };
-  }, [dataSessionImage, isLoadingSessionImage]);
+    if (isExternalImageEnvironment && containerImage) {
+      return dataSessionImage;
+    }
+    return { accessible: true };
+  }, [containerImage, dataSessionImage, isExternalImageEnvironment]);
 
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
