@@ -46,7 +46,7 @@ export const DEFAULT_META: MetaDescriptor[] = [
   {
     name: "description",
     content:
-      "An open-source platform for reproducible and collaborative data science. Share code, data and computational environments whilst tracking provenance and lineage of research objects.",
+      "An open-source platform reproducible and collaborative data science. Share code, data and computational environments whilst tracking provenance and lineage of research objects.",
   },
   {
     property: "og:title",
