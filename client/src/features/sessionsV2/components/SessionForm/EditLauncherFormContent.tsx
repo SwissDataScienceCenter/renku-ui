@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { ExclamationTriangle } from "react-bootstrap-icons";
 import {
   Control,
   Controller,
@@ -26,19 +28,21 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 import { Input, Label, ListGroup } from "reactstrap";
+import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
-
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { Links } from "../../../../utils/constants/Docs";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
+import { useGetSessionsImagesQuery } from "../../api/sessionsV2.api";
 import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { prioritizeSelectedEnvironment } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 import EnvironmentKindField from "./EnvironmentKindField";
+import InputOverlayLoader from "./InputOverlayLoader";
 import { SessionEnvironmentItem } from "./SessionEnvironmentItem";
 
 interface SessionLauncherFormContentProps {
@@ -60,12 +64,28 @@ export default function EditLauncherFormContent({
   touchedFields,
   environmentId,
 }: EditLauncherFormContentProps) {
+  const watchEnvironmentSelect = watch("environmentSelect");
+  const watchContainerImage = watch("container_image");
+
   const {
     data: environments,
     error,
     isLoading,
   } = useGetSessionEnvironmentsQuery({});
-  const environmentSelect = watch("environmentSelect");
+
+  const [debouncedContainerImage, setDebouncedContainerImage] =
+    useDebouncedState<string>(watchContainerImage ?? "", 1_000);
+  useEffect(() => {
+    setDebouncedContainerImage(watchContainerImage ?? "");
+  }, [watchContainerImage, setDebouncedContainerImage]);
+
+  const inputModified = watchContainerImage !== debouncedContainerImage;
+
+  const { data, isFetching } = useGetSessionsImagesQuery(
+    watchEnvironmentSelect === "custom + image" && debouncedContainerImage
+      ? { imageUrl: debouncedContainerImage }
+      : skipToken
+  );
 
   const orderedEnvironment = useMemo(
     () => prioritizeSelectedEnvironment(environments, environmentId),
@@ -94,7 +114,7 @@ export default function EditLauncherFormContent({
         <Controller
           control={control}
           name="environmentId"
-          rules={{ required: environmentSelect === "global" }}
+          rules={{ required: watchEnvironmentSelect === "global" }}
           render={({ field }) => (
             <>
               <ListGroup>
@@ -134,16 +154,28 @@ export default function EditLauncherFormContent({
         control={control}
         name="container_image"
         render={({ field }) => (
-          <Input
-            id="addSessionLauncherContainerImage"
-            placeholder="Docker image"
-            {...field}
-            className={cx(errors.container_image && "is-invalid")}
-          />
+          <div className="position-relative">
+            <Input
+              className={cx(
+                errors.container_image && "is-invalid",
+                !errors.container_image &&
+                  data?.accessible === true &&
+                  !isFetching &&
+                  !inputModified &&
+                  "is-valid"
+              )}
+              data-cy="custom-image-input"
+              id="addSessionLauncherContainerImage"
+              placeholder="image:tag"
+              type="text"
+              {...field}
+            />
+            {isFetching && <InputOverlayLoader />}
+          </div>
         )}
         rules={{
           required: {
-            value: environmentSelect === "custom + image",
+            value: watchEnvironmentSelect === "custom + image",
             message: "Please provide a container image.",
           },
           pattern: {
@@ -156,6 +188,15 @@ export default function EditLauncherFormContent({
         {errors.container_image?.message ??
           "Please provide a valid container image."}
       </div>
+      {!isFetching &&
+        !errors.container_image?.message &&
+        data?.accessible === false && (
+          <div className={cx("mt-1", "small", "text-warning-emphasis")}>
+            <ExclamationTriangle className="bi" /> Image not found. Access to
+            this image may require connecting an additional integration after
+            creating this launcher.
+          </div>
+        )}
       <div className={cx("fw-bold", "w-100")}>Advanced settings</div>
 
       <InfoAlert dismissible={false} timeout={0}>
@@ -183,10 +224,10 @@ export default function EditLauncherFormContent({
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <EnvironmentKindField control={control} />
 
-      {environmentSelect === "global" && renderEnvironmentList()}
-      {environmentSelect === "custom + image" &&
+      {watchEnvironmentSelect === "global" && renderEnvironmentList()}
+      {watchEnvironmentSelect === "custom + image" &&
         renderCustomEnvironmentFields()}
-      {environmentSelect === "custom + build" && (
+      {watchEnvironmentSelect === "custom + build" && (
         <BuilderEnvironmentFields control={control} isEdit />
       )}
     </div>

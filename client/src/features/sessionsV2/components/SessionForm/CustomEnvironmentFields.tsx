@@ -18,18 +18,11 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { debounce, type DebounceSettings, type DebouncedFunc } from "lodash";
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { useEffect } from "react";
 import { ExclamationTriangle } from "react-bootstrap-icons";
 import { Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
-import { Loader } from "~/components/Loader";
+import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Links } from "../../../../utils/constants/Docs";
@@ -38,27 +31,7 @@ import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
-
-function useDebouncedState<S>(
-  initialState: S | (() => S),
-  wait?: number,
-  options?: DebounceSettings
-): [S, DebouncedFunc<Dispatch<SetStateAction<S>>>] {
-  const [state, setState] = useState(initialState);
-
-  const debouncedSet = useMemo<DebouncedFunc<Dispatch<SetStateAction<S>>>>(
-    () => debounce(setState, wait, options),
-    [wait, options]
-  );
-
-  useEffect(() => {
-    return () => {
-      debouncedSet.cancel();
-    };
-  }, [debouncedSet]);
-
-  return [state, debouncedSet];
-}
+import InputOverlayLoader from "./InputOverlayLoader";
 
 export function CustomEnvironmentFields({
   control,
@@ -90,10 +63,7 @@ export function CustomEnvironmentFields({
         repository/image:tag).
       </p>
       <div className={cx("d-flex", "flex-column")}>
-        <Label
-          className={cx("form-label")}
-          for="addSessionLauncherContainerImage"
-        >
+        <Label className="form-label" for="addSessionLauncherContainerImage">
           Container Image
         </Label>
         <Controller
@@ -117,20 +87,7 @@ export function CustomEnvironmentFields({
                 type="text"
                 {...field}
               />
-              {isFetching && (
-                <div
-                  className={cx(
-                    "end-0",
-                    "me-2",
-                    "pe-none",
-                    "position-absolute",
-                    "top-50",
-                    "translate-middle-y"
-                  )}
-                >
-                  <Loader size={16} inline />
-                </div>
-              )}
+              {isFetching && <InputOverlayLoader />}
             </div>
           )}
           rules={{
