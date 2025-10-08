@@ -29,6 +29,7 @@ import {
 import { ExclamationTriangle } from "react-bootstrap-icons";
 import { Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
+import { Loader } from "~/components/Loader";
 import { InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Links } from "../../../../utils/constants/Docs";
@@ -99,22 +100,38 @@ export function CustomEnvironmentFields({
           control={control}
           name="container_image"
           render={({ field }) => (
-            <Input
-              autoFocus={true}
-              className={cx(
-                errors.container_image && "is-invalid",
-                !errors.container_image &&
-                  data?.accessible === true &&
-                  !isFetching &&
-                  !inputModified &&
-                  "is-valid"
+            <div className="position-relative">
+              <Input
+                autoFocus={true}
+                className={cx(
+                  errors.container_image && "is-invalid",
+                  !errors.container_image &&
+                    data?.accessible === true &&
+                    !isFetching &&
+                    !inputModified &&
+                    "is-valid"
+                )}
+                data-cy="custom-image-input"
+                id="addSessionLauncherContainerImage"
+                placeholder="image:tag"
+                type="text"
+                {...field}
+              />
+              {isFetching && (
+                <div
+                  className={cx(
+                    "end-0",
+                    "me-2",
+                    "pe-none",
+                    "position-absolute",
+                    "top-50",
+                    "translate-middle-y"
+                  )}
+                >
+                  <Loader size={16} inline />
+                </div>
               )}
-              data-cy="custom-image-input"
-              id="addSessionLauncherContainerImage"
-              placeholder="image:tag"
-              type="text"
-              {...field}
-            />
+            </div>
           )}
           rules={{
             required: {
@@ -131,13 +148,15 @@ export function CustomEnvironmentFields({
           {errors.container_image?.message ??
             "Please provide a valid container image."}
         </div>
-        {!errors.container_image?.message && data?.accessible === false && (
-          <div className={cx("mt-1", "small", "text-warning-emphasis")}>
-            <ExclamationTriangle className="bi" /> Image not found. Access to
-            this image may require connecting an additional integration after
-            creating this launcher.
-          </div>
-        )}
+        {!isFetching &&
+          !errors.container_image?.message &&
+          data?.accessible === false && (
+            <div className={cx("mt-1", "small", "text-warning-emphasis")}>
+              <ExclamationTriangle className="bi" /> Image not found. Access to
+              this image may require connecting an additional integration after
+              creating this launcher.
+            </div>
+          )}
       </div>
       <div className={cx("fw-bold", "w-100")}>Advanced settings</div>
 
