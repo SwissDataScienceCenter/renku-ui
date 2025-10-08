@@ -54,7 +54,7 @@ export default function UpdateConnectedServiceButton({
 
   return (
     <>
-      <Button color="outline-rk-green" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PencilSquare className={cx("bi", "me-1")} />
         Edit
       </Button>
@@ -169,7 +169,7 @@ function UpdateConnectedServiceModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Update provider</ModalHeader>
+        <ModalHeader toggle={toggle}>Update intergation</ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
 
@@ -190,17 +190,21 @@ function UpdateConnectedServiceModal({
           <ConnectedServiceFormContent control={control} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading || !isDirty} type="submit">
+          <Button
+            color="primary"
+            disabled={result.isLoading || !isDirty}
+            type="submit"
+          >
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
               <CheckLg className={cx("bi", "me-1")} />
             )}
-            Update provider
+            Update integration
           </Button>
         </ModalFooter>
       </Form>

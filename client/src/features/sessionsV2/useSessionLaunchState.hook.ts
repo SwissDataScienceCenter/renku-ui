@@ -18,7 +18,6 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
-
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
@@ -29,6 +28,7 @@ import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDat
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetResourcePoolsQuery } from "./api/computeResources.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
 import { DEFAULT_URL } from "./session.constants";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
@@ -77,6 +77,22 @@ export default function useSessionLauncherState({
   } = useSessionSecrets({ projectId: project.id });
 
   const containerImage = launcher.environment?.container_image ?? "";
+  const isExternalImageEnvironment =
+    containerImage &&
+    launcher.environment?.environment_kind === "CUSTOM" &&
+    launcher.environment?.environment_image_source === "image";
+  const { data: dataSessionImage, isLoading: isLoadingSessionImage } =
+    useGetSessionsImagesQuery(
+      isExternalImageEnvironment && containerImage
+        ? { imageUrl: containerImage }
+        : skipToken
+    );
+  const sessionImage = useMemo(() => {
+    if (isExternalImageEnvironment && containerImage) {
+      return dataSessionImage;
+    }
+    return { accessible: true };
+  }, [containerImage, dataSessionImage, isExternalImageEnvironment]);
 
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
@@ -150,14 +166,26 @@ export default function useSessionLauncherState({
     isReadyDataConnectorConfigs,
   ]);
 
+  useEffect(() => {
+    // check session image availability -- it should block only for external images
+    if (
+      !isExternalImageEnvironment ||
+      (!!sessionImage && sessionImage.accessible)
+    ) {
+      dispatch(startSessionOptionsV2Slice.actions.setImageReady(true));
+    }
+  }, [dispatch, isExternalImageEnvironment, sessionImage]);
+
   return {
     containerImage,
+    sessionImage,
     defaultSessionClass,
     isFetchingOrLoadingStorages,
-    resourcePools,
-    isPendingResourceClass,
-    setResourceClass,
     isFetchingSessionSecrets,
+    isLoadingSessionImage,
+    isPendingResourceClass,
+    resourcePools,
     sessionSecretSlotsWithSecrets,
+    setResourceClass,
   };
 }

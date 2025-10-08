@@ -25,7 +25,6 @@ import {
   useParams,
   useSearchParams,
 } from "react-router";
-
 import PageLoader from "../../components/PageLoader";
 import {
   RtkErrorAlert,
@@ -52,19 +51,20 @@ import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
+import SessionImageModal from "./SessionImageModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { usePostSessionsMutation as useLaunchSessionMutation } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
+import { validateEnvVariableName } from "./session.utils";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
   SessionStartDataConnectorConfiguration,
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
-import { validateEnvVariableName } from "./session.utils";
 
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
@@ -448,6 +448,8 @@ function StartSessionFromLauncher({
     setResourceClass,
     isFetchingSessionSecrets,
     sessionSecretSlotsWithSecrets,
+    isLoadingSessionImage,
+    sessionImage,
   } = useSessionLaunchState({
     launcher,
     project,
@@ -467,7 +469,13 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.sessionClass !== 0 &&
     startSessionOptionsV2.cloudStorage != null &&
     !isFetchingOrLoadingStorages &&
-    !isFetchingSessionSecrets;
+    !isFetchingSessionSecrets &&
+    !isLoadingSessionImage;
+
+  const fetchingApi =
+    isFetchingOrLoadingStorages ||
+    isFetchingSessionSecrets ||
+    isLoadingSessionImage;
 
   // set favicon during session launch
   useEffect(() => {
@@ -497,16 +505,18 @@ function StartSessionFromLauncher({
       startSessionOptionsV2.cloudStorage &&
       !shouldSaveCredentials &&
       startSessionOptionsV2.userSecretsReady &&
+      startSessionOptionsV2.imageReady &&
       !sessionStarted
     )
       setSessionStarted(true);
   }, [
     allDataFetched,
     needsCredentials,
-    startSessionOptionsV2.cloudStorage,
-    startSessionOptionsV2.userSecretsReady,
-    shouldSaveCredentials,
     sessionStarted,
+    shouldSaveCredentials,
+    startSessionOptionsV2.cloudStorage,
+    startSessionOptionsV2.imageReady,
+    startSessionOptionsV2.userSecretsReady,
   ]);
 
   const steps = [
@@ -534,6 +544,15 @@ function StartSessionFromLauncher({
     return <SessionStarting launcher={launcher} project={project} />;
 
   if (
+    !fetchingApi &&
+    !sessionImage?.accessible &&
+    !startSessionOptionsV2.imageReady
+  ) {
+    return <StartSessionImageModal launcher={launcher} project={project} />;
+  }
+
+  if (
+    !fetchingApi &&
     sessionSecretSlotsWithSecrets &&
     !startSessionOptionsV2.userSecretsReady
   ) {
@@ -667,6 +686,49 @@ function StartSessionWithSessionSecretsModal({
           isOpen={showModal}
           project={project}
           sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
+        />
+      </div>
+    </div>
+  );
+}
+
+function StartSessionImageModal({
+  launcher,
+  project,
+}: StartSessionFromLauncherProps) {
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+  );
+
+  const showModal = !startSessionOptionsV2.imageReady;
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Launching session ${launcher.name}`}
+          status={steps}
+        />
+        <SessionImageModal
+          isOpen={showModal}
+          launcher={launcher}
+          project={project}
         />
       </div>
     </div>

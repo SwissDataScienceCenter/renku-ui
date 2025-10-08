@@ -278,7 +278,8 @@
           "default": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "tags": ["oauth2"]
       }
     },
     "/oauth2/connections/{connection_id}/account": {

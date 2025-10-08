@@ -57,10 +57,15 @@ const enhanced = connectedServicesGeneratedApi.enhanceEndpoints({
           ? [
               {
                 type: "ConnectedAccount" as const,
-                id: `${connectionId}-${result.username}`,
+                id: connectionId,
               },
             ]
           : [],
+    },
+    deleteOauth2ConnectionsByConnectionId: {
+      invalidatesTags: (_result, _error, { connectionId }) => [
+        { type: "Connection", id: connectionId },
+      ],
     },
     postOauth2Providers: {
       invalidatesTags: ["Provider"],
@@ -116,6 +121,7 @@ export const {
   useGetOauth2ProvidersByProviderIdQuery,
   usePatchOauth2ProvidersByProviderIdMutation,
   useDeleteOauth2ProvidersByProviderIdMutation,
+  useDeleteOauth2ConnectionsByConnectionIdMutation,
   useGetOauth2ProvidersByProviderIdAuthorizeQuery,
   useGetOauth2ConnectionsQuery,
   useGetOauth2ConnectionsByConnectionIdQuery,
