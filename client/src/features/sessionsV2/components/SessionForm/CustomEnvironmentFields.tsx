@@ -115,26 +115,29 @@ export function CustomEnvironmentFields({
             </div>
           )}
       </div>
-      <div className={cx("fw-bold", "w-100")}>Advanced settings</div>
 
-      <InfoAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          Please see the{" "}
-          <ExternalLink
-            role="text"
-            url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
-            title="documentation"
-            showLinkIcon
-            iconAfter
-          />{" "}
-          for how to complete this form to make your image run on Renkulab.
-        </p>
-      </InfoAlert>
+      <div>
+        <p className={cx("fs-6", "fw-bold", "w-100")}>Advanced settings</p>
 
-      <AdvancedSettingsFields<SessionLauncherForm>
-        control={control}
-        errors={errors}
-      />
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Please see the{" "}
+            <ExternalLink
+              role="text"
+              url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
+              title="documentation"
+              showLinkIcon
+              iconAfter
+            />{" "}
+            for how to complete this form to make your image run on Renkulab.
+          </p>
+        </InfoAlert>
+
+        <AdvancedSettingsFields<SessionLauncherForm>
+          control={control}
+          errors={errors}
+        />
+      </div>
     </div>
   );
 }

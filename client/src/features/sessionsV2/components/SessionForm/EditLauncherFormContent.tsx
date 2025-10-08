@@ -147,76 +147,84 @@ export default function EditLauncherFormContent({
 
   const renderCustomEnvironmentFields = () => (
     <>
-      <Label className="form-label" htmlFor="addSessionLauncherContainerImage">
-        Container Image
-      </Label>
-      <Controller
-        control={control}
-        name="container_image"
-        render={({ field }) => (
-          <div className="position-relative">
-            <Input
-              className={cx(
-                errors.container_image && "is-invalid",
-                !errors.container_image &&
-                  data?.accessible === true &&
-                  !isFetching &&
-                  !inputModified &&
-                  "is-valid"
-              )}
-              data-cy="custom-image-input"
-              id="addSessionLauncherContainerImage"
-              placeholder="image:tag"
-              type="text"
-              {...field}
-            />
-            {isFetching && <InputOverlayLoader />}
-          </div>
-        )}
-        rules={{
-          required: {
-            value: watchEnvironmentSelect === "custom + image",
-            message: "Please provide a container image.",
-          },
-          pattern: {
-            value: CONTAINER_IMAGE_PATTERN,
-            message: "Please provide a valid container image.",
-          },
-        }}
-      />
-      <div className="invalid-feedback">
-        {errors.container_image?.message ??
-          "Please provide a valid container image."}
+      <div className={cx("d-flex", "flex-column")}>
+        <Label
+          className="form-label"
+          htmlFor="addSessionLauncherContainerImage"
+        >
+          Container Image
+        </Label>
+        <Controller
+          control={control}
+          name="container_image"
+          render={({ field }) => (
+            <div className="position-relative">
+              <Input
+                className={cx(
+                  errors.container_image && "is-invalid",
+                  !errors.container_image &&
+                    data?.accessible === true &&
+                    !isFetching &&
+                    !inputModified &&
+                    "is-valid"
+                )}
+                data-cy="custom-image-input"
+                id="addSessionLauncherContainerImage"
+                placeholder="image:tag"
+                type="text"
+                {...field}
+              />
+              {isFetching && <InputOverlayLoader />}
+            </div>
+          )}
+          rules={{
+            required: {
+              value: watchEnvironmentSelect === "custom + image",
+              message: "Please provide a container image.",
+            },
+            pattern: {
+              value: CONTAINER_IMAGE_PATTERN,
+              message: "Please provide a valid container image.",
+            },
+          }}
+        />
+        <div className="invalid-feedback">
+          {errors.container_image?.message ??
+            "Please provide a valid container image."}
+        </div>
+        {!isFetching &&
+          !errors.container_image?.message &&
+          data?.accessible === false && (
+            <div className={cx("mt-1", "small", "text-warning-emphasis")}>
+              <ExclamationTriangle className="bi" /> Image not found. Access to
+              this image may require connecting an additional integration after
+              creating this launcher.
+            </div>
+          )}
       </div>
-      {!isFetching &&
-        !errors.container_image?.message &&
-        data?.accessible === false && (
-          <div className={cx("mt-1", "small", "text-warning-emphasis")}>
-            <ExclamationTriangle className="bi" /> Image not found. Access to
-            this image may require connecting an additional integration after
-            creating this launcher.
-          </div>
-        )}
-      <div className={cx("fw-bold", "w-100")}>Advanced settings</div>
 
-      <InfoAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          Please see the{" "}
-          <ExternalLink
-            role="text"
-            url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
-            title="documentation"
-            showLinkIcon
-            iconAfter
-          />{" "}
-          for how to complete this form to make your image run on Renkulab.
-        </p>
-      </InfoAlert>
+      <div>
+        <p className={cx("fs-6", "fw-bold", "w-100")}>Advanced settings</p>
 
-      <AdvancedSettingsFields<SessionLauncherForm>
-        control={control}
-        errors={errors}
-      />
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Please see the{" "}
+            <ExternalLink
+              role="text"
+              url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
+              title="documentation"
+              showLinkIcon
+              iconAfter
+            />{" "}
+            for how to complete this form to make your image run on Renkulab.
+          </p>
+        </InfoAlert>
+
+        <AdvancedSettingsFields<SessionLauncherForm>
+          control={control}
+          errors={errors}
+        />
+      </div>
     </>
   );
 
