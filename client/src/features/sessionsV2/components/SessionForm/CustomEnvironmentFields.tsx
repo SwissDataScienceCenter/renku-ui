@@ -110,7 +110,7 @@ export function CustomEnvironmentFields({
         />
         {!isFetching &&
           !inputModified &&
-          !errors.container_image?.message &&
+          !errors.container_image &&
           data?.accessible === false && (
             <div className={cx("mt-1", "small", "text-warning-emphasis")}>
               <ExclamationTriangle className={cx("bi", "me-1")} />
