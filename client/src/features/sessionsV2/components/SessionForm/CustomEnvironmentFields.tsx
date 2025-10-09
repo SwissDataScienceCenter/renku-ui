@@ -27,7 +27,11 @@ import { InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Links } from "../../../../utils/constants/Docs";
 import { useGetSessionsImagesQuery } from "../../api/sessionsV2.api";
-import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
+import {
+  CONTAINER_IMAGE_PATTERN,
+  LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE,
+  LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE,
+} from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
@@ -41,7 +45,10 @@ export function CustomEnvironmentFields({
   const watchEnvironmentSelect = watch("environmentSelect");
   const watchContainerImage = watch("container_image");
   const [debouncedContainerImage, setDebouncedContainerImage] =
-    useDebouncedState<string>(watchContainerImage ?? "", 1_000);
+    useDebouncedState<string>(
+      watchContainerImage ?? "",
+      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE
+    );
 
   useEffect(() => {
     setDebouncedContainerImage(watchContainerImage ?? "");
@@ -93,18 +100,19 @@ export function CustomEnvironmentFields({
                 <InputOverlayLoader />
               )}
               <div className="invalid-feedback">
-                {errors.container_image?.message}
+                {errors.container_image?.message ??
+                  LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.pattern}
               </div>
             </div>
           )}
           rules={{
             required: {
               value: watchEnvironmentSelect === "custom + image",
-              message: "Please provide a container image.",
+              message: LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.required,
             },
             pattern: {
               value: CONTAINER_IMAGE_PATTERN,
-              message: "Please provide a valid container image.",
+              message: LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.pattern,
             },
           }}
         />

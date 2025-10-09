@@ -36,7 +36,11 @@ import { Loader } from "../../../../components/Loader";
 import { Links } from "../../../../utils/constants/Docs";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { useGetSessionsImagesQuery } from "../../api/sessionsV2.api";
-import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
+import {
+  CONTAINER_IMAGE_PATTERN,
+  LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE,
+  LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE,
+} from "../../session.constants";
 import { prioritizeSelectedEnvironment } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
@@ -74,7 +78,10 @@ export default function EditLauncherFormContent({
   } = useGetSessionEnvironmentsQuery({});
 
   const [debouncedContainerImage, setDebouncedContainerImage] =
-    useDebouncedState<string>(watchContainerImage ?? "", 1_000);
+    useDebouncedState<string>(
+      watchContainerImage ?? "",
+      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE
+    );
   useEffect(() => {
     setDebouncedContainerImage(watchContainerImage ?? "");
   }, [watchContainerImage, setDebouncedContainerImage]);
@@ -180,18 +187,19 @@ export default function EditLauncherFormContent({
                 <InputOverlayLoader />
               )}
               <div className="invalid-feedback">
-                {errors.container_image?.message}
+                {errors.container_image?.message ??
+                  LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.pattern}
               </div>
             </div>
           )}
           rules={{
             required: {
               value: watchEnvironmentSelect === "custom + image",
-              message: "Please provide a container image.",
+              message: LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.required,
             },
             pattern: {
               value: CONTAINER_IMAGE_PATTERN,
-              message: "Please provide a valid container image.",
+              message: LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.pattern,
             },
           }}
         />
