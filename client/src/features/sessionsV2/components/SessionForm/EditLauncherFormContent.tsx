@@ -179,6 +179,9 @@ export default function EditLauncherFormContent({
               {(inputModified || isFetching) && !errors.container_image && (
                 <InputOverlayLoader />
               )}
+              <div className="invalid-feedback">
+                {errors.container_image?.message}
+              </div>
             </div>
           )}
           rules={{
@@ -192,10 +195,6 @@ export default function EditLauncherFormContent({
             },
           }}
         />
-        <div className="invalid-feedback">
-          {errors.container_image?.message ??
-            "Please provide a valid container image."}
-        </div>
         {!isFetching &&
           !inputModified &&
           !errors.container_image?.message &&

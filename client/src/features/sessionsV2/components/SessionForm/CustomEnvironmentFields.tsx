@@ -92,6 +92,9 @@ export function CustomEnvironmentFields({
               {(inputModified || isFetching) && !errors.container_image && (
                 <InputOverlayLoader />
               )}
+              <div className="invalid-feedback">
+                {errors.container_image?.message}
+              </div>
             </div>
           )}
           rules={{
@@ -105,13 +108,9 @@ export function CustomEnvironmentFields({
             },
           }}
         />
-        <div className="invalid-feedback">
-          {errors.container_image?.message ??
-            "Please provide a valid container image."}
-        </div>
         {!isFetching &&
           !inputModified &&
-          !errors.container_image &&
+          !errors.container_image?.message &&
           data?.accessible === false && (
             <div className={cx("mt-1", "small", "text-warning-emphasis")}>
               <ExclamationTriangle className={cx("bi", "me-1")} />
