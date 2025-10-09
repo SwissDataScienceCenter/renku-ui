@@ -50,7 +50,9 @@ export function CustomEnvironmentFields({
   const inputModified = watchContainerImage !== debouncedContainerImage;
 
   const { data, isFetching } = useGetSessionsImagesQuery(
-    watchEnvironmentSelect === "custom + image" && debouncedContainerImage
+    watchEnvironmentSelect === "custom + image" &&
+      debouncedContainerImage &&
+      !errors.container_image
       ? { imageUrl: debouncedContainerImage }
       : skipToken
   );
@@ -87,7 +89,9 @@ export function CustomEnvironmentFields({
                 type="text"
                 {...field}
               />
-              {(inputModified || isFetching) && <InputOverlayLoader />}
+              {(inputModified || isFetching) && !errors.container_image && (
+                <InputOverlayLoader />
+              )}
             </div>
           )}
           rules={{
@@ -107,7 +111,7 @@ export function CustomEnvironmentFields({
         </div>
         {!isFetching &&
           !inputModified &&
-          !errors.container_image?.message &&
+          !errors.container_image &&
           data?.accessible === false && (
             <div className={cx("mt-1", "small", "text-warning-emphasis")}>
               <ExclamationTriangle className={cx("bi", "me-1")} />

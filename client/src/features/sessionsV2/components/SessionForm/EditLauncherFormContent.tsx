@@ -82,7 +82,9 @@ export default function EditLauncherFormContent({
   const inputModified = watchContainerImage !== debouncedContainerImage;
 
   const { data, isFetching } = useGetSessionsImagesQuery(
-    watchEnvironmentSelect === "custom + image" && debouncedContainerImage
+    watchEnvironmentSelect === "custom + image" &&
+      debouncedContainerImage &&
+      !errors.container_image
       ? { imageUrl: debouncedContainerImage }
       : skipToken
   );
@@ -174,7 +176,9 @@ export default function EditLauncherFormContent({
                 type="text"
                 {...field}
               />
-              {(inputModified || isFetching) && <InputOverlayLoader />}
+              {(inputModified || isFetching) && !errors.container_image && (
+                <InputOverlayLoader />
+              )}
             </div>
           )}
           rules={{
