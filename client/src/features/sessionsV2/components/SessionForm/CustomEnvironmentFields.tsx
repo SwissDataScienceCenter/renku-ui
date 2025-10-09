@@ -87,7 +87,7 @@ export function CustomEnvironmentFields({
                 type="text"
                 {...field}
               />
-              {isFetching && <InputOverlayLoader />}
+              {(inputModified || isFetching) && <InputOverlayLoader />}
             </div>
           )}
           rules={{
@@ -106,6 +106,7 @@ export function CustomEnvironmentFields({
             "Please provide a valid container image."}
         </div>
         {!isFetching &&
+          !inputModified &&
           !errors.container_image?.message &&
           data?.accessible === false && (
             <div className={cx("mt-1", "small", "text-warning-emphasis")}>

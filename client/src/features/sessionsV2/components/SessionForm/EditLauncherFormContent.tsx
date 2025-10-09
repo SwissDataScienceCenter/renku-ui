@@ -174,7 +174,7 @@ export default function EditLauncherFormContent({
                 type="text"
                 {...field}
               />
-              {isFetching && <InputOverlayLoader />}
+              {(inputModified || isFetching) && <InputOverlayLoader />}
             </div>
           )}
           rules={{
@@ -193,6 +193,7 @@ export default function EditLauncherFormContent({
             "Please provide a valid container image."}
         </div>
         {!isFetching &&
+          !inputModified &&
           !errors.container_image?.message &&
           data?.accessible === false && (
             <div className={cx("mt-1", "small", "text-warning-emphasis")}>
