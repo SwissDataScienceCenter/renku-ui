@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useContext } from "react";
 import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
-
+import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -32,17 +32,19 @@ import {
   sessionLaunchersV2Api,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
 } from "../api/sessionLaunchersV2.api";
+import { useGetSessionsImagesQuery } from "../api/sessionsV2.api";
+import {
+  BuildStatusBadge,
+  BuildStatusDescription,
+} from "../components/BuildStatusComponents";
 import {
   EnvironmentIcon,
   LauncherEnvironmentIcon,
 } from "../components/SessionForm/LauncherEnvironmentIcon";
 import { SessionLauncherButtons } from "../components/SessionLauncherButtons";
+import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
 import { SessionV2 } from "../sessionsV2.types";
-import {
-  BuildStatusBadge,
-  BuildStatusDescription,
-} from "../components/BuildStatusComponents";
 import SessionCard from "./SessionCard";
 
 import styles from "./Session.module.scss";
@@ -69,16 +71,18 @@ export default function SessionLauncherCard({
   toggleSessionView,
   toggleShareLink,
 }: SessionLauncherCardProps) {
-  const environment = launcher?.environment;
   const { params } = useContext(AppContext);
+  const environment = launcher?.environment;
   const imageBuildersEnabled =
     params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
-
-  const isBuildEnvironment =
+  const isCodeEnvironment =
     environment && environment.environment_image_source === "build";
+  const isExternalImageEnvironment =
+    environment?.environment_kind === "CUSTOM" &&
+    environment?.environment_image_source === "image";
 
   const { data: builds, isLoading } = useGetBuildsQuery(
-    imageBuildersEnabled && isBuildEnvironment
+    imageBuildersEnabled && isCodeEnvironment
       ? { environmentId: environment.id }
       : skipToken
   );
@@ -90,7 +94,7 @@ export default function SessionLauncherCard({
   const hasSession = !!sessions?.length;
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
-    isBuildEnvironment && lastBuild?.status === "in_progress"
+    isCodeEnvironment && lastBuild?.status === "in_progress"
       ? { environmentId: environment.id }
       : skipToken,
     {
@@ -113,6 +117,24 @@ export default function SessionLauncherCard({
       />
     );
 
+  const ENVIRONMENT_KIND_CLASSES = [
+    "align-items-center",
+    "d-flex",
+    "gap-2",
+    "me-2",
+    "small",
+    "text-muted",
+  ];
+
+  const { data: containerImage, isLoading: loadingContainerImage } =
+    useGetSessionsImagesQuery(
+      environment &&
+        environment.environment_kind === "CUSTOM" &&
+        environment.container_image
+        ? { imageUrl: environment.container_image }
+        : skipToken
+    );
+
   return (
     <Card
       className={cx(
@@ -128,7 +150,7 @@ export default function SessionLauncherCard({
       <CardBody className={cx("p-0")}>
         <div className={cx(hasSession && "border-bottom", "p-3")}>
           <Row className="g-2">
-            <Col className={cx("align-items-center")} xs={12} lg={5} xl={7}>
+            <Col className={cx("align-items-center")} xs={12} lg={6} xl={8}>
               <Row className={cx("g-2", "mb-0")}>
                 <Col
                   xs={12}
@@ -141,32 +163,24 @@ export default function SessionLauncherCard({
                 </Col>
                 <Col xs={12} xl="auto">
                   {environment?.environment_kind === "GLOBAL" ? (
-                    <span className={cx("small", "text-muted", "me-3")}>
-                      <EnvironmentIcon type="global" className="me-2" />
+                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                      <EnvironmentIcon type="global" />
                       Global environment
                     </span>
-                  ) : environment?.environment_image_source === "build" ? (
-                    <span className={cx("small", "text-muted", "me-3")}>
-                      <EnvironmentIcon
-                        type="codeBased"
-                        size={16}
-                        className="me-2"
-                      />
+                  ) : isCodeEnvironment ? (
+                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                      <EnvironmentIcon type="codeBased" size={16} />
                       Code based environment
                     </span>
-                  ) : environment?.environment_kind === "CUSTOM" ? (
-                    <span className={cx("small", "text-muted", "me-3")}>
-                      <EnvironmentIcon
-                        type="custom"
-                        size={16}
-                        className="me-2"
-                      />
-                      Custom image environment
+                  ) : isExternalImageEnvironment ? (
+                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                      <EnvironmentIcon type="custom" size={16} />
+                      External image environment
                     </span>
                   ) : null}
                 </Col>
               </Row>
-              <Row className={cx("g-2", isBuildEnvironment && "mb-2")}>
+              <Row className={cx("g-2", isCodeEnvironment && "mb-2")}>
                 <Col
                   xs={12}
                   className={cx("d-inline-block", "link-primary", "text-body")}
@@ -183,61 +197,71 @@ export default function SessionLauncherCard({
                   </span>
                 </Col>
               </Row>
-              {isBuildEnvironment && (
-                <>
-                  <Row className="g-2">
-                    <Col xs={12} xl={4}>
-                      {isBuildEnvironment && isLoading ? (
-                        <SessionBadge
-                          className={cx("border-warning", "bg-warning-subtle")}
+              <Row>
+                <Col data-cy="session-gitlab-warning" xs={12}>
+                  <SessionEnvironmentGitLabWarningBadge launcher={launcher} />
+                </Col>
+              </Row>
+              {isCodeEnvironment && (
+                <Row className="g-2">
+                  <Col xs={12} xl={4}>
+                    {isCodeEnvironment && isLoading ? (
+                      <SessionBadge
+                        className={cx("border-warning", "bg-warning-subtle")}
+                      >
+                        <Loader
+                          size={12}
+                          className={cx("me-1", "text-warning-emphasis")}
+                          inline
+                        />
+                        <span className="text-warning-emphasis">
+                          Loading build status
+                        </span>
+                      </SessionBadge>
+                    ) : isCodeEnvironment && lastBuild ? (
+                      <BuildStatusBadge status={lastBuild?.status} />
+                    ) : !hasSession ? (
+                      <SessionBadge
+                        className={cx("border-dark-subtle", "bg-light")}
+                      >
+                        <CircleFill
+                          className={cx("me-1", "bi", "text-light-emphasis")}
+                        />
+                        <span
+                          className="text-dark-emphasis"
+                          data-cy="session-status"
                         >
-                          <Loader
-                            size={12}
-                            className={cx("me-1", "text-warning-emphasis")}
-                            inline
-                          />
-                          <span className="text-warning-emphasis">
-                            Loading build status
-                          </span>
-                        </SessionBadge>
-                      ) : isBuildEnvironment && lastBuild ? (
-                        <BuildStatusBadge status={lastBuild?.status} />
-                      ) : !hasSession ? (
-                        <SessionBadge
-                          className={cx("border-dark-subtle", "bg-light")}
-                        >
-                          <CircleFill
-                            className={cx("me-1", "bi", "text-light-emphasis")}
-                          />
-                          <span
-                            className="text-dark-emphasis"
-                            data-cy="session-status"
-                          >
-                            Not Running
-                          </span>
-                        </SessionBadge>
-                      ) : null}
-                    </Col>
-                    <Col xs={12} xl="auto" className="d-flex">
-                      <BuildStatusDescription
-                        status={
-                          lastBuild?.status ?? lastSuccessfulBuild?.status
-                        }
-                        createdAt={
-                          lastBuild?.created_at ??
-                          lastSuccessfulBuild?.created_at
-                        }
-                        completedAt={
-                          lastBuild?.status === "succeeded"
-                            ? lastBuild?.result?.completed_at
-                            : lastSuccessfulBuild?.status === "succeeded"
-                            ? lastSuccessfulBuild?.result?.completed_at
-                            : undefined
-                        }
-                      />
-                    </Col>
-                  </Row>
-                </>
+                          Not Running
+                        </span>
+                      </SessionBadge>
+                    ) : null}
+                  </Col>
+                  <Col xs={12} xl="auto" className="d-flex">
+                    <BuildStatusDescription
+                      status={lastBuild?.status ?? lastSuccessfulBuild?.status}
+                      createdAt={
+                        lastBuild?.created_at ?? lastSuccessfulBuild?.created_at
+                      }
+                      completedAt={
+                        lastBuild?.status === "succeeded"
+                          ? lastBuild?.result?.completed_at
+                          : lastSuccessfulBuild?.status === "succeeded"
+                          ? lastSuccessfulBuild?.result?.completed_at
+                          : undefined
+                      }
+                    />
+                  </Col>
+                </Row>
+              )}
+              {isExternalImageEnvironment && (
+                <Row>
+                  <Col>
+                    <SessionImageBadge
+                      data={containerImage}
+                      loading={loadingContainerImage}
+                    />
+                  </Col>
+                </Row>
               )}
             </Col>
             <Col className={cx("ms-md-auto")} xs={12} md="auto">
@@ -258,12 +282,12 @@ export default function SessionLauncherCard({
                     otherActions={otherLauncherActions}
                     slug={project.slug}
                     useOldImage={
-                      isBuildEnvironment &&
+                      isCodeEnvironment &&
                       lastBuild?.status !== "succeeded" &&
                       !!lastSuccessfulBuild
                     }
                   />
-                  {isBuildEnvironment &&
+                  {isCodeEnvironment &&
                     lastBuild?.status !== "succeeded" &&
                     lastSuccessfulBuild && (
                       <BuildStatusDescription

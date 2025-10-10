@@ -25,19 +25,17 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import {
-  ConnectedServiceForm,
-  CreateProviderParams,
-} from "../connectedServices/api/connectedServices.types";
+
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
+import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
+import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 
 export default function AddConnectedServiceButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,9 +45,9 @@ export default function AddConnectedServiceButton() {
 
   return (
     <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
+      <Button color="primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Service Provider
+        Add Integration
       </Button>
       <AddConnectedServiceModal isOpen={isOpen} toggle={toggle} />
     </>
@@ -66,12 +64,7 @@ function AddConnectedServiceModal({
 }: AddConnectedServiceModalProps) {
   const [createProvider, result] = usePostOauth2ProvidersMutation();
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<ConnectedServiceForm>({
+  const { control, handleSubmit, reset } = useForm<ProviderForm>({
     defaultValues: {
       id: "",
       kind: "gitlab",
@@ -82,10 +75,16 @@ function AddConnectedServiceModal({
       scope: "",
       url: "",
       use_pkce: false,
+      image_registry_url: "",
+      oidc_issuer_url: "",
     },
   });
   const onSubmit = useCallback(
-    (data: CreateProviderParams) => {
+    (data: ProviderForm) => {
+      const oidc_issuer_url =
+        data.kind === "generic_oidc" && data.oidc_issuer_url
+          ? data.oidc_issuer_url
+          : undefined;
       createProvider({
         providerPost: {
           id: data.id,
@@ -97,6 +96,8 @@ function AddConnectedServiceModal({
           scope: data.scope ?? "",
           url: data.url,
           use_pkce: data.use_pkce,
+          image_registry_url: data.image_registry_url || undefined,
+          oidc_issuer_url: oidc_issuer_url,
         },
       });
     },
@@ -118,7 +119,7 @@ function AddConnectedServiceModal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -131,7 +132,7 @@ function AddConnectedServiceModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Add provider</ModalHeader>
+        <ModalHeader toggle={toggle}>Add integration</ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
 
@@ -142,9 +143,9 @@ function AddConnectedServiceModal({
             <Controller
               control={control}
               name="id"
-              render={({ field }) => (
+              render={({ field, fieldState: { error } }) => (
                 <Input
-                  className={cx("form-control", errors.id && "is-invalid")}
+                  className={cx("form-control", error && "is-invalid")}
                   id="addConnectedServiceId"
                   placeholder="Provider id"
                   type="text"
@@ -155,23 +156,23 @@ function AddConnectedServiceModal({
             />
           </div>
 
-          <ConnectedServiceFormContent control={control} errors={errors} />
+          <ConnectedServiceFormContent control={control} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading} type="submit">
+          <Button color="primary" disabled={result.isLoading} type="submit">
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
               <PlusLg className={cx("bi", "me-1")} />
             )}
-            Add provider
+            Add integration
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }

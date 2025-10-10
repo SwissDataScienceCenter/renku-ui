@@ -36,6 +36,7 @@ export interface StartSessionOptionsV2 {
   cloudStorage?: SessionStartDataConnectorConfiguration[];
   defaultUrl: string;
   environmentVariables: SessionEnvironmentVariable[];
+  imageReady: boolean;
   lfsAutoFetch: boolean;
   repositories: SessionRepository[];
   sessionClass: number;

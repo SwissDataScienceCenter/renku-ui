@@ -48,6 +48,8 @@ import {
   Row,
 } from "reactstrap";
 
+import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
+
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import {
   ErrorAlert,
@@ -393,7 +395,7 @@ function CodeRepositoryActions({
 
 interface CodeRepositoryErrorProps {
   error: FetchBaseQueryError | SerializedError;
-  provider: Pick<Provider, "id" | "kind"> | undefined;
+  provider: Pick<Provider, "id" | "kind" | "image_registry_url"> | undefined;
 }
 
 function CodeRepositoryError({ error, provider }: CodeRepositoryErrorProps) {
@@ -432,6 +434,7 @@ function CodeRepositoryError({ error, provider }: CodeRepositoryErrorProps) {
             connectionStatus="connected"
             id={provider.id}
             kind={provider.kind}
+            registryUrl={provider.image_registry_url}
           />
         </div>
       </WarnAlert>
@@ -507,6 +510,11 @@ export function RepositoryItem({
               </Col>
             </>
           )}
+        </Row>
+        <Row>
+          <Col data-cy="repo-gitlab-warning">
+            <RepositoryGitLabWarnBadge project={project} />
+          </Col>
         </Row>
       </ListGroupItem>
       {!readonly && (
@@ -867,7 +875,7 @@ function RepositoryPermissionsAlert({
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               You need to <a href={loginUrl.href}>log in</a> to perform pushes
-              on git repositories.
+              to git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
@@ -889,12 +897,12 @@ function RepositoryPermissionsAlert({
       <Col xs={12}>
         <WarnAlert className="mb-0" dismissible={false} timeout={0}>
           <p className="mb-0">
-            You are not allowed to push on this repository.
+            You are not allowed to push to this repository.
           </p>
           {!userLogged ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>
               You need to <a href={loginUrl.href}>log in</a> to perform pushes
-              on git repositories.
+              to git repositories.
             </p>
           ) : provider && status === "not-connected" ? (
             <p className={cx("mt-1", "mb-0", "fst-italic")}>

@@ -16,75 +16,39 @@
  * limitations under the License.
  */
 
-import { ResourceClass, Resources } from "../dataServices/dataServices.types";
-
-export interface ResourcePoolUser {
-  id: string;
-}
-
-export interface GetResourcePoolUsersParams {
-  resourcePoolId: number;
-}
-
-export interface AddResourcePoolParams {
+export interface ResourcePoolForm {
   name: string;
   public: boolean;
-  classes: ResourceClassDefinition[];
-  quota: Resources;
-  idle_threshold?: number;
-  hibernation_threshold?: number;
-}
-
-type ResourceClassDefinition = Omit<ResourceClass, "id" | "matching">;
-
-export interface UpdateResourcePoolParams {
-  resourcePoolId: number;
-
-  name?: string;
-  public?: boolean;
-  quota?: Resources;
-  default?: boolean;
-  idle_threshold?: number;
-  hibernation_threshold?: number;
-}
-
-export interface DeleteResourcePoolParams {
-  resourcePoolId: number;
-}
-
-export interface AddResourceClassParams extends ResourceClassDefinition {
-  resourcePoolId: number;
-}
-
-export interface UpdateResourceClassParams
-  extends Partial<ResourceClassDefinition> {
-  resourcePoolId: number;
-  resourceClassId: number;
-}
-
-export interface DeleteResourceClassParams {
-  resourcePoolId: number;
-  resourceClassId: number;
-}
-
-export interface AddUsersToResourcePoolParams {
-  resourcePoolId: number;
-  userIds: string[];
-}
-
-export interface RemoveUserFromResourcePoolParams {
-  resourcePoolId: number;
-  userId: string;
-}
-
-export interface AddResourcePoolForm {
-  name: string;
-  public: boolean;
-  quotaCpu: number;
-  quotaMemory: number;
-  quotaGpu: number;
-  idleThresholdMinutes?: number;
+  quota: ResourcePoolFormQuota;
   hibernationThresholdMinutes?: number;
+  idleThresholdMinutes?: number;
+}
+
+export interface ResourcePoolFormQuota {
+  cpu: number;
+  memory: number;
+  gpu: number;
+}
+
+export interface ResourceClassForm {
+  name: string;
+  cpu: number;
+  memory: number;
+  gpu: number;
+  default_storage: number;
+  max_storage: number;
+  default: boolean;
+  tolerations: ResourceClassFormToleration[];
+  node_affinities: ResourceClassFormNodeAffinity[];
+}
+
+export interface ResourceClassFormToleration {
+  label: string;
+}
+
+export interface ResourceClassFormNodeAffinity {
+  key: string;
+  required_during_scheduling?: boolean;
 }
 
 export interface UpdateResourcePoolThresholdsForm {

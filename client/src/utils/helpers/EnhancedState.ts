@@ -28,14 +28,13 @@ import {
   configureStore,
 } from "@reduxjs/toolkit";
 
+import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
-import adminSessionsApi from "../../features/admin/adminSessions.api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { doiResolverEmptyApi as doiResolverApi } from "../../features/dataConnectorsV2/api/doiResolver.empty-api";
 import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataConnectors.slice";
-import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
@@ -89,7 +88,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
-    [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
     [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
@@ -127,7 +125,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         serializableCheck: false,
       })
         .concat(adminKeycloakApi.middleware)
-        .concat(adminSessionsApi.middleware)
         .concat(computeResourcesApi.middleware)
         .concat(connectedServicesApi.middleware)
         .concat(dataConnectorsApi.middleware)

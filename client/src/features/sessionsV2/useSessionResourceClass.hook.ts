@@ -18,20 +18,21 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useCallback, useEffect, useState } from "react";
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { useGetResourceClassByIdQuery } from "../dataServices/computeResources.api";
+
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
-  ResourceClass,
-  ResourcePool,
-} from "../dataServices/dataServices.types";
+  type ResourceClassWithId,
+  type ResourcePoolWithIdFiltered,
+  useGetClassesByClassIdQuery,
+} from "./api/computeResources.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
 interface UseSessionResourceClassProps {
   isCustomLaunch: boolean;
   launcher: SessionLauncher;
-  resourcePools: ResourcePool[] | undefined;
+  resourcePools: ResourcePoolWithIdFiltered[] | undefined;
 }
 export default function useSessionResourceClass({
   isCustomLaunch,
@@ -43,11 +44,15 @@ export default function useSessionResourceClass({
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
   const { data: launcherClass, isLoading: isLoadingLauncherClass } =
-    useGetResourceClassByIdQuery(launcher?.resource_class_id ?? skipToken);
+    useGetClassesByClassIdQuery(
+      launcher.resource_class_id
+        ? { classId: `${launcher.resource_class_id}` }
+        : skipToken
+    );
   const [isPendingResourceClass, setIsPendingResourceClass] =
     useState<boolean>(false);
   const setResourceClass = useCallback(
-    (envClass: ResourceClass, diskStorage: number | undefined) => {
+    (envClass: ResourceClassWithId, diskStorage: number | undefined) => {
       if (envClass) {
         dispatch(
           startSessionOptionsV2Slice.actions.setSessionClass(envClass.id)

@@ -25,25 +25,21 @@ import {
   Form,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
 
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-
-import {
-  ConnectedServiceForm,
-  UpdateProviderParams,
-} from "../connectedServices/api/connectedServices.types";
-import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 import {
   Provider,
   ProviderKind,
   usePatchOauth2ProvidersByProviderIdMutation,
 } from "../connectedServices/api/connectedServices.api";
+import { ProviderForm } from "../connectedServices/api/connectedServices.types";
+import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
 
 interface UpdateConnectedServiceButtonProps {
   provider: Provider;
@@ -58,7 +54,7 @@ export default function UpdateConnectedServiceButton({
 
   return (
     <>
-      <Button color="outline-rk-green" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PencilSquare className={cx("bi", "me-1")} />
         Edit
       </Button>
@@ -87,10 +83,10 @@ function UpdateConnectedServiceModal({
 
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { isDirty },
     handleSubmit,
     reset,
-  } = useForm<ConnectedServiceForm>({
+  } = useForm<ProviderForm>({
     defaultValues: {
       kind: undefined,
       app_slug: "",
@@ -100,10 +96,14 @@ function UpdateConnectedServiceModal({
       scope: "",
       url: "",
       use_pkce: false,
+      image_registry_url: "",
+      oidc_issuer_url: "",
     },
   });
   const onSubmit = useCallback(
-    (data: UpdateProviderParams) => {
+    (data: ProviderForm) => {
+      const oidc_issuer_url =
+        data.kind === "generic_oidc" ? data.oidc_issuer_url : "";
       updateProvider({
         providerId: provider.id,
         providerPatch: {
@@ -115,6 +115,8 @@ function UpdateConnectedServiceModal({
           scope: data.scope,
           url: data.url,
           use_pkce: data.use_pkce,
+          image_registry_url: data.image_registry_url,
+          oidc_issuer_url: oidc_issuer_url,
         },
       });
     },
@@ -144,6 +146,8 @@ function UpdateConnectedServiceModal({
       scope: provider.scope,
       url: provider.url,
       use_pkce: provider.use_pkce,
+      image_registry_url: provider.image_registry_url ?? "",
+      oidc_issuer_url: provider.oidc_issuer_url ?? "",
       ...(provider.client_secret &&
         provider.client_secret !== "redacted" && {
           client_secret: provider.client_secret,
@@ -152,7 +156,7 @@ function UpdateConnectedServiceModal({
   }, [provider, reset]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -165,7 +169,7 @@ function UpdateConnectedServiceModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Update provider</ModalHeader>
+        <ModalHeader toggle={toggle}>Update intergation</ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
 
@@ -183,23 +187,27 @@ function UpdateConnectedServiceModal({
             />
           </div>
 
-          <ConnectedServiceFormContent control={control} errors={errors} />
+          <ConnectedServiceFormContent control={control} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading || !isDirty} type="submit">
+          <Button
+            color="primary"
+            disabled={result.isLoading || !isDirty}
+            type="submit"
+          >
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
               <CheckLg className={cx("bi", "me-1")} />
             )}
-            Update provider
+            Update integration
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </ScrollableModal>
   );
 }

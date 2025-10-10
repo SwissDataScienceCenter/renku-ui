@@ -29,13 +29,13 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { usePostEnvironmentsMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
+import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
-import { useAddSessionEnvironmentMutation } from "./adminSessions.api";
-import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 
 export default function AddSessionEnvironmentButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,7 +63,7 @@ function AddSessionEnvironmentModal({
   isOpen,
   toggle,
 }: AddSessionEnvironmentModalProps) {
-  const [addSessionEnvironment, result] = useAddSessionEnvironmentMutation();
+  const [addSessionEnvironment, result] = usePostEnvironmentsMutation();
 
   const {
     control,
@@ -84,17 +84,21 @@ function AddSessionEnvironmentModal({
       const argsParsed = safeParseJSONStringArray(data.args);
       if (commandParsed.parsed && argsParsed.parsed)
         addSessionEnvironment({
-          container_image: data.container_image,
-          name: data.name,
-          default_url: data.default_url?.trim() || undefined,
-          description: data.description?.trim() || undefined,
-          port: data.port ?? undefined,
-          working_directory: data.working_directory?.trim() || undefined,
-          mount_directory: data.mount_directory?.trim() || undefined,
-          uid: data.uid ?? undefined,
-          gid: data.gid ?? undefined,
-          command: commandParsed.data,
-          args: argsParsed.data,
+          environmentPost: {
+            container_image: data.container_image,
+            default_url: data.default_url?.trim() || undefined,
+            description: data.description?.trim() || undefined,
+            environment_image_source: "image",
+            gid: data.gid ?? undefined,
+            mount_directory: data.mount_directory?.trim() || undefined,
+            name: data.name,
+            port: data.port ?? undefined,
+            uid: data.uid ?? undefined,
+            strip_path_prefix: data.strip_path_prefix,
+            working_directory: data.working_directory?.trim() || undefined,
+            ...(commandParsed.data ? { command: commandParsed.data } : {}),
+            ...(argsParsed.data ? { args: argsParsed.data } : {}),
+          },
         });
     },
     [addSessionEnvironment]

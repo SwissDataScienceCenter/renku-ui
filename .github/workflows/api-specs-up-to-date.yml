@@ -1,0 +1,48 @@
+name: Check API specs
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "**"
+  pull_request:
+  schedule:
+    - cron: "0 10 * * 2" # Every Tuesday at 10:00 UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Set up node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Install client dependencies
+        run: npm clean-install
+      - name: Update the API specs
+        run: |
+          npm run update-api
+          npm run generate-api
+          npm run format
+      - name: Check if any spec is out of date
+        run: |
+          result="$(git status --porcelain)"
+          echo "$result"
+          test -z "$result"

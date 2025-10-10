@@ -30,13 +30,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useUpdateResourcePoolMutation } from "../dataServices/computeResources.api";
-import { ResourcePool } from "../dataServices/dataServices.types";
+
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import {
+  usePatchResourcePoolsByResourcePoolIdMutation,
+  type ResourcePoolWithId,
+} from "../sessionsV2/api/computeResources.api";
 
 interface UpdateResourcePoolQuotaButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 export default function UpdateResourcePoolQuotaButton({
@@ -72,7 +75,7 @@ export default function UpdateResourcePoolQuotaButton({
 
 interface UpdateResourcePoolQuotaModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -84,7 +87,8 @@ function UpdateResourcePoolQuotaModal({
   const { id, name, quota, idle_threshold, hibernation_threshold } =
     resourcePool;
 
-  const [updateResourcePool, result] = useUpdateResourcePoolMutation();
+  const [updateResourcePool, result] =
+    usePatchResourcePoolsByResourcePoolIdMutation();
 
   const { control, handleSubmit } = useForm<UpdateResourcePoolQuotaForm>({
     defaultValues: {
@@ -97,9 +101,11 @@ function UpdateResourcePoolQuotaModal({
     (data: UpdateResourcePoolQuotaForm) => {
       updateResourcePool({
         resourcePoolId: id,
-        quota: { ...data },
-        idle_threshold: idle_threshold,
-        hibernation_threshold: hibernation_threshold,
+        resourcePoolPatch: {
+          quota: { ...data },
+          idle_threshold: idle_threshold,
+          hibernation_threshold: hibernation_threshold,
+        },
       });
     },
     [id, idle_threshold, hibernation_threshold, updateResourcePool]

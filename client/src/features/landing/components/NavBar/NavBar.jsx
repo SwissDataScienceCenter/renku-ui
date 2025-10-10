@@ -57,6 +57,8 @@ function RenkuNavBarInner({ user }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
+  const { params } = useContext(AppContext);
+  const forceV2 = params && !params.LEGACY_SUPPORT.enabled;
   const sessionShowUrl =
     projectMetadata == null
       ? null
@@ -73,11 +75,27 @@ function RenkuNavBarInner({ user }) {
       <Route path={ABSOLUTE_ROUTES.v1.splat} element={null} />
       <Route
         path={ABSOLUTE_ROUTES.projects.splat}
-        element={!user?.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
+        element={
+          forceV2 ? (
+            <NavbarV2 />
+          ) : !user?.logged ? (
+            <AnonymousNavBar />
+          ) : (
+            <LoggedInNavBar />
+          )
+        }
       />
       <Route
         path={ABSOLUTE_ROUTES.datasets.splat}
-        element={!user?.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
+        element={
+          forceV2 ? (
+            <NavbarV2 />
+          ) : !user?.logged ? (
+            <AnonymousNavBar />
+          ) : (
+            <LoggedInNavBar />
+          )
+        }
       />
       <Route path="*" element={<NavbarV2 />} />
     </Routes>
