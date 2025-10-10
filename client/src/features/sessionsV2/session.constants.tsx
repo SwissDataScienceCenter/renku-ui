@@ -137,3 +137,10 @@ export const BUILDER_FRONTENDS = [
 
 export const IMAGE_BUILD_DOCS =
   "https://renku.notion.site/How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234";
+
+export const LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE = {
+  required: "Please provide a container image.",
+  pattern: "Please provide a valid container image.",
+};
+
+export const LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE = 1_000;
