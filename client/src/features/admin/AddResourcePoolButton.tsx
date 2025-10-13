@@ -40,6 +40,7 @@ import {
 } from "../sessionsV2/api/computeResources.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import type { ResourcePoolForm } from "./adminComputeResources.types";
+import ResourcePoolClusterIdInput from "./forms/ResourcePoolClusterIdInput";
 
 export default function AddResourcePoolButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -103,6 +104,8 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       },
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
+      clusterId: "",
+      remote: undefined,
     },
   });
 
@@ -121,6 +124,9 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             default: true,
           }
         : null;
+      const clusterId = data.clusterId?.trim()
+        ? data.clusterId.trim()
+        : undefined;
       addResourcePool({
         resourcePool: {
           classes: populatedClass ? [populatedClass] : [],
@@ -134,6 +140,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           name: data.name,
           public: data.public,
           quota: data.quota,
+          cluster_id: clusterId,
         },
       });
     },
@@ -151,6 +158,8 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       },
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
+      clusterId: "",
+      remote: undefined,
     });
   }, [defaultQuota, reset]);
 
@@ -181,13 +190,13 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       <ModalHeader toggle={toggle}>Add resource pool</ModalHeader>
       <ModalBody>
         <Form
-          className="form-rk-green"
+          className={cx("form-rk-green", "d-flex", "flex-column", "gap-3")}
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
           {result.error && <RtkOrNotebooksError error={result.error} />}
 
-          <div className="mb-3">
+          <div>
             <Label className="form-label" for="addResourcePoolName">
               Name
             </Label>
@@ -207,7 +216,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             />
             <div className="invalid-feedback">Please provide a name</div>
           </div>
-          <div className="mb-3">
+          <div>
             <Label className="form-label" for="addResourcePoolIdleThreshold">
               Maximum idle time before hibernating (minutes)
             </Label>
@@ -241,7 +250,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               isLoading={notebookVersion.isLoading}
             />
           </div>
-          <div className="mb-3">
+          <div>
             <Label
               className="form-label"
               for="addResourcePoolHibernationThreshold"
@@ -326,6 +335,12 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               )}
             />
           </div>
+
+          <ResourcePoolClusterIdInput
+            control={control}
+            name="clusterId"
+            formPrefix="addResourcePool"
+          />
         </Form>
       </ModalBody>
       <ModalFooter>

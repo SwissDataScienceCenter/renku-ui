@@ -22,12 +22,44 @@ export interface ResourcePoolForm {
   quota: ResourcePoolFormQuota;
   hibernationThresholdMinutes?: number;
   idleThresholdMinutes?: number;
+  clusterId?: string;
+  remote?: RemoteConfigurationFirecrest;
 }
+
+// export type ResourcePool = {
+//   quota?: QuotaWithOptionalId;
+//   classes: ResourceClasses;
+//   name: Name;
+//   public: PublicFlag;
+//   default: DefaultFlag;
+//   remote?: RemoteConfiguration;
+//   idle_threshold?: IdleThreshold;
+//   hibernation_threshold?: HibernationThreshold;
+//   cluster_id?: Ulid;
+// };
+
+// export type RemoteConfigurationFirecrest = {
+//   /** Kind of remote resource pool */
+//   kind: "firecrest";
+//   provider_id?: RemoteConfigurationFirecrestProviderId;
+//   api_url: RemoteConfigurationFirecrestApiUrl;
+//   system_name: RemoteConfigurationFirecrestSystemName;
+//   partition?: RemoteConfigurationFirecrestPartition;
+// };
 
 export interface ResourcePoolFormQuota {
   cpu: number;
   memory: number;
   gpu: number;
+}
+
+export interface RemoteConfigurationFirecrest {
+  /** Kind of remote resource pool */
+  kind: "firecrest";
+  providerId?: string;
+  apiUrl: string;
+  systemName: string;
+  partition?: string;
 }
 
 export interface ResourceClassForm {
