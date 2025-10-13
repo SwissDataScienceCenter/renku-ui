@@ -41,6 +41,7 @@ import {
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import type { ResourcePoolForm } from "./adminComputeResources.types";
 import ResourcePoolClusterIdInput from "./forms/ResourcePoolClusterIdInput";
+import ResourcePoolRemoteSection from "./forms/ResourcePoolRemoteSection";
 
 export default function AddResourcePoolButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -338,8 +339,14 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
 
           <ResourcePoolClusterIdInput
             control={control}
-            name="clusterId"
             formPrefix="addResourcePool"
+            name="clusterId"
+          />
+
+          <ResourcePoolRemoteSection
+            control={control}
+            formPrefix="addResourcePool"
+            name="remote"
           />
         </Form>
       </ModalBody>

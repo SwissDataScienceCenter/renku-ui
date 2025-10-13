@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import {
   type Control,
   Controller,
+  type FieldPathByValue,
   type FieldValues,
-  type FieldPath,
 } from "react-hook-form";
-import cx from "classnames";
 import { FormText, Input, Label } from "reactstrap";
 
 const DEFAULT_ERROR_MESSAGE =
@@ -30,15 +30,15 @@ const DEFAULT_ERROR_MESSAGE =
 
 interface ResourcePoolClusterIdInputProps<T extends FieldValues> {
   className?: string;
-  formPrefix: string;
   control: Control<T>;
-  name: FieldPath<T>;
+  formPrefix: string;
+  name: FieldPathByValue<T, string | undefined>;
 }
 
 export default function ResourcePoolClusterIdInput<T extends FieldValues>({
   className,
-  formPrefix,
   control,
+  formPrefix,
   name,
 }: ResourcePoolClusterIdInputProps<T>) {
   const inputId = `${formPrefix}ClusterId`;
