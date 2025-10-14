@@ -158,7 +158,15 @@ interface ResourcePoolItemProps {
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
-  const { name, default: isDefault, public: isPublic, quota } = resourcePool;
+  const {
+    name,
+    default: isDefault,
+    public: isPublic,
+    quota,
+    cluster,
+    remote,
+  } = resourcePool;
+  const clusterId = cluster?.id;
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
@@ -230,6 +238,26 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
               </div>
             ) : (
               <p className="mb-0">No quota</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {clusterId != null ? (
+              <p className="mb-0">
+                Remote cluster: <code>{clusterId}</code>
+              </p>
+            ) : (
+              <p className="mb-0">No remote cluster</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {remote != null ? (
+              <p className="mb-0">
+                Remote configuration: <code>{JSON.stringify(remote)}</code>
+              </p>
+            ) : (
+              <p className="mb-0">Local resource pool</p>
             )}
           </div>
 
