@@ -57,6 +57,7 @@ import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
+import UpdateResourcePoolRemoteButton from "./UpdateResourcePoolRemoteButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
@@ -253,11 +254,37 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
 
           <div className={cx("border-bottom", "py-2")}>
             {remote != null ? (
-              <p className="mb-0">
-                Remote configuration: <code>{JSON.stringify(remote)}</code>
-              </p>
+              <div
+                className={cx(
+                  "align-items-center",
+                  "row",
+                  "row-cols-1",
+                  "row-cols-sm-2"
+                )}
+              >
+                <div className={cx("col", "col-sm-10")}>
+                  Remote configuration: <code>{JSON.stringify(remote)}</code>
+                </div>
+                <div className={cx("col", "col-sm-2", "ms-auto", "text-end")}>
+                  <UpdateResourcePoolRemoteButton resourcePool={resourcePool} />
+                </div>
+              </div>
             ) : (
-              <p className="mb-0">Local resource pool</p>
+              <div
+                className={cx(
+                  "align-items-center",
+                  "row",
+                  "row-cols-1",
+                  "row-cols-sm-2"
+                )}
+              >
+                <div className={cx("col", "col-sm-10")}>
+                  Local resource pool
+                </div>
+                <div className={cx("col", "col-sm-2", "ms-auto", "text-end")}>
+                  <UpdateResourcePoolRemoteButton resourcePool={resourcePool} />
+                </div>
+              </div>
             )}
           </div>
 

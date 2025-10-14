@@ -28,22 +28,15 @@ import { Collapse, FormText, Input, Label } from "reactstrap";
 
 import { ExternalLink } from "~/components/ExternalLinks";
 import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS } from "~/utils/constants/NewDocs";
-import type { RemoteConfigurationFirecrest } from "../adminComputeResources.types";
+import type { RemoteConfiguration } from "../adminComputeResources.types";
 
-const DEFAULT_REMOTE_VALUE: RemoteConfigurationFirecrest = {
-  enabled: true,
-  kind: "firecrest",
-  providerId: "",
-  apiUrl: "",
-  systemName: "",
-  partition: "",
-};
+const DEFAULT_REMOTE_KIND_VALUE: RemoteConfiguration["kind"] = "firecrest";
 
 interface ResourcePoolRemoteSectionProps<T extends FieldValues> {
   className?: string;
   control: Control<T>;
   formPrefix: string;
-  name: FieldPathByValue<T, { enabled: false } | RemoteConfigurationFirecrest>;
+  name: FieldPathByValue<T, RemoteConfiguration>;
 }
 
 export default function ResourcePoolRemoteSection<T extends FieldValues>({
@@ -56,29 +49,25 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
   const remoteEnabled = `${name}.enabled` as FieldPathByValue<T, boolean>;
   const remoteEnabledWatch = useWatch({ control, name: remoteEnabled });
 
+  // Need to register "kind" so that the default value is populated
+  control.register(`${name}.kind` as FieldPathByValue<T, string>);
+
+  const remoteWatch = useWatch({ control, name });
+
   return (
     <div className={className}>
+      <pre>{JSON.stringify({ remote: remoteWatch }, null, 2)}</pre>
       <Controller
         control={control}
-        name={name}
+        name={remoteEnabled}
         render={({ field }) => (
           <>
             <div className={cx("form-check", "form-switch", "mb-0")}>
               <Input
                 id={inputId}
                 type="checkbox"
-                checked={field.value.enabled}
-                onBlur={field.onBlur}
-                disabled={field.disabled}
-                name={`${field.name}-switch`}
-                ref={field.ref}
-                onChange={() => {
-                  if (field.value.enabled) {
-                    field.onChange({ enabled: false });
-                  } else {
-                    field.onChange(DEFAULT_REMOTE_VALUE);
-                  }
-                }}
+                checked={field.value}
+                {...field}
               />
               <Label
                 className={cx("form-check-label", "ms-2", "mb-0")}
@@ -165,7 +154,7 @@ function ResourcePoolRemoteKind({ formPrefix }: ResourcePoolRemoteKindProps) {
       <Input
         id={inputId}
         type="text"
-        value={DEFAULT_REMOTE_VALUE.kind}
+        value={DEFAULT_REMOTE_KIND_VALUE}
         disabled
         readOnly
       />
@@ -176,7 +165,7 @@ function ResourcePoolRemoteKind({ formPrefix }: ResourcePoolRemoteKindProps) {
 interface ResourcePoolRemoteStringInputProps<T extends FieldValues> {
   control: Control<T>;
   formPrefix: string;
-  name: FieldPathByValue<T, { enabled: false } | RemoteConfigurationFirecrest>;
+  name: FieldPathByValue<T, RemoteConfiguration>;
 }
 
 function ResourcePoolRemoteProviderId<T extends FieldValues>({
@@ -251,7 +240,17 @@ function ResourcePoolRemoteApiUrl<T extends FieldValues>({
             </div>
           </>
         )}
-        rules={{ required: "Please provide a value for the API URL." }}
+        rules={{
+          validate: {
+            required: (value, formValues) => {
+              const remote = formValues[name] as RemoteConfiguration;
+              if (!remote.enabled || value) {
+                return true;
+              }
+              return "Please provide a value for the API URL.";
+            },
+          },
+        }}
       />
     </div>
   );
@@ -290,7 +289,17 @@ function ResourcePoolRemoteSystemName<T extends FieldValues>({
             </div>
           </>
         )}
-        rules={{ required: "Please provide a value for the system name." }}
+        rules={{
+          validate: {
+            required: (value, formValues) => {
+              const remote = formValues[name] as RemoteConfiguration;
+              if (!remote.enabled || value) {
+                return true;
+              }
+              return "Please provide a value for the system name.";
+            },
+          },
+        }}
       />
     </div>
   );

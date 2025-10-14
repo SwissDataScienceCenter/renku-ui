@@ -24,7 +24,7 @@ export interface ResourcePoolForm {
   idleThresholdMinutes?: number;
   clusterId: string;
   /* eslint-disable-next-line spellcheck/spell-checker */
-  remote: { enabled: false } | RemoteConfigurationFirecrest;
+  remote: RemoteConfiguration;
 }
 
 export interface ResourcePoolFormQuota {
@@ -33,8 +33,8 @@ export interface ResourcePoolFormQuota {
   gpu: number;
 }
 
-export interface RemoteConfigurationFirecrest {
-  enabled: true;
+export interface RemoteConfiguration {
+  enabled: boolean;
   /** Kind of remote resource pool */
   kind: "firecrest";
   providerId?: string;

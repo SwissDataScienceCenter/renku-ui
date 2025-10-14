@@ -107,7 +107,14 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
       clusterId: "",
-      remote: { enabled: false },
+      remote: {
+        enabled: false,
+        kind: "firecrest",
+        providerId: "",
+        apiUrl: "",
+        systemName: "",
+        partition: "",
+      },
     },
   });
 
@@ -175,7 +182,14 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
       clusterId: "",
-      remote: { enabled: false },
+      remote: {
+        enabled: false,
+        kind: "firecrest",
+        providerId: "",
+        apiUrl: "",
+        systemName: "",
+        partition: "",
+      },
     });
   }, [defaultQuota, reset]);
 
