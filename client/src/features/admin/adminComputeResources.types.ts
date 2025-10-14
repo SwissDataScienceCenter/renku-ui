@@ -22,9 +22,9 @@ export interface ResourcePoolForm {
   quota: ResourcePoolFormQuota;
   hibernationThresholdMinutes?: number;
   idleThresholdMinutes?: number;
-  clusterId?: string;
+  clusterId: string;
   /* eslint-disable-next-line spellcheck/spell-checker */
-  remote?: RemoteConfigurationFirecrest;
+  remote: { enabled: false } | RemoteConfigurationFirecrest;
 }
 
 export interface ResourcePoolFormQuota {
@@ -34,6 +34,7 @@ export interface ResourcePoolFormQuota {
 }
 
 export interface RemoteConfigurationFirecrest {
+  enabled: true;
   /** Kind of remote resource pool */
   kind: "firecrest";
   providerId?: string;

@@ -37,6 +37,7 @@ import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
   useGetResourcePoolsQuery,
   usePostResourcePoolsMutation,
+  type RemoteConfiguration,
 } from "../sessionsV2/api/computeResources.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import type { ResourcePoolForm } from "./adminComputeResources.types";
@@ -51,7 +52,7 @@ export default function AddResourcePoolButton() {
 
   return (
     <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
+      <Button color="primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
         Add Resource Pool
       </Button>
@@ -106,7 +107,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
       clusterId: "",
-      remote: undefined,
+      remote: { enabled: false },
     },
   });
 
@@ -128,6 +129,19 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       const clusterId = data.clusterId?.trim()
         ? data.clusterId.trim()
         : undefined;
+      const remote: RemoteConfiguration | undefined = data.remote.enabled
+        ? {
+            kind: data.remote.kind,
+            provider_id: data.remote.providerId?.trim()
+              ? data.remote.providerId.trim()
+              : undefined,
+            api_url: data.remote.apiUrl.trim(),
+            system_name: data.remote.systemName.trim(),
+            partition: data.remote.partition?.trim()
+              ? data.remote.partition.trim()
+              : undefined,
+          }
+        : undefined;
       addResourcePool({
         resourcePool: {
           classes: populatedClass ? [populatedClass] : [],
@@ -142,6 +156,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           public: data.public,
           quota: data.quota,
           cluster_id: clusterId,
+          remote: remote,
         },
       });
     },
@@ -160,7 +175,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
       clusterId: "",
-      remote: undefined,
+      remote: { enabled: false },
     });
   }, [defaultQuota, reset]);
 
@@ -351,11 +366,12 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button
+          color="primary"
           disabled={result.isLoading}
           onClick={handleSubmit(onSubmit)}
           type="submit"

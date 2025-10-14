@@ -25,6 +25,9 @@ import {
 } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 
+import { ExternalLink } from "~/components/ExternalLinks";
+import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_CLUSTERS } from "~/utils/constants/NewDocs";
+
 const DEFAULT_ERROR_MESSAGE =
   "Please provide a valid Cluster ID or leave empty.";
 
@@ -32,7 +35,7 @@ interface ResourcePoolClusterIdInputProps<T extends FieldValues> {
   className?: string;
   control: Control<T>;
   formPrefix: string;
-  name: FieldPathByValue<T, string | undefined>;
+  name: FieldPathByValue<T, string>;
 }
 
 export default function ResourcePoolClusterIdInput<T extends FieldValues>({
@@ -86,7 +89,16 @@ export default function ResourcePoolClusterIdInput<T extends FieldValues>({
         }}
       />
 
-      <FormText>See: admin documentation about remote clusters (TODO)</FormText>
+      <FormText>
+        See:{" "}
+        <ExternalLink
+          role="text"
+          showLinkIcon
+          iconAfter
+          title="admin documentation about remote clusters"
+          url={NEW_DOCS_ADMIN_OPERATIONS_REMOTE_CLUSTERS}
+        />
+      </FormText>
     </div>
   );
 }

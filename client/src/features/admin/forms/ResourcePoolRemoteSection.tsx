@@ -24,11 +24,14 @@ import {
   type FieldValues,
   useWatch,
 } from "react-hook-form";
-
 import { Collapse, FormText, Input, Label } from "reactstrap";
+
+import { ExternalLink } from "~/components/ExternalLinks";
+import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS } from "~/utils/constants/NewDocs";
 import type { RemoteConfigurationFirecrest } from "../adminComputeResources.types";
 
 const DEFAULT_REMOTE_VALUE: RemoteConfigurationFirecrest = {
+  enabled: true,
   kind: "firecrest",
   providerId: "",
   apiUrl: "",
@@ -40,7 +43,7 @@ interface ResourcePoolRemoteSectionProps<T extends FieldValues> {
   className?: string;
   control: Control<T>;
   formPrefix: string;
-  name: FieldPathByValue<T, RemoteConfigurationFirecrest | undefined>;
+  name: FieldPathByValue<T, { enabled: false } | RemoteConfigurationFirecrest>;
 }
 
 export default function ResourcePoolRemoteSection<T extends FieldValues>({
@@ -50,7 +53,8 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
   name,
 }: ResourcePoolRemoteSectionProps<T>) {
   const inputId = `${formPrefix}Remote`;
-  const remoteWatch = useWatch({ control, name });
+  const remoteEnabled = `${name}.enabled` as FieldPathByValue<T, boolean>;
+  const remoteEnabledWatch = useWatch({ control, name: remoteEnabled });
 
   return (
     <div className={className}>
@@ -63,16 +67,16 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
               <Input
                 id={inputId}
                 type="checkbox"
-                checked={field.value != null}
+                checked={field.value.enabled}
                 onBlur={field.onBlur}
                 disabled={field.disabled}
                 name={`${field.name}-switch`}
                 ref={field.ref}
                 onChange={() => {
-                  if (field.value == null) {
-                    field.onChange(DEFAULT_REMOTE_VALUE);
+                  if (field.value.enabled) {
+                    field.onChange({ enabled: false });
                   } else {
-                    field.onChange(undefined);
+                    field.onChange(DEFAULT_REMOTE_VALUE);
                   }
                 }}
               />
@@ -92,11 +96,18 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
 
       <div>
         <FormText>
-          See: admin documentation about remote sessions (TODO)
+          See:{" "}
+          <ExternalLink
+            role="text"
+            showLinkIcon
+            iconAfter
+            title="admin documentation about remote sessions"
+            url={NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS}
+          />
         </FormText>
       </div>
 
-      <Collapse isOpen={remoteWatch != null}>
+      <Collapse isOpen={remoteEnabledWatch}>
         <div
           className={cx(
             "border-3",
@@ -109,7 +120,7 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
             "gap-1"
           )}
         >
-          <ResourcePoolRemoteKind />
+          <ResourcePoolRemoteKind formPrefix={formPrefix} />
 
           <ResourcePoolRemoteProviderId
             control={control}
@@ -123,36 +134,49 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
             name={name}
           />
 
-          {/* <div className="row">
-            <Label for="staticEmail" className="col-sm-2 col-form-label">
-              Email
-            </Label>
-            <div className="col-sm-10">
-              <Input
-                type="text"
-                readonly
-                class="form-control-plaintext"
-                id="staticEmail"
-                value="email@example.com"
-              />
-            </div>
-          </div> */}
-        </div>
+          <ResourcePoolRemoteSystemName
+            control={control}
+            formPrefix={formPrefix}
+            name={name}
+          />
 
-        <pre>{JSON.stringify(remoteWatch)}</pre>
+          <ResourcePoolRemotePartition
+            control={control}
+            formPrefix={formPrefix}
+            name={name}
+          />
+        </div>
       </Collapse>
     </div>
   );
 }
 
-function ResourcePoolRemoteKind<T extends FieldValues>({}) {
-  return <div>Kind</div>;
+interface ResourcePoolRemoteKindProps {
+  formPrefix: string;
+}
+
+function ResourcePoolRemoteKind({ formPrefix }: ResourcePoolRemoteKindProps) {
+  const inputId = `${formPrefix}Kind`;
+  return (
+    <div>
+      <Label className="mb-1" for={inputId}>
+        Kind
+      </Label>
+      <Input
+        id={inputId}
+        type="text"
+        value={DEFAULT_REMOTE_VALUE.kind}
+        disabled
+        readOnly
+      />
+    </div>
+  );
 }
 
 interface ResourcePoolRemoteStringInputProps<T extends FieldValues> {
   control: Control<T>;
   formPrefix: string;
-  name: FieldPathByValue<T, RemoteConfigurationFirecrest | undefined>;
+  name: FieldPathByValue<T, { enabled: false } | RemoteConfigurationFirecrest>;
 }
 
 function ResourcePoolRemoteProviderId<T extends FieldValues>({
@@ -178,13 +202,17 @@ function ResourcePoolRemoteProviderId<T extends FieldValues>({
         render={({ field, fieldState: { error } }) => (
           <>
             <Input
-              className={cx("form-control", error && "is-invalid")}
+              className={cx(error && "is-invalid")}
               id={inputId}
               placeholder="Provider ID"
               type="text"
               {...field}
+              value={field.value ?? ""}
             />
-            <div className="invalid-feedback">{error?.message ?? "Hi"}</div>
+            <div className="invalid-feedback">
+              {error?.message ??
+                "Please provide a valid value for provider ID."}
+            </div>
           </>
         )}
       />
@@ -211,16 +239,98 @@ function ResourcePoolRemoteApiUrl<T extends FieldValues>({
         render={({ field, fieldState: { error } }) => (
           <>
             <Input
-              className={cx("form-control", error && "is-invalid")}
+              className={cx(error && "is-invalid")}
               id={inputId}
-              placeholder="FirecREST API URL"
+              placeholder="FirecREST API URL" // eslint-disable-line spellcheck/spell-checker
               type="text"
               {...field}
+              value={field.value ?? ""}
             />
-            <div className="invalid-feedback">{error?.message ?? "Hi"}</div>
+            <div className="invalid-feedback">
+              {error?.message ?? "Please provide a valid value for API URL."}
+            </div>
           </>
         )}
-        rules={{ required: "Please provide a value for the API URL" }}
+        rules={{ required: "Please provide a value for the API URL." }}
+      />
+    </div>
+  );
+}
+
+function ResourcePoolRemoteSystemName<T extends FieldValues>({
+  control,
+  formPrefix,
+  name,
+}: ResourcePoolRemoteStringInputProps<T>) {
+  const inputId = `${formPrefix}SystemName`;
+
+  const fieldName = `${name}.systemName` as FieldPathByValue<T, string>;
+
+  return (
+    <div>
+      <Label className="mb-1" for={inputId}>
+        System Name
+      </Label>
+      <Controller
+        control={control}
+        name={fieldName}
+        render={({ field, fieldState: { error } }) => (
+          <>
+            <Input
+              className={cx(error && "is-invalid")}
+              id={inputId}
+              placeholder='System name, e.g. "eiger"' // eslint-disable-line spellcheck/spell-checker
+              type="text"
+              {...field}
+              value={field.value ?? ""}
+            />
+            <div className="invalid-feedback">
+              {error?.message ??
+                "Please provide a valid value for system name."}
+            </div>
+          </>
+        )}
+        rules={{ required: "Please provide a value for the system name." }}
+      />
+    </div>
+  );
+}
+
+function ResourcePoolRemotePartition<T extends FieldValues>({
+  control,
+  formPrefix,
+  name,
+}: ResourcePoolRemoteStringInputProps<T>) {
+  const inputId = `${formPrefix}Partition`;
+  const fieldName = `${name}.partition` as FieldPathByValue<
+    T,
+    string | undefined
+  >;
+
+  return (
+    <div>
+      <Label className="mb-1" for={inputId}>
+        Partition
+        <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+      </Label>
+      <Controller
+        control={control}
+        name={fieldName}
+        render={({ field, fieldState: { error } }) => (
+          <>
+            <Input
+              className={cx(error && "is-invalid")}
+              id={inputId}
+              placeholder='SLURM partition, e.g. "normal"'
+              type="text"
+              {...field}
+              value={field.value ?? ""}
+            />
+            <div className="invalid-feedback">
+              {error?.message ?? "Please provide a valid value for partition."}
+            </div>
+          </>
+        )}
       />
     </div>
   );
