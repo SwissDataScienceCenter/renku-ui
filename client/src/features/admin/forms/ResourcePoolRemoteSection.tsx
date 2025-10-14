@@ -49,14 +49,8 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
   const remoteEnabled = `${name}.enabled` as FieldPathByValue<T, boolean>;
   const remoteEnabledWatch = useWatch({ control, name: remoteEnabled });
 
-  // Need to register "kind" so that the default value is populated
-  control.register(`${name}.kind` as FieldPathByValue<T, string>);
-
-  const remoteWatch = useWatch({ control, name });
-
   return (
     <div className={className}>
-      <pre>{JSON.stringify({ remote: remoteWatch }, null, 2)}</pre>
       <Controller
         control={control}
         name={remoteEnabled}
