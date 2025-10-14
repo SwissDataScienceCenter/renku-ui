@@ -75,6 +75,7 @@ export const CLOUD_STORAGE_OVERRIDE = {
       position: 4,
     },
     openbis: {
+      name: "openBIS",
       forceReadOnly: true,
       position: 6,
     },

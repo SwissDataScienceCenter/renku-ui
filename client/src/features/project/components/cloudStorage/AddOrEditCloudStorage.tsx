@@ -102,6 +102,7 @@ export default function AddOrEditCloudStorage({
   if (ContentByStep)
     return (
       <>
+        <AddStorageAdvancedToggle state={state} setState={setState} />
         <AddStorageBreadcrumbNavbar state={state} setState={setState} />
         <ContentByStep
           schema={schema}
@@ -194,8 +195,6 @@ interface AddStorageAdvancedForm {
 }
 export function AddStorageAdvanced({
   setStorage,
-  setState,
-  state,
   storage,
 }: AddStorageStepProps) {
   const {
@@ -233,16 +232,9 @@ export function AddStorageAdvanced({
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-advanced">
-      <AddStorageAdvancedToggle state={state} setState={setState} />
       <div className="mb-3">
         <Label className="form-label" for="sourcePath">
           {sourcePathHelp.label}
-          <Badge
-            className={cx("rounded-pill", "align-top", "ms-1")}
-            color="primary"
-          >
-            required
-          </Badge>
         </Label>
         <Controller
           name="sourcePath"
@@ -410,6 +402,14 @@ function CheckboxOptionItem({
   );
 }
 
+function BadgeRequired() {
+  return (
+    <Badge className={cx("rounded-pill", "ms-1")} color="secondary">
+      required
+    </Badge>
+  );
+}
+
 interface PasswordOptionItemProps {
   control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   defaultValue: string | undefined;
@@ -452,16 +452,7 @@ function PasswordOptionItem({
             className={cx("bi", "ms-1", "text-warning")}
           />
         </div>
-        {option.required ? (
-          <Badge
-            className={cx("rounded-pill", "align-top", "ms-1")}
-            color="primary"
-          >
-            required
-          </Badge>
-        ) : (
-          <></>
-        )}
+        {option.required && BadgeRequired()}
         <UncontrolledTooltip placement="top" target={tooltipContainerId}>
           {isV2 ? (
             <span>
@@ -604,16 +595,7 @@ function InputOptionItem({
     <>
       <Label htmlFor={option.name}>
         {inputName}
-        {option.required ? (
-          <Badge
-            className={cx("rounded-pill", "align-top", "ms-1")}
-            color="primary"
-          >
-            required
-          </Badge>
-        ) : (
-          <></>
-        )}
+        {option.required && BadgeRequired()}
       </Label>
       <Controller
         name={option.name}
@@ -1041,7 +1023,7 @@ export function AddStorageOptions({
     storage.schema ?? ""
   );
 
-  const moreOptionsThanInTheShortList = () => {
+  const moreOptionsThanInTheShortList = useMemo(() => {
     const allOptions = getSchemaOptions(
       schema,
       false,
@@ -1059,7 +1041,7 @@ export function AddStorageOptions({
       shortListOptions &&
       allOptions.length > shortListOptions.length
     );
-  };
+  }, [schema, storage.schema, storage.provider]);
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-options">
@@ -1068,11 +1050,10 @@ export function AddStorageOptions({
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.
       </p>
-      <AddStorageAdvancedToggle state={state} setState={setState} />
       {!hasAccessMode && sourcePath}
       {optionItems}
       {hasAccessMode && sourcePath}
-      {!moreOptionsThanInTheShortList() || advancedOptions}
+      {moreOptionsThanInTheShortList && advancedOptions}
     </form>
   );
 }
@@ -1160,7 +1141,7 @@ export function AddStorageMount({
     ),
     storage.schema
   );
-  if (selectedSchema && selectedSchema.forceReadOnly) {
+  if (selectedSchema?.forceReadOnly) {
     storage.readOnly = true;
   }
 
@@ -1262,9 +1243,7 @@ export function AddStorageMount({
               }}
               value=""
               checked={storage.readOnly ?? false}
-              readOnly={
-                (selectedSchema && selectedSchema.forceReadOnly) ?? false
-              }
+              readOnly={selectedSchema?.forceReadOnly ?? false}
             />
           )}
           rules={{ required: true }}

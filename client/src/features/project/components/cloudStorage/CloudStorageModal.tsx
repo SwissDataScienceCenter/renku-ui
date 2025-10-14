@@ -337,26 +337,28 @@ export default function CloudStorageModal({
   );
 
   // Visual elements
-  const disableContinueButton =
-    (state.step === 1 &&
-      (!storageDetails.schema ||
-        (schemaRequiresProvider && !storageDetails.provider))) ||
-    (state.step === 2 &&
-      !(
-        schema &&
-        getSchemaOptions(
-          schema,
-          true,
-          storageDetails.schema,
-          storageDetails.provider
-        )?.every((o) => {
-          return (
-            !o.required ||
-            (storageDetails.options && storageDetails.options[o.name])
-          );
-        })
-      )) ||
-    false;
+  const disableContinueButton = useMemo(() => {
+    return (
+      (state.step === 1 &&
+        (!storageDetails.schema ||
+          (schemaRequiresProvider && !storageDetails.provider))) ||
+      (state.step === 2 &&
+        !(
+          schema &&
+          getSchemaOptions(
+            schema,
+            true,
+            storageDetails.schema,
+            storageDetails.provider
+          )?.every((o) => {
+            return (
+              !o.required ||
+              (storageDetails.options && storageDetails.options[o.name])
+            );
+          })
+        ))
+    );
+  }, [state.step, storageDetails, schemaRequiresProvider, schema]);
 
   const isAddResultLoading = addResult.isLoading;
   const isModifyResultLoading = modifyResult.isLoading;
