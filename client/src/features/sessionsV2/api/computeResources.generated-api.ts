@@ -568,6 +568,7 @@ export type Ulid = string;
 export type Protocol = "http" | "https";
 export type Host = string;
 export type Port = number;
+export type IngressClassName = string;
 export type IngressAnnotations = {
   [key: string]: any;
 };
@@ -581,6 +582,7 @@ export type ClusterWithId = {
   session_host: Host;
   session_port: Port;
   session_path: string;
+  session_ingress_class_name?: IngressClassName;
   session_ingress_annotations: IngressAnnotations;
   session_tls_secret_name: TlsSecretName;
   session_storage_class?: StorageClassName;
@@ -595,6 +597,7 @@ export type Cluster = {
   session_host: Host;
   session_port: Port;
   session_path: string;
+  session_ingress_class_name?: IngressClassName;
   session_ingress_annotations: IngressAnnotations;
   session_tls_secret_name: TlsSecretName;
   session_storage_class?: StorageClassName;
@@ -608,6 +611,7 @@ export type ClusterPatch = {
   session_host?: Host;
   session_port?: Port;
   session_path?: string;
+  session_ingress_class_name?: IngressClassName;
   session_ingress_annotations?: IngressAnnotations;
   session_tls_secret_name?: TlsSecretName;
   session_storage_class?: StorageClassName;
@@ -633,6 +637,19 @@ export type ResourceClassWithIdFiltered = {
   node_affinities?: NodeAffinityList;
 };
 export type PublicFlag = boolean;
+export type RemoteConfigurationFirecrestProviderId = string;
+export type RemoteConfigurationFirecrestApiUrl = string;
+export type RemoteConfigurationFirecrestSystemName = string;
+export type RemoteConfigurationFirecrestPartition = string;
+export type RemoteConfigurationFirecrest = {
+  /** Kind of remote resource pool */
+  kind: "firecrest";
+  provider_id?: RemoteConfigurationFirecrestProviderId;
+  api_url: RemoteConfigurationFirecrestApiUrl;
+  system_name: RemoteConfigurationFirecrestSystemName;
+  partition?: RemoteConfigurationFirecrestPartition;
+};
+export type RemoteConfiguration = RemoteConfigurationFirecrest;
 export type IdleThreshold = number;
 export type HibernationThreshold = number;
 export type ResourcePoolWithIdFiltered = {
@@ -642,6 +659,7 @@ export type ResourcePoolWithIdFiltered = {
   id: IntegerId;
   public: PublicFlag;
   default: DefaultFlag;
+  remote?: RemoteConfiguration;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
@@ -657,6 +675,7 @@ export type ResourcePoolWithId = {
   id: IntegerId;
   public: PublicFlag;
   default: DefaultFlag;
+  remote?: RemoteConfiguration;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster?: {
@@ -687,6 +706,7 @@ export type ResourcePool = {
   name: Name;
   public: PublicFlag;
   default: DefaultFlag;
+  remote?: RemoteConfiguration;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
@@ -698,6 +718,7 @@ export type ResourcePoolPut = {
   name: Name;
   public: PublicFlag;
   default: DefaultFlag;
+  remote?: RemoteConfiguration;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
@@ -720,12 +741,25 @@ export type ResourceClassPatchWithId = {
   node_affinities?: NodeAffinityList;
 };
 export type ResourceClassesPatchWithId = ResourceClassPatchWithId[];
+export type RemoteConfigurationPatchReset = object;
+export type RemoteConfigurationFirecrestPatch = {
+  /** Kind of remote resource pool */
+  kind?: "firecrest";
+  provider_id?: RemoteConfigurationFirecrestProviderId;
+  api_url?: RemoteConfigurationFirecrestApiUrl;
+  system_name?: RemoteConfigurationFirecrestSystemName;
+  partition?: RemoteConfigurationFirecrestPartition;
+};
+export type RemoteConfigurationPatch =
+  | RemoteConfigurationPatchReset
+  | RemoteConfigurationFirecrestPatch;
 export type ResourcePoolPatch = {
   quota?: QuotaPatch;
   classes?: ResourceClassesPatchWithId;
   name?: Name;
   public?: PublicFlag;
   default?: DefaultFlag;
+  remote?: RemoteConfigurationPatch;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
