@@ -26,6 +26,7 @@ import {
 } from "react-hook-form";
 import { Collapse, FormText, Input, Label } from "reactstrap";
 
+import CollapseBody from "~/components/container/CollapseBody";
 import { ExternalLink } from "~/components/ExternalLinks";
 import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS } from "~/utils/constants/NewDocs";
 import type { RemoteConfiguration } from "../adminComputeResources.types";
@@ -117,7 +118,7 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
             formPrefix={formPrefix}
             name={name}
           />
-        </div>
+        </CollapseBody>
       </Collapse>
     </div>
   );
