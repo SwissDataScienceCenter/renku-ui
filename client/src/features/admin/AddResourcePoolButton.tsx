@@ -220,7 +220,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       <ModalHeader toggle={toggle}>Add resource pool</ModalHeader>
       <ModalBody>
         <Form
-          className={cx("form-rk-green", "d-flex", "flex-column", "gap-3")}
+          className={cx("d-flex", "flex-column", "gap-3")}
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
