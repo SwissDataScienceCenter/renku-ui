@@ -113,7 +113,7 @@ function DeleteResourceClassModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalBody>
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
@@ -124,7 +124,7 @@ function DeleteResourceClassModal({
         </p>
       </ModalBody>
       <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+        <Button className="ms-2" color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel, keep resource class
         </Button>
