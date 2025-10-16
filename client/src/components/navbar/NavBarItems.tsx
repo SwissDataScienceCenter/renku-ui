@@ -50,6 +50,7 @@ import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import styles from "./NavBarItem.module.scss";
+import { useMemo } from "react";
 
 export function RenkuToolbarItemPlus() {
   const location = useLocation();
@@ -286,9 +287,14 @@ export function RenkuToolbarItemUser({
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   const gatewayURL = params.GATEWAY_URL;
-  const uiserverURL = params.UISERVER_URL;
-  const redirect_url = encodeURIComponent(params.BASE_URL);
+  const redirectUrl = encodeURIComponent(params.BASE_URL);
+  const logoutLocation = `/auth/logout?redirect_url=${redirectUrl}`;
+
   const isLegacyEnabled = params.LEGACY_SUPPORT.enabled;
+  const logoutBase = useMemo(
+    () => (isLegacyEnabled ? params.UISERVER_URL : params.GATEWAY_URL),
+    [isLegacyEnabled, params.UISERVER_URL, params.GATEWAY_URL]
+  );
 
   const loginUrl = useLoginUrl({ params });
 
@@ -371,7 +377,7 @@ export function RenkuToolbarItemUser({
         <a
           className="dropdown-item"
           data-cy="navbar-logout"
-          href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
+          href={`${logoutBase}${logoutLocation}`}
           id="logout-link"
           onClick={() => {
             LoginHelper.notifyLogout();
