@@ -270,15 +270,12 @@
       "SourceUrl": {
         "description": "The URL that should be redirected. Must begin with `/projects` or\n`https://gitlab.renkulab.io/`\n",
         "type": "string",
-        "examples": [
-          "/projects/ns/slug",
-          "https://gitlab.renkulab.io/user/project"
-        ]
+        "example": "/projects/ns/slug"
       },
       "TargetUrl": {
         "description": "The URL that should be redirected to. Must begin with `https://` or\nhave the structure `/p/[ULID]`\n",
         "type": "string",
-        "examples": ["/p/project-ulid", "https://github.com/user/project"]
+        "example": "/p/project-ulid"
       },
       "UrlRedirectPlanList": {
         "description": "A list of redirect info objects",
