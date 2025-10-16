@@ -31,12 +31,12 @@ import {
   UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { LoginHelper } from "../../authentication";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem.tsx";
 import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
@@ -48,7 +48,6 @@ import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import styles from "./NavBarItem.module.scss";
 
 export function RenkuToolbarItemPlus() {
@@ -286,8 +285,9 @@ export function RenkuToolbarItemUser({
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   const gatewayURL = params.GATEWAY_URL;
-  const uiserverURL = params.UISERVER_URL;
-  const redirect_url = encodeURIComponent(params.BASE_URL);
+  const logoutURL = `${gatewayURL}/auth/logout?redirect_url=${encodeURIComponent(
+    params.BASE_URL
+  )}`;
   const isLegacyEnabled = params.LEGACY_SUPPORT.enabled;
 
   const loginUrl = useLoginUrl({ params });
@@ -371,7 +371,7 @@ export function RenkuToolbarItemUser({
         <a
           className="dropdown-item"
           data-cy="navbar-logout"
-          href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
+          href={logoutURL}
           id="logout-link"
           onClick={() => {
             LoginHelper.notifyLogout();

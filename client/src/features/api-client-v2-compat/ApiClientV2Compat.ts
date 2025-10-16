@@ -40,7 +40,7 @@ const FETCH_DEFAULT = {
 
 export default class ApiClientV2Compat {
   baseUrl: string;
-  uiserverUrl: string;
+  uiserverUrl: string; // Still used by the WebSocket channel
   supportsLegacy = false;
 
   constructor(baseUrl: string, uiserverUrl: string) {
@@ -96,13 +96,13 @@ export default class ApiClientV2Compat {
   doLogin() {
     // This is invoked to perform authentication.
     window.location.href = `${
-      this.uiserverUrl
+      this.baseUrl
     }/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   doLogout() {
     window.location.href = `${
-      this.uiserverUrl
+      this.baseUrl
     }/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
