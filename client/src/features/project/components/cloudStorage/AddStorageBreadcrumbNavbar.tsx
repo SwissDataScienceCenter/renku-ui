@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useMemo } from "react";
-import { Breadcrumb, BreadcrumbItem, Button } from "reactstrap";
+import { BreadcrumbItem, Button } from "reactstrap";
 
 import { CLOUD_STORAGE_TOTAL_STEPS } from "./projectCloudStorage.constants";
 import { AddCloudStorageState } from "./projectCloudStorage.types";
