@@ -452,7 +452,7 @@ function PasswordOptionItem({
             className={cx("bi", "ms-1", "text-warning")}
           />
         </div>
-        {option.required && BadgeRequired()}
+        {option.required && <BadgeRequired />}
         <UncontrolledTooltip placement="top" target={tooltipContainerId}>
           {isV2 ? (
             <span>
@@ -595,7 +595,7 @@ function InputOptionItem({
     <>
       <Label htmlFor={option.name}>
         {inputName}
-        {option.required && BadgeRequired()}
+        {option.required && <BadgeRequired />}
       </Label>
       <Controller
         name={option.name}
@@ -1248,7 +1248,7 @@ export function AddStorageMount({
           )}
           rules={{ required: true }}
         />
-        {(selectedSchema?.forceReadOnly && (
+        {selectedSchema?.forceReadOnly ? (
           <div className="mt-1">
             <InfoAlert dismissible={false} timeout={0}>
               <p className="mb-0">
@@ -1256,8 +1256,8 @@ export function AddStorageMount({
               </p>
             </InfoAlert>
           </div>
-        )) ||
-          (!storage.readOnly && (
+        ) : (
+          !storage.readOnly && (
             <div className="mt-1">
               <WarnAlert dismissible={false}>
                 <p className="mb-0">
@@ -1267,7 +1267,8 @@ export function AddStorageMount({
                 </p>
               </WarnAlert>
             </div>
-          ))}
+          )
+        )}
         <div className={cx("form-text", "text-muted")}>
           Check this box to mount the storage in read-only mode. You should
           always check this if you do not have credentials to write. You can use

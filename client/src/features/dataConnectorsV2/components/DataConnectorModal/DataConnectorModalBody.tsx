@@ -556,7 +556,7 @@ export function DataConnectorMount({
             )}
             rules={{ required: true }}
           />
-          {(schema?.forceReadOnly && (
+          {schema?.forceReadOnly ? (
             <div className="mt-1">
               <InfoAlert dismissible={false} timeout={0}>
                 <p className="mb-0">
@@ -564,8 +564,8 @@ export function DataConnectorMount({
                 </p>
               </InfoAlert>
             </div>
-          )) ||
-            (!flatDataConnector.readOnly && (
+          ) : (
+            !flatDataConnector.readOnly && (
               <div className="mt-1">
                 <WarnAlert dismissible={false}>
                   <p className="mb-0">
@@ -575,7 +575,8 @@ export function DataConnectorMount({
                   </p>
                 </WarnAlert>
               </div>
-            ))}
+            )
+          )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
             access. You should always select this if you do not have credentials
