@@ -148,7 +148,7 @@ function App(props) {
       )
     );
     // ! Ignoring the rule of hooks creates issues, we should refactor this hook
-  }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Avoid rendering the application while authenticating the user
   const user = useLegacySelector((state) => state.stateModel.user);
