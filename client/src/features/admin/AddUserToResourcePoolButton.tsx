@@ -62,7 +62,7 @@ export default function AddUserToResourcePoolButton({
 
   return (
     <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PersonFillAdd className={cx("bi", "me-1")} />
         Add User
       </Button>

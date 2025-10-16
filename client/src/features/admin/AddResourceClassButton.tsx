@@ -72,7 +72,7 @@ export default function AddResourceClassButton({
 
   return (
     <>
-      <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+      <Button className="ms-2" color="outline-primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
         Add Class
       </Button>
@@ -314,7 +314,7 @@ function AddResourceClassModal({
           <div className="mb-3">
             <div className="form-label">Tolerations</div>
             <Button
-              className="btn-outline-rk-green"
+              color="outline-primary"
               onClick={onAddTolerationLabel}
               type="button"
             >
@@ -357,7 +357,7 @@ function AddResourceClassModal({
           <div>
             <div className="form-label">Node affinities</div>
             <Button
-              className="btn-outline-rk-green"
+              color="outline-primary"
               onClick={onAddNodeAffinity}
               type="button"
             >
@@ -438,11 +438,12 @@ function AddResourceClassModal({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button
+          color="primary"
           disabled={result.isLoading}
           onClick={handleSubmit(onSubmit)}
           type="submit"

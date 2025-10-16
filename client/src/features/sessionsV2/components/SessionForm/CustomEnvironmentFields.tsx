@@ -18,46 +18,24 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { debounce, type DebounceSettings, type DebouncedFunc } from "lodash";
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { useEffect } from "react";
 import { ExclamationTriangle } from "react-bootstrap-icons";
 import { Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
+import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Links } from "../../../../utils/constants/Docs";
 import { useGetSessionsImagesQuery } from "../../api/sessionsV2.api";
-import { CONTAINER_IMAGE_PATTERN } from "../../session.constants";
+import {
+  CONTAINER_IMAGE_PATTERN,
+  LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE,
+  LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE,
+} from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
-
-function useDebouncedState<S>(
-  initialState: S | (() => S),
-  wait?: number,
-  options?: DebounceSettings
-): [S, DebouncedFunc<Dispatch<SetStateAction<S>>>] {
-  const [state, setState] = useState(initialState);
-
-  const debouncedSet = useMemo<DebouncedFunc<Dispatch<SetStateAction<S>>>>(
-    () => debounce(setState, wait, options),
-    [wait, options]
-  );
-
-  useEffect(() => {
-    return () => {
-      debouncedSet.cancel();
-    };
-  }, [debouncedSet]);
-
-  return [state, debouncedSet];
-}
+import InputOverlayLoader from "./InputOverlayLoader";
 
 export function CustomEnvironmentFields({
   control,
@@ -67,7 +45,10 @@ export function CustomEnvironmentFields({
   const watchEnvironmentSelect = watch("environmentSelect");
   const watchContainerImage = watch("container_image");
   const [debouncedContainerImage, setDebouncedContainerImage] =
-    useDebouncedState<string>(watchContainerImage ?? "", 1_000);
+    useDebouncedState<string>(
+      watchContainerImage ?? "",
+      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE
+    );
 
   useEffect(() => {
     setDebouncedContainerImage(watchContainerImage ?? "");
@@ -76,7 +57,9 @@ export function CustomEnvironmentFields({
   const inputModified = watchContainerImage !== debouncedContainerImage;
 
   const { data, isFetching } = useGetSessionsImagesQuery(
-    watchEnvironmentSelect === "custom + image" && debouncedContainerImage
+    watchEnvironmentSelect === "custom + image" &&
+      debouncedContainerImage &&
+      !errors.container_image
       ? { imageUrl: debouncedContainerImage }
       : skipToken
   );
@@ -89,76 +72,84 @@ export function CustomEnvironmentFields({
         repository/image:tag).
       </p>
       <div className={cx("d-flex", "flex-column")}>
-        <Label
-          className={cx("form-label")}
-          for="addSessionLauncherContainerImage"
-        >
+        <Label className="form-label" for="addSessionLauncherContainerImage">
           Container Image
         </Label>
         <Controller
           control={control}
           name="container_image"
           render={({ field }) => (
-            <Input
-              autoFocus={true}
-              className={cx(
-                errors.container_image && "is-invalid",
-                !errors.container_image &&
-                  data?.accessible === true &&
-                  !isFetching &&
-                  !inputModified &&
-                  "is-valid"
+            <div className="position-relative">
+              <Input
+                autoFocus={true}
+                className={cx(
+                  errors.container_image && "is-invalid",
+                  !errors.container_image &&
+                    data?.accessible === true &&
+                    !isFetching &&
+                    !inputModified &&
+                    "is-valid"
+                )}
+                data-cy="custom-image-input"
+                id="addSessionLauncherContainerImage"
+                placeholder="image:tag"
+                type="text"
+                {...field}
+              />
+              {(inputModified || isFetching) && !errors.container_image && (
+                <InputOverlayLoader />
               )}
-              data-cy="custom-image-input"
-              id="addSessionLauncherContainerImage"
-              placeholder="image:tag"
-              type="text"
-              {...field}
-            />
+              <div className="invalid-feedback">
+                {errors.container_image?.message ??
+                  LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.pattern}
+              </div>
+            </div>
           )}
           rules={{
             required: {
               value: watchEnvironmentSelect === "custom + image",
-              message: "Please provide a container image.",
+              message: LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.required,
             },
             pattern: {
               value: CONTAINER_IMAGE_PATTERN,
-              message: "Please provide a valid container image.",
+              message: LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE.pattern,
             },
           }}
         />
-        <div className="invalid-feedback">
-          {errors.container_image?.message ??
-            "Please provide a valid container image."}
-        </div>
-        {!errors.container_image?.message && data?.accessible === false && (
-          <div className={cx("mt-1", "small", "text-warning-emphasis")}>
-            <ExclamationTriangle className="bi" /> Image not found. Access to
-            this image may require connecting an additional integration after
-            creating this launcher.
-          </div>
-        )}
+        {!isFetching &&
+          !inputModified &&
+          !errors.container_image &&
+          data?.accessible === false && (
+            <div className={cx("mt-1", "small", "text-warning-emphasis")}>
+              <ExclamationTriangle className={cx("bi", "me-1")} />
+              Image not found. Access to this image may require connecting an
+              additional integration after creating this launcher.
+            </div>
+          )}
       </div>
-      <div className={cx("fw-bold", "w-100")}>Advanced settings</div>
 
-      <InfoAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          Please see the{" "}
-          <ExternalLink
-            role="text"
-            url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
-            title="documentation"
-            showLinkIcon
-            iconAfter
-          />{" "}
-          for how to complete this form to make your image run on Renkulab.
-        </p>
-      </InfoAlert>
+      <div>
+        <p className={cx("fs-6", "fw-bold", "w-100")}>Advanced settings</p>
 
-      <AdvancedSettingsFields<SessionLauncherForm>
-        control={control}
-        errors={errors}
-      />
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Please see the{" "}
+            <ExternalLink
+              role="text"
+              url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
+              title="documentation"
+              showLinkIcon
+              iconAfter
+            />{" "}
+            for how to complete this form to make your image run on Renkulab.
+          </p>
+        </InfoAlert>
+
+        <AdvancedSettingsFields<SessionLauncherForm>
+          control={control}
+          errors={errors}
+        />
+      </div>
     </div>
   );
 }

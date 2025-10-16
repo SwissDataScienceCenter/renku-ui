@@ -293,7 +293,7 @@ export function AdvancedSettingsFields<
       </div>
       <div className="row">
         <div className={cx("col-12")}>
-          <Label className={cx("form-label", "me-2", "fw-bold")}>
+          <Label className={cx("form-label", "mb-0", "fw-bold")}>
             Docker settings
           </Label>
         </div>
