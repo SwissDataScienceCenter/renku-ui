@@ -1536,6 +1536,9 @@
           "session_path": {
             "type": "string"
           },
+          "session_ingress_class_name": {
+            "$ref": "#/components/schemas/IngressClassName"
+          },
           "session_ingress_annotations": {
             "$ref": "#/components/schemas/IngressAnnotations"
           },
@@ -1582,6 +1585,9 @@
           "session_path": {
             "type": "string"
           },
+          "session_ingress_class_name": {
+            "$ref": "#/components/schemas/IngressClassName"
+          },
           "session_ingress_annotations": {
             "$ref": "#/components/schemas/IngressAnnotations"
           },
@@ -1620,6 +1626,9 @@
           },
           "session_path": {
             "type": "string"
+          },
+          "session_ingress_class_name": {
+            "$ref": "#/components/schemas/IngressClassName"
           },
           "session_ingress_annotations": {
             "$ref": "#/components/schemas/IngressAnnotations"
@@ -1999,6 +2008,9 @@
           "default": {
             "$ref": "#/components/schemas/DefaultFlag"
           },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteConfiguration"
+          },
           "idle_threshold": {
             "$ref": "#/components/schemas/IdleThreshold"
           },
@@ -2018,6 +2030,7 @@
           },
           "public": true,
           "default": false,
+          "remote": false,
           "classes": [
             {
               "name": "resource class 1",
@@ -2060,6 +2073,9 @@
           },
           "default": {
             "$ref": "#/components/schemas/DefaultFlag"
+          },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteConfigurationPatch"
           },
           "idle_threshold": {
             "$ref": "#/components/schemas/IdleThreshold"
@@ -2106,6 +2122,9 @@
           "default": {
             "$ref": "#/components/schemas/DefaultFlag"
           },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteConfiguration"
+          },
           "idle_threshold": {
             "$ref": "#/components/schemas/IdleThreshold"
           },
@@ -2126,6 +2145,7 @@
           },
           "public": true,
           "default": false,
+          "remote": false,
           "classes": [
             {
               "name": "resource class 1",
@@ -2173,6 +2193,9 @@
           "default": {
             "$ref": "#/components/schemas/DefaultFlag"
           },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteConfiguration"
+          },
           "idle_threshold": {
             "$ref": "#/components/schemas/IdleThreshold"
           },
@@ -2199,6 +2222,7 @@
           },
           "public": false,
           "default": false,
+          "remote": false,
           "classes": [
             {
               "name": "resource class 1",
@@ -2247,6 +2271,9 @@
           "default": {
             "$ref": "#/components/schemas/DefaultFlag"
           },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteConfiguration"
+          },
           "idle_threshold": {
             "$ref": "#/components/schemas/IdleThreshold"
           },
@@ -2267,6 +2294,7 @@
           },
           "public": false,
           "default": false,
+          "remote": false,
           "classes": [
             {
               "name": "resource class 1",
@@ -2532,6 +2560,103 @@
         "default": false,
         "example": false
       },
+      "RemoteConfiguration": {
+        "type": "object",
+        "description": "The configuration used by Renku to start sessions remotely.\nIf this field is present, the corresponding resource pool starts remote sessions.\n",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrest"
+          }
+        ]
+      },
+      "RemoteConfigurationFirecrest": {
+        "type": "object",
+        "description": "The configuration for starting sessions remotely using\nthe FirecREST API\n",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["firecrest"],
+            "description": "Kind of remote resource pool",
+            "example": "firecrest"
+          },
+          "provider_id": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestProviderId"
+          },
+          "api_url": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestApiUrl"
+          },
+          "system_name": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestSystemName"
+          },
+          "partition": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestPartition"
+          }
+        },
+        "required": ["kind", "api_url", "system_name"]
+      },
+      "RemoteConfigurationFirecrestProviderId": {
+        "type": "string",
+        "description": "The ID of a provider (see oauth2 section).\nThis is used to allow seamless authentication using Renku integrations.\n",
+        "example": "my-provider"
+      },
+      "RemoteConfigurationFirecrestApiUrl": {
+        "type": "string",
+        "description": "The base URL of the FirecREST API",
+        "example": "https://api.cscs.ch/hpc/firecrest/v2"
+      },
+      "RemoteConfigurationFirecrestSystemName": {
+        "type": "string",
+        "description": "The name of the system to use with the FirecREST API",
+        "example": "eiger"
+      },
+      "RemoteConfigurationFirecrestPartition": {
+        "type": "string",
+        "description": "The partition to use when submitting jobs",
+        "example": "normal"
+      },
+      "RemoteConfigurationPatch": {
+        "type": "object",
+        "description": "Patch for the configuration used by to start sessions remotely\n",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RemoteConfigurationPatchReset"
+          },
+          {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestPatch"
+          }
+        ]
+      },
+      "RemoteConfigurationPatchReset": {
+        "type": "object",
+        "description": "Value used to unset the remote field (empty object).",
+        "additionalProperties": false
+      },
+      "RemoteConfigurationFirecrestPatch": {
+        "type": "object",
+        "description": "The configuration for starting sessions remotely using\nthe FirecREST API\n",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["firecrest"],
+            "description": "Kind of remote resource pool",
+            "example": "firecrest"
+          },
+          "provider_id": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestProviderId"
+          },
+          "api_url": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestApiUrl"
+          },
+          "system_name": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestSystemName"
+          },
+          "partition": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestPartition"
+          }
+        }
+      },
       "IdleThreshold": {
         "type": "integer",
         "description": "A threshold in seconds after which a session gets hibernated (0 means no threshold)",
@@ -2683,6 +2808,10 @@
         "maxLength": 256
       },
       "StorageClassName": {
+        "type": "string",
+        "maxLength": 256
+      },
+      "IngressClassName": {
         "type": "string",
         "maxLength": 256
       },

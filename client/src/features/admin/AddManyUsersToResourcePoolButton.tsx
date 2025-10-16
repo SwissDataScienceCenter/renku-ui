@@ -74,7 +74,7 @@ export default function AddManyUsersToResourcePoolButton({
 
   return (
     <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PeopleFill className={cx("bi", "me-1")} />
         Add a batch of users
       </Button>
