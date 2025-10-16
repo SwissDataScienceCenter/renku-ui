@@ -91,18 +91,7 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
       </div>
 
       <Collapse isOpen={remoteEnabledWatch}>
-        <div
-          className={cx(
-            "border-3",
-            "border-dark-subtle",
-            "border-start",
-            "ms-1",
-            "ps-2",
-            "d-flex",
-            "flex-column",
-            "gap-1"
-          )}
-        >
+        <CollapseBody className={cx("d-flex", "flex-column", "gap-1")}>
           <ResourcePoolRemoteKind formPrefix={formPrefix} />
 
           <ResourcePoolRemoteProviderId
