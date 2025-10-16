@@ -728,6 +728,7 @@ export type QuotaPatch = {
   memory?: Memory;
   gpu?: Gpu;
 };
+export type DefaultFlagPatch = boolean;
 export type ResourceClassPatchWithId = {
   name?: Name;
   cpu?: Cpu;
@@ -736,11 +737,12 @@ export type ResourceClassPatchWithId = {
   max_storage?: Storage;
   default_storage?: Storage;
   id: IntegerId;
-  default?: DefaultFlag;
+  default?: DefaultFlagPatch;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
 };
 export type ResourceClassesPatchWithId = ResourceClassPatchWithId[];
+export type PublicFlagPatch = boolean;
 export type RemoteConfigurationPatchReset = object;
 export type RemoteConfigurationFirecrestPatch = {
   /** Kind of remote resource pool */
@@ -757,8 +759,8 @@ export type ResourcePoolPatch = {
   quota?: QuotaPatch;
   classes?: ResourceClassesPatchWithId;
   name?: Name;
-  public?: PublicFlag;
-  default?: DefaultFlag;
+  public?: PublicFlagPatch;
+  default?: DefaultFlagPatch;
   remote?: RemoteConfigurationPatch;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
@@ -772,7 +774,7 @@ export type ResourceClassPatch = {
   gpu?: Gpu;
   max_storage?: Storage;
   default_storage?: Storage;
-  default?: DefaultFlag;
+  default?: DefaultFlagPatch;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
 };
