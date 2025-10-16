@@ -23,7 +23,6 @@ export interface ResourcePoolForm {
   hibernationThresholdMinutes?: number;
   idleThresholdMinutes?: number;
   clusterId: string;
-  /* eslint-disable-next-line spellcheck/spell-checker */
   remote: RemoteConfiguration;
 }
 
