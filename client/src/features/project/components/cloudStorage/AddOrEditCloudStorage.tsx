@@ -34,6 +34,7 @@ import {
 } from "react-bootstrap-icons";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import {
+  Badge,
   Button,
   Input,
   InputGroup,
@@ -43,13 +44,14 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { WarnAlert } from "../../../../components/Alert";
+import { InfoAlert, WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { DataConnectorSecret } from "../../../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils";
 import {
   convertFromAdvancedConfig,
+  getSchema,
   getSchemaOptions,
   getSchemaProviders,
   getSchemaStorage,
@@ -192,8 +194,8 @@ interface AddStorageAdvancedForm {
   configuration: string;
 }
 export function AddStorageAdvanced({
-  storage,
   setStorage,
+  storage,
 }: AddStorageStepProps) {
   const {
     control,
@@ -231,6 +233,9 @@ export function AddStorageAdvanced({
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-advanced">
       <div className="mb-3">
+        <Label className="form-label" for="sourcePath">
+          {sourcePathHelp.label}
+        </Label>
         <Controller
           name="sourcePath"
           control={control}
@@ -249,9 +254,6 @@ export function AddStorageAdvanced({
             />
           )}
         />
-        <Label className="form-label" for="sourcePath">
-          Source path
-        </Label>
         <div className={cx("form-text", "text-muted")}>
           {sourcePathHelp.help}
         </div>
@@ -400,6 +402,14 @@ function CheckboxOptionItem({
   );
 }
 
+function BadgeRequired() {
+  return (
+    <Badge className={cx("rounded-pill", "ms-1")} color="secondary">
+      required
+    </Badge>
+  );
+}
+
 interface PasswordOptionItemProps {
   control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   defaultValue: string | undefined;
@@ -434,7 +444,7 @@ function PasswordOptionItem({
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <>
-      <label htmlFor={option.name}>
+      <Label htmlFor={option.name}>
         {option.friendlyName ?? option.name}{" "}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
@@ -442,6 +452,7 @@ function PasswordOptionItem({
             className={cx("bi", "ms-1", "text-warning")}
           />
         </div>
+        {option.required && <BadgeRequired />}
         <UncontrolledTooltip placement="top" target={tooltipContainerId}>
           {isV2 ? (
             <span>
@@ -458,7 +469,7 @@ function PasswordOptionItem({
             </span>
           )}
         </UncontrolledTooltip>
-      </label>
+      </Label>
 
       <InputGroup>
         <Controller
@@ -582,8 +593,10 @@ function InputOptionItem({
       : option.friendlyName ?? option.name;
   return (
     <>
-      <label htmlFor={option.name}>{inputName}</label>
-
+      <Label htmlFor={option.name}>
+        {inputName}
+        {option.required && <BadgeRequired />}
+      </Label>
       <Controller
         name={option.name}
         control={control}
@@ -1010,6 +1023,26 @@ export function AddStorageOptions({
     storage.schema ?? ""
   );
 
+  const moreOptionsThanInTheShortList = useMemo(() => {
+    const allOptions = getSchemaOptions(
+      schema,
+      false,
+      storage.schema,
+      storage.provider
+    );
+    const shortListOptions = getSchemaOptions(
+      schema,
+      true,
+      storage.schema,
+      storage.provider
+    );
+    return (
+      allOptions &&
+      shortListOptions &&
+      allOptions.length > shortListOptions.length
+    );
+  }, [schema, storage.schema, storage.provider]);
+
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-options">
       {!dataConnectorId && <h5 className="fw-bold">Connection information</h5>}
@@ -1020,7 +1053,7 @@ export function AddStorageOptions({
       {!hasAccessMode && sourcePath}
       {optionItems}
       {hasAccessMode && sourcePath}
-      {advancedOptions}
+      {moreOptionsThanInTheShortList && advancedOptions}
     </form>
   );
 }
@@ -1100,6 +1133,17 @@ export function AddStorageMount({
   const hasPasswordFieldWithInput = secretFields.some(
     (o) => storage.options && storage.options[o.name]
   );
+
+  const selectedSchema = getSchema(
+    useMemo(
+      () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
+      [schema, state.showAllSchema, storage.schema]
+    ),
+    storage.schema
+  );
+  if (selectedSchema?.forceReadOnly) {
+    storage.readOnly = true;
+  }
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
@@ -1199,20 +1243,31 @@ export function AddStorageMount({
               }}
               value=""
               checked={storage.readOnly ?? false}
+              readOnly={selectedSchema?.forceReadOnly ?? false}
             />
           )}
           rules={{ required: true }}
         />
-        {!storage.readOnly && (
+        {selectedSchema?.forceReadOnly ? (
           <div className="mt-1">
-            <WarnAlert dismissible={false}>
+            <InfoAlert dismissible={false} timeout={0}>
               <p className="mb-0">
-                You are mounting this storage in read-write mode. If you have
-                read-only access, please check the box to prevent errors with
-                some storage types.
+                This cloud storage only supports read-only access.
               </p>
-            </WarnAlert>
+            </InfoAlert>
           </div>
+        ) : (
+          !storage.readOnly && (
+            <div className="mt-1">
+              <WarnAlert dismissible={false}>
+                <p className="mb-0">
+                  You are mounting this storage in read-write mode. If you have
+                  read-only access, please check the box to prevent errors with
+                  some storage types.
+                </p>
+              </WarnAlert>
+            </div>
+          )
         )}
         <div className={cx("form-text", "text-muted")}>
           Check this box to mount the storage in read-only mode. You should

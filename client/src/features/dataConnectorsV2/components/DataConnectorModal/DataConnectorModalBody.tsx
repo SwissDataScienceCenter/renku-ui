@@ -32,8 +32,8 @@ import {
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import { InfoAlert, WarnAlert } from "../../../../components/Alert";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
@@ -49,7 +49,10 @@ import type {
   AddCloudStorageState,
   CloudStorageDetails,
 } from "../../../project/components/cloudStorage/projectCloudStorage.types";
-import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
+import {
+  getSchema,
+  getSchemaOptions,
+} from "../../../project/utils/projectCloudStorage.utils";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
@@ -294,16 +297,19 @@ export function DataConnectorMount({
   const { validationResult } = useAppSelector(
     (state) => state.dataConnectorFormSlice
   );
-  const options = getSchemaOptions(
+  const schema = getSchema(schemata, flatDataConnector.schema);
+  const schemaOptions = getSchemaOptions(
     schemata,
     true,
     flatDataConnector.schema,
     flatDataConnector.provider
   );
   const secretFields =
-    options == null
+    schemaOptions == null
       ? []
-      : Object.values(options).filter((o) => o && o.convertedType === "secret");
+      : Object.values(schemaOptions).filter(
+          (o) => o && o.convertedType === "secret"
+        );
   const hasPasswordFieldWithInput = secretFields.some(
     (o) => flatDataConnector.options && flatDataConnector.options[o.name]
   );
@@ -514,6 +520,7 @@ export function DataConnectorMount({
                       field.onChange(e);
                       onFieldValueChange("readOnly", !!e.target.value);
                     }}
+                    disabled={schema?.forceReadOnly ?? false}
                   />
                   <Label
                     for="data-connector-readonly-true"
@@ -535,6 +542,7 @@ export function DataConnectorMount({
                       field.onChange(e);
                       onFieldValueChange("readOnly", false);
                     }}
+                    disabled={schema?.forceReadOnly ?? false}
                   />
                   <Label
                     for="data-connector-readonly-false"
@@ -548,16 +556,26 @@ export function DataConnectorMount({
             )}
             rules={{ required: true }}
           />
-          {!flatDataConnector.readOnly && (
+          {schema?.forceReadOnly ? (
             <div className="mt-1">
-              <WarnAlert dismissible={false}>
+              <InfoAlert dismissible={false} timeout={0}>
                 <p className="mb-0">
-                  You are mounting this storage in read-write mode. If you have
-                  read-only access, please select &quot;Read Only&quot; to
-                  prevent errors with some storage types.
+                  This cloud storage only supports read-only access.
                 </p>
-              </WarnAlert>
+              </InfoAlert>
             </div>
+          ) : (
+            !flatDataConnector.readOnly && (
+              <div className="mt-1">
+                <WarnAlert dismissible={false}>
+                  <p className="mb-0">
+                    You are mounting this storage in read-write mode. If you
+                    have read-only access, please select &quot;Read Only&quot;
+                    to prevent errors with some storage types.
+                  </p>
+                </WarnAlert>
+              </div>
+            )
           )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
