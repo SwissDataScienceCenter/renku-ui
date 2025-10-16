@@ -345,7 +345,7 @@ function DataConnectorCreateFooter({
           <RtkOrNotebooksError error={actionError} />
         </div>
       )}
-      <div className={cx("d-flex", "flex-grow-1")}>
+      <div className={cx("d-flex", "me-auto", "my-auto")}>
         <AddStorageBreadcrumbNavbar
           state={cloudStorageState}
           setState={setStateSafe}
