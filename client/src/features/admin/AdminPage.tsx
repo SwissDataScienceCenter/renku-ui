@@ -67,7 +67,7 @@ export default function AdminPage() {
   return (
     <>
       <h1 className="mb-3">Admin Panel</h1>
-      <IncidentsAndMaintenanceSection className="mb-4" />
+      <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
       <ConnectedServicesSection />
       <SessionEnvironmentsSection />
