@@ -86,6 +86,7 @@ export default function useDataConnectorConfiguration({
           ? dataConnectorSecrets[dataConnector.id]?.map((s) => s.name)
           : [];
         const result: SessionStartDataConnectorConfiguration = {
+          active: true,
           dataConnector,
           saveCredentials: false,
           savedCredentialFields,

@@ -20,7 +20,6 @@ import type { SessionEnvironmentVariable } from "../session/startSessionOptions.
 import type { DataConnectorRead } from "../dataConnectorsV2/api/data-connectors.api";
 
 export interface SessionStartDataConnectorConfiguration {
-  // active: boolean;
   active: boolean;
   skip: boolean;
   touched: boolean;

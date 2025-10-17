@@ -1,14 +1,16 @@
 import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 import type { CloudStorageSchema } from "../components/cloudStorage/projectCloudStorage.types";
 import {
+  dataConnectorsOverrideFromConfig,
   getSchemaOptions,
-  storageDefinitionFromConfig,
 } from "./projectCloudStorage.utils";
 
 describe("storageDefinitionFromConfig", () => {
   it("should return the correct storage definition", () => {
     const config: SessionStartDataConnectorConfiguration = {
       active: true,
+      skip: false,
+      touched: false,
       dataConnector: {
         id: "ULID-1",
         etag: "foo",
@@ -79,7 +81,7 @@ describe("storageDefinitionFromConfig", () => {
       saveCredentials: false,
       savedCredentialFields: [],
     };
-    const result = storageDefinitionFromConfig(config);
+    const result = dataConnectorsOverrideFromConfig(config);
     expect(result).toEqual({
       configuration: {
         type: "s3",
