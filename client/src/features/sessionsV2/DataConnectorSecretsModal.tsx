@@ -353,12 +353,7 @@ function CredentialsButtons({
         <XLg className={cx("bi", "me-1")} />
         Cancel
       </Button>
-      {context === "session" && (
-        <SkipConnectionTestButton
-          onSkip={onSkip}
-          // validationResult={validationResult}
-        />
-      )}
+      {context === "session" && <SkipConnectionTestButton onSkip={onSkip} />}
       {context === "storage" && (
         <ClearCredentialsButton
           onSkip={onSkip}
@@ -632,12 +627,6 @@ function SkipConnectionTestButton({
       </span>
       <UncontrolledTooltip target={skipButtonRef}>
         Skip the data connector. It will not be mounted in the session.
-        {/* Skip the connection test. At session launch, the storage will try to
-        mount
-        {validationResult.isError
-          ? " using the provided credentials"
-          : " without any credentials"}
-        . */}
       </UncontrolledTooltip>
     </>
   );
