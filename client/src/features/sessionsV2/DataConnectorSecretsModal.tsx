@@ -222,6 +222,7 @@ export default function DataConnectorSecretsModal({
     newCloudStorageConfigs[index] = {
       ...dataConnectorConfigs[index],
       active: false,
+      saveCredentials: false,
       skip: true,
     };
     setDataConnectorConfigs(newCloudStorageConfigs);
