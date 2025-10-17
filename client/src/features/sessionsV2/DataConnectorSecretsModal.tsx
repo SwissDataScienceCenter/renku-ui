@@ -233,7 +233,10 @@ export default function DataConnectorSecretsModal({
       if (dataConnectorConfigs == null || dataConnectorConfigs.length < 1)
         return;
 
-      const config = { ...dataConnectorConfigs[index] };
+      const config: DataConnectorConfiguration = {
+        ...dataConnectorConfigs[index],
+        touched: true,
+      };
       const sensitiveFieldValues = { ...config.sensitiveFieldValues };
       const { saveCredentials } = options;
       if (saveCredentials === true || saveCredentials === false) {

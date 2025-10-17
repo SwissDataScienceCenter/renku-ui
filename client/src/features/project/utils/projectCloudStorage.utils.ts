@@ -342,29 +342,6 @@ export function storageDefinitionAfterSavingCredentialsFromConfig(
   return newCs;
 }
 
-// export function storageDefinitionFromConfig(
-//   config: SessionStartDataConnectorConfiguration
-// ): SessionCloudStorageV2 {
-//   const storageDefinition = config.dataConnector.storage;
-//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-//   const { sensitive_fields, ...s } = config.dataConnector.storage;
-//   const newStorageDefinition = {
-//     ...s,
-//     name: config.dataConnector.slug,
-//     storage_id: config.dataConnector.id,
-//   };
-//   newStorageDefinition.configuration = { ...storageDefinition.configuration };
-//   const sensitiveFieldValues = config.sensitiveFieldValues;
-//   Object.entries(sensitiveFieldValues).forEach(([name, value]) => {
-//     if (value != null && value !== "") {
-//       newStorageDefinition.configuration[name] = value;
-//     } else {
-//       delete newStorageDefinition.configuration[name];
-//     }
-//   });
-//   return newStorageDefinition;
-// }
-
 export function dataConnectorsOverrideFromConfig(
   config: SessionStartDataConnectorConfiguration
 ): SessionDataConnectorOverride[] {

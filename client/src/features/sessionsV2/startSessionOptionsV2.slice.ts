@@ -27,7 +27,6 @@ import {
 } from "./startSessionOptionsV2.types";
 
 const initialState: StartSessionOptionsV2 = {
-  // cloudStorage: undefined,
   dataConnectors: undefined,
   defaultUrl: "",
   environmentVariables: [],
@@ -43,12 +42,6 @@ const startSessionOptionsV2Slice = createSlice({
   name: "startSessionOptionsV2",
   initialState,
   reducers: {
-    // addCloudStorageItem: (
-    //   state,
-    //   action: PayloadAction<SessionStartDataConnectorConfiguration>
-    // ) => {
-    //   state.cloudStorage?.push(action.payload);
-    // },
     addDataConnectorOverrideItem: (
       state,
       action: PayloadAction<SessionStartDataConnectorConfiguration>
@@ -61,12 +54,6 @@ const startSessionOptionsV2Slice = createSlice({
     addEnvironmentVariable: (state) => {
       state.environmentVariables.push({ name: "", value: "" });
     },
-    // removeCloudStorageItem: (
-    //   state,
-    //   action: PayloadAction<{ index: number }>
-    // ) => {
-    //   state.cloudStorage?.splice(action.payload.index, 1);
-    // },
     removeDataConnectorOverrideItem: (
       state,
       action: PayloadAction<{ index: number }>
@@ -79,12 +66,6 @@ const startSessionOptionsV2Slice = createSlice({
     ) => {
       state.environmentVariables.splice(action.payload.index, 1);
     },
-    // setCloudStorage: (
-    //   state,
-    //   action: PayloadAction<SessionStartDataConnectorConfiguration[]>
-    // ) => {
-    //   state.cloudStorage = action.payload;
-    // },
     setDataConnectorsOverrides: (
       state,
       action: PayloadAction<SessionStartDataConnectorConfiguration[]>
@@ -112,16 +93,6 @@ const startSessionOptionsV2Slice = createSlice({
     setUserSecretsReady: (state, action: PayloadAction<boolean>) => {
       state.userSecretsReady = action.payload;
     },
-    // updateCloudStorageItem: (
-    //   state,
-    //   action: PayloadAction<{
-    //     index: number;
-    //     storage: SessionStartDataConnectorConfiguration;
-    //   }>
-    // ) => {
-    //   if (state.cloudStorage)
-    //     state.cloudStorage[action.payload.index] = action.payload.storage;
-    // },
     updateDataConnectorOverrideItem: (
       state,
       action: PayloadAction<{

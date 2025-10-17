@@ -214,9 +214,6 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       launcher_id: launcher.id,
       disk_storage: startSessionOptionsV2.storage,
       resource_class_id: startSessionOptionsV2.sessionClass,
-      // data_connectors_overrides: startSessionOptionsV2.dataConnectors
-      //   ?.filter(({ active }) => active)
-      //   .map((cs) => storageDefinitionFromConfig(cs)),
       data_connectors_overrides: startSessionOptionsV2.dataConnectors?.flatMap(
         dataConnectorsOverrideFromConfig
       ),
