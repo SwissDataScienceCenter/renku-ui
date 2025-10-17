@@ -53,7 +53,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
         <Col xs={12} lg={10}>
           <Row>
             <Col>
-              <h2 data-cy="project-name">{project.name}</h2>
+              <h1 data-cy="project-name">{project.name}</h1>
             </Col>
           </Row>
           <Col>

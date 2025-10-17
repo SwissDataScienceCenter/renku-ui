@@ -309,7 +309,7 @@ export function RenkuToolbarItemUser({
   return (
     <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
       <DropdownToggle
-        className={cx("nav-link", "fs-5")}
+        className={cx("nav-link", "fs-3")}
         data-cy="navbar-toggle-user-menu"
         id="profile-dropdown"
         nav

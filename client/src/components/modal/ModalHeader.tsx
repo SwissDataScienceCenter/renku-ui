@@ -37,7 +37,7 @@ export default function ModalHeader({
         className={cx(className, "modal-header", children && "border-0")}
         {...props}
       >
-        <h1 className={cx("modal-title", "fs-5")}>{modalTitle}</h1>
+        <h2 className={"modal-title"}>{modalTitle}</h2>
         {toggle && (
           <button
             type="button"

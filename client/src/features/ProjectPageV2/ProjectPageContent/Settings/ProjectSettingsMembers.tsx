@@ -300,10 +300,10 @@ export default function ProjectPageSettingsMembers({
     return (
       <>
         <CardHeader>
-          <h4>
+          <h2>
             <PersonGear className={cx("me-1", "bi")} />
             Project Members
-          </h4>
+          </h2>
         </CardHeader>
         <CardBody>
           <div className="mb-3">Could not load members</div>
@@ -317,10 +317,10 @@ export default function ProjectPageSettingsMembers({
     <Card id="members">
       <CardHeader>
         <div className={cx("d-flex", "gap-2", "justify-content-between")}>
-          <h4 className="m-0">
+          <h2 className="m-0">
             <PersonGear className={cx("me-1", "bi")} />
             Project Members
-          </h4>
+          </h2>
           <PermissionsGuard
             disabled={null}
             enabled={

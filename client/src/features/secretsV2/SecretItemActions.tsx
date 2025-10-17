@@ -202,7 +202,10 @@ function EditSecretModal({
         noValidate
         onSubmit={onSubmit}
       >
-        <ModalHeader toggle={toggle}>Edit secret</ModalHeader>
+        <ModalHeader tag="h2" toggle={toggle}>
+          <Pencil className={cx("bi", "me-1")} />
+          Edit user secret
+        </ModalHeader>
         <ModalBody>
           {result.error && (
             <RtkOrNotebooksError error={result.error} dismissible={false} />
@@ -278,7 +281,8 @@ function DeleteSecretModal({ isOpen, secret, toggle }: DeleteSecretModalProps) {
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader className="text-danger" toggle={toggle}>
+      <ModalHeader className="text-danger" tag="h2" toggle={toggle}>
+        <Trash className={cx("bi", "me-1")} />
         Delete user secret
       </ModalHeader>
       <ModalBody>

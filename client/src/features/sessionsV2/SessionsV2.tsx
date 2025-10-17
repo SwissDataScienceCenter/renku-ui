@@ -148,10 +148,10 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         )}
       >
         <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("mb-0", "me-2")}>
+          <h2 className={cx("mb-0", "me-2")}>
             <PlayCircle className={cx("me-1", "bi")} />
             Sessions
-          </h4>
+          </h2>
           <Badge>{totalSessions}</Badge>
         </div>
         <PermissionsGuard

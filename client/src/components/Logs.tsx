@@ -481,7 +481,7 @@ function EnvironmentLogsPresent({
         {sessionState && (
           <h3
             className={cx(
-              "fs-6",
+              "fs-4",
               "fst-italic",
               "mb-0",
               getSessionStatusStyles({

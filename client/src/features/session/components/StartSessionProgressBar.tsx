@@ -80,7 +80,7 @@ export function StartSessionProgressBarV2({
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
       <div data-cy="session-status-starting">
-        <h4 className="fw-bold">Launching Session</h4>
+        <h2 className="fw-bold">Launching Session</h2>
         <p className="pb-2">Starting session services</p>
         <div className={cx("d-flex", "gap-3")}>
           <Loader inline={true} size={24} />

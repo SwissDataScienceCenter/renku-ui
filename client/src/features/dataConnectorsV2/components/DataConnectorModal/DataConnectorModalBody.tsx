@@ -326,7 +326,7 @@ export function DataConnectorMount({
   const parentPath = `/${flatDataConnector.namespace}/`;
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
-      {!dataConnectorId && <h5 className="fw-bold">Final details</h5>}
+      {!dataConnectorId && <h3>Final details</h3>}
       <p>
         Set how your data connector displays in Renku and who can access it.
       </p>
@@ -691,7 +691,7 @@ export function DataConnectorMount({
           </div>
         )}
 
-      <div className="mb-3">
+      <div className="mt-3 mb-2">
         <button
           className={cx(
             "d-flex",
@@ -699,7 +699,8 @@ export function DataConnectorMount({
             "w-100",
             "bg-transparent",
             "border-0",
-            "fw-bold",
+            "fw-medium",
+            "fs-3",
             "px-0"
           )}
           type="button"

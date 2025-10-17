@@ -168,7 +168,9 @@ export function ModifyResourcesLauncherModal({
       size="lg"
       toggle={toggleModal}
     >
-      <ModalHeader toggle={toggleModal}>Set default resource class</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggleModal}>
+        Set default resource class
+      </ModalHeader>
       <ModalBody>
         {result.error && (
           <ErrorOrNotAvailableResourcePools title="Error modifying resources" />
