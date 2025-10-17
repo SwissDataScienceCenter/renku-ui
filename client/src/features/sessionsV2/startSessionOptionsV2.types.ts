@@ -35,7 +35,6 @@ export interface SessionStartDataConnectorConfiguration {
 }
 
 export interface StartSessionOptionsV2 {
-  // cloudStorage?: SessionStartDataConnectorConfiguration[];
   dataConnectors?: SessionStartDataConnectorConfiguration[];
   defaultUrl: string;
   environmentVariables: SessionEnvironmentVariable[];

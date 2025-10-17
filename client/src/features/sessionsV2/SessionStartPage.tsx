@@ -310,8 +310,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
 function doesCloudStorageNeedCredentials(
   config: SessionStartDataConnectorConfiguration
 ) {
-  // if (config.active === false) return false;
-  if (config.skip) {
+  if (!config.active || config.skip) {
     return false;
   }
 

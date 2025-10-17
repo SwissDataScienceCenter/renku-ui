@@ -222,6 +222,7 @@ export default function DataConnectorSecretsModal({
     newCloudStorageConfigs[index] = {
       ...dataConnectorConfigs[index],
       active: false,
+      skip: true,
     };
     setDataConnectorConfigs(newCloudStorageConfigs);
     onNext(newCloudStorageConfigs);
@@ -441,6 +442,7 @@ function ProgressBreadcrumbs({
                 newCloudStorageConfigs[idx] = {
                   ...dataConnectorConfigs[idx],
                   active: true,
+                  skip: false,
                 };
                 setDataConnectorConfigs(newCloudStorageConfigs);
                 setIndex(idx);
