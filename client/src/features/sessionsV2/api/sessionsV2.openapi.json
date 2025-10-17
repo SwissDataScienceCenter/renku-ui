@@ -34,7 +34,8 @@
                   "$ref": "#/components/schemas/ImageCheckResponse"
                 }
               }
-            }
+            },
+            "description": "The image check has completed successfully"
           },
           "422": {
             "content": {
@@ -1241,17 +1242,15 @@
             "$ref": "#/components/schemas/Ulid"
           },
           "disk_storage": {
-            "default": 1,
             "type": "integer",
             "description": "The size of disk storage for the session, in gigabytes"
           },
           "resource_class_id": {
-            "default": null,
             "nullable": true,
             "type": "integer"
           },
-          "cloudstorage": {
-            "$ref": "#/components/schemas/SessionCloudStoragePostList"
+          "data_connectors_overrides": {
+            "$ref": "#/components/schemas/SessionDataConnectorsOverrideList"
           },
           "env_variable_overrides": {
             "$ref": "#/components/schemas/EnvVariableOverrides"
@@ -1405,40 +1404,80 @@
         "maxLength": 26,
         "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
-      "SessionCloudStoragePostList": {
+      "SessionDataConnectorsOverrideList": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/SessionCloudStoragePost"
+          "$ref": "#/components/schemas/SessionDataConnectorOverride"
         }
       },
-      "SessionCloudStoragePost": {
+      "SessionDataConnectorOverride": {
         "type": "object",
         "properties": {
-          "configuration": {
-            "type": "object",
-            "additionalProperties": true
+          "skip": {
+            "type": "boolean",
+            "description": "The corresponding data connector will not be mounted if `skip` is set to `true`.",
+            "default": false
           },
-          "readonly": {
-            "type": "boolean"
-          },
-          "source_path": {
-            "type": "string"
-          },
-          "target_path": {
-            "type": "string"
-          },
-          "storage_id": {
+          "data_connector_id": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Ulid"
               },
               {
-                "description": "If the storage_id is provided then this config must replace an existing storage config in the session"
+                "description": "The `data_connector_id` must match an existing data connector from the session launcher's project.\n"
               }
             ]
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/RCloneConfig"
+          },
+          "source_path": {
+            "$ref": "#/components/schemas/SourcePath"
+          },
+          "target_path": {
+            "$ref": "#/components/schemas/TargetPath"
+          },
+          "readonly": {
+            "$ref": "#/components/schemas/StorageReadOnly"
           }
         },
-        "required": ["storage_id"]
+        "required": ["data_connector_id"]
+      },
+      "RCloneConfig": {
+        "type": "object",
+        "description": "Dictionary of rclone key:value pairs (based on schema from '/storage_schema')",
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string",
+              "nullable": true
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "SourcePath": {
+        "description": "the source path to mount, usually starts with bucket/container name",
+        "type": "string",
+        "example": "bucket/my/storage/folder/"
+      },
+      "TargetPath": {
+        "description": "the target path relative to the working directory where the storage should be mounted",
+        "type": "string",
+        "example": "my/project/folder"
+      },
+      "StorageReadOnly": {
+        "description": "Whether this storage should be mounted readonly or not",
+        "type": "boolean",
+        "default": true
       },
       "ServerName": {
         "type": "string",
