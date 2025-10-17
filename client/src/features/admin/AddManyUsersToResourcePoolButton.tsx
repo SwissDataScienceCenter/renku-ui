@@ -197,7 +197,7 @@ function AddManyUsersToResourcePoolModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         Add a batch of users to Resource Pool: {resourcePool.name}
       </ModalHeader>
       <ModalBody>

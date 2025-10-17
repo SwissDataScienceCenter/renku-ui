@@ -175,10 +175,10 @@ function ProjectDataConnectorBoxHeader({
         )}
       >
         <div className={cx("align-items-center", "d-flex", "gap-2")}>
-          <h4 className="mb-0">
+          <h2 className="mb-0">
             <Database className={cx("me-1", "bi")} />
             Data
-          </h4>
+          </h2>
           <Badge>{accessibleDataConnectorsCount}</Badge>
           {inaccessibleDataConnectorsCount > 0 && (
             <MissingDataConnectorsBadge
@@ -220,10 +220,10 @@ function DataConnectorLoadingBoxContent() {
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("mb-0", "me-2")}>
+            <h2 className={cx("mb-0", "me-2")}>
               <Database className={cx("me-1", "bi")} />
               Data
-            </h4>
+            </h2>
           </div>
         </div>
       </CardHeader>

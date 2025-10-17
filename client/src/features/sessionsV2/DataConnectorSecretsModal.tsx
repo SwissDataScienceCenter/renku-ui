@@ -131,7 +131,7 @@ function DataConnectorSecrets({
   return (
     <>
       <div className={cx("d-flex", "align-items-baseline", "mt-1")}>
-        <h4>{dataConnector.name}</h4>
+        <h3>{dataConnector.name}</h3>
         <div className="ms-2">({storage.source_path})</div>
       </div>
       <div>
@@ -286,10 +286,9 @@ export default function DataConnectorSecretsModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader>{CONTEXT_STRINGS[context].header}</ModalHeader>
+      <ModalHeader tag="h2">{CONTEXT_STRINGS[context].header}</ModalHeader>
       <Form
         noValidate
-        className="form-rk-green"
         data-cy="data-connector-edit-options"
         onSubmit={handleSubmit(onContinue)}
       >

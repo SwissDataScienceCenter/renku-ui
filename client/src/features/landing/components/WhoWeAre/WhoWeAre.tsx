@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { Envelope, Github, HeartFill } from "react-bootstrap-icons";
-import styles from "./WhoWeAre.module.scss";
 
 import {
   ExternalDocsLink,
@@ -28,108 +27,95 @@ import { Links, RenkuContactEmail } from "../../../../utils/constants/Docs.js";
 import logo_EPFL from "../../assets/EPFL.svg";
 import logo_ETH from "../../assets/ETH.svg";
 import logo_SDSC from "../../assets/SDSC.svg";
+import { Col, Row } from "reactstrap";
 export default function WhoWeAre() {
   const contactEmail = RenkuContactEmail || "";
   return (
     <div className="bg-light">
-      <div className="container">
-        <div id={styles.whoWeAreContainer}>
-          <div className={styles.whoWeAreTitle}>
-            <h2 className="text-rk-green">
-              Built for data scientists, by data scientists.
-            </h2>
-          </div>
-          <div className={styles.whoWeAreContent}>
-            <div className={styles.whoWeAreText}>
-              <p>
-                Renku is built by the{" "}
-                <ExternalLink role="link" url={Links.SDSC} className="fw-bold">
-                  Swiss Data Science Center
-                </ExternalLink>{" "}
-                with funding from the{" "}
-                <ExternalLink role="link" url={Links.ETH} className="fw-bold">
-                  ETH domain
-                </ExternalLink>
-                .
-              </p>
-              <p>
-                Our goal is to provide data and domain scientists with the tools
-                they need to work, collaborate and share their research.
-              </p>
-              <p>
-                Developed with <HeartFill className="text-primary" /> at ETH
-                Zurich and EPFL with contributions from our fantastic community.
-              </p>
-              <div className={styles.whoWeAreLinks}>
-                <div>
-                  <ExternalLink
-                    className={cx(
-                      styles.btnContactUs,
-                      "align-self-start",
-                      "align-self-lg-center",
-                      "gap-2",
-                      "fs-5"
-                    )}
-                    color="primary"
-                    role="button"
-                    id="Contact_us_btn"
-                    url={`mailto:${contactEmail}`}
-                    title=""
-                  >
-                    <Envelope size={20} /> Email us!
-                  </ExternalLink>
-                </div>
-                <div>
-                  <ExternalDocsLink
-                    url={Links.GITHUB}
-                    title=""
-                    className="text-black d-flex align-items-center gap-2"
-                  >
-                    {" "}
-                    <Github size={20} />
-                    Go to the Github repository
-                  </ExternalDocsLink>
-                </div>
-              </div>
+      <div className={cx("container", "py-5")}>
+        <h1 className={cx("text-center", "mb-4")}>
+          Built for data scientists, by data scientists.
+        </h1>
+        <Row className="g-5">
+          <Col className="offset-lg-1 d-flex flex-column gap-4" xs={12} lg={7}>
+            <p className={cx("fs-3", "mb-0")}>
+              Renku is built by the{" "}
+              <ExternalLink
+                role="link"
+                url={Links.SDSC}
+                className="fw-semibold"
+              >
+                Swiss Data Science Center
+              </ExternalLink>{" "}
+              with funding from the{" "}
+              <ExternalLink role="link" url={Links.ETH} className="fw-semibold">
+                ETH domain
+              </ExternalLink>
+              .
+            </p>
+            <p className={cx("fs-3", "mb-0")}>
+              Our goal is to provide data and domain scientists with the tools
+              they need to work, collaborate and share their research.
+            </p>
+            <p className={cx("fs-3", "mb-0")}>
+              Developed with <HeartFill className="text-primary" /> at ETH
+              Zurich and EPFL with contributions from our fantastic community.
+            </p>
+            <div className={cx("d-flex", "gap-3", "mt-3")}>
+              <ExternalLink
+                className="btn-lg"
+                color="primary"
+                role="button"
+                id="Contact_us_btn"
+                url={`mailto:${contactEmail}`}
+                title=""
+              >
+                <Envelope size={20} /> Email us!
+              </ExternalLink>
+
+              <ExternalDocsLink
+                url={Links.GITHUB}
+                title=""
+                className={cx("d-flex", "align-items-center", "gap-2", "fs-3")}
+              >
+                <Github className="text-black" size={24} />
+                Go to the Github repository
+              </ExternalDocsLink>
             </div>
-            <div className={styles.whoWeAreLogos}>
-              <div>
-                <ExternalLink url={Links.SDSC} className="" role="link">
-                  <img src={logo_SDSC} alt="SDSC" height="54" />
-                </ExternalLink>
-                <div>Swiss Data Science Center</div>
-              </div>
-              <div>
-                <ExternalLink url={Links.ETHZ} className="" role="link">
-                  <img className="mb-2" src={logo_ETH} alt="ETH" height="25" />
-                </ExternalLink>
-                <div>
-                  Wasserwerkstrasse 10,
-                  <br />
-                  8092 Zürich <br />
-                  +41 44 632 26 89
-                </div>
-              </div>
-              <div>
-                <ExternalLink url={Links.EPFL} className="" role="link">
-                  <img
-                    className="mb-2"
-                    src={logo_EPFL}
-                    alt="EPFL"
-                    height="30"
-                  />
-                </ExternalLink>
-                <div>
-                  INN Building, Station 14,
-                  <br />
-                  1015 Lausanne
-                  <br />
-                  +41 21 693 43 88
-                </div>
-              </div>
+          </Col>
+
+          <Col xs={12} lg={4} className={cx("d-flex", "flex-column", "gap-4")}>
+            <div>
+              <ExternalLink url={Links.SDSC} className="" role="link">
+                <img src={logo_SDSC} alt="SDSC" height="54" />
+              </ExternalLink>
+              <p className="fs-3">Swiss Data Science Center</p>
             </div>
-          </div>
-        </div>
+            <div>
+              <ExternalLink url={Links.ETHZ} className="" role="link">
+                <img className="mb-2" src={logo_ETH} alt="ETH" height="25" />
+              </ExternalLink>
+              <p className="fs-3">
+                Wasserwerkstrasse 10,
+                <br />
+                8092 Zürich <br />
+                +41 44 632 26 89
+              </p>
+            </div>
+            <div>
+              <ExternalLink url={Links.EPFL} className="" role="link">
+                <img className="mb-2" src={logo_EPFL} alt="EPFL" height="30" />
+              </ExternalLink>
+              <p className="fs-3">
+                INN Building, Station 14,
+                <br />
+                1015 Lausanne
+                <br />
+                +41 21 693 43 88
+              </p>
+            </div>
+          </Col>
+        </Row>
       </div>
     </div>
   );

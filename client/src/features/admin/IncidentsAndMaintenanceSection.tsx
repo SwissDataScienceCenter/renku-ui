@@ -62,7 +62,7 @@ export default function IncidentsAndMaintenanceSection() {
 
   return (
     <section>
-      <h2 className="fs-4">Incidents And Maintenance</h2>
+      <h2>Incidents And Maintenance</h2>
 
       <p>
         <Link

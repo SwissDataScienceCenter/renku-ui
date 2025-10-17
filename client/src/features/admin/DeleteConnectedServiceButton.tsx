@@ -86,7 +86,9 @@ function DeleteConnectedServiceModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>Are you sure?</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Are you sure?
+      </ModalHeader>
       <ModalBody>
         {result.error && <RtkOrNotebooksError error={result.error} />}
 

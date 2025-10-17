@@ -349,7 +349,7 @@ export function SessionView({
           {description && <p className="m-0">{description}</p>}
 
           <div className={cx("d-flex", "flex-column", "gap-2")}>
-            <h4 className="mb-0">Launched Session</h4>
+            <h3 className="mb-0">Launched Session</h3>
             {totalSession > 0 ? (
               sessions &&
               Object.entries(sessions).map(([key, session]) => (
@@ -375,7 +375,7 @@ export function SessionView({
           {launcher && (
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-                <h4 className="my-auto">Session Environment</h4>
+                <h3 className="my-auto">Session Environment</h3>
                 <PermissionsGuard
                   disabled={null}
                   enabled={
@@ -408,7 +408,7 @@ export function SessionView({
           )}
           <div>
             <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-              <h4 className="my-auto">Default Resource Class</h4>
+              <h3 className="my-auto">Default Resource Class</h3>
               {launcher && (
                 <PermissionsGuard
                   disabled={null}
@@ -464,7 +464,7 @@ export function SessionView({
           </div>
 
           <div>
-            <h4>Default URL</h4>
+            <h3>Default URL</h3>
             <p className="mb-2">
               The default URL specifies the URL pathname on the session to go to
               upon launch
@@ -485,10 +485,10 @@ export function SessionView({
 
           <div>
             <div className={cx("align-items-center", "d-flex", "mb-2")}>
-              <h4 className={cx("mb-0", "me-2")}>
+              <h3 className={cx("mb-0", "me-2")}>
                 <Database className={cx("me-1", "bi")} />
                 Data Connectors
-              </h4>
+              </h3>
               <Badge>{dataConnectors?.length || 0}</Badge>
             </div>
             {dataConnectors && dataConnectors.length > 0 ? (
@@ -509,12 +509,12 @@ export function SessionView({
 
           <div>
             <div className={cx("align-items-center", "d-flex", "mb-2")}>
-              <h4
+              <h3
                 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
               >
                 <FileCode className={cx("me-1", "bi")} />
                 Code Repositories
-              </h4>
+              </h3>
               {project?.repositories?.length != null && (
                 <Badge>{project?.repositories?.length}</Badge>
               )}
@@ -548,10 +548,10 @@ export function SessionView({
                   "mb-2"
                 )}
               >
-                <h4 className={cx("mb-0", "me-2")}>
+                <h3 className={cx("mb-0", "me-2")}>
                   <Braces className={cx("me-1", "bi")} />
                   Environment Variables
-                </h4>
+                </h3>
                 <PermissionsGuard
                   disabled={null}
                   enabled={

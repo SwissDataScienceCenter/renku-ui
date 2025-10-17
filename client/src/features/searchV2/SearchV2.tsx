@@ -31,7 +31,7 @@ export default function SearchV2() {
     <>
       <Row className="mb-3">
         <Col>
-          <h2>Renku 2.0 Search</h2>
+          <h1>Renku Search</h1>
         </Col>
       </Row>
       <Row className="mb-3">

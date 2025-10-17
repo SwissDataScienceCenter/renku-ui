@@ -50,7 +50,9 @@ export default function RemoveGroupMemberModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Remove a group member</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Remove a group member
+      </ModalHeader>
       {member != null && (
         <RemoveGroupMemberAccessForm
           groupSlug={groupSlug}

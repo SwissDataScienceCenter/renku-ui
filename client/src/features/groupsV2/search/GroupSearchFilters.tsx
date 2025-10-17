@@ -182,7 +182,7 @@ function GroupFilterKeywordRendering({
 }: GroupFilterKeywordRenderingProps) {
   return (
     <div className={cx("align-items-center", "d-flex")}>
-      <div className="fs-5">
+      <div className="fs-3">
         <KeywordBadge
           className={cx(
             "align-items-center",
@@ -238,11 +238,11 @@ function GroupSearchFilter({
       >
         <AccordionItem data-cy="search-group-filter-content">
           <AccordionHeader targetId="search-group-filter-content">
-            <h6
+            <h4
               className={cx("fw-semibold", "mb-0", isInvalid && "text-danger")}
             >
               {filter.label}
-            </h6>
+            </h4>
           </AccordionHeader>
           <AccordionBody accordionId="search-group-filter-content">
             <Row className={cx("g-2", "g-sm-0")}>
@@ -278,7 +278,7 @@ function GroupSearchFilter({
           className={cx("border-bottom", "px-0", "pt-0")}
           data-cy="search-group-filter-content"
         >
-          <h6 className="fw-semibold">{filter.label}</h6>
+          <h4 className="fw-semibold">{filter.label}</h4>
           {isInvalid ? (
             <>
               <p className={cx("fst-italic", "mb-2", "text-muted")}>

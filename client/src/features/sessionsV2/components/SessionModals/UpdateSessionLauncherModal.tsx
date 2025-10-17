@@ -115,9 +115,11 @@ export default function UpdateSessionLauncherEnvironmentModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
-        <EnvironmentIcon type="default" size={20} /> Edit environment{" "}
-        {launcher.name}
+      <ModalHeader toggle={toggle} tag="div">
+        <h2 className={cx("d-flex", "align-items-center", "mb-0")}>
+          <EnvironmentIcon className="me-1" type="default" size={24} /> Edit
+          environment {launcher.name}
+        </h2>
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (

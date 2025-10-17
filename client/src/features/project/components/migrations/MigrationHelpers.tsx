@@ -130,7 +130,7 @@ export function CompositeTitle({
     <>
       <div id={sectionIdFull} className={styles.projectStatusSection}>
         <div className="d-flex align-items-center w-100 mb-0">
-          <h6
+          <h4
             className={cx(
               styles.sectionTitle,
               !loading && [styles.sectionTitleExpandable, "cursor-pointer"],
@@ -147,7 +147,7 @@ export function CompositeTitle({
                 flipped={showDetails}
               />
             )}
-          </h6>
+          </h4>
           {!loading && (
             <div className="ms-auto" data-cy={buttonDataCy}>
               {button}

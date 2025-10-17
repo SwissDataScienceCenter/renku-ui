@@ -172,7 +172,7 @@ export function SessionStatusV2Label({
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
-      <div className={cx("fs-6", "fw-bold")}>
+      <div className={cx("fs-4", "fw-bold")}>
         <span
           className={
             variant === "list" ? styles.textColorList : styles.textColorCard

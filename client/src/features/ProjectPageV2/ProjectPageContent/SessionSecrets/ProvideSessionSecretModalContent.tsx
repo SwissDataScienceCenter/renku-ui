@@ -60,7 +60,9 @@ export default function ProvideSessionSecretModalContent({
 
   return (
     <>
-      <ModalHeader toggle={toggle}>Provide session secret</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Provide session secret
+      </ModalHeader>
       <ModalBody className="pb-0">
         {previousStepAlert}
 

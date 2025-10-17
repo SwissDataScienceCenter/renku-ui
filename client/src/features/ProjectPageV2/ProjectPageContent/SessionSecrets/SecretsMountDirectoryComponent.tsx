@@ -160,7 +160,7 @@ function UpdateSecretsMountDirectoryModal({
       toggle={toggle}
     >
       <Form noValidate onSubmit={onSubmit}>
-        <ModalHeader toggle={toggle}>
+        <ModalHeader tag="h2" toggle={toggle}>
           <Pencil className={cx("bi", "me-1")} />
           Update secrets mount location
         </ModalHeader>

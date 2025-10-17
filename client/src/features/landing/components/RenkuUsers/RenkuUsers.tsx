@@ -47,23 +47,20 @@ function RenkuUserCard({
         "h-100",
         "bg-white",
         "align-items-center",
-        "gap-5",
         "p-4"
       )}
     >
       <div
         className={cx("d-flex", "flex-column", "gap-4", "align-items-center")}
       >
-        <h3 className={cx("text-uppercase", "fw-normal", "fs-4", "my-0")}>
-          {user}
-        </h3>
+        <h2 className={cx("text-uppercase", "fw-normal", "my-0")}>{user}</h2>
         {icon}
-        <h4 className={cx("fw-bold", "my-0", "text-center")}>{title}</h4>
-        <p className={cx("mb-0", "fs-4", "text-center")}>{description}</p>
+        <p className={cx("fs-3", "fw-bold", "my-0", "text-center")}>{title}</p>
+        <p className={cx("mb-0", "fs-3", "text-center")}>{description}</p>
       </div>
-      <div className="pt-5">
+      <div className="mt-5">
         <a
-          className={cx("btn", "btn-primary", "text-decoration-none", "fs-5")}
+          className={cx("btn", "btn-primary", "btn-lg")}
           href={linkUrl}
           target="_blank"
           rel="noreferrer noopener"
@@ -121,23 +118,11 @@ export function RenkuUsers() {
   };
   return (
     <div className="bg-navy">
-      <div className={cx("container", "py-5", "px-3")}>
-        <div className={cx("pt-5", "pb-4", "pb-lg-5")}>
-          <h2
-            className={cx(
-              "text-center",
-              "fs-1",
-              "mt-0",
-              "mt-lg-5",
-              "text-white",
-              "fw-bold",
-              "mb-0"
-            )}
-          >
-            Who is Renku for?
-          </h2>
-        </div>
-        <Row className={cx("pb-5", "gap-4", "gap-lg-0")}>
+      <div className={cx("container", "py-5")}>
+        <h1 className={cx("text-center", "text-white", "fw-bold", "mb-4")}>
+          Who is Renku for?
+        </h1>
+        <Row className={cx("mb-5", "gap-4", "gap-lg-0")}>
           <Col xs={12} lg={4} className="px-4">
             <RenkuUserCard
               user="Researchers"

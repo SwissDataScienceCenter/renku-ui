@@ -413,7 +413,7 @@ function RemoveSessionSecretModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader className="text-danger" toggle={toggle}>
+      <ModalHeader className="text-danger" tag="h2" toggle={toggle}>
         Remove session secret slot
       </ModalHeader>
       <ModalBody>

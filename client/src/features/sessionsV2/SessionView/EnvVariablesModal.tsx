@@ -297,7 +297,7 @@ export default function EnvVariablesModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         <Braces className={cx("me-1", "bi")} />
         Environment variables for {launcher.name}
       </ModalHeader>

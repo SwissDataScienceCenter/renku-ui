@@ -26,24 +26,24 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
               <img
                 src={heroGraphic}
                 alt="Renku"
-                className={cx("w-100", "d-block", "d-lg-none", "my-5")}
+                className={cx("w-100", "d-block", "d-lg-none", "my-4")}
               />
-              <h2 className={cx("text-white", "py-4")}>
+              <p className={cx("fs-2", "text-white", "my-4")}>
                 One seamless platform powering collaboration in your project,
                 team, and community.
-              </h2>
+              </p>
               <div
                 className={cx(
                   "d-flex",
                   "gap-3",
-                  "pt-5",
-                  "pt-md-3",
+                  "mt-3",
+                  "mt-md-4",
                   "flex-sm-row",
                   "flex-column"
                 )}
               >
                 <a
-                  className={cx("btn", "btn-primary", "fs-5")}
+                  className={cx("btn", "btn-primary", "btn-lg")}
                   id="hero_link-sign_up"
                   href={loginUrl.href}
                   target="_blank"
@@ -52,12 +52,7 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
                   Create an account
                 </a>
                 <Link
-                  className={cx(
-                    "btn",
-                    "btn-outline-light",
-                    "text-decoration-none",
-                    "fs-5"
-                  )}
+                  className={cx("btn", "btn-outline-light", "btn-lg")}
                   to={projectUrl}
                   data-cy={`explore-a-project-hero-btn`}
                   target="_blank"
@@ -67,11 +62,7 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
               </div>
             </div>
           </Col>
-          <Col
-            xs={12}
-            lg={5}
-            className={cx("text-center", "text-lg-end", "ps-5")}
-          >
+          <Col xs={12} lg={5} className={cx("text-center", "text-lg-end")}>
             <img
               src={heroGraphic}
               alt="Renku"

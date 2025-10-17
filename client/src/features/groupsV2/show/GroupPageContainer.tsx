@@ -143,9 +143,9 @@ function GroupHeader({ group, slug }: { group: GroupResponse; slug: string }) {
           <UserAvatar namespace={slug} size="lg" />
         </AvatarTypeWrap>
         <div>
-          <h2 className="mb-0" data-cy="group-name">
+          <h1 className="mb-0" data-cy="group-name">
             {group.name ?? "Unknown group"}
-          </h2>
+          </h1>
           {group.description && (
             <section>
               <p data-cy="group-description">{group.description}</p>

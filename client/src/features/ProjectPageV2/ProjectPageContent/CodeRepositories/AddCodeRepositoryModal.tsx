@@ -105,7 +105,7 @@ export default function AddCodeRepositoryModal({
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader toggle={toggleModal}>
+        <ModalHeader tag="h2" toggle={toggleModal}>
           <CodeSquare className={cx("bi", "me-1")} />
           Connect an existing code repository
         </ModalHeader>

@@ -201,9 +201,9 @@ export function DataConnectorBoxListDisplayPlaceholder() {
     <ListGroupItem data-cy="data-connector-box-placeholder">
       <Row>
         <Col className={cx("d-flex", "flex-column")}>
-          <h5 className="mb-0">
+          <h3 className="mb-0">
             <span className={cx("bg-secondary", "col-8", "placeholder")}></span>
-          </h5>
+          </h3>
           <p className="mb-0">
             <span className={cx("bg-secondary", "col-5", "placeholder")}></span>
           </p>

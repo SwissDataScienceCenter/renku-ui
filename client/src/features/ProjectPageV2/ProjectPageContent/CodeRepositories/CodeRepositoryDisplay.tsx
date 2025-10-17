@@ -161,7 +161,7 @@ function EditCodeRepositoryModal({
   return (
     <Modal size={"lg"} isOpen={isOpen} toggle={toggleModal} centered>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader toggle={toggleModal}>
+        <ModalHeader tag="h2" toggle={toggleModal}>
           <FileCode className={cx("me-1", "bi")} />
           Edit code repository
         </ModalHeader>
@@ -716,7 +716,7 @@ function RepositoryView({
 
           <div className={cx("d-flex", "flex-column", "gap-3")}>
             <div>
-              <h5>Repository</h5>
+              <h3>Repository</h3>
               <p className="mb-0">
                 URL:{" "}
                 <a
@@ -751,7 +751,7 @@ function RepositoryView({
               <RepositoryPermissionsAlert repositoryUrl={repositoryUrl} />
             )}
             <div>
-              <h5>Permissions</h5>
+              <h3>Permissions</h3>
               <Row>
                 <Col xs={6}>
                   Clone, Pull:{" "}

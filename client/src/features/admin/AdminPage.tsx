@@ -66,7 +66,7 @@ import useKeycloakRealm from "./useKeycloakRealm.hook";
 export default function AdminPage() {
   return (
     <>
-      <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
+      <h1 className="mb-3">Admin Panel</h1>
       <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
       <ConnectedServicesSection />
@@ -77,8 +77,8 @@ export default function AdminPage() {
 
 function ComputeResourcesSection() {
   return (
-    <section className="mt-4">
-      <h2 className="fs-4">Compute Resources</h2>
+    <section>
+      <h2>Compute Resources</h2>
       <AdminComputeResourcesOverview />
     </section>
   );
@@ -143,7 +143,7 @@ function ResourcePoolsList() {
 
   return (
     <div className="mt-2">
-      <h3 className="fs-6">Resource Pools</h3>
+      <h3 className="fs-4">Resource Pools</h3>
 
       <AddResourcePoolButton />
 

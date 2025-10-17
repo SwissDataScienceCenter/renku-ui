@@ -200,7 +200,7 @@ export default function NewSessionLauncherModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         <PlayCircle className={cx("bi", "me-1")} />
         Add session launcher
       </ModalHeader>

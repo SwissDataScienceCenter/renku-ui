@@ -72,10 +72,10 @@ export default function Documentation({ project }: DocumentationProps) {
               "justify-content-between"
             )}
           >
-            <h4 className="m-0">
+            <h2 className="m-0">
               <FileEarmarkText className={cx("me-1", "bi")} />
               Documentation
-            </h4>
+            </h2>
             <div className="my-auto">
               <PermissionsGuard
                 disabled={null}

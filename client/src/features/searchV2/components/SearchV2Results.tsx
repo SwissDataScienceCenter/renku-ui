@@ -83,7 +83,7 @@ export default function SearchV2Results() {
     <>
       <Row data-cy="search-results">
         <Col className="d-sm-none" xs={12}>
-          <h4>Results</h4>
+          <h2>Results</h2>
         </Col>
         <Col xs={12}>
           <SearchV2ResultsContent />
@@ -197,11 +197,11 @@ function SearchV2CardTitle({
   return (
     <CardHeader className={cx("d-flex", "gap-2")}>
       <div>
-        <h5 className="mb-1">
+        <h3 className="mb-1">
           <Link data-cy="search-card-entity-link" to={entityUrl}>
             {name}
           </Link>
-        </h5>
+        </h3>
         <p className="mb-0">
           {namespace == null || namespaceUrl == null ? (
             <span className="fst-italic">
@@ -489,7 +489,7 @@ function SearchV2ResultsUnknown() {
   return (
     <SearchV2ResultsContainer>
       <CardHeader>
-        <h5 className="mb-0">Unknown entity</h5>
+        <h3 className="mb-0">Unknown entity</h3>
       </CardHeader>
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
         <p className="mb-0">This entity type is not supported yet.</p>

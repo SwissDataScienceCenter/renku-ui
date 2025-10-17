@@ -193,10 +193,10 @@ function ProjectBoxHeader({
         )}
       >
         <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("mb-0", "me-2")}>
+          <h2 className={cx("mb-0", "me-2")}>
             <Folder className={cx("me-1", "bi")} />
             Projects
-          </h4>
+          </h2>
           <Badge>{totalProjects}</Badge>
         </div>
         {namespaceKind === "group" && (

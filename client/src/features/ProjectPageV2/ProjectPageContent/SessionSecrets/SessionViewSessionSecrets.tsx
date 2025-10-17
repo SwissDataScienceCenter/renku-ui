@@ -87,10 +87,10 @@ export default function SessionViewSessionSecrets() {
   return (
     <div>
       <div className={cx("align-items-center", "d-flex", "mb-2")}>
-        <h4 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
+        <h3 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
           <ShieldLock className={cx("me-1", "bi")} />
           Session Secrets
-        </h4>
+        </h3>
         {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
       </div>
 

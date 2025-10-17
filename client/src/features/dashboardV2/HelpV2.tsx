@@ -119,13 +119,13 @@ function HelpGetting() {
         <Col xs={12} md={6}>
           <Card className={cardClasses}>
             <CardHeader>
-              <h4 className="mb-0">
+              <h2 className="mb-0">
                 <ExternalIconLink
                   url={Links.RENKU_2_DOCUMENTATION}
                   icon={<FileEarmarkText className={cx("bi", "me-1")} />}
                   text="RenkuLab Documentation"
                 />
-              </h4>
+              </h2>
             </CardHeader>
             <CardBody>
               <HelpCardBodyContent url={Links.RENKU_2_DOCUMENTATION}>
@@ -141,13 +141,13 @@ function HelpGetting() {
         <Col xs={12} md={6}>
           <Card className={cardClasses}>
             <CardHeader>
-              <h4 className="mb-0">
+              <h2 className="mb-0">
                 <ExternalIconLink
                   url={Links.RENKU_2_COMMUNITY_PORTAL}
                   icon={<Share className={cx("bi", "me-1")} />}
                   text="Renku Community Portal"
                 />
-              </h4>
+              </h2>
             </CardHeader>
             <CardBody>
               <HelpCardBodyContent url={Links.RENKU_2_COMMUNITY_PORTAL}>
@@ -165,13 +165,13 @@ function HelpGetting() {
         <Col xs={12} md={6}>
           <Card className={cardClasses}>
             <CardHeader>
-              <h4 className="mb-0">
+              <h2 className="mb-0">
                 <ExternalIconLink
                   url={Links.DISCOURSE}
                   icon={<JournalText className={cx("bi", "me-1")} />}
                   text="Forum"
                 />
-              </h4>
+              </h2>
             </CardHeader>
             <CardBody>
               <HelpCardBodyContent url={Links.DISCOURSE}>
@@ -187,13 +187,13 @@ function HelpGetting() {
         <Col xs={12} md={6}>
           <Card className={cardClasses}>
             <CardHeader>
-              <h4 className="mb-0">
+              <h2 className="mb-0">
                 <ExternalIconLink
                   url={Links.GITTER}
                   icon={<ChatSquareDots className={cx("bi", "me-1")} />}
                   text="Gitter"
                 />
-              </h4>
+              </h2>
             </CardHeader>
             <CardBody>
               <HelpCardBodyContent url={Links.GITTER}>
@@ -209,13 +209,13 @@ function HelpGetting() {
         <Col xs={12} md={6}>
           <Card className={cardClasses}>
             <CardHeader>
-              <h4 className="mb-0">
+              <h2 className="mb-0">
                 <ExternalIconLink
                   url={Links.GITHUB}
                   icon={<Github className={cx("bi", "me-1")} />}
                   text="GitHub"
                 />
-              </h4>
+              </h2>
             </CardHeader>
             <CardBody>
               <HelpCardBodyContent url={Links.GITHUB}>
@@ -255,7 +255,7 @@ export default function Help() {
   return (
     <Row>
       <Col xs={12}>
-        <h2>Help</h2>
+        <h1>Help</h1>
       </Col>
       <Col xs={12}>
         <HelpNav statuspageId={statuspageId} />

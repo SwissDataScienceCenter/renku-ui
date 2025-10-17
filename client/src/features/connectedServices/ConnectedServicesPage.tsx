@@ -132,8 +132,9 @@ export default function ConnectedServicesPage() {
 
   return (
     <div data-cy="connected-services-page">
-      <h1 className="fs-2">
-        <Plugin className={cx("bi", "me-1")} /> Integrations
+      <h1>
+        <Plugin className={cx("bi", "me-1")} />
+        Integrations
       </h1>
       <p>
         Integrations with external services allow you to connect your Renku
@@ -234,7 +235,7 @@ function ConnectedServiceCard({
           )}
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
-              <h4 className="pe-2">{display_name}</h4>
+              <h2 className="me-2">{display_name}</h2>
               <div className={cx("d-flex", "gap-2", "ms-auto")}>
                 <ConnectButton
                   id={id}
