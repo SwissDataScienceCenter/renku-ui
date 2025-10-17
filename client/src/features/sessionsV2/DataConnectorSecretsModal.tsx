@@ -60,7 +60,7 @@ const CONTEXT_STRINGS = {
     dataCy: "session-data-connector-credentials-modal",
     header: "Session Storage Credentials",
     testError:
-      "The data connector could not be mounted. Please retry with different credentials, or skip the test. If you skip, the data connector will still try to mount, using the provided credentials, at session launch time.",
+      "The data connector could not be mounted. Please retry with different credentials, or skip the data connector. If you skip, the data connector will not be mounted in the session.",
   },
   storage: {
     continueButton: "Test and Save",
@@ -356,7 +356,7 @@ function CredentialsButtons({
       {context === "session" && (
         <SkipConnectionTestButton
           onSkip={onSkip}
-          validationResult={validationResult}
+          // validationResult={validationResult}
         />
       )}
       {context === "storage" && (
@@ -620,8 +620,7 @@ function SensitiveFieldInput({
 
 function SkipConnectionTestButton({
   onSkip,
-  validationResult,
-}: Pick<CredentialsButtonsProps, "onSkip" | "validationResult">) {
+}: Pick<CredentialsButtonsProps, "onSkip">) {
   const skipButtonRef = useRef<HTMLAnchorElement>(null);
   return (
     <>
@@ -632,12 +631,13 @@ function SkipConnectionTestButton({
         </Button>
       </span>
       <UncontrolledTooltip target={skipButtonRef}>
-        Skip the connection test. At session launch, the storage will try to
+        Skip the data connector. It will not be mounted in the session.
+        {/* Skip the connection test. At session launch, the storage will try to
         mount
         {validationResult.isError
           ? " using the provided credentials"
           : " without any credentials"}
-        .
+        . */}
       </UncontrolledTooltip>
     </>
   );
