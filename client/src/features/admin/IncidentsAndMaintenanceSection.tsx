@@ -46,7 +46,7 @@ import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
-import { Docs } from "../../utils/constants/Docs";
+import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import {
@@ -66,7 +66,7 @@ export default function IncidentsAndMaintenanceSection() {
 
       <p>
         <Link
-          to={Docs.rtdHowToGuide("admin/incidents-maintenance.html")}
+          to={Links.RENKU_2_ADMIN_HOW_TO_GUIDE_INCIDENTS}
           target="_blank"
           rel="noreferrer noopener"
         >
