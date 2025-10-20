@@ -361,7 +361,7 @@ export function SessionView({
             ) : (
               <div>
                 <p className="mb-2">
-                  No session is running from this launcher.
+                  Woah: No session is running from this launcher.
                 </p>
                 {launcher && (
                   <SessionCardNotRunning
