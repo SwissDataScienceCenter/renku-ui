@@ -29,7 +29,7 @@ jobs:
           git config --global --add user.email "renku@datascience.ch"
           git config push.autoSetupRemote true
       - name: Set up node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "22"
       - name: Get old version
