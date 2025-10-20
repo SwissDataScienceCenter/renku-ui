@@ -48,6 +48,8 @@ const Links = {
   EPFL: "https://www.epfl.ch/en/",
   ETHZ: "https://ethz.ch/en.html",
   RENKU_BLOG: "https://blog.renkulab.io",
+  RENKU_2_ADMIN_HOW_TO_GUIDE_INCIDENTS:
+    "https://docs.renkulab.io/en/0.70.0/how-to-guides/admin/incidents-maintenance.html",
   RENKU_2_LEARN_MORE: "https://blog.renkulab.io/early-access",
   RENKU_2_MIGRATION_INFO:
     "https://renku.notion.site/How-to-migrate-a-Renku-1-0-project-to-Renku-2-0-1ac0df2efafc80a88e58e2b3db035110",
