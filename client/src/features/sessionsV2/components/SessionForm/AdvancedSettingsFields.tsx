@@ -38,6 +38,12 @@ import {
 import { isValidJSONStringArray } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 
+function OptionalLabel() {
+  return (
+    <span className={cx("fst-italic", "small", "text-muted")}>(Optional)</span>
+  );
+}
+
 function FormField<T extends FieldValues>({
   control,
   errors,
@@ -79,17 +85,18 @@ function FormField<T extends FieldValues>({
     <>
       <Label
         for={`addSessionLauncher${name}`}
-        className={cx("form-label", "me-2")}
+        className={cx("align-items-center", "d-flex", "gap-2")}
         aria-required={isOptional ? "false" : "true"}
       >
         {label}
-        {isOptional && (
-          <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+        {info && (
+          <MoreInfo>
+            <LazyRenkuMarkdown markdownText={info} />
+          </MoreInfo>
         )}
+
+        {isOptional && <OptionalLabel />}
       </Label>
-      <MoreInfo>
-        <LazyRenkuMarkdown markdownText={info} />
-      </MoreInfo>
       <Controller
         control={control}
         name={name}
@@ -158,17 +165,17 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
       />
       <Label
         for={`addSessionLauncher${name}`}
-        className={cx("form-label", "me-2")}
+        className={cx("d-flex", "align-items-center", "gap-2")}
         aria-required={isOptional ? "false" : "true"}
       >
         {label}
-        {isOptional && (
-          <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+        {info && (
+          <MoreInfo>
+            <LazyRenkuMarkdown markdownText={info} />
+          </MoreInfo>
         )}
+        {isOptional && <OptionalLabel />}
       </Label>
-      <MoreInfo>
-        <LazyRenkuMarkdown markdownText={info} />
-      </MoreInfo>
       {errors?.[name] && (
         <div className={cx("d-block", "invalid-feedback")}>
           {errors[name]?.message
@@ -203,16 +210,17 @@ function JsonField<T extends FieldValues>({
     <>
       <Label
         for={`addSessionLauncher${name}`}
-        className={cx("form-label", "me-2", "mb-0")}
+        className={cx("align-items-center", "d-flex", "gap-2")}
       >
         {label}
-        {isOptional && (
-          <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+        {info && (
+          <MoreInfo>
+            <LazyRenkuMarkdown markdownText={info} />
+          </MoreInfo>
         )}
+        {isOptional && <OptionalLabel />}
       </Label>
-      <MoreInfo>
-        <LazyRenkuMarkdown markdownText={info} />
-      </MoreInfo>
+
       <FormText tag="div">{helpText}</FormText>
       <Controller
         control={control}
@@ -248,8 +256,8 @@ export function AdvancedSettingsFields<
   T extends SessionLauncherForm | SessionEnvironmentForm
 >({ control, errors }: AdvancedSettingsProp<T>) {
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div className="row">
+    <>
+      <div className={cx("row", "gy-3", "mb-3")}>
         <div className={cx("col-12", "col-md-9")}>
           <FormField<T>
             control={control}
@@ -268,17 +276,11 @@ export function AdvancedSettingsFields<
             label="Port"
             isOptional={true}
             placeholder="e.g. 8080"
-            errors={errors}
             info={ENVIRONMENT_VALUES_DESCRIPTION.port}
             type="number"
-            rules={{
-              min: 1,
-              max: 65535,
-            }}
+            rules={{ min: 1, max: 65535 }}
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12")}>
           <FormField<T>
             control={control}
@@ -291,14 +293,14 @@ export function AdvancedSettingsFields<
           />
         </div>
       </div>
+
       <div className="row">
         <div className={cx("col-12")}>
-          <Label className={cx("form-label", "mb-0", "fw-bold")}>
-            Docker settings
-          </Label>
+          <h4 className="fw-bold">Docker settings</h4>
         </div>
       </div>
-      <div className="row">
+
+      <div className={cx("row", "gy-3")}>
         <div className={cx("col-12")}>
           <FormField<T>
             control={control}
@@ -310,8 +312,6 @@ export function AdvancedSettingsFields<
             type="text"
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12", "col-md-6")}>
           <FormField<T>
             control={control}
@@ -338,8 +338,6 @@ export function AdvancedSettingsFields<
             rules={{ min: 1, max: 65535 }}
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12")}>
           <JsonField<T>
             control={control}
@@ -351,8 +349,6 @@ export function AdvancedSettingsFields<
             helpText='Please enter a valid JSON array format e.g. ["python3","main.py"]'
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12")}>
           <JsonField<T>
             control={control}
@@ -364,8 +360,6 @@ export function AdvancedSettingsFields<
             helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12")}>
           <FormField<T>
             control={control}
@@ -378,6 +372,6 @@ export function AdvancedSettingsFields<
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }
