@@ -47,20 +47,27 @@ export default function GroupSearchResults() {
   const { data } = useGroupSearch();
 
   const currentPage = useMemo(() => {
+    const defaultValue = FILTER_PAGE.defaultValue as number;
     const pageParam = searchParams.get(FILTER_PAGE.name);
+    if (!pageParam) return defaultValue;
     try {
-      const page = parseInt(pageParam, 10)
-      return page > 0 ? page : 1;
+      const page = parseInt(pageParam, 10);
+      return page > 0 ? page : defaultValue;
     } catch {
-      return 1;
+      return defaultValue;
     }
   }, [searchParams]);
 
   const currentPerPage = useMemo(() => {
+    const defaultValue = FILTER_PER_PAGE.defaultValue as number;
     const perPageParam = searchParams.get(FILTER_PER_PAGE.name);
-    return perPageParam
-      ? parseInt(perPageParam)
-      : FILTER_PER_PAGE.defaultValue ?? 0;
+    if (!perPageParam) return defaultValue;
+    try {
+      const perPage = parseInt(perPageParam, 10);
+      return perPage > 0 ? perPage : defaultValue;
+    } catch {
+      return defaultValue;
+    }
   }, [searchParams]);
 
   return (
