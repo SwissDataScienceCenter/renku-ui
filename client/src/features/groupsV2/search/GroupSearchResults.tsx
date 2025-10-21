@@ -48,7 +48,12 @@ export default function GroupSearchResults() {
 
   const currentPage = useMemo(() => {
     const pageParam = searchParams.get(FILTER_PAGE.name);
-    return pageParam ? parseInt(pageParam) : FILTER_PAGE.defaultValue ?? 0;
+    try {
+      const page = parseInt(pageParam, 10)
+      return page > 0 ? page : 1;
+    } catch {
+      return 1;
+    }
   }, [searchParams]);
 
   const currentPerPage = useMemo(() => {
