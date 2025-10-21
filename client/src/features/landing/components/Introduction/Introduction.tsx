@@ -43,12 +43,12 @@ export function Introduction() {
             "align-items-center"
           )}
         >
-          <h1 className={cx("text-center", "mt-5", "pt-3", "mb-0")}>
+          <h2 className={cx("fs-1", "mb-0", "mt-5", "pt-3", "text-center")}>
             Introducing Renku 2.0: <br />
             <span className="fw-bold">
               Taking collaboration to the next level.
             </span>
-          </h1>
+          </h2>
           <p className={cx("text-center", "mb-0", "fs-3")}>
             We’re thrilled to announce the next generation of the Renku
             platform, Renku 2.0.
@@ -68,9 +68,9 @@ export function Introduction() {
               className={cx("px-0", "px-lg-3", "text-center")}
             >
               <img src={connectIcon} alt="Renku" width="62" height="62" />
-              <h2 className={cx("py-3", "fw-bold")}>
+              <h3 className={cx("fs-2", "fw-bold", "py-3")}>
                 Connect your favorite tools and platforms.
-              </h2>
+              </h3>
               <p className={cx("fs-3", "mb-0")}>
                 Hook up your Renku project to GitHub repositories, external data
                 sources, and more. Flexible integrations make collaboration easy
@@ -83,9 +83,9 @@ export function Introduction() {
               className={cx("px-0", "px-lg-3", "text-center")}
             >
               <img src={puzzleIcon} alt="Renku" width="62" height="62" />
-              <h2 className={cx("py-3", "fw-bold")}>
+              <h3 className={cx("fs-2", "fw-bold", "py-3")}>
                 Plug-and-Play Flexibility.
-              </h2>
+              </h3>
               <p className={cx("fs-3", "mb-0")}>
                 Mix and match code, data, and compute to suit your project
                 setup, scaling from exploration to advanced analysis with ease.

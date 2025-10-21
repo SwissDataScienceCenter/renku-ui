@@ -33,9 +33,9 @@ export default function WhoWeAre() {
   return (
     <div className="bg-light">
       <div className={cx("container", "py-5")}>
-        <h1 className={cx("text-center", "mb-4")}>
+        <h2 className={cx("fs-1", "mb-4", "text-center")}>
           Built for data scientists, by data scientists.
-        </h1>
+        </h2>
         <Row className="g-5">
           <Col className="offset-lg-1 d-flex flex-column gap-4" xs={12} lg={7}>
             <p className={cx("fs-3", "mb-0")}>

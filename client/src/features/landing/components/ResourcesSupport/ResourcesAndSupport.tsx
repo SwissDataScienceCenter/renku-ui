@@ -27,9 +27,9 @@ import styles from "./Resources.module.scss";
 export function ResourcesAndSupport() {
   return (
     <Container className={cx("bg-white", "py-5")}>
-      <h1 className={cx("text-center", "fw-bold", "mb-4")}>
+      <h2 className={cx("fs-1", "fw-bold", "mb-4", "text-center")}>
         Resources and support
-      </h1>
+      </h2>
       <Row className={cx("text-center", "g-5", "mb-3")}>
         <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
           <FooterDashboardCard
@@ -37,7 +37,7 @@ export function ResourcesAndSupport() {
             className={cx("text-decoration-none", "text-body")}
           >
             <InfoCircle size={60} />
-            <h2 className="mb-0">Get Help</h2>
+            <h3 className={cx("fs-2", "mb-0")}>Get Help</h3>
             <p className={cx("fs-3", "mb-0")}>
               See our documentation, join the forum, or contact us.
             </p>

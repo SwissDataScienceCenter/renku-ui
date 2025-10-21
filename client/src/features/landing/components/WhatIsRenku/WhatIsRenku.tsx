@@ -49,7 +49,9 @@ function ResearchFeatSection() {
           "order-lg-2"
         )}
       >
-        <h2 className={cx("my-0", "fw-bold")}>Where research comes together</h2>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>
+          Where research comes together
+        </h3>
         <p className={cx("mb-0", "fs-3")}>
           Integrations galore! We support integrations for your favorite code
           and data platforms, so you can connect your whole project in one
@@ -75,7 +77,9 @@ function ResearcherFeatSection() {
           "order-lg-1"
         )}
       >
-        <h2 className={cx("my-0", "fw-bold")}>Built for Every Researcher</h2>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>
+          Built for Every Researcher
+        </h3>
         <p className={cx("mb-0", "fs-3")}>
           Whether you&apos;re comfortable with command lines or prefer graphical
           interfaces, Renku adapts to your working style.
@@ -117,7 +121,9 @@ function CollaborationFeatSection() {
           "order-lg-2"
         )}
       >
-        <h2 className={cx("my-0", "fw-bold")}>Effortless Collaboration</h2>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>
+          Effortless Collaboration
+        </h3>
         <p className={cx("mb-0", "fs-3")}>
           Share your Renku project with anyone, and never worry about “it
           doesn’t work on my machine” again.
@@ -142,7 +148,7 @@ function ComputingFeatSection() {
           "order-lg-1"
         )}
       >
-        <h2 className={cx("my-0", "fw-bold")}>Flexible Computing</h2>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>Flexible Computing</h3>
         <p className={cx("mb-0", "fs-3")}>
           Scaling up your project is as simple as switching your resource class.
           Do data exploration and model training all in one place!
@@ -192,9 +198,9 @@ function ConnectionFeatSection() {
           "order-lg-2"
         )}
       >
-        <h2 className={cx("my-0", "fw-bold")}>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>
           Let others stand on your shoulders
-        </h2>
+        </h3>
         <p className={cx("mb-0", "fs-3")}>
           Research thrives on connection. Renku makes your work naturally
           well-structured, discoverable by others, and easy to build upon.
@@ -218,7 +224,7 @@ export default function WhatIsRenku() {
         )}
       >
         <div className={cx("text-center", "mt-0", "mt-lg-4")}>
-          <h1 className="fw-bold">Renku Features</h1>
+          <h2 className={cx("fs-1", "fw-bold")}>Renku Features</h2>
           <p className={cx("mb-0", "fs-3", "mx-5")}>
             Stop juggling multiple platforms and scattered resources. Renku
             provides a seamless environment where all your project components

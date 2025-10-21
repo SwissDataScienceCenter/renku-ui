@@ -53,10 +53,12 @@ function RenkuUserCard({
       <div
         className={cx("d-flex", "flex-column", "gap-4", "align-items-center")}
       >
-        <h2 className={cx("text-uppercase", "fw-normal", "my-0")}>{user}</h2>
+        <h3 className={cx("fs-2", "fw-normal", "my-0", "text-uppercase")}>
+          {user}
+        </h3>
         {icon}
         <p className={cx("fs-3", "fw-bold", "my-0", "text-center")}>{title}</p>
-        <p className={cx("mb-0", "fs-3", "text-center")}>{description}</p>
+        <p className={cx("fs-3", "mb-0", "text-center")}>{description}</p>
       </div>
       <div className="mt-5">
         <a
@@ -119,9 +121,11 @@ export function RenkuUsers() {
   return (
     <div className="bg-navy">
       <div className={cx("container", "py-5")}>
-        <h1 className={cx("text-center", "text-white", "fw-bold", "mb-4")}>
+        <h2
+          className={cx("fs-1", "fw-bold", "mb-4", "text-center", "text-white")}
+        >
           Who is Renku for?
-        </h1>
+        </h2>
         <Row className={cx("mb-5", "gap-4", "gap-lg-0")}>
           <Col xs={12} lg={4} className="px-4">
             <RenkuUserCard

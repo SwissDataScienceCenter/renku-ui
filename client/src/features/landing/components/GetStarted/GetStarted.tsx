@@ -39,12 +39,12 @@ export function GetStarted() {
             "my-5"
           )}
         >
-          <h1 className={cx("m-0", "fw-bold", "text-center")}>
+          <h2 className={cx("fs-1", "fw-bold", "m-0", "text-center")}>
             <span className={cx("fw-normal", "d-block")}>
               Get started today
             </span>
             Launch your first session now!
-          </h1>
+          </h2>
         </div>
         <Row>
           <Col xs={12} lg={6}>

@@ -53,7 +53,9 @@ function BenefitsCard({ icon, title, description }: BenefitsProps) {
         )}
       >
         {icon}
-        <h2 className={cx("fw-bold", "my-0", "text-center")}>{title}</h2>
+        <h3 className={cx("fs-2", "fw-bold", "my-0", "text-center")}>
+          {title}
+        </h3>
         <p className={cx("mb-0", "fs-3", "text-center")}>{description}</p>
       </div>
     </Card>
@@ -108,7 +110,7 @@ export function RenkuBenefits() {
     <div className="bg-navy">
       <div className={cx("container", "py-5", "px-3")}>
         <h2
-          className={cx("text-center", "fs-1", "text-white", "fw-bold", "mb-5")}
+          className={cx("fs-1", "fw-bold", "mb-5", "text-center", "text-white")}
         >
           The Benefits of Using Renku
         </h2>
