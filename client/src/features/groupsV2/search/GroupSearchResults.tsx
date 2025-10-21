@@ -46,6 +46,18 @@ export default function GroupSearchResults() {
   const [searchParams] = useSearchParams();
   const { data } = useGroupSearch();
 
+  const currentPage = useMemo(() => {
+    const pageParam = searchParams.get(FILTER_PAGE.name);
+    return pageParam ? parseInt(pageParam) : FILTER_PAGE.defaultValue ?? 0;
+  }, [searchParams]);
+
+  const currentPerPage = useMemo(() => {
+    const perPageParam = searchParams.get(FILTER_PER_PAGE.name);
+    return perPageParam
+      ? parseInt(perPageParam)
+      : FILTER_PER_PAGE.defaultValue ?? 0;
+  }, [searchParams]);
+
   return (
     <div>
       <h4 className={cx("d-block", "d-sm-none")}>Results</h4>
@@ -63,14 +75,8 @@ export default function GroupSearchResults() {
             })}
           </ListGroup>
           <Pagination
-            currentPage={
-              (searchParams.get(FILTER_PAGE.name) ??
-                FILTER_PAGE.defaultValue) as number
-            }
-            perPage={
-              (searchParams.get(FILTER_PER_PAGE.name) ??
-                FILTER_PER_PAGE.defaultValue) as number
-            }
+            currentPage={currentPage}
+            perPage={currentPerPage}
             totalItems={data?.pagingInfo.totalResult ?? 0}
             pageQueryParam="page"
             showDescription={true}
