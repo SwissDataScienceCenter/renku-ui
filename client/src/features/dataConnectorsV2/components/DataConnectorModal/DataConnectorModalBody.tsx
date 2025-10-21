@@ -32,7 +32,7 @@ import {
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { WarnAlert } from "../../../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -548,16 +548,24 @@ export function DataConnectorMount({
             )}
             rules={{ required: true }}
           />
-          {!flatDataConnector.readOnly && (
-            <div className="mt-1">
-              <WarnAlert dismissible={false}>
-                <p className="mb-0">
-                  You are mounting this storage in read-write mode. If you have
-                  read-only access, please select &quot;Read Only&quot; to
-                  prevent errors with some storage types.
-                </p>
-              </WarnAlert>
-            </div>
+          {!flatDataConnector.readOnly &&
+          !hasPasswordFieldWithInput &&
+          flatDataConnector.visibility === "public" ? (
+            <ErrorAlert className="mt-1" dismissible={false}>
+              <p className="mb-0">
+                This public data connector is set to allow writing but does not
+                have a password field. You should either fill in a password in
+                the previous step or pick a different access mode or visibility.
+              </p>
+            </ErrorAlert>
+          ) : (
+            <WarnAlert className="mt-1" dismissible={false}>
+              <p className="mb-0">
+                You are mounting this storage in read-write mode. If you have
+                read-only access, please select &quot;Read Only&quot; to prevent
+                errors with some storage types.
+              </p>
+            </WarnAlert>
           )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
