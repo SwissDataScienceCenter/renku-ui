@@ -117,7 +117,9 @@ export default function RemoveProjectMemberModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Remove a project member</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Remove a project member
+      </ModalHeader>
       {member != null && (
         <RemoveProjectMemberAccessForm
           projectId={projectId}

@@ -153,7 +153,7 @@ function AddUserToResourcePoolModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         Add User to Resource Pool: {resourcePool.name}
       </ModalHeader>
       <ModalBody>

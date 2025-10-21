@@ -200,10 +200,10 @@ function DataConnectorViewAccess({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-access-section"
     >
-      <h4 className="mb-4">
+      <h3 className="mb-4">
         <PersonBadge className={cx("bi", "me-1")} />
         Credentials
-      </h4>
+      </h3>
       <div>
         <DataConnectorPropertyValue title="Requires credentials">
           <span data-cy="requires-credentials-section">
@@ -313,10 +313,10 @@ function DataConnectorViewConfiguration({
       data-cy="data-connector-configuration-section"
     >
       <div className={cx("d-flex", "justify-content-between", "mb-4")}>
-        <h4>
+        <h3>
           <Gear className={cx("bi", "me-1")} />
           {scope === "global" ? "Configuration" : "Connection Information"}
-        </h4>
+        </h3>
         <PermissionsGuard
           disabled={null}
           enabled={
@@ -394,10 +394,10 @@ function DataConnectorViewProjects({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-projects-section"
     >
-      <h4 className="mb-4">
+      <h3 className="mb-4">
         <Folder className={cx("bi", "me-1")} />
         Projects
-      </h4>
+      </h3>
       <div>
         {isLoading && <p>Retrieving projects...</p>}
         {!isLoading && projects.length === 0 && <p>None</p>}

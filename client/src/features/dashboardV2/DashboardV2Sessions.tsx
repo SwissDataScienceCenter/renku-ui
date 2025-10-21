@@ -173,7 +173,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
                 )}
                 data-cy="list-session-link"
               >
-                <h6>
+                <h4>
                   {project && launcher ? (
                     <>
                       <span className="fw-bold">{project.name}</span> /{" "}
@@ -182,7 +182,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
                   ) : (
                     projectId ?? "Unknown"
                   )}
-                </h6>
+                </h4>
               </Col>
             </Row>
           </Col>

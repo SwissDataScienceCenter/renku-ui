@@ -217,7 +217,9 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Add resource pool</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Add resource pool
+      </ModalHeader>
       <ModalBody>
         <Form
           className={cx("d-flex", "flex-column", "gap-3")}

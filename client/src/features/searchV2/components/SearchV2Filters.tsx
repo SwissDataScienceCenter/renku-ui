@@ -124,7 +124,7 @@ export function SearchV2FilterContainer({
   return visualization === "accordion" ? (
     <AccordionItem data-cy={`search-filter-${filterKey}`}>
       <AccordionHeader targetId={targetIndex}>
-        <h6 className={cx("fw-semibold", "mb-0")}>{filterName}</h6>
+        <h4 className={cx("fw-semibold", "mb-0")}>{filterName}</h4>
       </AccordionHeader>
       <AccordionBody accordionId={targetIndex}>
         <Row className={cx("g-3", "g-sm-0")}>{children}</Row>
@@ -135,7 +135,7 @@ export function SearchV2FilterContainer({
       className={cx("mb-3", "px-0", "pt-0")}
       data-cy={`search-filter-${filterKey}`}
     >
-      <h6 className="fw-semibold">{filterName}</h6>
+      <h4 className="fw-semibold">{filterName}</h4>
       <div>{children}</div>
     </ListGroupItem>
   );

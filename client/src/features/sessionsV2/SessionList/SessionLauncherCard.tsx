@@ -185,7 +185,7 @@ export default function SessionLauncherCard({
                   className={cx("d-inline-block", "link-primary", "text-body")}
                 >
                   <span
-                    className={cx("fw-bold", "fs-5")}
+                    className={cx("fw-semibold", "fs-3")}
                     data-cy="session-name"
                   >
                     {name ? (

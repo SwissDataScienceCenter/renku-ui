@@ -113,7 +113,7 @@ export function SessionEnvironmentItem({
           className={cx("cursor-pointer", "m-0", "w-100")}
           for={`addSessionLauncherGlobalEnvironment-${id}`}
         >
-          <h5>{name}</h5>
+          <h4 className="fw-semibold">{name}</h4>
           <p className="mb-2">
             <EnvironmentIcon type="global" className="me-1" />
             Global environment

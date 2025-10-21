@@ -162,7 +162,7 @@ export default function SessionImageModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader>Session image not accessible</ModalHeader>
+      <ModalHeader tag="h2">Session image not accessible</ModalHeader>
       <ModalBody>{content}</ModalBody>
       <ModalFooter>
         <Button color="outline-danger" onClick={onCancel}>

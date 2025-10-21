@@ -94,7 +94,9 @@ function DeleteSessionEnvironmentModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Are you sure?</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Are you sure?
+      </ModalHeader>
       <ModalBody>
         {result.error && <RtkErrorAlert error={result.error} />}
 

@@ -116,7 +116,7 @@ export default function SessionSecretsModal({
         </p>
       </WarnAlert>
 
-      <p className={cx("h5")}>Required secrets</p>
+      <h3>Required secrets</h3>
       <ListGroup>
         {sessionSecretSlotsWithSecrets.map((secretSlot) => (
           <SessionSecretSlotItem
@@ -137,7 +137,7 @@ export default function SessionSecretsModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader>Session secrets</ModalHeader>
+      <ModalHeader tag="h2">Session secrets</ModalHeader>
       <ModalBody>{content}</ModalBody>
       <ModalFooter>
         <Button color="outline-danger" onClick={onCancel}>
@@ -171,7 +171,7 @@ function ReadySessionSecrets({
 
   return (
     <>
-      <p className={cx("h5")}>Ready</p>
+      <h3>Ready</h3>
       <div className="mb-3" data-cy="session-secrets-ready">
         {readySessionSecrets.map(({ secretSlot }) => (
           <ReadySessionSecretItem key={secretSlot.id} secretSlot={secretSlot} />
@@ -219,7 +219,7 @@ function UnreadySessionSecrets({
 
   return (
     <>
-      <p className={cx("h5")}>Required secrets</p>
+      <h3>Required secrets</h3>
       <Row className="gy-3">
         {unreadySessionSecrets.map(({ secretSlot }) => (
           <UnreadySessionSecretItem

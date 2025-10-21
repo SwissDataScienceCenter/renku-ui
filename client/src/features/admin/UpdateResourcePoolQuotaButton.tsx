@@ -119,7 +119,9 @@ function UpdateResourcePoolQuotaModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>Update {name}&apos;s quota</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Update {name}&apos;s quota
+      </ModalHeader>
       <ModalBody>
         <Form
           className="form-rk-green"

@@ -174,7 +174,9 @@ export function BuildActionFailedModal({
       size="lg"
       toggle={reset}
     >
-      <ModalHeader toggle={reset}>{title}</ModalHeader>
+      <ModalHeader tag="h2" toggle={reset}>
+        {title}
+      </ModalHeader>
       <ModalBody>
         <RtkOrNotebooksError error={error} dismissible={false} />
       </ModalBody>
