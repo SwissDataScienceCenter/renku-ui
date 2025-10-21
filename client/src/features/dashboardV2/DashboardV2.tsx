@@ -114,9 +114,9 @@ function HeaderDashboard() {
         "bg-navy"
       )}
     >
-      <div
-        className={cx("container-xxl", DashboardStyles.DashboardHeaderImg)}
-      ></div>
+      <div className={cx("container-xxl", DashboardStyles.DashboardHeaderImg)}>
+        <h1 className="visually-hidden">Renku Dashboard</h1>
+      </div>
     </div>
   );
 }
@@ -338,9 +338,9 @@ function UserDashboard() {
         )}
       >
         <UserAvatar namespace={userInfo.username} size="lg" />
-        <h1 className={cx("text-center", "mb-0")}>
+        <h2 className={cx("fs-1", "mb-0", "text-center")}>
           {userInfo.first_name} {userInfo.last_name}
-        </h1>
+        </h2>
         <p className="mb-0">
           <Link
             to={userPageUrl}
