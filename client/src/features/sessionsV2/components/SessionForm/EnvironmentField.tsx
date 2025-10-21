@@ -51,9 +51,7 @@ export function EnvironmentFields({
   const watchEnvironmentSelect = watch("environmentSelect");
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div className={cx("form-label", "mb-0")}>
-        <span className="fw-bold">1 of 2. Define environment</span>
-      </div>
+      <h3 className="mb-0">1 of 2. Define environment</h3>
       <div>
         <EnvironmentKindField control={control} />
       </div>

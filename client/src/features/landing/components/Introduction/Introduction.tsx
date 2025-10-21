@@ -43,13 +43,13 @@ export function Introduction() {
             "align-items-center"
           )}
         >
-          <h2 className={cx("text-center", "fs-1", "mt-5", "pt-3", "mb-0")}>
+          <h2 className={cx("fs-1", "mb-0", "mt-5", "pt-3", "text-center")}>
             Introducing Renku 2.0: <br />
             <span className="fw-bold">
               Taking collaboration to the next level.
             </span>
           </h2>
-          <p className={cx("text-center", "mb-0", "fs-4")}>
+          <p className={cx("text-center", "mb-0", "fs-3")}>
             We’re thrilled to announce the next generation of the Renku
             platform, Renku 2.0.
             <span className="d-block">Here’s what’s new:</span>
@@ -68,10 +68,10 @@ export function Introduction() {
               className={cx("px-0", "px-lg-3", "text-center")}
             >
               <img src={connectIcon} alt="Renku" width="62" height="62" />
-              <h4 className={cx("py-3", "fw-bold")}>
+              <h3 className={cx("fs-2", "fw-bold", "py-3")}>
                 Connect your favorite tools and platforms.
-              </h4>
-              <p className={cx("fs-4", "mb-0")}>
+              </h3>
+              <p className={cx("fs-3", "mb-0")}>
                 Hook up your Renku project to GitHub repositories, external data
                 sources, and more. Flexible integrations make collaboration easy
                 and powerful.
@@ -83,10 +83,10 @@ export function Introduction() {
               className={cx("px-0", "px-lg-3", "text-center")}
             >
               <img src={puzzleIcon} alt="Renku" width="62" height="62" />
-              <h4 className={cx("py-3", "fw-bold")}>
+              <h3 className={cx("fs-2", "fw-bold", "py-3")}>
                 Plug-and-Play Flexibility.
-              </h4>
-              <p className={cx("fs-4", "mb-0")}>
+              </h3>
+              <p className={cx("fs-3", "mb-0")}>
                 Mix and match code, data, and compute to suit your project
                 setup, scaling from exploration to advanced analysis with ease.
               </p>
@@ -104,20 +104,15 @@ export function Introduction() {
             )}
           >
             <Link
-              className={cx(
-                "btn",
-                "btn-primary",
-                "text-decoration-none",
-                "fs-5"
-              )}
+              className={cx("btn", "btn-primary", "btn-lg")}
               to={projectUrl}
-              data-cy={`explore-a-project-introduction-btn`}
+              data-cy="explore-a-project-introduction-btn"
               target="_blank"
             >
               Explore a Renku 2.0 project
             </Link>
             <Link
-              className={cx("btn", "btn-outline-primary", "fs-5")}
+              className={cx("btn", "btn-outline-primary", "btn-lg")}
               id="hero_link-learn-more"
               to={Links.RENKU_2_LEARN_MORE}
               target="_blank"

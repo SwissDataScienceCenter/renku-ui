@@ -26,67 +26,52 @@ import styles from "./Resources.module.scss";
 
 export function ResourcesAndSupport() {
   return (
-    <div className={cx("bg-white", "py-5")}>
-      <Container className="py-3">
-        <div className={cx("d-flex", "flex-column", "gap-5")}>
-          <h2
+    <Container className={cx("bg-white", "py-5")}>
+      <h2 className={cx("fs-1", "fw-bold", "mb-4", "text-center")}>
+        Resources and support
+      </h2>
+      <Row className={cx("text-center", "g-5", "mb-3")}>
+        <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
+          <FooterDashboardCard
+            url={Links.RENKU_2_GET_HELP}
+            className={cx("text-decoration-none", "text-body")}
+          >
+            <InfoCircle size={60} />
+            <h3 className={cx("fs-2", "mb-0")}>Get Help</h3>
+            <p className={cx("fs-3", "mb-0")}>
+              See our documentation, join the forum, or contact us.
+            </p>
+          </FooterDashboardCard>
+        </Col>
+        <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
+          <FooterDashboardCard
+            url={Links.RENKU_2_COMMUNITY_PORTAL}
             className={cx(
-              "text-center",
-              "fs-1",
-              "mt-5",
-              "pt-3",
-              "mb-0",
-              "text-navy",
-              "fw-bold"
+              "text-decoration-none",
+              "text-body",
+              styles.RenkuCard
             )}
           >
-            Resources and support
-          </h2>
-          <Row className={cx("text-center", "gap-5", "gap-lg-0")}>
-            <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
-              <FooterDashboardCard
-                url={Links.RENKU_2_GET_HELP}
-                className="text-decoration-none text-navy"
-              >
-                <InfoCircle size={60} />
-                <h4>Get Help</h4>
-                <p className={cx("fs-4", "mb-0")}>
-                  See our documentation, join the forum, or contact us.
-                </p>
-              </FooterDashboardCard>
-            </Col>
-            <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
-              <FooterDashboardCard
-                url={Links.RENKU_2_COMMUNITY_PORTAL}
-                className={cx(
-                  "text-decoration-none",
-                  "text-navy",
-                  styles.RenkuCard
-                )}
-              >
-                <img src={renkuBlackIcon} alt="Renku" width="60" height="60" />
-                <h4>Get Involved</h4>
-                <p className={cx("fs-4", "mb-0")}>
-                  Visit our Community Portal for community events and our
-                  roadmap.
-                </p>
-              </FooterDashboardCard>
-            </Col>
-            <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
-              <FooterDashboardCard
-                url={Links.GITHUB}
-                className="text-decoration-none text-navy"
-              >
-                <CodeSquare size={60} />
-                <h4>Open Source</h4>
-                <p className={cx("fs-4", "mb-0", "text-decoration-none")}>
-                  Browse our code on GitHub.
-                </p>
-              </FooterDashboardCard>
-            </Col>
-          </Row>
-        </div>
-      </Container>
-    </div>
+            <img src={renkuBlackIcon} alt="Renku" width="60" height="60" />
+            <h2 className="mb-0">Get Involved</h2>
+            <p className={cx("fs-3", "mb-0")}>
+              Visit our Community Portal for community events and our roadmap.
+            </p>
+          </FooterDashboardCard>
+        </Col>
+        <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
+          <FooterDashboardCard
+            url={Links.GITHUB}
+            className={cx("text-decoration-none", "text-body")}
+          >
+            <CodeSquare size={60} />
+            <h2 className="mb-0">Open Source</h2>
+            <p className={cx("fs-3", "mb-0", "text-decoration-none")}>
+              Browse our code on GitHub.
+            </p>
+          </FooterDashboardCard>
+        </Col>
+      </Row>
+    </Container>
   );
 }

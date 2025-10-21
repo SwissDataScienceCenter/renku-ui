@@ -183,7 +183,7 @@ export default function GitlabProjectList({
             onClick={() => onSelectProject(project)}
           >
             <div>
-              <h6 className={cx("mb-0", "fw-bold")}>
+              <h4 className={cx("mb-0", "fw-bold")}>
                 <Folder className={cx("bi", "me-1")} /> {project.name}
                 {project.alreadyMigrated && (
                   <span
@@ -201,7 +201,7 @@ export default function GitlabProjectList({
                     migrated
                   </span>
                 )}
-              </h6>
+              </h4>
               <small className="text-muted">
                 @{project.namespace.full_path}
               </small>

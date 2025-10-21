@@ -161,7 +161,9 @@ function UpdateSessionEnvironmentModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Update session environment</ModalHeader>
+        <ModalHeader tag="h2" toggle={toggle}>
+          Update session environment
+        </ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
           <SessionEnvironmentFormContent control={control} errors={errors} />

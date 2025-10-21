@@ -26,9 +26,10 @@ describe("display the home page", () => {
 
   it("displays the home page intro text", () => {
     cy.get("h1").should("have.length", 1);
-    cy.get("h1")
-      .first()
-      .should("have.text", "Connecting data, code, compute, and people.");
+    cy.get("h1").should(
+      "have.text",
+      "Connecting data, code, compute, and people."
+    );
   });
 });
 
@@ -77,7 +78,7 @@ describe("shows terms of use", () => {
     fixtures.versions().userNone();
   });
 
-  it("Default terms are visible visible", () => {
+  it("Default terms are visible", () => {
     fixtures.config();
     cy.visit("/v1/help/tos");
     cy.contains("No terms of use have been configured.").should("be.visible");

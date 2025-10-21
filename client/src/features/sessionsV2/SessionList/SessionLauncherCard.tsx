@@ -75,8 +75,7 @@ export default function SessionLauncherCard({
   const environment = launcher?.environment;
   const imageBuildersEnabled =
     params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
-  const isCodeEnvironment =
-    environment && environment.environment_image_source === "build";
+  const isCodeEnvironment = environment?.environment_image_source === "build";
   const isExternalImageEnvironment =
     environment?.environment_kind === "CUSTOM" &&
     environment?.environment_image_source === "image";
@@ -186,7 +185,7 @@ export default function SessionLauncherCard({
                   className={cx("d-inline-block", "link-primary", "text-body")}
                 >
                   <span
-                    className={cx("fw-bold", "fs-5")}
+                    className={cx("fw-semibold", "fs-3")}
                     data-cy="session-name"
                   >
                     {name ? (

@@ -89,7 +89,7 @@ function GroupDeleteConfirmation({
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader>Are you absolutely sure?</ModalHeader>
+      <ModalHeader tag="h2">Are you absolutely sure?</ModalHeader>
       <ModalBody>
         <p>
           Deleting a group{" "}

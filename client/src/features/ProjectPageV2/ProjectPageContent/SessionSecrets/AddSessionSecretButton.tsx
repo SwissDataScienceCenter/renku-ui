@@ -180,7 +180,7 @@ function AddSessionSecretModalContentStep1({
 
   return (
     <Form noValidate onSubmit={onSubmit}>
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         <ShieldLock className={cx("me-1", "bi")} />
         Add session secret slot
       </ModalHeader>
