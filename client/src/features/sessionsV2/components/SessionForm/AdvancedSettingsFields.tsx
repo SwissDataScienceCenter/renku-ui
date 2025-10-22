@@ -40,7 +40,7 @@ import { SessionLauncherForm } from "../../sessionsV2.types";
 
 function OptionalLabel() {
   return (
-    <span className={cx("fst-italic", "small", "text-muted")}>(Optional)</span>
+    <span className={cx("small", "text-muted")}>(Optional)</span>
   );
 }
 
