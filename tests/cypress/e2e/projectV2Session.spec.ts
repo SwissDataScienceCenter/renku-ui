@@ -99,8 +99,8 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -156,13 +156,15 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.configuration).to.have.property("access_key_id");
-        expect(storage.configuration).to.have.property("secret_access_key");
-        expect(storage.configuration["access_key_id"]).to.equal("access key");
-        expect(storage.configuration["secret_access_key"]).to.equal(
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(1);
+        const override = dcOverrides[0];
+        expect(override.skip).to.be.false;
+        expect(override.data_connector_id).to.equal("ULID-1");
+        expect(override.configuration).to.have.property("access_key_id");
+        expect(override.configuration).to.have.property("secret_access_key");
+        expect(override.configuration["access_key_id"]).to.equal("access key");
+        expect(override.configuration["secret_access_key"]).to.equal(
           "secret key"
         );
         req.reply({ body: session, delay: 2000 });
@@ -237,13 +239,8 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        // Since the session has already been saved, it doesn't need to be sent again
-        expect(storage.configuration).to.not.have.property("access_key_id");
-        expect(storage.configuration).to.not.have.property("secret_access_key");
-
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -297,7 +294,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
-  it("launch session with data connector, saving credentials on skip", () => {
+  it("launch session with skipped data connector", () => {
     fixtures
       .testCloudStorage()
       .listProjectDataConnectors()
@@ -330,11 +327,11 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.configuration).to.not.have.property("access_key_id");
-        expect(storage.configuration).to.not.have.property("secret_access_key");
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(1);
+        const override = dcOverrides[0];
+        expect(override.skip).to.be.true;
+        expect(override.data_connector_id).to.equal("ULID-1");
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -368,9 +365,6 @@ describe("launch sessions with data connectors", () => {
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Skip")
       .click();
-    cy.contains("Saving credentials...").should("be.visible");
-    cy.wait("@patchDataConnectorSecrets");
-    cy.wait("@getDataConnectorSecretsAfterSaving");
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
@@ -393,12 +387,8 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.storage_id).to.equal("ULID-1");
-        expect(storage.configuration).to.not.have.property("access_key_id");
-        expect(storage.configuration).to.not.have.property("secret_access_key");
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -432,14 +422,15 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.storage_id).to.equal("ULID-1");
-        expect(storage.configuration).to.have.property("access_key_id");
-        expect(storage.configuration).to.have.property("secret_access_key");
-        expect(storage.configuration["access_key_id"]).to.equal("access key");
-        expect(storage.configuration["secret_access_key"]).to.equal(
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(1);
+        const override = dcOverrides[0];
+        expect(override.skip).to.be.false;
+        expect(override.data_connector_id).to.equal("ULID-1");
+        expect(override.configuration).to.have.property("access_key_id");
+        expect(override.configuration).to.have.property("secret_access_key");
+        expect(override.configuration["access_key_id"]).to.equal("access key");
+        expect(override.configuration["secret_access_key"]).to.equal(
           "secret key"
         );
         req.reply({ body: session, delay: 2000 });
@@ -1022,8 +1013,8 @@ describe("view autostart link", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
