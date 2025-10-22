@@ -64,6 +64,13 @@ export const FILTER_QUERY: StringFilter = {
   defaultValue: "",
 };
 
+export const NAMESPACE_FILTER: StringFilter = {
+  name: "namespace",
+  label: "Namespace",
+  type: "string",
+  defaultValue: "",
+};
+
 export const FILTER_CONTENT: EnumFilter = {
   name: "type",
   label: (

@@ -35,6 +35,7 @@ import {
   FILTER_PAGE,
   FILTER_PER_PAGE,
   FILTER_QUERY,
+  NAMESPACE_FILTER,
   PROJECT_FILTERS,
   SELECTABLE_FILTERS,
   VALUE_SEPARATOR_AND,
@@ -100,9 +101,9 @@ export function generateQueryParams(
     ? {
         ...queryFilters,
         namespace: {
-          filter: undefined,
+          filter: NAMESPACE_FILTER,
           value: groupSlug,
-        } as FilterWithValue<"string">,
+        },
       }
     : queryFilters;
   const mustQuoteFilters = ALL_FILTERS.filter((filter) => filter.mustQuote).map(
