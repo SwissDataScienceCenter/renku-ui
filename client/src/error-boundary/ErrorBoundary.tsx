@@ -34,27 +34,54 @@ interface AppErrorBoundaryProps {
 }
 
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
-  // Handle chunk load errors by reloading the page
-  const onError = useCallback((error: Error) => {
-    if (
-      (error instanceof TypeError &&
-        (error.message.toLowerCase().includes("module") ||
-          error.message.toLowerCase().includes("text/html"))) ||
-      error.name === "ChunkLoadError"
-    ) {
-      const url = new URL(window.location.href);
-      const hasReloaded = !!+(
-        url.searchParams.get("reloadForChunkError") ?? ""
-      );
-      if (!hasReloaded) {
-        url.searchParams.set("reloadForChunkError", "1");
-        window.location.replace(url);
+  // // Handle chunk load errors by reloading the page
+  // const onError = useCallback((error: Error) => {
+  //   if (
+  //     (error instanceof TypeError &&
+  //       (error.message.toLowerCase().includes("module") ||
+  //         error.message.toLowerCase().includes("text/html"))) ||
+  //     error.name === "ChunkLoadError"
+  //   ) {
+  //     const url = new URL(window.location.href);
+  //     const hasReloaded = !!+(
+  //       url.searchParams.get("reloadForChunkError") ?? ""
+  //     );
+  //     if (!hasReloaded) {
+  //       url.searchParams.set("reloadForChunkError", "1");
+  //       window.location.replace(url);
+  //     }
+  //   }
+  // }, []);
+
+  // ((scope: Scope, error: Error | null, componentStack: string | null) => void) | undefined;
+  const beforeCapture = useCallback(
+    (scope: Sentry.Scope, error: Error | null) => {
+      if (
+        (error instanceof TypeError &&
+          (error.message.toLowerCase().includes("module") ||
+            error.message.toLowerCase().includes("text/html"))) ||
+        error?.name === "ChunkLoadError"
+      ) {
+        const url = new URL(window.location.href);
+        const hasReloaded = !!+(
+          url.searchParams.get("reloadForChunkError") ?? ""
+        );
+        if (!hasReloaded) {
+          scope.setTag("reloadForChunkError", true);
+          scope.setLevel("info");
+          url.searchParams.set("reloadForChunkError", "1");
+          window.location.replace(url);
+        }
       }
-    }
-  }, []);
+    },
+    []
+  );
 
   return (
-    <Sentry.ErrorBoundary onError={onError} fallback={<ErrorPage />}>
+    <Sentry.ErrorBoundary
+      /*onError={onError}*/ fallback={<ErrorPage />}
+      beforeCapture={beforeCapture}
+    >
       {children}
     </Sentry.ErrorBoundary>
   );
