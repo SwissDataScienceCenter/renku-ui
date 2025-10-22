@@ -99,7 +99,10 @@ export function generateQueryParams(
   const queryFiltersForGroup = groupSlug
     ? {
         ...queryFilters,
-        namespace: groupSlug,
+        namespace: {
+          filter: undefined,
+          value: groupSlug,
+        } as FilterWithValue<"string">,
       }
     : queryFilters;
   const mustQuoteFilters = ALL_FILTERS.filter((filter) => filter.mustQuote).map(
@@ -108,8 +111,9 @@ export function generateQueryParams(
 
   const queryFiltersProcessed = Object.entries(queryFiltersForGroup).reduce<
     string[]
-  >((acc, [key, value]) => {
-    if (!ignoredParams.includes(key) && value !== undefined) {
+  >((acc, [key, filterWithValue]) => {
+    if (!ignoredParams.includes(key) && filterWithValue?.value != null) {
+      const { value } = filterWithValue;
       const quote = mustQuoteFilters.includes(key) ? '"' : "";
       const values =
         typeof value === "string" && value.includes(VALUE_SEPARATOR_AND)
