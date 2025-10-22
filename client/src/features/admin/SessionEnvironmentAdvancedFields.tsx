@@ -20,9 +20,10 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Control, FieldErrors } from "react-hook-form";
 import { Collapse } from "reactstrap";
+import CollapseBody from "~/components/container/CollapseBody";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { SessionEnvironmentForm } from "./SessionEnvironmentFormContent";
 import { AdvancedSettingsFields } from "../sessionsV2/components/SessionForm/AdvancedSettingsFields";
+import { SessionEnvironmentForm } from "./SessionEnvironmentFormContent";
 
 interface SessionEnvironmentAdvancedFieldsProps {
   control: Control<SessionEnvironmentForm, unknown>;
@@ -46,12 +47,15 @@ export default function SessionEnvironmentAdvancedFields({
       <div>
         <button
           className={cx(
-            "d-flex",
             "align-items-center",
-            "w-100",
             "bg-transparent",
             "border-0",
-            "fw-bold"
+            "d-flex",
+            "fs-4",
+            "fw-bold",
+            "gap-1",
+            "p-0",
+            "w-100"
           )}
           type="button"
           onClick={toggleIsOpen}
@@ -59,15 +63,16 @@ export default function SessionEnvironmentAdvancedFields({
           Advanced settings{" "}
           <ChevronFlippedIcon flipped={isAdvancedSettingOpen} />
         </button>
+
+        <Collapse isOpen={isAdvancedSettingOpen}>
+          <CollapseBody className="mt-1">
+            <AdvancedSettingsFields<SessionEnvironmentForm>
+              control={control}
+              errors={errors}
+            />
+          </CollapseBody>
+        </Collapse>
       </div>
-      <Collapse isOpen={isAdvancedSettingOpen}>
-        <div className="mt-3">
-          <AdvancedSettingsFields<SessionEnvironmentForm>
-            control={control}
-            errors={errors}
-          />
-        </div>
-      </Collapse>
     </>
   );
 }
