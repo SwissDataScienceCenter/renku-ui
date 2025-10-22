@@ -70,7 +70,7 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
           scope.setTag("reloadForChunkError", true);
           scope.setLevel("info");
           url.searchParams.set("reloadForChunkError", "1");
-          window.location.replace(url);
+          setImmediate(() => window.location.replace(url));
         }
       }
     },
