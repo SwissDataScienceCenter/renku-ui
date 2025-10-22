@@ -154,7 +154,7 @@ export default function useSessionLauncherState({
       isReadyDataConnectorConfigs
     ) {
       dispatch(
-        startSessionOptionsV2Slice.actions.setCloudStorage(
+        startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
           initialDataConnectorConfigs
         )
       );
