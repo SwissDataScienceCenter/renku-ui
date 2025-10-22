@@ -553,9 +553,11 @@ export function DataConnectorMount({
           flatDataConnector.visibility === "public" ? (
             <ErrorAlert className="mt-1" dismissible={false}>
               <p className="mb-0">
-                This public data connector is set to allow writing but does not
-                have a password field. You should either fill in a password in
-                the previous step or pick a different access mode or visibility.
+                Data security warning: This public and writable data connector
+                is not protected by a password. Anyone on RenkuLab will be able
+                to edit the data connected here. Protect your data with a
+                password, select private visibility, or limit access to
+                read-only.
               </p>
             </ErrorAlert>
           ) : (
