@@ -32,7 +32,7 @@ import {
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { WarnAlert } from "../../../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -326,7 +326,7 @@ export function DataConnectorMount({
   const parentPath = `/${flatDataConnector.namespace}/`;
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
-      {!dataConnectorId && <h5 className="fw-bold">Final details</h5>}
+      {!dataConnectorId && <h3>Final details</h3>}
       <p>
         Set how your data connector displays in Renku and who can access it.
       </p>
@@ -548,16 +548,26 @@ export function DataConnectorMount({
             )}
             rules={{ required: true }}
           />
-          {!flatDataConnector.readOnly && (
-            <div className="mt-1">
-              <WarnAlert dismissible={false}>
-                <p className="mb-0">
-                  You are mounting this storage in read-write mode. If you have
-                  read-only access, please select &quot;Read Only&quot; to
-                  prevent errors with some storage types.
-                </p>
-              </WarnAlert>
-            </div>
+          {!flatDataConnector.readOnly &&
+          !hasPasswordFieldWithInput &&
+          flatDataConnector.visibility === "public" ? (
+            <ErrorAlert className="mt-1" dismissible={false}>
+              <p className="mb-0">
+                Data security warning: This public and writable data connector
+                is not protected by a password. Anyone on RenkuLab will be able
+                to edit the data connected here. Protect your data with a
+                password, select private visibility, or limit access to
+                read-only.
+              </p>
+            </ErrorAlert>
+          ) : (
+            <WarnAlert className="mt-1" dismissible={false}>
+              <p className="mb-0">
+                You are mounting this storage in read-write mode. If you have
+                read-only access, please select &quot;Read Only&quot; to prevent
+                errors with some storage types.
+              </p>
+            </WarnAlert>
           )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
@@ -691,7 +701,7 @@ export function DataConnectorMount({
           </div>
         )}
 
-      <div className="mb-3">
+      <div className="mt-3 mb-2">
         <button
           className={cx(
             "d-flex",
@@ -699,7 +709,8 @@ export function DataConnectorMount({
             "w-100",
             "bg-transparent",
             "border-0",
-            "fw-bold",
+            "fw-medium",
+            "fs-3",
             "px-0"
           )}
           type="button"

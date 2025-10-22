@@ -193,7 +193,11 @@ export default function DataConnectorModal({
       unmountOnClose={false}
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle} data-cy="data-connector-edit-header">
+      <ModalHeader
+        toggle={toggle}
+        data-cy="data-connector-edit-header"
+        tag="h2"
+      >
         <DataConnectorModalHeader
           dataConnectorId={dataConnectorId}
           initialStep={initialStep}

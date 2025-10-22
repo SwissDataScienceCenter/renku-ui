@@ -28,10 +28,8 @@ import TemplateSlider from "../TemplateSlider/TemplateSlider";
 
 function ResearchFeatSection() {
   return (
-    <Row
-      className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
-    >
-      <Col xs={12} lg={6}>
+    <Row className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0")}>
+      <Col xs={12} lg={6} className={cx("order-2", "order-lg-1")}>
         <img
           src={researchGraphic}
           className="w-100"
@@ -42,12 +40,19 @@ function ResearchFeatSection() {
       <Col
         xs={12}
         lg={6}
-        className={cx("d-flex", "flex-column", "gap-3", "gap-lg-4")}
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "gap-3",
+          "gap-lg-4",
+          "order-1",
+          "order-lg-2"
+        )}
       >
-        <h3 className={cx("my-0", "fs-1", "fw-bold")}>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>
           Where research comes together
         </h3>
-        <p className={cx("mb-0", "fs-4")}>
+        <p className={cx("mb-0", "fs-3")}>
           Integrations galore! We support integrations for your favorite code
           and data platforms, so you can connect your whole project in one
           place.
@@ -59,9 +64,7 @@ function ResearchFeatSection() {
 
 function ResearcherFeatSection() {
   return (
-    <Row
-      className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
-    >
+    <Row className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0")}>
       <Col
         xs={12}
         lg={6}
@@ -70,24 +73,24 @@ function ResearcherFeatSection() {
           "flex-column",
           "gap-3",
           "gap-lg-4",
-          "order-2",
+          "order-1",
           "order-lg-1"
         )}
       >
-        <h3 className={cx("my-0", "fs-1", "fw-bold")}>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>
           Built for Every Researcher
         </h3>
-        <p className={cx("mb-0", "fs-4")}>
+        <p className={cx("mb-0", "fs-3")}>
           Whether you&apos;re comfortable with command lines or prefer graphical
           interfaces, Renku adapts to your working style.
         </p>
-        <p className={cx("mb-0", "fs-4")}>
+        <p className={cx("mb-0", "fs-3")}>
           Launch browser-based sessions with zero setup. Customize your
           development environment for advanced needs.
         </p>
       </Col>
-      <Col xs={12} lg={6} className={cx("order-1", "order-lg-2")}>
-        <div className={cx("py-5", "py-lg-0")}>
+      <Col xs={12} lg={6} className={cx("order-2", "order-lg-2")}>
+        <div className={cx("pb-5", "pb-lg-0")}>
           <TemplateSlider />
         </div>
       </Col>
@@ -97,10 +100,8 @@ function ResearcherFeatSection() {
 
 function CollaborationFeatSection() {
   return (
-    <Row
-      className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
-    >
-      <Col xs={12} lg={6}>
+    <Row className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0")}>
+      <Col xs={12} lg={6} className={cx("order-2", "order-lg-1")}>
         <img
           src={collaborationGraphic}
           alt="Collaboration Renku graphic"
@@ -111,12 +112,19 @@ function CollaborationFeatSection() {
       <Col
         xs={12}
         lg={6}
-        className={cx("d-flex", "flex-column", "gap-3", "gap-lg-4")}
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "gap-3",
+          "gap-lg-4",
+          "order-1",
+          "order-lg-2"
+        )}
       >
-        <h3 className={cx("my-0", "fs-1", "fw-bold")}>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>
           Effortless Collaboration
         </h3>
-        <p className={cx("mb-0", "fs-4")}>
+        <p className={cx("mb-0", "fs-3")}>
           Share your Renku project with anyone, and never worry about “it
           doesn’t work on my machine” again.
         </p>
@@ -127,9 +135,7 @@ function CollaborationFeatSection() {
 
 function ComputingFeatSection() {
   return (
-    <Row
-      className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
-    >
+    <Row className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0")}>
       <Col
         xs={12}
         lg={6}
@@ -138,18 +144,18 @@ function ComputingFeatSection() {
           "flex-column",
           "gap-3",
           "gap-lg-4",
-          "order-2",
+          "order-1",
           "order-lg-1"
         )}
       >
-        <h3 className={cx("my-0", "fs-1", "fw-bold")}>Flexible Computing</h3>
-        <p className={cx("mb-0", "fs-4")}>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>Flexible Computing</h3>
+        <p className={cx("mb-0", "fs-3")}>
           Scaling up your project is as simple as switching your resource class.
           Do data exploration and model training all in one place!
         </p>
         <div>
           <ExternalLink
-            className="text-primary"
+            className="fs-3"
             role="link"
             id="computeFeatLink"
             url={`mailto:${RenkuContactEmail}?subject=RenkuLab%20compute%20resources`}
@@ -157,7 +163,7 @@ function ComputingFeatSection() {
           />
         </div>
       </Col>
-      <Col xs={12} lg={6} className={cx("order-1", "order-lg-2")}>
+      <Col xs={12} lg={6} className={cx("order-2", "order-lg-2")}>
         <img
           src={computingGraphic}
           alt="Computing Renku graphic"
@@ -171,10 +177,8 @@ function ComputingFeatSection() {
 
 function ConnectionFeatSection() {
   return (
-    <Row
-      className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0", "pt-5", "pt-lg-0")}
-    >
-      <Col xs={12} lg={6}>
+    <Row className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0")}>
+      <Col xs={12} lg={6} className={cx("order-2", "order-lg-1")}>
         <img
           src={connectionGraphic}
           alt="Connection Renku graphic"
@@ -185,12 +189,19 @@ function ConnectionFeatSection() {
       <Col
         xs={12}
         lg={6}
-        className={cx("d-flex", "flex-column", "gap-3", "gap-lg-4")}
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "gap-3",
+          "gap-lg-4",
+          "order-1",
+          "order-lg-2"
+        )}
       >
-        <h3 className={cx("my-0", "fs-1", "fw-bold")}>
+        <h3 className={cx("fs-2", "fw-bold", "my-0")}>
           Let others stand on your shoulders
         </h3>
-        <p className={cx("mb-0", "fs-4")}>
+        <p className={cx("mb-0", "fs-3")}>
           Research thrives on connection. Renku makes your work naturally
           well-structured, discoverable by others, and easy to build upon.
         </p>
@@ -203,11 +214,18 @@ export default function WhatIsRenku() {
   return (
     <div id="rk-anon-home-what-is-renku">
       <div
-        className={cx("container", "d-flex", "flex-column", "gap-5", "my-5")}
+        className={cx(
+          "container",
+          "d-flex",
+          "flex-column",
+          "gap-5",
+          "gap-lg-4",
+          "my-5"
+        )}
       >
-        <div className={cx("text-center", "mt-0", "mt-lg-5")}>
-          <h2 className={cx("fs-1", "fw-bold", "pt-5")}>Renku Features</h2>
-          <p className={cx("mb-0", "fs-4")}>
+        <div className={cx("text-center", "mt-0", "mt-lg-4")}>
+          <h2 className={cx("fs-1", "fw-bold")}>Renku Features</h2>
+          <p className={cx("mb-0", "fs-3", "mx-5")}>
             Stop juggling multiple platforms and scattered resources. Renku
             provides a seamless environment where all your project components
             work together.

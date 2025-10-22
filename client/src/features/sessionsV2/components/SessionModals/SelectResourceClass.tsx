@@ -150,7 +150,7 @@ export function SelectResourceClassModal({
 
   return (
     <Modal centered isOpen={isOpen} size="lg">
-      <ModalHeader>
+      <ModalHeader tag="h2">
         {isCustom
           ? "Modify session launch before start"
           : "Complete missing information for session launch"}

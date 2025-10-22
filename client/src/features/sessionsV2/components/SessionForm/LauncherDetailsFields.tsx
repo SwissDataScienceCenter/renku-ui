@@ -69,9 +69,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div className={cx("form-label", "mb-0")}>
-        <span className="fw-bold">2 of 2. Define launcher details</span>
-      </div>
+      <h3 className="mb-0">2 of 2. Define launcher details</h3>
       <div>
         <Label className="form-label" for="addSessionLauncherName">
           Session launcher name

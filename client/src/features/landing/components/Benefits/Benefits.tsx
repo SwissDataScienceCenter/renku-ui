@@ -49,12 +49,14 @@ function BenefitsCard({ icon, title, description }: BenefitsProps) {
           "flex-column",
           "gap-2",
           "align-items-center",
-          "pt-5"
+          styles.BenefitsIconGap
         )}
       >
         {icon}
-        <h4 className={cx("fw-bold", "my-0", "text-center")}>{title}</h4>
-        <p className={cx("mb-0", "fs-4", "text-center")}>{description}</p>
+        <h3 className={cx("fs-2", "fw-bold", "my-0", "text-center")}>
+          {title}
+        </h3>
+        <p className={cx("mb-0", "fs-3", "text-center")}>{description}</p>
       </div>
     </Card>
   );
@@ -107,41 +109,38 @@ export function RenkuBenefits() {
   return (
     <div className="bg-navy">
       <div className={cx("container", "py-5", "px-3")}>
-        <div className={cx("pt-5", "pb-4", "pb-lg-5")}>
-          <h2
-            className={cx(
-              "text-center",
-              "fs-1",
-              "mt-0",
-              "mt-lg-5",
-              "text-white",
-              "fw-bold",
-              "mb-0"
-            )}
+        <h2
+          className={cx("fs-1", "fw-bold", "mb-5", "text-center", "text-white")}
+        >
+          The Benefits of Using Renku
+        </h2>
+        <Row className="g-5">
+          <Col
+            xs={12}
+            lg={8}
+            className={cx("px-4", "offset-lg-2", styles.BenefitsIconDistance)}
           >
-            The Benefits of Using Renku
-          </h2>
-        </div>
-        <Row className={cx("pb-5")}>
-          <Col xs={8} className={cx("px-4", "offset-2", "pt-5")}>
             <BenefitsCard
               title={content.individuals.title}
               description={content.individuals.description}
               icon={content.individuals.icon}
             />
           </Col>
-        </Row>
-        <Row className={cx("pb-5")}>
-          <Col xs={10} className={cx("px-4", "offset-1", "pt-5")}>
+          <Col
+            xs={12}
+            lg={10}
+            className={cx("px-4", "offset-lg-1", styles.BenefitsIconDistance)}
+          >
             <BenefitsCard
               title={content.teams.title}
               description={content.teams.description}
               icon={content.teams.icon}
             />
           </Col>
-        </Row>
-        <Row className={cx("pb-3")}>
-          <Col xs={12} className={cx("px-4", "pt-5")}>
+          <Col
+            xs={12}
+            className={cx("mb-3", "px-4", styles.BenefitsIconDistance)}
+          >
             <BenefitsCard
               title={content.community.title}
               description={content.community.description}

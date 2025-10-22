@@ -180,7 +180,9 @@ function UpdateResourceClassModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Update {resourceClass.name}</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Update {resourceClass.name}
+      </ModalHeader>
       <ModalBody>
         <Form
           className="form-rk-green"

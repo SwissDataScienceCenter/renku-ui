@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
@@ -40,7 +39,6 @@ export default function GroupV2Show() {
               namespaceKind="group"
             >
               <Link
-                className={cx("btn", "btn-primary")}
                 to={{
                   pathname: RELATIVE_ROUTES.v2.groups.show.search,
                   search: new URLSearchParams({ type: "Project" }).toString(),
@@ -58,7 +56,6 @@ export default function GroupV2Show() {
               pageParam="data_connectors_page"
             >
               <Link
-                className={cx("btn", "btn-primary")}
                 to={{
                   pathname: RELATIVE_ROUTES.v2.groups.show.search,
                   search: new URLSearchParams({

@@ -217,10 +217,10 @@ export default function ProjectInformation({
             "justify-content-between"
           )}
         >
-          <h4 className="m-0">
+          <h2 className="m-0">
             <InfoCircle className={cx("me-1", "bi")} />
             Info
-          </h4>
+          </h2>
 
           <div>
             <ProjectInformationButton

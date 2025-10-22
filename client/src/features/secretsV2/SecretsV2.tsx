@@ -51,7 +51,7 @@ export default function SecretsV2() {
     <>
       <Row>
         <Col>
-          <h2>User Secrets</h2>
+          <h1>User Secrets</h1>
           <SecretsPageInfo />
         </Col>
       </Row>
@@ -123,10 +123,10 @@ function SessionSecrets() {
     <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("m-0", "me-2")}>
+          <h2 className={cx("m-0", "me-2")}>
             <Key className={cx("me-1", "bi")} />
             Session Secrets
-          </h4>
+          </h2>
           {secretsUsedInSessions && (
             <Badge>{secretsUsedInSessions.length}</Badge>
           )}
@@ -188,10 +188,10 @@ function DataConnectorSecrets() {
     <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("m-0", "me-2")}>
+          <h2 className={cx("m-0", "me-2")}>
             <DatabaseLock className={cx("me-1", "bi")} />
             Data Connector Secrets
-          </h4>
+          </h2>
           {secrets && <Badge>{secrets.length}</Badge>}
         </div>
       </CardHeader>
@@ -248,10 +248,10 @@ function UnusedSecrets() {
     <Card className="h-100">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("m-0", "me-2")}>
+          <h2 className={cx("m-0", "me-2")}>
             <ShieldX className={cx("me-1", "bi")} />
             Unused Secrets
-          </h4>
+          </h2>
           <Badge>{unusedSecrets.length}</Badge>
         </div>
       </CardHeader>

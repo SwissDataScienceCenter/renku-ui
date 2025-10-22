@@ -147,7 +147,7 @@ function UpdateResourcePoolRemoteModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         Update {name}&apos;s remote configuration
       </ModalHeader>
       <ModalBody>

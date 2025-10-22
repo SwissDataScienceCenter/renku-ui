@@ -79,7 +79,7 @@ describe("View v2 landing page", () => {
   it("list groups", () => {
     cy.contains("View other groups").should("not.exist");
     cy.contains("View all my 50 groups").should("be.visible").click();
-    cy.contains("Renku 2.0 Search").should("be.visible");
+    cy.contains("Renku Search").should("be.visible");
     cy.getDataCy("search-filter-role-owner").should("be.checked");
     cy.getDataCy("search-filter-role-editor").should("be.checked");
     cy.getDataCy("search-filter-role-viewer").should("be.checked");
@@ -89,7 +89,7 @@ describe("View v2 landing page", () => {
   it("list projects", () => {
     cy.contains("View other projects").should("not.exist");
     cy.contains("View all my 50 projects").should("be.visible").click();
-    cy.contains("Renku 2.0 Search").should("be.visible");
+    cy.contains("Renku Search").should("be.visible");
     cy.getDataCy("search-filter-role-owner").should("be.checked");
     cy.getDataCy("search-filter-role-editor").should("be.checked");
     cy.getDataCy("search-filter-role-viewer").should("be.checked");
@@ -119,7 +119,7 @@ describe("View v2 landing page empty", () => {
     cy.contains("View all my projects").should("not.exist");
     cy.contains("Create my first project").should("be.visible");
     cy.contains("View existing projects").should("be.visible").click();
-    cy.contains("Renku 2.0 Search").should("be.visible");
+    cy.contains("Renku Search").should("be.visible");
     cy.getDataCy("search-filter-role-owner").should("be.not.checked");
     cy.getDataCy("search-filter-role-editor").should("be.not.checked");
     cy.getDataCy("search-filter-role-viewer").should("be.not.checked");

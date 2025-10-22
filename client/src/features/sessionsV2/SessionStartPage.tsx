@@ -649,7 +649,7 @@ export default function SessionStartPage() {
   if (error || launcher == null || project == null) {
     return (
       <div>
-        <h1 className="fs-5">Error: could not load session</h1>
+        <h3>Error: could not load session</h3>
         {error && <RtkOrNotebooksError error={error} dismissible={false} />}
       </div>
     );

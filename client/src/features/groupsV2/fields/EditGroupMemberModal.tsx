@@ -59,7 +59,7 @@ export default function EditGroupMemberModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         <PersonGear className={cx("me-1", "bi")} />
         Change access
       </ModalHeader>

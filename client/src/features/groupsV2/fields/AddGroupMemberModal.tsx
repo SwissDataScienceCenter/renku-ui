@@ -63,7 +63,7 @@ export default function AddGroupMemberModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         <PersonGear className={cx("me-1", "bi")} />
         Add a group member
       </ModalHeader>
