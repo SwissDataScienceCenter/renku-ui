@@ -39,9 +39,7 @@ import { isValidJSONStringArray } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 
 function OptionalLabel() {
-  return (
-    <span className={cx("small", "text-muted")}>(Optional)</span>
-  );
+  return <span className={cx("small", "text-muted")}>(Optional)</span>;
 }
 
 function FormField<T extends FieldValues>({
