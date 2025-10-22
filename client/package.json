@@ -166,6 +166,7 @@
     "http-server": "^14.1.1",
     "jest-websocket-mock": "^2.5.0",
     "prettier": "^2.8.7",
+    "prettier-plugin-organize-imports": "^4.3.0",
     "pretty-quick": "^3.3.1",
     "react-test-renderer": "^18.2.0",
     "storybook": "^8.6.4",
