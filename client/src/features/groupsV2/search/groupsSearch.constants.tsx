@@ -38,21 +38,23 @@ export const VALUE_SEPARATOR_AND = "+";
 
 export const DEFAULT_ELEMENTS_LIMIT_IN_FILTERS = 5;
 
-export const FILTER_PAGE: NumberFilter = {
+export const FILTER_PAGE: NumberFilter &
+  Required<Pick<NumberFilter, "defaultValue" | "minValue">> = {
   name: "page",
   label: "Page",
   type: "number",
   defaultValue: 1,
-  minValues: 1,
+  minValue: 1,
 };
 
-export const FILTER_PER_PAGE: NumberFilter = {
+export const FILTER_PER_PAGE: NumberFilter &
+  Required<Pick<NumberFilter, "defaultValue" | "minValue" | "maxValue">> = {
   name: "perPage",
   label: "Per page",
   type: "number",
   defaultValue: 10,
-  minValues: 1,
-  maxValues: 100,
+  minValue: 1,
+  maxValue: 100,
 };
 
 export const FILTER_QUERY: StringFilter = {
