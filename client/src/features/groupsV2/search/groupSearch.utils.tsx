@@ -124,7 +124,7 @@ export function generateQueryParams(
 
   const query = [
     ...queryFiltersProcessed,
-    commonFilters[FILTER_QUERY.name],
+    (commonFilters[FILTER_QUERY.name] as FilterWithValue<"string">).value,
   ].join(TERM_SEPARATOR);
   return {
     q: query.trim(),
