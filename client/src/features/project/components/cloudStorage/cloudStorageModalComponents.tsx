@@ -109,6 +109,7 @@ export interface AddCloudStorageBodyContentProps
   storageDetails: CloudStorageDetails;
   success: boolean;
   validationSucceeded: boolean;
+  disableContinueButton: boolean;
   projectId?: string;
 }
 export function AddCloudStorageBodyContent({
@@ -241,15 +242,14 @@ export function AddCloudStorageContinueButton({
           testIsFailure={validationResult.isError}
           testIsOngoing={validationResult.isLoading}
           testIsSuccess={validationResult.isSuccess}
+          disableContinueButton={disableContinueButton}
         />
         {disableContinueButton && (
           <UncontrolledTooltip
             placement="top"
             target={`${continueButtonId}-div`}
           >
-            {!storageDetails.schema
-              ? "Please select a storage type"
-              : "Please select a provider or change storage type"}
+            Please fill out all fields labeled as required
           </UncontrolledTooltip>
         )}
       </div>
@@ -398,6 +398,7 @@ interface TestConnectionAndContinueButtonsProps {
   testIsFailure: boolean;
   testIsOngoing: boolean;
   testIsSuccess: boolean;
+  disableContinueButton: boolean;
 }
 function TestConnectionAndContinueButtons({
   actionState,
@@ -410,6 +411,7 @@ function TestConnectionAndContinueButtons({
   testIsFailure,
   testIsOngoing,
   testIsSuccess,
+  disableContinueButton,
 }: TestConnectionAndContinueButtonsProps) {
   const buttonTestId = `${testId}-button`;
   const divTestId = `${testId}-div`;
@@ -438,7 +440,7 @@ function TestConnectionAndContinueButtons({
         color={testConnectionColor}
         id={buttonTestId}
         data-cy={buttonTestId}
-        disabled={testIsOngoing}
+        disabled={disableContinueButton || testIsOngoing}
         onClick={() => actionTest()}
       >
         {testConnectionContent}
