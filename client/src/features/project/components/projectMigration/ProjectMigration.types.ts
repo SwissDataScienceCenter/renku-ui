@@ -20,12 +20,12 @@ import {
   ContainerImage,
   DefaultUrl,
   KeywordsList,
-  SlugResponse,
   ProjectName,
   RepositoriesList,
   ResourceClassId,
   SessionName,
   Slug,
+  SlugResponse,
   Visibility,
 } from "../../../projectsV2/api/projectV2.api";
 

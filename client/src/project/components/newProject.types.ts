@@ -64,4 +64,4 @@ interface NewProjectHandlers {
   setProperty: Function;
 }
 
-export type { NewProjectMeta, NewProjectInputs, NewProjectHandlers };
+export type { NewProjectHandlers, NewProjectInputs, NewProjectMeta };

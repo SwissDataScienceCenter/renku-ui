@@ -18,16 +18,16 @@
 
 import cx from "classnames";
 import {
-  type Control,
   Controller,
+  useWatch,
+  type Control,
   type FieldPathByValue,
   type FieldValues,
-  useWatch,
 } from "react-hook-form";
 import { Collapse, FormText, Input, Label } from "reactstrap";
 
-import CollapseBody from "~/components/container/CollapseBody";
 import { ExternalLink } from "~/components/ExternalLinks";
+import CollapseBody from "~/components/container/CollapseBody";
 import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS } from "~/utils/constants/NewDocs";
 import type { RemoteConfiguration } from "../adminComputeResources.types";
 

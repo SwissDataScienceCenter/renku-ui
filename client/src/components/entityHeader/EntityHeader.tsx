@@ -35,7 +35,6 @@ import { EnvironmentLogs } from "../Logs";
 import { TimeCaption } from "../TimeCaption";
 import Creators, { EntityCreator } from "../entities/Creators";
 import EntityDescription from "../entities/Description";
-import { EntityType } from "../entities/entities.types";
 import EntityLabel from "../entities/Label";
 import LinkedEntitiesByItemType, {
   EntityLinksHeader,
@@ -43,6 +42,7 @@ import LinkedEntitiesByItemType, {
 import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
+import { EntityType } from "../entities/entities.types";
 import PinnedBadge from "../list/PinnedBadge";
 
 import "./EntityHeader.scss";

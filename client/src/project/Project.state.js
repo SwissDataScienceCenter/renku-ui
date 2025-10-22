@@ -578,4 +578,4 @@ Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
 Object.assign(ProjectCoordinator.prototype, ProjectAttributesMixin);
 Object.assign(ProjectCoordinator.prototype, RepoMixin);
 
-export { ProjectCoordinator, MigrationStatus };
+export { MigrationStatus, ProjectCoordinator };

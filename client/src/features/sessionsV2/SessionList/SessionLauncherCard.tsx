@@ -24,8 +24,8 @@ import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvir
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import {

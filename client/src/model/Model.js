@@ -531,9 +531,9 @@ function _mapStateToProps(state, ownProps) {
 export {
   PropertyName,
   Schema,
-  StateModel,
-  StateKind,
-  SubModel,
   SpecialPropVal,
+  StateKind,
+  StateModel,
   StatusHelper,
+  SubModel,
 };

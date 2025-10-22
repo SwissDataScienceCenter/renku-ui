@@ -1,7 +1,7 @@
 // Code taken from https://github.com/sdobz/notebook-render/blob/master/src/index.tsx
 
-import { IpynbRenderer } from "react-ipynb-renderer";
 import type { BaseProps, CellType, LanguageType } from "react-ipynb-renderer";
+import { IpynbRenderer } from "react-ipynb-renderer";
 
 type BaseIpynb = BaseProps["ipynb"];
 interface IIpynb extends BaseIpynb {

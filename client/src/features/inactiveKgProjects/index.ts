@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export type { InactiveKgProjects } from "./inactiveKgProjects.types";
-export type { KgInactiveProjectsState } from "./inactiveKgProjectsSlice";
-export { filterProgressingProjects } from "./inactiveKgProjects.utils";
 export { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
+export type { InactiveKgProjects } from "./inactiveKgProjects.types";
+export { filterProgressingProjects } from "./inactiveKgProjects.utils";
+export type { KgInactiveProjectsState } from "./inactiveKgProjectsSlice";

@@ -31,8 +31,8 @@ import {
 } from "reactstrap";
 
 import ScrollableModal from "~/components/modal/ScrollableModal";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 import ConnectedServiceFormContent from "./ConnectedServiceFormContent";

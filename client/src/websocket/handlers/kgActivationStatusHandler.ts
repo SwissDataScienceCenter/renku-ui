@@ -20,11 +20,11 @@ import {
   ActivationStatusProgressError,
   filterProgressingProjects,
 } from "../../features/inactiveKgProjects/";
+import type { KgInactiveProjectsState } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import {
   setActivationSlow,
   updateProgress,
 } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
-import type { KgInactiveProjectsState } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 type ActivationStatus = {

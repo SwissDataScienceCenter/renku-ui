@@ -1,7 +1,7 @@
-import cx from "classnames";
-import { Nav, NavItem, NavLink } from "reactstrap";
-import { Eye, Sliders } from "react-bootstrap-icons";
 import { Meta, StoryObj } from "@storybook/react";
+import cx from "classnames";
+import { Eye, Sliders } from "react-bootstrap-icons";
+import { Nav, NavItem, NavLink } from "reactstrap";
 
 const componentDescription = `
 Navbar helps users navigate the application. We have a main navbar at the top and bottom of the application, and local navbar in pages (or rarely modals) requiring navigation.

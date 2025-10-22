@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
+import { APIError, API_ERRORS } from "~/api-client/errors";
+import processPaginationHeaders from "~/api-client/pagination";
 import {
   RETURN_TYPES,
   renkuFetch,
   type FetchOptions,
 } from "~/api-client/utils";
-import { API_ERRORS, APIError } from "~/api-client/errors";
-import processPaginationHeaders from "~/api-client/pagination";
 
 /**
  * A compatibility layer implementation of the old APIClient supporting only the

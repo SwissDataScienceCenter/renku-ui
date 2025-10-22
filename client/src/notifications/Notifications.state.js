@@ -123,4 +123,4 @@ class NotificationsCoordinator {
   }
 }
 
-export { NotificationsInfo, NotificationsCoordinator };
+export { NotificationsCoordinator, NotificationsInfo };

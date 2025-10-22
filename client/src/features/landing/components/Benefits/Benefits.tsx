@@ -19,9 +19,9 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { Card, Col, Row } from "reactstrap";
+import communityIcon from "../../assets/communityIcon.svg";
 import individualsIcon from "../../assets/individualsIcon.svg";
 import teamsIcon from "../../assets/teamsIcon.svg";
-import communityIcon from "../../assets/communityIcon.svg";
 import styles from "./Benefits.module.scss";
 
 interface BenefitsProps {

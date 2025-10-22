@@ -64,7 +64,7 @@ function getUpdatedDatasetImage(imageUrl, lastUpdateDate) {
   return `${imageUrl}?${lastUpdate}`;
 }
 
-export { mapDataset, getDatasetAuthors, getUpdatedDatasetImage };
+export { getDatasetAuthors, getUpdatedDatasetImage, mapDataset };
 
 /**
  * Prevents issues with the leading slash  on the dataset modify link.

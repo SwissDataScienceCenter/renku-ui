@@ -19,11 +19,11 @@
 import cx from "classnames";
 import { Navigate, useSearchParams } from "react-router";
 import { Col, Row } from "reactstrap";
-import { getSearchQueryMissingFilters } from "./groupSearch.utils";
 import GroupSearchBar from "./GroupSearchBar";
 import GroupSearchFilters from "./GroupSearchFilters";
 import GroupSearchResultRecap from "./GroupSearchResultRecap";
 import GroupSearchResults from "./GroupSearchResults";
+import { getSearchQueryMissingFilters } from "./groupSearch.utils";
 
 // ? The GroupV2Search components should be re-used in the User namespace and later
 // ? replace the global search components. Mind to rename them at that point.

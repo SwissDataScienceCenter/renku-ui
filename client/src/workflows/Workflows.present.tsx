@@ -16,8 +16,27 @@
  * limitations under the License.
  */
 
+import {
+  faArrowRight,
+  faCheck,
+  faExclamationTriangle,
+  faSortAmountDown,
+  faSortAmountUp,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useState } from "react";
+import {
+  Bookmarks,
+  Calendar4,
+  Diagram2,
+  FileCode,
+  Journals,
+  Link45deg,
+  People,
+  XLg,
+} from "react-bootstrap-icons";
+import { Link } from "react-router";
 import {
   Button,
   ButtonDropdown,
@@ -34,31 +53,12 @@ import {
   Table,
   UncontrolledTooltip,
 } from "reactstrap";
-import {
-  Bookmarks,
-  Calendar4,
-  Diagram2,
-  FileCode,
-  Journals,
-  Link45deg,
-  People,
-  XLg,
-} from "react-bootstrap-icons";
-import { Link } from "react-router";
-import {
-  faArrowRight,
-  faCheck,
-  faExclamationTriangle,
-  faSortAmountDown,
-  faSortAmountUp,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { InfoAlert, WarnAlert } from "../components/Alert";
 
 import { ExternalDocsLink, ExternalLink } from "../components/ExternalLinks";
-import LinkWithTooltip from "../components/LinkWithTooltip";
 import InformativeIcon from "../components/InformativeIcon";
+import LinkWithTooltip from "../components/LinkWithTooltip";
 import { Loader } from "../components/Loader";
 import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";
 import { CommandCopy } from "../components/commandCopy/CommandCopy";

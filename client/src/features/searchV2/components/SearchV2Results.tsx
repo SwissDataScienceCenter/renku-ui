@@ -40,23 +40,23 @@ import {
 } from "reactstrap";
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
+import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { useGetDataConnectorsByDataConnectorIdQuery } from "../../dataConnectorsV2/api/data-connectors.api";
 import DataConnectorView from "../../dataConnectorsV2/components/DataConnectorView";
 import {
+  searchV2Api,
   type DataConnector,
   type Group,
   type Project,
   type SearchEntity,
   type User,
-  searchV2Api,
 } from "../api/searchV2Api.api";
 import useClampSearchPage from "../hooks/useClampSearchPage.hook";
 import { toDisplayName } from "../searchV2.utils";

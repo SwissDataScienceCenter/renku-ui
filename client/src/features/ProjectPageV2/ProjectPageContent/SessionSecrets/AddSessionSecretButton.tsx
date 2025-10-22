@@ -30,16 +30,16 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
+import ProvideSessionSecretModalContent from "./ProvideSessionSecretModalContent";
 import DescriptionField from "./fields/DescriptionField";
-import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import FilenameField from "./fields/FilenameField";
 import NameField from "./fields/NameField";
-import ProvideSessionSecretModalContent from "./ProvideSessionSecretModalContent";
-import { SuccessAlert } from "../../../../components/Alert";
 
 export default function AddSessionSecretButton() {
   const ref = useRef<HTMLButtonElement>(null);

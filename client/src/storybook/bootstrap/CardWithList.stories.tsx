@@ -1,4 +1,6 @@
+import { Meta, StoryObj } from "@storybook/react";
 import cx from "classnames";
+import { PlayCircle } from "react-bootstrap-icons";
 import {
   Card,
   CardBody,
@@ -6,8 +8,6 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
-import { PlayCircle } from "react-bootstrap-icons";
-import { Meta, StoryObj } from "@storybook/react";
 
 const componentDescription = `
 Renku has in many places cards containing a list of elements that users can interact with. This is a simple example where the only interaction is a click.

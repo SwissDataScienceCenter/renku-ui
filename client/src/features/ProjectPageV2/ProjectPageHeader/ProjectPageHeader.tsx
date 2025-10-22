@@ -24,9 +24,9 @@ import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
 
+import ProjectGitLabWarnBanner from "../../legacy/ProjectGitLabWarnBanner";
 import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
-import ProjectGitLabWarnBanner from "../../legacy/ProjectGitLabWarnBanner";
 import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
 
 interface ProjectPageHeaderProps {

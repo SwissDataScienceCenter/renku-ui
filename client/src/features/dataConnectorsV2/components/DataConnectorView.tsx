@@ -40,8 +40,8 @@ import {
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { WarnAlert } from "../../../components/Alert";
-import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
+import { Clipboard } from "../../../components/clipboard/Clipboard";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
@@ -62,14 +62,14 @@ import type {
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
+import DataConnectorActions from "./DataConnectorActions";
+import DataConnectorModal from "./DataConnectorModal";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
   parseDoi,
   useGetDataConnectorSource,
 } from "./dataConnector.utils";
-import DataConnectorActions from "./DataConnectorActions";
-import DataConnectorModal from "./DataConnectorModal";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 
 const SECTION_CLASSES = [

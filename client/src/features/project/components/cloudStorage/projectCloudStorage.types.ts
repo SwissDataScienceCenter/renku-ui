@@ -17,9 +17,9 @@
  */
 
 import type {
-  RCloneOption,
-  RCloneEntry,
   CloudStorageGet,
+  RCloneEntry,
+  RCloneOption,
 } from "./api/projectCloudStorage.api";
 
 export interface CloudStorage

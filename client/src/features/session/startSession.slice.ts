@@ -17,8 +17,8 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { StartSession } from "./startSession.types";
 import { StepsProgressBar } from "../../components/progress/ProgressSteps";
+import { StartSession } from "./startSession.types";
 
 const initialState: StartSession = {
   error: null,

@@ -25,13 +25,13 @@
 
 import { faCog, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { Funnel, FunnelFill } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityType } from "./entities.types";
-import cx from "classnames";
 
 export interface EntityButtonProps {
   type: EntityType;

@@ -33,6 +33,7 @@ import {
   Row,
 } from "reactstrap";
 
+import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Project } from "../../../projectsV2/api/projectV2.api";
@@ -42,7 +43,6 @@ import {
   validateCodeRepository,
   validateNoDuplicatesInCodeRepositories,
 } from "./repositories.utils";
-import { WarnAlert } from "../../../../components/Alert";
 
 interface AddCodeRepositoryForm {
   repositoryUrl: string;

@@ -62,12 +62,12 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
+import { ConnectButton } from "../../../connectedServices/ConnectedServicesPage";
 import {
   connectedServicesApi,
   useGetOauth2ProvidersQuery,
   type Provider,
 } from "../../../connectedServices/api/connectedServices.api";
-import { ConnectButton } from "../../../connectedServices/ConnectedServicesPage";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";

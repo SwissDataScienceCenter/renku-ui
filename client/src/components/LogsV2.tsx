@@ -19,9 +19,9 @@
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useGetSessionsBySessionIdQuery } from "~/features/sessionsV2/api/sessionsV2.api";
 import { displaySlice } from "../features/display";
+import { useGetSessionLogsV2 } from "../utils/customHooks/UseGetSessionLogs";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../utils/customHooks/useAppSelector.hook";
-import { useGetSessionLogsV2 } from "../utils/customHooks/UseGetSessionLogs";
 import { EnvironmentLogsPresent } from "./Logs";
 
 /**

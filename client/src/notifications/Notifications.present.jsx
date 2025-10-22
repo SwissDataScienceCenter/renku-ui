@@ -562,7 +562,7 @@ export {
   CloseToast,
   NotificationDropdownItem,
   NotificationPageItem,
+  NotificationToast,
   Notifications,
   NotificationsMenu,
-  NotificationToast,
 };

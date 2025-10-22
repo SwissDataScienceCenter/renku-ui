@@ -21,7 +21,6 @@ import { useMemo, useState } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
-  components,
   GroupBase,
   InputProps,
   NoticeProps,
@@ -30,6 +29,7 @@ import Select, {
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
+  components,
 } from "react-select";
 import {
   useGetSearchQueryQuery,

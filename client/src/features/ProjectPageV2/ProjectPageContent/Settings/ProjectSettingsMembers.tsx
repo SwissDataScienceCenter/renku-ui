@@ -34,9 +34,9 @@ import {
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { Loader } from "../../../../components/Loader";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { Loader } from "../../../../components/Loader";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {

@@ -59,8 +59,8 @@ import { SessionClassSelectorV2 } from "../../../session/components/options/Sess
 import { SessionStatusState } from "../../../session/sessions.types";
 import { useWaitForSessionStatusV2 } from "../../../session/useWaitForSessionStatus.hook";
 import {
-  type ResourceClassWithId,
   useGetResourcePoolsQuery,
+  type ResourceClassWithId,
 } from "../../api/computeResources.api";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,

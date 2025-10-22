@@ -29,8 +29,8 @@ import {
 } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
   MIN_SESSION_STORAGE_GB,

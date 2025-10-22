@@ -22,7 +22,7 @@ import {
   BoxArrowInRight,
   Diagram3Fill,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import { Button } from "reactstrap";
 
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";

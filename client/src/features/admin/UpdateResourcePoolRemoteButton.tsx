@@ -29,8 +29,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
+import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
 import {
   usePatchResourcePoolsByResourcePoolIdMutation,
   type ResourcePoolWithId,

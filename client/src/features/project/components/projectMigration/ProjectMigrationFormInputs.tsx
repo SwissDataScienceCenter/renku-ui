@@ -34,9 +34,9 @@ import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
+import styles from "../../../projectsV2/fields/RenkuV1FormFields.module.scss";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
 import { ProjectMigrationForm } from "./ProjectMigration.types";
-import styles from "../../../projectsV2/fields/RenkuV1FormFields.module.scss";
 
 interface ProjectMigrationFormInputsProps {
   control: Control<ProjectMigrationForm>;

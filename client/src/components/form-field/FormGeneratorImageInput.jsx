@@ -38,7 +38,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { ImageFieldPropertyName as Prop } from "./stockimages";
+import { DESIRABLE_FINAL_IMAGE_SIZE } from "../../project/components/NewProjectAvatar";
 import { formatBytes } from "../../utils/helpers/HelperFunctions";
 import {
   ErrorLabel,
@@ -46,7 +46,7 @@ import {
   InputLabel,
 } from "../formlabels/FormLabels";
 import ImageEditor, { CARD_IMAGE_DIMENSIONS } from "../imageEditor/ImageEditor";
-import { DESIRABLE_FINAL_IMAGE_SIZE } from "../../project/components/NewProjectAvatar";
+import { ImageFieldPropertyName as Prop } from "./stockimages";
 
 function userInputOption(options) {
   let userInput = options.find((o) => o[Prop.STOCK] === false);

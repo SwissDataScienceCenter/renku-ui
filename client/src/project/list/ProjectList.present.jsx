@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
+import {
+  faBars,
+  faCheck,
+  faPlus,
+  faSearch,
+  faSortAmountDown,
+  faSortAmountUp,
+  faTh,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router";
 import {
@@ -32,24 +42,14 @@ import {
   NavItem,
   Row,
 } from "reactstrap";
-import {
-  faCheck,
-  faSearch,
-  faSortAmountDown,
-  faSortAmountUp,
-  faBars,
-  faTh,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { Label } from "reactstrap";
+import ListDisplay from "../../components/List";
+import { Loader } from "../../components/Loader";
+import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
+import LazyMarkdownTextExcerpt from "../../components/markdown/LazyMarkdownTextExcerpt";
 import { Url } from "../../utils/helpers/url";
 import "../Project.css";
-import { Label } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import LazyMarkdownTextExcerpt from "../../components/markdown/LazyMarkdownTextExcerpt";
-import ListDisplay from "../../components/List";
-import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 
 function ProjectListRows(props) {
   const { currentPage, perPage, projects, search, totalItems, gridDisplay } =

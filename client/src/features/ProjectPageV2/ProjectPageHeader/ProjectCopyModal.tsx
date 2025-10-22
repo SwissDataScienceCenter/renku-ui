@@ -41,11 +41,11 @@ import {
   type Visibility,
 } from "../../projectsV2/api/projectV2.api";
 import { usePostProjectsByProjectIdCopiesMutation } from "../../projectsV2/api/projectV2.enhanced-api";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 import ProjectNameFormField from "../../projectsV2/fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectOwnerSlugFormField from "../../projectsV2/fields/ProjectOwnerSlugFormField";
 import ProjectVisibilityFormField from "../../projectsV2/fields/ProjectVisibilityFormField";
+import { useGetUserQuery } from "../../usersV2/api/users.api";
 
 interface ProjectCopyModalProps {
   currentUser: ReturnType<typeof useGetUserQuery>["data"];
