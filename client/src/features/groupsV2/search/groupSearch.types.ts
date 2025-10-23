@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 
-import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api";
+import { ReactNode } from "react";
+
+import type { SearchEntity } from "~/features/searchV2/api/searchV2Api.api";
 
 export type GroupSearchEntity = Exclude<
   SearchEntity,
@@ -24,7 +26,7 @@ export type GroupSearchEntity = Exclude<
 >;
 
 interface FilterValue {
-  label: React.ReactNode;
+  label: ReactNode;
   quantity?: number;
   value: string;
 }
@@ -33,7 +35,7 @@ type FilterType = "enum" | "number" | "string";
 
 interface BaseFilter {
   doNotPassEmpty?: boolean;
-  label: React.ReactNode;
+  label: ReactNode;
   mustQuote?: boolean;
   name: string;
   type: FilterType;
@@ -54,9 +56,37 @@ export interface EnumFilter extends BaseFilter {
 
 export interface NumberFilter extends BaseFilter {
   defaultValue?: number;
-  maxValues?: number;
-  minValues?: number;
+  maxValue?: number;
+  minValue?: number;
   type: "number";
 }
 
-export type Filter = StringFilter | EnumFilter | NumberFilter;
+type Filter_ = StringFilter | EnumFilter | NumberFilter;
+
+export type Filter<T extends Filter_["type"] = Filter_["type"]> = Extract<
+  Filter_ & { type: T },
+  Filter_
+>;
+
+type ValueType<T extends Filter["type"] = Filter["type"]> = T extends "number"
+  ? number
+  : T extends "string" | "enum"
+  ? string
+  : string | number;
+
+type FilterWithValue_ =
+  | {
+      filter: StringFilter | EnumFilter;
+      value: string;
+    }
+  | { filter: NumberFilter; value: number };
+
+export type FilterWithValue<T extends Filter["type"] = Filter["type"]> =
+  Extract<
+    FilterWithValue_ & { filter: Filter<T>; value: ValueType<T> },
+    FilterWithValue_
+  >;
+
+export type SearchQueryFilters = {
+  [key: Filter["name"]]: FilterWithValue | undefined;
+};

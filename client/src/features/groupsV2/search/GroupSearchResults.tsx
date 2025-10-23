@@ -47,7 +47,7 @@ export default function GroupSearchResults() {
   const { data } = useGroupSearch();
 
   const currentPage = useMemo(() => {
-    const defaultValue = FILTER_PAGE.defaultValue as number;
+    const defaultValue = FILTER_PAGE.defaultValue;
     const pageParam = searchParams.get(FILTER_PAGE.name);
     if (!pageParam) return defaultValue;
     try {
@@ -59,7 +59,7 @@ export default function GroupSearchResults() {
   }, [searchParams]);
 
   const currentPerPage = useMemo(() => {
-    const defaultValue = FILTER_PER_PAGE.defaultValue as number;
+    const defaultValue = FILTER_PER_PAGE.defaultValue;
     const perPageParam = searchParams.get(FILTER_PER_PAGE.name);
     if (!perPageParam) return defaultValue;
     try {

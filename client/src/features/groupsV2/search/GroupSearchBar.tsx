@@ -58,11 +58,9 @@ export default function GroupSearchBar() {
     (data: SearchBarForm, forceRefresh = false) => {
       const newParams = new URLSearchParams(searchParams);
       newParams.set(FILTER_QUERY.name, data.query);
-      const page_default_value = (
-        FILTER_PAGE.defaultValue as number
-      ).toString();
-      if (newParams.get(FILTER_PAGE.name) !== page_default_value) {
-        newParams.set(FILTER_PAGE.name, page_default_value);
+      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
+      if (newParams.get(FILTER_PAGE.name) !== pageDefaultValue) {
+        newParams.set(FILTER_PAGE.name, pageDefaultValue);
       }
 
       // force a refetch even for the same query if explicitly asked for

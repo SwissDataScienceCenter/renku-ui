@@ -16,13 +16,17 @@
  * limitations under the License.
  */
 
-import { SearchQuery } from "~/features/searchV2/api/searchV2Api.generated-api";
+import { ReactNode } from "react";
+import type { SearchQuery } from "~/features/searchV2/api/searchV2Api.api";
 import {
   KEY_VALUE_SEPARATOR,
   TERM_SEPARATOR,
 } from "../../searchV2/searchV2.constants";
-import { SearchQueryFilters } from "~/features/searchV2/searchV2.types";
-import { Filter } from "./groupSearch.types";
+import type {
+  Filter,
+  FilterWithValue,
+  SearchQueryFilters,
+} from "./groupSearch.types";
 import {
   ALL_FILTERS,
   COMMON_FILTERS,
@@ -31,6 +35,7 @@ import {
   FILTER_PAGE,
   FILTER_PER_PAGE,
   FILTER_QUERY,
+  NAMESPACE_FILTER,
   PROJECT_FILTERS,
   SELECTABLE_FILTERS,
   VALUE_SEPARATOR_AND,
@@ -43,7 +48,22 @@ export function getSearchQueryFilters(
   return filters.reduce<SearchQueryFilters>((acc, filter) => {
     const raw = searchParams.get(filter.name);
     if (raw !== null) {
-      acc[filter.name] = filter.type === "number" ? Number(raw) : raw;
+      if (filter.type === "number") {
+        try {
+          const parsed = parseInt(raw, 10);
+          acc[filter.name] = {
+            filter,
+            value: parsed,
+          };
+          return acc;
+        } catch {
+          // Do not add the filter
+          return acc;
+        }
+      }
+
+      // The filter is string or enum here
+      acc[filter.name] = { filter, value: raw };
     }
     return acc;
   }, {});
@@ -55,11 +75,11 @@ export function getSearchQueryMissingFilters(
 ): SearchQueryFilters {
   const existing = getSearchQueryFilters(searchParams, filters);
   return filters.reduce<SearchQueryFilters>((acc, filter) => {
-    if (
-      existing[filter.name] === undefined &&
-      filter.defaultValue !== undefined
-    ) {
-      acc[filter.name] = filter.defaultValue;
+    if (existing[filter.name] == null && filter.defaultValue != null) {
+      acc[filter.name] = {
+        filter,
+        value: filter.defaultValue,
+      } as FilterWithValue;
     }
     return acc;
   }, {});
@@ -80,7 +100,10 @@ export function generateQueryParams(
   const queryFiltersForGroup = groupSlug
     ? {
         ...queryFilters,
-        namespace: groupSlug,
+        namespace: {
+          filter: NAMESPACE_FILTER,
+          value: groupSlug,
+        },
       }
     : queryFilters;
   const mustQuoteFilters = ALL_FILTERS.filter((filter) => filter.mustQuote).map(
@@ -89,8 +112,9 @@ export function generateQueryParams(
 
   const queryFiltersProcessed = Object.entries(queryFiltersForGroup).reduce<
     string[]
-  >((acc, [key, value]) => {
-    if (!ignoredParams.includes(key) && value !== undefined) {
+  >((acc, [key, filterWithValue]) => {
+    if (!ignoredParams.includes(key) && filterWithValue?.value != null) {
+      const { value } = filterWithValue;
       const quote = mustQuoteFilters.includes(key) ? '"' : "";
       const values =
         typeof value === "string" && value.includes(VALUE_SEPARATOR_AND)
@@ -105,22 +129,24 @@ export function generateQueryParams(
 
   const query = [
     ...queryFiltersProcessed,
-    commonFilters[FILTER_QUERY.name],
+    (commonFilters[FILTER_QUERY.name] as FilterWithValue<"string">).value,
   ].join(TERM_SEPARATOR);
   return {
     q: query.trim(),
-    page: (commonFilters[FILTER_PAGE.name] ??
-      (FILTER_PAGE.defaultValue as number)) as number,
-    per_page: (commonFilters[FILTER_PER_PAGE.name] ??
-      FILTER_PER_PAGE.defaultValue) as number,
+    page:
+      (commonFilters[FILTER_PAGE.name] as FilterWithValue<"number">)?.value ??
+      FILTER_PAGE.defaultValue,
+    per_page:
+      (commonFilters[FILTER_PER_PAGE.name] as FilterWithValue<"number">)
+        ?.value ?? FILTER_PER_PAGE.defaultValue,
   };
 }
 
 export function getQueryHumanReadable(
   searchParams: URLSearchParams,
   filters: Filter[] = SELECTABLE_FILTERS
-): React.ReactNode {
-  const filterNamesToLabel = filters.reduce<Record<string, React.ReactNode>>(
+): ReactNode {
+  const filterNamesToLabel = filters.reduce<Record<string, ReactNode>>(
     (acc, filter) => {
       acc[filter.name] = filter.label;
       return acc;
@@ -129,11 +155,11 @@ export function getQueryHumanReadable(
   );
   const queryFilters = getSearchQueryFilters(searchParams, filters);
   const validFilters = Object.entries(queryFilters).filter(
-    ([, value]) => value !== undefined
+    ([, filterWithValue]) => filterWithValue?.value != null
   );
-  const queryParts = validFilters.map(([key, value], index) => (
+  const queryParts = validFilters.map(([key, filterWithValue], index) => (
     <span key={key}>
-      {filterNamesToLabel[key] ?? key}: {value}
+      {filterNamesToLabel[key] ?? key}: {filterWithValue?.value}
       {index < validFilters.length - 1 && <> + </>}
     </span>
   ));
