@@ -348,11 +348,9 @@ function GroupSearchFilterContent({
       } else {
         params.set(filter.name, value);
       }
-      const page_default_value = (
-        FILTER_PAGE.defaultValue as number
-      ).toString();
-      if (params.get(FILTER_PAGE.name) !== page_default_value) {
-        params.set(FILTER_PAGE.name, page_default_value);
+      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
+      if (params.get(FILTER_PAGE.name) !== pageDefaultValue) {
+        params.set(FILTER_PAGE.name, pageDefaultValue);
       }
       setSearchParams(params);
     },
