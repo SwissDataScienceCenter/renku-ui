@@ -22,19 +22,50 @@ import morgan from "morgan";
 
 const BUILD_PATH = "./build/server/index.js";
 const DEVELOPMENT = process.env.NODE_ENV === "development";
-const PORT = Number.parseInt(process.env.PORT || "3000");
+const PORT = Number.parseInt(process.env.PORT || "3000", 10);
+const METRICS_ENABLE = !!+process.env.METRICS_ENABLE || false;
+const METRICS_PORT = Number.parseInt(process.env.PORT || "9090", 10);
+
+if (DEVELOPMENT) {
+  throw new Error("Can only run in production");
+}
 
 const app = express();
 
 app.use(compression());
 app.disable("x-powered-by");
 
-if (DEVELOPMENT) {
-  throw new Error("Can only run in production");
-}
-
 // eslint-disable-next-line no-console
 console.log("Starting production server");
+
+if (METRICS_ENABLE) {
+  // eslint-disable-next-line no-console
+  console.log("Setting up metrics");
+
+  const metricsApp = express();
+  metricsApp.use(compression());
+  metricsApp.disable("x-powered-by");
+
+  await import(BUILD_PATH).then(
+    async (
+      /**
+       * @import * as ModuleType from './server/app'
+       * @type {ModuleType} */
+      mod
+    ) => {
+      const { handler, middleware } = await mod.metrics();
+      app.use(middleware);
+      metricsApp.use("/metrics", handler);
+    }
+  );
+
+  metricsApp.listen(METRICS_PORT, () => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `Prometheus exporter is running at http://localhost:${METRICS_PORT}/metrics`
+    );
+  });
+}
 
 // Storybook
 app.use("/storybook", express.static("storybook-static"));
@@ -121,5 +152,5 @@ app.use(
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running at http://localhost:${PORT}`);
 });
