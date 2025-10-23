@@ -106,8 +106,8 @@ export default function UpdateSessionLauncherMetadataModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
-        <Pencil className={cx("me-2")} />
+      <ModalHeader tag="h2" toggle={toggle}>
+        <Pencil className={cx("bi", "me-1")} />
         Edit session launcher {launcher.name}
       </ModalHeader>
       <ModalBody>

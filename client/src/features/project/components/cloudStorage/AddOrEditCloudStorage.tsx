@@ -723,7 +723,7 @@ export function AddStorageType({
     <div className="mt-3" data-cy="cloud-storage-edit-schema">
       {!isV2 && (
         <>
-          <h5>Storage type</h5>
+          <h3>Storage type</h3>
           <p>
             Pick a storage from this list to start our guided procedure. You can
             switch to the Advanced mode if you prefer to manually configure the
@@ -830,7 +830,7 @@ export function AddStorageType({
   const finalProviders =
     providerOrAccessItems && !hasAccessMode ? (
       <div className="mt-3" data-cy="cloud-storage-edit-providers">
-        <h5>Provider</h5>
+        <h3>Provider</h3>
         <p>
           We support the following providers for this storage type. If you do
           not find yours, you can select Others to manually specify the required
@@ -848,7 +848,7 @@ export function AddStorageType({
       </div>
     ) : providerOrAccessItems && hasAccessMode ? (
       <div className="mt-3" data-cy="cloud-storage-edit-providers">
-        <h5>Mode</h5>
+        <h3>Mode</h3>
         <p>We support the following modes for this storage type.</p>
         {missingProvider}
         <div ref={providerRef}>
@@ -1044,8 +1044,8 @@ export function AddStorageOptions({
   }, [schema, storage.schema, storage.provider]);
 
   return (
-    <form className="form-rk-green" data-cy="cloud-storage-edit-options">
-      {!dataConnectorId && <h5 className="fw-bold">Connection information</h5>}
+    <form data-cy="cloud-storage-edit-options">
+      {!dataConnectorId && <h3>Connection information</h3>}
       <p>
         Please fill in all the options required to connect to your storage. Mind
         that the specific fields required depend on your storage configuration.
@@ -1147,7 +1147,7 @@ export function AddStorageMount({
 
   return (
     <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
-      <h5>Final details</h5>
+      <h3>Final details</h3>
       <p>We need a few more details to mount your storage properly.</p>
 
       <div className="mb-3">

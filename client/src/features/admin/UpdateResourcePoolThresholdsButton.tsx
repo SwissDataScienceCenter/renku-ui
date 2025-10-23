@@ -150,7 +150,9 @@ function UpdateResourcePoolThresholdsModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Update {name}&apos;s thresholds</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Update {name}&apos;s thresholds
+      </ModalHeader>
       <ModalBody>
         <p>
           Please note that changes only affect new sessions, not already running

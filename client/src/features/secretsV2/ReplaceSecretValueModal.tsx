@@ -138,7 +138,7 @@ export default function ReplaceSecretValueModal({
         noValidate
         onSubmit={onSubmit}
       >
-        <ModalHeader toggle={toggle}>
+        <ModalHeader tag="h2" toggle={toggle}>
           <Save className={cx("bi", "me-1")} />
           Replace secret value
         </ModalHeader>

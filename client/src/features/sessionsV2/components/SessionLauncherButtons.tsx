@@ -52,14 +52,14 @@ export function SessionLauncherButtons({
   slug,
   useOldImage,
 }: SessionLauncherButtonsProps) {
-  const [, setHash] = useLocationHash();
-  const environment = launcher?.environment;
+  const { environment } = launcher;
   const permissions = useProjectPermissions({ projectId: launcher.project_id });
-  const isCodeEnvironment =
-    environment && environment.environment_image_source === "build";
+  const isCodeEnvironment = environment.environment_image_source === "build";
   const isExternalImageEnvironment =
-    environment?.environment_kind === "CUSTOM" &&
-    environment?.environment_image_source === "image";
+    environment.environment_kind === "CUSTOM" &&
+    environment.environment_image_source === "image";
+
+  const [, setHash] = useLocationHash();
   const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
   const toggleLauncherView = useCallback(() => {
     setHash((prev) => {
@@ -67,6 +67,7 @@ export function SessionLauncherButtons({
       return isOpen ? "" : launcherHash;
     });
   }, [launcherHash, setHash]);
+
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
@@ -76,9 +77,7 @@ export function SessionLauncherButtons({
     }
   );
   const { data, isLoading } = useGetSessionsImagesQuery(
-    environment &&
-      environment.environment_kind === "CUSTOM" &&
-      environment.container_image
+    environment.environment_kind === "CUSTOM" && environment.container_image
       ? { imageUrl: environment.container_image }
       : skipToken
   );
@@ -86,6 +85,7 @@ export function SessionLauncherButtons({
   const displayLaunchSession =
     !isCodeEnvironment ||
     (isCodeEnvironment && lastBuild?.status === "succeeded") ||
+    (isCodeEnvironment && data?.accessible) ||
     useOldImage;
 
   const buildActions = isCodeEnvironment &&

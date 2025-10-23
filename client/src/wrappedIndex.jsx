@@ -64,10 +64,7 @@ function appIndexInner() {
             params.UISERVER_URL,
             coreApiVersionedUrlConfig
           )
-        : new ApiClientV2Compat(
-            `${params.UISERVER_URL}/api`,
-            params.UISERVER_URL
-          );
+        : new ApiClientV2Compat(`${params.BASE_URL}/api`, params.UISERVER_URL);
 
       // Create the global model containing the formal schema definition and the redux store
       const model = new StateModel(globalSchema);
