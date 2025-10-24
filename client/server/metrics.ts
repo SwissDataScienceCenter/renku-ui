@@ -16,49 +16,48 @@
  * limitations under the License.
  */
 
-import type { RequestHandler } from "express-serve-static-core";
+import type { Express } from "express";
+import type { PrometheusContentType, Registry } from "prom-client";
 
-export interface MetricsResult {
-  /** The "/metrics" request handler, returns prometheus metrics */
-  handler: RequestHandler;
-
-  /** The express middleware which collects request metrics */
-  middleware: RequestHandler;
+interface MetricsArgs {
+  app: Express;
+  metricsApp: Express;
 }
 
-export async function metrics(): Promise<MetricsResult> {
+export async function metrics({
+  app,
+  metricsApp,
+}: MetricsArgs): Promise<Registry<PrometheusContentType>> {
   // Initialize metrics
-  const client = await import("prom-client");
-  const collectDefaultMetrics = client.collectDefaultMetrics;
-  const Registry = client.Registry;
-  const register = new Registry();
-  collectDefaultMetrics({ register });
+  const promClient = await import("prom-client");
+  const promBundle = (await import("express-prom-bundle")).default;
+  const register = new promClient.Registry();
 
-  const requestCounter = new client.Counter({
-    name: "expressjs_http_requests_total",
+  // Collect default metrics
+  promClient.collectDefaultMetrics({ register });
+
+  // Register the "prom-bundle" middleware
+  app.use(
+    promBundle({
+      autoregister: false,
+      includeMethod: true,
+      includePath: true,
+      includeStatusCode: true,
+      metricsApp,
+      promRegistry: register,
+    })
+  );
+
+  // Collect HTTP requests total (App only)
+  const requestCounter = new promClient.Counter({
+    name: "http_requests_total",
     help: "Total number of HTTP requests.",
-    labelNames: ["method"],
-    registers: [register],
-  });
-  const responsesCounter = new client.Counter({
-    name: "expressjs_http_responses_total",
-    help: "Total number of HTTP responses.",
     labelNames: ["method", "status_code"],
     registers: [register],
   });
-
-  // Metrics endpoint
-  const handler: RequestHandler = async (_, res) => {
-    res.setHeader("Content-Type", register.contentType);
-    const result = await register.metrics();
-    res.send(result);
-  };
-
-  // Metrics middleware
-  const middleware: RequestHandler = async (req, res, next) => {
-    requestCounter.labels({ method: req.method }).inc();
+  app.use(async (req, res, next) => {
     res.on("close", () => {
-      responsesCounter
+      requestCounter
         .labels({
           method: req.method,
           status_code: res.statusCode,
@@ -66,7 +65,62 @@ export async function metrics(): Promise<MetricsResult> {
         .inc();
     });
     next();
-  };
+  });
 
-  return { handler, middleware };
+  return register;
 }
+
+// import type { RequestHandler } from "express-serve-static-core";
+
+// export interface MetricsResult {
+//   /** The "/metrics" request handler, returns prometheus metrics */
+//   handler: RequestHandler;
+
+//   /** The express middleware which collects request metrics */
+//   middleware: RequestHandler;
+// }
+
+// export async function metrics(): Promise<MetricsResult> {
+//   // Initialize metrics
+//   const client = await import("prom-client");
+//   const collectDefaultMetrics = client.collectDefaultMetrics;
+//   const Registry = client.Registry;
+//   const register = new Registry();
+//   collectDefaultMetrics({ register });
+
+//   const requestCounter = new client.Counter({
+//     name: "expressjs_http_requests_total",
+//     help: "Total number of HTTP requests.",
+//     labelNames: ["method"],
+//     registers: [register],
+//   });
+//   const responsesCounter = new client.Counter({
+//     name: "expressjs_http_responses_total",
+//     help: "Total number of HTTP responses.",
+//     labelNames: ["method", "status_code"],
+//     registers: [register],
+//   });
+
+//   // Metrics endpoint
+//   const handler: RequestHandler = async (_, res) => {
+//     res.setHeader("Content-Type", register.contentType);
+//     const result = await register.metrics();
+//     res.send(result);
+//   };
+
+//   // Metrics middleware
+//   const middleware: RequestHandler = async (req, res, next) => {
+//     requestCounter.labels({ method: req.method }).inc();
+//     res.on("close", () => {
+//       responsesCounter
+//         .labels({
+//           method: req.method,
+//           status_code: res.statusCode,
+//         })
+//         .inc();
+//     });
+//     next();
+//   };
+
+//   return { handler, middleware };
+// }

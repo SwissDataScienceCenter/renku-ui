@@ -69,6 +69,7 @@
     "dompurify": "^3.2.4",
     "dropzone": "^6.0.0-beta.2",
     "express": "^5.1.0",
+    "express-prom-bundle": "^8.0.0",
     "file-saver": "^2.0.5",
     "filesize": "^6.4.0",
     "graphql": "^16.8.1",
