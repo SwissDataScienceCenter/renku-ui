@@ -22,16 +22,21 @@ import morgan from "morgan";
 
 const BUILD_PATH = "./build/server/index.js";
 const DEVELOPMENT = process.env.NODE_ENV === "development";
-const PORT = Number.parseInt(process.env.PORT || "3000");
+const PORT = Number.parseInt(process.env.PORT || "3000", 10);
+const METRICS_ENABLED =
+  !!+process.env.METRICS_ENABLED ||
+  process.env.METRICS_ENABLED?.toLowerCase() === "true" ||
+  false;
+const METRICS_PORT = Number.parseInt(process.env.METRICS_PORT || "9090", 10);
+
+if (DEVELOPMENT) {
+  throw new Error("Can only run in production");
+}
 
 const app = express();
 
 app.use(compression());
 app.disable("x-powered-by");
-
-if (DEVELOPMENT) {
-  throw new Error("Can only run in production");
-}
 
 // eslint-disable-next-line no-console
 console.log("Starting production server");
@@ -107,6 +112,34 @@ if (process.env.CI !== "1") {
 // Client files
 app.use(express.static("build/client"));
 
+// Register metrics for application routes, we do not want to collect metrics for the routes above
+if (METRICS_ENABLED) {
+  // eslint-disable-next-line no-console
+  console.log("Setting up metrics");
+
+  const metricsApp = express();
+  metricsApp.use(compression());
+  metricsApp.disable("x-powered-by");
+
+  await import(BUILD_PATH).then(
+    async (
+      /**
+       * @import * as ModuleType from './server/app'
+       * @type {ModuleType} */
+      mod
+    ) => {
+      await mod.metrics({ app, metricsApp });
+    }
+  );
+
+  metricsApp.listen(METRICS_PORT, () => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `Prometheus exporter is running at http://localhost:${METRICS_PORT}/metrics`
+    );
+  });
+}
+
 // Server-side rendering
 app.use(
   await import(BUILD_PATH).then(
@@ -121,5 +154,5 @@ app.use(
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running at http://localhost:${PORT}`);
 });

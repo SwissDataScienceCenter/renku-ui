@@ -11,3 +11,5 @@ app.use(
 );
 
 export * as constants from "./constants";
+
+export { metrics } from "./metrics";
