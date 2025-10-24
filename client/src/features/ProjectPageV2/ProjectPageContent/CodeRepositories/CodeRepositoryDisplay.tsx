@@ -513,7 +513,7 @@ export function RepositoryItem({
         </Row>
         <Row>
           <Col data-cy="repo-gitlab-warning">
-            <RepositoryGitLabWarnBadge project={project} />
+            <RepositoryGitLabWarnBadge project={project} url={url} />
           </Col>
         </Row>
       </ListGroupItem>
