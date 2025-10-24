@@ -655,7 +655,7 @@
                     "$ref": "#/components/schemas/EnvironmentKind"
                   }
                 ],
-                "default": "custom"
+                "default": "CUSTOM"
               }
             },
             "required": ["environment_image_source", "environment_kind"]
@@ -685,7 +685,7 @@
                     "$ref": "#/components/schemas/EnvironmentKind"
                   }
                 ],
-                "default": "custom"
+                "default": "CUSTOM"
               }
             },
             "required": [
@@ -855,16 +855,16 @@
             "$ref": "#/components/schemas/EnvironmentPort"
           },
           "command": {
-            "$ref": "#/components/schemas/EnvironmentCommand"
+            "$ref": "#/components/schemas/EnvironmentPatchCommand"
           },
           "args": {
-            "$ref": "#/components/schemas/EnvironmentArgs"
+            "$ref": "#/components/schemas/EnvironmentPatchArgs"
           },
           "is_archived": {
-            "$ref": "#/components/schemas/IsArchived"
+            "$ref": "#/components/schemas/IsArchivedPatch"
           },
           "strip_path_prefix": {
-            "$ref": "#/components/schemas/StripPathPrefix"
+            "$ref": "#/components/schemas/StripPathPrefixPatch"
           }
         }
       },
@@ -1242,6 +1242,15 @@
         "description": "The command that will be run i.e. will overwrite the image Dockerfile ENTRYPOINT, equivalent to command in Kubernetes",
         "minItems": 1
       },
+      "EnvironmentPatchCommand": {
+        "type": "array",
+        "description": "The command that will be run i.e. will overwrite the image Dockerfile ENTRYPOINT, equivalent to command in Kubernetes",
+        "items": {
+          "type": "string"
+        },
+        "nullable": true,
+        "minItems": 1
+      },
       "EnvironmentArgs": {
         "type": "array",
         "items": {
@@ -1250,10 +1259,23 @@
         "description": "The arguments that will follow the command, i.e. will overwrite the image Dockerfile CMD, equivalent to args in Kubernetes",
         "minItems": 1
       },
+      "EnvironmentPatchArgs": {
+        "type": "array",
+        "description": "The arguments that will follow the command, i.e. will overwrite the image Dockerfile CMD, equivalent to args in Kubernetes",
+        "items": {
+          "type": "string"
+        },
+        "nullable": true,
+        "minItems": 1
+      },
       "IsArchived": {
         "type": "boolean",
         "description": "Whether this environment is archived and not for use in new projects or not",
         "default": false
+      },
+      "IsArchivedPatch": {
+        "type": "boolean",
+        "description": "Whether this environment is archived and not for use in new projects or not"
       },
       "Build": {
         "description": "A container image build",
@@ -1330,6 +1352,10 @@
       "StripPathPrefix": {
         "type": "boolean",
         "default": false,
+        "description": "If set to true the default url and the base path where sessions are\nserved will be removed from all URL paths before the requests reach\nthe server running in the session. So the server in the session will\nreceive HTTP requests whose base path will be \"/\". However this will\nnot work unless the server running inside the session can be made\naware that paths are rewritten. For example, if the application/server\nrunning in the session serves a HTML page that then loads javascript\nand CSS, the path where these assets should be loaded from in the browser\nwill not be \"/\" but it has to include the prefix that was stripped. And\nthe server from the session that generated the HTML page needs to know\nwhat is the full base path (including the part that was stripped) so that\nit can make the URLs to such assets be reachable from the browser."
+      },
+      "StripPathPrefixPatch": {
+        "type": "boolean",
         "description": "If set to true the default url and the base path where sessions are\nserved will be removed from all URL paths before the requests reach\nthe server running in the session. So the server in the session will\nreceive HTTP requests whose base path will be \"/\". However this will\nnot work unless the server running inside the session can be made\naware that paths are rewritten. For example, if the application/server\nrunning in the session serves a HTML page that then loads javascript\nand CSS, the path where these assets should be loaded from in the browser\nwill not be \"/\" but it has to include the prefix that was stripped. And\nthe server from the session that generated the HTML page needs to know\nwhat is the full base path (including the part that was stripped) so that\nit can make the URLs to such assets be reachable from the browser."
       },
       "BuildPatch": {

@@ -180,7 +180,23 @@ export function getFormattedEnvironmentValuesForEdit(
     environmentSelect === "global" ||
     environmentSelect === "custom + image"
   ) {
-    return getFormattedEnvironmentValues(data);
+    const result = getFormattedEnvironmentValues(data);
+    if (!result.success) {
+      return result;
+    }
+    const { data: environment } = result;
+    const commandParsed = safeParseJSONStringArray(data.command);
+    const argsParsed = safeParseJSONStringArray(data.args);
+    return {
+      ...result,
+      data: {
+        ...environment,
+        ...(commandParsed.data
+          ? { command: commandParsed.data }
+          : { command: null }),
+        ...(argsParsed.data ? { args: argsParsed.data } : { args: null }),
+      },
+    };
   }
 
   const {

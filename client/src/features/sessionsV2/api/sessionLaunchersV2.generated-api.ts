@@ -289,6 +289,10 @@ export type EnvironmentPost = {
 };
 export type EnvironmentWorkingDirectoryPatch = string;
 export type EnvironmentMountDirectoryPatch = string;
+export type EnvironmentPatchCommand = string[] | null;
+export type EnvironmentPatchArgs = string[] | null;
+export type IsArchivedPatch = boolean;
+export type StripPathPrefixPatch = boolean;
 export type EnvironmentPatch = {
   name?: SessionName;
   description?: Description;
@@ -299,10 +303,10 @@ export type EnvironmentPatch = {
   working_directory?: EnvironmentWorkingDirectoryPatch;
   mount_directory?: EnvironmentMountDirectoryPatch;
   port?: EnvironmentPort;
-  command?: EnvironmentCommand;
-  args?: EnvironmentArgs;
-  is_archived?: IsArchived;
-  strip_path_prefix?: StripPathPrefix;
+  command?: EnvironmentPatchCommand;
+  args?: EnvironmentPatchArgs;
+  is_archived?: IsArchivedPatch;
+  strip_path_prefix?: StripPathPrefixPatch;
 };
 export type EnvironmentKind = "GLOBAL" | "CUSTOM";
 export type EnvironmentWithImageGet = Environment & {
