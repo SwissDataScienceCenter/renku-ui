@@ -41,7 +41,6 @@ export async function metrics({
     promBundle({
       autoregister: false,
       includeMethod: true,
-      includePath: true,
       includeStatusCode: true,
       metricsApp,
       promRegistry: register,
@@ -69,58 +68,3 @@ export async function metrics({
 
   return register;
 }
-
-// import type { RequestHandler } from "express-serve-static-core";
-
-// export interface MetricsResult {
-//   /** The "/metrics" request handler, returns prometheus metrics */
-//   handler: RequestHandler;
-
-//   /** The express middleware which collects request metrics */
-//   middleware: RequestHandler;
-// }
-
-// export async function metrics(): Promise<MetricsResult> {
-//   // Initialize metrics
-//   const client = await import("prom-client");
-//   const collectDefaultMetrics = client.collectDefaultMetrics;
-//   const Registry = client.Registry;
-//   const register = new Registry();
-//   collectDefaultMetrics({ register });
-
-//   const requestCounter = new client.Counter({
-//     name: "expressjs_http_requests_total",
-//     help: "Total number of HTTP requests.",
-//     labelNames: ["method"],
-//     registers: [register],
-//   });
-//   const responsesCounter = new client.Counter({
-//     name: "expressjs_http_responses_total",
-//     help: "Total number of HTTP responses.",
-//     labelNames: ["method", "status_code"],
-//     registers: [register],
-//   });
-
-//   // Metrics endpoint
-//   const handler: RequestHandler = async (_, res) => {
-//     res.setHeader("Content-Type", register.contentType);
-//     const result = await register.metrics();
-//     res.send(result);
-//   };
-
-//   // Metrics middleware
-//   const middleware: RequestHandler = async (req, res, next) => {
-//     requestCounter.labels({ method: req.method }).inc();
-//     res.on("close", () => {
-//       responsesCounter
-//         .labels({
-//           method: req.method,
-//           status_code: res.statusCode,
-//         })
-//         .inc();
-//     });
-//     next();
-//   };
-
-//   return { handler, middleware };
-// }
