@@ -128,10 +128,6 @@ if (METRICS_ENABLED) {
        * @type {ModuleType} */
       mod
     ) => {
-      // const { handler, middleware } = await mod.metrics();
-      // app.use(middleware);
-      // metricsApp.use("/metrics", handler);
-
       await mod.metrics({ app, metricsApp });
     }
   );
