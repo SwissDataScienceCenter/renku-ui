@@ -23,9 +23,9 @@ import morgan from "morgan";
 const BUILD_PATH = "./build/server/index.js";
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const PORT = Number.parseInt(process.env.PORT || "3000", 10);
-const METRICS_ENABLE =
-  !!+process.env.METRICS_ENABLE ||
-  process.env.METRICS_ENABLE?.toLowerCase() === "true" ||
+const METRICS_ENABLED =
+  !!+process.env.METRICS_ENABLED ||
+  process.env.METRICS_ENABLED?.toLowerCase() === "true" ||
   false;
 const METRICS_PORT = Number.parseInt(process.env.METRICS_PORT || "9090", 10);
 
@@ -113,7 +113,7 @@ if (process.env.CI !== "1") {
 app.use(express.static("build/client"));
 
 // Register metrics for application routes, we do not want to collect metrics for the routes above
-if (METRICS_ENABLE) {
+if (METRICS_ENABLED) {
   // eslint-disable-next-line no-console
   console.log("Setting up metrics");
 
