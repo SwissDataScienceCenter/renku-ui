@@ -46,19 +46,26 @@ export function doesProjectReferenceRenkulabGitLab(
   return repositories.length > 0 || launchers.length > 0;
 }
 
+export function doesRepositoryReferenceRenkulabGitLab(url: string) {
+  return doesUrlHostMatchHost(url, DEFAULT_INTERNAL_GITLAB_HOSTS.repository);
+}
+
+function doesImageReferenceRenkulabGitLab(imageRef: string) {
+  return doesUrlHostMatchHost(imageRef, DEFAULT_INTERNAL_GITLAB_HOSTS.images);
+}
+
 function projectReferencesToRenkulabGitLab(
   allRepositories: Project["repositories"],
   allLaunchers: SessionLaunchersList
 ) {
-  const hosts = DEFAULT_INTERNAL_GITLAB_HOSTS;
   const repositories =
     allRepositories?.filter((repo) =>
-      doesUrlHostMatchHost(repo, hosts.repository)
+      doesRepositoryReferenceRenkulabGitLab(repo)
     ) ?? [];
   const launchers = allLaunchers.filter(
     (launcher) =>
       launcher.environment.container_image != null &&
-      doesUrlHostMatchHost(launcher.environment.container_image, hosts.images)
+      doesImageReferenceRenkulabGitLab(launcher.environment.container_image)
   );
   return { repositories, launchers };
 }
