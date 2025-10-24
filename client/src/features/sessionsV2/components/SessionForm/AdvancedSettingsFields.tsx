@@ -28,8 +28,8 @@ import {
 } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
-import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import { MoreInfo } from "../../../../components/MoreInfo";
+import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
 import {
   DEFAULT_URL,

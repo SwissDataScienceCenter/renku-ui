@@ -29,11 +29,11 @@ import {
 } from "../../project/utils/projectCloudStorage.utils";
 
 import { EMPTY_CLOUD_STORAGE_STATE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
-import type { AuxiliaryCommandStatus } from "../components/DataConnectorModal/DataConnectorModalResult";
 import {
   EMPTY_DATA_CONNECTOR_FLAT,
   type DataConnectorFlat,
 } from "../components/dataConnector.utils";
+import type { AuxiliaryCommandStatus } from "../components/DataConnectorModal/DataConnectorModalResult";
 
 interface BackendResult {
   isSuccess: boolean | undefined;

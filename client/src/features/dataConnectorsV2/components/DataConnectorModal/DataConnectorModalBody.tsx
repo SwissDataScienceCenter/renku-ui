@@ -31,9 +31,9 @@ import {
 } from "reactstrap";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
-import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";

@@ -31,13 +31,13 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
+  usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   type ResourceClassWithId,
   type ResourcePoolWithId,
-  usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
 } from "../sessionsV2/api/computeResources.api";
 import { ResourceClassForm } from "./adminComputeResources.types";
 

@@ -404,4 +404,4 @@ const NotebooksHelper = {
   validSettings: VALID_SETTINGS,
 };
 
-export { LOG_ERROR_KEY, NotebooksHelper, ExpectedAnnotations };
+export { ExpectedAnnotations, LOG_ERROR_KEY, NotebooksHelper };

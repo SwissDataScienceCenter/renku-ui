@@ -18,14 +18,14 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { generatePath, Link } from "react-router";
+import { Link, generatePath } from "react-router";
 import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
 import { Folder, ShieldLock } from "react-bootstrap-icons";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { SESSION_SECRETS_CARD_ID } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.constants";
 import type {

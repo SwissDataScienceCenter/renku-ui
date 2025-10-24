@@ -31,7 +31,7 @@ import {
   PlusSquare,
   Send,
 } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router";
+import { Link, generatePath } from "react-router";
 import {
   Badge,
   Card,
@@ -42,11 +42,11 @@ import {
   Row,
 } from "reactstrap";
 import AppContext from "~/utils/context/appContext";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
+import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import ProjectMigrationBanner from "../projectMigrationV2/ProjectMigrationBanner";
 import {
   GetGroupsApiResponse,
@@ -54,8 +54,8 @@ import {
   useGetGroupsQuery,
   useGetProjectsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
-import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
+import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";

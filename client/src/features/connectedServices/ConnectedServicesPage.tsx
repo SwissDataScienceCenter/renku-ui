@@ -41,12 +41,13 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { InfoAlert, WarnAlert } from "../../components/Alert";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
+import ContactUsCard from "./ContactUsCard";
 import {
   connectedServicesApi,
   useDeleteOauth2ConnectionsByConnectionIdMutation,
@@ -67,7 +68,6 @@ import {
   SEARCH_PARAM_SOURCE,
 } from "./connectedServices.constants";
 import { getSettingsUrl } from "./connectedServices.utils";
-import ContactUsCard from "./ContactUsCard";
 
 const CHECK_STATUS_QUERY_PARAM = "check-status";
 

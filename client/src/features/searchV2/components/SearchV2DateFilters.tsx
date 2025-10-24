@@ -30,8 +30,8 @@ import {
 } from "../searchV2.constants";
 import { selectCreationDateFilter } from "../searchV2.slice";
 import type { SearchDateFilter } from "../searchV2.types";
-import { SearchV2Visualization } from "./SearchV2Filters.types";
 import { SearchV2FilterContainer } from "./SearchV2Filters";
+import { SearchV2Visualization } from "./SearchV2Filters.types";
 
 interface SearchV2DateFilterProps {
   dateFilter: SearchDateFilter;

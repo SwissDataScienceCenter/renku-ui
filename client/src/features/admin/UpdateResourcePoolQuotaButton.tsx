@@ -31,8 +31,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import {
   usePatchResourcePoolsByResourcePoolIdMutation,
   type ResourcePoolWithId,

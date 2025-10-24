@@ -39,9 +39,9 @@ import {
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "~/features/dataConnectorsV2/components/DataConnectorModal";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import ModalHeader from "../../../../components/modal/ModalHeader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";

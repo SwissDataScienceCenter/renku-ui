@@ -23,9 +23,9 @@ import type {
   UseFormWatch,
 } from "react-hook-form";
 
+import { Button } from "reactstrap";
 import SlugFormField from "./SlugFormField";
 import type { GenericProjectFormFieldProps } from "./formField.types";
-import { Button } from "reactstrap";
 
 interface ProjectOwnerSlugFormFieldProps<T extends FieldValues>
   extends GenericProjectFormFieldProps<T> {

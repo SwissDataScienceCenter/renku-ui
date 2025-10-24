@@ -23,16 +23,16 @@ import type {
   Merge,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { FormGroup, Input, Label, Row, Col, Button } from "reactstrap";
+import { Button, Col, FormGroup, Input, Label, Row } from "reactstrap";
 
-import HelpText from "./HelpText";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserMinus, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ErrorLabel,
   InputHintLabel,
   InputLabel,
 } from "../formlabels/FormLabels";
+import HelpText from "./HelpText";
 
 import { Creator } from "../../features/project/project.types";
 

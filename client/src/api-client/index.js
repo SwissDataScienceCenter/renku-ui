@@ -18,19 +18,19 @@
 import { CoreApiVersionedUrlHelper } from "../utils/helpers/url";
 
 import addDatasetMethods from "./dataset";
+import { APIError, API_ERRORS, alertAPIErrors } from "./errors";
 import addGraphMethods from "./graph";
 import addInstanceMethods from "./instance";
 import addJobMethods from "./job";
 import addNotebookServersMethods from "./notebook-servers";
+import processPaginationHeaders from "./pagination";
 import addPipelineMethods from "./pipeline";
 import addProjectMethods from "./project";
 import addRepositoryMethods from "./repository";
 import addTemplatesMethods from "./templates";
-import addUserMethods from "./user";
-import processPaginationHeaders from "./pagination";
 import testClient from "./test-client";
-import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
-import { renkuFetch, RETURN_TYPES } from "./utils";
+import addUserMethods from "./user";
+import { RETURN_TYPES, renkuFetch } from "./utils";
 
 const ACCESS_LEVELS = {
   GUEST: 10,
@@ -255,10 +255,10 @@ class APIClient {
 
 export default APIClient;
 export {
-  alertAPIErrors,
-  APIError,
   ACCESS_LEVELS,
+  APIError,
   API_ERRORS,
   FETCH_DEFAULT,
+  alertAPIErrors,
   testClient,
 };

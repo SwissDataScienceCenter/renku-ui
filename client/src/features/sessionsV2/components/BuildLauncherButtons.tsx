@@ -24,8 +24,8 @@ import {
   XOctagon,
 } from "react-bootstrap-icons";
 import { Button, ButtonGroup } from "reactstrap";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import {
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,

@@ -32,6 +32,7 @@ import {
   Input,
   Label,
 } from "reactstrap";
+import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
@@ -57,7 +58,6 @@ import ProjectPageDelete from "./ProjectDelete";
 import ProjectKeywordsFormField from "./ProjectKeywordsFormField";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
-import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,

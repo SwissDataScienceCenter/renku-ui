@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import * as samples from "./test-samples";
 import { carveProject } from "./project";
+import * as samples from "./test-samples";
 
 const methods = {
   getProjects: {

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from "react";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -24,6 +23,7 @@ import {
   faInfoCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { useCallback, useState } from "react";
 import { Collapse } from "reactstrap";
 
 import { ExternalLink } from "../../../../components/ExternalLinks";

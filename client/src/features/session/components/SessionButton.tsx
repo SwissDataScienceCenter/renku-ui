@@ -49,8 +49,8 @@ import { ButtonWithMenu } from "~/components/buttons/Button";
 import SessionPausedIcon from "~/components/icons/SessionPausedIcon";
 import { SshDropdown } from "~/components/ssh/ssh";
 import {
-  type ResourceClassWithId,
   useGetResourcePoolsQuery,
+  type ResourceClassWithId,
 } from "~/features/sessionsV2/api/computeResources.api";
 import { User } from "~/model/renkuModels.types";
 import { NotebooksHelper } from "~/notebooks";

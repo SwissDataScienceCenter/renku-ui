@@ -19,7 +19,7 @@ import { skipToken } from "@reduxjs/toolkit/query/react";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo } from "react";
 import { Gear, PlayCircle } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router";
+import { Link, generatePath } from "react-router";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
 import { Loader } from "~/components/Loader";
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";

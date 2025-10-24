@@ -18,11 +18,11 @@
 
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Col, Row } from "reactstrap";
 import { BrowserRouter } from "react-router";
+import { Button, Col, Row } from "reactstrap";
 
-import { FooterNavbar } from "../landing/components/NavBar/NavBar";
 import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
+import { FooterNavbar } from "../landing/components/NavBar/NavBar";
 
 interface MaintenanceProps {
   info: string;

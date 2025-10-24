@@ -37,13 +37,13 @@ import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
-  type PoolUserWithId,
-  type ResourceClassWithId,
-  type ResourcePoolWithId,
   useDeleteResourcePoolsByResourcePoolIdMutation,
   useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
   useGetResourcePoolsByResourcePoolIdUsersQuery,
   useGetResourcePoolsQuery,
+  type PoolUserWithId,
+  type ResourceClassWithId,
+  type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import { useGetUsersQuery } from "../usersV2/api/users.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";

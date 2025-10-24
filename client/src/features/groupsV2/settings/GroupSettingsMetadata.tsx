@@ -31,8 +31,8 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";

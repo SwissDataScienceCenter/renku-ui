@@ -40,15 +40,15 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { EnvironmentLogsPresent, ILogs } from "../../../components/Logs";
-import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { TimeCaption } from "../../../components/TimeCaption";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../components/modal/ScrollableModal";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import {
   SessionLauncher,
   useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,

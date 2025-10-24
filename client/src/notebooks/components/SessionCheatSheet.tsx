@@ -19,11 +19,11 @@
 import { useEffect, useState } from "react";
 import { Col } from "reactstrap";
 
+import { ExternalDocsLink } from "../../components/ExternalLinks";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
+import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
 import "./SessionCheatSheet.css";
 import * as cheatsheetJson from "./cheatsheet.json";
-import { ExternalDocsLink } from "../../components/ExternalLinks";
-import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
-import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 
 interface CommandDescProps {
   command: string;

@@ -31,8 +31,8 @@ import {
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import ModalHeader from "../../../components/modal/ModalHeader";
 import ScrollableModal from "../../../components/modal/ScrollableModal";

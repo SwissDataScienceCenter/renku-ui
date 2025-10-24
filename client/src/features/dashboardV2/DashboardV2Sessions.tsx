@@ -30,9 +30,9 @@ import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enha
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
-  getSessionStatusStyles,
   SessionStatusV2Description,
   SessionStatusV2Label,
+  getSessionStatusStyles,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
 

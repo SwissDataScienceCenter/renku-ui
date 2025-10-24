@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router";
-import cx from "classnames";
 
 import LazyRenkuMarkdown from "../markdown/LazyRenkuMarkdown";
 

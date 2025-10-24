@@ -27,6 +27,7 @@ import {
   type FieldErrors,
   type UseFormRegister,
 } from "react-hook-form";
+import { generatePath } from "react-router";
 import {
   Button,
   Col,
@@ -40,7 +41,6 @@ import {
   ModalFooter,
   Row,
 } from "reactstrap";
-import { generatePath } from "react-router";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";

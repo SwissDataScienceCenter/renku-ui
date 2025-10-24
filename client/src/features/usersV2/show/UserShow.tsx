@@ -32,9 +32,9 @@ import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/proje
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import {
+  UserWithId,
   useGetUserByIdQuery,
   useGetUserQueryState,
-  UserWithId,
 } from "../api/users.api";
 import UserAvatar, { AvatarTypeWrap } from "./UserAvatar";
 

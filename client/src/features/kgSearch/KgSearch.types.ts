@@ -23,8 +23,8 @@ import { UserRoles } from "../../components/userRolesFilter/userRolesFilter.type
 import { Visibilities } from "../../components/visibility/Visibility";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import {
-  AbstractKgPaginatedResponse,
   AbstractKgPaginatedQueryArgs,
+  AbstractKgPaginatedResponse,
 } from "../../utils/types/pagination.types";
 
 export interface KgSearchResultLink {

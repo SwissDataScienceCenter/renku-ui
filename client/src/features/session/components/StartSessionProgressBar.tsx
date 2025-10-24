@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-import { Session, SessionStatus } from "../sessions.types";
+import cx from "classnames";
+import { Button } from "reactstrap";
+import { Loader } from "../../../components/Loader";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
   StatusStepProgressBar,
   StepsProgressBar,
 } from "../../../components/progress/ProgressSteps";
-import cx from "classnames";
-import { Button } from "reactstrap";
 import { SessionV2 } from "../../sessionsV2/sessionsV2.types";
-import { Loader } from "../../../components/Loader";
+import { Session, SessionStatus } from "../sessions.types";
 
 interface StartSessionProgressBarProps {
   includeStepInTitle?: boolean;

@@ -19,23 +19,23 @@
 import cx from "classnames";
 import { Controller, type FieldValues } from "react-hook-form";
 import Select, {
-  type SelectComponentsConfig,
+  components,
   type ClassNamesConfig,
   type GroupBase,
-  components,
+  type SelectComponentsConfig,
 } from "react-select";
 
 import { Input, Label } from "reactstrap";
 import { Loader } from "../../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../../components/errors/RtkErrorAlert";
 import {
-  type SecretWithId,
   useGetUserSecretsQuery,
+  type SecretWithId,
 } from "../../../../usersV2/api/users.api";
 import type { SessionSecretFormFieldProps } from "./fields.types";
 
-import styles from "./SelectUserSecretField.module.scss";
 import { ChevronDown } from "react-bootstrap-icons";
+import styles from "./SelectUserSecretField.module.scss";
 
 interface SelectUserSecretFieldProps<T extends FieldValues>
   extends SessionSecretFormFieldProps<T> {

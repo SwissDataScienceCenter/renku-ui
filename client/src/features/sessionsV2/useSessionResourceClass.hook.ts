@@ -22,9 +22,9 @@ import { useCallback, useEffect, useState } from "react";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
+  useGetClassesByClassIdQuery,
   type ResourceClassWithId,
   type ResourcePoolWithIdFiltered,
-  useGetClassesByClassIdQuery,
 } from "./api/computeResources.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";

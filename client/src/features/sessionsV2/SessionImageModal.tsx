@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
 import { Plugin, Send, SkipForward, XLg } from "react-bootstrap-icons";
-import { generatePath, Link, useLocation, useNavigate } from "react-router";
+import { Link, generatePath, useLocation, useNavigate } from "react-router";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { ReactNode, forwardRef, useRef } from "react";
 import cx from "classnames";
+import { ReactNode, forwardRef, useRef } from "react";
 import { TimeCaption } from "../TimeCaption";
 import { EntityType } from "./entities.types";
 

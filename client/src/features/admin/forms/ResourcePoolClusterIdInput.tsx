@@ -18,8 +18,8 @@
 
 import cx from "classnames";
 import {
-  type Control,
   Controller,
+  type Control,
   type FieldPathByValue,
   type FieldValues,
 } from "react-hook-form";

@@ -69,5 +69,5 @@ export function sendPullKgActivationStatus(
   socket.send(message);
 }
 
-export { checkWsServerMessage, WsMessage };
+export { WsMessage, checkWsServerMessage };
 export type { WsServerMessage };

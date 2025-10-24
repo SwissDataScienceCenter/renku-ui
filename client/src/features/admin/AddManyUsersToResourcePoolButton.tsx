@@ -45,8 +45,8 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
   usePostResourcePoolsByResourcePoolIdUsersMutation,

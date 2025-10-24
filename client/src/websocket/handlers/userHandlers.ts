@@ -71,4 +71,4 @@ function handleUserError(
   return false;
 }
 
-export { handleUserInit, handleUserUiVersion, handleUserError };
+export { handleUserError, handleUserInit, handleUserUiVersion };

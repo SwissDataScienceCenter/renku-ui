@@ -40,12 +40,12 @@ import type {
   DataConnector,
   DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
+import DataConnectorView from "./DataConnectorView";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
   useGetDataConnectorSource,
 } from "./dataConnector.utils";
-import DataConnectorView from "./DataConnectorView";
 
 interface DataConnectorBoxListDisplayProps {
   dataConnector: DataConnector;

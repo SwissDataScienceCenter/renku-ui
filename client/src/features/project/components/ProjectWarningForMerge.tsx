@@ -1,8 +1,8 @@
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
-import { extractRkErrorRemoteBranch } from "../../../components/errors/RtkErrorAlert";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { WarnAlert } from "../../../components/Alert";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { extractRkErrorRemoteBranch } from "../../../components/errors/RtkErrorAlert";
 
 interface ProjectWarningMessageForMergeProps {
   defaultBranch?: string;

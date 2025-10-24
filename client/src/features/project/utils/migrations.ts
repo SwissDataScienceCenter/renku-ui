@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
+import { TemplateSourceRenku } from "../../../utils/constants/Migrations";
+import { RenkuRepositories } from "../../../utils/constants/Repositories";
 import {
   MigrationStatus,
   RenkuMigrationLevel,
   TemplateMigrationLevel,
 } from "../project.types";
 import { ProjectMigrationLevel } from "../projectEnums";
-import { TemplateSourceRenku } from "../../../utils/constants/Migrations";
-import { RenkuRepositories } from "../../../utils/constants/Repositories";
 
 /**
  * Replace the longer dev suffix (E.G: ".dev22+g1262f766") with a shorter

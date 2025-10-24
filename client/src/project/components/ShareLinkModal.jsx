@@ -23,16 +23,16 @@
  */
 import { useEffect, useState } from "react";
 import {
-  FormGroup,
-  FormText,
-  Label,
-  Input,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Row,
   Col,
   Form,
+  FormGroup,
+  FormText,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row,
 } from "reactstrap";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 

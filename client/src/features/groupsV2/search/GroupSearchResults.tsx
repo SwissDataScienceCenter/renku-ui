@@ -27,7 +27,7 @@ import {
   Pencil,
   Question,
 } from "react-bootstrap-icons";
-import { generatePath, Link, useSearchParams } from "react-router";
+import { Link, generatePath, useSearchParams } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 import Pagination from "~/components/Pagination";
 import { TimeCaption } from "~/components/TimeCaption";

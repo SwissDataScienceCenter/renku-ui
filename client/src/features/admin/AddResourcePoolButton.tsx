@@ -31,8 +31,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
+import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
   useGetResourcePoolsQuery,

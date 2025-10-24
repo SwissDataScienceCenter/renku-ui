@@ -31,8 +31,8 @@ import { useGetRepositoriesProbesQuery } from "../../../repositories/repositorie
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
-import CodeRepositorySelector from "./CodeRepositorySelector";
 import CodeRepositoryAdvancedSettings from "./CodeRepositoryAdvancedSettings";
+import CodeRepositorySelector from "./CodeRepositorySelector";
 
 interface BuilderEnvironmentFieldsProps {
   control: Control<SessionLauncherForm>;

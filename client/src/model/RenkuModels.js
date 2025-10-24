@@ -23,7 +23,7 @@
  *
  */
 
-import { Schema, PropertyName as Prop } from "./Model";
+import { PropertyName as Prop, Schema } from "./Model";
 
 const userSchema = new Schema({
   fetched: { initial: null, mandatory: true },

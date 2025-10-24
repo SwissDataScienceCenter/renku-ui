@@ -96,5 +96,5 @@ function formatEnvironmentVariables(variables: EnvVariable[]) {
   return env_variables;
 }
 
-export { renkuFetch, formatEnvironmentVariables, AUTH_HEADER, RETURN_TYPES };
+export { AUTH_HEADER, RETURN_TYPES, formatEnvironmentVariables, renkuFetch };
 export type { FetchOptions };

@@ -536,8 +536,8 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
 
 export default { View };
 export {
-  mapProjectFeatures,
   MigrationStatus,
+  mapProjectFeatures,
   splitProjectSubRoute,
   withProjectMapped,
 };

@@ -20,9 +20,9 @@ import { EmojiDizzy } from "react-bootstrap-icons";
 
 import { ExternalLink } from "~/components/ExternalLinks";
 import TakeActionAlert from "~/components/TakeActionAlert";
+import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
-import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetProjectsByProjectIdSessionLaunchersQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { Links } from "~/utils/constants/Docs";
