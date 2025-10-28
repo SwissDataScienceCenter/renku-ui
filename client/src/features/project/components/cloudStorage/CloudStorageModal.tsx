@@ -28,6 +28,7 @@ import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import {
   findSensitive,
   getCurrentStorageDetails,
+  getSchemaOptions,
   getSchemaProviders,
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
@@ -336,10 +337,28 @@ export default function CloudStorageModal({
   );
 
   // Visual elements
-  const disableContinueButton =
-    state.step === 1 &&
-    (!storageDetails.schema ||
-      (schemaRequiresProvider && !storageDetails.provider));
+  const disableContinueButton = useMemo(() => {
+    return (
+      (state.step === 1 &&
+        (!storageDetails.schema ||
+          (schemaRequiresProvider && !storageDetails.provider))) ||
+      (state.step === 2 &&
+        !(
+          schema &&
+          getSchemaOptions(
+            schema,
+            true,
+            storageDetails.schema,
+            storageDetails.provider
+          )?.every((o) => {
+            return (
+              !o.required ||
+              (storageDetails.options && storageDetails.options[o.name])
+            );
+          })
+        ))
+    );
+  }, [state.step, storageDetails, schemaRequiresProvider, schema]);
 
   const isAddResultLoading = addResult.isLoading;
   const isModifyResultLoading = modifyResult.isLoading;
@@ -399,6 +418,7 @@ export default function CloudStorageModal({
           storageId={storageId}
           success={success}
           validationSucceeded={validationSucceeded}
+          disableContinueButton={disableContinueButton}
           projectId={projectId}
         />
       </ModalBody>

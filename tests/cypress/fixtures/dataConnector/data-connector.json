@@ -44,5 +44,40 @@
     "created_by": { "id": "user1-uuid" },
     "visibility": "public",
     "description": "Example storage description"
+  },
+  {
+    "id": "ULID-2",
+    "name": "openbis",
+    "namespace": "user1-uuid",
+    "slug": "openbis",
+    "storage": {
+      "storage_type": "openbis",
+      "configuration": {
+        "host": "openbis-eln-lims.ethz.ch",
+        "type": "openbis",
+        "session_token": "<sensitive>"
+      },
+      "source_path": "/",
+      "target_path": "external_storage/openbis",
+      "readonly": true,
+      "sensitive_fields": [
+        {
+          "name": "session_token",
+          "help": "openBIS session token",
+          "provider": "",
+          "default": "",
+          "default_str": "",
+          "required": true,
+          "sensitive": true,
+          "advanced": false,
+          "exclusive": false,
+          "type": "string"
+        }
+      ]
+    },
+    "creation_date": "2023-11-15T09:55:59Z",
+    "created_by": { "id": "user1-uuid" },
+    "visibility": "private",
+    "description": "openBIS storage description"
   }
 ]
