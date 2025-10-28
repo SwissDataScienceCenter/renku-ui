@@ -62,7 +62,7 @@ export default function AddUserToResourcePoolButton({
 
   return (
     <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PersonFillAdd className={cx("bi", "me-1")} />
         Add User
       </Button>
@@ -153,7 +153,7 @@ function AddUserToResourcePoolModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         Add User to Resource Pool: {resourcePool.name}
       </ModalHeader>
       <ModalBody>

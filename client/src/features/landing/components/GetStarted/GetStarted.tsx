@@ -27,7 +27,7 @@ import styles from "./GetStarted.module.scss";
 export function GetStarted() {
   const loginUrl = useLoginUrl();
   return (
-    <div className={cx("bg-white", "py-5", "mb-5")}>
+    <div className={cx("my-5")}>
       <Container>
         <div
           className={cx(
@@ -36,13 +36,15 @@ export function GetStarted() {
             "align-items-center",
             "gap-4",
             "mt-0",
-            "py-5"
+            "my-5"
           )}
         >
-          <h3 className={cx("m-0", "fw-bold", "text-center", "fs-1")}>
-            <span className={cx("fw-light", "d-block")}>Get started today</span>
+          <h2 className={cx("fs-1", "fw-bold", "m-0", "text-center")}>
+            <span className={cx("fw-normal", "d-block")}>
+              Get started today
+            </span>
             Launch your first session now!
-          </h3>
+          </h2>
         </div>
         <Row>
           <Col xs={12} lg={6}>
@@ -51,18 +53,17 @@ export function GetStarted() {
                 "d-flex",
                 "flex-column",
                 "gap-4",
-                "mt-0",
                 "align-items-center",
                 "align-items-lg-start"
               )}
             >
-              <p className={cx("mb-0", "fs-4")}>
+              <p className={cx("mb-0", "fs-3")}>
                 Creating projects and running sessions in our public compute
                 tier is always free.
               </p>
               <div>
                 <a
-                  className={cx("btn", "btn-primary", "fs-5")}
+                  className={cx("btn", "btn-primary", "btn-lg")}
                   href={loginUrl.href}
                   target="_blank"
                   rel="noreferrer noopener"
@@ -70,7 +71,7 @@ export function GetStarted() {
                   Create an account
                 </a>
               </div>
-              <p className={cx("mb-0", "fs-4")}>
+              <p className={cx("mb-0", "fs-3")}>
                 For individuals who need more compute resources, and for
                 instructors organizing courses, get in touch to set up your
                 custom RenkuLab resources.
@@ -81,7 +82,7 @@ export function GetStarted() {
                     "btn",
                     "btn-outline-primary",
                     "text-decoration-none",
-                    "fs-5"
+                    "btn-lg"
                   )}
                   role="link"
                   url={`mailto:${RenkuContactEmail}?subject=Requesting%20Pricing%20Details `}
@@ -93,7 +94,7 @@ export function GetStarted() {
           <Col
             xs={12}
             lg={6}
-            className={cx("text-center", "text-lg-end", "pt-5", "pt-lg-0")}
+            className={cx("text-center", "text-lg-end", "mt-5", "mt-lg-0")}
           >
             <img
               src={getStartedGraphic}

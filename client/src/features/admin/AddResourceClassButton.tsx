@@ -16,24 +16,6 @@
  * limitations under the License.
  */
 
-/*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
- * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
- * Eidgenössische Technische Hochschule Zürich (ETHZ).
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
@@ -72,7 +54,7 @@ export default function AddResourceClassButton({
 
   return (
     <>
-      <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+      <Button className="ms-2" color="outline-primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
         Add Class
       </Button>
@@ -166,7 +148,7 @@ function AddResourceClassModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         Add resource class to {resourcePool.name}
       </ModalHeader>
       <ModalBody>
@@ -314,7 +296,7 @@ function AddResourceClassModal({
           <div className="mb-3">
             <div className="form-label">Tolerations</div>
             <Button
-              className="btn-outline-rk-green"
+              color="outline-primary"
               onClick={onAddTolerationLabel}
               type="button"
             >
@@ -357,7 +339,7 @@ function AddResourceClassModal({
           <div>
             <div className="form-label">Node affinities</div>
             <Button
-              className="btn-outline-rk-green"
+              color="outline-primary"
               onClick={onAddNodeAffinity}
               type="button"
             >
@@ -438,11 +420,12 @@ function AddResourceClassModal({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button
+          color="primary"
           disabled={result.isLoading}
           onClick={handleSubmit(onSubmit)}
           type="submit"

@@ -72,10 +72,10 @@ export default function GroupSettingsMembers({
     return (
       <>
         <CardHeader>
-          <h4>
+          <h2>
             <PersonGear className={cx("me-1", "bi")} />
             Group Members
-          </h4>
+          </h2>
         </CardHeader>
         <CardBody>
           <div className="mb-3">Could not load members</div>
@@ -88,10 +88,10 @@ export default function GroupSettingsMembers({
     <>
       <CardHeader>
         <div className={cx("d-flex", "gap-2", "justify-content-between")}>
-          <h4>
+          <h2>
             <PersonGear className={cx("me-1", "bi")} />
             Group Members
-          </h4>
+          </h2>
 
           <PermissionsGuard
             disabled={null}

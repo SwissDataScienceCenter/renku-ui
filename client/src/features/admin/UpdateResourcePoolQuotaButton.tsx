@@ -57,8 +57,8 @@ export default function UpdateResourcePoolQuotaButton({
   return (
     <>
       <Button
-        className="btn-sm"
-        color="outline-rk-green"
+        size="sm"
+        color="outline-primary"
         disabled={resourcePool.quota == null}
         onClick={toggle}
       >
@@ -119,7 +119,9 @@ function UpdateResourcePoolQuotaModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>Update {name}&apos;s quota</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Update {name}&apos;s quota
+      </ModalHeader>
       <ModalBody>
         <Form
           className="form-rk-green"
@@ -196,11 +198,12 @@ function UpdateResourcePoolQuotaModal({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button
+          color="primary"
           disabled={result.isLoading}
           onClick={handleSubmit(onSubmit)}
           type="submit"

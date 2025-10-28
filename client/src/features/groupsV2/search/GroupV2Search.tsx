@@ -34,8 +34,10 @@ export default function GroupV2Search() {
   const missingParams = getSearchQueryMissingFilters(searchParams);
   if (Object.keys(missingParams).length > 0) {
     const newSearchParams = new URLSearchParams(searchParams);
-    Object.entries(missingParams).forEach(([key, value]) => {
-      newSearchParams.set(key, String(value));
+    Object.entries(missingParams).forEach(([key, filterWithValue]) => {
+      if (filterWithValue?.value != null) {
+        newSearchParams.set(key, filterWithValue.value.toString());
+      }
     });
     return <Navigate to={{ search: newSearchParams.toString() }} replace />;
   }

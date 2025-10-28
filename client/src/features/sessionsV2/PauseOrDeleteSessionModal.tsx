@@ -138,7 +138,7 @@ function AnonymousDeleteSessionModal({
 
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader className="text-danger" toggle={toggleModal}>
+      <ModalHeader className="text-danger" tag="h2" toggle={toggleModal}>
         Shut Down Session
       </ModalHeader>
       <ModalBody>
@@ -188,6 +188,7 @@ function LoggedPauseOrDeleteSessionModal({
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader
+        tag="h2"
         className={cx(action === "delete" && "text-danger")}
         toggle={toggleModal}
       >

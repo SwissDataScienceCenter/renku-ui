@@ -57,6 +57,7 @@ import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
+import UpdateResourcePoolRemoteButton from "./UpdateResourcePoolRemoteButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
@@ -65,7 +66,7 @@ import useKeycloakRealm from "./useKeycloakRealm.hook";
 export default function AdminPage() {
   return (
     <>
-      <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
+      <h1 className="mb-3">Admin Panel</h1>
       <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
       <ConnectedServicesSection />
@@ -76,8 +77,8 @@ export default function AdminPage() {
 
 function ComputeResourcesSection() {
   return (
-    <section className="mt-4">
-      <h2 className="fs-4">Compute Resources</h2>
+    <section>
+      <h2>Compute Resources</h2>
       <AdminComputeResourcesOverview />
     </section>
   );
@@ -142,7 +143,7 @@ function ResourcePoolsList() {
 
   return (
     <div className="mt-2">
-      <h3 className="fs-6">Resource Pools</h3>
+      <h3 className="fs-4">Resource Pools</h3>
 
       <AddResourcePoolButton />
 
@@ -158,7 +159,15 @@ interface ResourcePoolItemProps {
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
-  const { name, default: isDefault, public: isPublic, quota } = resourcePool;
+  const {
+    name,
+    default: isDefault,
+    public: isPublic,
+    quota,
+    cluster,
+    remote,
+  } = resourcePool;
+  const clusterId = cluster?.id;
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
@@ -230,6 +239,52 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
               </div>
             ) : (
               <p className="mb-0">No quota</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {clusterId != null ? (
+              <p className="mb-0">
+                Remote cluster: <code>{clusterId}</code>
+              </p>
+            ) : (
+              <p className="mb-0">No remote cluster</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {remote != null ? (
+              <div
+                className={cx(
+                  "align-items-center",
+                  "row",
+                  "row-cols-1",
+                  "row-cols-sm-2"
+                )}
+              >
+                <div className={cx("col", "col-sm-10")}>
+                  Remote configuration: <code>{JSON.stringify(remote)}</code>
+                </div>
+                <div className={cx("col", "col-sm-2", "ms-auto", "text-end")}>
+                  <UpdateResourcePoolRemoteButton resourcePool={resourcePool} />
+                </div>
+              </div>
+            ) : (
+              <div
+                className={cx(
+                  "align-items-center",
+                  "row",
+                  "row-cols-1",
+                  "row-cols-sm-2"
+                )}
+              >
+                <div className={cx("col", "col-sm-10")}>
+                  Local resource pool
+                </div>
+                <div className={cx("col", "col-sm-2", "ms-auto", "text-end")}>
+                  <UpdateResourcePoolRemoteButton resourcePool={resourcePool} />
+                </div>
+              </div>
             )}
           </div>
 
@@ -678,7 +733,7 @@ function DeleteResourcePoolModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalBody>
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
@@ -689,7 +744,7 @@ function DeleteResourcePoolModal({
         </p>
       </ModalBody>
       <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+        <Button className="ms-2" color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel, keep resource pool
         </Button>

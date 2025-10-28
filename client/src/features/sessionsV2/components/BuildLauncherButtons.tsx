@@ -104,16 +104,18 @@ export default function BuildLauncherButtons({
     </>
   ) : (
     <>
-      <Button
-        className="text-nowrap"
-        color="outline-primary"
-        data-cy="session-view-menu-show-logs"
-        onClick={toggleLogs}
-        size="sm"
-      >
-        <FileEarmarkText className={cx("bi", "me-1")} />
-        Logs
-      </Button>
+      {builds && builds.length > 0 && (
+        <Button
+          className="text-nowrap"
+          color="outline-primary"
+          data-cy="session-view-menu-show-logs"
+          onClick={toggleLogs}
+          size="sm"
+        >
+          <FileEarmarkText className={cx("bi", "me-1")} />
+          Logs
+        </Button>
+      )}
       <Button
         className={cx("text-nowrap", "rounded-end-0")}
         color={isMainButton ? "primary" : "outline-primary"}

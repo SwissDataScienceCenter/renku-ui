@@ -134,7 +134,7 @@ export default function UserShow() {
               </Row>
             </Col>
             <Col xs={12} md={4} xl={3}>
-              <Card data-cy="project-info-card">
+              <Card data-cy="user-info-card">
                 <CardHeader>
                   <div
                     className={cx(
@@ -143,10 +143,10 @@ export default function UserShow() {
                       "justify-content-between"
                     )}
                   >
-                    <h4 className="m-0">
+                    <h2 className="m-0">
                       <InfoCircle className={cx("me-1", "bi")} />
                       Info
-                    </h4>
+                    </h2>
                   </div>
                 </CardHeader>
                 <CardBody>{information}</CardBody>
@@ -199,8 +199,10 @@ function UserHeader({
         <AvatarTypeWrap type={"User"}>
           <UserAvatar namespace={username} size="lg" />
         </AvatarTypeWrap>
-        <div className="d-flex gap-2">
-          <h2 className="mb-0">{name}</h2>
+        <div className={cx("d-flex", "gap-2")}>
+          <h1 className="mb-0" data-cy="group-name">
+            {name}
+          </h1>
           <div>
             <ItsYouBadge username={username} />
           </div>

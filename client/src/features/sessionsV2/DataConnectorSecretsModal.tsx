@@ -60,7 +60,7 @@ const CONTEXT_STRINGS = {
     dataCy: "session-data-connector-credentials-modal",
     header: "Session Storage Credentials",
     testError:
-      "The data connector could not be mounted. Please retry with different credentials, or skip the test. If you skip, the data connector will still try to mount, using the provided credentials, at session launch time.",
+      "The data connector could not be mounted. Please retry with different credentials, or skip the data connector. If you skip, the data connector will not be mounted in the session.",
   },
   storage: {
     continueButton: "Test and Save",
@@ -131,7 +131,7 @@ function DataConnectorSecrets({
   return (
     <>
       <div className={cx("d-flex", "align-items-baseline", "mt-1")}>
-        <h4>{dataConnector.name}</h4>
+        <h3>{dataConnector.name}</h3>
         <div className="ms-2">({storage.source_path})</div>
       </div>
       <div>
@@ -222,6 +222,8 @@ export default function DataConnectorSecretsModal({
     newCloudStorageConfigs[index] = {
       ...dataConnectorConfigs[index],
       active: false,
+      saveCredentials: false,
+      skip: true,
     };
     setDataConnectorConfigs(newCloudStorageConfigs);
     onNext(newCloudStorageConfigs);
@@ -232,7 +234,10 @@ export default function DataConnectorSecretsModal({
       if (dataConnectorConfigs == null || dataConnectorConfigs.length < 1)
         return;
 
-      const config = { ...dataConnectorConfigs[index] };
+      const config: DataConnectorConfiguration = {
+        ...dataConnectorConfigs[index],
+        touched: true,
+      };
       const sensitiveFieldValues = { ...config.sensitiveFieldValues };
       const { saveCredentials } = options;
       if (saveCredentials === true || saveCredentials === false) {
@@ -286,10 +291,9 @@ export default function DataConnectorSecretsModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader>{CONTEXT_STRINGS[context].header}</ModalHeader>
+      <ModalHeader tag="h2">{CONTEXT_STRINGS[context].header}</ModalHeader>
       <Form
         noValidate
-        className="form-rk-green"
         data-cy="data-connector-edit-options"
         onSubmit={handleSubmit(onContinue)}
       >
@@ -349,12 +353,7 @@ function CredentialsButtons({
         <XLg className={cx("bi", "me-1")} />
         Cancel
       </Button>
-      {context === "session" && (
-        <SkipConnectionTestButton
-          onSkip={onSkip}
-          validationResult={validationResult}
-        />
-      )}
+      {context === "session" && <SkipConnectionTestButton onSkip={onSkip} />}
       {context === "storage" && (
         <ClearCredentialsButton
           onSkip={onSkip}
@@ -441,6 +440,7 @@ function ProgressBreadcrumbs({
                 newCloudStorageConfigs[idx] = {
                   ...dataConnectorConfigs[idx],
                   active: true,
+                  skip: false,
                 };
                 setDataConnectorConfigs(newCloudStorageConfigs);
                 setIndex(idx);
@@ -615,8 +615,7 @@ function SensitiveFieldInput({
 
 function SkipConnectionTestButton({
   onSkip,
-  validationResult,
-}: Pick<CredentialsButtonsProps, "onSkip" | "validationResult">) {
+}: Pick<CredentialsButtonsProps, "onSkip">) {
   const skipButtonRef = useRef<HTMLAnchorElement>(null);
   return (
     <>
@@ -627,12 +626,7 @@ function SkipConnectionTestButton({
         </Button>
       </span>
       <UncontrolledTooltip target={skipButtonRef}>
-        Skip the connection test. At session launch, the storage will try to
-        mount
-        {validationResult.isError
-          ? " using the provided credentials"
-          : " without any credentials"}
-        .
+        Skip the data connector. It will not be mounted in the session.
       </UncontrolledTooltip>
     </>
   );

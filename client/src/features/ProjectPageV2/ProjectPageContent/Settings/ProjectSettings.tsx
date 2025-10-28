@@ -516,10 +516,10 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
   return (
     <Card data-cy="project-settings-general" id="general">
       <CardHeader>
-        <h4 className="m-0">
+        <h2 className="m-0">
           <Sliders className={cx("me-1", "bi")} />
           General settings
-        </h4>
+        </h2>
       </CardHeader>
       <CardBody>
         <ProjectSettingsForm project={project} />

@@ -59,7 +59,7 @@ export default function UpdateResourceClassButton({
 
   return (
     <>
-      <Button className="btn-sm" color="outline-rk-green" onClick={toggle}>
+      <Button size="sm" color="outline-primary" onClick={toggle}>
         Update
       </Button>
       <UpdateResourceClassModal
@@ -180,7 +180,9 @@ function UpdateResourceClassModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Update {resourceClass.name}</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Update {resourceClass.name}
+      </ModalHeader>
       <ModalBody>
         <Form
           className="form-rk-green"
@@ -325,7 +327,7 @@ function UpdateResourceClassModal({
           <div className="mb-3">
             <div className="form-label">Tolerations</div>
             <Button
-              className="btn-outline-rk-green"
+              color="outline-primary"
               onClick={onAddTolerationLabel}
               type="button"
             >
@@ -368,7 +370,7 @@ function UpdateResourceClassModal({
           <div>
             <div className="form-label">Node affinities</div>
             <Button
-              className="btn-outline-rk-green"
+              color="outline-primary"
               onClick={onAddNodeAffinity}
               type="button"
             >
@@ -449,11 +451,12 @@ function UpdateResourceClassModal({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button
+          color="primary"
           disabled={result.isLoading || !isDirty}
           onClick={handleSubmit(onSubmit)}
           type="submit"

@@ -210,7 +210,11 @@ export default function HelpRelease() {
   return (
     <>
       <Row>
-        <Col md={6}>
+        <Col>
+          <h2>Release Information</h2>
+        </Col>
+
+        <Col xs={12}>
           <p>
             For detailed information about new Renku features and the latest
             improvements to individual components, please refer to the following
@@ -220,9 +224,8 @@ export default function HelpRelease() {
             <span className="fw-bold">Renku version</span> <RenkuRelease />
           </p>
         </Col>
-      </Row>
-      <Row>
-        <Col>
+
+        <Col xs={12}>
           <ComponentDetails />
         </Col>
       </Row>

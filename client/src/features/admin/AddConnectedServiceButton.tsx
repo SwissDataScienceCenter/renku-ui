@@ -132,7 +132,9 @@ function AddConnectedServiceModal({
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Add integration</ModalHeader>
+        <ModalHeader tag="h2" toggle={toggle}>
+          Add integration
+        </ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}
 

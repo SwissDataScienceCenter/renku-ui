@@ -21,6 +21,8 @@ import type { DataConnectorRead } from "../dataConnectorsV2/api/data-connectors.
 
 export interface SessionStartDataConnectorConfiguration {
   active: boolean;
+  skip: boolean;
+  touched: boolean;
   dataConnector: DataConnectorRead;
   sensitiveFieldDefinitions: {
     friendlyName: string;
@@ -33,7 +35,7 @@ export interface SessionStartDataConnectorConfiguration {
 }
 
 export interface StartSessionOptionsV2 {
-  cloudStorage?: SessionStartDataConnectorConfiguration[];
+  dataConnectors?: SessionStartDataConnectorConfiguration[];
   defaultUrl: string;
   environmentVariables: SessionEnvironmentVariable[];
   imageReady: boolean;

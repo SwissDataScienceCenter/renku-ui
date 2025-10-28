@@ -22,12 +22,24 @@ export interface ResourcePoolForm {
   quota: ResourcePoolFormQuota;
   hibernationThresholdMinutes?: number;
   idleThresholdMinutes?: number;
+  clusterId: string;
+  remote: RemoteConfiguration;
 }
 
 export interface ResourcePoolFormQuota {
   cpu: number;
   memory: number;
   gpu: number;
+}
+
+export interface RemoteConfiguration {
+  enabled: boolean;
+  /** Kind of remote resource pool */
+  kind: "firecrest";
+  providerId?: string;
+  apiUrl: string;
+  systemName: string;
+  partition?: string;
 }
 
 export interface ResourceClassForm {
