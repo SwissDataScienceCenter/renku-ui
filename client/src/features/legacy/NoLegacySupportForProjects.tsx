@@ -29,7 +29,9 @@ export default function NoLegacySupportForProjects() {
       hostname === "renkulab.io" ||
       hostname.endsWith(".renkulab.io") ||
       hostname === "dev.renku.ch" ||
-      hostname.endsWith(".dev.renku.ch")
+      hostname.endsWith(".dev.renku.ch") ||
+      hostname === "dev.renkulab.ch" ||
+      hostname.endsWith(".dev.renkulab.ch")
     ) {
       setIsRenkulabIo(true);
     }
