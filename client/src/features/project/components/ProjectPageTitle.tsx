@@ -18,7 +18,6 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Helmet } from "react-helmet";
-
 import {
   useGetProjectIndexingStatusQuery,
   useProjectJsonLdQuery,

@@ -42,7 +42,6 @@ import {
   ListGroupItem,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -59,6 +58,7 @@ import {
 } from "../../utils/projectCloudStorage.utils";
 import AddStorageBreadcrumbNavbar from "./AddStorageBreadcrumbNavbar";
 import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
+import styles from "./CloudStorage.module.scss";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
@@ -71,8 +71,6 @@ import {
   CloudStorageSchema,
   CloudStorageSchemaOption,
 } from "./projectCloudStorage.types";
-
-import styles from "./CloudStorage.module.scss";
 
 interface AddOrEditCloudStorageProps {
   schema: CloudStorageSchema[];

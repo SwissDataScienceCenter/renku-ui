@@ -27,7 +27,6 @@ import {
   useParams,
 } from "react-router";
 import { Col, Row } from "reactstrap";
-
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import { Loader } from "../../../components/Loader";

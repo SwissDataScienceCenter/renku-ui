@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { Key, Lock } from "react-bootstrap-icons";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
-
 import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
 import SessionSecretActions from "./SessionSecretActions";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";

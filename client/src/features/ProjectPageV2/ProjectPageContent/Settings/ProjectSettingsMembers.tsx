@@ -17,6 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import cx from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { PencilSquare, PersonGear, PlusLg, Trash } from "react-bootstrap-icons";
@@ -32,8 +33,6 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";

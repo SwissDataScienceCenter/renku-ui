@@ -17,7 +17,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 import { MIN_SESSION_STORAGE_GB } from "../session/startSessionOptions.constants";
 import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
 import {

@@ -17,6 +17,7 @@
  */
 import type { SerializedError } from "@reduxjs/toolkit";
 import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -47,18 +48,15 @@ import {
   OffcanvasBody,
   Row,
 } from "reactstrap";
-
-import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
-
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import {
   ErrorAlert,
   RenkuAlert,
   WarnAlert,
 } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
@@ -67,8 +65,8 @@ import {
   useGetOauth2ProvidersQuery,
   type Provider,
 } from "../../../connectedServices/api/connectedServices.api";
-import { ConnectButton } from "../../../connectedServices/ConnectedServicesPage";
 import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
+import { ConnectButton } from "../../../connectedServices/ConnectedServicesPage";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";

@@ -20,7 +20,6 @@ import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import type { GroupMemberResponse } from "../../projectsV2/api/namespace.api";

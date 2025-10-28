@@ -27,11 +27,9 @@ import type {
   Path,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { Input, FormGroup, FormText, Label } from "reactstrap";
-
-import FormLabel from "./FormLabel";
+import { FormGroup, FormText, Input, Label } from "reactstrap";
 import { ErrorLabel } from "../formlabels/FormLabels";
-
+import FormLabel from "./FormLabel";
 import LazyCkEditor from "./LazyCkEditor";
 
 type EditMarkdownSwitchProps = {

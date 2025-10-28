@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import {
@@ -28,10 +29,9 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
-
 import { SuccessAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import { usePostStorageSchemaTestConnectionMutation } from "./api/projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "./projectCloudStorage.constants";
@@ -41,8 +41,6 @@ import {
   CloudStorageDetails,
   CloudStorageSchema,
 } from "./projectCloudStorage.types";
-
-import { SerializedError } from "@reduxjs/toolkit";
 
 interface AddCloudStorageForwardBackButtonProps {
   setStateSafe: (newState: Partial<AddCloudStorageState>) => void;

@@ -16,6 +16,12 @@
  * limitations under the License.
  */
 
+import { ErrorAlert } from "~/components/Alert";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { Loader } from "~/components/Loader";
+import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
+import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PersonFillX, TrashFill, XLg } from "react-bootstrap-icons";
@@ -29,21 +35,14 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
-
-import { ErrorAlert } from "~/components/Alert";
-import { Loader } from "~/components/Loader";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
-import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
-import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
-  type PoolUserWithId,
-  type ResourceClassWithId,
-  type ResourcePoolWithId,
   useDeleteResourcePoolsByResourcePoolIdMutation,
   useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
   useGetResourcePoolsByResourcePoolIdUsersQuery,
   useGetResourcePoolsQuery,
+  type PoolUserWithId,
+  type ResourceClassWithId,
+  type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import { useGetUsersQuery } from "../usersV2/api/users.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
@@ -51,6 +50,8 @@ import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
+import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
+import { KeycloakUser } from "./adminKeycloak.types";
 import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
@@ -59,8 +60,6 @@ import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import UpdateResourcePoolRemoteButton from "./UpdateResourcePoolRemoteButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
-import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
-import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
 export default function AdminPage() {

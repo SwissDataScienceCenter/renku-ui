@@ -1,7 +1,5 @@
 import { Meta } from "@storybook/react";
-
 import { CommandCopy } from "../../components/commandCopy/CommandCopy.tsx";
-
 import styles from "./ColorPalette.module.scss";
 
 interface Color {

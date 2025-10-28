@@ -41,10 +41,9 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
-
-import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
+import { Loader } from "../../components/Loader";
 import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";

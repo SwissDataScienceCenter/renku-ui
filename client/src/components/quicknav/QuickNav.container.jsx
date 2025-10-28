@@ -18,7 +18,6 @@
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-
 import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 import {
   TOTAL_QUERIES,

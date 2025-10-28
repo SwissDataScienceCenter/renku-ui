@@ -27,7 +27,6 @@ import { groupBy } from "lodash-es";
 import qs from "query-string";
 import { Component } from "react";
 import { connect } from "react-redux";
-
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import { DatasetCoordinator } from "../dataset/Dataset.state";
 import Present from "./Project.present";

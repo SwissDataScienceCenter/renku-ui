@@ -32,15 +32,14 @@ import {
   ModalBody,
   ModalHeader,
 } from "reactstrap";
-
 import { SuccessAlert } from "../../components/Alert";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { ExternalLink } from "../../components/ExternalLinks";
 import { LoadingLabel } from "../../components/formlabels/FormLabels";
+import { Loader } from "../../components/Loader";
 import VisibilitiesInput, {
-  VISIBILITY_ITEMS,
   Visibilities,
+  VISIBILITY_ITEMS,
 } from "../../components/visibility/Visibility";
 import { SettingRequiresKg } from "../../features/project/components/ProjectSettingsUtils";
 import { useGetProjectByIdQuery } from "../../features/project/projectGitLab.api";

@@ -17,7 +17,6 @@
  */
 
 import { Component } from "react";
-
 import { API_ERRORS } from "../api-client";
 import { FileLineage as FileLineagePresent } from "./Lineage.present";
 

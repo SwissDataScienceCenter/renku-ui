@@ -32,17 +32,16 @@ import {
   UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { ACCESS_LEVELS } from "../../../../api-client";
-import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
-import CloudStorageItem from "../../../project/components/cloudStorage/CloudStorageItem";
 import { useGetStorageQuery } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
+import CloudStorageItem from "../../../project/components/cloudStorage/CloudStorageItem";
 import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import { StateModelProject } from "../../../project/project.types";
 import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";

@@ -17,6 +17,16 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetConfigQuery } from "~/features/project/projectCoreApi";
+import { useCoreSupport } from "~/features/project/useProjectCoreSupport";
+import {
+  useGetResourcePoolsQuery,
+  type ResourceClassWithId,
+} from "~/features/sessionsV2/api/computeResources.api";
+import { ProjectStatistics } from "~/notebooks/components/session.types";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import {
@@ -25,17 +35,6 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
-
-import { useGetConfigQuery } from "~/features/project/projectCoreApi";
-import { useCoreSupport } from "~/features/project/useProjectCoreSupport";
-import {
-  type ResourceClassWithId,
-  useGetResourcePoolsQuery,
-} from "~/features/sessionsV2/api/computeResources.api";
-import { ProjectStatistics } from "~/notebooks/components/session.types";
-import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -45,7 +44,6 @@ import {
   computeStorageSizes,
   validateStorageAmount,
 } from "../../utils/sessionOptions.utils";
-
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {

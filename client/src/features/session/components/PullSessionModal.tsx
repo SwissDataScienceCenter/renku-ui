@@ -19,12 +19,11 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
-
 import { Loader } from "../../../components/Loader";
 import {
   CenteredLoader,
-  InformationalBody,
   commitsPhrasing,
+  InformationalBody,
 } from "../../../notebooks/components/Sidecar";
 import {
   useGitStatusQuery,
@@ -32,7 +31,6 @@ import {
   useRenkuPullMutation,
 } from "../sidecar.api";
 import type { GitStatusResult } from "../sidecar.types";
-
 import styles from "./SessionModals.module.scss";
 
 interface PullSessionModalProps {

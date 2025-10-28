@@ -18,7 +18,6 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
-
 import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/projects.api";
 import { Session } from "../helpers/SessionFunctions";
 

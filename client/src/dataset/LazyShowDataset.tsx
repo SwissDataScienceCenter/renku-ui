@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { ComponentProps, lazy, Suspense } from "react";
 import PageLoader from "../components/PageLoader";
 
 const ShowDataset = lazy(() => import("./Dataset.container"));

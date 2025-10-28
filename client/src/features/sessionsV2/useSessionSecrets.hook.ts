@@ -18,14 +18,13 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
-
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { getSessionSecretSlotsWithSecrets } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.utils";
 import {
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
   useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
 interface UseSessionSecretsArgs {

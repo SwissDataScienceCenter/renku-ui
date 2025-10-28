@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { ComponentProps, Suspense, lazy } from "react";
+import { ComponentProps, lazy, Suspense } from "react";
 import { Loader } from "../components/Loader";
 
 const PDFViewer = lazy(() => import("./PDFViewer"));

@@ -18,7 +18,6 @@
 
 import { useCallback } from "react";
 import { Button } from "reactstrap";
-
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { PROJECT_CREATION_HASH } from "./createProjectV2.constants";
 

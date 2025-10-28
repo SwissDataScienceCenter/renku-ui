@@ -17,7 +17,6 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-
 import { Loader } from "../../../../components/Loader";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";

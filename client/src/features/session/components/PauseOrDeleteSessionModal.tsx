@@ -21,9 +21,8 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Duration } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 import { useNavigate } from "react-router";
-
+import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/renkuModels.types";
@@ -41,9 +40,8 @@ import {
 } from "../sessions.api";
 import { Session } from "../sessions.types";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
-import UnsavedWorkWarning from "./UnsavedWorkWarning";
-
 import styles from "./SessionModals.module.scss";
+import UnsavedWorkWarning from "./UnsavedWorkWarning";
 
 interface PauseOrDeleteSessionModalProps {
   action?: "pause" | "delete";

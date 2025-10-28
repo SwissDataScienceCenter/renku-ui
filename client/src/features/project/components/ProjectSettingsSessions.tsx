@@ -46,13 +46,12 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Loader } from "../../../components/Loader";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import { ExternalLink } from "../../../components/ExternalLinks";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
+import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { LockStatus, User } from "../../../model/renkuModels.types";
 import { Docs } from "../../../utils/constants/Docs";
@@ -60,16 +59,15 @@ import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
 import {
+  mergeDefaultUrlOptions,
   ServerOptionBoolean,
   ServerOptionEnum,
-  mergeDefaultUrlOptions,
 } from "../../session/components/options/StartNotebookServerOptions";
 import { useServerOptionsQuery } from "../../session/sessions.api";
 import { ServerOptions } from "../../session/sessions.types";
 import { ProjectConfig, StateModelProject } from "../project.types";
 import { useGetConfigQuery, useUpdateConfigMutation } from "../projectCoreApi";
 import { useCoreSupport } from "../useProjectCoreSupport";
-
 import styles from "./ProjectSettingsSessions.module.scss";
 
 type CoreServiceVersionedApiParams = {

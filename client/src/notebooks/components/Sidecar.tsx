@@ -17,7 +17,6 @@
  */
 
 import { Button, Col, Row } from "reactstrap";
-
 import { Loader } from "../../components/Loader";
 
 function commitsPhrasing(numberOfCommits: number) {

@@ -17,8 +17,8 @@
  */
 
 // Run `npm run generate-api:platform` to generate the API
-import type { ConfigFile } from "@rtk-query/codegen-openapi";
 import path from "path";
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
 
 const config: ConfigFile = {
   apiFile: "./platform-empty.api.ts",

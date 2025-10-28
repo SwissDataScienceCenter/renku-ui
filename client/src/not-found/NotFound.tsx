@@ -24,9 +24,8 @@
  */
 import cx from "classnames";
 import { ReactNode } from "react";
-import { Link, useLocation } from "react-router";
-
 import { ArrowLeft } from "react-bootstrap-icons";
+import { Link, useLocation } from "react-router";
 import ContainerWrap from "../components/container/ContainerWrap";
 import rkNotFoundImg from "../styles/assets/not-found.svg";
 import rkNotFoundImgV2 from "../styles/assets/not-foundV2.svg";

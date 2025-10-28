@@ -45,7 +45,6 @@ import {
   UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
 import buttonStyles from "./Buttons.module.scss";

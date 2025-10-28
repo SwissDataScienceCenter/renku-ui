@@ -22,7 +22,6 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import Masonry from "react-masonry-css";
 import { Button } from "reactstrap";
-
 import {
   KgSearchResult,
   ListResponse,
@@ -33,9 +32,9 @@ import {
   hasInitialFilterValues,
   mapSearchResultToEntity,
 } from "../../utils/helpers/KgSearchFunctions";
+import ListCard from "../list/ListCard";
 import { Loader } from "../Loader";
 import Pagination from "../Pagination";
-import ListCard from "../list/ListCard";
 
 interface SearchResultProps {
   data?: ListResponse<KgSearchResult>;

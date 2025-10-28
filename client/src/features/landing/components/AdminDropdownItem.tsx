@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { Link } from "react-router";
 import { DropdownItem } from "reactstrap";
-
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
 export default function AdminDropdownItem() {

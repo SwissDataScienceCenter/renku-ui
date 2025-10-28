@@ -18,13 +18,12 @@
 
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-
-import { ErrorAlert, RenkuAlert } from "../Alert";
-import { CoreErrorAlert } from "./CoreErrorAlert";
-import { CoreErrorResponse } from "../../utils/types/coreService.types";
-import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 import { UpdateProjectResponse } from "../../features/project/project.types";
 import { NotebooksErrorResponse } from "../../features/session/sessions.types";
+import { extractTextFromObject } from "../../utils/helpers/TextUtils";
+import { CoreErrorResponse } from "../../utils/types/coreService.types";
+import { ErrorAlert, RenkuAlert } from "../Alert";
+import { CoreErrorAlert } from "./CoreErrorAlert";
 
 export function extractRkErrorMessage(
   error: FetchBaseQueryError | SerializedError,

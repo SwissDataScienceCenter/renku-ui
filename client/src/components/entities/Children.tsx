@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Badge, UncontrolledTooltip } from "reactstrap";
-
 import { EntityType } from "./entities.types";
 
 interface EntityChildrenProps {

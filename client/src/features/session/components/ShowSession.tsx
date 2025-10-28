@@ -40,16 +40,15 @@ import {
   type Location,
 } from "react-router";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
-
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
 import { User } from "../../../model/renkuModels.types";
-import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
+import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { Url } from "../../../utils/helpers/url";
+import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { useGetSessionsQuery } from "../sessions.api";
 import AboutSessionModal from "./AboutSessionModal";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";

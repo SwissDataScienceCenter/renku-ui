@@ -17,7 +17,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
 import type { Role } from "../projectsV2/api/projectV2.api";
 import {

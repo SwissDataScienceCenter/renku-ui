@@ -16,11 +16,10 @@
  * limitations under the License
  */
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Button } from "reactstrap";
-
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import BootstrapCopyIcon from "../../../components/icons/BootstrapCopyIcon";
 import { type Project } from "../../projectsV2/api/projectV2.api";
 import ProjectCopyModal from "./ProjectCopyModal";

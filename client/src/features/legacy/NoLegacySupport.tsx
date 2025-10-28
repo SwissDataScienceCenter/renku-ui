@@ -17,9 +17,8 @@
  */
 
 import cx from "classnames";
-import { Link } from "react-router";
 import { ArrowLeft } from "react-bootstrap-icons";
-
+import { Link } from "react-router";
 import ContainerWrap from "../../components/container/ContainerWrap";
 
 export default function NoLegacySupport() {

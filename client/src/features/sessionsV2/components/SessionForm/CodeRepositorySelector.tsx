@@ -27,19 +27,17 @@ import {
   type UseControllerProps,
 } from "react-hook-form";
 import Select, {
+  components,
   type ClassNamesConfig,
   type GroupBase,
   type OptionProps,
   type SelectComponentsConfig,
   type SingleValue,
   type SingleValueProps,
-  components,
 } from "react-select";
 import { Label } from "reactstrap";
-
 import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import type { RepositoryWithProbe } from "../../../repositories/repositories.types";
-
 import styles from "./Select.module.scss";
 
 interface CodeRepositorySelectorProps<T extends FieldValues>

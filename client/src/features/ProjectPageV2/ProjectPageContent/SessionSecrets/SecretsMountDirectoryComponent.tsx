@@ -33,11 +33,11 @@ import {
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
-import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
-import SecretsMountDirectoryField from "../../../projectsV2/fields/SecretsMountDirectoryField";
-import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
+import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import SecretsMountDirectoryField from "../../../projectsV2/fields/SecretsMountDirectoryField";
+import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 export default function SecretsMountDirectoryComponent() {
   const { project } = useProject();

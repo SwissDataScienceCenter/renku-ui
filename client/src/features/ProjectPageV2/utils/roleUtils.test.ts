@@ -17,7 +17,6 @@
  */
 
 import { describe, expect, it } from "vitest";
-
 import { toNumericRole } from "./roleUtils";
 
 describe("Test toNumericRole", () => {

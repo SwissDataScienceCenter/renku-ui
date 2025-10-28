@@ -25,7 +25,6 @@
 
 import cx from "classnames";
 import { Alert } from "reactstrap";
-
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 
 export interface LoginAlertProps {

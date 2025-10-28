@@ -18,6 +18,7 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { parseINIString } from "../../utils/helpers/HelperFunctions";
+import processPaginationHeaders from "../../utils/helpers/pagination.utils";
 import {
   MAX_GITLAB_REPOSITORY_BRANCH_PAGES,
   MAX_GITLAB_REPOSITORY_COMMIT_PAGES,
@@ -25,33 +26,32 @@ import {
 } from "./GitLab.constants";
 import {
   GetAllRepositoryBranchesParams,
+  GetAllRepositoryCommitsParams,
   GetConfigFromRepositoryParams,
   GetPipelineJobByNameParams,
   GetPipelinesParams,
+  GetProjectsParams,
   GetRegistryTagParams,
   GetRenkuRegistryParams,
-  GetRepositoryBranchParams,
   GetRepositoryBranchesParams,
+  GetRepositoryBranchParams,
   GetRepositoryCommitParams,
   GetRepositoryCommitsParams,
-  GetAllRepositoryCommitsParams,
   GitLabPipeline,
   GitLabPipelineJob,
+  GitLabProjectList,
+  GitlabProjectResponse,
   GitLabRegistry,
   GitLabRegistryTag,
   GitLabRepositoryBranch,
   GitLabRepositoryBranchList,
   GitLabRepositoryCommit,
   GitLabRepositoryCommitList,
-  GitlabProjectResponse,
   RetryPipelineParams,
   RunPipelineParams,
-  GetProjectsParams,
-  GitLabProjectList,
 } from "./GitLab.types";
 import { ProjectConfig } from "./project.types";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
-import processPaginationHeaders from "../../utils/helpers/pagination.utils";
 
 const projectGitLabApi = createApi({
   reducerPath: "projectGitLab",

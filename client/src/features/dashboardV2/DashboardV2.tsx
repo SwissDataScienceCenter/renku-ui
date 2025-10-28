@@ -17,6 +17,7 @@
  */
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import AppContext from "~/utils/context/appContext";
 import cx from "classnames";
 import { ReactNode, useContext } from "react";
 import {
@@ -41,7 +42,6 @@ import {
   ListGroup,
   Row,
 } from "reactstrap";
-import AppContext from "~/utils/context/appContext";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -61,9 +61,8 @@ import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay"
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
 import { useGetUserQueryState } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
-import DashboardV2Sessions from "./DashboardV2Sessions";
-
 import DashboardStyles from "./DashboardV2.module.scss";
+import DashboardV2Sessions from "./DashboardV2Sessions";
 
 export default function DashboardV2() {
   const { params } = useContext(AppContext);

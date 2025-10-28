@@ -17,15 +17,15 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { Loader } from "~/components/Loader";
+import ScrollableModal from "~/components/modal/ScrollableModal";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
 import { Plugin, Send, SkipForward, XLg } from "react-bootstrap-icons";
 import { generatePath, Link, useLocation, useNavigate } from "react-router";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { Loader } from "~/components/Loader";
-import ScrollableModal from "~/components/modal/ScrollableModal";
-import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
 import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";

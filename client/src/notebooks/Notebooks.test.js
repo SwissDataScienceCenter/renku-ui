@@ -23,9 +23,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-
-import { ExpectedAnnotations } from "./Notebooks.state";
 import { NotebooksHelper } from "./index";
+import { ExpectedAnnotations } from "./Notebooks.state";
 
 const simplifiedGlobalOptions = {
   default_url: {

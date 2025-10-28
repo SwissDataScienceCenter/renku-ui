@@ -20,12 +20,11 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
 import { ArrowLeft, BoxArrowInRight } from "react-bootstrap-icons";
-import { Link, generatePath, useNavigate } from "react-router";
+import { generatePath, Link, useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
-
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
-import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
+import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";

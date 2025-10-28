@@ -17,7 +17,6 @@
  */
 
 import type { FieldValues } from "react-hook-form";
-
 import DescriptionFormField from "./DescriptionFormField";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 

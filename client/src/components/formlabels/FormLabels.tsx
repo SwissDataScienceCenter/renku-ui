@@ -23,16 +23,14 @@
  *  FormLabels components.
  */
 
-import { FormText, FormFeedback, Label } from "reactstrap";
-import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExclamationTriangle,
   faCheck,
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { FormFeedback, FormText, Label } from "reactstrap";
 import { Loader } from "../Loader";
-
 import "./FormLabels.css";
 
 interface LabelProps {

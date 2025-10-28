@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { datasetSchema } from "../model/RenkuModels";
 import { API_ERRORS } from "../api-client";
+import { datasetSchema } from "../model/RenkuModels";
 import { mapDataset } from "./DatasetFunctions";
 
 /**

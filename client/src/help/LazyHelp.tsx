@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy } from "react";
-
+import { lazy, Suspense } from "react";
 import PageLoader from "../components/PageLoader";
 
 const Help = lazy(() => import("./Help"));

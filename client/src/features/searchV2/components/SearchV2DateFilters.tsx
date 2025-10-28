@@ -20,7 +20,6 @@ import cx from "classnames";
 import { DateTime } from "luxon";
 import { useCallback, useMemo, useState } from "react";
 import { Col } from "reactstrap";
-
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import {
   CREATION_DATE_FILTER_PREDEFINED_FILTERS,
@@ -30,8 +29,8 @@ import {
 } from "../searchV2.constants";
 import { selectCreationDateFilter } from "../searchV2.slice";
 import type { SearchDateFilter } from "../searchV2.types";
-import { SearchV2Visualization } from "./SearchV2Filters.types";
 import { SearchV2FilterContainer } from "./SearchV2Filters";
+import { SearchV2Visualization } from "./SearchV2Filters.types";
 
 interface SearchV2DateFilterProps {
   dateFilter: SearchDateFilter;

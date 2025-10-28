@@ -18,12 +18,12 @@
 
 import { useEffect } from "react";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import type { CloudStorageGet } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import { getProvidedSensitiveFields } from "../../../project/utils/projectCloudStorage.utils";
 import { NotebooksVersion } from "../../../versions/versions.types";
 import { setError } from "../../startSession.slice";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import { setCloudStorage } from "../../startSessionOptionsSlice";
-import type { CloudStorageGet } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 
 interface UseDefaultCloudStorageOptionArgs {
   notebooksVersion: NotebooksVersion | undefined;

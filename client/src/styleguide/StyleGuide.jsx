@@ -26,7 +26,6 @@
 import { Fragment } from "react";
 import { Route, Routes } from "react-router";
 import { Col, Nav, NavItem, Row, Table } from "reactstrap";
-
 import { ExternalLink } from "../components/ExternalLinks";
 import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
 import { TimeCaption } from "../components/TimeCaption";

@@ -18,10 +18,9 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import React, { useCallback, useEffect, useState } from "react";
-
 import {
-  RtkErrorAlert,
   extractRkErrorRemoteBranch,
+  RtkErrorAlert,
 } from "../../../components/errors/RtkErrorAlert";
 import InlineSubmitInput, {
   InputCard,

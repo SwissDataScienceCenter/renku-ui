@@ -27,23 +27,20 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
-
 import { SuccessAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-
 import {
-  type PostStorageSchemaTestConnectionApiArg,
   usePostStorageSchemaTestConnectionMutation,
+  type PostStorageSchemaTestConnectionApiArg,
 } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   AddCloudStorageState,
   CloudStorageDetailsOptions,
 } from "../../../project/components/cloudStorage/projectCloudStorage.types";
-
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
 interface DataConnectorModalForwardBackButtonProps {}

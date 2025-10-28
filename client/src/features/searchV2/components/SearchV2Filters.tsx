@@ -28,7 +28,6 @@ import {
   Row,
   UncontrolledAccordion,
 } from "reactstrap";
-
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import type { Role } from "../../projectsV2/api/projectV2.api";

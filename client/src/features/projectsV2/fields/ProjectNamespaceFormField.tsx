@@ -24,16 +24,15 @@ import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import Select, {
   ClassNamesConfig,
+  components,
   GroupBase,
   MenuListProps,
   OptionProps,
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
-  components,
 } from "react-select";
 import { Button, Label } from "reactstrap";
-
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import type { PaginatedState } from "../../session/components/options/fetchMore.types";
@@ -44,7 +43,6 @@ import {
   useLazyGetNamespacesQuery,
 } from "../api/projectV2.enhanced-api";
 import type { GenericFormFieldProps } from "./formField.types";
-
 import styles from "./ProjectNamespaceFormField.module.scss";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];

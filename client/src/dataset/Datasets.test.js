@@ -24,7 +24,6 @@
  */
 
 import { describe, expect, it } from "vitest";
-
 import { mapDataset } from "./DatasetFunctions";
 
 describe("Dataset functions", () => {

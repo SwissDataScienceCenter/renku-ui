@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
@@ -33,8 +34,8 @@ import {
   Label,
 } from "reactstrap";
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
@@ -57,7 +58,6 @@ import ProjectPageDelete from "./ProjectDelete";
 import ProjectKeywordsFormField from "./ProjectKeywordsFormField";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
-import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 
 function notificationProjectUpdated(
   notifications: NotificationsManager,

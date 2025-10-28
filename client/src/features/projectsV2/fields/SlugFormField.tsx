@@ -23,7 +23,6 @@ import { Controller } from "react-hook-form";
 import { useLocation } from "react-router";
 import { Button, FormText, Input, InputGroup, Label } from "reactstrap";
 import { isRenkuLegacy } from "../../../utils/helpers/HelperFunctionsV2.ts";
-
 import type { SlugFormFieldProps } from "./formField.types";
 import styles from "./RenkuV1FormFields.module.scss";
 

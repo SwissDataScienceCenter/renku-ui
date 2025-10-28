@@ -17,7 +17,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 import {
   DEFAULT_FEATURE_FLAGS,
   FEATURE_FLAG_KEYS,

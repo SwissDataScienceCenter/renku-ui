@@ -25,7 +25,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Link, useMatch } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
-
 import { Url } from "../../../../utils/helpers/url";
 import { ProjectMigrationLevel } from "../../projectEnums";
 import { projectKgApi } from "../../projectKg.api";

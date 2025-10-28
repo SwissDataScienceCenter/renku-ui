@@ -24,15 +24,14 @@ import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
-
 import { InfoAlert, WarnAlert } from "../../../components/Alert";
+import { extractRkErrorMessage } from "../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../components/ExternalLinks";
+import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
 import ListDisplay from "../../../components/List";
+import ListBarSession from "../../../components/list/ListBarSessions";
 import { Loader } from "../../../components/Loader";
 import { EnvironmentLogs } from "../../../components/Logs";
-import { extractRkErrorMessage } from "../../../components/errors/RtkErrorAlert";
-import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
-import ListBarSession from "../../../components/list/ListBarSessions";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import { Notebook } from "../../../notebooks/components/session.types";
 import { urlMap } from "../../../project/list/ProjectList.container";

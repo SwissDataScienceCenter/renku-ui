@@ -18,7 +18,6 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { ACCESS_LEVELS } from "../../../api-client";
-
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";

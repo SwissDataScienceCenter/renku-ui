@@ -28,16 +28,15 @@ import {
   ListGroup,
   Row,
 } from "reactstrap";
-
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import type { User } from "../../model/renkuModels.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
-  type SecretWithId,
   useGetUserSecretsQuery,
   usersApi,
+  type SecretWithId,
 } from "../usersV2/api/users.api";
 import DataConnectorSecretItem from "./DataConnectorSecretItem";
 import GeneralSecretItem from "./GeneralSecretItem";

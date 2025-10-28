@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Input, Label } from "reactstrap";
-
 import { CONTAINER_IMAGE_PATTERN } from "../sessionsV2/session.constants";
 import SessionEnvironmentAdvancedFields from "./SessionEnvironmentAdvancedFields";
 

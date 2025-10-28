@@ -22,10 +22,9 @@ import { useEffect } from "react";
 import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
-
-import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
+import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";

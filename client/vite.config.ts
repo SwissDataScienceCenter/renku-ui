@@ -1,8 +1,8 @@
+import { resolve } from "path";
 import eslintPlugin from "@nabla/vite-plugin-eslint";
 import { reactRouter } from "@react-router/dev/vite";
-import { resolve } from "path";
-import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ isSsrBuild }) => ({

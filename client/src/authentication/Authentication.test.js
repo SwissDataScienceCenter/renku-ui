@@ -23,7 +23,6 @@
  *  Tests for authentication.
  */
 import { describe, expect, it, vi } from "vitest";
-
 import { LoginHelper, RenkuQueryParams } from "./Authentication.container";
 
 // Mock relevant react objects

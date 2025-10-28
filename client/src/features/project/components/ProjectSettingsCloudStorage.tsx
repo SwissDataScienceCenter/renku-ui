@@ -19,11 +19,10 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { Col, Container, Row } from "reactstrap";
-
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/renkuModels.types";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
@@ -31,11 +30,11 @@ import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
 import { NotebooksVersion } from "../../versions/versions.types";
 import { StateModelProject } from "../project.types";
 import AddOrEditCloudStorageButton from "./cloudStorage/AddOrEditCloudStorageButton";
-import CloudStorageItem from "./cloudStorage/CloudStorageItem";
 import {
   useGetStorageQuery,
   type CloudStorageGet,
 } from "./cloudStorage/api/projectCloudStorage.api";
+import CloudStorageItem from "./cloudStorage/CloudStorageItem";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useLegacySelector<User["logged"]>(

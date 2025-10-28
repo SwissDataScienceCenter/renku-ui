@@ -24,10 +24,9 @@
  */
 
 import { connect } from "react-redux";
-
 import {
-  StatuspageDisplay as DisplayPresent,
   StatuspageBanner as BannerPresent,
+  StatuspageDisplay as DisplayPresent,
 } from "./Statuspage.present";
 
 function mapStateToProps(state, ownProps) {

@@ -19,16 +19,16 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { BoxArrowInUp } from "react-bootstrap-icons";
-import { ModalBody, ModalHeader } from "reactstrap";
-import { GitlabProjectsToMigrate } from "./ProjectMigration.types";
-import ScrollableModal from "../../components/modal/ScrollableModal";
-import GitlabProjectList from "./GitlabProjectList";
-import MigrationForm from "../project/components/projectMigration/ProjectMigrationForm";
-import ProjectMigrationFooter from "../project/components/projectMigration/ProjectMigrationFooter";
-import { useMigrationForm } from "../project/components/projectMigration/hooks/useMigrationForm";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { SuccessAlert } from "../../components/Alert";
 import { Link } from "react-router";
+import { ModalBody, ModalHeader } from "reactstrap";
+import { SuccessAlert } from "../../components/Alert";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
+import { useMigrationForm } from "../project/components/projectMigration/hooks/useMigrationForm";
+import ProjectMigrationFooter from "../project/components/projectMigration/ProjectMigrationFooter";
+import MigrationForm from "../project/components/projectMigration/ProjectMigrationForm";
+import GitlabProjectList from "./GitlabProjectList";
+import { GitlabProjectsToMigrate } from "./ProjectMigration.types";
 
 interface MigrationV2ModalProps {
   isOpen: boolean;

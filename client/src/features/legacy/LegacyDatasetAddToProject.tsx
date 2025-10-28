@@ -18,11 +18,8 @@
 
 import cx from "classnames";
 import { useContext } from "react";
-
 import AppContext from "../../utils/context/appContext";
-
 import SunsetBanner from "../projectsV2/shared/SunsetV1Banner";
-
 import NoLegacySupport from "./NoLegacySupport";
 
 export default function LegacyDatasetAddToProject() {

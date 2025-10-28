@@ -24,16 +24,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
+  components,
   GroupBase,
   MenuListProps,
   OptionProps,
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
-  components,
 } from "react-select";
 import { Button, UncontrolledTooltip } from "reactstrap";
-
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
@@ -48,7 +47,6 @@ import projectGitLabApi, {
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import { setCommit } from "../../startSessionOptionsSlice";
 import { PaginatedState } from "./fetchMore.types";
-
 import styles from "./SessionCommitOption.module.scss";
 
 export default function SessionCommitOption() {

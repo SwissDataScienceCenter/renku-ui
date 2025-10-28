@@ -25,7 +25,6 @@
 
 import { ReactNode } from "react";
 import { Col, Row } from "reactstrap";
-
 import "./FormSchema.css";
 
 interface FormSchemaProps {

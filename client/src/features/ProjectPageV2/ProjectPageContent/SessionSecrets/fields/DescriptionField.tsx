@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { Controller, type FieldValues } from "react-hook-form";
 import { Label } from "reactstrap";
-
 import type { SessionSecretFormFieldProps } from "./fields.types";
 
 type DescriptionFieldProps<T extends FieldValues> =

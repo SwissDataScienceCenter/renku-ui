@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { Envelope, Github, HeartFill } from "react-bootstrap-icons";
-
+import { Col, Row } from "reactstrap";
 import {
   ExternalDocsLink,
   ExternalLink,
@@ -27,7 +27,7 @@ import { Links, RenkuContactEmail } from "../../../../utils/constants/Docs.js";
 import logo_EPFL from "../../assets/EPFL.svg";
 import logo_ETH from "../../assets/ETH.svg";
 import logo_SDSC from "../../assets/SDSC.svg";
-import { Col, Row } from "reactstrap";
+
 export default function WhoWeAre() {
   const contactEmail = RenkuContactEmail || "";
   return (

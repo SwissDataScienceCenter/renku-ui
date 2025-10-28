@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import ButtonStyles from "~/components/buttons/Buttons.module.scss";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PencilSquare, XLg } from "react-bootstrap-icons";
@@ -28,9 +31,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import { Loader } from "~/components/Loader";
 import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { usePatchEnvironmentsByEnvironmentIdMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
@@ -38,8 +38,6 @@ import { getSessionEnvironmentValues } from "./adminSessions.utils";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
-
-import ButtonStyles from "~/components/buttons/Buttons.module.scss";
 
 interface UpdateSessionEnvironmentButtonProps {
   environment: SessionEnvironment;

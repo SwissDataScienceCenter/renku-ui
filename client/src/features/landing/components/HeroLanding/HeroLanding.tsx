@@ -1,11 +1,10 @@
 import cx from "classnames";
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
-
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import { HomeHeader } from "../../AnonymousHome";
-import heroGraphic from "../../assets/heroBoxes.svg";
 import { AnonymousHomeConfig } from "../../anonymousHome.types";
+import heroGraphic from "../../assets/heroBoxes.svg";
 import { useCustomHomePageProjectUrl } from "../../hooks/useCustomHomePageProjectUrl.hook";
 
 export default function HeroLanding(props: AnonymousHomeConfig) {

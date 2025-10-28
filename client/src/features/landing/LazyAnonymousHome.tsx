@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy } from "react";
-
+import { lazy, Suspense } from "react";
 import PageLoader from "../../components/PageLoader";
 
 const AnonymousHome = lazy(() => import("./AnonymousHome"));

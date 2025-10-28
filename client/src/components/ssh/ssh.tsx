@@ -20,7 +20,6 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useContext } from "react";
 import { Link } from "react-router";
 import { DropdownItem, Modal, ModalBody, ModalHeader } from "reactstrap";
-
 import {
   hideSshModal,
   showSshModal,
@@ -36,11 +35,11 @@ import AppContext from "../../utils/context/appContext";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
-import { Url, apiVersionForMetadataVersion } from "../../utils/helpers/url";
+import { apiVersionForMetadataVersion, Url } from "../../utils/helpers/url";
 import { InfoAlert } from "../Alert";
+import { CommandCopy } from "../commandCopy/CommandCopy";
 import { ExternalDocsLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
-import { CommandCopy } from "../commandCopy/CommandCopy";
 
 const docsIconStyle = {
   showLinkIcon: true,

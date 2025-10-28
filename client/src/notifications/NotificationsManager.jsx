@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { Component } from "react";
 import { toast } from "react-toastify";
-
 import { NotificationTypes } from "./Notifications.constants";
 import {
   CloseToast,

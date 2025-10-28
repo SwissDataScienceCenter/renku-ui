@@ -24,24 +24,23 @@ import {
   Badge,
   Collapse,
   Nav,
-  NavItem,
   Navbar,
   NavbarToggler,
+  NavItem,
 } from "reactstrap";
-
+import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import StatusBanner from "../../features/platform/components/StatusBanner";
 import SunsetV1Button from "../../features/projectsV2/shared/SunsetV1Button";
-import { NavBarWarnings } from "../../features/landing/components/NavBar/NavBarWarnings";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import RenkuNavLinkV2 from "../RenkuNavLinkV2";
 import AnnounceV2Banner from "./AnnounceV2Banner";
+import { RENKU_LOGO } from "./navbar.constants";
 import {
   RenkuToolbarHelpMenu,
   RenkuToolbarItemUser,
   RenkuToolbarNotifications,
 } from "./NavBarItems";
-import { RENKU_LOGO } from "./navbar.constants";
 
 export default function AnonymousNavBar() {
   const { params, model, notifications } = useContext(AppContext);

@@ -1,4 +1,5 @@
 import { computeResourcesEmptyApi as api } from "./computeResources.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getClassesByClassId: build.query<

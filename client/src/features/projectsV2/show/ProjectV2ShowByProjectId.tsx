@@ -23,7 +23,6 @@ import {
   useNavigate,
   useParams,
 } from "react-router";
-
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { useGetProjectsByProjectIdQuery } from "../api/projectV2.enhanced-api";

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -30,10 +33,10 @@ import {
   Control,
   Controller,
   FieldArrayWithId,
-  UseFormSetValue,
-  UseFormWatch,
   useFieldArray,
   useForm,
+  UseFormSetValue,
+  UseFormWatch,
 } from "react-hook-form";
 import {
   Button,
@@ -45,17 +48,13 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import { Loader } from "~/components/Loader";
-import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
   usePostResourcePoolsByResourcePoolIdUsersMutation,
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
+import styles from "./AddManyUsersToResourcePoolButton.module.scss";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
-
-import styles from "./AddManyUsersToResourcePoolButton.module.scss";
 
 const USERS_EMAILS_PLACEHOLDER =
   "user_1@example.com\nuser_2@example.com\nuser_3@example.com";

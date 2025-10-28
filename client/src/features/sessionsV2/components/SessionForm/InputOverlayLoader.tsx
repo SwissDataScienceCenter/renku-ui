@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import { Loader } from "~/components/Loader";
+import cx from "classnames";
 
 export default function InputOverlayLoader() {
   return (

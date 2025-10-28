@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useRef } from "react";
 import { PopoverBody, UncontrolledPopover } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 interface InformativeIconProps {
   children: string | ReactNode;

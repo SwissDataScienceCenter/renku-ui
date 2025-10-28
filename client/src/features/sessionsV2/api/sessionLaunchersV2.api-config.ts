@@ -17,8 +17,8 @@
  */
 
 // Run `npm run generate-api:sessionLaunchersV2` to generate the API
-import type { ConfigFile } from "@rtk-query/codegen-openapi";
 import path from "path";
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
 
 const config: ConfigFile = {
   apiFile: "./sessionLaunchersV2.empty-api.ts",

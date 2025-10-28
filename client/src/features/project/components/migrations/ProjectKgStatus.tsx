@@ -26,7 +26,6 @@ import {
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Collapse } from "reactstrap";
-
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Docs } from "../../../../utils/constants/Docs";
 import { ProjectIndexingStatusResponse } from "../../project.types";

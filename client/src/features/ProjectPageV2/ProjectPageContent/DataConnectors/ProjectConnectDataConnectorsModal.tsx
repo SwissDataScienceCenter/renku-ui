@@ -16,6 +16,10 @@
  * limitations under the License
  */
 
+import DataConnectorModal, {
+  DataConnectorModalBodyAndFooter,
+} from "~/features/dataConnectorsV2/components/DataConnectorModal";
+import styles from "~/features/dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -35,10 +39,6 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
-
-import DataConnectorModal, {
-  DataConnectorModalBodyAndFooter,
-} from "~/features/dataConnectorsV2/components/DataConnectorModal";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
@@ -54,8 +54,6 @@ import {
 import { DATA_CONNECTORS_DOI_DOCS_URL } from "../../../dataConnectorsV2/components/dataConnector.constants";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-
-import styles from "~/features/dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<

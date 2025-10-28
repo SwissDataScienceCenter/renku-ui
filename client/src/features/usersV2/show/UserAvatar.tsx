@@ -19,12 +19,10 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useEffect, useMemo } from "react";
-
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 import type { SearchEntity } from "../../searchV2/api/searchV2Api.api";
 import { EntityPill } from "../../searchV2/components/SearchV2Results";
 import { usersApi } from "../api/users.api";
-
 import styles from "./UserAvatar.module.scss";
 
 type AvatarSize = "sm" | "md" | "lg";

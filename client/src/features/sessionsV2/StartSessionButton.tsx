@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query/react";
 import cx from "classnames";
 import { ReactNode } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";

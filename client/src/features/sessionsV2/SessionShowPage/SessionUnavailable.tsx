@@ -17,10 +17,9 @@
  */
 
 import cx from "classnames";
-import { Link } from "react-router";
-import { Alert } from "reactstrap";
 import { QuestionCircle } from "react-bootstrap-icons";
-import { generatePath, useParams } from "react-router";
+import { generatePath, Link, useParams } from "react-router";
+import { Alert } from "reactstrap";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 export default function SessionUnavailable() {

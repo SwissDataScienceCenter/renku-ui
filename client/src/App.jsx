@@ -32,11 +32,11 @@ import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import { Favicon } from "./features/favicon/Favicon";
-import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
 import {
   FooterNavbar,
   RenkuNavBar,
 } from "./features/landing/components/NavBar/NavBar";
+import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
 import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
 import LegacyDatasets from "./features/legacy/LegacyDatasets";
 import LegacyProjectView from "./features/legacy/LegacyProjectView";
@@ -51,7 +51,6 @@ import Cookie from "./privacy/Cookie";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
-
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 

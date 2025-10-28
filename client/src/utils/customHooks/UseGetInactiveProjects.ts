@@ -17,8 +17,8 @@
  */
 
 import { useEffect, useState } from "react";
-import { useGetInactiveKgProjectsQuery } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import type { InactiveKgProjects } from "../../features/inactiveKgProjects";
+import { useGetInactiveKgProjectsQuery } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 
 const PROJECTS_PER_PAGE = 100;
 /**

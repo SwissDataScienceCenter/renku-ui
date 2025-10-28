@@ -16,22 +16,20 @@
  * limitations under the License.
  */
 
+import v2Styles from "~/styles/renku_bootstrap.scss?url";
 import cx from "classnames";
 import {
+  isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  isRouteErrorResponse,
   type MetaDescriptor,
   type MetaFunction,
 } from "react-router";
-
-import v2Styles from "~/styles/renku_bootstrap.scss?url";
-import NotFound from "./not-found/NotFound";
-
 import type { Route } from "./+types/root";
+import NotFound from "./not-found/NotFound";
 
 export const DEFAULT_META_TITLE: string =
   "Reproducible Data Science | Open Research | Renku";

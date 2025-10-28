@@ -32,9 +32,9 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
-import { Loader } from "../../../../components/Loader";
+import { WarnAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
@@ -42,7 +42,6 @@ import {
   validateCodeRepository,
   validateNoDuplicatesInCodeRepositories,
 } from "./repositories.utils";
-import { WarnAlert } from "../../../../components/Alert";
 
 interface AddCodeRepositoryForm {
   repositoryUrl: string;

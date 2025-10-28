@@ -26,12 +26,12 @@ import {
 import { Link } from "react-router";
 import { Col } from "reactstrap";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
-import LinkWithTooltip from "./LinkWithTooltip";
 import { EntityChildrenDot } from "./entities/Children";
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityDuration from "./entities/Duration";
-import { EntityExecutions } from "./entities/Executions";
 import { EntityType, WorkflowType } from "./entities/entities.types";
+import { EntityExecutions } from "./entities/Executions";
+import LinkWithTooltip from "./LinkWithTooltip";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

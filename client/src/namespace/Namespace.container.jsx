@@ -23,8 +23,7 @@
  *  Namespace container components.
  */
 
-import { useState, useEffect } from "react";
-
+import { useEffect, useState } from "react";
 import { NamespaceProjectsPresent } from ".";
 import { API_ERRORS } from "../api-client/errors";
 

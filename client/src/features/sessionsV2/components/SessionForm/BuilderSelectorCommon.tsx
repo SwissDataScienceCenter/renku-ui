@@ -27,9 +27,7 @@ import Select, {
   type SelectComponentsConfig,
   type SingleValue,
 } from "react-select";
-
 import type { BuilderSelectorOption } from "../../sessionsV2.types";
-
 import styles from "./Select.module.scss";
 
 interface BuilderSelectorCommonProps {

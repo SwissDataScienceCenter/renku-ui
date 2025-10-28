@@ -17,11 +17,9 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-import { CoreResponse } from "../../utils/types/coreService.types";
 import { Url } from "../../utils/helpers/url";
 import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
-
+import { CoreResponse } from "../../utils/types/coreService.types";
 import {
   WorkflowDetails,
   WorkflowDetailsRequestParams,

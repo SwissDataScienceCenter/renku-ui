@@ -17,7 +17,6 @@
  */
 
 import cx from "classnames";
-
 import { Loader } from "./Loader";
 
 export default function PageLoader() {

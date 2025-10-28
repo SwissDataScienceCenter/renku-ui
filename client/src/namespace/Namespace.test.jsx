@@ -27,7 +27,6 @@ import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router";
 import { describe, it } from "vitest";
-
 import { testClient as client } from "../api-client";
 import { NamespaceProjects } from "./index";
 

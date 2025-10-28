@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { Collapse } from "reactstrap";
-
 import { RenkuAlert } from "../../../components/Alert";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
@@ -28,7 +27,6 @@ import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { dashboardMessageSlice } from "../message/dashboardMessageSlice";
-
 import styles from "./DashboardMessage.module.scss";
 
 export default function DashboardMessage() {

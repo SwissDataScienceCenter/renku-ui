@@ -26,7 +26,6 @@ import {
 } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
 import { Alert, Container } from "reactstrap";
-
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";

@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { Col, Container, Row } from "reactstrap";
-
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { useGetUserSecretsQuery } from "../usersV2/api/users.api";

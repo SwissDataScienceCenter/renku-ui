@@ -18,7 +18,6 @@
 
 import { useContext } from "react";
 import { Navigate } from "react-router";
-
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 

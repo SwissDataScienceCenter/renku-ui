@@ -21,11 +21,9 @@ import cx from "classnames";
 import { useContext, useMemo } from "react";
 import { Send } from "react-bootstrap-icons";
 import { Button, Card, CardBody, CardText, CardTitle } from "reactstrap";
-
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { useGetUserQueryState } from "../usersV2/api/users.api";
-
 import styles from "./ContactUsCard.module.scss";
 
 export default function ContactUsCard() {

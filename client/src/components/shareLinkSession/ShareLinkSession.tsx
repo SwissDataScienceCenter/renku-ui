@@ -34,7 +34,6 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
 import { Url } from "../../utils/helpers/url";
 import { CommandCopy } from "../commandCopy/CommandCopy";
 

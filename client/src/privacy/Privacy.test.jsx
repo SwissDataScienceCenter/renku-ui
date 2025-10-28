@@ -27,7 +27,6 @@ import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router";
 import { act } from "react-test-renderer";
 import { describe, it } from "vitest";
-
 import Cookie from "./Cookie";
 import RoutedContent from "./RoutedContent";
 

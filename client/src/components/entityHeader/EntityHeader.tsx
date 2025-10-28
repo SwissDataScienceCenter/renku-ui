@@ -24,15 +24,12 @@
  */
 
 import cx from "classnames";
-
 import SessionButton from "../../features/session/components/SessionButton";
 import { useGetSessionsQuery } from "../../features/session/sessions.api";
 import { getRunningSession } from "../../features/session/sessions.utils";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { Url } from "../../utils/helpers/url";
-import { EnvironmentLogs } from "../Logs";
-import { TimeCaption } from "../TimeCaption";
 import Creators, { EntityCreator } from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import { EntityType } from "../entities/entities.types";
@@ -44,7 +41,8 @@ import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import PinnedBadge from "../list/PinnedBadge";
-
+import { EnvironmentLogs } from "../Logs";
+import { TimeCaption } from "../TimeCaption";
 import "./EntityHeader.scss";
 
 export interface EntityHeaderProps {

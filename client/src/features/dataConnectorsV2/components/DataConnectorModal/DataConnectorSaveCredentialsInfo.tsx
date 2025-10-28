@@ -19,10 +19,8 @@
 import cx from "classnames";
 import { Control, Controller } from "react-hook-form";
 import { Label } from "reactstrap";
-
 import { InfoAlert } from "../../../../components/Alert";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-
 import { DataConnectorMountForm } from "./DataConnectorModalBody";
 
 type DataConnectorSaveCredentialsInfoProps = {

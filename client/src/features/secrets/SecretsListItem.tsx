@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { Card, CardBody, Col } from "reactstrap";
-
 import { TimeCaption } from "../../components/TimeCaption";
 import SecretItemActions from "../secretsV2/SecretItemActions";
 import type { SecretWithId } from "../usersV2/api/users.api";

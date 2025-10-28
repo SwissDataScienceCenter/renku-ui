@@ -18,16 +18,14 @@
 
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
-
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { User } from "../../model/renkuModels.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-
 import GeneralSecretNew from "./GeneralSecretNew";
-import SecretsList from "./SecretsList";
 import { SECRETS_DOCS_URL } from "./secrets.constants";
+import SecretsList from "./SecretsList";
 
 function GeneralSecretSection() {
   return (

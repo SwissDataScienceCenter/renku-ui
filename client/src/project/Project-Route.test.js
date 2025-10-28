@@ -24,7 +24,6 @@
  */
 
 import { describe, expect, it } from "vitest";
-
 import { splitProjectSubRoute } from "./Project";
 
 describe("basic route extraction", () => {

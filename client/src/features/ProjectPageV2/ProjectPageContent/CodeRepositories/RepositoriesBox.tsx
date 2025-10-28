@@ -26,7 +26,6 @@ import {
   CardHeader,
   ListGroup,
 } from "reactstrap";
-
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";

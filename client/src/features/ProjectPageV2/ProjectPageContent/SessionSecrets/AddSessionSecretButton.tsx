@@ -29,17 +29,16 @@ import {
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
-
-import { Loader } from "../../../../components/Loader";
+import { SuccessAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
+import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import DescriptionField from "./fields/DescriptionField";
-import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import FilenameField from "./fields/FilenameField";
 import NameField from "./fields/NameField";
 import ProvideSessionSecretModalContent from "./ProvideSessionSecretModalContent";
-import { SuccessAlert } from "../../../../components/Alert";
 
 export default function AddSessionSecretButton() {
   const ref = useRef<HTMLButtonElement>(null);

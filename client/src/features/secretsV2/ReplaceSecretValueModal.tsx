@@ -28,7 +28,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-
 import { InfoAlert } from "../../components/Alert";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";

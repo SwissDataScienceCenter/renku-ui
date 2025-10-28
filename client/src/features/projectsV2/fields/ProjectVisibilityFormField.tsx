@@ -17,17 +17,15 @@
  */
 
 import cx from "classnames";
-
+import { Globe, Lock } from "react-bootstrap-icons";
 import type { FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
-
-import { Globe, Lock } from "react-bootstrap-icons";
 import { useLocation } from "react-router";
 import { ButtonGroup, Input, Label } from "reactstrap";
 import { isRenkuLegacy } from "../../../utils/helpers/HelperFunctionsV2";
 import type { GenericProjectFormFieldProps } from "./formField.types";
-
 import styles from "./RenkuV1FormFields.module.scss";
+
 export default function ProjectVisibilityFormField<T extends FieldValues>({
   control,
   formId,

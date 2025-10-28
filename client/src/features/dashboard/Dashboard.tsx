@@ -24,7 +24,6 @@ import DashboardMessage from "./components/DashboardMessage";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
 import { ProjectsDashboard } from "./components/ProjectsDashboard";
-
 import "./Dashboard.scss";
 
 function LoggedOutDashboard() {

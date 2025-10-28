@@ -21,13 +21,11 @@ import {
   fetchBaseQuery,
   type FetchBaseQueryMeta,
 } from "@reduxjs/toolkit/query/react";
-
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { processPaginationHeaders } from "../../utils/helpers/kgPagination.utils";
-
 import type { KgSearchResult, ListResponse } from "./KgSearch.types";
 
 export type SearchEntitiesQueryParams = {

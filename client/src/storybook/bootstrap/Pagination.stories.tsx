@@ -1,6 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { useMemo } from "react";
-
 import { useSearchParams } from "react-router";
 import Pagination from "../../components/Pagination";
 

@@ -18,17 +18,17 @@
 
 import { Card, CardBody, Col, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
-import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
-import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
-import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
-import { NotificationsManager } from "../../../notifications/notifications.types";
-import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
-import { EditVisibility } from "../../../project/components/Visibility";
-import { Visibilities } from "../../../components/visibility/Visibility";
-import ProjectKeywordsInput from "../../../project/shared/ProjectKeywords";
-import { ProjectSettingsAvatar } from "./ProjectSettingAvatar";
 import { InfoAlert } from "../../../components/Alert";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import { Visibilities } from "../../../components/visibility/Visibility";
+import { NotificationsManager } from "../../../notifications/notifications.types";
+import { EditVisibility } from "../../../project/components/Visibility";
+import ProjectKeywordsInput from "../../../project/shared/ProjectKeywords";
+import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
+import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
+import { ProjectSettingsAvatar } from "./ProjectSettingAvatar";
+import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
+import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
 
 // ****** SETTINGS COMPONENTS ****** //
 

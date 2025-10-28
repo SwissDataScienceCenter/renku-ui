@@ -17,7 +17,6 @@
  */
 
 import { describe, expect, it } from "vitest";
-
 import { MigrationStatus, RenkuMigrationLevel } from "../project.types";
 import { ProjectMigrationLevel } from "../projectEnums";
 import {
@@ -28,7 +27,6 @@ import {
   getRenkuLevel,
   getTemplateLevel,
 } from "../utils/migrations";
-
 import * as jsonObjects from "./ProjectSettings.testData.json";
 
 type ProjectMigrationLevelKeys = keyof typeof ProjectMigrationLevel;

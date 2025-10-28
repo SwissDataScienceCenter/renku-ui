@@ -17,7 +17,6 @@
  */
 
 import { Progress } from "reactstrap";
-
 import { Loader } from "../../../components/Loader";
 import type { InactiveKgProjects } from "../inactiveKgProjects.types";
 import { ActivationStatusProgressError } from "../InactiveKgProjectsApi";

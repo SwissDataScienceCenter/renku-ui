@@ -36,15 +36,14 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
 import { ACCESS_LEVELS } from "../../../api-client";
 import { SuccessAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/renkuModels.types";
 import {
   CenteredLoader,
-  InformationalBody,
   commitsPhrasing,
+  InformationalBody,
 } from "../../../notebooks/components/Sidecar";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import {
@@ -53,7 +52,6 @@ import {
   useRenkuSaveMutation,
 } from "../sidecar.api";
 import type { GitStatusResult } from "../sidecar.types";
-
 import styles from "./SessionModals.module.scss";
 
 interface SaveSessionModalProps {

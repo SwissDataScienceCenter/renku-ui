@@ -16,16 +16,15 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useMemo } from "react";
-import { Badge, Col, ListGroupItem, Row } from "reactstrap";
-
-import { skipToken } from "@reduxjs/toolkit/query";
 import { Database, NodePlus } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
+import { Badge, Col, ListGroupItem, Row } from "reactstrap";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import {
   useGetDataConnectorsByDataConnectorIdQuery,

@@ -26,7 +26,6 @@ import {
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
-
 import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { SessionStatus, SessionStatusState } from "../../sessions.types";
 import { getSessionStatusColor } from "../../utils/sessionStatus.utils";

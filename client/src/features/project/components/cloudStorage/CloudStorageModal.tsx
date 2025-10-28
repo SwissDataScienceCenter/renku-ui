@@ -22,7 +22,6 @@ import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import {
@@ -39,6 +38,7 @@ import {
   type PostStorageApiArg,
   type PostStorageSchemaTestConnectionApiArg,
 } from "./api/projectCloudStorage.api";
+import styles from "./CloudStorage.module.scss";
 import {
   AddCloudStorageBackButton,
   AddCloudStorageBodyContent,
@@ -59,8 +59,6 @@ import type {
   CloudStorageDetails,
   CloudStorageDetailsOptions,
 } from "./projectCloudStorage.types";
-
-import styles from "./CloudStorage.module.scss";
 
 interface CloudStorageModalProps {
   currentStorage?: CloudStorage | null;

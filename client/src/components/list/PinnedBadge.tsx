@@ -22,7 +22,6 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
-
 import { EntityType } from "../../features/kgSearch";
 import {
   useDeletePinnedProjectsMutation,
@@ -34,9 +33,9 @@ import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { Loader } from "../Loader";
 import { EntityType as AnotherEntityType } from "../entities/entities.types";
 import { extractRkErrorMessage } from "../errors/RtkErrorAlert";
+import { Loader } from "../Loader";
 
 interface PinnedBadgeProps {
   entityType: EntityType | AnotherEntityType;

@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { BoxArrowInUp, Link45deg, XLg } from "react-bootstrap-icons";
+import { Link } from "react-router";
 import {
   Alert,
   Button,
@@ -29,14 +30,13 @@ import {
 } from "reactstrap";
 import { SuccessAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import {
   useGetUserPreferencesQuery,
   usePostUserPreferencesDismissProjectMigrationBannerMutation,
   UserPreferences,
 } from "../usersV2/api/users.api";
 import MigrationV2Modal from "./MigrationV2Modal";
-import { Link } from "react-router";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 
 export default function ProjectMigrationBanner() {
   const [isOpenModal, setIsOpenModal] = useState(false);

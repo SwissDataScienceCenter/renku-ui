@@ -21,10 +21,9 @@ import { useCallback, useEffect, useMemo } from "react";
 import { CheckLg, Pencil, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
 import { SuccessAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {

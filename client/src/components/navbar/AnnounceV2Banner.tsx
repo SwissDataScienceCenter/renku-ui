@@ -1,6 +1,5 @@
 import cx from "classnames";
 import { Link, useLocation } from "react-router";
-
 import LearnAboutV2Button from "../../features/projectsV2/shared/LearnAboutV2Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AnnounceV2 from "./Graphics/AnnounceV2.svg";

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 import PageLoader from "../../components/PageLoader";
 
 const GroupV2Settings = lazy(() => import("./settings/GroupV2Settings"));

@@ -20,7 +20,6 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { PencilSquare, PlusLg } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
-
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { StateModelProject } from "../../project.types";
 import AddCloudStorageModal from "./CloudStorageModal";

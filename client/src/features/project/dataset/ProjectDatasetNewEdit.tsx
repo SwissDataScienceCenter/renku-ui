@@ -23,10 +23,9 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import React from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Alert, Button, Col } from "reactstrap";
-
 import { ACCESS_LEVELS } from "../../../api-client";
-import { Loader } from "../../../components/Loader";
 import FormSchema from "../../../components/formschema/FormSchema";
+import { Loader } from "../../../components/Loader";
 import ProgressIndicator, {
   ProgressStyle,
   ProgressType,
@@ -35,14 +34,14 @@ import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import type { IDatasetFiles, StateModelProject } from "../project.types";
+import type { DatasetPostClient } from "./datasetCore.api";
+import { initializeForDataset } from "./datasetForm.slice";
 import type {
   DatasetModifyDisplayProps,
   DatasetModifyProps,
   PostSubmitProps,
 } from "./DatasetModify";
 import DatasetModify from "./DatasetModify";
-import type { DatasetPostClient } from "./datasetCore.api";
-import { initializeForDataset } from "./datasetForm.slice";
 
 type ChangeDatasetProps = {
   apiVersion: string | undefined;

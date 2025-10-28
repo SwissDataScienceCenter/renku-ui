@@ -21,7 +21,6 @@ import cx from "classnames";
 import { Sliders } from "react-bootstrap-icons";
 import { useParams } from "react-router";
 import { Card, CardBody, CardHeader } from "reactstrap";
-
 import { Loader } from "../../../components/Loader";
 import LazyNotFound from "../../../not-found/LazyNotFound";
 import { useGetGroupsByGroupSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";

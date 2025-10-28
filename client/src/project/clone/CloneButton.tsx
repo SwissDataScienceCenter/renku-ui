@@ -27,7 +27,6 @@ import {
   DropdownToggle,
   Row,
 } from "reactstrap";
-
 import BootstrapCopyIcon from "../../components/icons/BootstrapCopyIcon";
 import { CloneSettings } from "./CloneSettings";
 

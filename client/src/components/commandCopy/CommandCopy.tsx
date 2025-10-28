@@ -19,9 +19,7 @@
 import cx from "classnames";
 import { useRef } from "react";
 import { UncontrolledTooltip } from "reactstrap";
-
 import { Clipboard } from "../clipboard/Clipboard";
-
 import styles from "./CommandCopy.module.scss";
 
 interface CommandCopyProps {

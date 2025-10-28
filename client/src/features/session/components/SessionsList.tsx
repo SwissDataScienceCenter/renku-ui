@@ -26,15 +26,15 @@ import { Col, Row } from "reactstrap";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EnvironmentLogs } from "../../../components/Logs";
 import { NotebooksHelper } from "../../../notebooks";
+import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
 } from "../../../notebooks/components/SessionListStatus";
-import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import Sizes from "../../../utils/constants/Media";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
-import { Session, SessionStatusState, Sessions } from "../sessions.types";
+import { Session, Sessions, SessionStatusState } from "../sessions.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
 

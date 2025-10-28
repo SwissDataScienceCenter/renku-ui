@@ -16,7 +16,6 @@
  * limitations under the License
  */
 import { Col, Row } from "reactstrap";
-
 import SearchV2Bar from "./components/SearchV2Bar";
 import SearchV2Filters from "./components/SearchV2Filters";
 import SearchV2Header from "./components/SearchV2Header";

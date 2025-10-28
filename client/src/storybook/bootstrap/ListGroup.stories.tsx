@@ -1,7 +1,7 @@
-import cx from "classnames";
-import { ListGroup, ListGroupItem } from "reactstrap";
-import { PlayCircle } from "react-bootstrap-icons";
 import { Meta, StoryObj } from "@storybook/react";
+import cx from "classnames";
+import { PlayCircle } from "react-bootstrap-icons";
+import { ListGroup, ListGroupItem } from "reactstrap";
 
 const componentDescription = `
 Renku extensively uses List groups.

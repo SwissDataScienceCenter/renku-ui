@@ -16,19 +16,18 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import {
-  type Control,
-  Controller,
-  type FieldPathByValue,
-  type FieldValues,
-  useWatch,
-} from "react-hook-form";
-import { Collapse, FormText, Input, Label } from "reactstrap";
-
 import CollapseBody from "~/components/container/CollapseBody";
 import { ExternalLink } from "~/components/ExternalLinks";
 import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS } from "~/utils/constants/NewDocs";
+import cx from "classnames";
+import {
+  Controller,
+  useWatch,
+  type Control,
+  type FieldPathByValue,
+  type FieldValues,
+} from "react-hook-form";
+import { Collapse, FormText, Input, Label } from "reactstrap";
 import type { RemoteConfiguration } from "../adminComputeResources.types";
 
 const DEFAULT_REMOTE_KIND_VALUE: RemoteConfiguration["kind"] = "firecrest";

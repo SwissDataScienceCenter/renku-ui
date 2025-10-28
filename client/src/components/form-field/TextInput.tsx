@@ -17,10 +17,9 @@
  */
 
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
-
 import { FormGroup, FormText } from "reactstrap";
-import FormLabel from "./FormLabel";
 import { ErrorLabel } from "../formlabels/FormLabels";
+import FormLabel from "./FormLabel";
 
 type TextInputProps = {
   dataCy?: string;

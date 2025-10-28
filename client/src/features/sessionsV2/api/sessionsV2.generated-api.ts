@@ -1,4 +1,5 @@
 import { sessionsV2EmptyApi as api } from "./sessionsV2.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getNotebooksImages: build.query<

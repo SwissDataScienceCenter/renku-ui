@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
+import CollapseBody from "~/components/container/CollapseBody";
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Control, FieldErrors } from "react-hook-form";
 import { Collapse } from "reactstrap";
-import CollapseBody from "~/components/container/CollapseBody";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { AdvancedSettingsFields } from "../sessionsV2/components/SessionForm/AdvancedSettingsFields";
 import { SessionEnvironmentForm } from "./SessionEnvironmentFormContent";

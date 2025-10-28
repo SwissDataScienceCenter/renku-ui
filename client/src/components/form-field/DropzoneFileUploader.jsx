@@ -16,7 +16,17 @@
  * limitations under the License.
  */
 
+import {
+  faCheck,
+  faExclamationTriangle,
+  faSyncAlt,
+  faTimes,
+  faTrashAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Dropzone from "dropzone";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { Link } from "react-router";
 import {
   Button,
   Card,
@@ -30,21 +40,10 @@ import {
   UncontrolledCollapse,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Link } from "react-router";
-import Dropzone from "dropzone";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck,
-  faExclamationTriangle,
-  faSyncAlt,
-  faTimes,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
-
+import AppContext from "../../utils/context/appContext";
 import { formatBytes, isValidURL } from "../../utils/helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../FileExplorer";
 import { ErrorLabel, InputLabel } from "../formlabels/FormLabels";
-import AppContext from "../../utils/context/appContext";
 
 const FILE_STATUS = {
   ADDED: 201,

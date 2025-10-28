@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 import PageLoader from "../../components/PageLoader";
 
 const SearchV2 = lazy(() => import("./SearchV2"));

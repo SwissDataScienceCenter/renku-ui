@@ -20,7 +20,6 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Progress } from "reactstrap";
-
 import { ProjectIndexingStatuses } from "../../features/project/projectEnums";
 import { projectKgApi } from "../../features/project/projectKg.api";
 import { Url } from "../../utils/helpers/url";

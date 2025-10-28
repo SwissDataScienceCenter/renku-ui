@@ -41,12 +41,12 @@ import {
   RenkuAlert,
   WarnAlert,
 } from "../../../components/Alert";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Loader } from "../../../components/Loader";
 import {
   ButtonWithMenu,
   GoBackButton,
 } from "../../../components/buttons/Button";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { Loader } from "../../../components/Loader";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
@@ -78,7 +78,6 @@ import startSessionSlice, {
 } from "../startSession.slice";
 import { startSessionOptionsSlice } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
-import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import AutostartSessionOptions from "./options/AutostartSessionOptions";
 import SessionBranchOption from "./options/SessionBranchOption";
 import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
@@ -87,6 +86,7 @@ import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import SessionUserSecrets from "./options/SessionUserSecrets";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
+import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);

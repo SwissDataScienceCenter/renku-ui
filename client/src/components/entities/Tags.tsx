@@ -18,7 +18,6 @@
 
 import { useRef } from "react";
 import { UncontrolledTooltip } from "reactstrap";
-
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 
 /**
