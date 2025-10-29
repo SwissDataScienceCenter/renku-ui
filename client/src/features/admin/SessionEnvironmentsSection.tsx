@@ -22,7 +22,6 @@ import {
   CardBody,
   CardHeader,
   CardText,
-  CardTitle,
   Col,
   Collapse,
   Container,
