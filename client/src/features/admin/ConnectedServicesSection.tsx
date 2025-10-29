@@ -43,7 +43,7 @@ import UpdateConnectedServiceButton from "./UpdateConnectedServiceButton";
 export default function ConnectedServicesSection() {
   return (
     <section className="mt-4">
-      <h2 className="fs-4">Integrations</h2>
+      <h2>Integrations</h2>
       <ConnectedServices />
     </section>
   );
@@ -102,10 +102,7 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
   return (
     <Col xs={12} md={6}>
       <Card>
-        <CardHeader
-          className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
-          tag="h5"
-        >
+        <CardHeader className={cx("fs-4", "p-0")} tag="h3">
           <button
             className={cx(
               "align-items-center",
