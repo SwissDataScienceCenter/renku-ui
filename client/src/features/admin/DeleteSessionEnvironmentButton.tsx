@@ -86,14 +86,7 @@ function DeleteSessionEnvironmentModal({
   }, [isOpen, result]);
 
   return (
-    <Modal
-      backdrop="static"
-      centered
-      fullscreen="lg"
-      isOpen={isOpen}
-      size="lg"
-      toggle={toggle}
-    >
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader tag="h2" toggle={toggle}>
         Are you sure?
       </ModalHeader>
@@ -101,8 +94,8 @@ function DeleteSessionEnvironmentModal({
         {result.error && <RtkErrorAlert error={result.error} />}
 
         <p className="mb-0">
-          Please confirm that you want to delete the {environment.name} session
-          environment.
+          Please confirm that you want to delete the{" "}
+          <code>{environment.name}</code> session environment.
         </p>
       </ModalBody>
       <ModalFooter>
