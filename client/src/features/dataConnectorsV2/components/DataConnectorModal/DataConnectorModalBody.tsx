@@ -549,26 +549,26 @@ export function DataConnectorMount({
             rules={{ required: true }}
           />
           {!flatDataConnector.readOnly &&
-          !hasPasswordFieldWithInput &&
-          flatDataConnector.visibility === "public" ? (
-            <ErrorAlert className="mt-1" dismissible={false}>
-              <p className="mb-0">
-                Data security warning: This public and writable data connector
-                is not protected by a password. Anyone on RenkuLab will be able
-                to edit the data connected here. Protect your data with a
-                password, select private visibility, or limit access to
-                read-only.
-              </p>
-            </ErrorAlert>
-          ) : (
-            <WarnAlert className="mt-1" dismissible={false}>
-              <p className="mb-0">
-                You are mounting this storage in read-write mode. If you have
-                read-only access, please select &quot;Read Only&quot; to prevent
-                errors with some storage types.
-              </p>
-            </WarnAlert>
-          )}
+            (!hasPasswordFieldWithInput &&
+            flatDataConnector.visibility === "public" ? (
+              <ErrorAlert className="mt-1" dismissible={false}>
+                <p className="mb-0">
+                  Data security warning: This public and writable data connector
+                  is not protected by a password. Anyone on RenkuLab will be
+                  able to edit the data connected here. Protect your data with a
+                  password, select private visibility, or limit access to
+                  read-only.
+                </p>
+              </ErrorAlert>
+            ) : (
+              <WarnAlert className="mt-1" dismissible={false}>
+                <p className="mb-0">
+                  You are mounting this storage in read-write mode. If you have
+                  read-only access, please select &quot;Read Only&quot; to
+                  prevent errors with some storage types.
+                </p>
+              </WarnAlert>
+            ))}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
             access. You should always select this if you do not have credentials
