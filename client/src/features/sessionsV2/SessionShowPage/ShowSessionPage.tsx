@@ -39,6 +39,7 @@ import {
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
 import { Loader } from "../../../components/Loader";
@@ -53,7 +54,6 @@ import { displaySlice, resetFavicon, setFavicon } from "../../display";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import styles from "../../session/components/ShowSession.module.scss";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
 import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
@@ -67,6 +67,8 @@ import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
+
+import styles from "../../session/components/ShowSession.module.scss";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();

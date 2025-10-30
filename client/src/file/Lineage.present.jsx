@@ -22,6 +22,7 @@ import { Component } from "react";
 import { Download } from "react-bootstrap-icons";
 import { useNavigate } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
+
 import { Clipboard } from "../components/clipboard/Clipboard";
 import { ExternalIconLink } from "../components/ExternalLinks";
 import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
@@ -29,6 +30,7 @@ import { KgStatusWrapper } from "../components/kgStatus/KgStatus";
 import SessionFileButton from "../features/session/components/SessionFileButton";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";
+
 import "./Lineage.css";
 
 function cropLabelStart(limit, label) {

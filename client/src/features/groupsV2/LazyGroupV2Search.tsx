@@ -17,6 +17,7 @@
  */
 
 import { lazy, Suspense } from "react";
+
 import PageLoader from "../../components/PageLoader";
 
 const GroupV2Search = lazy(() => import("./search/GroupV2Search"));

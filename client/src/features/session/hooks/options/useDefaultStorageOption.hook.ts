@@ -21,6 +21,7 @@ import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResou
 import type { ProjectStatistics } from "~/notebooks/components/session.types";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { useEffect } from "react";
+
 import { setError } from "../../startSession.slice";
 import { setStorage } from "../../startSessionOptionsSlice";
 import {

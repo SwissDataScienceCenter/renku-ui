@@ -33,6 +33,7 @@ import Select, {
   SingleValueProps,
 } from "react-select";
 import { Button, Label } from "reactstrap";
+
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import type { PaginatedState } from "../../session/components/options/fetchMore.types";
@@ -43,6 +44,7 @@ import {
   useLazyGetNamespacesQuery,
 } from "../api/projectV2.enhanced-api";
 import type { GenericFormFieldProps } from "./formField.types";
+
 import styles from "./ProjectNamespaceFormField.module.scss";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];

@@ -39,6 +39,7 @@ import {
   Table,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { RefreshButton } from "../../components/buttons/Button";
 import { CommitsView } from "../../components/commits/Commits";
 import { ExternalLink } from "../../components/ExternalLinks";

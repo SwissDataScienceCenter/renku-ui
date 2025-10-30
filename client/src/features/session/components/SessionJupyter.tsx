@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useLocation, type Location } from "react-router";
+
 import { appendCustomUrlPath } from "../../../utils/helpers/url";
 import { Session } from "../sessions.types";
 

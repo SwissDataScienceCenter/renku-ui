@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { InfoAlert } from "~/components/Alert";
 import { ExternalLink } from "~/components/ExternalLinks";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
@@ -37,6 +38,7 @@ import {
   PlayCircle,
 } from "react-bootstrap-icons";
 import { Collapse } from "reactstrap";
+
 import type { GitLabRepositoryCommit } from "../../GitLab.types";
 
 interface DetailsMigrationProps {

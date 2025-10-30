@@ -18,6 +18,7 @@
 
 import { useContext, useEffect, useRef } from "react";
 import { useLocation } from "react-router";
+
 import AppContext from "../utils/context/appContext";
 import type { AppParams } from "../utils/context/appParams.types";
 import { RenkuQueryParams } from "./Authentication.container";

@@ -17,6 +17,7 @@
  */
 
 import { clamp } from "lodash-es";
+
 import { ProjectStatistics } from "../../../notebooks/components/session.types";
 import { MIN_SESSION_STORAGE_GB } from "../startSessionOptions.constants";
 

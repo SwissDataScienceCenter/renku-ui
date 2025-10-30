@@ -52,6 +52,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";

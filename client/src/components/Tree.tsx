@@ -25,6 +25,7 @@ import {
 } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Col } from "reactstrap";
+
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import { EntityChildrenDot } from "./entities/Children";
 import EntityCreators, { EntityCreator } from "./entities/Creators";

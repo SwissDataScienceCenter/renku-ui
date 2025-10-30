@@ -28,6 +28,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
+
 import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
@@ -51,6 +52,7 @@ import Cookie from "./privacy/Cookie";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
+
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 

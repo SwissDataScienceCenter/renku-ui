@@ -17,6 +17,7 @@
  */
 
 import React, { Component } from "react";
+
 import { API_ERRORS } from "../api-client";
 import { ShareLinkSessionIcon } from "../components/shareLinkSession/ShareLinkSession";
 import SessionFileButton from "../features/session/components/SessionFileButton";

@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { Fragment } from "react";
 import { Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
+
 import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";

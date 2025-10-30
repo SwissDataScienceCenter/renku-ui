@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router";
+
 import LazyRenkuMarkdown from "../markdown/LazyRenkuMarkdown";
 
 export interface EntityDescriptionProps {

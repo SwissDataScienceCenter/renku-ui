@@ -35,6 +35,7 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -44,6 +45,7 @@ import {
   computeStorageSizes,
   validateStorageAmount,
 } from "../../utils/sessionOptions.utils";
+
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {

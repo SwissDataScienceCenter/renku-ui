@@ -19,9 +19,11 @@
 import cx from "classnames";
 import { CodeSquare, InfoCircle } from "react-bootstrap-icons";
 import { Col, Container, Row } from "reactstrap";
+
 import { Links } from "../../../../utils/constants/Docs.js";
 import { FooterDashboardCard } from "../../../dashboardV2/DashboardV2.js";
 import renkuBlackIcon from "../../assets/renkuBlack.svg";
+
 import styles from "./Resources.module.scss";
 
 export function ResourcesAndSupport() {

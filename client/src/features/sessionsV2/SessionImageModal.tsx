@@ -26,6 +26,7 @@ import { useCallback, useMemo } from "react";
 import { Plugin, Send, SkipForward, XLg } from "react-bootstrap-icons";
 import { generatePath, Link, useLocation, useNavigate } from "react-router";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
 import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";

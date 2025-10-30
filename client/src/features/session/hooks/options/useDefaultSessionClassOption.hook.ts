@@ -19,6 +19,7 @@
 import type { ResourcePoolWithIdFiltered } from "~/features/sessionsV2/api/computeResources.api";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { useEffect, useMemo } from "react";
+
 import { setError } from "../../startSession.slice";
 import { setSessionClass } from "../../startSessionOptionsSlice";
 

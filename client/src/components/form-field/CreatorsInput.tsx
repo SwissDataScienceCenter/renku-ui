@@ -26,6 +26,7 @@ import type {
   UseFormRegisterReturn,
 } from "react-hook-form";
 import { Button, Col, FormGroup, Input, Label, Row } from "reactstrap";
+
 import { Creator } from "../../features/project/project.types";
 import {
   ErrorLabel,

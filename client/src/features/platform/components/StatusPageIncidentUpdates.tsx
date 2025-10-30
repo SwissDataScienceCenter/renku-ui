@@ -17,6 +17,7 @@
  */
 
 import { startCase } from "lodash-es";
+
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import type {
   IncidentUpdate,

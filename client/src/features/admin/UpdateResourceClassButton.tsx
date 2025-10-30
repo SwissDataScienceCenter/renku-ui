@@ -33,12 +33,14 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import {
   usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   type ResourceClassWithId,
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import { ResourceClassForm } from "./adminComputeResources.types";
+
 import styles from "./UpdateResourceClassButton.module.scss";
 
 interface UpdateResourceClassButtonProps {

@@ -24,6 +24,7 @@
  */
 
 import cx from "classnames";
+
 import SessionButton from "../../features/session/components/SessionButton";
 import { useGetSessionsQuery } from "../../features/session/sessions.api";
 import { getRunningSession } from "../../features/session/sessions.utils";
@@ -43,6 +44,7 @@ import VisibilityIcon from "../entities/VisibilityIcon";
 import PinnedBadge from "../list/PinnedBadge";
 import { EnvironmentLogs } from "../Logs";
 import { TimeCaption } from "../TimeCaption";
+
 import "./EntityHeader.scss";
 
 export interface EntityHeaderProps {

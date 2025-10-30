@@ -25,6 +25,7 @@
 
 import { Component, useContext } from "react";
 import { connect } from "react-redux";
+
 import AppContext from "../utils/context/appContext";
 import { Notifications as NotificationsPresent } from "./Notifications.present";
 import { NotificationsCoordinator } from "./Notifications.state";

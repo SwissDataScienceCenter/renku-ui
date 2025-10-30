@@ -63,6 +63,7 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
   ErrorOrNotAvailableResourcePools,

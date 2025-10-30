@@ -37,6 +37,7 @@ import {
   Label,
   Row,
 } from "reactstrap";
+
 import { DESIRABLE_FINAL_IMAGE_SIZE } from "../../project/components/NewProjectAvatar";
 import { formatBytes } from "../../utils/helpers/HelperFunctions";
 import {

@@ -21,6 +21,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
+
 import {
   useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   type ResourceClassWithId,

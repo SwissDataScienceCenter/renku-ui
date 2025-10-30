@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
+
 import { usersApi } from "../usersV2/api/users.api";
 
 const ONE_MINUTE = 60 * 1_000; // milliseconds

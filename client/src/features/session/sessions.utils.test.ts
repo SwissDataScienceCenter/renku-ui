@@ -17,6 +17,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { Sessions } from "./sessions.types";
 import { getRunningSession } from "./sessions.utils";
 

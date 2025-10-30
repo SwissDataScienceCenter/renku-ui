@@ -17,6 +17,7 @@
  */
 
 // Run `npm run generate-api:namespaceV2` to generate the API
+
 import path from "path";
 import type { ConfigFile } from "@rtk-query/codegen-openapi";
 

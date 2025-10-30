@@ -40,6 +40,7 @@ import {
   type Location,
 } from "react-router";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
+
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
 import { User } from "../../../model/renkuModels.types";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
@@ -59,8 +60,9 @@ import SaveSessionModal from "./SaveSessionModal";
 import SessionHibernated from "./SessionHibernated";
 import SessionJupyter from "./SessionJupyter";
 import SessionUnavailable from "./SessionUnavailable";
-import styles from "./ShowSession.module.scss";
 import StartSessionProgressBar from "./StartSessionProgressBar";
+
+import styles from "./ShowSession.module.scss";
 
 const logo = "/static/public/img/logo.svg";
 

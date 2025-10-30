@@ -30,7 +30,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { FormFeedback, FormText, Label } from "reactstrap";
+
 import { Loader } from "../Loader";
+
 import "./FormLabels.css";
 
 interface LabelProps {

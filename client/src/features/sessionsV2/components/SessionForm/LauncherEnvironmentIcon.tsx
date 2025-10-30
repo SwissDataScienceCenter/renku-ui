@@ -15,8 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { CSSProperties } from "react";
+
 import { SessionLauncher } from "../../api/sessionLaunchersV2.generated-api";
 
 export function LauncherEnvironmentIcon({

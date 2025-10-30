@@ -19,6 +19,7 @@
 import cx from "classnames";
 import type { CSSProperties } from "react";
 import { Link } from "react-router";
+
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityButton } from "../entities/Buttons";
 import EntityCreators from "../entities/Creators";
@@ -30,6 +31,7 @@ import VisibilityIcon from "../entities/VisibilityIcon";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
 import PinnedBadge from "./PinnedBadge";
+
 import "./ListCard.css";
 
 function ListCard({

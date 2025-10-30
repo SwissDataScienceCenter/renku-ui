@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { XCircle } from "react-bootstrap-icons";
+
 import RenkuBadge from "../renkuBadge/RenkuBadge";
 
 interface KeywordBadgeProps {

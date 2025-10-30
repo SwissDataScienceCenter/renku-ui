@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import cx from "classnames";
+
 import { Loader } from "../../components/Loader";
 
 const componentDescription = `

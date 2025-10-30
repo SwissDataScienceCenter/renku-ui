@@ -18,7 +18,9 @@
 
 import { useEffect, useState } from "react";
 import { Col } from "reactstrap";
+
 import "./SessionCheatSheet.css";
+
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 import { ExternalDocsLink } from "../../components/ExternalLinks";
 import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";

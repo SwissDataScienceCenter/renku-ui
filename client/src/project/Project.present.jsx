@@ -40,6 +40,7 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../api-client";
 import { ContainerWrap } from "../App";
 import { InfoAlert } from "../components/Alert";
@@ -65,7 +66,9 @@ import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import { Url } from "../utils/helpers/url";
 import { WorkflowsList } from "../workflows";
+
 import "./Project.css";
+
 import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,

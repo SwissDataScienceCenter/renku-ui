@@ -26,6 +26,7 @@ import { useGetProjectsByProjectIdQuery } from "~/features/projectsV2/api/projec
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { Collapse } from "reactstrap";
+
 import { useGetSessionLaunchersByLauncherIdQuery } from "../../api/sessionLaunchersV2.api";
 import shutdownSessionWarningImage from "./assets/renkuShutdownSessionWarning.svg";
 

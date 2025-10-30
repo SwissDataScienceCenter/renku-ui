@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { forwardRef, ReactNode, useRef } from "react";
+
 import { TimeCaption } from "../TimeCaption";
 import { EntityType } from "./entities.types";
 

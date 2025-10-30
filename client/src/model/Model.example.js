@@ -18,6 +18,7 @@
 
 import { Component } from "react";
 import { connect } from "react-redux";
+
 import { Schema, StateKind, StateModel } from "./Model";
 
 const simpleSchema = new Schema({

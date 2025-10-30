@@ -22,6 +22,7 @@ import cx from "classnames";
 import { ReactNode, useCallback, useContext } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { useLocation } from "react-router";
+
 import rkOopsImg from "../styles/assets/oops.svg";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
 import AppContext from "../utils/context/appContext";

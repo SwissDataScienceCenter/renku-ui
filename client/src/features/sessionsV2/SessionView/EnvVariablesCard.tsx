@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { Col, ListGroup, ListGroupItem, Row } from "reactstrap";
+
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 
 export default function EnvVariablesCard({

@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { Modal, type ModalProps } from "reactstrap";
+
 import styles from "./ScrollableModal.module.scss";
 
 type ScrollableModalProps = Omit<ModalProps, "scrollable">;

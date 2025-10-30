@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { Button } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import ProgressStepsIndicator, {
   ProgressStyle,

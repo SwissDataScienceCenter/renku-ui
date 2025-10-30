@@ -17,6 +17,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { ProjectStatistics } from "../../../notebooks/components/session.types";
 import { MIN_SESSION_STORAGE_GB } from "../startSessionOptions.constants";
 import {

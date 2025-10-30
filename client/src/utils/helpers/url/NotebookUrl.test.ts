@@ -17,6 +17,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { appendCustomUrlPath } from "./NotebookUrl";
 
 describe("Test notebook URL functions", () => {

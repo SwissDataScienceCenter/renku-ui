@@ -28,6 +28,7 @@ import {
   type FieldValues,
 } from "react-hook-form";
 import { Collapse, FormText, Input, Label } from "reactstrap";
+
 import type { RemoteConfiguration } from "../adminComputeResources.types";
 
 const DEFAULT_REMOTE_KIND_VALUE: RemoteConfiguration["kind"] = "firecrest";

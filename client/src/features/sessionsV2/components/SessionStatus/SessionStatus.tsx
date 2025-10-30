@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -26,6 +27,7 @@ import {
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { PrettySessionErrorMessage } from "../../../session/components/status/SessionStatusBadge";

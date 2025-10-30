@@ -31,6 +31,7 @@ import {
   UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { LoginHelper } from "../../authentication";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem.tsx";
@@ -47,6 +48,7 @@ import {
 import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 import { Loader } from "../Loader";
+
 import styles from "./NavBarItem.module.scss";
 
 export function RenkuToolbarItemPlus() {

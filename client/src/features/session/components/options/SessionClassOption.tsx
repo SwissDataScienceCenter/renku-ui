@@ -51,6 +51,7 @@ import Select, {
   SingleValue,
   SingleValueProps,
 } from "react-select";
+
 import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
@@ -58,6 +59,7 @@ import { FetchingResourcePools } from "../../../sessionsV2/components/SessionMod
 import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
 import { setSessionClass } from "../../startSessionOptionsSlice";
 import { computeStorageSizes } from "../../utils/sessionOptions.utils";
+
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {

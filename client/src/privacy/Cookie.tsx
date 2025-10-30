@@ -19,8 +19,10 @@
 /**
  *  Container components for privacy
  */
+
 import { useContext } from "react";
 import CookieConsent from "react-cookie-consent";
+
 import AppContext from "../utils/context/appContext";
 import RoutedContent from "./RoutedContent";
 

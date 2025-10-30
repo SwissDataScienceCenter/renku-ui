@@ -15,11 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Diagram3Fill } from "react-bootstrap-icons";
 import { Button, ListGroup, ModalBody, ModalHeader } from "reactstrap";
+
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import PrimaryAlert from "../../../components/PrimaryAlert";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -27,6 +29,7 @@ import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdCopiesQuery } from "../../projectsV2/api/projectV2.api";
 import ProjectShortHandDisplay from "../../projectsV2/show/ProjectShortHandDisplay";
 import useProjectPermissions from "../utils/useProjectPermissions.hook";
+
 import styles from "./ProjectTemplateInfoBanner.module.css";
 
 interface ProjectCopyListModalProps {

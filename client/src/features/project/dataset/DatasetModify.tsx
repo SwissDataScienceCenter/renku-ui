@@ -22,6 +22,7 @@ import type { FieldErrors } from "react-hook-form";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, type NavigateFunction } from "react-router";
 import { Button, FormGroup, UncontrolledAlert } from "reactstrap";
+
 import { ExternalLink } from "../../../components/ExternalLinks";
 import CreatorsInput, {
   validateCreators,

@@ -23,6 +23,7 @@ import { locationPathnameToSourceUrl } from "~/features/platform/api/platform.ut
 import cx from "classnames";
 import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
+
 import NoLegacySupportForProjects from "./NoLegacySupportForProjects";
 
 function CheckingForRedirect() {

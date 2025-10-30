@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { generatePath, useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
+
 import { UnderlineArrowLink } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import ProjectGitLabWarnBanner from "../../legacy/ProjectGitLabWarnBanner";

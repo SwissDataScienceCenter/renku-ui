@@ -17,6 +17,7 @@
  */
 
 import { useCallback, useMemo, useState } from "react";
+
 import EnvironmentLogsV2 from "../../../components/LogsV2";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";

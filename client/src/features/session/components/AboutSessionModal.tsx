@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { InfoCircle } from "react-bootstrap-icons";
 import { Container, ModalBody, ModalHeader } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { EntityType } from "../../../components/entities/entities.types";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
@@ -28,8 +29,9 @@ import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { Docs } from "../../../utils/constants/Docs";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Session } from "../sessions.types";
-import styles from "./SessionModals.module.scss";
 import SessionsList from "./SessionsList";
+
+import styles from "./SessionModals.module.scss";
 
 interface AboutSessionModalProps {
   isOpen: boolean;

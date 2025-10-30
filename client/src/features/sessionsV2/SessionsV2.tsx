@@ -28,6 +28,7 @@ import {
   CardHeader,
   DropdownItem,
 } from "reactstrap";
+
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
@@ -45,8 +46,10 @@ import SessionLauncherCard from "./SessionList/SessionLauncherCard";
 import { SessionLauncherDisplay } from "./SessionList/SessionLauncherDisplay";
 import { SessionV2 } from "./sessionsV2.types";
 import { SessionView } from "./SessionView/SessionView";
+
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
+
 import { LauncherEnvironmentIcon } from "./components/SessionForm/LauncherEnvironmentIcon";
 
 export function getShowSessionUrlByProject(

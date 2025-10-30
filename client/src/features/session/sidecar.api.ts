@@ -23,6 +23,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
+
 import type {
   GitStatusResult,
   HealthState,

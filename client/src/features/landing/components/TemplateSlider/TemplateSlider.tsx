@@ -21,6 +21,7 @@ import { clamp } from "lodash-es";
 import { DateTime, Duration } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "reactstrap";
+
 import btnPython from "../../assets/btnJupyter.png";
 import btnPythonSelected from "../../assets/btnJupyterSelected.png";
 import btnRStudio from "../../assets/btnR.png";
@@ -30,6 +31,7 @@ import btnVSSelected from "../../assets/btnVSSelected.png";
 import templatePythonGraphic from "../../assets/templateJupyter.png";
 import templateRStudioGraphic from "../../assets/templateR.png";
 import templateVSGraphic from "../../assets/templateVS.png";
+
 import styles from "./TemplateSlider.module.scss";
 
 const AUTO_CHANGE_TEMPLATE_DURATION_MS = Duration.fromObject({

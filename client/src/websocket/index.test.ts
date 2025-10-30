@@ -18,6 +18,7 @@
 
 import WS from "jest-websocket-mock";
 import { describe, expect, it } from "vitest";
+
 import APIClient, { testClient as client } from "../api-client";
 import { globalSchema, StateModel } from "../model";
 import NotificationsManager from "../notifications/NotificationsManager";

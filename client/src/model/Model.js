@@ -36,6 +36,7 @@
 // TODO: Maybe use [jsdoc](http://usejsdoc.org/) here?
 
 import immutableUpdate from "immutability-helper";
+
 import { createStore } from "../utils/helpers/EnhancedState";
 
 // import { Component } from 'react';

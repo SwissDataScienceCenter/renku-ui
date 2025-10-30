@@ -36,6 +36,7 @@ import {
 } from "react-bootstrap-icons";
 import { generatePath, Link, useSearchParams } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
+
 import { useGroupSearch } from "./groupSearch.hook";
 import { GroupSearchEntity } from "./groupSearch.types";
 import { useGroupSearchResultMembers } from "./groupSearchResultMembers.hook";

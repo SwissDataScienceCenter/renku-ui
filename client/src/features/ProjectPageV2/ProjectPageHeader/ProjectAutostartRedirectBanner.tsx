@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import LearnAboutV2Button from "~/features/projectsV2/shared/LearnAboutV2Button";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import cx from "classnames";
 import { Diagram3Fill } from "react-bootstrap-icons";
+
 import PrimaryAlert from "../../../components/PrimaryAlert";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";

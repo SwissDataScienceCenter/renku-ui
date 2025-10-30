@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { Envelope, Github, HeartFill } from "react-bootstrap-icons";
 import { Col, Row } from "reactstrap";
+
 import {
   ExternalDocsLink,
   ExternalLink,

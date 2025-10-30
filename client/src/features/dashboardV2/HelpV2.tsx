@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import cx from "classnames";
 import { useContext } from "react";
 import {
@@ -26,6 +27,7 @@ import {
 } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
+
 import { ExternalIconLink } from "../../components/ExternalLinks";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
@@ -37,6 +39,7 @@ import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import StatusSummary from "../platform/components/StatusSummary";
+
 import HelpV2Styles from "./HelpV2.module.scss";
 
 type HelpNavProps = {

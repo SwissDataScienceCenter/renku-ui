@@ -41,6 +41,7 @@ import {
   UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
@@ -57,6 +58,7 @@ import projectGitLabApi, {
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import { setBranch } from "../../startSessionOptionsSlice";
 import { PaginatedState } from "./fetchMore.types";
+
 import styles from "./SessionBranchOption.module.scss";
 
 export default function SessionBranchOption() {

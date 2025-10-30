@@ -22,6 +22,7 @@ import cx from "classnames";
 import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
+
 import SessionButton from "../../features/session/components/SessionButton";
 import SessionStatusBadge from "../../features/session/components/status/SessionStatusBadge";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
@@ -38,6 +39,7 @@ import { ExternalLink } from "../ExternalLinks";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
 import PinnedBadge from "./PinnedBadge";
+
 import "./ListBar.scss";
 
 /** Helper function for formatting the resource list */

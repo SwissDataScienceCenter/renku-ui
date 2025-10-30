@@ -15,7 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { lazy, Suspense } from "react";
+
 import PageLoader from "../../components/PageLoader";
 
 const ProjectV2ShowByProjectId = lazy(

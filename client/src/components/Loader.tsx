@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useEffect, useRef } from "react";
+
 import styles from "./Loader.module.scss";
 
 interface LoaderProps {

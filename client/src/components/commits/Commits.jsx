@@ -34,11 +34,13 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { Clipboard } from "../clipboard/Clipboard";
 import { ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { TimeCaption } from "../TimeCaption";
+
 import "./Commits.css";
 
 // Constants

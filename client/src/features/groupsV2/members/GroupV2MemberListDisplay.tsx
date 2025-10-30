@@ -22,6 +22,7 @@ import { useMemo } from "react";
 import { People } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Badge } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";

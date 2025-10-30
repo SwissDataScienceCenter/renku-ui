@@ -20,6 +20,7 @@ import cx from "classnames";
 import { ReactNode, useRef } from "react";
 import { Link, useLocation, type To } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
+
 import JupyterIcon from "../../../components/icons/JupyterIcon";
 import { Loader } from "../../../components/Loader";
 import { NotebooksHelper } from "../../../notebooks";

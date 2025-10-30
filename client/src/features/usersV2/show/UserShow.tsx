@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import { Loader } from "../../../components/Loader";

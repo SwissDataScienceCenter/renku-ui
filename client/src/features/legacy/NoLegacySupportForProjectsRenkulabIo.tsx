@@ -26,8 +26,10 @@ import { type CSSProperties } from "react";
 import { PlusSquare } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
+
 import Background from "./Background.svg";
 import MigrateRepo from "./MigrateRepo.svg";
+
 import styles from "./NoLegacySupportForProjects.module.css";
 
 function FrontendClosedIcon() {

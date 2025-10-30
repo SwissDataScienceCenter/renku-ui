@@ -17,6 +17,7 @@
  */
 
 // Run `npx @rtk-query/codegen-openapi projectV2.api-config.ts` in this folder to generate the API
+
 import path from "path";
 import type { ConfigFile } from "@rtk-query/codegen-openapi";
 

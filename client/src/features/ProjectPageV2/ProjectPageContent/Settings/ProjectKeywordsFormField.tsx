@@ -9,6 +9,7 @@ import type {
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Button, FormText, Label } from "reactstrap";
+
 import type { ProjectV2MetadataWithKeyword } from "../../settings/projectSettings.types";
 
 interface ProjectKeywordsFormFieldProps {

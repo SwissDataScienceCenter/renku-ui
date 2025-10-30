@@ -18,6 +18,7 @@
 
 import { Component } from "react";
 import { connect } from "react-redux";
+
 import { NotificationsMenu as NotificationsMenuPresent } from "./Notifications.present";
 import { NotificationsCoordinator } from "./Notifications.state";
 

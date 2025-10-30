@@ -17,6 +17,7 @@
  */
 
 import { Col, Row } from "reactstrap";
+
 import SessionsV2 from "../../sessionsV2/SessionsV2";
 import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
 import { CodeRepositoriesDisplay } from "./CodeRepositories/RepositoriesBox";

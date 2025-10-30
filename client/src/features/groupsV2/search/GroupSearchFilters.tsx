@@ -35,6 +35,7 @@ import {
   Row,
   UncontrolledAccordion,
 } from "reactstrap";
+
 import { useGroup } from "../show/GroupPageContainer";
 import { useGroupSearch } from "./groupSearch.hook";
 import { Filter, GroupSearchEntity } from "./groupSearch.types";

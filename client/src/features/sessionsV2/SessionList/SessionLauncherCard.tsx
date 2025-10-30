@@ -15,12 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { skipToken } from "@reduxjs/toolkit/query";
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
 import cx from "classnames";
 import { useContext } from "react";
 import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -45,8 +47,9 @@ import { SessionLauncherButtons } from "../components/SessionLauncherButtons";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
 import { SessionV2 } from "../sessionsV2.types";
-import styles from "./Session.module.scss";
 import SessionCard from "./SessionCard";
+
+import styles from "./Session.module.scss";
 
 interface SessionLauncherCardProps {
   launcher?: SessionLauncher;

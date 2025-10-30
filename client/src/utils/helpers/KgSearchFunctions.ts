@@ -17,6 +17,7 @@
  */
 
 import { isEqual } from "lodash-es";
+
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 import { ListElementProps } from "../../components/list/list.types";
 import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";

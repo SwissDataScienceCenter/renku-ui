@@ -22,6 +22,7 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
+
 import { EntityType } from "../../features/kgSearch";
 import {
   useDeletePinnedProjectsMutation,

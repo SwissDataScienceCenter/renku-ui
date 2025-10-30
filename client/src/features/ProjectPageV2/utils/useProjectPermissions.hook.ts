@@ -18,6 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect } from "react";
+
 import { DEFAULT_PERMISSIONS } from "../../permissionsV2/permissions.constants";
 import type { Permissions } from "../../permissionsV2/permissions.types";
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";

@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import { ExternalLink } from "~/components/ExternalLinks";
 import TakeActionAlert from "~/components/TakeActionAlert";
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
@@ -25,6 +26,7 @@ import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { Links } from "~/utils/constants/Docs";
 import cx from "classnames";
 import { EmojiDizzy } from "react-bootstrap-icons";
+
 import { doesProjectReferenceRenkulabGitLab } from "./legacy.utils";
 
 function ProjectEditorWarnBanner() {

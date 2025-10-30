@@ -23,6 +23,7 @@ import type {
   UseFormWatch,
 } from "react-hook-form";
 import { Button } from "reactstrap";
+
 import type { GenericProjectFormFieldProps } from "./formField.types";
 import SlugFormField from "./SlugFormField";
 

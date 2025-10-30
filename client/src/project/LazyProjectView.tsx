@@ -17,6 +17,7 @@
  */
 
 import { lazy, Suspense } from "react";
+
 import PageLoader from "../components/PageLoader";
 
 const ProjectView = lazy(() => import("./ProjectV2"));

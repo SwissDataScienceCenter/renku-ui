@@ -26,6 +26,7 @@ import Select, {
   type SelectComponentsConfig,
 } from "react-select";
 import { Input, Label } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../../components/Loader";
 import {
@@ -33,6 +34,7 @@ import {
   type SecretWithId,
 } from "../../../../usersV2/api/users.api";
 import type { SessionSecretFormFieldProps } from "./fields.types";
+
 import styles from "./SelectUserSecretField.module.scss";
 
 interface SelectUserSecretFieldProps<T extends FieldValues>

@@ -3,8 +3,11 @@ import { createRoot } from "react-dom/client";
 import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
 import { BrowserRouter, useLocation, useNavigate } from "react-router";
+
 import "bootstrap";
+
 import StyleHandler from "~/features/rootV2/StyleHandler";
+
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";

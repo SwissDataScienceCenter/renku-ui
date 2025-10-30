@@ -25,6 +25,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { PauseCircle, Trash, XLg } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
@@ -32,7 +33,6 @@ import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import styles from "../session/components/SessionModals.module.scss";
 import { useWaitForSessionStatusV2 } from "../session/useWaitForSessionStatus.hook";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
@@ -40,6 +40,8 @@ import {
 } from "./api/sessionsV2.api";
 import ShutdownSessionContent from "./components/SessionModals/ShoutdownSessionContent";
 import { SessionV2 } from "./sessionsV2.types";
+
+import styles from "../session/components/SessionModals.module.scss";
 
 interface PauseOrDeleteSessionModalProps {
   action?: "pause" | "delete";

@@ -24,6 +24,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { testClient as client } from "../api-client";
 import { globalSchema, StateModel } from "../model";
 import { NotificationsInfo } from "./Notifications.state";

@@ -20,6 +20,7 @@ import { useCallback, useContext, useEffect } from "react";
 import { Balloon, Briefcase } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Button, Table } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import AppContext from "../../utils/context/appContext";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
@@ -43,6 +44,7 @@ import {
   updateList,
   updateProgress,
 } from "./inactiveKgProjectsSlice";
+
 import "./inactiveKgProjects.css";
 
 function ActivatingInfo({ activating }: { activating: boolean }) {

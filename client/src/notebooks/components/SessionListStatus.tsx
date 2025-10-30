@@ -25,6 +25,7 @@ import {
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { Clipboard } from "../../components/clipboard/Clipboard";
 import SessionHibernationStatusDetails from "../../features/session/components/status/SessionHibernationStatusDetails";
 import { PrettySessionErrorMessage } from "../../features/session/components/status/SessionStatusBadge";

@@ -28,6 +28,7 @@ import {
   type MetaDescriptor,
   type MetaFunction,
 } from "react-router";
+
 import type { Route } from "./+types/root";
 import NotFound from "./not-found/NotFound";
 

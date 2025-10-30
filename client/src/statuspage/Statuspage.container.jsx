@@ -24,6 +24,7 @@
  */
 
 import { connect } from "react-redux";
+
 import {
   StatuspageBanner as BannerPresent,
   StatuspageDisplay as DisplayPresent,

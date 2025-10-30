@@ -18,6 +18,7 @@
 
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+
 import { UpdateProjectResponse } from "../../features/project/project.types";
 import { NotebooksErrorResponse } from "../../features/session/sessions.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";

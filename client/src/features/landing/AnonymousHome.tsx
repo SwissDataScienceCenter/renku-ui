@@ -29,6 +29,7 @@ import { Fragment, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
+
 import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
@@ -45,11 +46,13 @@ import { NavBarWarnings } from "./components/NavBar/NavBarWarnings";
 import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport";
 import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./components/WhoWeAre/WhoWeAre";
+
 // ? react-autosuggest styles are defined there q_q
 // ? also, the order of import matters here q_q
 import "../../project/Project.style.css";
 // ? the "quick-nav" class is used in this file
 import "../../components/quicknav/QuickNav.style.css";
+
 import { GetStarted } from "./components/GetStarted/GetStarted";
 import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 

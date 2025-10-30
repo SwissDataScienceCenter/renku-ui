@@ -22,6 +22,7 @@ import {
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import SessionPausedIcon from "../../../../components/icons/SessionPausedIcon";
 import { Loader } from "../../../../components/Loader";
 import { SessionStatusState } from "../../sessions.types";

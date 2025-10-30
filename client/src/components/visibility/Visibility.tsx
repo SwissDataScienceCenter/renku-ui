@@ -25,10 +25,13 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { Input, UncontrolledTooltip } from "reactstrap";
+
 import "./Visibility.css";
+
 import { IconDefinition } from "@fortawesome/free-brands-svg-icons";
 import cx from "classnames";
 import { FormText } from "reactstrap";
+
 import { GitlabLinks } from "../../utils/constants/Docs";
 import { computeVisibilities } from "../../utils/helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";

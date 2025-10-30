@@ -17,6 +17,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import { StepsProgressBar } from "../../components/progress/ProgressSteps";
 import { StartSession } from "./startSession.types";
 

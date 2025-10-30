@@ -21,6 +21,7 @@
  *  ShareLinkModal.js
  *  Share Link Modal component to create a project
  */
+
 import { useEffect, useState } from "react";
 import {
   Col,
@@ -34,6 +35,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 
 function ShareLinkModal(props) {

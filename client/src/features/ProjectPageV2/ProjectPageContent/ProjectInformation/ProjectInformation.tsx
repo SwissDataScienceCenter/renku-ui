@@ -32,6 +32,7 @@ import {
 } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
+
 import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
@@ -50,8 +51,9 @@ import {
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import styles from "./ProjectInformation.module.scss";
 import ProjectInformationButton from "./ProjectInformationButton";
+
+import styles from "./ProjectInformation.module.scss";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 

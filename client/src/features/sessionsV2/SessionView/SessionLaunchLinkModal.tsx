@@ -41,6 +41,7 @@ import {
   ModalFooter,
   Row,
 } from "reactstrap";
+
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import ModalHeader from "../../../components/modal/ModalHeader";

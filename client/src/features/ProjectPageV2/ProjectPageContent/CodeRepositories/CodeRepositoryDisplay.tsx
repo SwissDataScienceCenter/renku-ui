@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type { SerializedError } from "@reduxjs/toolkit";
 import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
@@ -48,6 +49,7 @@ import {
   OffcanvasBody,
   Row,
 } from "reactstrap";
+
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import {
   ErrorAlert,

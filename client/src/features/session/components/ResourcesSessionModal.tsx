@@ -26,12 +26,14 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
+
 import { SessionLogs } from "../../../components/Logs";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import SessionCheatSheetGenerated from "../../../notebooks/components/SessionCheatSheet";
 import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import { Docs } from "../../../utils/constants/Docs";
 import useGetSessionLogs from "../../../utils/customHooks/UseGetSessionLogs";
+
 import styles from "./SessionModals.module.scss";
 
 interface ResourcesSessionModalProps {

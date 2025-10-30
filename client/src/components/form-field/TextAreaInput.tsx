@@ -17,6 +17,7 @@
  */
 
 // TODO: Upgrade to ckeditor5 v6.0.0 to get TS support
+
 import cx from "classnames";
 import React from "react";
 import { Controller } from "react-hook-form";
@@ -28,6 +29,7 @@ import type {
   UseFormRegisterReturn,
 } from "react-hook-form";
 import { FormGroup, FormText, Input, Label } from "reactstrap";
+
 import { ErrorLabel } from "../formlabels/FormLabels";
 import FormLabel from "./FormLabel";
 import LazyCkEditor from "./LazyCkEditor";

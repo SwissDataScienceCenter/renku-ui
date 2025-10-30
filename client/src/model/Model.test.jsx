@@ -28,6 +28,7 @@ import { createRoot } from "react-dom/client";
 import { act } from "react-test-renderer";
 import { createStore } from "redux";
 import { describe, expect, it } from "vitest";
+
 import { Schema, StateKind, StateModel } from "./Model";
 
 const simpleSchema = new Schema({

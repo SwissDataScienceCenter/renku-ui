@@ -29,6 +29,7 @@ import cx from "classnames";
 import { Funnel, FunnelFill } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Button, UncontrolledTooltip } from "reactstrap";
+
 import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityType } from "./entities.types";

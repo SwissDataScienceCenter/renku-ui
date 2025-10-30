@@ -17,6 +17,7 @@
  */
 
 import { ComponentProps, lazy, Suspense } from "react";
+
 import { Loader } from "../Loader";
 
 const NotebookRender = lazy(() => import("./NotebookRender"));

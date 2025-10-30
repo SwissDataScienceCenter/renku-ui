@@ -48,13 +48,15 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import {
   usePostResourcePoolsByResourcePoolIdUsersMutation,
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
-import styles from "./AddManyUsersToResourcePoolButton.module.scss";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
+
+import styles from "./AddManyUsersToResourcePoolButton.module.scss";
 
 const USERS_EMAILS_PLACEHOLDER =
   "user_1@example.com\nuser_2@example.com\nuser_3@example.com";

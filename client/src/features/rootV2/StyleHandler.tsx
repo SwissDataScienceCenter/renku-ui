@@ -1,6 +1,8 @@
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router";
+
 import "bootstrap";
+
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import v1Styles from "~/styles/index.scss?inline";
 import v2Styles from "~/styles/renku_bootstrap.scss?inline";

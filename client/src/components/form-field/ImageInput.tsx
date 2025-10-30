@@ -18,6 +18,7 @@
 
 import React from "react";
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
+
 import FormGeneratorImageInput, {
   ImageInputMode,
 } from "./FormGeneratorImageInput";

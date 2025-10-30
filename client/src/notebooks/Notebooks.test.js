@@ -23,6 +23,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { NotebooksHelper } from "./index";
 import { ExpectedAnnotations } from "./Notebooks.state";
 

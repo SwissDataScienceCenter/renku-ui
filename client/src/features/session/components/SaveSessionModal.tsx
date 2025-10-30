@@ -36,6 +36,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { SuccessAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -52,6 +53,7 @@ import {
   useRenkuSaveMutation,
 } from "../sidecar.api";
 import type { GitStatusResult } from "../sidecar.types";
+
 import styles from "./SessionModals.module.scss";
 
 interface SaveSessionModalProps {

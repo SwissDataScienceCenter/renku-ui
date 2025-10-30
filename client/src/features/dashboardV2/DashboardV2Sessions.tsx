@@ -21,6 +21,7 @@ import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { generatePath, Link } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
@@ -34,6 +35,7 @@ import {
   SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
+
 import styles from "./DashboardV2Sessions.module.scss";
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";

@@ -22,6 +22,7 @@ import useDefaultCommitOption from "~/features/session/hooks/options/useDefaultC
 import { useGetResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.api";
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { useEffect, useMemo } from "react";
+
 import {
   projectCoreApi,
   useGetConfigQuery,

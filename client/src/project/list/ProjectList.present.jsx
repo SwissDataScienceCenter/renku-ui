@@ -42,9 +42,13 @@ import {
   NavItem,
   Row,
 } from "reactstrap";
+
 import { Url } from "../../utils/helpers/url";
+
 import "../Project.css";
+
 import { Label } from "reactstrap";
+
 import ListDisplay from "../../components/List";
 import { Loader } from "../../components/Loader";
 import LazyMarkdownTextExcerpt from "../../components/markdown/LazyMarkdownTextExcerpt";

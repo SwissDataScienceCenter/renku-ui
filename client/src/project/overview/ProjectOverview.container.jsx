@@ -24,6 +24,7 @@
  */
 
 import { Component } from "react";
+
 import { withProjectMapped } from "../Project";
 import {
   OverviewCommits as OverviewCommitsPresent,

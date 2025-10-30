@@ -18,6 +18,7 @@
 
 import { ChangeEvent } from "react";
 import { Input, Label } from "reactstrap";
+
 import "./SortingEntities.css";
 
 /**

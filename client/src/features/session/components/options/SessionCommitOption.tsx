@@ -33,6 +33,7 @@ import Select, {
   SingleValueProps,
 } from "react-select";
 import { Button, UncontrolledTooltip } from "reactstrap";
+
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
@@ -47,6 +48,7 @@ import projectGitLabApi, {
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import { setCommit } from "../../startSessionOptionsSlice";
 import { PaginatedState } from "./fetchMore.types";
+
 import styles from "./SessionCommitOption.module.scss";
 
 export default function SessionCommitOption() {
