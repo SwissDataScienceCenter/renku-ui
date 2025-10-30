@@ -562,13 +562,15 @@ export function DataConnectorMount({
               </p>
             </ErrorAlert>
           ) : (
-            <WarnAlert className="mt-1" dismissible={false}>
-              <p className="mb-0">
-                You are mounting this storage in read-write mode. If you have
-                read-only access, please select &quot;Read Only&quot; to prevent
-                errors with some storage types.
-              </p>
-            </WarnAlert>
+            !flatDataConnector.readOnly && (
+              <WarnAlert className="mt-1" dismissible={false}>
+                <p className="mb-0">
+                  You are mounting this storage in read-write mode. If you have
+                  read-only access, please select &quot;Read Only&quot; to
+                  prevent errors with some storage types.
+                </p>
+              </WarnAlert>
+            )
           )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
