@@ -216,6 +216,14 @@
     "plugins": [
       "@ianvs/prettier-plugin-sort-imports"
     ],
+    "importOrder": [
+      "",
+      "<THIRD_PARTY_MODULES>",
+      "",
+      "^(?!.*[.]s?css$)[./].*$",
+      "",
+      ".s?css$"
+    ],
     "importOrderCaseSensitive": false
   }
 }
