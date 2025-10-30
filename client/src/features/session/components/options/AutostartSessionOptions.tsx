@@ -17,8 +17,6 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useEffect, useMemo } from "react";
-
 import { StatusStepProgressBar } from "~/components/progress/ProgressSteps";
 import { useGetStorageQuery } from "~/features/project/components/cloudStorage/api/projectCloudStorage.api";
 import { useGetConfigQuery } from "~/features/project/projectCoreApi";
@@ -33,6 +31,8 @@ import { ProjectStatistics } from "~/notebooks/components/session.types";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+import { useEffect, useMemo } from "react";
+
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import useDefaultCloudStorageOption from "../../hooks/options/useDefaultCloudStorageOption.hook";

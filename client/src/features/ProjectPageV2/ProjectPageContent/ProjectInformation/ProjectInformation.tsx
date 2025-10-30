@@ -17,6 +17,8 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import cx from "classnames";
 import { useMemo } from "react";
 import {
@@ -28,13 +30,12 @@ import {
   JournalAlbum,
   People,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
-import KeywordBadge from "~/components/keywords/KeywordBadge";
-import KeywordContainer from "~/components/keywords/KeywordContainer";
+
+import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
-import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import type {
@@ -50,8 +51,9 @@ import {
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import styles from "./ProjectInformation.module.scss";
 import ProjectInformationButton from "./ProjectInformationButton";
+
+import styles from "./ProjectInformation.module.scss";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 

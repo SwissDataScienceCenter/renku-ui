@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useSearchParams } from "react-router";
+
 import { useGroupSearch } from "./groupSearch.hook";
 import { getQueryHumanReadable } from "./groupSearch.utils";
 import { FILTER_QUERY } from "./groupsSearch.constants";

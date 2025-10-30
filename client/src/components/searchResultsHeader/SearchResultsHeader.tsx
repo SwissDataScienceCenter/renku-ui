@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
+import { FilterButton } from "../entities/Buttons";
 import SortingEntities, {
   SortingOptions,
 } from "../sortingEntities/SortingEntities";
-import { FilterButton } from "../entities/Buttons";
 
 interface ResultHeaderProps {
   total?: number;

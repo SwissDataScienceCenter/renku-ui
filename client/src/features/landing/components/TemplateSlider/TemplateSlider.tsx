@@ -22,15 +22,15 @@ import { DateTime, Duration } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "reactstrap";
 
-import btnVS from "../../assets/btnVS.png";
-import btnVSSelected from "../../assets/btnVSSelected.png";
 import btnPython from "../../assets/btnJupyter.png";
 import btnPythonSelected from "../../assets/btnJupyterSelected.png";
 import btnRStudio from "../../assets/btnR.png";
 import btnRStudioSelected from "../../assets/btnRSelected.png";
-import templateVSGraphic from "../../assets/templateVS.png";
+import btnVS from "../../assets/btnVS.png";
+import btnVSSelected from "../../assets/btnVSSelected.png";
 import templatePythonGraphic from "../../assets/templateJupyter.png";
 import templateRStudioGraphic from "../../assets/templateR.png";
+import templateVSGraphic from "../../assets/templateVS.png";
 
 import styles from "./TemplateSlider.module.scss";
 

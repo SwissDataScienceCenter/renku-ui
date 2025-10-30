@@ -21,9 +21,7 @@ import { useContext } from "react";
 import { DatasetCoordinator } from "../../dataset/Dataset.state";
 import LazyShowDataset from "../../dataset/LazyShowDataset";
 import AppContext from "../../utils/context/appContext";
-
 import type { UserInfo } from "../usersV2/api/users.types";
-
 import NoLegacySupport from "./NoLegacySupport";
 
 interface LegacyDatasetProps {

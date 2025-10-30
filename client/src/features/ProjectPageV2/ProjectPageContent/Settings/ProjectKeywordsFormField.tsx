@@ -1,3 +1,5 @@
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import cx from "classnames";
 import { PlusLg } from "react-bootstrap-icons";
 import type {
@@ -7,8 +9,7 @@ import type {
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Button, FormText, Label } from "reactstrap";
-import KeywordBadge from "~/components/keywords/KeywordBadge";
-import KeywordContainer from "~/components/keywords/KeywordContainer";
+
 import type { ProjectV2MetadataWithKeyword } from "../../settings/projectSettings.types";
 
 interface ProjectKeywordsFormFieldProps {

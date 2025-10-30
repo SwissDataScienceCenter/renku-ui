@@ -31,7 +31,7 @@ import {
   PauseCircle,
   Trash,
 } from "react-bootstrap-icons";
-import { Link, generatePath, useNavigate, useParams } from "react-router";
+import { generatePath, Link, useNavigate, useParams } from "react-router";
 import {
   Button,
   Modal,
@@ -40,27 +40,27 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
+import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
 import { Loader } from "../../../components/Loader";
 import EnvironmentLogsV2 from "../../../components/LogsV2";
 import { TimeCaption } from "../../../components/TimeCaption";
-import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
-import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
 import { User } from "../../../model/renkuModels.types";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
+import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
-import type { Project } from "../../projectsV2/api/projectV2.api";
-import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery } from "../api/sessionsV2.api";
+import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";

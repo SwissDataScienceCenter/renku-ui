@@ -17,6 +17,7 @@
  */
 
 import React from "react";
+
 import type { NotificationsManager } from "../../notifications/notifications.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 import { createCoreApiVersionedUrlConfig } from "../helpers/url";

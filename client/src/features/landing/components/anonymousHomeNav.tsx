@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import cx from "classnames";
 import type { CSSProperties } from "react";
 import React from "react";
@@ -23,7 +24,6 @@ import { List } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
-import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Links } from "../../../utils/constants/Docs.js";

@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { TimeCaption } from "~/components/TimeCaption";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import cx from "classnames";
 import {
   Control,
@@ -26,8 +28,7 @@ import {
 } from "react-hook-form";
 import { SingleValue } from "react-select";
 import { Card, CardBody, Input, Label, ListGroupItem } from "reactstrap";
-import { TimeCaption } from "~/components/TimeCaption";
-import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
+
 import {
   type ResourceClassWithId,
   type ResourcePoolWithId,

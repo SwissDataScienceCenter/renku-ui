@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Duration } from "luxon";
 import { useRef } from "react";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
+
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";

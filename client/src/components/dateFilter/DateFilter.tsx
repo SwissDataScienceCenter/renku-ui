@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
+import { DateTime, Duration } from "luxon";
 import React, { ChangeEvent, useState } from "react";
 import { Input } from "reactstrap";
-import { DateTime, Duration } from "luxon";
 
 export interface DateFilterProps {
   dates: DatesFilter;

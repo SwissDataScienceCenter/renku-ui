@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { Navigate, useSearchParams } from "react-router";
 import { Col, Row } from "reactstrap";
+
 import { getSearchQueryMissingFilters } from "./groupSearch.utils";
 import GroupSearchBar from "./GroupSearchBar";
 import GroupSearchFilters from "./GroupSearchFilters";

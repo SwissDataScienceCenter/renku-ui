@@ -1,7 +1,7 @@
 import { UncontrolledTooltip } from "reactstrap";
 
-import { ExternalLink } from "../../components/ExternalLinks";
 import { ButtonWithMenu } from "../../components/buttons/Button";
+import { ExternalLink } from "../../components/ExternalLinks";
 
 function externalUrlToGitLabIdeUrl(externalUrl: string) {
   if (externalUrl.includes("/gitlab/"))

@@ -18,13 +18,14 @@
 
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { InfoAlert } from "~/components/Alert";
+import { TimeCaption } from "~/components/TimeCaption";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { PauseCircle, Trash, XLg } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { InfoAlert } from "~/components/Alert";
-import { TimeCaption } from "~/components/TimeCaption";
+
 import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";

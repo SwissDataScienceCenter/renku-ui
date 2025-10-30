@@ -16,6 +16,13 @@
  * limitations under the License.
  */
 
+import { SuccessAlert } from "~/components/Alert";
+import { Loader } from "~/components/Loader";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
+import {
+  MIN_SESSION_STORAGE_GB,
+  STEP_SESSION_STORAGE_GB,
+} from "~/features/session/startSessionOptions.constants";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
@@ -33,16 +40,9 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { SuccessAlert } from "~/components/Alert";
-import { Loader } from "~/components/Loader";
-import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
-  MIN_SESSION_STORAGE_GB,
-  STEP_SESSION_STORAGE_GB,
-} from "~/features/session/startSessionOptions.constants";
-import {
-  type ResourceClassWithId,
   useGetResourcePoolsQuery,
+  type ResourceClassWithId,
 } from "../../api/computeResources.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../../api/sessionLaunchersV2.api";
 import {

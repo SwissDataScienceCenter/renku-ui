@@ -23,8 +23,8 @@ import { Download } from "react-bootstrap-icons";
 import { useNavigate } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
-import { ExternalIconLink } from "../components/ExternalLinks";
 import { Clipboard } from "../components/clipboard/Clipboard";
+import { ExternalIconLink } from "../components/ExternalLinks";
 import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { KgStatusWrapper } from "../components/kgStatus/KgStatus";
 import SessionFileButton from "../features/session/components/SessionFileButton";

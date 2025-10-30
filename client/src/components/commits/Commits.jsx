@@ -25,6 +25,7 @@
 
 import cx from "classnames";
 import { DateTime } from "luxon";
+import { Folder2Open } from "react-bootstrap-icons";
 import {
   ButtonGroup,
   Col,
@@ -33,13 +34,12 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Folder2Open } from "react-bootstrap-icons";
 
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
+import { Clipboard } from "../clipboard/Clipboard";
 import { ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { TimeCaption } from "../TimeCaption";
-import { Clipboard } from "../clipboard/Clipboard";
 
 import "./Commits.css";
 

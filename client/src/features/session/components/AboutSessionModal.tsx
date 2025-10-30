@@ -21,9 +21,9 @@ import { InfoCircle } from "react-bootstrap-icons";
 import { Container, ModalBody, ModalHeader } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
-import { ExternalLink } from "../../../components/ExternalLinks";
 import { EntityType } from "../../../components/entities/entities.types";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
+import { ExternalLink } from "../../../components/ExternalLinks";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { Docs } from "../../../utils/constants/Docs";

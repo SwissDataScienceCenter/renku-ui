@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
@@ -31,9 +34,6 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
-import { Loader } from "~/components/Loader";
-import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
   useGetResourcePoolsQuery,
   usePostResourcePoolsMutation,

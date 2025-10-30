@@ -25,6 +25,7 @@
 
 import { faDiscourse, faGitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { useContext } from "react";
 import { Github } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router";
@@ -35,16 +36,14 @@ import {
   ExternalIconLink,
 } from "../components/ExternalLinks";
 import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
+import StatusSummary from "../features/platform/components/StatusSummary";
 import { isStatusConfigured } from "../statuspage";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
-
-import StatusSummary from "../features/platform/components/StatusSummary";
 import HelpRelease from "./HelpRelease";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
-import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 
 type HelpNavProps = {
   statuspageId: string;

@@ -28,15 +28,16 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
+
 import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import { Favicon } from "./features/favicon/Favicon";
-import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
 import {
   FooterNavbar,
   RenkuNavBar,
 } from "./features/landing/components/NavBar/NavBar";
+import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
 import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
 import LegacyDatasets from "./features/legacy/LegacyDatasets";
 import LegacyProjectView from "./features/legacy/LegacyProjectView";

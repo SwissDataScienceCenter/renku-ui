@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { useCallback, useState } from "react";
 import {
   Card,
   CardBody,
@@ -27,7 +28,9 @@ import {
   Container,
   Row,
 } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import {
   Provider,
@@ -35,8 +38,6 @@ import {
   useGetOauth2ProvidersQuery,
 } from "../connectedServices/api/connectedServices.api";
 import AddConnectedServiceButton from "./AddConnectedServiceButton";
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { useCallback, useState } from "react";
 import DeleteConnectedServiceButton from "./DeleteConnectedServiceButton";
 import UpdateConnectedServiceButton from "./UpdateConnectedServiceButton";
 

@@ -43,13 +43,13 @@ import { Button, Row, UncontrolledTooltip } from "reactstrap";
 
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
 import { User } from "../../../model/renkuModels.types";
-import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
+import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { Url } from "../../../utils/helpers/url";
+import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { useGetSessionsQuery } from "../sessions.api";
 import AboutSessionModal from "./AboutSessionModal";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
@@ -60,8 +60,9 @@ import SaveSessionModal from "./SaveSessionModal";
 import SessionHibernated from "./SessionHibernated";
 import SessionJupyter from "./SessionJupyter";
 import SessionUnavailable from "./SessionUnavailable";
-import styles from "./ShowSession.module.scss";
 import StartSessionProgressBar from "./StartSessionProgressBar";
+
+import styles from "./ShowSession.module.scss";
 
 const logo = "/static/public/img/logo.svg";
 

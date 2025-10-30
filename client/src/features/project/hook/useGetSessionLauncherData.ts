@@ -17,16 +17,16 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useEffect, useMemo } from "react";
-
 import useDefaultBranchOption from "~/features/session/hooks/options/useDefaultBranchOption.hook";
 import useDefaultCommitOption from "~/features/session/hooks/options/useDefaultCommitOption.hook";
 import { useGetResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.api";
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import { useEffect, useMemo } from "react";
+
 import {
   projectCoreApi,
-  type ProjectMetadataParams,
   useGetConfigQuery,
+  type ProjectMetadataParams,
 } from "../projectCoreApi";
 import projectGitLabApi, {
   useGetAllRepositoryBranchesQuery,

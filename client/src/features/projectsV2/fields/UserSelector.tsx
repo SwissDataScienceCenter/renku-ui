@@ -31,10 +31,12 @@ import Select, {
   SingleValue,
   SingleValueProps,
 } from "react-select";
+
 import {
   useGetSearchQueryQuery,
   type User,
 } from "../../searchV2/api/searchV2Api.api";
+
 import styles from "./ProjectNamespaceFormField.module.scss";
 
 const USER_REQUEST_LIMIT = 100;

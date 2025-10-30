@@ -17,15 +17,16 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query/react";
-import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
-import { Collapse } from "reactstrap";
 import CollapseBody from "~/components/container/CollapseBody";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { getRepositoryName } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import { useGetProjectsByProjectIdQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
+import cx from "classnames";
+import { useCallback, useMemo, useState } from "react";
+import { Collapse } from "reactstrap";
+
 import { useGetSessionLaunchersByLauncherIdQuery } from "../../api/sessionLaunchersV2.api";
 import shutdownSessionWarningImage from "./assets/renkuShutdownSessionWarning.svg";
 

@@ -22,6 +22,7 @@
  *  UseWindowSize.tsx
  *  UseWindowSize hook
  */
+
 import { useLayoutEffect, useState } from "react";
 
 function useWindowSize() {

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from "react";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -24,11 +23,12 @@ import {
   faInfoCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { useCallback, useState } from "react";
 import { Collapse } from "reactstrap";
 
-import { ExternalLink } from "../../../../components/ExternalLinks";
 import { CoreErrorAlert } from "../../../../components/errors/CoreErrorAlert";
 import { RtkOrCoreError } from "../../../../components/errors/RtkErrorAlert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Docs } from "../../../../utils/constants/Docs";
 import { TemplateSourceRenku } from "../../../../utils/constants/Migrations";
 import { RenkuRepositories } from "../../../../utils/constants/Repositories";

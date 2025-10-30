@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
+import { InfoAlert } from "~/components/Alert";
 import cx from "classnames";
 import { Control, Controller, useWatch } from "react-hook-form";
 import { Input, Label } from "reactstrap";
-import { InfoAlert } from "~/components/Alert";
+
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 
 export interface ConnectedServiceFormContentProps {

@@ -6,26 +6,25 @@ import { BrowserRouter, useLocation, useNavigate } from "react-router";
 
 import "bootstrap";
 
-// Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
-import v1Styles from "./styles/index.scss?inline";
+import StyleHandler from "~/features/rootV2/StyleHandler";
 
-import App from "./App";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
+import App from "./App";
 import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
+// Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
+import v1Styles from "./styles/index.scss?inline";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import { Sentry } from "./utils/helpers/sentry";
 import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
-
-import StyleHandler from "~/features/rootV2/StyleHandler";
 
 let hasRendered = false;
 
