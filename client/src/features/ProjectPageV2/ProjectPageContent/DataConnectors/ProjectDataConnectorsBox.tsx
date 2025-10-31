@@ -16,6 +16,15 @@
  * limitations under the License
  */
 
+import {
+  type DataConnectorToProjectLink,
+  type GetProjectsByProjectIdDataConnectorLinksApiResponse,
+} from "~/features/dataConnectorsV2/api/data-connectors.api";
+import {
+  useGetDataConnectorsByDataConnectorIdQuery,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
+} from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import cx from "classnames";
 import { useCallback, useRef, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
@@ -29,18 +38,9 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import {
-  type DataConnectorToProjectLink,
-  type GetProjectsByProjectIdDataConnectorLinksApiResponse,
-} from "~/features/dataConnectorsV2/api/data-connectors.api";
-import {
-  useGetDataConnectorsByDataConnectorIdQuery,
-  useGetProjectsByProjectIdDataConnectorLinksQuery,
-  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
-} from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { ErrorAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import DataConnectorBoxListDisplay, {
   DataConnectorBoxListDisplayPlaceholder,
 } from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";

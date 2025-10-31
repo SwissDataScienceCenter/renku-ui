@@ -15,21 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CoreApiVersionedUrlHelper } from "../utils/helpers/url";
 
+import { CoreApiVersionedUrlHelper } from "../utils/helpers/url";
 import addDatasetMethods from "./dataset";
+import { alertAPIErrors, API_ERRORS, APIError } from "./errors";
 import addGraphMethods from "./graph";
 import addInstanceMethods from "./instance";
 import addJobMethods from "./job";
 import addNotebookServersMethods from "./notebook-servers";
+import processPaginationHeaders from "./pagination";
 import addPipelineMethods from "./pipeline";
 import addProjectMethods from "./project";
 import addRepositoryMethods from "./repository";
 import addTemplatesMethods from "./templates";
-import addUserMethods from "./user";
-import processPaginationHeaders from "./pagination";
 import testClient from "./test-client";
-import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
+import addUserMethods from "./user";
 import { renkuFetch, RETURN_TYPES } from "./utils";
 
 const ACCESS_LEVELS = {

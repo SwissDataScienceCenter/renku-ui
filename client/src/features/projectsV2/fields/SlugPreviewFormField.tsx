@@ -17,13 +17,12 @@
  */
 
 import cx from "classnames";
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import type { FieldValues } from "react-hook-form";
 import { FormText } from "reactstrap";
 
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon.tsx";
 import AppContext from "../../../utils/context/appContext.ts";
-
 import { SlugPreviewFormFieldProps } from "./formField.types.ts";
 import SlugFormField from "./SlugFormField";
 

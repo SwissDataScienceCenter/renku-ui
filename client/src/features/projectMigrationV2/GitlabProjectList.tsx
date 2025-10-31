@@ -21,13 +21,14 @@ import { useCallback, useMemo, useState } from "react";
 import { CheckCircle, Folder } from "react-bootstrap-icons";
 import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
+
+import { ErrorAlert } from "../../components/Alert";
 import VisibilityIcon from "../../components/entities/VisibilityIcon";
 import { Loader } from "../../components/Loader";
 import Pagination from "../../components/Pagination";
+import { useGetAllProjectsQuery } from "../project/projectGitLab.api";
 import { useGetRenkuV1ProjectsMigrationsQuery } from "../projectsV2/api/projectV2.api.ts";
 import { GitlabProjectsToMigrate } from "./ProjectMigration.types";
-import { useGetAllProjectsQuery } from "../project/projectGitLab.api";
-import { ErrorAlert } from "../../components/Alert";
 
 export const DEFAULT_PER_PAGE_PROJECT_MIGRATION = 5;
 

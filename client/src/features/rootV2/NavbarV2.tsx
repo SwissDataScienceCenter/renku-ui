@@ -32,13 +32,13 @@ import {
   DropdownMenu,
   DropdownToggle,
   Nav,
-  NavItem,
   NavbarToggler,
+  NavItem,
 } from "reactstrap";
 
 import { ExternalDocsLink } from "../../components/ExternalLinks";
-import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
+import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";

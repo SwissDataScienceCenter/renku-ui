@@ -18,21 +18,20 @@
 
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { XLg } from "react-bootstrap-icons";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
+import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
+import type { DataConnectorRead } from "../api/data-connectors.api";
 import {
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
 } from "../api/data-connectors.enhanced-api";
-import type { DataConnectorRead } from "../api/data-connectors.api";
-import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
-
 import useDataConnectorConfiguration, {
   type DataConnectorConfiguration,
 } from "./useDataConnectorConfiguration.hook";
-import { Loader } from "../../../components/Loader";
 
 interface DataConnectorCredentialsModalProps {
   isOpen: boolean;

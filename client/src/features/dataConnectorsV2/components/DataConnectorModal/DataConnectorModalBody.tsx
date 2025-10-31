@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { Eye, Globe, Lock, Pencil, PlusLg } from "react-bootstrap-icons";
@@ -29,10 +31,9 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import KeywordBadge from "~/components/keywords/KeywordBadge";
-import KeywordContainer from "~/components/keywords/KeywordContainer";
-import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
+
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -561,13 +562,15 @@ export function DataConnectorMount({
               </p>
             </ErrorAlert>
           ) : (
-            <WarnAlert className="mt-1" dismissible={false}>
-              <p className="mb-0">
-                You are mounting this storage in read-write mode. If you have
-                read-only access, please select &quot;Read Only&quot; to prevent
-                errors with some storage types.
-              </p>
-            </WarnAlert>
+            !flatDataConnector.readOnly && (
+              <WarnAlert className="mt-1" dismissible={false}>
+                <p className="mb-0">
+                  You are mounting this storage in read-write mode. If you have
+                  read-only access, please select &quot;Read Only&quot; to
+                  prevent errors with some storage types.
+                </p>
+              </WarnAlert>
+            )
           )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write

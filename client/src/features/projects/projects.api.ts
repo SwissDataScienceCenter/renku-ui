@@ -15,11 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type { FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import {
-  ProjectMetadata,
   formatProjectMetadata,
+  ProjectMetadata,
 } from "../../utils/helpers/ProjectFunctions";
 import { GetProjectsFromSlugsParams } from "./projects.types";
 

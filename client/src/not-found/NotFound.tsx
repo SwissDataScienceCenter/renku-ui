@@ -22,15 +22,17 @@
  *  not-found
  *  Components for the not-found page
  */
+
 import cx from "classnames";
 import { ReactNode } from "react";
+import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
 
-import { ArrowLeft } from "react-bootstrap-icons";
 import ContainerWrap from "../components/container/ContainerWrap";
 import rkNotFoundImg from "../styles/assets/not-found.svg";
 import rkNotFoundImgV2 from "../styles/assets/not-foundV2.svg";
 import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
+
 import "./NotFound.css";
 
 interface NotFoundProps {

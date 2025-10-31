@@ -17,6 +17,12 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
+import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
+import {
+  MIN_SESSION_STORAGE_GB,
+  STEP_SESSION_STORAGE_GB,
+} from "~/features/session/startSessionOptions.constants";
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
 import { XLg } from "react-bootstrap-icons";
@@ -35,12 +41,6 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
-import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
-import {
-  MIN_SESSION_STORAGE_GB,
-  STEP_SESSION_STORAGE_GB,
-} from "~/features/session/startSessionOptions.constants";
 import {
   useGetClassesByClassIdQuery,
   useGetResourcePoolsQuery,

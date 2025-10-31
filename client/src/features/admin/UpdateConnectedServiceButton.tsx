@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PencilSquare, XLg } from "react-bootstrap-icons";
@@ -30,9 +31,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import ScrollableModal from "~/components/modal/ScrollableModal";
-import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
 import {
   Provider,
   ProviderKind,

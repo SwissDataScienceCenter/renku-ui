@@ -23,12 +23,12 @@
 import {
   Action,
   AnyAction,
+  configureStore,
   ReducersMapObject,
   StoreEnhancer,
-  configureStore,
 } from "@reduxjs/toolkit";
-
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
+
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";

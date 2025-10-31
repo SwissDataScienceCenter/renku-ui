@@ -21,15 +21,16 @@ import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPerm
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
 
 import InternalGitLabReferenceWarnBadge from "./InternalGitLabWarnBadge";
-import { doesProjectReferenceRenkulabGitLab } from "./legacy.utils";
+import { doesRepositoryReferenceRenkulabGitLab } from "./legacy.utils";
 
 interface RepositoryGitLabWarnBadgeProps {
   project: Project;
+  url: string;
 }
 
 function RepositoryGitLabWarnBadgeForProject({
   project,
-}: RepositoryGitLabWarnBadgeProps) {
+}: Pick<RepositoryGitLabWarnBadgeProps, "project">) {
   const userPermissions = useProjectPermissions({
     projectId: project.id,
   });
@@ -46,9 +47,9 @@ function RepositoryGitLabWarnBadgeForProject({
 
 export default function RepositoryGitLabWarnBadge({
   project,
+  url,
 }: RepositoryGitLabWarnBadgeProps) {
-  if (!doesProjectReferenceRenkulabGitLab(project.repositories, []))
-    return null;
+  if (!doesRepositoryReferenceRenkulabGitLab(url)) return null;
 
   return <RepositoryGitLabWarnBadgeForProject project={project} />;
 }

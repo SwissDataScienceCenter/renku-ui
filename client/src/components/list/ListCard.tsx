@@ -21,7 +21,6 @@ import type { CSSProperties } from "react";
 import { Link } from "react-router";
 
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { TimeCaption } from "../TimeCaption";
 import { EntityButton } from "../entities/Buttons";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
@@ -29,8 +28,9 @@ import EntityLabel from "../entities/Label";
 import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import PinnedBadge from "./PinnedBadge";
+import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
+import PinnedBadge from "./PinnedBadge";
 
 import "./ListCard.css";
 

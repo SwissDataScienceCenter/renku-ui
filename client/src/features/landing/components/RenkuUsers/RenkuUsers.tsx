@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { Card, Col, Row } from "reactstrap";
+
 import { Links } from "../../../../utils/constants/Docs.js";
 import educatorIcon from "../../assets/educatorIcon.svg";
 import organizerIcon from "../../assets/organizerIcon.svg";

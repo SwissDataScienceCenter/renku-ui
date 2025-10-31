@@ -27,7 +27,6 @@ import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntit
 import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { processPaginationHeaders } from "../../utils/helpers/kgPagination.utils";
-
 import type { KgSearchResult, ListResponse } from "./KgSearch.types";
 
 export type SearchEntitiesQueryParams = {

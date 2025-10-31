@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
+import { Loader } from "~/components/Loader";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
 
-import { Loader } from "~/components/Loader";
 import {
   useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   type ResourceClassWithId,

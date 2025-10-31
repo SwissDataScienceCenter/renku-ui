@@ -1,4 +1,5 @@
 import { sessionLaunchersV2EmptyApi as api } from "./sessionLaunchersV2.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getEnvironments: build.query<

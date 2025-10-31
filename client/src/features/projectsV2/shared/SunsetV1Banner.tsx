@@ -1,13 +1,14 @@
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import cx from "classnames";
 import { useContext } from "react";
 import { ArrowRight, BoxArrowUpRight } from "react-bootstrap-icons";
 import { Link } from "react-router";
-import AppContext from "~/utils/context/appContext";
-import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+
 import { WarnAlert } from "../../../components/Alert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import SunsetV1Button from "./SunsetV1Button";
-import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 
 export default function SunsetBanner() {
   const user = useLegacySelector((state) => state.stateModel.user);

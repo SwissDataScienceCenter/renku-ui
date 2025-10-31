@@ -16,6 +16,9 @@
  * limitations under the License
  */
 
+import DataConnectorModal, {
+  DataConnectorModalBodyAndFooter,
+} from "~/features/dataConnectorsV2/components/DataConnectorModal";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -36,9 +39,6 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import DataConnectorModal, {
-  DataConnectorModalBodyAndFooter,
-} from "~/features/dataConnectorsV2/components/DataConnectorModal";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";

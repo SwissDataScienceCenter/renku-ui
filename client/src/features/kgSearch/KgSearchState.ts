@@ -26,14 +26,14 @@ import {
   stringToSortingOption,
 } from "../../components/sortingEntities/SortingEntities";
 import {
-  TypeEntitySelection,
   arrayToTypeEntitySelection,
+  TypeEntitySelection,
 } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { arrayToUserRolesFilter } from "../../components/userRolesFilter/userRoles.utils";
 import { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import {
-  VisibilitiesFilter,
   arrayToVisibilitiesFilter,
+  VisibilitiesFilter,
 } from "../../components/visibilityFilter/VisibilityFilter";
 import { KgSearchState } from "./KgSearch.types";
 

@@ -21,14 +21,15 @@
  *  Alert.js
  *  Alert code and presentation.
  */
+
 import cx from "classnames";
 import { Component } from "react";
-import { Alert } from "reactstrap";
 import {
   CheckCircle,
   ExclamationTriangle,
   InfoCircle,
 } from "react-bootstrap-icons";
+import { Alert } from "reactstrap";
 
 import { ALERT_ICON_SIZE } from "./Alert.constants";
 

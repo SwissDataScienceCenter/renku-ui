@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { getSessionStatusStyles } from "~/features/sessionsV2/components/SessionStatus/SessionStatus";
+import { SessionV2 } from "~/features/sessionsV2/sessionsV2.types";
 import cx from "classnames";
 import React, { createRef, ReactNode, useEffect, useState } from "react";
 import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
@@ -30,15 +32,14 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
-import { getSessionStatusStyles } from "~/features/sessionsV2/components/SessionStatus/SessionStatus";
-import { SessionV2 } from "~/features/sessionsV2/sessionsV2.types";
+
 import { displaySlice } from "../features/display";
 import { NotebooksHelper } from "../notebooks";
-import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
 import { NotebookAnnotations } from "../notebooks/components/session.types";
-import useGetSessionLogs from "../utils/customHooks/UseGetSessionLogs";
+import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../utils/customHooks/useAppSelector.hook";
+import useGetSessionLogs from "../utils/customHooks/UseGetSessionLogs";
 import {
   capitalizeFirstLetter,
   generateZip,

@@ -17,7 +17,6 @@
  */
 
 import cx from "classnames";
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRepeat,
@@ -46,7 +45,6 @@ import {
 import { Loader } from "../../components/Loader";
 import { User } from "../../model/renkuModels.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-
 import { validationParametersFromDataConnectorConfiguration } from "../dataConnectorsV2/components/dataConnector.utils";
 import { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { usePostStorageSchemaTestConnectionMutation } from "../project/components/cloudStorage/api/projectCloudStorage.api";

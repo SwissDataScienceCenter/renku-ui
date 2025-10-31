@@ -17,13 +17,13 @@
  */
 
 import {
+  sessionLaunchersV2GeneratedApi,
   type EnvironmentIdOnlyPatch,
   type EnvironmentIdOnlyPost,
   type EnvironmentPatchInLauncher,
   type EnvironmentPostInLauncher,
   type GetEnvironmentsApiArg,
   type GetEnvironmentsApiResponse,
-  sessionLaunchersV2GeneratedApi,
 } from "./sessionLaunchersV2.generated-api";
 
 // Fixes some API endpoints

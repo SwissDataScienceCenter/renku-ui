@@ -19,6 +19,7 @@
 import { ChangeEvent } from "react";
 import { Globe, Lock, People } from "react-bootstrap-icons";
 import { Input } from "reactstrap";
+
 import "./VisibilityFilter.css";
 
 /**

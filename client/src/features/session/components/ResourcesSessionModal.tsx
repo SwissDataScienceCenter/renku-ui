@@ -29,8 +29,8 @@ import {
 
 import { SessionLogs } from "../../../components/Logs";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
-import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import SessionCheatSheetGenerated from "../../../notebooks/components/SessionCheatSheet";
+import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import { Docs } from "../../../utils/constants/Docs";
 import useGetSessionLogs from "../../../utils/customHooks/UseGetSessionLogs";
 

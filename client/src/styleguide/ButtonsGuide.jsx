@@ -17,18 +17,18 @@
  */
 
 import { Fragment, useState } from "react";
-
 import { Button, ButtonGroup, DropdownItem, Table } from "reactstrap";
-import { Loader } from "../components/Loader";
+
 import {
   ErrorAlert,
   InfoAlert,
   SuccessAlert,
   WarnAlert,
 } from "../components/Alert";
-import { Clipboard } from "../components/clipboard/Clipboard";
 import { ButtonWithMenu, GoBackButton } from "../components/buttons/Button";
+import { Clipboard } from "../components/clipboard/Clipboard";
 import { ExternalLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
 
 function Switch() {
   const [mode, setMode] = useState(0);
