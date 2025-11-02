@@ -20,6 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Activity,
   ArrowLeft,
   Box,
   Briefcase,
@@ -69,6 +70,7 @@ import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
 
 import styles from "../../session/components/ShowSession.module.scss";
+import { PrometheusQueryBox } from "../../../components/prometheusModal/prometheusModal";
 
 export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
@@ -113,7 +115,9 @@ export default function ShowSessionPage() {
 
   const toggleModalLogs = useCallback(() => {
     dispatch(
-      displaySlice.actions.toggleSessionLogsModal({ targetServer: sessionName })
+      displaySlice.actions.toggleSessionLogsModal({
+        targetServer: sessionName,
+      })
     );
   }, [dispatch, sessionName]);
 
@@ -121,6 +125,14 @@ export default function ShowSessionPage() {
     useState(false);
   const togglePauseOrDeleteSession = useCallback(
     () => setShowModalPauseOrDeleteSession((show) => !show),
+    []
+  );
+
+  const [showPrometheusQuery, setShowPrometheusQuery] = useState(true);
+  const [prometheusQueryBtnColor, setPrometheusQueryBtnColor] =
+    useState("text-dark");
+  const togglePrometheusQuery = useCallback(
+    () => setShowPrometheusQuery((show) => !show),
     []
   );
   const [pauseOrDeleteAction, setPauseOrDeleteAction] = useState<
@@ -225,6 +237,10 @@ export default function ShowSessionPage() {
               namespace={namespace}
               slug={slug}
             />
+            <PrometheusBtn
+              toggle={togglePrometheusQuery}
+              color={prometheusQueryBtnColor}
+            />
           </div>
           <div
             className={cx(
@@ -252,6 +268,17 @@ export default function ShowSessionPage() {
           className={cx(styles.fullscreenContent, "w-100")}
           data-cy="session-page"
         >
+          <div
+            className={cx("position-absolute", "top-0", "end-0", "m-3")}
+            style={{ zIndex: 1000, maxWidth: "400px" }}
+          >
+            <PrometheusQueryBox
+              sessionName={sessionName}
+              onClose={togglePrometheusQuery}
+              setPrometheusQueryBtnColor={setPrometheusQueryBtnColor}
+              showPrometheusQuery={showPrometheusQuery}
+            />
+          </div>
           {content}
         </div>
       </div>
@@ -288,6 +315,39 @@ function LogsBtn({ toggle }: LogsBtnProps) {
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         Get logs
+      </UncontrolledTooltip>
+    </div>
+  );
+}
+
+interface PrometheusBtnProps {
+  toggle: () => void;
+  color: string;
+}
+function PrometheusBtn({ toggle, color }: PrometheusBtnProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  return (
+    <div>
+      <Button
+        enabled={false}
+        className={cx(
+          "bg-transparent",
+          "border-0",
+          "no-focus",
+          "p-0",
+          "shadow-none",
+          color
+        )}
+        data-cy="prometheus-button"
+        id="prometheus-button"
+        innerRef={ref}
+        onClick={toggle}
+      >
+        <Activity className="bi" />
+      </Button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        Toggle metrics
       </UncontrolledTooltip>
     </div>
   );
