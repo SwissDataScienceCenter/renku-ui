@@ -103,6 +103,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     gid,
     mount_directory,
     name,
+    platform,
     port,
     repository_revision: repository_revision_,
     repository,
@@ -125,6 +126,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
         builder_variant,
         frontend_variant,
         repository,
+        platforms: [platform],
         ...(context_dir ? { context_dir } : {}),
         ...(repository_revision ? { repository_revision } : {}),
       },
@@ -203,6 +205,7 @@ export function getFormattedEnvironmentValuesForEdit(
     builder_variant,
     context_dir,
     frontend_variant,
+    platform,
     repository_revision,
     repository,
   } = data;
@@ -218,6 +221,7 @@ export function getFormattedEnvironmentValuesForEdit(
         repository,
         repository_revision: repository_revision ?? "",
         context_dir: context_dir ?? "",
+        platforms: [platform],
       },
     },
   };
@@ -276,6 +280,10 @@ export function getLauncherDefaultValues(
     context_dir:
       launcher.environment.environment_image_source === "build"
         ? launcher.environment.build_parameters.context_dir ?? ""
+        : "",
+    platform:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.platforms?.at(0) ?? ""
         : "",
   };
 }

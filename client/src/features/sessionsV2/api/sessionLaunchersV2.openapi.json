@@ -1006,6 +1006,19 @@
         "maxLength": 99,
         "example": "My Renku Session :)"
       },
+      "BuildPlatforms": {
+        "description": "The target runtime platforms of a session environment.",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/BuildPlatform"
+        }
+      },
+      "BuildPlatform": {
+        "description": "A runtime platform, e.g. \"linux/amd64\".",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99
+      },
       "BuilderVariant": {
         "description": "Type of virtual environment manager when building custom environments.",
         "type": "string",
@@ -1106,6 +1119,9 @@
           "repository": {
             "$ref": "#/components/schemas/Repository"
           },
+          "platforms": {
+            "$ref": "#/components/schemas/BuildPlatforms"
+          },
           "builder_variant": {
             "$ref": "#/components/schemas/BuilderVariant"
           },
@@ -1143,6 +1159,9 @@
         "properties": {
           "repository": {
             "$ref": "#/components/schemas/Repository"
+          },
+          "platforms": {
+            "$ref": "#/components/schemas/BuildPlatforms"
           },
           "builder_variant": {
             "$ref": "#/components/schemas/BuilderVariant"
