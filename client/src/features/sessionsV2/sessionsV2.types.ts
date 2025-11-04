@@ -103,7 +103,7 @@ export interface SessionLauncherForm
   // For "global" environments
   environmentId: EnvironmentId;
 
-  // For "custom" + "image" environments
+  // For "custom + image" environments
   default_url: DefaultUrl;
   uid: EnvironmentUid;
   gid: EnvironmentGid;
@@ -112,6 +112,9 @@ export interface SessionLauncherForm
   args: string;
   command: string;
   strip_path_prefix: boolean;
+
+  // For "custom + build" environments
+  platform: string;
 }
 
 export interface SessionResources {
