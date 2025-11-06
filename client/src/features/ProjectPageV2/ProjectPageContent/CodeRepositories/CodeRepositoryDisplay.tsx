@@ -50,6 +50,8 @@ import {
 } from "reactstrap";
 
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
+import { useGetRepositoriesByRepositoryUrlQuery } from "~/features/repositories/api/repositories.api";
+import { useGetRepositoriesByRepositoryUrlProbeQuery } from "~/features/repositories/api/repositories.generated-api";
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import {
   ErrorAlert,
@@ -72,10 +74,6 @@ import { ConnectButton } from "../../../connectedServices/ConnectedServicesPage"
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-import repositoriesApi, {
-  useGetRepositoryMetadataQuery,
-  useGetRepositoryProbeQuery,
-} from "../../../repositories/repositories.api";
 import { NotebooksErrorResponse } from "../../../session/sessions.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import { SshRepositoryUrlWarning } from "./AddCodeRepositoryModal";
@@ -565,12 +563,18 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
     data: repositoryProviderMatch,
     isLoading: isLoadingRepositoryProviderMatch,
     error,
-  } = useGetRepositoryMetadataQuery({ repositoryUrl });
+  } = useGetRepositoriesByRepositoryUrlQuery({
+    repositoryUrl: encodeURIComponent(repositoryUrl),
+  });
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
   const { data: repositoryProbe, isLoading: isLoadingRepositoryProbe } =
-    useGetRepositoryProbeQuery(isNotFound ? { repositoryUrl } : skipToken);
+    useGetRepositoriesByRepositoryUrlProbeQuery(
+      isNotFound
+        ? { repositoryUrl: encodeURIComponent(repositoryUrl) }
+        : skipToken
+    );
 
   const isLoading =
     isLoadingRepositoryProviderMatch || isLoadingRepositoryProbe;
@@ -636,17 +640,20 @@ function RepositoryView({
     data: repositoryProviderMatch,
     isLoading: isLoadingRepositoryProviderMatch,
     error,
-  } = repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
-    repositoryUrl,
+  } = useGetRepositoriesByRepositoryUrlQuery({
+    repositoryUrl: encodeURIComponent(repositoryUrl),
   });
+
   const { isLoading: isLoadingProviders, error: providersError } =
     useGetOauth2ProvidersQuery();
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
   const { data: repositoryProbe, isLoading: isLoadingRepositoryProbe } =
-    repositoriesApi.endpoints.getRepositoryProbe.useQueryState(
-      isNotFound ? { repositoryUrl } : skipToken
+    useGetRepositoriesByRepositoryUrlProbeQuery(
+      isNotFound
+        ? { repositoryUrl: encodeURIComponent(repositoryUrl) }
+        : skipToken
     );
 
   const isLoading =
@@ -793,18 +800,20 @@ function RepositoryPermissionsAlert({
   );
 
   const { data: repositoryProviderMatch, error } =
-    repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
-      repositoryUrl,
+    useGetRepositoriesByRepositoryUrlQuery({
+      repositoryUrl: encodeURIComponent(repositoryUrl),
     });
+
   const { data: providers } =
     connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
 
   const isNotFound = error != null && "status" in error && error.status == 404;
 
-  const { data: repositoryProbe } =
-    repositoriesApi.endpoints.getRepositoryProbe.useQueryState(
-      isNotFound ? { repositoryUrl } : skipToken
-    );
+  const { data: repositoryProbe } = useGetRepositoriesByRepositoryUrlProbeQuery(
+    isNotFound
+      ? { repositoryUrl: encodeURIComponent(repositoryUrl) }
+      : skipToken
+  );
 
   const permissions = useMemo(() => {
     if (isNotFound && repositoryProbe) {
@@ -967,9 +976,10 @@ function RepositoryProviderDetails({
     data: repositoryProviderMatch,
     isLoading: isLoadingRepositoryProviderMatch,
     error: repositoryProviderMatchError,
-  } = repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
-    repositoryUrl,
+  } = useGetRepositoriesByRepositoryUrlQuery({
+    repositoryUrl: encodeURIComponent(repositoryUrl),
   });
+
   const {
     data: providers,
     isLoading: isLoadingProviders,

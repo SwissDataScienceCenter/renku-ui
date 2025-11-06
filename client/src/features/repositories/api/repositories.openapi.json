@@ -1,0 +1,182 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Renku Data Services API",
+    "description": "This service is the main backend for Renku. It provides information about users, projects,\ncloud storage, access to compute resources and many other things.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api/data"
+    }
+  ],
+  "paths": {
+    "/repositories/{repository_url}": {
+      "get": {
+        "summary": "Get the metadata available about a repository",
+        "description": "The repository URL will be matched against the set of available OAuth2 clients to determine which service to connect to. If a match is found, the corresponding service API will be used to fetch the repository metadata.\n\nIf no provider is found, we cannot fetch repository metadata and a 404 is returned. In this case, we can use the probe endpoint to check if the repository is likely clonable.\n\nNote that only HTTP(S) URLs are supported.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repository_url",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The repository metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryProviderMatch"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There is no available provider for this repository."
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["repositories"]
+      }
+    },
+    "/repositories/{repository_url}/probe": {
+      "get": {
+        "summary": "Probe a repository to check if it is publicly available",
+        "description": "Probe a repository URL to see if it implements the git+http protocol. In this case we assume that the repository can be cloned and pulled.\n\nNote that only HTTP(S) URLs are supported.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repository_url",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The repository seems to be available."
+          },
+          "404": {
+            "description": "There is no available provider for this repository."
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["repositories"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RepositoryProviderMatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider_id": {
+            "$ref": "#/components/schemas/ProviderId"
+          },
+          "connection_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "repository_metadata": {
+            "$ref": "#/components/schemas/RepositoryMetadata"
+          }
+        },
+        "required": ["provider_id"]
+      },
+      "RepositoryMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "git_http_url": {
+            "$ref": "#/components/schemas/WebUrl"
+          },
+          "web_url": {
+            "$ref": "#/components/schemas/WebUrl"
+          },
+          "permissions": {
+            "$ref": "#/components/schemas/RepositoryPermissions"
+          }
+        },
+        "required": ["git_http_url", "web_url", "permissions"]
+      },
+      "RepositoryPermissions": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pull": {
+            "type": "boolean"
+          },
+          "push": {
+            "type": "boolean"
+          }
+        },
+        "required": ["pull", "push"]
+      },
+      "Ulid": {
+        "description": "ULID identifier",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      },
+      "ProviderId": {
+        "description": "ID of a OAuth2 provider, e.g. \"gitlab.com\".",
+        "type": "string",
+        "example": "some-id"
+      },
+      "WebUrl": {
+        "description": "A URL which can be opened in a browser, i.e. a web page.",
+        "type": "string",
+        "example": "https://example.org"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}

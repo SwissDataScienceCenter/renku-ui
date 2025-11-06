@@ -27,7 +27,7 @@ import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
-import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
+import { useGetRepositoriesProbesQuery } from "../../../repositories/api/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
