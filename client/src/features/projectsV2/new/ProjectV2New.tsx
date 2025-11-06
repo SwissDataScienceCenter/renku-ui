@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { CheckLg, Folder, InfoCircle, XLg } from "react-bootstrap-icons";
@@ -31,6 +30,7 @@ import {
   ModalFooter,
 } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";

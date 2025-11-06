@@ -18,15 +18,6 @@
 
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { WarnAlert } from "~/components/Alert";
-import { ButtonWithMenuV2 } from "~/components/buttons/Button";
-import { Loader } from "~/components/Loader";
-import { User } from "~/model/renkuModels.types";
-import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
-import { NotificationsManager } from "~/notifications/notifications.types";
-import AppContext from "~/utils/context/appContext";
-import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import {
@@ -53,6 +44,15 @@ import {
   Row,
 } from "reactstrap";
 
+import { WarnAlert } from "~/components/Alert";
+import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { Loader } from "~/components/Loader";
+import { User } from "~/model/renkuModels.types";
+import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
+import { NotificationsManager } from "~/notifications/notifications.types";
+import AppContext from "~/utils/context/appContext";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
 import { SessionRowResourceRequests } from "../../../session/components/SessionsList";

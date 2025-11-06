@@ -18,7 +18,6 @@
 
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import AppContext from "~/utils/context/appContext";
 import cx from "classnames";
 import { ReactNode, useContext } from "react";
 import {
@@ -44,6 +43,7 @@ import {
   Row,
 } from "reactstrap";
 
+import AppContext from "~/utils/context/appContext";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";

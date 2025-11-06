@@ -18,7 +18,6 @@
 
 import type { SerializedError } from "@reduxjs/toolkit";
 import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -50,6 +49,7 @@ import {
   Row,
 } from "reactstrap";
 
+import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import {
   ErrorAlert,

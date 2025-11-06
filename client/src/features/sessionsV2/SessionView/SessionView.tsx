@@ -17,7 +17,6 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
@@ -43,6 +42,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";

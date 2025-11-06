@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import { Loader } from "~/components/Loader";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
@@ -31,6 +29,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
 import { usePostEnvironmentsMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 import SessionEnvironmentFormContent, {

@@ -16,6 +16,9 @@
  * limitations under the License
  */
 
+import cx from "classnames";
+import { EmojiDizzy } from "react-bootstrap-icons";
+
 import { ExternalLink } from "~/components/ExternalLinks";
 import TakeActionAlert from "~/components/TakeActionAlert";
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
@@ -24,9 +27,6 @@ import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { Links } from "~/utils/constants/Docs";
-import cx from "classnames";
-import { EmojiDizzy } from "react-bootstrap-icons";
-
 import { doesProjectReferenceRenkulabGitLab } from "./legacy.utils";
 
 function ProjectEditorWarnBanner() {

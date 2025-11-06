@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import { Loader } from "~/components/Loader";
-import ScrollableModal from "~/components/modal/ScrollableModal";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -49,6 +46,9 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
   usePostResourcePoolsByResourcePoolIdUsersMutation,
   type ResourcePoolWithId,

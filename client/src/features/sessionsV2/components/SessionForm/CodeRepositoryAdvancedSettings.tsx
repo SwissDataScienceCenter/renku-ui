@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import CollapseBody from "~/components/container/CollapseBody";
-import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Controller, type Control } from "react-hook-form";
 import { Collapse, Input, Label } from "reactstrap";
 
+import CollapseBody from "~/components/container/CollapseBody";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 
 interface CodeRepositoryAdvancedSettingsProps {

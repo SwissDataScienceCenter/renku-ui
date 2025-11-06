@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-import KeywordBadge from "~/components/keywords/KeywordBadge";
-import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
-import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { XCircleFill } from "react-bootstrap-icons";
@@ -36,6 +33,9 @@ import {
   UncontrolledAccordion,
 } from "reactstrap";
 
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
+import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { useGroup } from "../show/GroupPageContainer";
 import { useGroupSearch } from "./groupSearch.hook";
 import { Filter, GroupSearchEntity } from "./groupSearch.types";

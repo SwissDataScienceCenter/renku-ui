@@ -16,7 +16,6 @@
  * limitations under the License
  */
 
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import cx from "classnames";
 import { useEffect, useMemo } from "react";
 import { Folder, PlusLg } from "react-bootstrap-icons";
@@ -30,6 +29,7 @@ import {
   ListGroupItem,
 } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";

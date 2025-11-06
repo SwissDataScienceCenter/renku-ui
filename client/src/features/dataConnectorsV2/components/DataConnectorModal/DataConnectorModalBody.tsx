@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import KeywordBadge from "~/components/keywords/KeywordBadge";
-import KeywordContainer from "~/components/keywords/KeywordContainer";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { Eye, Globe, Lock, Pencil, PlusLg } from "react-bootstrap-icons";
@@ -32,6 +30,8 @@ import {
   Row,
 } from "reactstrap";
 
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";

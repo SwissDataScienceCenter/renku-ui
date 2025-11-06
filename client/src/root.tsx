@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import v2Styles from "~/styles/renku_bootstrap.scss?url";
 import cx from "classnames";
 import {
   isRouteErrorResponse,
@@ -29,6 +28,7 @@ import {
   type MetaFunction,
 } from "react-router";
 
+import v2Styles from "~/styles/renku_bootstrap.scss?url";
 import type { Route } from "./+types/root";
 import NotFound from "./not-found/NotFound";
 

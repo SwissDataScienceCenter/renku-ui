@@ -16,12 +16,6 @@
  * limitations under the License.
  */
 
-import { InfoAlert } from "~/components/Alert";
-import { ExternalLink } from "~/components/ExternalLinks";
-import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
-import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
-import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResources.api";
-import { Links } from "~/utils/constants/Docs";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -39,6 +33,12 @@ import {
 } from "react-bootstrap-icons";
 import { Collapse } from "reactstrap";
 
+import { InfoAlert } from "~/components/Alert";
+import { ExternalLink } from "~/components/ExternalLinks";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
+import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResources.api";
+import { Links } from "~/utils/constants/Docs";
 import type { GitLabRepositoryCommit } from "../../GitLab.types";
 
 interface DetailsMigrationProps {

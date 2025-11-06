@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from "@storybook/react";
-import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import cx from "classnames";
 import { CircleFill } from "react-bootstrap-icons";
 
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { Loader } from "../../components/Loader";
 
 export default {

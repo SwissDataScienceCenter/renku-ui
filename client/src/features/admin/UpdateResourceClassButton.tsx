@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import { Loader } from "~/components/Loader";
-import ScrollableModal from "~/components/modal/ScrollableModal";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
@@ -34,6 +31,9 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
   usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   type ResourceClassWithId,

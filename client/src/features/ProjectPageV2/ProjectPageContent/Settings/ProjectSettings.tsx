@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
@@ -34,6 +33,7 @@ import {
   Label,
 } from "reactstrap";
 
+import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";

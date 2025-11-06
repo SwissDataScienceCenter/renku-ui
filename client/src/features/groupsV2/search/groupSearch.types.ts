@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 
-import type { SearchEntity } from "~/features/searchV2/api/searchV2Api.api";
 import { ReactNode } from "react";
+
+import type { SearchEntity } from "~/features/searchV2/api/searchV2Api.api";
 
 export type GroupSearchEntity = Exclude<
   SearchEntity,

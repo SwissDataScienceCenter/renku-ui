@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
+import { useEffect } from "react";
+
 import type { ProjectConfig } from "~/features/project/project.types";
 import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResources.api";
 import type { ProjectStatistics } from "~/notebooks/components/session.types";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import { useEffect } from "react";
-
 import { setError } from "../../startSession.slice";
 import { setStorage } from "../../startSessionOptionsSlice";
 import {

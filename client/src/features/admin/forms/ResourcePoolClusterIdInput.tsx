@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { ExternalLink } from "~/components/ExternalLinks";
-import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_CLUSTERS } from "~/utils/constants/NewDocs";
 import cx from "classnames";
 import {
   Controller,
@@ -26,6 +24,9 @@ import {
   type FieldValues,
 } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
+
+import { ExternalLink } from "~/components/ExternalLinks";
+import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_CLUSTERS } from "~/utils/constants/NewDocs";
 
 const DEFAULT_ERROR_MESSAGE =
   "Please provide a valid Cluster ID or leave empty.";

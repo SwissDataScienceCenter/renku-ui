@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import { Loader } from "~/components/Loader";
 import cx from "classnames";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import Autosuggest, {
@@ -40,6 +38,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
 import {
   usePostResourcePoolsByResourcePoolIdUsersMutation,
   type ResourcePoolWithId,
