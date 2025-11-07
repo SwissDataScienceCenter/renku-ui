@@ -17,6 +17,15 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import cx from "classnames";
+import { useCallback, useEffect, useMemo } from "react";
+import {
+  Input,
+  InputGroup,
+  InputGroupText,
+  UncontrolledTooltip,
+} from "reactstrap";
+
 import { useGetConfigQuery } from "~/features/project/projectCoreApi";
 import { useCoreSupport } from "~/features/project/useProjectCoreSupport";
 import {
@@ -27,15 +36,6 @@ import { ProjectStatistics } from "~/notebooks/components/session.types";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
-import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
-import {
-  Input,
-  InputGroup,
-  InputGroupText,
-  UncontrolledTooltip,
-} from "reactstrap";
-
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,

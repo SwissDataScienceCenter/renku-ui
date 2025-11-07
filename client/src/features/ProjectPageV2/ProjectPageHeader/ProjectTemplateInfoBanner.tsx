@@ -16,12 +16,12 @@
  * limitations under the License
  */
 
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Diagram3Fill } from "react-bootstrap-icons";
 import { Button, ListGroup, ModalBody, ModalHeader } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import PrimaryAlert from "../../../components/PrimaryAlert";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";

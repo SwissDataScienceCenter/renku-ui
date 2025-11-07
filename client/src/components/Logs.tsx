@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { getSessionStatusStyles } from "~/features/sessionsV2/components/SessionStatus/SessionStatus";
-import { SessionV2 } from "~/features/sessionsV2/sessionsV2.types";
 import cx from "classnames";
 import React, { createRef, ReactNode, useEffect, useState } from "react";
 import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
@@ -33,6 +31,8 @@ import {
   TabPane,
 } from "reactstrap";
 
+import { getSessionStatusStyles } from "~/features/sessionsV2/components/SessionStatus/SessionStatus";
+import { SessionV2 } from "~/features/sessionsV2/sessionsV2.types";
 import { displaySlice } from "../features/display";
 import { NotebooksHelper } from "../notebooks";
 import { NotebookAnnotations } from "../notebooks/components/session.types";

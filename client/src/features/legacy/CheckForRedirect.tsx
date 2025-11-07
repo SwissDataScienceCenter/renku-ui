@@ -17,13 +17,13 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import ContainerWrap from "~/components/container/ContainerWrap";
-import { useGetPlatformRedirectsBySourceUrlQuery } from "~/features/platform/api/platform.api";
-import { locationPathnameToSourceUrl } from "~/features/platform/api/platform.utils";
 import cx from "classnames";
 import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 
+import ContainerWrap from "~/components/container/ContainerWrap";
+import { useGetPlatformRedirectsBySourceUrlQuery } from "~/features/platform/api/platform.api";
+import { locationPathnameToSourceUrl } from "~/features/platform/api/platform.utils";
 import NoLegacySupportForProjects from "./NoLegacySupportForProjects";
 
 function CheckingForRedirect() {

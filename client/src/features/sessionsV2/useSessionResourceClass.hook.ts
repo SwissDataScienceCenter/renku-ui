@@ -17,10 +17,10 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { useCallback, useEffect, useState } from "react";
 
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
   useGetClassesByClassIdQuery,
   type ResourceClassWithId,

@@ -19,7 +19,6 @@
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
-
 import InternalGitLabReferenceWarnBadge from "./InternalGitLabWarnBadge";
 import { doesRepositoryReferenceRenkulabGitLab } from "./legacy.utils";
 

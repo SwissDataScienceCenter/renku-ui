@@ -17,8 +17,6 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import KeywordBadge from "~/components/keywords/KeywordBadge";
-import KeywordContainer from "~/components/keywords/KeywordContainer";
 import cx from "classnames";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
@@ -40,6 +38,8 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";

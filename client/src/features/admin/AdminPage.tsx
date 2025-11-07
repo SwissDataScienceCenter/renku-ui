@@ -16,12 +16,6 @@
  * limitations under the License.
  */
 
-import { ErrorAlert } from "~/components/Alert";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
-import { Loader } from "~/components/Loader";
-import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
-import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PersonFillX, TrashFill, XLg } from "react-bootstrap-icons";
@@ -36,6 +30,12 @@ import {
   ModalFooter,
 } from "reactstrap";
 
+import { ErrorAlert } from "~/components/Alert";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { Loader } from "~/components/Loader";
+import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
+import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
   useDeleteResourcePoolsByResourcePoolIdMutation,
   useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,

@@ -17,7 +17,6 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { ReactNode, useCallback, useMemo, useRef, useState } from "react";
@@ -32,6 +31,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { Loader } from "../../../components/Loader";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";

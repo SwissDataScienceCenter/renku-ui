@@ -18,8 +18,6 @@
 
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AppContext from "~/utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import cx from "classnames";
 import {
   MouseEvent,
@@ -31,6 +29,8 @@ import {
 import { Link, useNavigate } from "react-router";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { Loader } from "../../../components/Loader";
 import { NotebooksHelper } from "../../../notebooks";
 import { Url } from "../../../utils/helpers/url";

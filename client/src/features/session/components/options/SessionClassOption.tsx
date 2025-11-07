@@ -22,21 +22,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { ErrorAlert, WarnAlert } from "~/components/Alert";
-import { ExternalLink } from "~/components/ExternalLinks";
-import {
-  useGetResourcePoolsQuery,
-  type ResourceClassWithIdFiltered,
-  type ResourcePoolWithIdFiltered,
-} from "~/features/sessionsV2/api/computeResources.api";
-import { User } from "~/model/renkuModels.types";
-import { ProjectStatistics } from "~/notebooks/components/session.types";
-import AppContext from "~/utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
-import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
-import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
-import { toHumanDuration } from "~/utils/helpers/DurationUtils";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
@@ -52,6 +37,21 @@ import Select, {
   SingleValueProps,
 } from "react-select";
 
+import { ErrorAlert, WarnAlert } from "~/components/Alert";
+import { ExternalLink } from "~/components/ExternalLinks";
+import {
+  useGetResourcePoolsQuery,
+  type ResourceClassWithIdFiltered,
+  type ResourcePoolWithIdFiltered,
+} from "~/features/sessionsV2/api/computeResources.api";
+import { User } from "~/model/renkuModels.types";
+import { ProjectStatistics } from "~/notebooks/components/session.types";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+import { toHumanDuration } from "~/utils/helpers/DurationUtils";
 import { ProjectConfig } from "../../../project/project.types";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";

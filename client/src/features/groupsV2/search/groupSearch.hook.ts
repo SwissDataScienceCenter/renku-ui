@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 
+import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api";
 import { useGroup } from "../show/GroupPageContainer";
 import { generateQueryParams } from "./groupSearch.utils";
 import { SEARCH_DEBOUNCE_SECONDS } from "./groupsSearch.constants";

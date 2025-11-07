@@ -20,7 +20,6 @@ import type {
   Pagination as BasePagination,
   PaginatedResponse,
 } from "~/utils/types/pagination.types";
-
 import type { AppInstallation, ProviderPost } from "./connectedServices.api";
 
 export type Pagination = Required<

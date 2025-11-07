@@ -17,7 +17,6 @@
  */
 
 import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils";
-
 import type { Provider } from "./api/connectedServices.api";
 
 type GetSettingsUrlArgs = Pick<Provider, "app_slug" | "url">;

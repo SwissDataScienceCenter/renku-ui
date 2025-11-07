@@ -26,6 +26,23 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
+import cx from "classnames";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
+import { Link, useNavigate } from "react-router";
+import { SingleValue } from "react-select";
+import {
+  Button,
+  Col,
+  DropdownItem,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+  UncontrolledTooltip,
+} from "reactstrap";
+
 import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenu } from "~/components/buttons/Button";
 import SessionPausedIcon from "~/components/icons/SessionPausedIcon";
@@ -47,23 +64,6 @@ import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import RtkQueryErrorsContext from "~/utils/helpers/RtkQueryErrorsContext";
 import { Url } from "~/utils/helpers/url";
-import cx from "classnames";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { CheckLg, Tools, XLg } from "react-bootstrap-icons";
-import { Link, useNavigate } from "react-router";
-import { SingleValue } from "react-select";
-import {
-  Button,
-  Col,
-  DropdownItem,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Row,
-  UncontrolledTooltip,
-} from "reactstrap";
-
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
   ErrorOrNotAvailableResourcePools,

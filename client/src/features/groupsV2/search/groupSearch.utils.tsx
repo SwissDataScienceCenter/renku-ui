@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import type { SearchQuery } from "~/features/searchV2/api/searchV2Api.api";
 import { ReactNode } from "react";
 
+import type { SearchQuery } from "~/features/searchV2/api/searchV2Api.api";
 import {
   KEY_VALUE_SEPARATOR,
   TERM_SEPARATOR,

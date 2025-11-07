@@ -16,14 +16,6 @@
  * limitations under the License.
  */
 
-import { WarnAlert } from "~/components/Alert";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
-import { Loader } from "~/components/Loader";
-import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
-import {
-  MIN_SESSION_STORAGE_GB,
-  STEP_SESSION_STORAGE_GB,
-} from "~/features/session/startSessionOptions.constants";
 import cx from "classnames";
 import { useMemo } from "react";
 import { Control, Controller, useWatch } from "react-hook-form";
@@ -36,6 +28,14 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { WarnAlert } from "~/components/Alert";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
+import {
+  MIN_SESSION_STORAGE_GB,
+  STEP_SESSION_STORAGE_GB,
+} from "~/features/session/startSessionOptions.constants";
 import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 
