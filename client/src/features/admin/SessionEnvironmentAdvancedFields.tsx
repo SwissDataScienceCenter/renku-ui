@@ -66,7 +66,7 @@ export default function SessionEnvironmentAdvancedFields({
         </button>
 
         <Collapse isOpen={isAdvancedSettingOpen}>
-          <CollapseBody className="mt-4">
+          <CollapseBody className={cx("ms-0", "mt-4")}>
             <AdvancedSettingsFields<SessionEnvironmentForm>
               control={control}
               errors={errors}
