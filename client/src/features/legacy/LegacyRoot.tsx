@@ -16,23 +16,16 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import { useContext } from "react";
 
 import AppContext from "../../utils/context/appContext";
 import LazyRootV1 from "../rootV1/LazyRootV1";
-import NavbarV2 from "../rootV2/NavbarV2";
 import NoLegacySupport from "./NoLegacySupport";
 
 export default function LegacyRoot() {
   const { params } = useContext(AppContext);
   if (params && !params.LEGACY_SUPPORT.enabled) {
-    return (
-      <div className={cx("d-flex", "flex-column", "w-100")}>
-        <NavbarV2 />
-        <NoLegacySupport />
-      </div>
-    );
+    return <NoLegacySupport />;
   }
   return <LazyRootV1 />;
 }

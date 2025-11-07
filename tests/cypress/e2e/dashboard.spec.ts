@@ -614,6 +614,8 @@ describe("No legacy support", () => {
 
   it("displays warning when dataset doesn't exist", () => {
     cy.visit("/v1");
-    cy.contains("Legacy not supported").should("be.visible");
+    cy.contains("This version of Renku is no longer supported").should(
+      "be.visible"
+    );
   });
 });
