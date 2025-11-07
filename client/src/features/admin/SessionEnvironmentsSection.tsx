@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { useCallback, useState } from "react";
 import {
   Card,
   CardBody,
@@ -31,6 +32,7 @@ import {
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import { ErrorLabel } from "~/components/formlabels/FormLabels";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
 import { TimeCaption } from "~/components/TimeCaption";
 import type {
@@ -42,8 +44,6 @@ import { safeStringify } from "../sessionsV2/session.utils";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
-import { useCallback, useState } from "react";
-import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 
 export default function SessionEnvironmentsSection() {
   return (
