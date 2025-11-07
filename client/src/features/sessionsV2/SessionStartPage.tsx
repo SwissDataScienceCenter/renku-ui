@@ -26,11 +26,11 @@ import {
   useSearchParams,
 } from "react-router";
 
-import PageLoader from "../../components/PageLoader";
 import {
   RtkErrorAlert,
   RtkOrNotebooksError,
 } from "../../components/errors/RtkErrorAlert";
+import PageLoader from "../../components/PageLoader";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
@@ -40,7 +40,6 @@ import ProgressStepsIndicator, {
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { resetFavicon, setFavicon } from "../display";
@@ -48,12 +47,10 @@ import {
   dataConnectorsOverrideFromConfig,
   storageDefinitionAfterSavingCredentialsFromConfig,
 } from "../project/utils/projectCloudStorage.utils";
+import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
-import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
-import SessionImageModal from "./SessionImageModal";
-import SessionSecretsModal from "./SessionSecretsModal";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
@@ -61,8 +58,11 @@ import {
   type SessionPostRequest,
 } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
+import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 import { validateEnvVariableName } from "./session.utils";
+import SessionImageModal from "./SessionImageModal";
+import SessionSecretsModal from "./SessionSecretsModal";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type {
   SessionStartDataConnectorConfiguration,

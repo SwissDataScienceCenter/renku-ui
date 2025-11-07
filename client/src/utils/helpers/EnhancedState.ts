@@ -23,9 +23,9 @@
 import {
   Action,
   AnyAction,
+  configureStore,
   ReducersMapObject,
   StoreEnhancer,
-  configureStore,
 } from "@reduxjs/toolkit";
 
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";

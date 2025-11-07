@@ -22,7 +22,7 @@ import { useNavigate, useLocation as useRouterLocation } from "react-router";
 
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { Url, getSearchParams } from "../../utils/helpers/url";
+import { getSearchParams, Url } from "../../utils/helpers/url";
 import { ProjectList as ProjectListPresent } from "./ProjectList.present";
 
 // *** Constants ***

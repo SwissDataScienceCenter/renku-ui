@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { faUserMinus, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import type {
   FieldError,
@@ -23,20 +25,16 @@ import type {
   Merge,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { FormGroup, Input, Label, Row, Col, Button } from "reactstrap";
+import { Button, Col, FormGroup, Input, Label, Row } from "reactstrap";
 
-import HelpText from "./HelpText";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserMinus, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { Creator } from "../../features/project/project.types";
 import {
   ErrorLabel,
   InputHintLabel,
   InputLabel,
 } from "../formlabels/FormLabels";
-
-import { Creator } from "../../features/project/project.types";
-
 import { SetInputsValue } from "./form-field.types";
+import HelpText from "./HelpText";
 
 export type CreatorInputCreator = Creator & { id: number; default?: boolean };
 

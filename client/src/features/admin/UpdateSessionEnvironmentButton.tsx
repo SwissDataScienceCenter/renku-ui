@@ -106,14 +106,10 @@ function UpdateSessionEnvironmentModal({
             uid: data.uid ?? undefined,
             working_directory: data.working_directory?.trim() || undefined,
             strip_path_prefix: data.strip_path_prefix,
-            // TODO: The API spec needs to be fixed to describe value resets here
-            // TODO: See https://github.com/SwissDataScienceCenter/renku-data-services/issues/985
             ...(commandParsed.data
               ? { command: commandParsed.data }
-              : ({ command: null } as any)), // eslint-disable-line @typescript-eslint/no-explicit-any
-            ...(argsParsed.data
-              ? { args: argsParsed.data }
-              : ({ args: null } as any)), // eslint-disable-line @typescript-eslint/no-explicit-any
+              : { command: null }),
+            ...(argsParsed.data ? { args: argsParsed.data } : { args: null }),
           },
         });
     },

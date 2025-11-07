@@ -20,11 +20,10 @@ import cx from "classnames";
 import React from "react";
 import type { FieldErrors } from "react-hook-form";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { type NavigateFunction, useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, type NavigateFunction } from "react-router";
 import { Button, FormGroup, UncontrolledAlert } from "reactstrap";
 
 import { ExternalLink } from "../../../components/ExternalLinks";
-import { Loader } from "../../../components/Loader";
 import CreatorsInput, {
   validateCreators,
 } from "../../../components/form-field/CreatorsInput";
@@ -35,6 +34,7 @@ import ImageInput from "../../../components/form-field/ImageInput";
 import KeywordsInput from "../../../components/form-field/KeywordsInput";
 import TextAreaInput from "../../../components/form-field/TextAreaInput";
 import TextInput from "../../../components/form-field/TextInput";
+import { Loader } from "../../../components/Loader";
 import type { RenkuUser } from "../../../model/renkuModels.types";
 import { FormErrorFields } from "../../../project/components/FormValidations";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";

@@ -29,8 +29,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Loader } from "~/components/Loader";
 import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
 import { usePostEnvironmentsMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 import SessionEnvironmentFormContent, {

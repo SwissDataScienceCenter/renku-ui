@@ -1,7 +1,6 @@
-import AppRoot from "~/index";
-
 import { data, type LoaderFunctionArgs } from "react-router";
 
+import AppRoot from "~/index";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 
 type RouteGroup = Record<string, string> | Record<string, unknown>;

@@ -17,9 +17,9 @@
  */
 
 import { useContext } from "react";
+import { useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { useLocation } from "react-router";
 import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";

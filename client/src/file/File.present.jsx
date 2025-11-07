@@ -19,9 +19,8 @@
 import cx from "classnames";
 import DOMPurify from "dompurify";
 import { isEqual } from "lodash-es";
-import styles from "./File.module.scss";
-
 import React, { memo, useState } from "react";
+import { Download } from "react-bootstrap-icons";
 import {
   Badge,
   Button,
@@ -34,17 +33,18 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
-import { Download } from "react-bootstrap-icons";
+
 import { Clipboard } from "../components/clipboard/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
-
 import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { Loader } from "../components/Loader";
-import { TimeCaption } from "../components/TimeCaption";
 import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
+import { TimeCaption } from "../components/TimeCaption";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";
 import FilePreview from "./FilePreview";
+
+import styles from "./File.module.scss";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
 

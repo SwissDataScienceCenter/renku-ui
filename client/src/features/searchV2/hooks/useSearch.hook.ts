@@ -21,13 +21,13 @@ import { useSearchParams } from "react-router";
 
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { setInitialQuery, setPage, setPerPage } from "../searchV2.slice";
-import { parseSearchQuery } from "../searchV2.utils";
 import {
   DEFAULT_PAGE_SIZE,
   FIRST_PAGE,
   MAX_PAGE_SIZE,
 } from "../searchV2.constants";
+import { setInitialQuery, setPage, setPerPage } from "../searchV2.slice";
+import { parseSearchQuery } from "../searchV2.utils";
 
 export default function useSearch() {
   const [searchParams, setSearchParams] = useSearchParams();

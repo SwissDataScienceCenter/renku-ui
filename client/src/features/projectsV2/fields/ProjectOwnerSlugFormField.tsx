@@ -22,10 +22,10 @@ import type {
   UseFormGetValues,
   UseFormWatch,
 } from "react-hook-form";
-
-import SlugFormField from "./SlugFormField";
-import type { GenericProjectFormFieldProps } from "./formField.types";
 import { Button } from "reactstrap";
+
+import type { GenericProjectFormFieldProps } from "./formField.types";
+import SlugFormField from "./SlugFormField";
 
 interface ProjectOwnerSlugFormFieldProps<T extends FieldValues>
   extends GenericProjectFormFieldProps<T> {

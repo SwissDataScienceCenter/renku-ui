@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { Navigate, Route, Routes } from "react-router";
+
 import ContainerWrap from "../../components/container/ContainerWrap";
 import AnonymousNavBar from "../../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../../components/navbar/LoggedInNavBar";
@@ -26,13 +27,12 @@ import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
 import LazyStyleGuide from "../../styleguide/LazyStyleGuide";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import LazyDashboard from "../dashboard/LazyDashboard";
 import LazyInactiveKGProjectsPage from "../inactiveKgProjects/LazyInactiveKGProjectsPage";
 import LazySearchPage from "../kgSearch/LazySearchPage";
 import LazySecrets from "../secrets/LazySecrets";
 import LazyAnonymousSessionsList from "../session/components/LazyAnonymousSessionsList";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-
 import ProjectRootV1 from "./ProjectRootV1";
 
 export default function RootV1() {

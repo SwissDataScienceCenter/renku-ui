@@ -18,10 +18,10 @@
 
 import {
   BaseQueryFn,
-  FetchArgs,
-  FetchBaseQueryError,
   createApi,
+  FetchArgs,
   fetchBaseQuery,
+  FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 
 import type {

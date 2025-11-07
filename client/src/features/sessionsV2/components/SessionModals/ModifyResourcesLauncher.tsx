@@ -41,8 +41,8 @@ import {
   STEP_SESSION_STORAGE_GB,
 } from "~/features/session/startSessionOptions.constants";
 import {
-  type ResourceClassWithId,
   useGetResourcePoolsQuery,
+  type ResourceClassWithId,
 } from "../../api/computeResources.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../../api/sessionLaunchersV2.api";
 import {

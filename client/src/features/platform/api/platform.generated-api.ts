@@ -1,4 +1,5 @@
 import { platformEmptyApi as api } from "./platform-empty.api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getPlatformConfig: build.query<

@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { Eye, Search, Sliders } from "react-bootstrap-icons";
 import { Nav, NavItem } from "reactstrap";
+
 import RenkuNavLinkV2 from "./RenkuNavLinkV2";
 
 export interface PageNavOptions {

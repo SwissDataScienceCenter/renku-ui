@@ -1,4 +1,5 @@
 import { projectV2EmptyApi as api } from "./projectV2-empty.api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({

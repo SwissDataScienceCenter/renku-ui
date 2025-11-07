@@ -26,8 +26,9 @@ import {
   useParams,
 } from "react-router";
 import { Col, Row } from "reactstrap";
-import { Loader } from "../../../components/Loader";
+
 import ContainerWrap from "../../../components/container/ContainerWrap";
+import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";

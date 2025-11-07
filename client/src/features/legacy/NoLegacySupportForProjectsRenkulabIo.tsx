@@ -18,18 +18,17 @@
 
 import cx from "classnames";
 import { type CSSProperties } from "react";
-import { Link, useLocation } from "react-router";
 import { PlusSquare } from "react-bootstrap-icons";
+import { Link, useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { Links } from "~/utils/constants/Docs";
-import { PROJECT_CREATION_HASH } from "~/features/projectsV2/new/createProjectV2.constants";
 import { ExternalLink } from "~/components/ExternalLinks";
-import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import TakeActionAlert from "~/components/TakeActionAlert";
-
-import MigrateRepo from "./MigrateRepo.svg";
+import { PROJECT_CREATION_HASH } from "~/features/projectsV2/new/createProjectV2.constants";
+import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
+import { Links } from "~/utils/constants/Docs";
 import Background from "./Background.svg";
+import MigrateRepo from "./MigrateRepo.svg";
 
 import styles from "./NoLegacySupportForProjects.module.css";
 

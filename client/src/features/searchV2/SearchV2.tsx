@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import { Col, Row } from "reactstrap";
 
 import SearchV2Bar from "./components/SearchV2Bar";

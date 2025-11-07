@@ -19,6 +19,7 @@
 /**
  *  Container components for privacy
  */
+
 import { useContext } from "react";
 import CookieConsent from "react-cookie-consent";
 

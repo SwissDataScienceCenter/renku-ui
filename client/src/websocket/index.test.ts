@@ -20,16 +20,16 @@ import WS from "jest-websocket-mock";
 import { describe, expect, it } from "vitest";
 
 import APIClient, { testClient as client } from "../api-client";
-import { StateModel, globalSchema } from "../model";
+import { globalSchema, StateModel } from "../model";
 import NotificationsManager from "../notifications/NotificationsManager";
 import { sleep } from "../utils/helpers/HelperFunctions";
-import { WsServerMessage } from "./WsMessages";
 import {
-  MessageData,
   getWsServerMessageHandler,
+  MessageData,
   retryConnection,
   setupWebSocket,
 } from "./index";
+import { WsServerMessage } from "./WsMessages";
 
 const fakeLocation = () => {
   return { pathname: "" };

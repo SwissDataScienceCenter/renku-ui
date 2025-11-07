@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from "@storybook/react";
-
 import { Badge } from "reactstrap";
 
 const componentDescription = `

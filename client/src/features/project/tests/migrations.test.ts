@@ -28,7 +28,6 @@ import {
   getRenkuLevel,
   getTemplateLevel,
 } from "../utils/migrations";
-
 import * as jsonObjects from "./ProjectSettings.testData.json";
 
 type ProjectMigrationLevelKeys = keyof typeof ProjectMigrationLevel;

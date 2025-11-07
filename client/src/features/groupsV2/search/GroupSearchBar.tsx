@@ -22,6 +22,7 @@ import { Search, XCircleFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
+
 import { useGroupSearch } from "./groupSearch.hook";
 import { FILTER_PAGE, FILTER_QUERY } from "./groupsSearch.constants";
 

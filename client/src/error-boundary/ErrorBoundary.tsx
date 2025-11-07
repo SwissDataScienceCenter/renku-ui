@@ -19,15 +19,15 @@
 import * as Sentry from "@sentry/react";
 import cx from "classnames";
 import { ReactNode, useCallback, useContext } from "react";
-import { useLocation } from "react-router";
 import { ArrowLeft } from "react-bootstrap-icons";
+import { useLocation } from "react-router";
 
+import StyleHandler from "~/features/rootV2/StyleHandler";
 import rkOopsImg from "../styles/assets/oops.svg";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
 import AppContext from "../utils/context/appContext";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
-import StyleHandler from "~/features/rootV2/StyleHandler";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;

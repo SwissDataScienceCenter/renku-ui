@@ -19,6 +19,7 @@
 import { createSlice, PayloadAction, SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
+import { EMPTY_CLOUD_STORAGE_STATE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   AddCloudStorageState,
   CloudStorageSchema,
@@ -27,13 +28,11 @@ import {
   getSchemaProviders,
   hasProviderShortlist,
 } from "../../project/utils/projectCloudStorage.utils";
-
-import { EMPTY_CLOUD_STORAGE_STATE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
-import type { AuxiliaryCommandStatus } from "../components/DataConnectorModal/DataConnectorModalResult";
 import {
   EMPTY_DATA_CONNECTOR_FLAT,
   type DataConnectorFlat,
 } from "../components/dataConnector.utils";
+import type { AuxiliaryCommandStatus } from "../components/DataConnectorModal/DataConnectorModalResult";
 
 interface BackendResult {
   isSuccess: boolean | undefined;

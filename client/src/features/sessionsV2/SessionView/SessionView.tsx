@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
@@ -42,17 +43,15 @@ import {
 } from "reactstrap";
 
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
-import { TimeCaption } from "../../../components/TimeCaption";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
+import { TimeCaption } from "../../../components/TimeCaption";
+import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
-import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
-import StartSessionButton from "../StartSessionButton";
 import {
   useGetClassesByClassIdQuery,
   useGetResourcePoolsQuery,
@@ -68,10 +67,12 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
+import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
+import StartSessionButton from "../StartSessionButton";
+import EnvironmentCard from "./EnvironmentCard";
 import EnvVariablesCard from "./EnvVariablesCard";
 import EnvVariablesModal from "./EnvVariablesModal";
-import EnvironmentCard from "./EnvironmentCard";
 
 interface SessionCardContentProps {
   color: string;
