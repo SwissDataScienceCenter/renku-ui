@@ -31,7 +31,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepositoryProviderMatch"
+                  "$ref": "#/components/schemas/RepositoryProviderData"
                 }
               }
             }
@@ -77,21 +77,87 @@
   },
   "components": {
     "schemas": {
-      "RepositoryProviderMatch": {
+      "Metadata": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "git_url": {
+            "type": "string"
+          },
+          "web_url": {
+            "type": "string"
+          },
+          "pull_permission": {
+            "type": "boolean"
+          },
+          "push_permission": {
+            "type": "boolean"
+          }
+        },
+        "required": ["git_url", "pull_permission"]
+      },
+      "RepositoryProviderData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["valid", "invalid", "unknown"]
+          },
+          "connection": {
+            "$ref": "#/components/schemas/ProviderConnection"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ProviderData"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "error_code": {
+            "type": "str",
+            "enum": [
+              "no_url_scheme",
+              "no_url_host",
+              "no_git_repo",
+              "no_url_path",
+              "invalid_url_scheme",
+              "metadata_unauthorized",
+              "metadata_unknown",
+              "metadata_validation"
+            ]
+          }
+        },
+        "required": ["status"]
+      },
+      "ProviderConnection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
           "provider_id": {
             "$ref": "#/components/schemas/ProviderId"
           },
-          "connection_id": {
-            "$ref": "#/components/schemas/Ulid"
-          },
-          "repository_metadata": {
-            "$ref": "#/components/schemas/RepositoryMetadata"
+          "status": {
+            "type": "string"
           }
         },
-        "required": ["provider_id"]
+        "required": ["id", "provider_id", "status"]
+      },
+      "ProviderData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/ProviderId"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "url"]
       },
       "RepositoryMetadata": {
         "type": "object",
