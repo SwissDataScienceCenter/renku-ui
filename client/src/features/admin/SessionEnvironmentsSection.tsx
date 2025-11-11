@@ -17,12 +17,14 @@
  */
 
 import cx from "classnames";
+import { useCallback, useState } from "react";
 import {
   Card,
   CardBody,
+  CardHeader,
   CardText,
-  CardTitle,
   Col,
+  Collapse,
   Container,
   Row,
 } from "reactstrap";
@@ -30,6 +32,7 @@ import {
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import { ErrorLabel } from "~/components/formlabels/FormLabels";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
 import { TimeCaption } from "~/components/TimeCaption";
 import type {
@@ -45,7 +48,7 @@ import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 export default function SessionEnvironmentsSection() {
   return (
     <section className="mt-4">
-      <h2 className="fs-4">Session Environments - Renku 2.0</h2>
+      <h2>Session Environments</h2>
       <SessionEnvironments />
     </section>
   );
@@ -121,69 +124,95 @@ function SessionEnvironmentDisplay({
     strip_path_prefix,
   } = environment;
 
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((isOpen) => !isOpen);
+  }, []);
+
   return (
     <Col className={cx("col-12", "col-sm-6")}>
       <Card>
-        <CardBody>
-          <CardTitle className={cx("mb-0", "fs-5")} tag="h5">
-            {name}
-          </CardTitle>
-          <CardText className="mb-0">
-            {description ? description : <i>No description</i>}
-          </CardText>
-          <CardText className="mb-0" tag="div">
-            <CommandCopy command={container_image} />
-          </CardText>
-          <CardText className="mb-0">
-            {default_url ? (
-              <>
-                Default URL: <code>{default_url}</code>
-              </>
-            ) : (
-              <i>
-                No default URL {"("}will use <code>{"/lab"}</code>
-                {")"}
-              </i>
+        <CardHeader className={cx("fs-4", "p-0")} tag="h3">
+          <button
+            className={cx(
+              "align-items-center",
+              "bg-transparent",
+              "border-0",
+              "d-flex",
+              "fw-bold",
+              "gap-3",
+              "p-3",
+              "w-100"
             )}
-          </CardText>
-          <CardText className="mb-0">
-            Mount directory: <code>{mount_directory}</code>
-          </CardText>
-          <CardText className="mb-0">
-            Work directory: <code>{working_directory}</code>
-          </CardText>
-          <CardText className="mb-0">
-            Port: <code>{port}</code>
-          </CardText>
-          <CardText className="mb-0">
-            GID: <code>{gid}</code>
-          </CardText>
-          <CardText className="mb-0">
-            UID: <code>{uid}</code>
-          </CardText>
-          <CardText className="mb-0">
-            Command:{" "}
-            <EnvironmentCode value={command ? safeStringify(command) : "-"} />
-          </CardText>
-          <CardText className="mb-0">
-            Args: <EnvironmentCode value={args ? safeStringify(args) : "-"} />
-          </CardText>
-          <CardText className="mb-0">
-            Strip path prefix: {strip_path_prefix ? "Yes" : "No"}
-          </CardText>
-          <CardText>
-            <TimeCaption
-              datetime={creation_date}
-              enableTooltip
-              prefix="Created"
-            />
-          </CardText>
+            onClick={toggle}
+            type="button"
+          >
+            {name}
+            <div className="ms-auto">
+              <ChevronFlippedIcon flipped={isOpen} />
+            </div>
+          </button>
+        </CardHeader>
 
-          <div className={cx("d-flex", "justify-content-end", "gap-2")}>
-            <UpdateSessionEnvironmentButton environment={environment} />
-            <DeleteSessionEnvironmentButton environment={environment} />
-          </div>
-        </CardBody>
+        <Collapse isOpen={isOpen}>
+          <CardBody className="pt-0">
+            <CardText className="mb-0">
+              {description ? description : <i>No description</i>}
+            </CardText>
+            <CardText className="mb-0" tag="div">
+              <CommandCopy command={container_image} />
+            </CardText>
+            <CardText className="mb-0">
+              {default_url ? (
+                <>
+                  Default URL: <code>{default_url}</code>
+                </>
+              ) : (
+                <i>
+                  No default URL {"("}will use <code>{"/lab"}</code>
+                  {")"}
+                </i>
+              )}
+            </CardText>
+            <CardText className="mb-0">
+              Mount directory: <code>{mount_directory}</code>
+            </CardText>
+            <CardText className="mb-0">
+              Work directory: <code>{working_directory}</code>
+            </CardText>
+            <CardText className="mb-0">
+              Port: <code>{port}</code>
+            </CardText>
+            <CardText className="mb-0">
+              GID: <code>{gid}</code>
+            </CardText>
+            <CardText className="mb-0">
+              UID: <code>{uid}</code>
+            </CardText>
+            <CardText className="mb-0">
+              Command:{" "}
+              <EnvironmentCode value={command ? safeStringify(command) : "-"} />
+            </CardText>
+            <CardText className="mb-0">
+              Args: <EnvironmentCode value={args ? safeStringify(args) : "-"} />
+            </CardText>
+            <CardText className="mb-0">
+              Strip path prefix: {strip_path_prefix ? "Yes" : "No"}
+            </CardText>
+            <CardText>
+              <TimeCaption
+                datetime={creation_date}
+                enableTooltip
+                prefix="Created"
+              />
+            </CardText>
+
+            <div className={cx("d-flex", "justify-content-end", "gap-2")}>
+              <UpdateSessionEnvironmentButton environment={environment} />
+              <DeleteSessionEnvironmentButton environment={environment} />
+            </div>
+          </CardBody>
+        </Collapse>
       </Card>
     </Col>
   );

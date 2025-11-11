@@ -27,14 +27,17 @@ export default function CollapseBody({
   className,
   children,
 }: CollapseBodyProps) {
+  const customMarginStart = /\bms-(?:auto|[0-5])\b/.test(className ?? "");
+  const customPaddingStart = /\bps-(?:auto|[0-5])\b/.test(className ?? "");
+
   return (
     <div
       className={cx(
         "border-3",
         "border-dark-subtle",
         "border-start",
-        "ms-1",
-        "ps-2",
+        !customMarginStart && "ms-1",
+        !customPaddingStart && "ps-2",
         className
       )}
     >

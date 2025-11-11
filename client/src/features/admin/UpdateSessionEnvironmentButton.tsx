@@ -39,8 +39,6 @@ import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
 
-import ButtonStyles from "~/components/buttons/Buttons.module.scss";
-
 interface UpdateSessionEnvironmentButtonProps {
   environment: SessionEnvironment;
 }
@@ -55,17 +53,9 @@ export default function UpdateSessionEnvironmentButton({
 
   return (
     <>
-      <Button
-        className={cx(
-          "bg-transparent",
-          "shadow-none",
-          "border-0",
-          ButtonStyles.EditButton
-        )}
-        onClick={toggle}
-      >
-        <PencilSquare size={24} />
-        <span className="visually-hidden">Edit</span>
+      <Button color="outline-primary" onClick={toggle}>
+        <PencilSquare className={cx("bi", "me-1")} />
+        Edit
       </Button>
       <UpdateSessionEnvironmentModal
         environment={environment}
@@ -153,7 +143,7 @@ function UpdateSessionEnvironmentModal({
       toggle={toggle}
     >
       <Form
-        className="form-rk-green"
+        className="modal-content"
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -165,11 +155,15 @@ function UpdateSessionEnvironmentModal({
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading || !isDirty} type="submit">
+          <Button
+            color="primary"
+            disabled={result.isLoading || !isDirty}
+            type="submit"
+          >
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
