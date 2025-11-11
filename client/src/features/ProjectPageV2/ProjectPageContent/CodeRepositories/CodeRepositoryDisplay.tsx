@@ -49,6 +49,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
+import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import { useGetRepositoriesByRepositoryUrlQuery } from "~/features/repositories/api/repositories.api";
@@ -459,22 +460,23 @@ function RepositoryPermissionsBadge({
     repositoryUrl: encodeURIComponent(repositoryUrl),
   });
 
-  const badgeColor =
-    error || isLoading
-      ? "light"
-      : !data?.metadata?.pull_permission
-      ? "danger"
-      : data?.metadata?.push_permission
-      ? "success"
-      : data?.connection?.status === "connected"
-      ? "success"
-      : data?.provider?.id
-      ? "warning"
-      : data?.metadata?.pull_permission && hasWriteAccess
-      ? "warning"
-      : data?.metadata?.pull_permission && !hasWriteAccess
-      ? "success"
-      : "light";
+  const badgeColor = isLoading
+    ? "light"
+    : error
+    ? "danger"
+    : !data?.metadata?.pull_permission
+    ? "danger"
+    : data?.metadata?.push_permission
+    ? "success"
+    : data?.connection?.status === "connected"
+    ? "success"
+    : data?.provider?.id
+    ? "warning"
+    : data?.metadata?.pull_permission && hasWriteAccess
+    ? "warning"
+    : data?.metadata?.pull_permission && !hasWriteAccess
+    ? "success"
+    : "light";
 
   const badgeIcon = isLoading ? (
     <Loader className="me-1" inline size={12} />
@@ -536,6 +538,10 @@ function RepositoryView({
     repositoryUrl: encodeURIComponent(repositoryUrl),
   });
 
+  const webUrl = useMemo(() => {
+    return data?.metadata?.web_url ? data.metadata.web_url : repositoryUrl;
+  }, [data, repositoryUrl]);
+
   const search = useMemo(() => {
     return `?${new URLSearchParams({
       targetProvider: data?.provider?.id ?? "",
@@ -591,27 +597,18 @@ function RepositoryView({
                 <h3>Repository</h3>
                 <p>
                   URL:{" "}
-                  <a
-                    href={repositoryUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    {repositoryUrl}
+                  <a href={webUrl} target="_blank" rel="noreferrer noopener">
+                    {webUrl}
                     <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
                   </a>
                 </p>
                 {data?.metadata?.git_url && (
-                  <p>
-                    Git URL:{" "}
-                    <a
-                      href={data?.metadata?.git_url}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {data?.metadata?.git_url}
-                      <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
-                    </a>
-                  </p>
+                  <div>
+                    <span>Git command: </span>
+                    <CommandCopy
+                      command={`git clone ${data.metadata.git_url}`}
+                    />
+                  </div>
                 )}
               </div>
 
