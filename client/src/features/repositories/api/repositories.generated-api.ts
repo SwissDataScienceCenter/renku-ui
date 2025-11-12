@@ -2,11 +2,29 @@ import { repositoriesEmptyApi as api } from "./repositories.empty-api";
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
+    getRepositories: build.query<
+      GetRepositoriesApiResponse,
+      GetRepositoriesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/repositories`,
+        params: { url: queryArg.url },
+      }),
+    }),
     getRepositoriesByRepositoryUrl: build.query<
       GetRepositoriesByRepositoryUrlApiResponse,
       GetRepositoriesByRepositoryUrlApiArg
     >({
       query: (queryArg) => ({ url: `/repositories/${queryArg.repositoryUrl}` }),
+    }),
+    getRepositoriesProbe: build.query<
+      GetRepositoriesProbeApiResponse,
+      GetRepositoriesProbeApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/repositories/probe`,
+        params: { url: queryArg.url },
+      }),
     }),
     getRepositoriesByRepositoryUrlProbe: build.query<
       GetRepositoriesByRepositoryUrlProbeApiResponse,
@@ -20,10 +38,20 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as repositoriesGeneratedApi };
+export type GetRepositoriesApiResponse =
+  /** status 200 The repository metadata. */ RepositoryProviderData;
+export type GetRepositoriesApiArg = {
+  url: string;
+};
 export type GetRepositoriesByRepositoryUrlApiResponse =
   /** status 200 The repository metadata. */ RepositoryProviderData;
 export type GetRepositoriesByRepositoryUrlApiArg = {
   repositoryUrl: string;
+};
+export type GetRepositoriesProbeApiResponse =
+  /** status 200 The repository seems to be available. */ void;
+export type GetRepositoriesProbeApiArg = {
+  url: string;
 };
 export type GetRepositoriesByRepositoryUrlProbeApiResponse =
   /** status 200 The repository seems to be available. */ void;
@@ -59,7 +87,9 @@ export type RepositoryProviderData = {
     | "no_git_repo"
     | "no_url_path"
     | "invalid_url_scheme"
+    | "invalid_git_url"
     | "metadata_unauthorized"
+    | "metadata_oauth"
     | "metadata_unknown"
     | "metadata_validation";
 };
@@ -71,6 +101,8 @@ export type ErrorResponse = {
   };
 };
 export const {
+  useGetRepositoriesQuery,
   useGetRepositoriesByRepositoryUrlQuery,
+  useGetRepositoriesProbeQuery,
   useGetRepositoriesByRepositoryUrlProbeQuery,
 } = injectedRtkApi;

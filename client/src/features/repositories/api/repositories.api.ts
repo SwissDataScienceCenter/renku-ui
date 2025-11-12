@@ -34,10 +34,7 @@
  * limitations under the License.
  */
 
-import {
-  GetRepositoriesByRepositoryUrlProbeApiArg,
-  repositoriesGeneratedApi,
-} from "./repositories.generated-api";
+import { repositoriesGeneratedApi } from "./repositories.generated-api";
 
 export interface GetRepositoriesProbesParams {
   repositoriesUrls: string[];
@@ -53,24 +50,6 @@ export type GetRepositoriesProbesResponse = RepositoryWithProbe[];
 const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
-    getRepositoriesByRepositoryUrlProbe: build.query<
-      boolean,
-      GetRepositoriesByRepositoryUrlProbeApiArg
-    >({
-      query: ({ repositoryUrl }) => ({
-        url: `/repositories/${repositoryUrl}/probe`,
-        validateStatus: (response) => {
-          return (
-            (response.status >= 200 && response.status < 300) ||
-            response.status == 404
-          );
-        },
-      }),
-      transformResponse(_result, meta) {
-        const status = meta?.response?.status;
-        return status != null && status >= 200 && status < 300;
-      },
-    }),
     getRepositoriesProbes: build.query<
       GetRepositoriesProbesResponse,
       GetRepositoriesProbesParams
@@ -111,15 +90,9 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
 const withTagHandling = withResponseRewrite.enhanceEndpoints({
   addTagTypes: ["Repository", "RepositoryProbe"],
   endpoints: {
-    getRepositoriesByRepositoryUrl: {
-      providesTags: (result, _error, { repositoryUrl }) =>
-        result ? [{ type: "Repository" as const, id: repositoryUrl }] : [],
-    },
-    getRepositoriesByRepositoryUrlProbe: {
-      providesTags: (result, _error, { repositoryUrl }) =>
-        result != null
-          ? [{ type: "RepositoryProbe" as const, id: repositoryUrl }]
-          : [],
+    getRepositories: {
+      providesTags: (result, _error, { url }) =>
+        result ? [{ type: "Repository" as const, id: url }] : [],
     },
     getRepositoriesProbes: {
       providesTags: (result) =>
@@ -134,9 +107,6 @@ const withTagHandling = withResponseRewrite.enhanceEndpoints({
 });
 
 export { withTagHandling as repositoriesApi };
-export const {
-  useGetRepositoriesByRepositoryUrlQuery,
-  useGetRepositoriesByRepositoryUrlProbeQuery,
-  useGetRepositoriesProbesQuery,
-} = withTagHandling;
+export const { useGetRepositoriesQuery, useGetRepositoriesProbesQuery } =
+  withTagHandling;
 export type * from "./repositories.generated-api";

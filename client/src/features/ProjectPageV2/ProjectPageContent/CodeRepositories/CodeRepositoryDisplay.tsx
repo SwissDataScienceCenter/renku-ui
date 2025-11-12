@@ -52,7 +52,7 @@ import { ErrorAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
-import { useGetRepositoriesByRepositoryUrlQuery } from "~/features/repositories/api/repositories.api";
+import { useGetRepositoriesQuery } from "~/features/repositories/api/repositories.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
@@ -456,8 +456,8 @@ function RepositoryPermissionsBadge({
   hasWriteAccess,
   repositoryUrl,
 }: RepositoryPermissionsProps) {
-  const { data, isLoading, error } = useGetRepositoriesByRepositoryUrlQuery({
-    repositoryUrl: encodeURIComponent(repositoryUrl),
+  const { data, isLoading, error } = useGetRepositoriesQuery({
+    url: repositoryUrl,
   });
 
   const badgeColor = isLoading
@@ -534,8 +534,8 @@ function RepositoryView({
   toggleDetails,
 }: RepositoryViewProps) {
   const { pathname, hash } = useLocation();
-  const { data, isLoading, error } = useGetRepositoriesByRepositoryUrlQuery({
-    repositoryUrl: encodeURIComponent(repositoryUrl),
+  const { data, isLoading, error } = useGetRepositoriesQuery({
+    url: repositoryUrl,
   });
 
   const webUrl = useMemo(() => {
@@ -693,8 +693,8 @@ function RepositoryCallToActionAlert({
   repositoryUrl,
 }: RepositoryCallToActionAlertProps) {
   const { pathname, hash } = useLocation();
-  const { data, isLoading, error } = useGetRepositoriesByRepositoryUrlQuery({
-    repositoryUrl: encodeURIComponent(repositoryUrl),
+  const { data, isLoading, error } = useGetRepositoriesQuery({
+    url: repositoryUrl,
   });
 
   const search = useMemo(() => {
