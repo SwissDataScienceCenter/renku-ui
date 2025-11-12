@@ -71,7 +71,7 @@ export function detectSSHRepository(repositoryURL: string): boolean {
 }
 
 export function getRepositoryName(repositoryURL: string): string {
-  const canonicalUrlStr = `${repositoryURL.replace(/.git$/i, "")}`;
+  const canonicalUrlStr = `${repositoryURL.replace(/(?:\.git|\/)$/i, "")}`;
   const canonicalUrl = safeNewUrl(canonicalUrlStr);
   return canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
 }

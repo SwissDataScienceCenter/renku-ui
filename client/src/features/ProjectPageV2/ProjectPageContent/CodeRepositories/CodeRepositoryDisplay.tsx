@@ -391,7 +391,10 @@ export function RepositoryItem({
   const toggleDetails = useCallback(() => {
     setShowDetails((open) => !open);
   }, []);
-  const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
+  const canonicalUrlStr = useMemo(
+    () => `${url.replace(/(?:\.git|\/)$/i, "")}`,
+    [url]
+  );
   const title = getRepositoryName(url);
 
   const listGroupProps = !readonly
