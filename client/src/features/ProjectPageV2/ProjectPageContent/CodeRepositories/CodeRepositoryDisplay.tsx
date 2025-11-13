@@ -455,7 +455,7 @@ interface RepositoryPermissionsProps {
   hasWriteAccess?: boolean;
   repositoryUrl: string;
 }
-function RepositoryPermissionsBadge({
+export function RepositoryPermissionsBadge({
   hasWriteAccess,
   repositoryUrl,
 }: RepositoryPermissionsProps) {
@@ -691,7 +691,7 @@ interface RepositoryCallToActionAlertProps {
   hasWriteAccess: boolean;
   repositoryUrl: string;
 }
-function RepositoryCallToActionAlert({
+export function RepositoryCallToActionAlert({
   hasWriteAccess,
   repositoryUrl,
 }: RepositoryCallToActionAlertProps) {

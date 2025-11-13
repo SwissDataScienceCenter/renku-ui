@@ -34,7 +34,11 @@
  * limitations under the License.
  */
 
-import { repositoriesGeneratedApi } from "./repositories.generated-api";
+import { shouldInterrupt } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
+import {
+  GetRepositoriesApiResponse,
+  repositoriesGeneratedApi,
+} from "./repositories.generated-api";
 
 export interface GetRepositoriesProbesParams {
   repositoriesUrls: string[];
@@ -45,6 +49,17 @@ export interface RepositoryWithProbe {
   probe: boolean;
 }
 export type GetRepositoriesProbesResponse = RepositoryWithProbe[];
+
+export type RepositoryInterrupts = {
+  interruptAlways: boolean;
+  interruptOwner: boolean;
+};
+
+export type RepositoriesApiResponseWithInterrupts = GetRepositoriesApiResponse &
+  RepositoryInterrupts & {
+    error: boolean;
+    url: string;
+  };
 
 // TODO: we can drop the probes and use the new metadata in getRepositoriesByRepositoryUrl instead
 const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
@@ -84,6 +99,46 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
         return { data: result };
       },
     }),
+    getRepositoriesArray: build.query<
+      RepositoriesApiResponseWithInterrupts[],
+      string[]
+    >({
+      async queryFn(queryArg, _api, _options, fetchWithBQ) {
+        const result: RepositoriesApiResponseWithInterrupts[] = [];
+        const promises = queryArg.map((repository) =>
+          fetchWithBQ({
+            url: "/repositories",
+            params: { url: repository },
+          })
+        );
+        const responses = await Promise.all(promises);
+        for (let i = 0; i < queryArg.length; i++) {
+          const repositoryUrl = queryArg[i];
+          const response = responses[i];
+          if (response.error)
+            result.push({
+              error: true,
+              interruptAlways: true,
+              interruptOwner: true,
+              status: "unknown",
+              url: repositoryUrl,
+            });
+          else if (response.data) {
+            const interrupts = shouldInterrupt(
+              response.data as GetRepositoriesApiResponse
+            );
+            result.push({
+              ...(response.data as GetRepositoriesApiResponse),
+              ...interrupts,
+              error: false,
+              url: repositoryUrl,
+            });
+          }
+        }
+
+        return { data: result };
+      },
+    }),
   }),
 });
 
@@ -93,6 +148,15 @@ const withTagHandling = withResponseRewrite.enhanceEndpoints({
     getRepositories: {
       providesTags: (result, _error, { url }) =>
         result ? [{ type: "Repository" as const, id: url }] : [],
+    },
+    getRepositoriesArray: {
+      providesTags: (result) =>
+        result != null
+          ? result.map(({ url }) => ({
+              type: "Repository" as const,
+              id: url,
+            }))
+          : [],
     },
     getRepositoriesProbes: {
       providesTags: (result) =>
@@ -107,6 +171,9 @@ const withTagHandling = withResponseRewrite.enhanceEndpoints({
 });
 
 export { withTagHandling as repositoriesApi };
-export const { useGetRepositoriesQuery, useGetRepositoriesProbesQuery } =
-  withTagHandling;
+export const {
+  useGetRepositoriesArrayQuery,
+  useGetRepositoriesProbesQuery,
+  useGetRepositoriesQuery,
+} = withTagHandling;
 export type * from "./repositories.generated-api";

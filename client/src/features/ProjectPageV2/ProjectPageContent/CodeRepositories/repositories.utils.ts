@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
+import {
+  GetRepositoriesApiResponse,
+  RepositoryInterrupts,
+} from "~/features/repositories/api/repositories.api";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 /**
@@ -68,6 +72,27 @@ export function detectSSHRepository(repositoryURL: string): boolean {
   // This matches URLs like "git@github.com:SwissDataScienceCenter/renku-ui.git"
   const gitUrlRegex = /git@(?:.)+:/;
   return cleaned.match(gitUrlRegex) != null;
+}
+
+export function shouldInterrupt(
+  repositoryData: GetRepositoriesApiResponse
+): RepositoryInterrupts {
+  const interruptAlways = !!(
+    (!repositoryData?.metadata?.pull_permission &&
+      !(repositoryData?.connection?.status === "connected")) ||
+    (repositoryData?.metadata?.pull_permission &&
+      !repositoryData?.metadata?.push_permission &&
+      repositoryData?.provider?.id &&
+      repositoryData?.connection?.status !== "connected")
+  );
+  const interruptOwner = !!(
+    (!repositoryData?.metadata?.pull_permission &&
+      !(repositoryData?.connection?.status === "connected")) ||
+    (repositoryData?.metadata?.pull_permission &&
+      !repositoryData?.metadata?.push_permission &&
+      !(repositoryData?.connection?.status === "connected"))
+  );
+  return { interruptAlways, interruptOwner };
 }
 
 export function getRepositoryName(repositoryURL: string): string {
