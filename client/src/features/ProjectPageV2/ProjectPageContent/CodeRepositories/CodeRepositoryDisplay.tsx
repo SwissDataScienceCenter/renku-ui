@@ -413,7 +413,10 @@ export function RepositoryItem({
         <Row className={cx("align-items-center", "g-2")}>
           <Col className={cx("align-items-center", "flex-row")}>
             <div>
-              <span className={cx("me-2", !readonly && "fw-bold")}>
+              <span
+                className={cx("me-2", !readonly && "fw-bold")}
+                data-cy="code-repository-title"
+              >
                 {title || canonicalUrlStr || (
                   <span className="fwd-italic">Unknown repository</span>
                 )}
@@ -515,7 +518,12 @@ export function RepositoryPermissionsBadge({
     : "Unexpected";
 
   return (
-    <RenkuBadge className="fw-normal" color={badgeColor} pill>
+    <RenkuBadge
+      className="fw-normal"
+      color={badgeColor}
+      data-cy="code-repository-permission-badge"
+      pill
+    >
       {badgeIcon}
       {badgeText}
     </RenkuBadge>
@@ -562,7 +570,7 @@ function RepositoryView({
       direction="end"
       backdrop={true}
     >
-      <OffcanvasBody>
+      <OffcanvasBody data-cy="code-repository-details">
         <div className="mb-3">
           <button
             aria-label="Close"
@@ -600,7 +608,12 @@ function RepositoryView({
                 <h3>Repository</h3>
                 <p>
                   URL:{" "}
-                  <a href={webUrl} target="_blank" rel="noreferrer noopener">
+                  <a
+                    href={webUrl}
+                    data-cy="code-repository-url"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
                     {webUrl}
                     <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
                   </a>
@@ -636,7 +649,10 @@ function RepositoryView({
                       />
                     </div>
 
-                    <div className="mb-3">
+                    <div
+                      className="mb-3"
+                      data-cy="code-repository-pull-permission"
+                    >
                       <span>
                         Pull:{" "}
                         <YesNoBadge
@@ -645,7 +661,10 @@ function RepositoryView({
                       </span>
                     </div>
 
-                    <div className="mb-3">
+                    <div
+                      className="mb-3"
+                      data-cy="code-repository-push-permission"
+                    >
                       <span>
                         Push:{" "}
                         <YesNoBadge
@@ -713,7 +732,11 @@ export function RepositoryCallToActionAlert({
 
   if (!data?.metadata?.pull_permission) {
     return (
-      <ErrorAlert className="mb-0" dismissible={false}>
+      <ErrorAlert
+        className="mb-0"
+        dismissible={false}
+        data-cy="code-repository-alert"
+      >
         {data?.provider?.id ? (
           <>
             <p className="mb-2">
@@ -776,7 +799,11 @@ export function RepositoryCallToActionAlert({
     hasWriteAccess
   ) {
     return (
-      <WarnAlert className="mb-0" dismissible={false}>
+      <WarnAlert
+        className="mb-0"
+        dismissible={false}
+        data-cy="code-repository-alert"
+      >
         <p>
           The repository URL is valid. However, we don&apos;t currently support
           this version control platform and you won&apos;t have the credentials
@@ -805,7 +832,11 @@ export function RepositoryCallToActionAlert({
     data?.connection?.status !== "connected"
   ) {
     return (
-      <WarnAlert className="mb-0" dismissible={false}>
+      <WarnAlert
+        className="mb-0"
+        dismissible={false}
+        data-cy="code-repository-alert"
+      >
         <p className={cx("mb-2", "mt-2")}>
           You can log in through the integration to enable pushing to
           repositories for which you have permissions.
