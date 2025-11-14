@@ -85,6 +85,7 @@ export default function NoLegacySupport() {
         "d-flex",
         "flex-column",
         "justify-content-center",
+        "bg-navy",
         styles.background
       )}
       style={backgroundImage}

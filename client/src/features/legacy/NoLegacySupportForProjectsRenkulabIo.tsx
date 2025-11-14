@@ -392,6 +392,7 @@ export default function NoLegacySupportForProjectsRenkulabIo() {
         "d-flex",
         "flex-column",
         "justify-content-center",
+        "bg-navy",
         styles.background
       )}
       style={backgroundImage}
