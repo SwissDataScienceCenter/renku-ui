@@ -40,8 +40,7 @@ function MigrateContentInfo() {
       setIsRenkulabIo(true);
     }
   }, []);
-  if (!isRenkulabIo)
-    return <div className={cx("mt-4", "gap-3", "px-5", styles.alertBox)}></div>;
+  if (!isRenkulabIo) return null;
 
   return (
     <div className={cx("mt-4", "gap-3", "px-5", styles.alertBox)}>
