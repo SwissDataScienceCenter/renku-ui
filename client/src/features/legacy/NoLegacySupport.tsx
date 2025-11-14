@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 
 import { InfoAlert } from "~/components/Alert";
@@ -26,6 +26,42 @@ import { Links, RenkuContactEmail } from "~/utils/constants/Docs";
 import Background from "./Background.svg";
 
 import styles from "./NoLegacySupport.module.css";
+
+function MigrateContentInfo() {
+  const [isRenkulabIo, setIsRenkulabIo] = useState(false);
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    if (
+      hostname === "renkulab.io" ||
+      hostname.endsWith(".renkulab.io") ||
+      hostname === "dev.renku.ch" ||
+      hostname.endsWith(".dev.renku.ch")
+    ) {
+      setIsRenkulabIo(true);
+    }
+  }, []);
+  if (!isRenkulabIo)
+    return <div className={cx("mt-4", "gap-3", "px-5", styles.alertBox)}></div>;
+
+  return (
+    <div className={cx("mt-4", "gap-3", "px-5", styles.alertBox)}>
+      <InfoAlert className="mb-0" dismissible={false} timeout={0}>
+        <b>
+          Do you need to retrieve content from Renku Legacy that was not
+          migrated?
+        </b>{" "}
+        The migration window is closed. We are handling late retrievals on a
+        case-by-case basis with limited capacity.{" "}
+        <ExternalLink
+          className="text-dark"
+          role="text"
+          title="Submit a data retrieval request."
+          url={`mailto:${RenkuContactEmail}`}
+        />
+      </InfoAlert>
+    </div>
+  );
+}
 
 export default function NoLegacySupport() {
   const description =
@@ -90,22 +126,7 @@ export default function NoLegacySupport() {
                 url={Links.RENKU_2_WHY_RENKU}
               />
             </div>
-            <div className={cx("mt-4", "gap-3", "px-5", styles.alertBox)}>
-              <InfoAlert className="mb-0" dismissible={false} timeout={0}>
-                <b>
-                  Do you need to retrieve content from Renku Legacy that was not
-                  migrated?
-                </b>{" "}
-                The migration window is closed. We are handling late retrievals
-                on a case-by-case basis with limited capacity.{" "}
-                <ExternalLink
-                  className="text-dark"
-                  role="text"
-                  title="Submit a data retrieval request."
-                  url={`mailto:${RenkuContactEmail}`}
-                />
-              </InfoAlert>
-            </div>
+            <MigrateContentInfo />
             <div className={cx("mt-4", "text-center")}>
               Join us on the{" "}
               <ExternalLink
