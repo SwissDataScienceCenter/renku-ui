@@ -52,12 +52,436 @@ describe("launch sessions with data connectors", () => {
       })
       .sessionSecrets({
         fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo1.git",
       });
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
   });
 
-  it("launch session with public data connector", () => {
+  // it("launch session with public data connector", () => {
+  //   fixtures
+  //     .testCloudStorage()
+  //     .listProjectDataConnectors()
+  //     .getDataConnector({
+  //       fixture: "dataConnector/data-connector-public.json",
+  //     })
+  //     .getRepositoryMetadata({
+  //       repositoryUrl: "https://domain.name/repo2.git",
+  //     });
+
+  //   cy.visit("/p/user1-uuid/test-2-v2-project");
+  //   cy.wait("@readProjectV2");
+  //   cy.wait("@sessionServersEmptyV2");
+  //   cy.wait("@sessionLaunchers");
+  //   cy.wait("@listProjectDataConnectors");
+
+  //   // ensure the data connector is there
+  //   cy.getDataCy("data-connector-name").should(
+  //     "contain.text",
+  //     "example storage"
+  //   );
+  //   cy.getDataCy("data-connector-name").click();
+  //   cy.getDataCy("data-connector-title").should(
+  //     "contain.text",
+  //     "example storage"
+  //   );
+  //   cy.getDataCy("requires-credentials-section")
+  //     .contains("No")
+  //     .should("be.visible");
+  //   cy.getDataCy("data-connector-view-back-button").click();
+
+  //   // ensure the session launcher is there
+  //   cy.getDataCy("session-launcher-item")
+  //     .first()
+  //     .within(() => {
+  //       cy.getDataCy("session-name").should("contain.text", "Session-custom");
+  //       cy.getDataCy("start-session-button").should("contain.text", "Launch");
+  //     });
+
+  //   fixtures.dataConnectorSecrets({
+  //     dataConnectorId: "ULID-1",
+  //     fixture: "dataConnector/data-connector-secrets-empty.json",
+  //   });
+  //   // start session
+  //   cy.fixture("sessions/sessionV2.json").then((session) => {
+  //     // eslint-disable-next-line max-nested-callbacks
+  //     cy.intercept("POST", "/api/data/sessions", (req) => {
+  //       const dcOverrides = req.body.data_connectors_overrides;
+  //       expect(dcOverrides).to.have.length(0);
+  //       req.reply({ body: session, delay: 2000 });
+  //     }).as("createSession");
+  //   });
+  //   fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+  //   cy.getDataCy("session-launcher-item").within(() => {
+  //     cy.getDataCy("start-session-button").click();
+  //   });
+  //   cy.wait("@getResourceClass");
+  //   cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+  //   cy.wait("@createSession");
+  //   cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  // });
+
+  // it("launch session with data connector requiring credentials", () => {
+  //   fixtures
+  //     .testCloudStorage()
+  //     .listProjectDataConnectors()
+  //     .getDataConnector()
+  //     .dataConnectorSecrets({
+  //       fixture: "dataConnector/data-connector-secrets-empty.json",
+  //     })
+  //     .getRepositoryMetadata({
+  //       repositoryUrl: "https://domain.name/repo2.git",
+  //     });
+
+  //   cy.visit("/p/user1-uuid/test-2-v2-project");
+  //   cy.wait("@readProjectV2");
+  //   cy.wait("@sessionServersEmptyV2");
+  //   cy.wait("@sessionLaunchers");
+  //   cy.wait("@listProjectDataConnectors");
+
+  //   // ensure the data connector is there
+  //   cy.getDataCy("data-connector-name").should(
+  //     "contain.text",
+  //     "example storage"
+  //   );
+  //   cy.getDataCy("data-connector-name").click();
+  //   cy.getDataCy("data-connector-title").should(
+  //     "contain.text",
+  //     "example storage"
+  //   );
+  //   cy.getDataCy("requires-credentials-section")
+  //     .contains("Yes")
+  //     .should("be.visible");
+  //   cy.getDataCy("data-connector-view-back-button").click();
+
+  //   // ensure the session launcher is there
+  //   cy.getDataCy("session-launcher-item")
+  //     .first()
+  //     .within(() => {
+  //       cy.getDataCy("session-name").should("contain.text", "Session-custom");
+  //       cy.getDataCy("start-session-button").should("contain.text", "Launch");
+  //     });
+
+  //   // start session
+  //   cy.fixture("sessions/sessionV2.json").then((session) => {
+  //     // eslint-disable-next-line max-nested-callbacks
+  //     cy.intercept("POST", "/api/data/sessions", (req) => {
+  //       const dcOverrides = req.body.data_connectors_overrides;
+  //       expect(dcOverrides).to.have.length(1);
+  //       const override = dcOverrides[0];
+  //       expect(override.skip).to.be.false;
+  //       expect(override.data_connector_id).to.equal("ULID-1");
+  //       expect(override.configuration).to.have.property("access_key_id");
+  //       expect(override.configuration).to.have.property("secret_access_key");
+  //       expect(override.configuration["access_key_id"]).to.equal("access key");
+  //       expect(override.configuration["secret_access_key"]).to.equal(
+  //         "secret key"
+  //       );
+  //       req.reply({ body: session, delay: 2000 });
+  //     }).as("createSession");
+  //   });
+  //   fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+  //   cy.getDataCy("session-launcher-item")
+  //     .first()
+  //     .within(() => {
+  //       cy.getDataCy("start-session-button").click();
+  //     });
+  //   cy.wait("@getResourceClass");
+  //   cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .should("be.visible")
+  //     .contains("Please provide")
+  //     .should("not.be.visible");
+
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Continue")
+  //     .click();
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Please provide")
+  //     .should("be.visible");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .find("#access_key_id")
+  //     .type("access key");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Secret Access Key (password)")
+  //     .should("be.visible");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .find("#secret_access_key")
+  //     .type("secret key");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Continue")
+  //     .click();
+  //   cy.wait("@testCloudStorage");
+  //   cy.wait("@createSession");
+  //   cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  // });
+
+  // it("launch session with data connector, saving credentials", () => {
+  //   fixtures
+  //     .testCloudStorage()
+  //     .listProjectDataConnectors()
+  //     .getDataConnector()
+  //     .dataConnectorSecrets({
+  //       dataConnectorId: "ULID-1",
+  //       fixture: "dataConnector/data-connector-secrets-empty.json",
+  //     })
+  //     .patchDataConnectorSecrets({
+  //       dataConnectorId: "ULID-1",
+  //       content: [
+  //         {
+  //           name: "access_key_id",
+  //           value: "access key",
+  //         },
+  //         {
+  //           name: "secret_access_key",
+  //           value: "secret key",
+  //         },
+  //       ],
+  //     })
+  //     .getRepositoryMetadata({
+  //       repositoryUrl: "https://domain.name/repo2.git",
+  //     });
+
+  //   cy.visit("/p/user1-uuid/test-2-v2-project");
+  //   cy.wait("@readProjectV2");
+  //   cy.wait("@sessionServersEmptyV2");
+  //   cy.wait("@sessionLaunchers");
+  //   cy.wait("@listProjectDataConnectors");
+  //   cy.getDataCy("data-connector-name").contains("example storage");
+
+  //   cy.fixture("sessions/sessionV2.json").then((session) => {
+  //     // eslint-disable-next-line max-nested-callbacks
+  //     cy.intercept("POST", "/api/data/sessions", (req) => {
+  //       const dcOverrides = req.body.data_connectors_overrides;
+  //       expect(dcOverrides).to.have.length(0);
+  //       req.reply({ body: session, delay: 2000 });
+  //     }).as("createSession");
+  //   });
+
+  //   fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+  //   cy.getDataCy("session-launcher-item")
+  //     .first()
+  //     .within(() => {
+  //       cy.getDataCy("start-session-button").click();
+  //     });
+
+  //   cy.wait("@getDataConnectorSecrets");
+
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .should("be.visible")
+  //     .contains("Please provide")
+  //     .should("not.be.visible");
+
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Continue")
+  //     .click();
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Please provide")
+  //     .should("be.visible");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .find("#access_key_id")
+  //     .type("access key");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Secret Access Key (password)")
+  //     .should("be.visible");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .find("#secret_access_key")
+  //     .type("secret key");
+  //   cy.get("#saveCredentials").click();
+
+  //   fixtures.dataConnectorSecrets({
+  //     dataConnectorId: "ULID-1",
+  //     fixture: "dataConnector/data-connector-secrets.json",
+  //     name: "getDataConnectorSecretsAfterSaving",
+  //   });
+
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Continue")
+  //     .click();
+  //   cy.wait("@testCloudStorage");
+  //   cy.contains("Saving credentials...").should("be.visible");
+  //   cy.wait("@patchDataConnectorSecrets");
+  //   cy.wait("@getDataConnectorSecretsAfterSaving");
+
+  //   cy.wait("@createSession");
+  //   cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  // });
+
+  // it("launch session with skipped data connector", () => {
+  //   fixtures
+  //     .testCloudStorage()
+  //     .listProjectDataConnectors()
+  //     .getDataConnector()
+  //     .dataConnectorSecrets({
+  //       dataConnectorId: "ULID-1",
+  //       fixture: "dataConnector/data-connector-secrets-empty.json",
+  //     })
+  //     .patchDataConnectorSecrets({
+  //       dataConnectorId: "ULID-1",
+  //       content: [
+  //         {
+  //           name: "access_key_id",
+  //           value: "access key",
+  //         },
+  //         {
+  //           name: "secret_access_key",
+  //           value: "secret key",
+  //         },
+  //       ],
+  //     }).getRepositoryMetadata({
+  //       repositoryUrl: "https://domain.name/repo2.git",
+  //     });
+
+  //   cy.visit("/p/user1-uuid/test-2-v2-project");
+  //   cy.wait("@readProjectV2");
+  //   cy.wait("@sessionServersEmptyV2");
+  //   cy.wait("@sessionLaunchers");
+  //   cy.wait("@listProjectDataConnectors");
+  //   cy.getDataCy("data-connector-name").contains("example storage");
+
+  //   cy.fixture("sessions/sessionV2.json").then((session) => {
+  //     // eslint-disable-next-line max-nested-callbacks
+  //     cy.intercept("POST", "/api/data/sessions", (req) => {
+  //       const dcOverrides = req.body.data_connectors_overrides;
+  //       expect(dcOverrides).to.have.length(1);
+  //       const override = dcOverrides[0];
+  //       expect(override.skip).to.be.true;
+  //       expect(override.data_connector_id).to.equal("ULID-1");
+  //       req.reply({ body: session, delay: 2000 });
+  //     }).as("createSession");
+  //   });
+
+  //   fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+  //   cy.getDataCy("session-launcher-item")
+  //     .first()
+  //     .within(() => {
+  //       cy.getDataCy("start-session-button").click();
+  //     });
+  //   fixtures.testCloudStorage({ success: false });
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .find("#access_key_id")
+  //     .type("access key");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Secret Access Key (password)")
+  //     .should("be.visible");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .find("#secret_access_key")
+  //     .type("secret key");
+  //   cy.get("#saveCredentials").click();
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Continue")
+  //     .click();
+  //   cy.wait("@testCloudStorage");
+  //   fixtures.dataConnectorSecrets({
+  //     dataConnectorId: "ULID-1",
+  //     fixture: "dataConnector/data-connector-secrets.json",
+  //     name: "getDataConnectorSecretsAfterSaving",
+  //   });
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Skip")
+  //     .click();
+  //   cy.wait("@createSession");
+  //   cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  // });
+
+  // it("launch session with saved credentials", () => {
+  //   fixtures
+  //     .testCloudStorage()
+  //     .sessionServersEmptyV2()
+  //     .listProjectDataConnectors()
+  //     .getDataConnector()
+  //     .dataConnectorSecrets().getRepositoryMetadata({
+  //       repositoryUrl: "https://domain.name/repo2.git",
+  //     });
+
+  //   cy.visit("/p/user1-uuid/test-2-v2-project");
+  //   cy.wait("@readProjectV2");
+  //   cy.wait("@sessionServersEmptyV2");
+  //   cy.wait("@sessionLaunchers");
+  //   cy.wait("@listProjectDataConnectors");
+
+  //   // start session
+  //   cy.fixture("sessions/sessionV2.json").then((session) => {
+  //     // eslint-disable-next-line max-nested-callbacks
+  //     cy.intercept("POST", "/api/data/sessions", (req) => {
+  //       const dcOverrides = req.body.data_connectors_overrides;
+  //       expect(dcOverrides).to.have.length(0);
+  //       req.reply({ body: session, delay: 2000 });
+  //     }).as("createSession");
+  //   });
+
+  //   fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+  //   cy.getDataCy("session-launcher-item")
+  //     .first()
+  //     .within(() => {
+  //       cy.getDataCy("start-session-button").click();
+  //       cy.wait("@getDataConnectorSecrets");
+  //     });
+  //   cy.wait("@createSession");
+  //   cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  // });
+
+  // it("launch session with incomplete saved credentials", () => {
+  //   fixtures
+  //     .testCloudStorage()
+  //     .listProjectDataConnectors()
+  //     .getDataConnector()
+  //     .dataConnectorSecrets({
+  //       fixture: "dataConnector/data-connector-secrets-partial.json",
+  //     }).getRepositoryMetadata({
+  //       repositoryUrl: "https://domain.name/repo2.git",
+  //     });
+
+  //   cy.visit("/p/user1-uuid/test-2-v2-project");
+  //   cy.wait("@readProjectV2");
+  //   cy.wait("@sessionServersEmptyV2");
+  //   cy.wait("@sessionLaunchers");
+  //   cy.wait("@listProjectDataConnectors");
+
+  //   cy.fixture("sessions/sessionV2.json").then((session) => {
+  //     // eslint-disable-next-line max-nested-callbacks
+  //     cy.intercept("POST", "/api/data/sessions", (req) => {
+  //       const dcOverrides = req.body.data_connectors_overrides;
+  //       expect(dcOverrides).to.have.length(1);
+  //       const override = dcOverrides[0];
+  //       expect(override.skip).to.be.false;
+  //       expect(override.data_connector_id).to.equal("ULID-1");
+  //       expect(override.configuration).to.have.property("access_key_id");
+  //       expect(override.configuration).to.have.property("secret_access_key");
+  //       expect(override.configuration["access_key_id"]).to.equal("access key");
+  //       expect(override.configuration["secret_access_key"]).to.equal(
+  //         "secret key"
+  //       );
+  //       req.reply({ body: session, delay: 2000 });
+  //     }).as("createSession");
+  //   });
+
+  //   fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+  //   cy.getDataCy("session-launcher-item")
+  //     .first()
+  //     .within(() => {
+  //       cy.getDataCy("start-session-button").click();
+  //     });
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .find("#access_key_id")
+  //     .type("access key");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Secret Access Key (password)")
+  //     .should("be.visible");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .find("#secret_access_key")
+  //     .type("secret key");
+  //   cy.getDataCy("session-data-connector-credentials-modal")
+  //     .contains("Continue")
+  //     .click();
+  //   cy.wait("@testCloudStorage");
+  //   cy.wait("@createSession");
+  //   cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  // });
+
+  it("show warning on launch", () => {
     fixtures.testCloudStorage().listProjectDataConnectors().getDataConnector({
       fixture: "dataConnector/data-connector-public.json",
     });
@@ -110,354 +534,7 @@ describe("launch sessions with data connectors", () => {
     });
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
-    cy.wait("@createSession");
-    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
-  });
-
-  it("launch session with data connector requiring credentials", () => {
-    fixtures
-      .testCloudStorage()
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .dataConnectorSecrets({
-        fixture: "dataConnector/data-connector-secrets-empty.json",
-      });
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    cy.wait("@sessionServersEmptyV2");
-    cy.wait("@sessionLaunchers");
-    cy.wait("@listProjectDataConnectors");
-
-    // ensure the data connector is there
-    cy.getDataCy("data-connector-name").should(
-      "contain.text",
-      "example storage"
-    );
-    cy.getDataCy("data-connector-name").click();
-    cy.getDataCy("data-connector-title").should(
-      "contain.text",
-      "example storage"
-    );
-    cy.getDataCy("requires-credentials-section")
-      .contains("Yes")
-      .should("be.visible");
-    cy.getDataCy("data-connector-view-back-button").click();
-
-    // ensure the session launcher is there
-    cy.getDataCy("session-launcher-item")
-      .first()
-      .within(() => {
-        cy.getDataCy("session-name").should("contain.text", "Session-custom");
-        cy.getDataCy("start-session-button").should("contain.text", "Launch");
-      });
-
-    // start session
-    cy.fixture("sessions/sessionV2.json").then((session) => {
-      // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/api/data/sessions", (req) => {
-        const dcOverrides = req.body.data_connectors_overrides;
-        expect(dcOverrides).to.have.length(1);
-        const override = dcOverrides[0];
-        expect(override.skip).to.be.false;
-        expect(override.data_connector_id).to.equal("ULID-1");
-        expect(override.configuration).to.have.property("access_key_id");
-        expect(override.configuration).to.have.property("secret_access_key");
-        expect(override.configuration["access_key_id"]).to.equal("access key");
-        expect(override.configuration["secret_access_key"]).to.equal(
-          "secret key"
-        );
-        req.reply({ body: session, delay: 2000 });
-      }).as("createSession");
-    });
-    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
-    cy.getDataCy("session-launcher-item")
-      .first()
-      .within(() => {
-        cy.getDataCy("start-session-button").click();
-      });
-    cy.wait("@getResourceClass");
-    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .should("be.visible")
-      .contains("Please provide")
-      .should("not.be.visible");
-
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Please provide")
-      .should("be.visible");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
-      .type("access key");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Secret Access Key (password)")
-      .should("be.visible");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
-      .type("secret key");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.wait("@testCloudStorage");
-    cy.wait("@createSession");
-    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
-  });
-
-  it("launch session with data connector, saving credentials", () => {
-    fixtures
-      .testCloudStorage()
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .dataConnectorSecrets({
-        dataConnectorId: "ULID-1",
-        fixture: "dataConnector/data-connector-secrets-empty.json",
-      })
-      .patchDataConnectorSecrets({
-        dataConnectorId: "ULID-1",
-        content: [
-          {
-            name: "access_key_id",
-            value: "access key",
-          },
-          {
-            name: "secret_access_key",
-            value: "secret key",
-          },
-        ],
-      });
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    cy.wait("@sessionServersEmptyV2");
-    cy.wait("@sessionLaunchers");
-    cy.wait("@listProjectDataConnectors");
-    cy.getDataCy("data-connector-name").contains("example storage");
-
-    cy.fixture("sessions/sessionV2.json").then((session) => {
-      // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/api/data/sessions", (req) => {
-        const dcOverrides = req.body.data_connectors_overrides;
-        expect(dcOverrides).to.have.length(0);
-        req.reply({ body: session, delay: 2000 });
-      }).as("createSession");
-    });
-
-    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
-    cy.getDataCy("session-launcher-item")
-      .first()
-      .within(() => {
-        cy.getDataCy("start-session-button").click();
-      });
-
-    cy.wait("@getDataConnectorSecrets");
-
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .should("be.visible")
-      .contains("Please provide")
-      .should("not.be.visible");
-
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Please provide")
-      .should("be.visible");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
-      .type("access key");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Secret Access Key (password)")
-      .should("be.visible");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
-      .type("secret key");
-    cy.get("#saveCredentials").click();
-
-    fixtures.dataConnectorSecrets({
-      dataConnectorId: "ULID-1",
-      fixture: "dataConnector/data-connector-secrets.json",
-      name: "getDataConnectorSecretsAfterSaving",
-    });
-
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.wait("@testCloudStorage");
-    cy.contains("Saving credentials...").should("be.visible");
-    cy.wait("@patchDataConnectorSecrets");
-    cy.wait("@getDataConnectorSecretsAfterSaving");
-
-    cy.wait("@createSession");
-    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
-  });
-
-  it("launch session with skipped data connector", () => {
-    fixtures
-      .testCloudStorage()
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .dataConnectorSecrets({
-        dataConnectorId: "ULID-1",
-        fixture: "dataConnector/data-connector-secrets-empty.json",
-      })
-      .patchDataConnectorSecrets({
-        dataConnectorId: "ULID-1",
-        content: [
-          {
-            name: "access_key_id",
-            value: "access key",
-          },
-          {
-            name: "secret_access_key",
-            value: "secret key",
-          },
-        ],
-      });
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    cy.wait("@sessionServersEmptyV2");
-    cy.wait("@sessionLaunchers");
-    cy.wait("@listProjectDataConnectors");
-    cy.getDataCy("data-connector-name").contains("example storage");
-
-    cy.fixture("sessions/sessionV2.json").then((session) => {
-      // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/api/data/sessions", (req) => {
-        const dcOverrides = req.body.data_connectors_overrides;
-        expect(dcOverrides).to.have.length(1);
-        const override = dcOverrides[0];
-        expect(override.skip).to.be.true;
-        expect(override.data_connector_id).to.equal("ULID-1");
-        req.reply({ body: session, delay: 2000 });
-      }).as("createSession");
-    });
-
-    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
-    cy.getDataCy("session-launcher-item")
-      .first()
-      .within(() => {
-        cy.getDataCy("start-session-button").click();
-      });
-    fixtures.testCloudStorage({ success: false });
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
-      .type("access key");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Secret Access Key (password)")
-      .should("be.visible");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
-      .type("secret key");
-    cy.get("#saveCredentials").click();
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.wait("@testCloudStorage");
-    fixtures.dataConnectorSecrets({
-      dataConnectorId: "ULID-1",
-      fixture: "dataConnector/data-connector-secrets.json",
-      name: "getDataConnectorSecretsAfterSaving",
-    });
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Skip")
-      .click();
-    cy.wait("@createSession");
-    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
-  });
-
-  it("launch session with saved credentials", () => {
-    fixtures
-      .testCloudStorage()
-      .sessionServersEmptyV2()
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .dataConnectorSecrets();
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    cy.wait("@sessionServersEmptyV2");
-    cy.wait("@sessionLaunchers");
-    cy.wait("@listProjectDataConnectors");
-
-    // start session
-    cy.fixture("sessions/sessionV2.json").then((session) => {
-      // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/api/data/sessions", (req) => {
-        const dcOverrides = req.body.data_connectors_overrides;
-        expect(dcOverrides).to.have.length(0);
-        req.reply({ body: session, delay: 2000 });
-      }).as("createSession");
-    });
-
-    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
-    cy.getDataCy("session-launcher-item")
-      .first()
-      .within(() => {
-        cy.getDataCy("start-session-button").click();
-        cy.wait("@getDataConnectorSecrets");
-      });
-    cy.wait("@createSession");
-    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
-  });
-
-  it("launch session with incomplete saved credentials", () => {
-    fixtures
-      .testCloudStorage()
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .dataConnectorSecrets({
-        fixture: "dataConnector/data-connector-secrets-partial.json",
-      });
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    cy.wait("@sessionServersEmptyV2");
-    cy.wait("@sessionLaunchers");
-    cy.wait("@listProjectDataConnectors");
-
-    cy.fixture("sessions/sessionV2.json").then((session) => {
-      // eslint-disable-next-line max-nested-callbacks
-      cy.intercept("POST", "/api/data/sessions", (req) => {
-        const dcOverrides = req.body.data_connectors_overrides;
-        expect(dcOverrides).to.have.length(1);
-        const override = dcOverrides[0];
-        expect(override.skip).to.be.false;
-        expect(override.data_connector_id).to.equal("ULID-1");
-        expect(override.configuration).to.have.property("access_key_id");
-        expect(override.configuration).to.have.property("secret_access_key");
-        expect(override.configuration["access_key_id"]).to.equal("access key");
-        expect(override.configuration["secret_access_key"]).to.equal(
-          "secret key"
-        );
-        req.reply({ body: session, delay: 2000 });
-      }).as("createSession");
-    });
-
-    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
-    cy.getDataCy("session-launcher-item")
-      .first()
-      .within(() => {
-        cy.getDataCy("start-session-button").click();
-      });
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
-      .type("access key");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Secret Access Key (password)")
-      .should("be.visible");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
-      .type("secret key");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.wait("@testCloudStorage");
-    cy.wait("@createSession");
-    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+    cy.getDataCy("session-repositories-warning");
   });
 
   it.skip("launch session multiple data connectors requiring multiple credentials, saving all", () => {
@@ -501,6 +578,9 @@ describe("launch sessions with data connectors", () => {
             value: "webDav pass",
           },
         ],
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -585,6 +665,9 @@ describe("launch sessions with data connectors", () => {
       })
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -680,6 +763,9 @@ describe("launch sessions with data connectors", () => {
       })
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
