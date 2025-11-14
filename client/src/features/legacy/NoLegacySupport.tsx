@@ -91,7 +91,7 @@ export default function NoLegacySupport() {
       style={backgroundImage}
     >
       <div className={cx("m-auto")}>
-        <div className={cx("d-flex", "pb-5", "px-0", styles.contentBox)}>
+        <div className={cx("d-flex", "pb-5", "px-0", "container-lg")}>
           <div
             className={cx(
               "bg-white",

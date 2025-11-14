@@ -4,16 +4,6 @@
   background-repeat: no-repeat;
 }
 
-.contentBox {
-  max-width: 100%;
-}
-
-@media (min-width: 992px) {
-  .contentBox {
-    max-width: 992px;
-  }
-}
-
 .alertBox {
   max-width: 100%;
 }
