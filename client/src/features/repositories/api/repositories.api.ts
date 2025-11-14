@@ -40,16 +40,6 @@ import {
   repositoriesGeneratedApi,
 } from "./repositories.generated-api";
 
-export interface GetRepositoriesProbesParams {
-  repositoriesUrls: string[];
-}
-
-export interface RepositoryWithProbe {
-  repositoryUrl: string;
-  probe: boolean;
-}
-export type GetRepositoriesProbesResponse = RepositoryWithProbe[];
-
 export type RepositoryInterrupts = {
   interruptAlways: boolean;
   interruptOwner: boolean;
