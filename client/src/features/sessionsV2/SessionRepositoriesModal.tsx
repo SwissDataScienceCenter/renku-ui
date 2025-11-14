@@ -95,7 +95,7 @@ export default function SessionRepositoriesModal({
       </div>
     ) : (
       <>
-        <p>
+        <p data-cy="session-repositories-warning">
           There{" "}
           {repoWithInterruptions.length === 1
             ? `is ${repoWithInterruptions.length} repository that requires`
