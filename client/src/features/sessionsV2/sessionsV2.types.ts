@@ -19,7 +19,7 @@
 import type { ReactNode } from "react";
 
 import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
-import type { ResourceClassWithId } from "./api/computeResources.generated-api";
+import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
   BuildParametersPost,
   DefaultUrl,
@@ -185,9 +185,9 @@ export interface DockerImage {
   error?: unknown;
 }
 
-export interface BuilderSelectorOption {
+export interface BuilderSelectorOption<T extends string = string> {
   label: string;
-  value: string;
+  value: T;
   description?: ReactNode;
 }
 
