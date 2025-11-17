@@ -2019,6 +2019,9 @@
           },
           "cluster_id": {
             "$ref": "#/components/schemas/Ulid"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/RuntimePlatform"
           }
         },
         "required": ["classes", "name", "public", "default"],
@@ -2085,6 +2088,9 @@
           },
           "cluster_id": {
             "$ref": "#/components/schemas/Ulid"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/RuntimePlatform"
           }
         },
         "example": {
@@ -2133,6 +2139,9 @@
           },
           "cluster_id": {
             "$ref": "#/components/schemas/Ulid"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/RuntimePlatform"
           }
         },
         "required": ["classes", "name", "public", "default"],
@@ -2210,9 +2219,12 @@
               }
             },
             "required": ["id"]
+          },
+          "platform": {
+            "$ref": "#/components/schemas/RuntimePlatform"
           }
         },
-        "required": ["classes", "name", "id", "public", "default"],
+        "required": ["classes", "name", "id", "public", "default", "platform"],
         "example": {
           "quota": {
             "cpu": 50,
@@ -2282,9 +2294,12 @@
           },
           "cluster_id": {
             "$ref": "#/components/schemas/Ulid"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/RuntimePlatform"
           }
         },
-        "required": ["classes", "name", "id", "public", "default"],
+        "required": ["classes", "name", "id", "public", "default", "platform"],
         "example": {
           "quota": {
             "cpu": 50,
@@ -2764,6 +2779,11 @@
         "uniqueItems": true,
         "default": [],
         "minItems": 0
+      },
+      "RuntimePlatform": {
+        "type": "string",
+        "description": "A runtime platform, e.g. \"linux/amd64\" or \"linux/arm64\".\n",
+        "enum": ["linux/amd64", "linux/arm64"]
       },
       "ErrorResponse": {
         "type": "object",

@@ -653,6 +653,7 @@ export type RemoteConfigurationFirecrest = {
 export type RemoteConfiguration = RemoteConfigurationFirecrest;
 export type IdleThreshold = number;
 export type HibernationThreshold = number;
+export type RuntimePlatform = "linux/amd64" | "linux/arm64";
 export type ResourcePoolWithIdFiltered = {
   quota?: QuotaWithId;
   classes: ResourceClassWithIdFiltered[];
@@ -664,6 +665,7 @@ export type ResourcePoolWithIdFiltered = {
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
+  platform: RuntimePlatform;
 };
 export type ResourcePoolsWithIdFiltered = ResourcePoolWithIdFiltered[];
 export type CpuFilter = number;
@@ -682,6 +684,7 @@ export type ResourcePoolWithId = {
   cluster?: {
     id: Ulid;
   };
+  platform: RuntimePlatform;
 };
 export type QuotaWithOptionalId = {
   cpu: Cpu;
@@ -711,6 +714,7 @@ export type ResourcePool = {
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
+  platform?: RuntimePlatform;
 };
 export type ResourceClassesWithId = ResourceClassWithId[];
 export type ResourcePoolPut = {
@@ -723,6 +727,7 @@ export type ResourcePoolPut = {
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
+  platform?: RuntimePlatform;
 };
 export type QuotaPatch = {
   cpu?: Cpu;
@@ -766,6 +771,7 @@ export type ResourcePoolPatch = {
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
+  platform?: RuntimePlatform;
 };
 export type ResourceClassesWithIdResponse = ResourceClassWithId[];
 export type ResourceClassPatch = {
