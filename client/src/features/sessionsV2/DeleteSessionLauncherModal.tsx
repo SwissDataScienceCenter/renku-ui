@@ -69,7 +69,7 @@ export default function DeleteSessionLauncherModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader className="text-danger" tag="h2" toggle={toggle}>
+      <ModalHeader className="text-danger" data-cy="delete-session-launcher-title" tag="h2" toggle={toggle}>
         Delete session launcher
       </ModalHeader>
       <ModalBody>
@@ -107,6 +107,7 @@ export default function DeleteSessionLauncherModal({
         </Button>
         <Button
           color="danger"
+          data-cy="delete-session-launcher-button"
           disabled={result.isLoading}
           onClick={onDelete}
           type="button"
