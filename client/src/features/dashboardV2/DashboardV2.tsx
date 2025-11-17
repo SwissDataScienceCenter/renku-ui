@@ -347,6 +347,7 @@ function UserDashboard() {
           <Link
             to={userPageUrl}
             className={cx("link-primary", "stretched-link")}
+            data-cy="user-namespace-link"
           >
             @{userInfo.username ?? "unknown"}
           </Link>

@@ -73,7 +73,7 @@ describe("Set up project components", () => {
     // delete code repository
     cy.getDataCy("button-with-menu-dropdown").first().click();
     cy.getDataCy("code-repository-delete").click();
-    cy.getDataCy("delete-code-repository-modal-button").click();
+    cy.getDataCy("delete-modal-button").click();
     cy.wait("@updateProjectV2");
   });
 
