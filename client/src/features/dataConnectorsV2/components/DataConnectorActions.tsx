@@ -490,6 +490,7 @@ function DataConnectorActionsInner({
     ) : (
       <ButtonWithMenuV2
         color="outline-primary"
+        dataCy="data-connector-menu-dropdown"
         default={
           <Button
             color="outline-primary"
