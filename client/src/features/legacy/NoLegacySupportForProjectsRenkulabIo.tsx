@@ -30,7 +30,7 @@ import { Links } from "~/utils/constants/Docs";
 import Background from "./Background.svg";
 import MigrateRepo from "./MigrateRepo.svg";
 
-import styles from "./NoLegacySupportForProjects.module.css";
+import styles from "./NoLegacySupport.module.css";
 
 function FrontendClosedIcon() {
   return (
@@ -392,6 +392,7 @@ export default function NoLegacySupportForProjectsRenkulabIo() {
         "d-flex",
         "flex-column",
         "justify-content-center",
+        "bg-navy",
         styles.background
       )}
       style={backgroundImage}

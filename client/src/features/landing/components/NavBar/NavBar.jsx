@@ -71,8 +71,14 @@ function RenkuNavBarInner({ user }) {
   return (
     <Routes key="mainNav">
       <Route path={sessionShowUrl} element={null} />
-      <Route path={ABSOLUTE_ROUTES.v1.root} element={null} />
-      <Route path={ABSOLUTE_ROUTES.v1.splat} element={null} />
+      <Route
+        path={ABSOLUTE_ROUTES.v1.root}
+        element={forceV2 ? <NavbarV2 /> : null}
+      />
+      <Route
+        path={ABSOLUTE_ROUTES.v1.splat}
+        element={forceV2 ? <NavbarV2 /> : null}
+      />
       <Route
         path={ABSOLUTE_ROUTES.projects.splat}
         element={
