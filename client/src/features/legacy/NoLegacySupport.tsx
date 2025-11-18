@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { useEffect, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
+import { Col, Row } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
 import { ExternalLink } from "~/components/ExternalLinks";
@@ -43,7 +44,7 @@ function MigrateContentInfo() {
   if (!isRenkulabIo) return null;
 
   return (
-    <div className={cx("mt-4", "gap-3", "px-5", styles.alertBox)}>
+    <div className={cx("mt-4", "gap-3", "px-5")}>
       <InfoAlert className="mb-0" dismissible={false} timeout={0}>
         <b>
           Do you need to retrieve content from Renku Legacy that was not
@@ -89,19 +90,18 @@ export default function NoLegacySupport() {
       )}
       style={backgroundImage}
     >
-      <div className={cx("m-auto")}>
-        <div className={cx("d-flex", "pb-5", "px-0", "container-lg")}>
-          <div
+      <div className="container-md">
+        <Row className="justify-content-center">
+          <Col
             className={cx(
               "bg-white",
-              "m-auto",
+              "col-lg-10",
+              "col-xl-9",
+              "col-xxl-8",
               "d-flex",
               "flex-column",
               "align-items-center",
-              "mt-2",
-              "mb-5",
-              "px-5",
-              "py-5"
+              "p-5"
             )}
           >
             <h2
@@ -137,8 +137,8 @@ export default function NoLegacySupport() {
               />{" "}
               to learn, connect, and begin your journey with Renku.
             </div>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
     </div>
   );
