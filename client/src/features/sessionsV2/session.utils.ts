@@ -18,18 +18,20 @@
 
 import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
+import type { ResourcePoolWithId } from "./api/computeResources.api";
 import type {
   EnvironmentList as SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherEnvironmentParams,
   SessionLauncherEnvironmentPatchParams,
 } from "./api/sessionLaunchersV2.api";
+import type { ImageCheckResponse } from "./api/sessionsV2.api";
 import {
   BUILDER_PLATFORMS,
   DEFAULT_URL,
   ENV_VARIABLES_RESERVED_PREFIX,
 } from "./session.constants";
-import { SessionLauncherForm } from "./sessionsV2.types";
+import type { SessionLauncherForm } from "./sessionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -401,4 +403,17 @@ export function validateEnvVariableName(name: string): true | string {
     return `Variable names cannot start with '${ENV_VARIABLES_RESERVED_PREFIX}'.`;
   }
   return true;
+}
+
+export function isImageCompatibleWith(
+  image: ImageCheckResponse,
+  platform: ResourcePoolWithId["platform"]
+): boolean | "unknown" {
+  if (image.platforms == null) {
+    return "unknown";
+  }
+  const imagePlatforms = image.platforms?.map(
+    ({ os, architecture }) => `${os}/${architecture}`
+  );
+  return imagePlatforms.some((p) => p === platform);
 }
