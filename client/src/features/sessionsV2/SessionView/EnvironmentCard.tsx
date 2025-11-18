@@ -32,6 +32,7 @@ import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
+import { computeResourcesApi } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import {
   sessionLaunchersV2Api,
@@ -175,6 +176,16 @@ function CustomImageEnvironmentValues({
       ? { imageUrl: environment.container_image }
       : skipToken
   );
+  const { data: resourcePools, isLoading: isLoadingResourcePools } =
+    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
+  const resourcePool = useMemo(() => {
+    if (launcher?.resource_class_id == null || resourcePools == null) {
+      return undefined;
+    }
+    return resourcePools.find(({ classes }) =>
+      classes.some(({ id }) => id === launcher.resource_class_id)
+    );
+  }, [launcher?.resource_class_id, resourcePools]);
   const search = useMemo(() => {
     return `?${new URLSearchParams({
       targetProvider: data?.provider?.id ?? "",
@@ -188,7 +199,12 @@ function CustomImageEnvironmentValues({
   return (
     <>
       <div className="mb-2">
-        <SessionImageBadge data={data} isLoading={isLoading} />
+        <SessionImageBadge
+          data={data}
+          isLoading={isLoading}
+          resourcePool={resourcePool}
+          isLoadingResourcePools={isLoadingResourcePools}
+        />
         {!isLoading && data?.accessible === false && (
           <div className="mt-2">
             {!data.connection && !data.provider ? (
