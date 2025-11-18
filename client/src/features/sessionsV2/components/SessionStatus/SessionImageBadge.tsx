@@ -17,26 +17,43 @@
  */
 
 import cx from "classnames";
+import { useMemo } from "react";
 import { CircleFill } from "react-bootstrap-icons";
 
 import { Loader } from "~/components/Loader";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
-import { ImageCheckResponse } from "../../api/sessionsV2.generated-api";
+import type { ResourcePoolWithId } from "../../api/computeResources.api";
+import type { ImageCheckResponse } from "../../api/sessionsV2.api";
+import { isImageCompatibleWith } from "../../session.utils";
 
 interface SessionImageBadgeProps {
   data?: ImageCheckResponse | null;
-  loading: boolean;
+  isLoading: boolean;
+
+  resourcePool?: ResourcePoolWithId;
+  isLoadingResourcePools?: boolean;
 }
 
 export default function SessionImageBadge({
   data,
-  loading,
+  isLoading,
+  resourcePool,
+  isLoadingResourcePools,
 }: SessionImageBadgeProps) {
+  const isCompatible = useMemo(() => {
+    if (data == null || resourcePool == null) {
+      return "unknown";
+    }
+    return isImageCompatibleWith(data, resourcePool.platform);
+  }, [data, resourcePool]);
+
   return (
     <RenkuBadge
       color={
-        loading
+        isLoading || isLoadingResourcePools
           ? "light"
+          : isCompatible === false
+          ? "danger"
           : data?.accessible
           ? "success"
           : data?.provider?.id &&
@@ -47,7 +64,7 @@ export default function SessionImageBadge({
       className="fw-normal"
       pill
     >
-      {loading ? (
+      {isLoading || isLoadingResourcePools ? (
         <>
           <Loader className="me-1" size={12} inline />
           Checking image status.
@@ -55,7 +72,11 @@ export default function SessionImageBadge({
       ) : (
         <>
           <CircleFill className={cx("bi", "me-1")} />
-          {data?.accessible
+          {isCompatible === false
+            ? `Image incompatible${
+                resourcePool?.platform ? ` with ${resourcePool.platform}` : ""
+              }`
+            : data?.accessible
             ? "Image accessible"
             : data?.provider?.id &&
               (!data?.connection || data?.connection?.status !== "connected")

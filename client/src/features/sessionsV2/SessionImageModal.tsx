@@ -76,7 +76,7 @@ export default function SessionImageModal({
     ) : (
       <>
         <div className="mb-2">
-          <SessionImageBadge data={data} loading={isLoading} />
+          <SessionImageBadge data={data} isLoading={isLoading} />
         </div>
         {!data.connection && !data.provider ? (
           <>

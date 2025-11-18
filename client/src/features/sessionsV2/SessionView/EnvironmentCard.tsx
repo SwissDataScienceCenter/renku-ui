@@ -188,7 +188,7 @@ function CustomImageEnvironmentValues({
   return (
     <>
       <div className="mb-2">
-        <SessionImageBadge data={data} loading={isLoading} />
+        <SessionImageBadge data={data} isLoading={isLoading} />
         {!isLoading && data?.accessible === false && (
           <div className="mt-2">
             {!data.connection && !data.provider ? (
