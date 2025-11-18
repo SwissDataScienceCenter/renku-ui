@@ -3,13 +3,3 @@
   background-size: inherit;
   background-repeat: no-repeat;
 }
-
-.alertBox {
-  max-width: 100%;
-}
-
-@media (min-width: 768px) {
-  .alertBox {
-    max-width: 768px;
-  }
-}
