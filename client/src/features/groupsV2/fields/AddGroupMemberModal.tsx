@@ -39,7 +39,7 @@ import type {
 import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import { UserControl } from "../../projectsV2/fields/UserSelector";
 import type { User } from "../../searchV2/api/searchV2Api.api";
-import GroupMemberRole from "./GroupMemberRole";
+import GroupMemberRoleSelect from "./GroupMemberRoleSelect";
 
 interface AddGroupMemberModalProps {
   isOpen: boolean;
@@ -154,7 +154,7 @@ function AddGroupMemberAccessForm({
             />
             <div className="invalid-feedback">Please select a user to add</div>
           </div>
-          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
+          <div className={cx("align-items-baseline", "d-flex", "flex-column")}>
             <Label for="member-role-select-input">Role</Label>
             <Controller
               control={control}
@@ -164,10 +164,8 @@ function AddGroupMemberAccessForm({
                 fieldState: { error },
               }) => (
                 <>
-                  <div
-                    className={cx("ms-1", "flex-grow-1", error && "is-invalid")}
-                  >
-                    <GroupMemberRole
+                  <div className={cx("ms-1", "w-100", error && "is-invalid")}>
+                    <GroupMemberRoleSelect
                       disabled={disabled}
                       data-cy="member-role-select"
                       id="member-role"

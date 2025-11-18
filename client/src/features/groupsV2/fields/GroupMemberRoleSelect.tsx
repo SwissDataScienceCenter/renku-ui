@@ -66,7 +66,7 @@ interface GroupMemberRoleProps {
   onChange?: (newValue?: string) => void;
 }
 
-export default function GroupMemberRole({
+export default function GroupMemberRoleSelect({
   disabled,
   id,
   inputId,

@@ -35,7 +35,7 @@ import { Loader } from "../../../components/Loader";
 import type { GroupMemberResponse } from "../../projectsV2/api/namespace.api";
 import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import { ProjectMemberDisplay } from "../../projectsV2/shared/ProjectMemberDisplay";
-import GroupMemberRole from "./GroupMemberRole";
+import GroupMemberRoleSelect from "./GroupMemberRoleSelect";
 
 interface EditGroupMemberModalProps {
   groupSlug: string;
@@ -139,7 +139,7 @@ function EditGroupMemberRoleForm({
                   <div
                     className={cx("ms-1", "flex-grow-1", error && "is-invalid")}
                   >
-                    <GroupMemberRole
+                    <GroupMemberRoleSelect
                       disabled={disabled}
                       data-cy="member-role-select"
                       id="member-role"
