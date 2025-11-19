@@ -164,7 +164,7 @@ function AddGroupMemberAccessForm({
                 fieldState: { error },
               }) => (
                 <>
-                  <div className={cx("ms-1", "w-100", error && "is-invalid")}>
+                  <div className={cx("w-100", error && "is-invalid")}>
                     <GroupMemberRoleSelect
                       disabled={disabled}
                       data-cy="member-role-select"
