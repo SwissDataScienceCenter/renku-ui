@@ -24,7 +24,6 @@ import { SingleValue } from "react-select";
 import {
   Button,
   Form,
-  Input,
   Label,
   Modal,
   ModalBody,
@@ -40,6 +39,7 @@ import type {
 import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import { UserControl } from "../../projectsV2/fields/UserSelector";
 import type { User } from "../../searchV2/api/searchV2Api.api";
+import GroupMemberRoleSelect from "./GroupMemberRoleSelect";
 
 interface AddGroupMemberModalProps {
   isOpen: boolean;
@@ -154,24 +154,36 @@ function AddGroupMemberAccessForm({
             />
             <div className="invalid-feedback">Please select a user to add</div>
           </div>
-          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
-            <Label for="member-role">Role</Label>
+          <div className={cx("align-items-baseline", "d-flex", "flex-column")}>
+            <Label for="member-role-select-input">Role</Label>
             <Controller
               control={control}
               name="role"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", "ms-3")}
-                  data-cy="member-role"
-                  id="member-role"
-                  type="select"
-                  style={{ maxWidth: "7em" }}
-                  {...field}
-                >
-                  <option value="viewer">Viewer</option>
-                  <option value="editor">Editor</option>
-                  <option value="owner">Owner</option>
-                </Input>
+              render={({
+                field: { onBlur, onChange, value, disabled },
+                fieldState: { error },
+              }) => (
+                <>
+                  <div className={cx("w-100", error && "is-invalid")}>
+                    <GroupMemberRoleSelect
+                      disabled={disabled}
+                      data-cy="member-role-select"
+                      id="member-role"
+                      inputId="member-role-select-input"
+                      name="role"
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      value={value ?? ""}
+                    />
+                  </div>
+                  <div className="invalid-feedback">
+                    {error?.message ? (
+                      <>{error.message}</>
+                    ) : (
+                      <>Please select a role.</>
+                    )}
+                  </div>
+                </>
               )}
               rules={{ required: true }}
             />
