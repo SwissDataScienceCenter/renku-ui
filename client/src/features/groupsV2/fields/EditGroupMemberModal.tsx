@@ -23,7 +23,6 @@ import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Input,
   Label,
   Modal,
   ModalBody,
@@ -36,6 +35,7 @@ import { Loader } from "../../../components/Loader";
 import type { GroupMemberResponse } from "../../projectsV2/api/namespace.api";
 import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
 import { ProjectMemberDisplay } from "../../projectsV2/shared/ProjectMemberDisplay";
+import GroupMemberRoleSelect from "./GroupMemberRoleSelect";
 
 interface EditGroupMemberModalProps {
   groupSlug: string;
@@ -64,7 +64,7 @@ export default function EditGroupMemberModal({
         Change access
       </ModalHeader>
       {member != null && (
-        <EditGroupMemberAccessForm
+        <EditGroupMemberRoleForm
           groupSlug={groupSlug}
           member={member}
           toggle={toggle}
@@ -74,17 +74,17 @@ export default function EditGroupMemberModal({
   );
 }
 
-interface EditGroupMemberAccessFormProps {
+interface EditGroupMemberRoleFormProps {
   groupSlug: string;
   member: GroupMemberResponse;
   toggle: () => void;
 }
 
-function EditGroupMemberAccessForm({
+function EditGroupMemberRoleForm({
   groupSlug,
   member,
   toggle,
-}: EditGroupMemberAccessFormProps) {
+}: EditGroupMemberRoleFormProps) {
   const [patchGroupMembers, { isLoading, isSuccess, error }] =
     usePatchGroupsByGroupSlugMembersMutation();
   const {
@@ -125,25 +125,39 @@ function EditGroupMemberAccessForm({
         <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {error && <RtkOrNotebooksError error={error} />}
           <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
-            <Label for="member-role">
+            <Label for="member-role-select-input">
               <ProjectMemberDisplay member={member} />
             </Label>
             <Controller
               control={control}
               name="role"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", "ms-3")}
-                  data-cy="member-role"
-                  id="member-role"
-                  type="select"
-                  style={{ maxWidth: "7em" }}
-                  {...field}
-                >
-                  <option value="viewer">Viewer</option>
-                  <option value="editor">Editor</option>
-                  <option value="owner">Owner</option>
-                </Input>
+              render={({
+                field: { onBlur, onChange, value, disabled },
+                fieldState: { error },
+              }) => (
+                <>
+                  <div
+                    className={cx("ms-1", "flex-grow-1", error && "is-invalid")}
+                  >
+                    <GroupMemberRoleSelect
+                      disabled={disabled}
+                      data-cy="member-role-select"
+                      id="member-role"
+                      inputId="member-role-select-input"
+                      name="role"
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      value={value ?? ""}
+                    />
+                  </div>
+                  <div className="invalid-feedback">
+                    {error?.message ? (
+                      <>{error.message}</>
+                    ) : (
+                      <>Please select a role.</>
+                    )}
+                  </div>
+                </>
               )}
               rules={{ required: true }}
             />
