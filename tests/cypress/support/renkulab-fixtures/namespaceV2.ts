@@ -111,7 +111,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         args ?? {};
       const response = { statusCode: 204 };
       cy.intercept("DELETE", `/api/data/groups/${groupSlug}`, response).as(
-        name
+        name,
       );
       return this;
     }
@@ -127,7 +127,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "DELETE",
         `/api/data/groups/${groupSlug}/members/${userId}`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -142,7 +142,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         const start = (page - 1) * perPage;
         const numToGen = Math.min(
           Math.max(numberOfGroups - start - perPage, 0),
-          perPage
+          perPage,
         );
         req.reply({
           body: generateGroups(numToGen, start),
@@ -169,7 +169,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         const totalPages = Math.ceil(numberOfNamespaces / perPage);
         const numToGen = Math.min(
           Math.max(numberOfNamespaces - start - perPage, 0),
-          perPage
+          perPage,
         );
         req.reply({
           body: generateNamespaces(numToGen, start),
@@ -212,7 +212,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/api/data/groups/${groupSlug}/permissions`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -227,14 +227,14 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       cy.fixture(fixture).then((content) => {
         const result = content.filter(
-          (memberWithRole) => memberWithRole.id !== removeUserId
+          (memberWithRole) => memberWithRole.id !== removeUserId,
         );
         if (addMember != null) result.push(addMember);
         const response = { body: result };
         cy.intercept(
           "GET",
           `/api/data/groups/${groupSlug}/members`,
-          response
+          response,
         ).as(name);
       });
       return this;
@@ -250,7 +250,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "PATCH",
         `/api/data/groups/${groupSlug}/members`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -316,7 +316,7 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("GET", `/api/data/namespaces/${username}`, response).as(
-        name
+        name,
       );
       return this;
     }

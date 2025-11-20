@@ -55,7 +55,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
 
     adminResourcePoolUsers(
       name = "getAdminResourcePoolUsers",
-      fixture = "dataServices/resource-pool-users.json"
+      fixture = "dataServices/resource-pool-users.json",
     ) {
       cy.intercept("/api/data/users", {
         fixture,

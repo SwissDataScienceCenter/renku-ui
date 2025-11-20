@@ -88,11 +88,11 @@ describe("Set up data connectors with credentials", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "project was linked"
+      "project was linked",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listProjectDataConnectors");
@@ -101,11 +101,11 @@ describe("Set up data connectors with credentials", () => {
     cy.wait("@getDataConnectorSecrets");
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Requires credentials"
+      "Requires credentials",
     );
   });
 
@@ -153,7 +153,7 @@ describe("Set up data connectors with credentials", () => {
     cy.getDataCy("test-data-connector-button").click();
     cy.wait("@testCloudStorage");
     cy.contains("The connection to the storage works correctly.").should(
-      "be.visible"
+      "be.visible",
     );
     cy.getDataCy("add-data-connector-continue-button")
       .contains("Continue")
@@ -167,15 +167,15 @@ describe("Set up data connectors with credentials", () => {
     cy.wait("@patchDataConnectorSecrets");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-with-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-with-credentials has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "credentials were saved"
+      "credentials were saved",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "project was linked"
+      "project was linked",
     );
 
     cy.getDataCy("data-connector-edit-close-button").click();
@@ -185,11 +185,11 @@ describe("Set up data connectors with credentials", () => {
     cy.wait("@getDataConnectorSecrets");
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Credentials saved"
+      "Credentials saved",
     );
     cy.getDataCy("data-connector-view-back-button").click();
 

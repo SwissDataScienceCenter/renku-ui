@@ -21,7 +21,7 @@ import type { FixturesType } from "../renkulab-fixtures";
 function selectProjectFromAutosuggestionList(
   project: string,
   fixtures: FixturesType,
-  migrationCheckResult: string
+  migrationCheckResult: string,
 ) {
   fixtures.interceptMigrationCheck({
     name: "migrationCheckSelectedProject",
@@ -78,14 +78,14 @@ function newDataset(newDataset: Dataset) {
   if (newDataset.file) {
     cy.get('[data-cy="dropzone"]').attachFile(
       "/datasets/files/" + newDataset.file,
-      { subjectType: "drag-n-drop" }
+      { subjectType: "drag-n-drop" },
     );
   }
 
   if (newDataset.image) {
     cy.get('[data-cy="file-input-image"]').attachFile(
       "/datasets/files/" + newDataset.image,
-      { subjectType: "drag-n-drop" }
+      { subjectType: "drag-n-drop" },
     );
   }
 }
@@ -93,7 +93,7 @@ function newDataset(newDataset: Dataset) {
 export default function registerDatasetsCommands() {
   Cypress.Commands.add(
     "selectProjectFromAutosuggestionList",
-    selectProjectFromAutosuggestionList
+    selectProjectFromAutosuggestionList,
   );
   Cypress.Commands.add("newDataset", newDataset);
 }

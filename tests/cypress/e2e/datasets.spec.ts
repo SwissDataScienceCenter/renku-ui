@@ -49,7 +49,7 @@ describe("display a dataset", () => {
           .first()
           .should(
             "contain.text",
-            "abcd • Dataset • Dataset for testing purposes"
+            "abcd • Dataset • Dataset for testing purposes",
           );
         // the dataset title is displayed
         cy.getDataCy("dataset-title").should("contain.text", dataset?.name);
@@ -57,7 +57,7 @@ describe("display a dataset", () => {
         const totalFiles = dataset?.hasPart?.length;
         cy.getDataCy("dataset-file-title").should(
           "contain.text",
-          `Dataset files (${totalFiles})`
+          `Dataset files (${totalFiles})`,
         );
         cy.getDataCy("dataset-fs-element").should("have.length", 2);
 
@@ -66,7 +66,7 @@ describe("display a dataset", () => {
         if (totalProjectsUsingDataset > 1)
           cy.getDataCy("project-using-dataset").should(
             "have.length",
-            totalProjectsUsingDataset
+            totalProjectsUsingDataset,
           );
       });
   });

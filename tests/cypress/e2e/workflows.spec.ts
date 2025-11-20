@@ -117,7 +117,7 @@ describe("iteract with workflows", () => {
       .click();
     cy.url().should(
       "include",
-      "/projects/e2e/local-test-project/workflows/952c938055a041168f6e795ae33b0d22"
+      "/projects/e2e/local-test-project/workflows/952c938055a041168f6e795ae33b0d22",
     );
 
     // first mapping is selected
@@ -144,7 +144,7 @@ describe("iteract with workflows", () => {
       .click();
     cy.url().should(
       "include",
-      "/projects/e2e/local-test-project/workflows/d1341c90f2b2464dba2bd933fc716007"
+      "/projects/e2e/local-test-project/workflows/d1341c90f2b2464dba2bd933fc716007",
     );
   });
 
@@ -163,7 +163,7 @@ describe("iteract with workflows", () => {
       .click();
     cy.url().should(
       "include",
-      "/projects/e2e/local-test-project/workflows/d1341c90f2b2464dba2bd933fc716007"
+      "/projects/e2e/local-test-project/workflows/d1341c90f2b2464dba2bd933fc716007",
     );
 
     // look for some props
@@ -244,12 +244,12 @@ describe("iteract with workflows", () => {
       .click();
     cy.url().should(
       "include",
-      "/projects/e2e/local-test-project/workflows/952c938055a041168f6e795ae33b0d22"
+      "/projects/e2e/local-test-project/workflows/952c938055a041168f6e795ae33b0d22",
     );
     cy.getDataCy("workflow-details-newer").should("exist").find("a").click();
     cy.url().should(
       "include",
-      "/projects/e2e/local-test-project/workflows/3398f0a970774e2d82b1791190de85d0"
+      "/projects/e2e/local-test-project/workflows/3398f0a970774e2d82b1791190de85d0",
     );
   });
 });

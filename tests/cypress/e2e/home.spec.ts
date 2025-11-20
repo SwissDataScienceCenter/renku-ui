@@ -28,7 +28,7 @@ describe("display the home page", () => {
     cy.get("h1").should("have.length", 1);
     cy.get("h1").should(
       "have.text",
-      "Connecting data, code, compute, and people."
+      "Connecting data, code, compute, and people.",
     );
   });
 });

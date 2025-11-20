@@ -45,7 +45,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture: `datasets/dataset_${id}.json` };
       cy.intercept("GET", `/ui-server/api/kg/datasets/${id}`, response).as(
-        name
+        name,
       );
       return this;
     }
@@ -56,7 +56,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "POST",
         "/ui-server/api/renku/*/datasets.remove",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -66,7 +66,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         args ?? {};
       const response = { fixture: `datasets/no-dataset.json`, statusCode: 404 };
       cy.intercept("GET", `/ui-server/api/kg/datasets/${id}`, response).as(
-        name
+        name,
       );
       return this;
     }
@@ -81,7 +81,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/kg/projects/${projectPath}/datasets`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -99,7 +99,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         cy.intercept(
           "GET",
           "/ui-server/api/renku/**/datasets.list?git_url=*",
-          response
+          response,
         ).as(name);
       });
       return this;
@@ -117,7 +117,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         cy.intercept(
           "GET",
           "/ui-server/api/renku/*/datasets.list?git_url=*",
-          response
+          response,
         ).as(name);
       });
       return this;
@@ -130,7 +130,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/renku/*/datasets.files_list?*",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -144,10 +144,10 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "POST",
         "/ui-server/api/renku/*/datasets.import",
-        response
+        response,
       ).as(name);
       cy.intercept("POST", "/ui-server/api/renku/datasets.import", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -205,7 +205,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "POST",
         "/ui-server/api/renku/*/datasets.create",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -223,7 +223,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       };
 
       cy.intercept("POST", "/ui-server/api/renku/*/datasets.edit", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -233,7 +233,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         args ?? {};
       const response = { fixture };
       cy.intercept("POST", "/ui-server/api/renku/*/datasets.add", response).as(
-        name
+        name,
       );
       return this;
     }

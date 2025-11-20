@@ -45,7 +45,7 @@ describe("launch autostart sessions", () => {
   it("autostart session - not found custom values commit", () => {
     const invalidCommit = "no-valid-commit";
     cy.visit(
-      `${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=master`
+      `${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=master`,
     );
     const alertMessage = `The session could not start because the commit ${invalidCommit} does not exist. Please select another commit to start a session.`;
     cy.wait("@getProjectCommits");
@@ -133,7 +133,7 @@ describe("launch autostart sessions without legacy support", () => {
     cy.wait("@readProjectV2ById");
     cy.url().should(
       "contain",
-      "/p/user1-uuid/test-2-v2-project?autostartRedirect=true"
+      "/p/user1-uuid/test-2-v2-project?autostartRedirect=true",
     );
   });
 
@@ -146,7 +146,7 @@ describe("launch autostart sessions without legacy support", () => {
     cy.contains("Checking for redirect").should("be.visible");
     cy.wait("@getUrlRedirect");
     cy.contains("This version of Renku is no longer supported").should(
-      "be.visible"
+      "be.visible",
     );
   });
 });

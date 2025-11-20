@@ -308,7 +308,7 @@ describe("Project Session secret slots", () => {
     cy.get("@modal").contains("label", "User secret").should("be.visible");
     cy.findReactSelectOptions(
       "session-secret-select-user-secret",
-      "session-secret-select-user-secret"
+      "session-secret-select-user-secret",
     )
       .first()
       .click(); // click on first option

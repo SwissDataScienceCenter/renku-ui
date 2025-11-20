@@ -44,7 +44,7 @@ export function UserPreferences<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "POST",
         "/api/data/user/preferences/pinned_projects",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -58,7 +58,7 @@ export function UserPreferences<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "DELETE",
         "/api/data/user/preferences/pinned_projects*",
-        response
+        response,
       ).as(name);
       return this;
     }

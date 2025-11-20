@@ -101,7 +101,7 @@ describe("display KG status information", () => {
     cy.getDataCy("kg-status-section-open").should("exist").click();
     cy.getDataCy("project-settings-knowledge-graph")
       .contains(
-        "Indexing must be activated to use this project from the RenkuLab web interface"
+        "Indexing must be activated to use this project from the RenkuLab web interface",
       )
       .should("exist");
     cy.getDataCy("kg-status-section-close").should("exist");
@@ -249,7 +249,7 @@ describe("display migration information", () => {
     cy.getDataCy("project-version-section-open").should("exist").click();
     cy.getDataCy("project-settings-migration-status")
       .contains(
-        "project metadata is still on version 9 while the latest version is 10"
+        "project metadata is still on version 9 while the latest version is 10",
       )
       .should("exist");
     cy.getDataCy("project-settings-migration-status")
@@ -281,7 +281,7 @@ describe("display migration information", () => {
     cy.getDataCy("project-version-section-open").should("exist").click();
     cy.getDataCy("project-settings-migration-status")
       .contains(
-        "project metadata is still on version 8 while the latest version is 10"
+        "project metadata is still on version 8 while the latest version is 10",
       )
       .should("exist");
     cy.getDataCy("project-settings-migration-status")
@@ -313,7 +313,7 @@ describe("display migration information", () => {
     cy.getDataCy("project-version-section-open").should("exist").click();
     cy.getDataCy("project-settings-migration-status")
       .contains(
-        "project metadata is still on version 5 while the latest version is 10"
+        "project metadata is still on version 5 while the latest version is 10",
       )
       .should("exist");
     cy.getDataCy("project-settings-migration-status")
@@ -440,7 +440,7 @@ describe("display migration information for non maintainer", () => {
     cy.getDataCy("project-version-section-open").should("exist").click();
     cy.getDataCy("project-settings-migration-status")
       .contains(
-        "project metadata is still on version 8 while the latest version is 10"
+        "project metadata is still on version 8 while the latest version is 10",
       )
       .should("exist");
     cy.getDataCy("project-settings-migration-status")

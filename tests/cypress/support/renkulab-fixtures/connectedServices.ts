@@ -45,7 +45,7 @@ export function ConnectedServices<T extends FixturesConstructor>(Parent: T) {
           {
             body: repoMetadata,
             statusCode,
-          }
+          },
         ).as(name);
       });
 

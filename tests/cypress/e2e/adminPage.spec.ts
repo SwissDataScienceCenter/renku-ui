@@ -203,7 +203,7 @@ describe("admin page", () => {
       .click();
     cy.get(".modal")
       .contains(
-        "Please confirm that you want to delete the High-GPU class 1 resource class from the Special GPU pool resource pool."
+        "Please confirm that you want to delete the High-GPU class 1 resource class from the Special GPU pool resource pool.",
       )
       .should("be.visible");
     cy.get(".modal").contains("button", "Cancel").should("be.visible").click();

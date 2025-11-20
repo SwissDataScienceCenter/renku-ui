@@ -66,7 +66,7 @@ describe("Add new v2 project", () => {
       cy.wait("@listNamespaceV2");
       cy.findReactSelectOptions(
         "project-creation-form-project-namespace-input",
-        "namespace-select"
+        "namespace-select",
       )
         .first()
         .click();
@@ -91,14 +91,14 @@ describe("Add new v2 project", () => {
     cy.getDataCy("project-slug-input").clear().type(newProjectTitle);
     cy.getDataCy("project-create-button").click();
     cy.contains(
-      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'."
+      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'.",
     ).should("be.visible");
 
     cy.getDataCy("project-slug-input").clear().type(slug);
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions(
       "project-creation-form-project-namespace-input",
-      "namespace-select"
+      "namespace-select",
     )
       .first()
       .click();
@@ -118,7 +118,7 @@ describe("Add new v2 project -- not logged in", () => {
 
   it("create a new project", () => {
     cy.contains("Only authenticated users can create new projects.").should(
-      "be.visible"
+      "be.visible",
     );
   });
 });
@@ -163,14 +163,14 @@ describe("Navigate to project", () => {
     cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
     cy.getDataCy("project-description").should(
       "contain.text",
-      "Project 2 description"
+      "Project 2 description",
     );
     cy.getDataCy("project-info-card").contains("public");
     cy.getDataCy("project-info-card").contains("user1-uuid");
     cy.getDataCy("project-documentation-text").should("be.visible");
     cy.getDataCy("project-documentation-text")
       .contains(
-        "A description of this project, supporting markdown and math symbols"
+        "A description of this project, supporting markdown and math symbols",
       )
       .should("be.visible");
     cy.getDataCy("project-documentation-edit").should("not.exist");
@@ -188,7 +188,7 @@ describe("Navigate to project", () => {
     cy.getDataCy("project-documentation-text").should("be.visible");
     cy.getDataCy("project-documentation-text")
       .contains(
-        "Describe your project, so others can understand what it does and how to use it."
+        "Describe your project, so others can understand what it does and how to use it.",
       )
       .should("be.visible");
   });
@@ -259,7 +259,7 @@ describe("Edit v2 project", () => {
     cy.wait("@updateProjectV2");
     cy.wait("@readPostUpdate");
     cy.contains("The project has been successfully updated.").should(
-      "be.visible"
+      "be.visible",
     );
     cy.contains("new name").should("be.visible");
   });
@@ -275,7 +275,7 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-documentation-edit").click();
     cy.getDataCy("project-documentation-modal-body")
       .contains(
-        "A description of this project, supporting **markdown** and math symbols"
+        "A description of this project, supporting **markdown** and math symbols",
       )
       .should("be.visible");
     const newDescription =
@@ -315,7 +315,7 @@ describe("Edit v2 project", () => {
     cy.wait("@readUserV2Namespace");
     cy.findReactSelectOptions(
       "project-settings-form-project-namespace-input",
-      "namespace-select"
+      "namespace-select",
     );
     cy.get("button").contains("Fetch more").click();
     // Need to click away so the dropdown option selection works
@@ -323,7 +323,7 @@ describe("Edit v2 project", () => {
     cy.wait("@listNamespaceV2");
     cy.findReactSelectOptions(
       "project-settings-form-project-namespace-input",
-      "namespace-select"
+      "namespace-select",
     )
       // Pick an element from the second page of results
       .contains("test-25-group-v2")
@@ -351,7 +351,7 @@ describe("Edit v2 project", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.getDataCy("add-code-repository").click();
     cy.getDataCy("project-add-repository-url").type(
-      "https://domain.name/repo3.git"
+      "https://domain.name/repo3.git",
     );
     fixtures.readProjectV2({
       fixture: "projectV2/update-projectV2-repositories.json",
@@ -688,7 +688,7 @@ describe("Project templates and copies", () => {
       .click();
     cy.getDataCy("project-copy-menu-item").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
-      "be.visible"
+      "be.visible",
     );
     cy.wait("@listNamespaceV2");
     cy.getDataCy("copy-modal")
@@ -717,7 +717,7 @@ describe("Project templates and copies", () => {
       .click();
     cy.getDataCy("project-copy-menu-item").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
-      "be.visible"
+      "be.visible",
     );
     cy.wait("@listNamespaceV2");
     cy.getDataCy("project-copy-form-project-name-input")
@@ -745,7 +745,7 @@ describe("Project templates and copies", () => {
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
-      "be.visible"
+      "be.visible",
     );
     cy.wait("@listNamespaceV2");
     cy.getDataCy("project-copy-form-project-name-input")
@@ -777,7 +777,7 @@ describe("Project templates and copies", () => {
     cy.wait("@listProjectV2Copies");
     cy.getDataCy("copy-project-button").should("not.exist");
     cy.contains(
-      "You already have a project created from this template."
+      "You already have a project created from this template.",
     ).should("be.visible");
     fixtures.readProjectV2({
       projectSlug: "test-2-v2-project",
@@ -816,7 +816,7 @@ describe("Project templates and copies", () => {
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
-      "be.visible"
+      "be.visible",
     );
     cy.wait("@listNamespaceV2");
     cy.getDataCy("project-copy-form-project-name-input")
@@ -850,7 +850,7 @@ describe("Project templates and copies", () => {
     cy.wait("@readProjectV2");
     cy.getDataCy("copy-project-button").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
-      "be.visible"
+      "be.visible",
     );
     cy.wait("@listNamespaceV2");
     cy.getDataCy("project-copy-form-project-name-input")

@@ -36,13 +36,13 @@ describe("display a project - not found", () => {
       .should("be.visible")
       .should(
         "contain.text",
-        "We could not find project with path e2e/not-found-test-project."
+        "We could not find project with path e2e/not-found-test-project.",
       );
     cy.getDataCy("not-found-children")
       .should("be.visible")
       .should(
         "contain.text",
-        "If you are sure the project exists, you may want to try the following:"
+        "If you are sure the project exists, you may want to try the following:",
       );
   });
 
@@ -59,13 +59,13 @@ describe("display a project - not found", () => {
       .should("be.visible")
       .should(
         "contain.text",
-        "We could not find project with path e2e/not-found-test-project."
+        "We could not find project with path e2e/not-found-test-project.",
       );
     cy.getDataCy("not-found-children")
       .should("be.visible")
       .should(
         "contain.text",
-        "You might need to be logged in to see this project."
+        "You might need to be logged in to see this project.",
       );
   });
 
@@ -80,13 +80,13 @@ describe("display a project - not found", () => {
       .should("be.visible")
       .should(
         "contain.text",
-        "We could not find project with numeric id 12345."
+        "We could not find project with numeric id 12345.",
       );
     cy.getDataCy("not-found-children")
       .should("be.visible")
       .should(
         "contain.text",
-        "If you are sure the project exists, you may want to try the following:"
+        "If you are sure the project exists, you may want to try the following:",
       );
   });
 
@@ -101,13 +101,13 @@ describe("display a project - not found", () => {
       .should("be.visible")
       .should(
         "contain.text",
-        "We could not find project with numeric id 12345."
+        "We could not find project with numeric id 12345.",
       );
     cy.getDataCy("not-found-children")
       .should("be.visible")
       .should(
         "contain.text",
-        "You might need to be logged in to see this project."
+        "You might need to be logged in to see this project.",
       );
   });
 });
@@ -223,7 +223,7 @@ describe("display a project", () => {
       .children("a")
       .should(($a) => {
         expect($a.attr("href")).to.eq(
-          "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb"
+          "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb",
         );
       });
   });
@@ -245,7 +245,7 @@ describe("display a project", () => {
       .children("a")
       .should(($a) => {
         expect($a.attr("href")).to.eq(
-          "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb"
+          "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb",
         );
       });
   });
@@ -323,7 +323,7 @@ describe("visit V1 project urls without legacy support", () => {
     cy.contains("Checking for redirect").should("be.visible");
     cy.wait("@getUrlRedirect");
     cy.contains("This version of Renku is no longer supported").should(
-      "be.visible"
+      "be.visible",
     );
   });
 });

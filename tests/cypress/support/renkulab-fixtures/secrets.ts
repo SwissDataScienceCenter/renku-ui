@@ -67,7 +67,7 @@ function generateFakeSecretsStorage(num: number) {
 
 function generateFakeSecrets(
   num: number,
-  kind: ListSecretsArgs["secretsKind"]
+  kind: ListSecretsArgs["secretsKind"],
 ) {
   if (kind === "general") {
     return generateFakeSecretsGeneral(num);
@@ -91,7 +91,7 @@ export function Secrets<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/api/data/user/secrets?kind=${secretsKind}`,
-        response
+        response,
       ).as(name);
       return this;
     }

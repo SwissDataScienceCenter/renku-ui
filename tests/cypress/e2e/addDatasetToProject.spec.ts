@@ -32,7 +32,7 @@ describe("Add dataset to project", () => {
     cy.wait("@getUser");
     cy.getDataCy("sunset-banner").should(
       "contain",
-      "project and dataset creation are no longer available"
+      "project and dataset creation are no longer available",
     );
   });
 });
@@ -49,7 +49,7 @@ describe("No legacy support", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
     cy.visit(`datasets/${datasetIdentifier}/add`);
     cy.contains("This version of Renku is no longer supported").should(
-      "be.visible"
+      "be.visible",
     );
   });
 });

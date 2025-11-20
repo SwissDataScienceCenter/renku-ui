@@ -42,7 +42,7 @@ export function KgSearch<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture, headers: { Total: `${total}` } };
       cy.intercept("GET", `/ui-server/api/kg/entities${params}`, response).as(
-        name
+        name,
       );
       return this;
     }
@@ -56,7 +56,7 @@ export function KgSearch<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/kg/users/*/projects?state=NOT_ACTIVATED&*",
-        response
+        response,
       ).as(name);
       return this;
     }

@@ -57,7 +57,7 @@ describe("Set up project components", () => {
     cy.getDataCy("add-code-repository").click();
 
     cy.getDataCy("project-add-repository-url").type(
-      "https://gitlab.dev.renku.ch/url-repo.git"
+      "https://gitlab.dev.renku.ch/url-repo.git",
     );
     cy.getDataCy("add-code-repository-modal-button").click();
 
@@ -232,7 +232,7 @@ describe("Set up data connectors", () => {
       .parent() // Go one node above (to the parent div)
       .should(
         "contain.text",
-        "If using KMS ID you must provide the ARN of Key"
+        "If using KMS ID you must provide the ARN of Key",
       );
 
     // Fill out the details
@@ -254,11 +254,11 @@ describe("Set up data connectors", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "project was linked"
+      "project was linked",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listProjectDataConnectors");
@@ -296,7 +296,7 @@ describe("Set up data connectors", () => {
     cy.getDataCy("project-data-connector-connect-modal").should("be.visible");
     cy.wait("@postGlobalDataConnector");
     cy.get("[data-cy=project-data-connector-connect-modal]").should(
-      "not.exist"
+      "not.exist",
     );
   });
 
@@ -361,7 +361,7 @@ describe("Set up data connectors", () => {
     cy.get("#data-connector-identifier").type("user1-uuid/example-storage");
     cy.getDataCy("link-data-connector-button").click();
     cy.contains(
-      "Data connector with identifier 'user1-uuid/example-storage' does not exist or you do not have access to it."
+      "Data connector with identifier 'user1-uuid/example-storage' does not exist or you do not have access to it.",
     ).should("be.visible");
   });
 
@@ -387,7 +387,7 @@ describe("Set up data connectors", () => {
     cy.getDataCy("data-connector-unlink").should("be.visible").click();
     cy.wait("@getProjectV2Permissions");
     cy.contains("Are you sure you want to unlink the data connector").should(
-      "be.visible"
+      "be.visible",
     );
     cy.getDataCy("delete-data-connector-modal-button")
       .should("be.enabled")
@@ -456,11 +456,11 @@ describe("Set up data connectors", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "project was linked"
+      "project was linked",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listProjectDataConnectors");
@@ -508,7 +508,7 @@ describe("Set up data connectors", () => {
     cy.wait("@patchDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/example-storage has been successfully updated."
+      "The data connector user1-uuid/example-storage has been successfully updated.",
     );
   });
 });
@@ -577,7 +577,7 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "A variable name is made up of letters, numbers and '_'."
+      "A variable name is made up of letters, numbers and '_'.",
     );
     cy.getDataCy("env-variables-input_0-name").clear().type("TEST");
     cy.getDataCy("env-variables-input_0-value").clear().type("1");
@@ -664,13 +664,13 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "A variable name is made up of letters, numbers and '_'."
+      "A variable name is made up of letters, numbers and '_'.",
     );
     cy.getDataCy("env-variables-input_0-name").clear().type("RENKU_VALUE");
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Variable names cannot start with 'RENKU'."
+      "Variable names cannot start with 'RENKU'.",
     );
 
     const longName = "a".repeat(257);
@@ -680,11 +680,11 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Name can be at most 256 characters."
+      "Name can be at most 256 characters.",
     );
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Value can be at most 500 characters."
+      "Value can be at most 500 characters.",
     );
   });
 
@@ -762,7 +762,7 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("session-launcher-menu-share-link").click();
     cy.getDataCy("customize-launch-link-expand").click();
     cy.contains(
-      "To customize your launch link, first add environment variables"
+      "To customize your launch link, first add environment variables",
     ).should("be.visible");
   });
 });
@@ -837,7 +837,7 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-item").click();
     cy.contains("Clone, Pull: No").should("be.visible");
     cy.contains(
-      "There is a problem with the integration to the repository host."
+      "There is a problem with the integration to the repository host.",
     ).should("be.visible");
     cy.get("a").contains("Reconnect").should("be.visible");
   });

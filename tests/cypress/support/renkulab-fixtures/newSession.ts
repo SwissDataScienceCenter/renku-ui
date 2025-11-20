@@ -37,7 +37,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/projects/${projectId}/pipelines?sha=${ref}`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -47,10 +47,10 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
       const defaultFixture = missing
         ? "session/ci-jobs-missing.json"
         : running
-        ? "session/ci-jobs-running.json"
-        : failed
-        ? "session/ci-jobs-failed.json"
-        : "session/ci-jobs.json";
+          ? "session/ci-jobs-running.json"
+          : failed
+            ? "session/ci-jobs-failed.json"
+            : "session/ci-jobs.json";
       const {
         fixture = defaultFixture,
         name = "getSessionJobs",
@@ -61,7 +61,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/projects/${projectId}/pipelines/${pipelineId}/jobs`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -92,7 +92,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/projects/${projectId}/registry/repositories`,
-        registryResponse
+        registryResponse,
       ).as(registry.name);
 
       const imageResponse = {
@@ -103,7 +103,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/projects/${projectId}/registry/repositories/1/tags/${image.tag}`,
-        imageResponse
+        imageResponse,
       ).as(image.name);
       return this;
     }

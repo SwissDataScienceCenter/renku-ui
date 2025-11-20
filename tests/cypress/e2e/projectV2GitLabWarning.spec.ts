@@ -50,7 +50,7 @@ describe("handle project with repo and image references to internal GitLab", () 
     cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
     cy.getDataCy("project-description").should(
       "contain.text",
-      "Project 2 description"
+      "Project 2 description",
     );
     cy.contains("You must take action").should("be.visible");
     cy.getDataCy("session-gitlab-warning")
@@ -69,7 +69,7 @@ describe("handle project with repo and image references to internal GitLab", () 
     cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
     cy.getDataCy("project-description").should(
       "contain.text",
-      "Project 2 description"
+      "Project 2 description",
     );
     cy.contains("You must take action").should("not.exist");
   });
@@ -104,7 +104,7 @@ describe("handle project with repo references to internal GitLab", () => {
     cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
     cy.getDataCy("project-description").should(
       "contain.text",
-      "Project 2 description"
+      "Project 2 description",
     );
     cy.getDataCy("repo-gitlab-warning")
       .contains("Migration needed")
@@ -119,7 +119,7 @@ describe("handle project with repo references to internal GitLab", () => {
     cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
     cy.getDataCy("project-description").should(
       "contain.text",
-      "Project 2 description"
+      "Project 2 description",
     );
     cy.contains("You must take action").should("not.exist");
     cy.getDataCy("repo-gitlab-warning")
@@ -153,7 +153,7 @@ describe("handle project with launcher references to internal GitLab", () => {
     cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
     cy.getDataCy("project-description").should(
       "contain.text",
-      "Project 2 description"
+      "Project 2 description",
     );
     cy.contains("You must take action").should("be.visible");
     cy.getDataCy("session-gitlab-warning")
@@ -169,7 +169,7 @@ describe("handle project with launcher references to internal GitLab", () => {
     cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
     cy.getDataCy("project-description").should(
       "contain.text",
-      "Project 2 description"
+      "Project 2 description",
     );
     cy.contains("You must take action").should("not.exist");
     cy.getDataCy("session-gitlab-warning")

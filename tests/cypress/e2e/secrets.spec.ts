@@ -79,7 +79,7 @@ describe("Secrets", () => {
     cy.get("#user-secret-filename").type("New Secret");
     cy.getDataCy("secrets-new-form")
       .contains(
-        'A valid filename must consist of alphanumeric characters, "-", "_" or "."'
+        'A valid filename must consist of alphanumeric characters, "-", "_" or "."',
       )
       .should("be.visible");
     cy.get("#user-secret-filename").clear().type("my-secret.txt");
@@ -141,7 +141,7 @@ describe("Secrets", () => {
       .contains("button", "Delete secret")
       .click();
     cy.contains(".modal-content", "Delete user secret").should(
-      "not.be.visible"
+      "not.be.visible",
     );
   });
 });

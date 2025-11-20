@@ -29,7 +29,7 @@ function createProject(title: string) {
 function createProjectAndAddDataset(
   title: string,
   path: string,
-  fixtures: FixturesType
+  fixtures: FixturesType,
 ) {
   fixtures
     .createProject()
@@ -48,7 +48,7 @@ export default function registerProjectsCommands() {
   Cypress.Commands.add("createProject", createProject);
   Cypress.Commands.add(
     "createProjectAndAddDataset",
-    createProjectAndAddDataset
+    createProjectAndAddDataset,
   );
 }
 

@@ -59,7 +59,7 @@ describe("Project settings page", () => {
     cy.getDataCy("visibility-private").click();
     cy.get(".modal-title").should(
       "contain.text",
-      "Change visibility to Private"
+      "Change visibility to Private",
     );
     cy.getDataCy("cancel-visibility-btn").click();
     cy.getDataCy("visibility-public").should("be.checked");
@@ -73,7 +73,7 @@ describe("Project settings page", () => {
     cy.wait("@updateProjectKG");
     cy.get(".modal-body").should(
       "contain.text",
-      "The visibility of the project has been modified"
+      "The visibility of the project has been modified",
     );
   });
 
@@ -94,7 +94,7 @@ describe("Project settings page", () => {
     cy.wait("@updateProjectKG");
     cy.get(".modal-body").should(
       "contain.text",
-      "Internal is not allowed in a private group."
+      "Internal is not allowed in a private group.",
     );
     cy.get(".modal-content .btn-close").click();
   });
@@ -105,15 +105,15 @@ describe("Project settings page", () => {
     // check there is no description
     cy.getDataCy("description-input").should(
       "not.have.value",
-      "description abcde"
+      "description abcde",
     );
     cy.getDataCy("entity-description").should(
       "not.contain.text",
-      "description abcde"
+      "description abcde",
     );
     cy.getDataCy("entity-description").should(
       "contain.text",
-      "This project has no description"
+      "This project has no description",
     );
 
     // edit the description -- load the new fixtures
@@ -131,7 +131,7 @@ describe("Project settings page", () => {
       .contains("Updated");
     cy.getDataCy("description-input").should(
       "not.contain.text",
-      "description abcde"
+      "description abcde",
     );
 
     // Check the header also reflects the change onnce KG processes the metadata
@@ -216,7 +216,7 @@ describe("Project settings page", () => {
     cy.contains("Are you absolutely sure?");
     cy.get("button").contains("Yes, delete this project").should("be.disabled");
     cy.get("input[name=project-settings-general-delete-confirm-box]").type(
-      "e2e/local-test-project"
+      "e2e/local-test-project",
     );
     cy.get("button")
       .contains("Yes, delete this project")
@@ -265,7 +265,7 @@ describe("Cloud storage settings page", () => {
       .should("be.visible");
     cy.url().should(
       "include",
-      "/projects/e2e/local-test-project/settings/storage"
+      "/projects/e2e/local-test-project/settings/storage",
     );
   });
 
@@ -443,7 +443,7 @@ describe("Cloud storage settings page", () => {
     });
 
     cy.getDataCy("cloud-storage-edit-body").contains(
-      "storage fake-storage has been successfully added"
+      "storage fake-storage has been successfully added",
     );
     cy.getDataCy("cloud-storage-edit-close-button")
       .should("be.visible")

@@ -42,7 +42,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         cy.intercept(
           "GET",
           "https://*.statuspage.io/api/v2/summary.json",
-          response
+          response,
         ).as(name);
         return this;
       }
@@ -53,7 +53,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         cy.intercept(
           "GET",
           "https://*.statuspage.io/api/v2/summary.json",
-          response
+          response,
         ).as(name);
       });
 
@@ -66,7 +66,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "https://*.statuspage.io/api/v2/summary.json",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -114,7 +114,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
 
       const notebooksResponse = { fixture: notebooks.fixture };
       cy.intercept("GET", "/api/notebooks/version", notebooksResponse).as(
-        notebooks.name
+        notebooks.name,
       );
 
       const uiResponse = { fixture: ui.fixture };
@@ -145,7 +145,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/renku/templates.read_manifest?${urlSource}`,
-        response
+        response,
       ).as(name);
       return this;
     }

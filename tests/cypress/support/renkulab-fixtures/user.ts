@@ -42,7 +42,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
 
       const dataServiceUserResponse = { fixture: dataServiceUser.fixture };
       cy.intercept("GET", "/api/data/user", dataServiceUserResponse).as(
-        dataServiceUser.name
+        dataServiceUser.name,
       );
 
       return this;
@@ -60,7 +60,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
             name: "getDataServiceUser",
           },
           delay: null,
-        }
+        },
       ) as DeepRequired<UserNoneArgs>;
 
       const responseGitLab = {
@@ -81,7 +81,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
         ...(delay != null ? { delay } : {}),
       };
       cy.intercept("GET", "/api/data/user", responseDataService).as(
-        dataServiceUser.name
+        dataServiceUser.name,
       );
 
       return this;

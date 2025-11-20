@@ -57,21 +57,21 @@ const V1Fixtures = NewProject(
                         User(
                           ConnectedServices(
                             UserPreferences(
-                              Workflows(KgSearch(Global(BaseFixtures)))
-                            )
-                          )
-                        )
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
-  )
+                              Workflows(KgSearch(Global(BaseFixtures))),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ),
 );
 
 const Fixtures = SearchV2(ProjectV2(NamespaceV2(V1Fixtures)));

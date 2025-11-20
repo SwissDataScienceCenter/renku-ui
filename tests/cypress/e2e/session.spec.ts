@@ -92,7 +92,7 @@ describe("display a session", () => {
     cy.getDataCy("about-button").click();
     cy.getDataCy("list-card-title").should(
       "contain.text",
-      "local-test-project"
+      "local-test-project",
     );
     cy.getDataCy("modal-header").find(".btn-close").click();
     // open resources modal
@@ -122,7 +122,7 @@ describe("display a session", () => {
     cy.get(".modal-dialog")
       .get("div")
       .contains(
-        "It is not possible to offer a one-click save for this session."
+        "It is not possible to offer a one-click save for this session.",
       )
       .should("be.visible");
   });
@@ -156,7 +156,7 @@ describe("display a session", () => {
     cy.get(".modal-dialog")
       .get("div")
       .contains(
-        "You have work in this session that has not yet been saved to the server."
+        "You have work in this session that has not yet been saved to the server.",
       )
       .should("be.visible");
   });
@@ -174,7 +174,7 @@ describe("display a session", () => {
     cy.get(".modal-dialog")
       .get("div")
       .contains(
-        "It is not possible to offer a one-click refresh for this session."
+        "It is not possible to offer a one-click refresh for this session.",
       )
       .should("be.visible");
   });
@@ -192,7 +192,7 @@ describe("display a session", () => {
     cy.get(".modal-dialog")
       .get("div")
       .contains(
-        "It is not possible to offer a one-click refresh for this session."
+        "It is not possible to offer a one-click refresh for this session.",
       )
       .should("be.visible");
   });

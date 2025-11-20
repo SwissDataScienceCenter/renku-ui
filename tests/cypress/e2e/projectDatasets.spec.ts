@@ -22,7 +22,7 @@ import fixtures from "../support/renkulab-fixtures";
 function checkDatasetInKg(
   cy: Cypress.Chainable,
   fixtures: FixturesType,
-  projectPath: string
+  projectPath: string,
 ) {
   const datasetName = "abcd";
   const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
@@ -41,7 +41,7 @@ function checkDatasetDisplay(
   cy: Cypress.Chainable,
   fixtures: FixturesType,
   datasets,
-  projectPath: string
+  projectPath: string,
 ) {
   datasets.forEach((d, i) => {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
@@ -53,7 +53,7 @@ function checkDatasetDisplay(
     cy.getDataCy("header-project").should("not.exist");
     cy.getDataCy("go-back-button").should(
       "contain.text",
-      `Back to ${projectPath}`
+      `Back to ${projectPath}`,
     );
     cy.getDataCy("edit-dataset-button").should("exist");
     cy.getDataCy("delete-dataset-button").should("exist");
@@ -66,7 +66,7 @@ function checkDatasetLimitedPermissionDisplay(
   cy: Cypress.Chainable,
   fixtures: FixturesType,
   datasets,
-  editDisabled = false
+  editDisabled = false,
 ) {
   datasets.forEach((d, i) => {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
@@ -166,7 +166,7 @@ describe("Project dataset", () => {
         cy.get("div.tree-container").contains("air_quality_no2.txt");
         cy.get('[data-cy="dropzone"]').attachFile(
           "/datasets/files/count_flights.txt",
-          { subjectType: "drag-n-drop" }
+          { subjectType: "drag-n-drop" },
         );
         cy.wait("@uploadDatasetFile");
 
@@ -231,7 +231,7 @@ describe("Project dataset", () => {
         });
         cy.getDataCy("submit-button").click();
         cy.contains(
-          "The operation was successful, but this project requires use of merge requests to make changes."
+          "The operation was successful, but this project requires use of merge requests to make changes.",
         ).should("be.visible");
       });
   });
