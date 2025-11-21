@@ -124,6 +124,7 @@ $list-group-item-padding-y: $spacer;
 // Make form labels bold
 .form-label {
   font-weight: bold;
+  margin-bottom: $spacer * 0.25 !important;
 }
 
 // Adjust Accordion
