@@ -1016,8 +1016,7 @@
       "BuildPlatform": {
         "description": "A runtime platform, e.g. \"linux/amd64\".",
         "type": "string",
-        "minLength": 1,
-        "maxLength": 99
+        "enum": ["linux/amd64", "linux/arm64"]
       },
       "BuilderVariant": {
         "description": "Type of virtual environment manager when building custom environments.",
