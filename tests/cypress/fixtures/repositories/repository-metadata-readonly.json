@@ -14,6 +14,6 @@
     "git_url": "https://github.com/renku/url-repo.git",
     "web_url": "https://github.com/renku/url-repo",
     "pull_permission": true,
-    "push_permission": true
+    "push_permission": false
   }
 }

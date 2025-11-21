@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
+import {
+  GetRepositoriesApiResponse,
+  RepositoryInterrupts,
+} from "~/features/repositories/api/repositories.api";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 /**
@@ -70,8 +74,25 @@ export function detectSSHRepository(repositoryURL: string): boolean {
   return cleaned.match(gitUrlRegex) != null;
 }
 
+export function shouldInterrupt(
+  repositoryData: GetRepositoriesApiResponse
+): RepositoryInterrupts {
+  const interruptAlways = !!(
+    !repositoryData?.metadata?.pull_permission &&
+    !(repositoryData?.connection?.status === "connected")
+  );
+  const interruptOwner = !!(
+    (!repositoryData?.metadata?.pull_permission &&
+      !(repositoryData?.connection?.status === "connected")) ||
+    (repositoryData?.metadata?.pull_permission &&
+      !repositoryData?.metadata?.push_permission &&
+      !(repositoryData?.connection?.status === "connected"))
+  );
+  return { interruptAlways, interruptOwner };
+}
+
 export function getRepositoryName(repositoryURL: string): string {
-  const canonicalUrlStr = `${repositoryURL.replace(/.git$/i, "")}`;
+  const canonicalUrlStr = `${repositoryURL.replace(/(?:\.git|\/)$/i, "")}`;
   const canonicalUrl = safeNewUrl(canonicalUrlStr);
   return canonicalUrl?.pathname.split("/").pop() || canonicalUrlStr;
 }
