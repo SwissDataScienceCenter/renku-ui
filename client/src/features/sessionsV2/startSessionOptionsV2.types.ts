@@ -41,6 +41,7 @@ export interface StartSessionOptionsV2 {
   imageReady: boolean;
   lfsAutoFetch: boolean;
   repositories: SessionRepository[];
+  repositoriesReady: boolean;
   sessionClass: number;
   storage: number;
   userSecretsReady: boolean;
