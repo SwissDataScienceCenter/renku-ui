@@ -94,9 +94,7 @@ export function BuildStatusBadge({
 
   const badgeText =
     isCompatible === false
-      ? `Image incompatible${
-          resourcePool?.platform ? ` with ${resourcePool.platform}` : ""
-        }`
+      ? "Image incompatible"
       : buildStatus === "in_progress"
       ? "Build in progress"
       : buildStatus === "cancelled"
