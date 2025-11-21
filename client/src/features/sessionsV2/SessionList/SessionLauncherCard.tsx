@@ -130,9 +130,7 @@ export default function SessionLauncherCard({
 
   const { data: containerImage, isLoading: isLoadingContainerImage } =
     useGetSessionsImagesQuery(
-      environment &&
-        environment.environment_kind === "CUSTOM" &&
-        environment.container_image
+      environment?.container_image != null
         ? { imageUrl: environment.container_image }
         : skipToken
     );
@@ -215,10 +213,13 @@ export default function SessionLauncherCard({
                   <SessionEnvironmentGitLabWarningBadge launcher={launcher} />
                 </Col>
               </Row>
-              {isCodeEnvironment && (
+              {isCodeEnvironment ? (
                 <Row className="g-2">
                   <Col xs={12} xl={4}>
-                    {isCodeEnvironment && isLoading ? (
+                    {isCodeEnvironment &&
+                    (isLoading ||
+                      isLoadingContainerImage ||
+                      isLoadingResourcePools) ? (
                       <SessionBadge
                         className={cx("border-warning", "bg-warning-subtle")}
                       >
@@ -232,7 +233,11 @@ export default function SessionLauncherCard({
                         </span>
                       </SessionBadge>
                     ) : isCodeEnvironment && lastBuild ? (
-                      <BuildStatusBadge status={lastBuild?.status} />
+                      <BuildStatusBadge
+                        buildStatus={lastBuild?.status}
+                        imageCheck={containerImage}
+                        resourcePool={resourcePool}
+                      />
                     ) : !hasSession ? (
                       <SessionBadge
                         className={cx("border-dark-subtle", "bg-light")}
@@ -265,8 +270,7 @@ export default function SessionLauncherCard({
                     />
                   </Col>
                 </Row>
-              )}
-              {isExternalImageEnvironment && (
+              ) : (
                 <Row>
                   <Col>
                     <SessionImageBadge
