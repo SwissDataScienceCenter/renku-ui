@@ -44,7 +44,8 @@ export default function SlugPreviewFormField<T extends FieldValues>({
   const url = `${baseUrl}${parentPath}`;
 
   const slugPreview = (
-    <div>
+    // Compensate for the mb-1 on the button which is needed to align with the text
+    <div className="mb-n1">
       <FormText className="me-2">
         The URL for this {entityName} will be{" "}
         <span className="fw-bold" data-cy={`${entityName}-url-preview`}>

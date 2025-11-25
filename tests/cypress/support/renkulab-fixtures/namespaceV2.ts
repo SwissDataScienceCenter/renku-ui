@@ -53,6 +53,11 @@ interface ListManyNamespacesArgs extends NameOnlyFixture {
   numberOfNamespaces?: number;
 }
 
+interface ProjectV2Args extends SimpleFixture {
+  projectNamespace?: string;
+  projectSlug?: string;
+}
+
 interface UserNamespaceV2Args extends SimpleFixture {
   username?: string;
 }
@@ -304,6 +309,31 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
         cy.intercept("GET", `/api/data/namespaces/${groupSlug}`, {
           body: namespace,
         }).as(name);
+      });
+      return this;
+    }
+
+    readProjectV2Namespace(args?: ProjectV2Args) {
+      const {
+        fixture = "projectV2/read-projectV2-namespace.json",
+        name = "readProjectV2Namespace",
+        projectNamespace = "user1-uuid",
+        projectSlug = "test-2-v2-project",
+      } = args ?? {};
+      cy.fixture(fixture).then((namespace_) => {
+        const namespace = {
+          ...namespace_,
+          name: projectSlug,
+          slug: projectSlug,
+          path: `${projectNamespace}/${projectSlug}`,
+        };
+        cy.intercept(
+          "GET",
+          `/api/data/namespaces/${projectNamespace}/${projectSlug}`,
+          {
+            body: namespace,
+          }
+        ).as(name);
       });
       return this;
     }

@@ -112,8 +112,6 @@ export default function ProjectMigrationFormInputs({
             errors={errors}
             name="namespace"
           />
-        </div>
-        <div>
           <SlugPreviewFormField
             compact={true}
             control={control}

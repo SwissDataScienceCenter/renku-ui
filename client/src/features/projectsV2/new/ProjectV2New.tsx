@@ -199,17 +199,15 @@ function ProjectV2CreationDetails() {
                 formId={formId}
                 name="name"
               />
-              <div>
-                <div className="mb-1">
-                  <ProjectNamespaceFormField
-                    control={control}
-                    ensureNamespace={defaultNamespace}
-                    entityName={`${formId}-project`}
-                    errors={errors}
-                    name="namespace"
-                  />
-                </div>
 
+              <div className="mb-1">
+                <ProjectNamespaceFormField
+                  control={control}
+                  ensureNamespace={defaultNamespace}
+                  entityName={`${formId}-project`}
+                  errors={errors}
+                  name="namespace"
+                />
                 <SlugPreviewFormField
                   compact={true}
                   control={control}

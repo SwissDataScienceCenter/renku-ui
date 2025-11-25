@@ -400,9 +400,6 @@ export function DataConnectorMount({
         <div className="invalid-feedback">
           {errors.name?.message?.toString()}
         </div>
-      </div>
-
-      <div className="mb-3">
         <SlugPreviewFormField
           compact={true}
           control={control}
