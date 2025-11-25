@@ -41,7 +41,7 @@ export function ConnectedServices<T extends FixturesConstructor>(Parent: T) {
       cy.fixture(fixture).then((repoMetadata) => {
         cy.intercept(
           "GET",
-          `/api/data/repositories?url=${encodeURIComponent(repositoryUrl)}`,
+          `/api/data/repository?url=${encodeURIComponent(repositoryUrl)}`,
           {
             body: repoMetadata,
             statusCode,
