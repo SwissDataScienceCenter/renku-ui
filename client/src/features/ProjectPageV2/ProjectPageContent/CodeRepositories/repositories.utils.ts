@@ -17,7 +17,7 @@
  */
 
 import {
-  GetRepositoriesApiResponse,
+  GetRepositoryApiResponse,
   RepositoryInterrupts,
 } from "~/features/repositories/api/repositories.api";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
@@ -75,7 +75,7 @@ export function detectSSHRepository(repositoryURL: string): boolean {
 }
 
 export function shouldInterrupt(
-  repositoryData: GetRepositoriesApiResponse
+  repositoryData: GetRepositoryApiResponse
 ): RepositoryInterrupts {
   const interruptAlways = !!(
     !repositoryData?.metadata?.pull_permission &&

@@ -52,7 +52,7 @@ import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
-import { useGetRepositoriesQuery } from "~/features/repositories/api/repositories.api";
+import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
@@ -463,7 +463,7 @@ export function RepositoryPermissionsBadge({
   hasWriteAccess,
   repositoryUrl,
 }: RepositoryPermissionsProps) {
-  const { data, isLoading, error } = useGetRepositoriesQuery({
+  const { data, isLoading, error } = useGetRepositoryQuery({
     url: repositoryUrl,
   });
 
@@ -553,7 +553,7 @@ function RepositoryView({
   toggleDetails,
 }: RepositoryViewProps) {
   const { pathname, hash } = useLocation();
-  const { data, isLoading, error } = useGetRepositoriesQuery({
+  const { data, isLoading, error } = useGetRepositoryQuery({
     url: repositoryUrl,
   });
 
@@ -732,7 +732,7 @@ export function RepositoryCallToActionAlert({
   repositoryUrl,
 }: RepositoryCallToActionAlertProps) {
   const { pathname, hash } = useLocation();
-  const { data, isLoading, error } = useGetRepositoriesQuery({
+  const { data, isLoading, error } = useGetRepositoryQuery({
     url: repositoryUrl,
   });
 

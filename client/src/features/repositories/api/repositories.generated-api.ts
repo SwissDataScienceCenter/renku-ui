@@ -2,61 +2,20 @@ import { repositoriesEmptyApi as api } from "./repositories.empty-api";
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getRepositories: build.query<
-      GetRepositoriesApiResponse,
-      GetRepositoriesApiArg
-    >({
+    getRepository: build.query<GetRepositoryApiResponse, GetRepositoryApiArg>({
       query: (queryArg) => ({
-        url: `/repositories`,
+        url: `/repository`,
         params: { url: queryArg.url },
-      }),
-    }),
-    getRepositoriesByRepositoryUrl: build.query<
-      GetRepositoriesByRepositoryUrlApiResponse,
-      GetRepositoriesByRepositoryUrlApiArg
-    >({
-      query: (queryArg) => ({ url: `/repositories/${queryArg.repositoryUrl}` }),
-    }),
-    getRepositoriesProbe: build.query<
-      GetRepositoriesProbeApiResponse,
-      GetRepositoriesProbeApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/repositories/probe`,
-        params: { url: queryArg.url },
-      }),
-    }),
-    getRepositoriesByRepositoryUrlProbe: build.query<
-      GetRepositoriesByRepositoryUrlProbeApiResponse,
-      GetRepositoriesByRepositoryUrlProbeApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/repositories/${queryArg.repositoryUrl}/probe`,
       }),
     }),
   }),
   overrideExisting: false,
 });
 export { injectedRtkApi as repositoriesGeneratedApi };
-export type GetRepositoriesApiResponse =
+export type GetRepositoryApiResponse =
   /** status 200 The repository metadata. */ RepositoryProviderData;
-export type GetRepositoriesApiArg = {
+export type GetRepositoryApiArg = {
   url: string;
-};
-export type GetRepositoriesByRepositoryUrlApiResponse =
-  /** status 200 The repository metadata. */ RepositoryProviderData;
-export type GetRepositoriesByRepositoryUrlApiArg = {
-  repositoryUrl: string;
-};
-export type GetRepositoriesProbeApiResponse =
-  /** status 200 The repository seems to be available. */ void;
-export type GetRepositoriesProbeApiArg = {
-  url: string;
-};
-export type GetRepositoriesByRepositoryUrlProbeApiResponse =
-  /** status 200 The repository seems to be available. */ void;
-export type GetRepositoriesByRepositoryUrlProbeApiArg = {
-  repositoryUrl: string;
 };
 export type Ulid = string;
 export type ProviderId = string;
@@ -100,9 +59,4 @@ export type ErrorResponse = {
     message: string;
   };
 };
-export const {
-  useGetRepositoriesQuery,
-  useGetRepositoriesByRepositoryUrlQuery,
-  useGetRepositoriesProbeQuery,
-  useGetRepositoriesByRepositoryUrlProbeQuery,
-} = injectedRtkApi;
+export const { useGetRepositoryQuery } = injectedRtkApi;

@@ -36,7 +36,7 @@
 
 import { shouldInterrupt } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import {
-  GetRepositoriesApiResponse,
+  GetRepositoryApiResponse,
   repositoriesGeneratedApi,
 } from "./repositories.generated-api";
 
@@ -45,7 +45,7 @@ export type RepositoryInterrupts = {
   interruptOwner: boolean;
 };
 
-export type RepositoriesApiResponseWithInterrupts = GetRepositoriesApiResponse &
+export type RepositoriesApiResponseWithInterrupts = GetRepositoryApiResponse &
   RepositoryInterrupts & {
     error: boolean;
     url: string;
@@ -80,10 +80,10 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
             });
           else if (response.data) {
             const interrupts = shouldInterrupt(
-              response.data as GetRepositoriesApiResponse
+              response.data as GetRepositoryApiResponse
             );
             result.push({
-              ...(response.data as GetRepositoriesApiResponse),
+              ...(response.data as GetRepositoryApiResponse),
               ...interrupts,
               error: false,
               url: repositoryUrl,
@@ -100,7 +100,7 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
 const withTagHandling = withResponseRewrite.enhanceEndpoints({
   addTagTypes: ["Repository"],
   endpoints: {
-    getRepositories: {
+    getRepository: {
       providesTags: (result, _error, { url }) =>
         result ? [{ type: "Repository" as const, id: url }] : [],
     },
@@ -117,6 +117,6 @@ const withTagHandling = withResponseRewrite.enhanceEndpoints({
 });
 
 export { withTagHandling as repositoriesApi };
-export const { useGetRepositoriesArrayQuery, useGetRepositoriesQuery } =
+export const { useGetRepositoriesArrayQuery, useGetRepositoryQuery } =
   withTagHandling;
 export type * from "./repositories.generated-api";

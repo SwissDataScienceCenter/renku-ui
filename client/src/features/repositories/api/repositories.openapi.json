@@ -11,7 +11,7 @@
     }
   ],
   "paths": {
-    "/repositories": {
+    "/repository": {
       "get": {
         "summary": "Get the metadata available about a repository",
         "description": "The repository URL will be matched against the set of\navailable OAuth2 clients to determine which service to connect\nto. If a match is found, the corresponding service API will be\nused to fetch the repository metadata.\n\nIf no provider is found, the given url is checked for being a\npublic git repository. If this succeeds, the repository is\nlikely clonable.\n\nNote that only HTTP(S) URLs are supported.\n",
@@ -38,97 +38,6 @@
           },
           "404": {
             "description": "There is no available provider for this repository."
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["repositories"]
-      }
-    },
-    "/repositories/{repository_url}": {
-      "get": {
-        "summary": "Get the metadata available about a repository",
-        "description": "The repository URL will be matched against the set of\navailable OAuth2 clients to determine which service to connect\nto. If a match is found, the corresponding service API will be\nused to fetch the repository metadata.\n\nIf no provider is found, the given url is checked for being a\npublic git repository. If this succeeds, the repository is\nlikely clonable.\n\nNote that only HTTP(S) URLs are supported.\n",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "repository_url",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The repository metadata.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RepositoryProviderData"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "There is no available provider for this repository."
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["repositories"]
-      }
-    },
-    "/repositories/probe": {
-      "get": {
-        "summary": "Probe a repository to check if it is publicly available",
-        "description": "Probe a repository URL to see if it implements the git+http\nprotocol. In this case we assume that the repository can be\ncloned and pulled.\n\nNote that only HTTP(S) URLs are supported.\n",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "url",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The repository seems to be available."
-          },
-          "404": {
-            "description": "The repository is not available."
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["repositories"]
-      }
-    },
-    "/repositories/{repository_url}/probe": {
-      "get": {
-        "summary": "Probe a repository to check if it is publicly available",
-        "description": "Probe a repository URL to see if it implements the git+http\nprotocol. In this case we assume that the repository can be\ncloned and pulled.\n\nNote that only HTTP(S) URLs are supported.\n",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "repository_url",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The repository seems to be available."
-          },
-          "404": {
-            "description": "The repository is not available."
           },
           "default": {
             "$ref": "#/components/responses/Error"
