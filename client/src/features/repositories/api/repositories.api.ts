@@ -62,7 +62,7 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
         const result: RepositoriesApiResponseWithInterrupts[] = [];
         const promises = queryArg.map((repository) =>
           fetchWithBQ({
-            url: "/repositories",
+            url: "/repository",
             params: { url: repository },
           })
         );
