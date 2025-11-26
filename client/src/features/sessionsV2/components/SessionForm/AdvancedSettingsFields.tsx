@@ -249,12 +249,12 @@ function JsonField<T extends FieldValues>({
           />
         )}
       />
-      <FormText tag="div">{helpText}</FormText>
       {errors?.[name] && (
         <div className="invalid-feedback mt-0 d-block">
           {errors[name]?.message?.toString()}
         </div>
       )}
+      <FormText tag="div">{helpText}</FormText>
     </>
   );
 }
