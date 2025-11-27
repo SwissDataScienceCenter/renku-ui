@@ -236,7 +236,7 @@ function ConnectedServiceCard({
           )}
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
-              <h2 className="me-2">{display_name}</h2>
+              <h2 className="me-2">{display_name} TEMP</h2>
               <div className={cx("d-flex", "gap-2", "ms-auto")}>
                 <ConnectButton
                   id={id}
