@@ -18,6 +18,20 @@
 
 import { sessionsV2GeneratedApi } from "./sessionsV2.generated-api";
 
+// Alert types (manually added - not in generated API yet)
+export interface Alert {
+  id: string;
+  title: string;
+  message: string;
+  event_type: string;
+  user_id: string;
+  session_name?: string;
+  creation_date: string;
+  resolved_at?: string;
+}
+
+export type AlertList = Alert[];
+
 // Adds tag handling for cache management
 const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
   addTagTypes: ["Session"],
@@ -61,12 +75,20 @@ const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
   },
 });
 
-// Adds tag invalidation endpoints
+// Adds tag invalidation endpoints and alerts
 export const sessionsV2Api = withTagHandling.injectEndpoints({
   endpoints: (build) => ({
     invalidateSessions: build.mutation<null, void>({
       queryFn: () => ({ data: null }),
       invalidatesTags: ["Session"],
+    }),
+    getAlerts: build.query<AlertList, { sessionName?: string }>({
+      query: (queryArg) => ({
+        url: `/alerts`,
+        params: queryArg.sessionName
+          ? { session_name: queryArg.sessionName }
+          : {},
+      }),
     }),
   }),
 });
@@ -80,6 +102,8 @@ export const {
   useDeleteSessionsBySessionIdMutation,
   useGetSessionsBySessionIdLogsQuery,
   useGetSessionsImagesQuery,
+  // "alerts" hooks
+  useGetAlertsQuery,
 } = sessionsV2Api;
 
 export type * from "./sessionsV2.generated-api";
