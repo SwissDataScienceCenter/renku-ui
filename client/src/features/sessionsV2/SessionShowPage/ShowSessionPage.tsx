@@ -26,6 +26,7 @@ import {
   Clock,
   Cloud,
   ExclamationTriangle,
+  ExclamationTriangleFill,
   FileEarmarkText,
   Link45deg,
   PauseCircle,
@@ -37,6 +38,9 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -206,6 +210,7 @@ export default function ShowSessionPage() {
           className={cx("d-flex", styles.fullscreenHeader)}
           data-cy="session-header"
         >
+          <Alerts />
           <div
             className={cx(
               "align-items-center",
@@ -607,4 +612,48 @@ function useSessionProjectAndLauncher({
     launchersError,
     project,
   };
+}
+
+function Alerts() {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  return (
+    <>
+      <button
+        ref={ref}
+        className={cx(
+          "fs-2",
+          "text-bg-danger",
+          "text-center",
+          "align-middle",
+          "d-block",
+          "p-0",
+          "border-0"
+        )}
+        style={{ height: "42px", width: "42px" }}
+      >
+        <ExclamationTriangleFill className="bi" />
+      </button>
+      <UncontrolledPopover
+        target={ref}
+        trigger="click"
+        placement="auto"
+        popperClassName="foo"
+        defaultOpen
+      >
+        <PopoverHeader className="text-bg-danger">
+          High memory usage
+        </PopoverHeader>
+        <PopoverBody className={cx("text-danger", "bg-danger-subtle")}>
+          Your session is running out of memory
+        </PopoverBody>
+        <PopoverHeader className={cx("rounded-0", "text-bg-danger")}>
+          High disk usage
+        </PopoverHeader>
+        <PopoverBody className={cx("text-danger", "bg-danger-subtle")}>
+          Your session is running out of disk space
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
+  );
 }
