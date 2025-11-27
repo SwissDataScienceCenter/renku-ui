@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
   Controller,
-  useWatch,
+  useController,
   type Control,
   type FieldValues,
   type UseControllerProps,
@@ -39,8 +39,13 @@ interface BuilderAdvancedSettingsProps {
 export default function BuilderAdvancedSettings({
   control,
 }: BuilderAdvancedSettingsProps) {
-  const watchPlatform = useWatch({ control, name: "platform" });
-  const isDefaultPlatform = watchPlatform === BUILDER_PLATFORMS[0].value;
+  const {
+    formState: { defaultValues },
+  } = useController({ control, name: "platform" });
+  defaultValues?.platform;
+  const isDefaultPlatform =
+    defaultValues?.platform == null ||
+    defaultValues.platform === BUILDER_PLATFORMS[0].value;
   const [isOpen, setIsOpen] = useState(!isDefaultPlatform);
   const toggleIsOpen = useCallback(
     () => setIsOpen((isAdvancedSettingOpen) => !isAdvancedSettingOpen),
