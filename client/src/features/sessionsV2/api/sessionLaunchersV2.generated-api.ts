@@ -315,7 +315,7 @@ export type EnvironmentWithImageGet = Environment & {
   environment_kind: EnvironmentKind;
 };
 export type Repository = string;
-export type BuildPlatform = string;
+export type BuildPlatform = "linux/amd64" | "linux/arm64";
 export type BuildPlatforms = BuildPlatform[];
 export type BuilderVariant = string;
 export type FrontendVariant = string;

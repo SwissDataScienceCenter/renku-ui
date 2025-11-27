@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -27,6 +26,7 @@ import {
 } from "react-hook-form";
 import { Collapse, Label } from "reactstrap";
 
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { BUILDER_PLATFORMS } from "../../session.constants";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
