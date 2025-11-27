@@ -25,10 +25,11 @@ import type {
   SessionLauncherEnvironmentPatchParams,
 } from "./api/sessionLaunchersV2.api";
 import {
+  BUILDER_PLATFORMS,
   DEFAULT_URL,
   ENV_VARIABLES_RESERVED_PREFIX,
 } from "./session.constants";
-import { SessionLauncherForm } from "./sessionsV2.types";
+import type { SessionLauncherForm } from "./sessionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -103,6 +104,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     gid,
     mount_directory,
     name,
+    platform: platform_,
     port,
     repository_revision: repository_revision_,
     repository,
@@ -118,6 +120,10 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
   if (environmentSelect === "custom + build") {
     const context_dir = context_dir_?.trim();
     const repository_revision = repository_revision_?.trim();
+    const platform =
+      BUILDER_PLATFORMS.map(({ value }) => value).find(
+        (value) => value === platform_
+      ) ?? BUILDER_PLATFORMS[0].value;
     return {
       success: true,
       data: {
@@ -125,6 +131,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
         builder_variant,
         frontend_variant,
         repository,
+        platforms: [platform],
         ...(context_dir ? { context_dir } : {}),
         ...(repository_revision ? { repository_revision } : {}),
       },
@@ -203,9 +210,14 @@ export function getFormattedEnvironmentValuesForEdit(
     builder_variant,
     context_dir,
     frontend_variant,
+    platform: platform_,
     repository_revision,
     repository,
   } = data;
+  const platform =
+    BUILDER_PLATFORMS.map(({ value }) => value).find(
+      (value) => value === platform_
+    ) ?? BUILDER_PLATFORMS[0].value;
 
   return {
     success: true,
@@ -218,6 +230,7 @@ export function getFormattedEnvironmentValuesForEdit(
         repository,
         repository_revision: repository_revision ?? "",
         context_dir: context_dir ?? "",
+        platforms: [platform],
       },
     },
   };
@@ -276,6 +289,10 @@ export function getLauncherDefaultValues(
     context_dir:
       launcher.environment.environment_image_source === "build"
         ? launcher.environment.build_parameters.context_dir ?? ""
+        : "",
+    platform:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.platforms?.at(0) ?? ""
         : "",
   };
 }
