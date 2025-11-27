@@ -138,18 +138,18 @@ export const BUILDER_FRONTENDS = [
 
 export const BUILDER_PLATFORMS = [
   {
-    value: "linux/amd64",
+    value: "linux/amd64" as const,
     label: "linux/amd64",
     description:
       "The default runtime platform. Select this option unless you know your session will run on a different platform.",
   },
   {
-    value: "linux/arm64",
+    value: "linux/arm64" as const,
     label: "linux/arm64",
     description:
       "Select this option if your session will run on ARM64 compute resources.",
   },
-] as readonly BuilderSelectorOption[];
+] as readonly BuilderSelectorOption<"linux/amd64" | "linux/arm64">[];
 
 export const IMAGE_BUILD_DOCS =
   "https://renku.notion.site/How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234";
