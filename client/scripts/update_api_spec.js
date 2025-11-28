@@ -24,7 +24,7 @@ import { parseDocument } from "yaml";
 
 const GH_BASE_URL = "https://raw.githubusercontent.com";
 const DATA_SERVICES_REPO = "SwissDataScienceCenter/renku-data-services";
-const DATA_SERVICES_RELEASE = "leafty/feat-resource-class-platforms";
+const DATA_SERVICES_RELEASE = "build/support-build-arm";
 
 async function main() {
   argv.forEach((arg) => {
