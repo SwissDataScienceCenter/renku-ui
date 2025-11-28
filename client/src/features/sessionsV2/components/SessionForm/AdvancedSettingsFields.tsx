@@ -43,6 +43,38 @@ function OptionalLabel() {
   return <span className={cx("small", "text-muted")}>(Optional)</span>;
 }
 
+interface FormFieldLabelProps<T extends FieldValues> {
+  info: string;
+  isOptional?: boolean;
+  label: ReactNode;
+  name: Path<T>;
+}
+
+function FormFieldLabel<T extends FieldValues>({
+  info,
+  isOptional,
+  label,
+  name,
+}: FormFieldLabelProps<T>) {
+  return (
+    <div className={cx("d-flex", "align-items-center", "gap-2", "mb-1")}>
+      <Label
+        for={`addSessionLauncher${name}`}
+        className="mb-0"
+        aria-required={isOptional ? "false" : "true"}
+      >
+        {label}
+      </Label>
+      {info && (
+        <MoreInfo>
+          <LazyRenkuMarkdown markdownText={info} />
+        </MoreInfo>
+      )}
+      {isOptional && <OptionalLabel />}
+    </div>
+  );
+}
+
 function FormField<T extends FieldValues>({
   control,
   errors,
@@ -53,16 +85,12 @@ function FormField<T extends FieldValues>({
   rules,
   type = "text",
   isOptional,
-}: {
+}: FormFieldLabelProps<T> & {
   control: Control<T>;
   errors?: FieldErrors<T>;
-  info: string;
-  label: ReactNode;
-  name: Path<T>;
   placeholder?: string;
   rules?: ControllerProps<T>["rules"];
   type: InputType;
-  isOptional?: boolean;
 }) {
   if (type === "checkbox" || type === "radio") {
     return (
@@ -82,20 +110,12 @@ function FormField<T extends FieldValues>({
 
   return (
     <>
-      <Label
-        for={`addSessionLauncher${name}`}
-        className={cx("align-items-center", "d-flex", "gap-2")}
-        aria-required={isOptional ? "false" : "true"}
-      >
-        {label}
-        {info && (
-          <MoreInfo>
-            <LazyRenkuMarkdown markdownText={info} />
-          </MoreInfo>
-        )}
-
-        {isOptional && <OptionalLabel />}
-      </Label>
+      <FormFieldLabel
+        info={info}
+        isOptional={isOptional}
+        label={label}
+        name={name}
+      />
       <Controller
         control={control}
         name={name}
@@ -207,20 +227,12 @@ function JsonField<T extends FieldValues>({
 }: JsonFieldProps<T>) {
   return (
     <>
-      <Label
-        for={`addSessionLauncher${name}`}
-        className={cx("align-items-center", "d-flex", "gap-2")}
-      >
-        {label}
-        {info && (
-          <MoreInfo>
-            <LazyRenkuMarkdown markdownText={info} />
-          </MoreInfo>
-        )}
-        {isOptional && <OptionalLabel />}
-      </Label>
-
-      <FormText tag="div">{helpText}</FormText>
+      <FormFieldLabel
+        info={info}
+        isOptional={isOptional}
+        label={label}
+        name={name}
+      />
       <Controller
         control={control}
         name={name}
@@ -242,6 +254,7 @@ function JsonField<T extends FieldValues>({
           {errors[name]?.message?.toString()}
         </div>
       )}
+      <FormText tag="div">{helpText}</FormText>
     </>
   );
 }
@@ -295,7 +308,7 @@ export function AdvancedSettingsFields<
 
       <div className="row">
         <div className={cx("col-12")}>
-          <h4 className="fw-bold">Docker settings</h4>
+          <h3 className={cx("fw-bold", "mt-3")}>Docker settings</h3>
         </div>
       </div>
 

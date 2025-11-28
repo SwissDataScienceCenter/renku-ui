@@ -141,8 +141,8 @@ export default function ProjectSessionSecrets() {
       </CardHeader>
       <CardBody>
         <div className={cx(sessionSecretSlots?.length !== 0 && "mb-3")}>
-          <p className="mb-1">
-            Session secrets will be mounted at the following location:
+          <p className={cx("form-label", "mb-1")}>
+            Session secrets will be mounted at the following location
           </p>
           <SecretsMountDirectoryComponent />
         </div>

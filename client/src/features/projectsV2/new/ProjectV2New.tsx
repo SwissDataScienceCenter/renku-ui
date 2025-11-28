@@ -25,7 +25,7 @@ import {
   Button,
   Form,
   FormGroup,
-  Label,
+  FormText,
   ModalBody,
   ModalFooter,
 } from "reactstrap";
@@ -199,17 +199,15 @@ function ProjectV2CreationDetails() {
                 formId={formId}
                 name="name"
               />
-              <div>
-                <div className="mb-1">
-                  <ProjectNamespaceFormField
-                    control={control}
-                    ensureNamespace={defaultNamespace}
-                    entityName={`${formId}-project`}
-                    errors={errors}
-                    name="namespace"
-                  />
-                </div>
 
+              <div className="mb-1">
+                <ProjectNamespaceFormField
+                  control={control}
+                  ensureNamespace={defaultNamespace}
+                  entityName={`${formId}-project`}
+                  errors={errors}
+                  name="namespace"
+                />
                 <SlugPreviewFormField
                   compact={true}
                   control={control}
@@ -241,10 +239,10 @@ function ProjectV2CreationDetails() {
               />
 
               <div>
-                <Label className="mb-0" for="projectV2NewForm-users">
+                <FormText className="mb-0" color="body">
                   <InfoCircle className="bi" /> You can add members after
                   creating the project.
-                </Label>
+                </FormText>
               </div>
 
               {result.error && <RtkOrNotebooksError error={result.error} />}

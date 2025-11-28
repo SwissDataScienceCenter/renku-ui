@@ -207,7 +207,8 @@ describe("Set up data connectors", () => {
         namespace: "user1-uuid/test-2-v2-project",
         visibility: "public",
       })
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
+      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" })
+      .readProjectV2Namespace();
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");

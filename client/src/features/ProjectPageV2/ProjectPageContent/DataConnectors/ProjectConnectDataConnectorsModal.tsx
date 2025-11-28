@@ -372,10 +372,6 @@ function ProjectLinkDataConnectorBodyAndFooter({
               pattern: /^[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+){0,2}$/,
             }}
           />
-          <div className="form-text">
-            Paste a data connector identifier. You can find it on the the data
-            connector&apos;s side panel
-          </div>
           <div className="invalid-feedback">
             {errors.dataConnectorIdentifier == null
               ? undefined
@@ -383,6 +379,10 @@ function ProjectLinkDataConnectorBodyAndFooter({
                 errors.dataConnectorIdentifier.message.length > 0
               ? errors.dataConnectorIdentifier.message
               : "Please provide an identifier for the data connector"}
+          </div>
+          <div className="form-text">
+            Paste a data connector identifier. You can find it on the the data
+            connector&apos;s side panel
           </div>
         </div>
         {error != null && <RtkOrNotebooksError error={error} />}
@@ -530,10 +530,10 @@ function ProjectDoiDataConnectorBodyAndFooter({
               required: true,
             }}
           />
+          <div className="invalid-feedback">Please provide a valid DOI</div>
           <div className="form-text">
             Paste a DOI, e.g. <code>10.5281/zenodo.3831980</code>.
           </div>
-          <div className="invalid-feedback">Please provide a valid DOI</div>
         </div>
         {error !== null && <RtkOrNotebooksError error={error} />}
       </ModalBody>
