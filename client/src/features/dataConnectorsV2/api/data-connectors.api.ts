@@ -178,8 +178,8 @@ export type PostDataConnectorsApiArg = {
 };
 export type PostDataConnectorsGlobalApiResponse =
   /** status 200 The data connector already exists */
-  | DataConnectorRead
-  | /** status 201 The data connector was created */ DataConnectorRead;
+    | DataConnectorRead
+    | /** status 201 The data connector was created */ DataConnectorRead;
 export type PostDataConnectorsGlobalApiArg = {
   globalDataConnectorPost: GlobalDataConnectorPost;
 };

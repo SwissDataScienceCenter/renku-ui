@@ -59,11 +59,12 @@ import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
-import { useGetSessionsQuery } from "../api/sessionsV2.api";
+import { useGetAlertsQuery, useGetSessionsQuery } from "../api/sessionsV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
+import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
@@ -98,6 +99,11 @@ export default function ShowSessionPage() {
     }
     return sessions.find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
+
+  const { data: alerts } = useGetAlertsQuery(
+    sessionName ? { sessionName } : skipToken
+  );
+  const hasAlerts = alerts && alerts.length > 0;
 
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
@@ -225,6 +231,7 @@ export default function ShowSessionPage() {
               namespace={namespace}
               slug={slug}
             />
+            <SessionAlerts sessionName={sessionName} />
           </div>
           <div
             className={cx(
@@ -243,7 +250,9 @@ export default function ShowSessionPage() {
                 slug={slug}
               />
             </div>
-            <div className={cx("pe-3", "text-white")}>
+            <div
+              className={cx("pe-3", hasAlerts ? "text-warning" : "text-white")}
+            >
               <RenkuFrogIcon size={24} />
             </div>
           </div>
