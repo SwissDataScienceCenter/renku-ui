@@ -1,9 +1,6 @@
 // Functions: should be imported first
 @import "~bootstrap/scss/functions";
 
-// Enable negative margins utility
-$enable-negative-margins: true;
-
 // Font
 @import "./fonts/fonts";
 $font-family-base: "Inter", sans-serif;

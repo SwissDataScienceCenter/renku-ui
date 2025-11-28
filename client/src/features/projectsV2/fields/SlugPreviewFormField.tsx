@@ -26,6 +26,8 @@ import AppContext from "../../../utils/context/appContext.ts";
 import { SlugPreviewFormFieldProps } from "./formField.types.ts";
 import SlugFormField from "./SlugFormField";
 
+import styles from "./SlugPreviewFormField.module.scss";
+
 export default function SlugPreviewFormField<T extends FieldValues>({
   compact = false,
   control,
@@ -44,8 +46,7 @@ export default function SlugPreviewFormField<T extends FieldValues>({
   const url = `${baseUrl}${parentPath}`;
 
   const slugPreview = (
-    // Compensate for the mb-1 on the button which is needed to align with the text
-    <div className="mb-n1">
+    <div>
       <FormText className="me-2">
         The URL for this {entityName} will be{" "}
         <span className="fw-bold" data-cy={`${entityName}-url-preview`}>
@@ -54,7 +55,13 @@ export default function SlugPreviewFormField<T extends FieldValues>({
         </span>
       </FormText>
       <button
-        className={cx("btn", "btn-link", "p-0", "mb-1", "text-decoration-none")}
+        className={cx(
+          "btn",
+          "btn-link",
+          "p-0",
+          "text-decoration-none",
+          styles.slugPreviewButton
+        )}
         data-cy={`${entityName}-slug-toggle`}
         onClick={toggleCollapse}
         type="button"
