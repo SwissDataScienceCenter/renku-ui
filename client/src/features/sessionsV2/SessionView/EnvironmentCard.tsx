@@ -116,6 +116,7 @@ export default function EnvironmentCard({
             </EnvironmentRow>
             {environment_kind === "GLOBAL" && (
               <>
+                <GlobalEnvironmentSessionImageBadge launcher={launcher} />
                 <EnvironmentRow>
                   {environment?.description ? (
                     <p className={cx("text-truncate", "text-wrap")}>
@@ -148,6 +149,42 @@ export default function EnvironmentCard({
         </CardBody>
       </Card>
     </>
+  );
+}
+
+function GlobalEnvironmentSessionImageBadge({
+  launcher,
+}: {
+  launcher: SessionLauncher;
+}) {
+  const environment = launcher.environment;
+  const { data, isLoading } = useGetSessionsImagesQuery(
+    environment && environment.container_image
+      ? { imageUrl: environment.container_image }
+      : skipToken
+  );
+  const { data: resourcePools, isLoading: isLoadingResourcePools } =
+    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
+  const resourcePool = useMemo(() => {
+    if (launcher?.resource_class_id == null || resourcePools == null) {
+      return undefined;
+    }
+    return resourcePools.find(({ classes }) =>
+      classes.some(({ id }) => id === launcher.resource_class_id)
+    );
+  }, [launcher?.resource_class_id, resourcePools]);
+
+  console.log({ data, resourcePool });
+
+  return (
+    <div className="mb-2">
+      <SessionImageBadge
+        data={data}
+        isLoading={isLoading}
+        resourcePool={resourcePool}
+        isLoadingResourcePools={isLoadingResourcePools}
+      />
+    </div>
   );
 }
 
