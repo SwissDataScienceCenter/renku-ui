@@ -727,7 +727,7 @@ export type ResourcePoolPut = {
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
   cluster_id?: Ulid;
-  platform?: RuntimePlatform;
+  platform: RuntimePlatform;
 };
 export type QuotaPatch = {
   cpu?: Cpu;

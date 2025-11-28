@@ -2144,7 +2144,7 @@
             "$ref": "#/components/schemas/RuntimePlatform"
           }
         },
-        "required": ["classes", "name", "public", "default"],
+        "required": ["classes", "name", "public", "default", "platform"],
         "example": {
           "quota": {
             "cpu": 50,
