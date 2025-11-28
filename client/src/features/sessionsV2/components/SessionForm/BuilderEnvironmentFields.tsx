@@ -29,6 +29,7 @@ import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constant
 import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
+import BuilderAdvancedSettings from "./BuilderAdvancedSettings";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
 import CodeRepositoryAdvancedSettings from "./CodeRepositoryAdvancedSettings";
@@ -104,6 +105,7 @@ export default function BuilderEnvironmentFields({
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
       <BuilderFrontendSelector name="frontend_variant" control={control} />
+      <BuilderAdvancedSettings control={control} />
     </div>
   );
 

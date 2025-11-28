@@ -72,6 +72,7 @@ export default function NewSessionLauncherModal({
       default_url: DEFAULT_URL,
       port: DEFAULT_PORT,
       repository: "",
+      platform: "",
     },
   });
   const {

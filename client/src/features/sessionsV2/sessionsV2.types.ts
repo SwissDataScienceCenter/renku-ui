@@ -19,7 +19,7 @@
 import type { ReactNode } from "react";
 
 import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
-import type { ResourceClassWithId } from "./api/computeResources.generated-api";
+import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
   BuildParametersPost,
   DefaultUrl,
@@ -103,7 +103,7 @@ export interface SessionLauncherForm
   // For "global" environments
   environmentId: EnvironmentId;
 
-  // For "custom" + "image" environments
+  // For "custom + image" environments
   default_url: DefaultUrl;
   uid: EnvironmentUid;
   gid: EnvironmentGid;
@@ -112,6 +112,9 @@ export interface SessionLauncherForm
   args: string;
   command: string;
   strip_path_prefix: boolean;
+
+  // For "custom + build" environments
+  platform: string;
 }
 
 export interface SessionResources {
@@ -182,9 +185,9 @@ export interface DockerImage {
   error?: unknown;
 }
 
-export interface BuilderSelectorOption {
+export interface BuilderSelectorOption<T extends string = string> {
   label: string;
-  value: string;
+  value: T;
   description?: ReactNode;
 }
 
