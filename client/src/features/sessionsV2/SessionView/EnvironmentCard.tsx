@@ -174,8 +174,6 @@ function GlobalEnvironmentSessionImageBadge({
     );
   }, [launcher?.resource_class_id, resourcePools]);
 
-  console.log({ data, resourcePool });
-
   return (
     <div className="mb-2">
       <SessionImageBadge
