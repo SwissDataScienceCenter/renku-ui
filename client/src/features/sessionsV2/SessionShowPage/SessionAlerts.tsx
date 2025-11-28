@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useRef } from "react";
 import { ExclamationTriangleFill } from "react-bootstrap-icons";
@@ -27,20 +28,16 @@ import {
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
-import { skipToken } from "@reduxjs/toolkit/query";
+
 import { useGetAlertsQuery, type Alert } from "../api/sessionsV2.api";
 
 interface SessionAlertsProps {
   sessionName?: string;
-  inline?: boolean;
 }
 
 const POLL_INTERVAL = 12000;
 
-export default function SessionAlerts({
-  sessionName,
-  inline = false,
-}: SessionAlertsProps) {
+export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
   const { data: alerts } = useGetAlertsQuery(
     sessionName ? { sessionName } : skipToken,
     {
@@ -103,7 +100,7 @@ function Alerts({ alerts }: AlertsProps) {
         placement="auto"
         popperClassName="session-alerts-popover"
       >
-        {alerts.map((alert, index) => (
+        {alerts.map((alert) => (
           <div key={alert.id}>
             <PopoverHeader className="text-bg-danger">
               {alert.title}
@@ -117,4 +114,3 @@ function Alerts({ alerts }: AlertsProps) {
     </>
   );
 }
-

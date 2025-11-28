@@ -1634,7 +1634,14 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "title", "message", "event_type", "user_id", "creation_date"]
+        "required": [
+          "id",
+          "title",
+          "message",
+          "event_type",
+          "user_id",
+          "creation_date"
+        ]
       },
       "AlertList": {
         "type": "array",

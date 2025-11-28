@@ -59,15 +59,15 @@ import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
-import { useGetSessionsQuery, useGetAlertsQuery } from "../api/sessionsV2.api";
+import { useGetAlertsQuery, useGetSessionsQuery } from "../api/sessionsV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
+import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
-import SessionAlerts from "./SessionAlerts";
 
 import styles from "../../session/components/ShowSession.module.scss";
 
@@ -250,7 +250,9 @@ export default function ShowSessionPage() {
                 slug={slug}
               />
             </div>
-            <div className={cx("pe-3", hasAlerts ? "text-warning" : "text-white")}>
+            <div
+              className={cx("pe-3", hasAlerts ? "text-warning" : "text-white")}
+            >
               <RenkuFrogIcon size={24} />
             </div>
           </div>
