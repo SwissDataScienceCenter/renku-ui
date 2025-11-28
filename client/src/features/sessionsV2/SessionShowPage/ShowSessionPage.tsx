@@ -231,7 +231,7 @@ export default function ShowSessionPage() {
               namespace={namespace}
               slug={slug}
             />
-            <SessionAlerts sessionName={sessionName} inline />
+            <SessionAlerts sessionName={sessionName} />
           </div>
           <div
             className={cx(
