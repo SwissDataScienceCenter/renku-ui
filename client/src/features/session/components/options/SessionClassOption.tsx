@@ -627,6 +627,7 @@ export const SessionClassSelectorV2 = ({
     <div data-cy="session-class-select">
       <Select
         id={id}
+        data-cy={id}
         classNames={selectClassNamesV2}
         components={selectComponentsV2}
         defaultValue={defaultSessionClass}
