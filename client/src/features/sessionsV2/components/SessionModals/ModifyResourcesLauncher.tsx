@@ -168,7 +168,7 @@ export function ModifyResourcesLauncherModal({
       size="lg"
       toggle={toggleModal}
     >
-      <ModalHeader tag="h2" toggle={toggleModal}>
+      <ModalHeader tag="h2" toggle={toggleModal} data-cy="modify-resources-modal-header">
         Set default resource class
       </ModalHeader>
       <ModalBody>
@@ -176,12 +176,12 @@ export function ModifyResourcesLauncherModal({
           <ErrorOrNotAvailableResourcePools title="Error modifying resources" />
         )}
         {result.isSuccess && (
-          <SuccessAlert dismissible={false}>
+          <SuccessAlert dismissible={false} data-cy="modify-resources-success-alert">
             <h3 className={cx("fs-6", "fw-bold")}>
               Default resource class updated
             </h3>
             <p className="mb-0">
-              The session launcher’s default resource class has been changed.
+              The session launcher's default resource class has been changed.
               This change will apply the next time you launch a new session.
             </p>
           </SuccessAlert>
@@ -269,7 +269,7 @@ export function ModifyResourcesLauncherModal({
         )}
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-primary" onClick={toggleModal}>
+        <Button color="outline-primary" onClick={toggleModal} data-cy="modify-resources-cancel-button">
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -284,6 +284,7 @@ export function ModifyResourcesLauncherModal({
           }
           onClick={onSubmit}
           type="submit"
+          data-cy="modify-resources-submit-button"
         >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
