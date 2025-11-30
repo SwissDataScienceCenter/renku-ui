@@ -383,6 +383,7 @@ export function SessionView({
                     <>
                       <Button
                         color="outline-primary"
+                        data-cy="session-view-modify-session-environment-button"
                         id="modify-session-environment-button"
                         onClick={toggle}
                         size="sm"
