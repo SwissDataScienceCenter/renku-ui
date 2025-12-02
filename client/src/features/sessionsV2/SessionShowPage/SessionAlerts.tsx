@@ -18,15 +18,15 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ExclamationTriangleFill, ExclamationTriangle } from "react-bootstrap-icons";
 import ReactMarkdown from "react-markdown";
 import {
   Badge,
   Button,
+  Popover,
   PopoverBody,
   PopoverHeader,
-  UncontrolledPopover,
 } from "reactstrap";
 
 import { useGetAlertsQuery, type Alert } from "../api/sessionsV2.api";
@@ -38,7 +38,6 @@ interface SessionAlertsProps {
 const POLL_INTERVAL = 12000;
 
 function LinkRenderer(props) {
-  console.log({ props });
   return (
     <a href={props.href} target="_blank" rel="noreferrer">
       {props.children}
@@ -64,6 +63,28 @@ interface AlertsProps {
 
 function Alerts({ alerts }: AlertsProps) {
   const ref = useRef<HTMLButtonElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [prevAlertIds, setPrevAlertIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!alerts || alerts.length === 0) {
+      setPrevAlertIds(new Set());
+      setIsOpen(false);
+      return;
+    }
+
+    const currentAlertIds = new Set(alerts.map((alert) => alert.id));
+
+    const hasNewAlerts = alerts.some((alert) => !prevAlertIds.has(alert.id));
+
+    if (hasNewAlerts) {
+      setIsOpen(true);
+    }
+
+    setPrevAlertIds(currentAlertIds);
+  }, [alerts, prevAlertIds]);
+
+  const togglePopover = () => setIsOpen(!isOpen);
 
   if (!alerts || alerts.length === 0) {
     return (
@@ -90,6 +111,7 @@ function Alerts({ alerts }: AlertsProps) {
         <div className="position-relative">
           <Button
             innerRef={ref}
+            onClick={togglePopover}
             className={cx(
               "bg-transparent",
               "border-0",
@@ -118,9 +140,11 @@ function Alerts({ alerts }: AlertsProps) {
             </Badge>
           )}
         </div>
-        <UncontrolledPopover
+        <Popover
           target={ref}
-          trigger="click"
+          isOpen={isOpen}
+          toggle={togglePopover}
+          trigger="legacy"
           placement="auto"
           popperClassName="session-alerts-popover"
         >
@@ -134,7 +158,7 @@ function Alerts({ alerts }: AlertsProps) {
               </PopoverBody>
             </div>
           ))}
-        </UncontrolledPopover>
+        </Popover>
       </>
     );
   }
