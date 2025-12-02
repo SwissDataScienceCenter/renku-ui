@@ -155,7 +155,14 @@ function EditCodeRepositoryModal({
           <p>Specify a code repository by its URL.</p>
           <Row>
             <Col>
-              <FormGroup className="field-group" noMargin>
+              <FormGroup
+                className="field-group"
+                noMargin
+                onClickCapture={(e) => {
+                  // ? Prevent offcanvas from toggling when clicking inside the form group
+                  e.stopPropagation();
+                }}
+              >
                 <Label for={`project-${project.id}-edit-repository-url`}>
                   Repository URL
                 </Label>
