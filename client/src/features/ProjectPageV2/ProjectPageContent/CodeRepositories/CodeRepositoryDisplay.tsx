@@ -467,63 +467,61 @@ export function RepositoryPermissionsBadge({
     url: repositoryUrl,
   });
 
-  const badgeColor = isLoading
-    ? "light"
-    : error
-    ? "danger"
-    : !data?.metadata?.pull_permission
-    ? "danger"
-    : data?.metadata?.push_permission
-    ? "success"
-    : data?.connection?.status === "connected"
-    ? "success"
-    : data?.provider?.id && hasWriteAccess
-    ? "warning"
-    : data?.provider?.id && !hasWriteAccess
-    ? "success"
-    : data?.metadata?.pull_permission && hasWriteAccess
-    ? "warning"
-    : data?.metadata?.pull_permission && !hasWriteAccess
-    ? "success"
-    : "light";
+  let badgeColor: "light" | "danger" | "warning" | "success";
+  let badgeText: string;
+
+  if (isLoading) {
+    badgeColor = "light";
+    badgeText = "Loading...";
+  } else if (error) {
+    badgeColor = "danger";
+    badgeText = "Error";
+  } else if (!data?.metadata?.pull_permission && !data?.provider?.id) {
+    badgeColor = "danger";
+    badgeText = "Inaccessible";
+  } else if (
+    !data?.metadata?.pull_permission &&
+    data?.connection?.status !== "connected"
+  ) {
+    badgeColor = "danger";
+    badgeText = "Integration required";
+  } else if (
+    !data?.metadata?.pull_permission &&
+    data?.connection?.status === "connected"
+  ) {
+    badgeColor = "danger";
+    badgeText = "Inaccessible";
+  } else if (!data?.metadata?.push_permission && !data?.provider?.id) {
+    badgeText = hasWriteAccess ? "Request integration" : "Read only";
+    badgeColor = hasWriteAccess ? "warning" : "success";
+  } else if (
+    !data?.metadata?.push_permission &&
+    data?.connection?.status !== "connected"
+  ) {
+    badgeText = hasWriteAccess ? "Integration recommended" : "Read only";
+    badgeColor = hasWriteAccess ? "warning" : "success";
+  } else if (
+    !data?.metadata?.push_permission &&
+    data?.connection?.status === "connected"
+  ) {
+    badgeColor = "success";
+    badgeText = "Read only";
+  } else if (
+    data?.metadata?.push_permission &&
+    data?.connection?.status === "connected"
+  ) {
+    badgeColor = "success";
+    badgeText = "Read & write";
+  } else {
+    badgeColor = "light";
+    badgeText = "Unexpected";
+  }
 
   const badgeIcon = isLoading ? (
     <Loader className="me-1" inline size={12} />
   ) : (
     <CircleFill className={cx("me-1", "bi")} />
   );
-
-  const badgeText = isLoading
-    ? "Loading..."
-    : error
-    ? "Error"
-    : !data?.metadata?.pull_permission && !data?.provider?.id
-    ? "Inaccessible"
-    : !data?.metadata?.pull_permission &&
-      data?.connection?.status !== "connected"
-    ? "Integration required"
-    : !data?.metadata?.pull_permission &&
-      data?.connection?.status === "connected"
-    ? "Inaccessible"
-    : !data?.metadata?.push_permission && !data?.provider?.id && hasWriteAccess
-    ? "Request integration"
-    : !data?.metadata?.push_permission && !data?.provider?.id && !hasWriteAccess
-    ? "Read only"
-    : !data?.metadata?.push_permission &&
-      data?.connection?.status !== "connected" &&
-      hasWriteAccess
-    ? "Integration recommended"
-    : !data?.metadata?.push_permission &&
-      data?.connection?.status !== "connected" &&
-      !hasWriteAccess
-    ? "Read only"
-    : !data?.metadata?.push_permission &&
-      data?.connection?.status === "connected"
-    ? "Read only"
-    : data?.metadata?.push_permission &&
-      data?.connection?.status === "connected"
-    ? "Read & write"
-    : "Unexpected";
 
   return (
     <RenkuBadge
