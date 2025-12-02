@@ -29,8 +29,8 @@ import {
 import { useGetConfigQuery } from "~/features/project/projectCoreApi";
 import { useCoreSupport } from "~/features/project/useProjectCoreSupport";
 import {
-  type ResourceClassWithId,
   useGetResourcePoolsQuery,
+  type ResourceClassWithId,
 } from "~/features/sessionsV2/api/computeResources.api";
 import { ProjectStatistics } from "~/notebooks/components/session.types";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";

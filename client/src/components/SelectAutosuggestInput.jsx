@@ -24,8 +24,8 @@
  */
 
 import { useState } from "react";
-import { FormGroup, FormText } from "reactstrap";
 import Autosuggest from "react-autosuggest";
+import { FormGroup, FormText } from "reactstrap";
 
 import FormLabel from "./form-field/FormLabel";
 import { ErrorLabel } from "./formlabels/FormLabels";

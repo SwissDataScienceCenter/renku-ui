@@ -18,11 +18,11 @@
 
 import cx from "classnames";
 import {
-  type Control,
   Controller,
+  useWatch,
+  type Control,
   type FieldPathByValue,
   type FieldValues,
-  useWatch,
 } from "react-hook-form";
 import { Collapse, FormText, Input, Label } from "reactstrap";
 

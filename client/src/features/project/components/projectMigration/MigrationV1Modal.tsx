@@ -18,15 +18,16 @@
 
 import cx from "classnames";
 import { BoxArrowInUp } from "react-bootstrap-icons";
-import { ModalBody, ModalHeader } from "reactstrap";
-import { ProjectMetadata } from "./ProjectMigration.types";
-import ScrollableModal from "../../../../components/modal/ScrollableModal";
-import MigrationForm from "./ProjectMigrationForm";
-import ProjectMigrationFooter from "./ProjectMigrationFooter";
-import { useMigrationForm } from "./hooks/useMigrationForm";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import { SuccessAlert } from "../../../../components/Alert";
 import { Link } from "react-router";
+import { ModalBody, ModalHeader } from "reactstrap";
+
+import { SuccessAlert } from "../../../../components/Alert";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../../../components/modal/ScrollableModal";
+import { useMigrationForm } from "./hooks/useMigrationForm";
+import { ProjectMetadata } from "./ProjectMigration.types";
+import ProjectMigrationFooter from "./ProjectMigrationFooter";
+import MigrationForm from "./ProjectMigrationForm";
 
 interface MigrationV1ModalProps {
   isOpen: boolean;

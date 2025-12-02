@@ -17,6 +17,7 @@
  */
 
 import { useEffect } from "react";
+
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { FAVICON_BY_SESSION_STATUS } from "../sessionsV2/session.constants";
 

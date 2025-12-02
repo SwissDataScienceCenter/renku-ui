@@ -1,4 +1,5 @@
 import { Label } from "reactstrap";
+
 import { InputLabel } from "../formlabels/FormLabels";
 
 type FormLabelProps = {

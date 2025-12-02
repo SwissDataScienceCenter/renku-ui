@@ -23,16 +23,16 @@
  *  Model and schema for storing Renku data.
  */
 
+import { globalSchema } from "./GlobalSchema";
 import {
   PropertyName,
   Schema,
-  StateModel,
-  StateKind,
-  SubModel,
   SpecialPropVal,
+  StateKind,
+  StateModel,
   StatusHelper,
+  SubModel,
 } from "./Model";
-import { globalSchema } from "./GlobalSchema";
 import { formGeneratorSchema, projectSchema } from "./RenkuModels";
 
 export {

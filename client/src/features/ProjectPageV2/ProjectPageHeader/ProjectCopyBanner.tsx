@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import {
@@ -22,7 +23,7 @@ import {
   BoxArrowInRight,
   Diagram3Fill,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import { Button } from "reactstrap";
 
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";

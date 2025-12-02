@@ -322,6 +322,8 @@ describe("visit V1 project urls without legacy support", () => {
     cy.visit(`${projectUrl}`);
     cy.contains("Checking for redirect").should("be.visible");
     cy.wait("@getUrlRedirect");
-    cy.contains("Legacy not supported").should("be.visible");
+    cy.contains("This version of Renku is no longer supported").should(
+      "be.visible"
+    );
   });
 });

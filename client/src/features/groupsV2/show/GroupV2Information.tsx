@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { Clock, InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { Card, CardBody, CardHeader } from "reactstrap";
+
 import { TimeCaption } from "../../../components/TimeCaption";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
 import { useGroup } from "./GroupPageContainer";

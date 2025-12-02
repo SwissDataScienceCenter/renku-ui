@@ -33,13 +33,13 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, WarnAlert } from "../components/Alert";
-import { ExternalLink } from "../components/ExternalLinks";
-import FileExplorer from "../components/FileExplorer";
-import { Loader } from "../components/Loader";
 import { EntityDeleteButtonButton } from "../components/entities/Buttons";
 import EntityHeader from "../components/entityHeader/EntityHeader";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { CoreError } from "../components/errors/CoreErrorHelpers";
+import { ExternalLink } from "../components/ExternalLinks";
+import FileExplorer from "../components/FileExplorer";
+import { Loader } from "../components/Loader";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import DeleteDataset from "../project/datasets/delete";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";

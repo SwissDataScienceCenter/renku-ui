@@ -27,6 +27,7 @@ import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
+  components,
   GroupBase,
   GroupHeadingProps,
   MenuListProps,
@@ -34,7 +35,6 @@ import Select, {
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
-  components,
 } from "react-select";
 
 import { ErrorAlert, WarnAlert } from "~/components/Alert";

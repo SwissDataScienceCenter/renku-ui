@@ -29,26 +29,27 @@ import {
   DropdownItem,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import EnvironmentLogsV2 from "../../components/LogsV2";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
+import EnvironmentLogsV2 from "../../components/LogsV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
-import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
+import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import AddSessionLauncherButton from "./AddSessionLauncherButton";
-import SessionLauncherCard from "./SessionList/SessionLauncherCard";
-import { SessionLauncherDisplay } from "./SessionList/SessionLauncherDisplay";
-import { SessionView } from "./SessionView/SessionView";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
+import SessionLauncherCard from "./SessionList/SessionLauncherCard";
+import { SessionLauncherDisplay } from "./SessionList/SessionLauncherDisplay";
 import { SessionV2 } from "./sessionsV2.types";
+import { SessionView } from "./SessionView/SessionView";
 
 // Required for logs formatting
 import "../../notebooks/Notebooks.css";
+
 import { LauncherEnvironmentIcon } from "./components/SessionForm/LauncherEnvironmentIcon";
 
 export function getShowSessionUrlByProject(

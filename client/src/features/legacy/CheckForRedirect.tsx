@@ -24,7 +24,6 @@ import { useLocation, useNavigate } from "react-router";
 import ContainerWrap from "~/components/container/ContainerWrap";
 import { useGetPlatformRedirectsBySourceUrlQuery } from "~/features/platform/api/platform.api";
 import { locationPathnameToSourceUrl } from "~/features/platform/api/platform.utils";
-
 import NoLegacySupportForProjects from "./NoLegacySupportForProjects";
 
 function CheckingForRedirect() {

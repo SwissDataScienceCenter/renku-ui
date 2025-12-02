@@ -28,8 +28,8 @@ import { trim } from "lodash-es";
 import { useCallback, useEffect, useState } from "react";
 
 import {
-  RtkErrorAlert,
   extractRkErrorRemoteBranch,
+  RtkErrorAlert,
 } from "../../components/errors/RtkErrorAlert";
 import InlineSubmitInput, {
   InputCard,

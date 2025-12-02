@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Control, FieldErrors } from "react-hook-form";
 import { Collapse } from "reactstrap";
+
 import CollapseBody from "~/components/container/CollapseBody";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { AdvancedSettingsFields } from "../sessionsV2/components/SessionForm/AdvancedSettingsFields";
@@ -65,7 +66,7 @@ export default function SessionEnvironmentAdvancedFields({
         </button>
 
         <Collapse isOpen={isAdvancedSettingOpen}>
-          <CollapseBody className="mt-1">
+          <CollapseBody className={cx("ms-0", "mt-4")}>
             <AdvancedSettingsFields<SessionEnvironmentForm>
               control={control}
               errors={errors}

@@ -18,8 +18,8 @@
 
 import {
   computeResourcesGeneratedApi,
-  type GetResourcePoolsApiResponse,
   type GetResourcePoolsApiArg,
+  type GetResourcePoolsApiResponse,
 } from "./computeResources.generated-api";
 
 // Fixes some API endpoints

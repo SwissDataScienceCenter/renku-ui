@@ -41,16 +41,16 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ContainerWrap } from "../App";
 import { ACCESS_LEVELS } from "../api-client";
+import { ContainerWrap } from "../App";
 import { InfoAlert } from "../components/Alert";
+import { RoundButtonGroup } from "../components/buttons/Button";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import RenkuNavLinkV2, {
   RenkuNavLinkV2WithAlternates,
 } from "../components/RenkuNavLinkV2";
-import { RoundButtonGroup } from "../components/buttons/Button";
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
 import {
   ProjectDatasetsView,
@@ -66,7 +66,9 @@ import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import { Url } from "../utils/helpers/url";
 import { WorkflowsList } from "../workflows";
+
 import "./Project.css";
+
 import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,

@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-import { Card, CardBody, FormText, Input, Label } from "reactstrap";
 import React from "react";
-import { Loader } from "../Loader";
+import { Card, CardBody, FormText, Input, Label } from "reactstrap";
+
 import { InlineSubmitButton } from "../buttons/Button";
+import { Loader } from "../Loader";
 
 interface InlineInputProps {
   classNameSubmitButton: string;

@@ -1,5 +1,5 @@
-import { Card, CardBody, CardFooter, CardHeader } from "reactstrap";
 import { Meta, StoryObj } from "@storybook/react";
+import { Card, CardBody, CardFooter, CardHeader } from "reactstrap";
 
 const componentDescription = `
 This is a very generic example of card, rarely used in its vanilla version in Renku.

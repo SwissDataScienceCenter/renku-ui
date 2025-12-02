@@ -17,8 +17,8 @@
  */
 
 import {
-  AbstractKgPaginatedResponse,
   AbstractKgPaginatedQueryArgs,
+  AbstractKgPaginatedResponse,
 } from "../types/pagination.types";
 
 export function processPaginationHeaders(

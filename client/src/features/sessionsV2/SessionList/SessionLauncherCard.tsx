@@ -15,11 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext } from "react";
 import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
+
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";

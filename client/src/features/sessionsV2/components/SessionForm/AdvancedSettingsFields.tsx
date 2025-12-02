@@ -28,6 +28,7 @@ import {
 } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
+
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import { MoreInfo } from "../../../../components/MoreInfo";
 import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
@@ -256,7 +257,7 @@ export function AdvancedSettingsFields<
   return (
     <>
       <div className={cx("row", "gy-3", "mb-3")}>
-        <div className={cx("col-12", "col-md-9")}>
+        <div className={cx("col-12", "col-md-9", "mt-0")}>
           <FormField<T>
             control={control}
             name={"default_url" as Path<T>}
@@ -267,7 +268,7 @@ export function AdvancedSettingsFields<
             type="text"
           />
         </div>
-        <div className={cx("col-12", "col-md-3")}>
+        <div className={cx("col-12", "col-md-3", "mt-md-0")}>
           <FormField<T>
             control={control}
             name={"port" as Path<T>}

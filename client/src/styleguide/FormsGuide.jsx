@@ -17,8 +17,7 @@
  */
 
 import { Fragment } from "react";
-
-import { Row, Col, Card, CardBody, CardHeader } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 /* eslint-disable */
 function CardsSection(props) {

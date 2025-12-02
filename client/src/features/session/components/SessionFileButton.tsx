@@ -21,8 +21,8 @@ import { ReactNode, useRef } from "react";
 import { Link, useLocation, type To } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
-import { Loader } from "../../../components/Loader";
 import JupyterIcon from "../../../components/icons/JupyterIcon";
+import { Loader } from "../../../components/Loader";
 import { NotebooksHelper } from "../../../notebooks";
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";

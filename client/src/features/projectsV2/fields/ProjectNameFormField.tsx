@@ -18,8 +18,8 @@
 
 import type { FieldValues } from "react-hook-form";
 
-import NameFormField from "./NameFormField";
 import type { GenericProjectFormFieldProps } from "./formField.types";
+import NameFormField from "./NameFormField";
 
 export default function ProjectNameFormField<T extends FieldValues>({
   control,

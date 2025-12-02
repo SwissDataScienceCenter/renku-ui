@@ -24,13 +24,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
+  components,
   GroupBase,
   MenuListProps,
   OptionProps,
   SelectComponentsConfig,
   SingleValue,
   SingleValueProps,
-  components,
 } from "react-select";
 import { Button, UncontrolledTooltip } from "reactstrap";
 

@@ -18,17 +18,17 @@
 
 import { useCallback, useMemo, useState } from "react";
 
+import EnvironmentLogsV2 from "../../../components/LogsV2";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
+import UpdateSessionLauncherMetadataModal from "../components/SessionModals/UpdateSessionLauncherMetadataModal";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherCard from "./SessionLauncherCard";
-import EnvironmentLogsV2 from "../../../components/LogsV2";
-import UpdateSessionLauncherMetadataModal from "../components/SessionModals/UpdateSessionLauncherMetadataModal";
 
 interface SessionLauncherDisplayProps {
   launcher: SessionLauncher;

@@ -17,9 +17,9 @@
  */
 
 import {
-  FetchBaseQueryError,
   createApi,
   fetchBaseQuery,
+  FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 
 import {

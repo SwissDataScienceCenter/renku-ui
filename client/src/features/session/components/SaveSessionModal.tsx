@@ -43,8 +43,8 @@ import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/renkuModels.types";
 import {
   CenteredLoader,
-  InformationalBody,
   commitsPhrasing,
+  InformationalBody,
 } from "../../../notebooks/components/Sidecar";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import {

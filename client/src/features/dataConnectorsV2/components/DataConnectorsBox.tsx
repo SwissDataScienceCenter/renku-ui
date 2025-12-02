@@ -31,9 +31,9 @@ import {
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { NamespaceKind } from "../../projectsV2/api/namespace.api";
