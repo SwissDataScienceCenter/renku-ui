@@ -34,7 +34,6 @@
  * limitations under the License.
  */
 
-import { shouldInterrupt } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import {
   GetRepositoryApiResponse,
   repositoriesGeneratedApi,
@@ -51,15 +50,18 @@ export type RepositoriesApiResponseWithInterrupts = GetRepositoryApiResponse &
     url: string;
   };
 
+export type GetRepositoriesApiResponse = {
+  data?: GetRepositoryApiResponse;
+  error: boolean;
+  url: string;
+};
+
 const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
-    getRepositoriesArray: build.query<
-      RepositoriesApiResponseWithInterrupts[],
-      string[]
-    >({
+    getRepositories: build.query<GetRepositoriesApiResponse[], string[]>({
       async queryFn(queryArg, _api, _options, fetchWithBQ) {
-        const result: RepositoriesApiResponseWithInterrupts[] = [];
+        const result: GetRepositoriesApiResponse[] = [];
         const promises = queryArg.map((repository) =>
           fetchWithBQ({
             url: "/repository",
@@ -73,18 +75,11 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
           if (response.error)
             result.push({
               error: true,
-              interruptAlways: true,
-              interruptOwner: true,
-              status: "unknown",
               url: repositoryUrl,
             });
           else if (response.data) {
-            const interrupts = shouldInterrupt(
-              response.data as GetRepositoryApiResponse
-            );
             result.push({
-              ...(response.data as GetRepositoryApiResponse),
-              ...interrupts,
+              data: response.data as GetRepositoryApiResponse,
               error: false,
               url: repositoryUrl,
             });
@@ -104,7 +99,7 @@ const withTagHandling = withResponseRewrite.enhanceEndpoints({
       providesTags: (result, _error, { url }) =>
         result ? [{ type: "Repository" as const, id: url }] : [],
     },
-    getRepositoriesArray: {
+    getRepositories: {
       providesTags: (result) =>
         result != null
           ? result.map(({ url }) => ({
@@ -117,6 +112,6 @@ const withTagHandling = withResponseRewrite.enhanceEndpoints({
 });
 
 export { withTagHandling as repositoriesApi };
-export const { useGetRepositoriesArrayQuery, useGetRepositoryQuery } =
+export const { useGetRepositoriesQuery, useGetRepositoryQuery } =
   withTagHandling;
 export type * from "./repositories.generated-api";

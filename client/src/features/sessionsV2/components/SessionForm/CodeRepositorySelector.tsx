@@ -37,14 +37,14 @@ import Select, {
 } from "react-select";
 import { Label } from "reactstrap";
 
-import { RepositoriesApiResponseWithInterrupts } from "~/features/repositories/api/repositories.api";
+import { GetRepositoriesApiResponse } from "~/features/repositories/api/repositories.api";
 import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 
 import styles from "./Select.module.scss";
 
 interface CodeRepositorySelectorProps<T extends FieldValues>
   extends UseControllerProps<T> {
-  repositoriesDetails: RepositoriesApiResponseWithInterrupts[];
+  repositoriesDetails: GetRepositoriesApiResponse[];
 }
 
 export default function CodeRepositorySelector<T extends FieldValues>({
@@ -55,7 +55,8 @@ export default function CodeRepositorySelector<T extends FieldValues>({
     () =>
       controllerProps.defaultValue
         ? controllerProps.defaultValue
-        : repositoriesDetails.find((repo) => repo.status === "valid")?.url,
+        : repositoriesDetails.find((repo) => repo.data?.status === "valid")
+            ?.url,
     [controllerProps.defaultValue, repositoriesDetails]
   );
 
@@ -108,7 +109,7 @@ export default function CodeRepositorySelector<T extends FieldValues>({
 interface CodeRepositorySelectProps {
   name: string;
   defaultValue?: string;
-  options: RepositoriesApiResponseWithInterrupts[];
+  options: GetRepositoriesApiResponse[];
   onChange?: (newValue?: string) => void;
   onBlur?: () => void;
   value: string;
@@ -134,12 +135,7 @@ function CodeRepositorySelect({
   );
 
   const onChange = useCallback(
-    (
-      newValue: SingleValue<{
-        url: string;
-        status: string;
-      }>
-    ) => {
+    (newValue: SingleValue<GetRepositoriesApiResponse>) => {
       onChange_?.(newValue?.url);
     },
     [onChange_]
@@ -163,7 +159,7 @@ function CodeRepositorySelect({
       getOptionLabel={(option) => option.url}
       getOptionValue={(option) => option.url}
       unstyled
-      isOptionDisabled={(option) => option.status !== "valid"}
+      isOptionDisabled={(option) => option.data?.status !== "valid"}
       onChange={onChange}
       onBlur={onBlur}
       value={value}
@@ -175,10 +171,7 @@ function CodeRepositorySelect({
   );
 }
 
-const selectClassNames: ClassNamesConfig<
-  RepositoriesApiResponseWithInterrupts,
-  false
-> = {
+const selectClassNames: ClassNamesConfig<GetRepositoriesApiResponse, false> = {
   control: ({ menuIsOpen }) =>
     cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
   dropdownIndicator: () => cx("pe-3"),
@@ -201,7 +194,7 @@ const selectClassNames: ClassNamesConfig<
 };
 
 interface OptionOrSingleValueContentProps {
-  option: RepositoriesApiResponseWithInterrupts;
+  option: GetRepositoriesApiResponse;
 }
 
 function OptionOrSingleValueContent({
@@ -210,7 +203,7 @@ function OptionOrSingleValueContent({
   return (
     <>
       <span>{option.url}</span>
-      {option.status !== "valid" && (
+      {option.data?.status !== "valid" && (
         <span>
           <XLg className={cx("bi", "me-1")} />
           No public access
@@ -221,9 +214,9 @@ function OptionOrSingleValueContent({
 }
 
 const selectComponents: SelectComponentsConfig<
-  RepositoriesApiResponseWithInterrupts,
+  GetRepositoriesApiResponse,
   false,
-  GroupBase<RepositoriesApiResponseWithInterrupts>
+  GroupBase<GetRepositoriesApiResponse>
 > = {
   DropdownIndicator: (props) => {
     return (
@@ -234,9 +227,9 @@ const selectComponents: SelectComponentsConfig<
   },
   Option: (
     props: OptionProps<
-      RepositoriesApiResponseWithInterrupts,
+      GetRepositoriesApiResponse,
       false,
-      GroupBase<RepositoriesApiResponseWithInterrupts>
+      GroupBase<GetRepositoriesApiResponse>
     >
   ) => {
     const { data } = props;
@@ -250,9 +243,9 @@ const selectComponents: SelectComponentsConfig<
   },
   SingleValue: (
     props: SingleValueProps<
-      RepositoriesApiResponseWithInterrupts,
+      GetRepositoriesApiResponse,
       false,
-      GroupBase<RepositoriesApiResponseWithInterrupts>
+      GroupBase<GetRepositoriesApiResponse>
     >
   ) => {
     const { data } = props;

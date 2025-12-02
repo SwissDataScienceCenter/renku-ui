@@ -27,7 +27,7 @@ import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
-import { useGetRepositoriesArrayQuery } from "../../../repositories/api/repositories.api";
+import { useGetRepositoriesQuery } from "../../../repositories/api/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
@@ -50,12 +50,12 @@ export default function BuilderEnvironmentFields({
   const { project } = useProject();
   const repositories = project.repositories ?? [];
 
-  const { data, isLoading, error } = useGetRepositoriesArrayQuery(
+  const { data, isLoading, error } = useGetRepositoriesQuery(
     repositories.length > 0 ? repositories : skipToken
   );
 
   const firstEligibleRepository = useMemo(
-    () => data?.findIndex((repo) => repo.status === "valid"),
+    () => data?.findIndex((repo) => repo.data?.status === "valid"),
     [data]
   );
 

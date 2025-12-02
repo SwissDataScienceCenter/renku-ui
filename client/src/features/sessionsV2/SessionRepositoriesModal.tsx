@@ -38,12 +38,15 @@ import {
   RepositoryCallToActionAlert,
   RepositoryPermissionsBadge,
 } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
-import { getRepositoryName } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
+import {
+  getRepositoryName,
+  shouldInterrupt,
+} from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import {
-  RepositoriesApiResponseWithInterrupts,
-  useGetRepositoriesArrayQuery,
+  GetRepositoriesApiResponse,
+  useGetRepositoriesQuery,
 } from "../repositories/api/repositories.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
@@ -65,17 +68,20 @@ export default function SessionRepositoriesModal({
   }, [navigate, project.namespace, project.slug]);
 
   const projectPermissions = useProjectPermissions({ projectId: project.id });
-  const interruptProperty = projectPermissions?.write
-    ? "interruptOwner"
-    : "interruptAlways";
-  const { data, error, isLoading } = useGetRepositoriesArrayQuery(
+  const { data, error, isLoading } = useGetRepositoriesQuery(
     project.repositories ?? []
   );
 
   const repoWithInterruptions = useMemo(() => {
     if (isLoading || !data) return [];
-    return data.filter((repo) => repo[interruptProperty]) ?? [];
-  }, [data, interruptProperty, isLoading]);
+    return (
+      data.filter(
+        (repo) =>
+          repo.error ||
+          (repo.data && shouldInterrupt(repo.data, !!projectPermissions?.write))
+      ) ?? []
+    );
+  }, [data, isLoading, projectPermissions?.write]);
 
   const dispatch = useAppDispatch();
   const onSkip = useCallback(() => {
@@ -147,7 +153,7 @@ export default function SessionRepositoriesModal({
 
 interface SessionRepositoryWarningProps {
   hasWriteAccess: boolean;
-  repository: RepositoriesApiResponseWithInterrupts;
+  repository: GetRepositoriesApiResponse;
 }
 function SessionRepositoryWarning({
   hasWriteAccess,

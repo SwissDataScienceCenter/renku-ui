@@ -16,10 +16,7 @@
  * limitations under the License.
  */
 
-import {
-  GetRepositoryApiResponse,
-  RepositoryInterrupts,
-} from "~/features/repositories/api/repositories.api";
+import { GetRepositoryApiResponse } from "~/features/repositories/api/repositories.api";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 /**
@@ -75,20 +72,21 @@ export function detectSSHRepository(repositoryURL: string): boolean {
 }
 
 export function shouldInterrupt(
-  repositoryData: GetRepositoryApiResponse
-): RepositoryInterrupts {
-  const interruptAlways = !!(
+  repositoryData: GetRepositoryApiResponse,
+  hasProjectWritePermission: boolean
+): boolean {
+  if (hasProjectWritePermission)
+    return !!(
+      (!repositoryData?.metadata?.pull_permission &&
+        !(repositoryData?.connection?.status === "connected")) ||
+      (repositoryData?.metadata?.pull_permission &&
+        !repositoryData?.metadata?.push_permission &&
+        !(repositoryData?.connection?.status === "connected"))
+    );
+  return !!(
     !repositoryData?.metadata?.pull_permission &&
     !(repositoryData?.connection?.status === "connected")
   );
-  const interruptOwner = !!(
-    (!repositoryData?.metadata?.pull_permission &&
-      !(repositoryData?.connection?.status === "connected")) ||
-    (repositoryData?.metadata?.pull_permission &&
-      !repositoryData?.metadata?.push_permission &&
-      !(repositoryData?.connection?.status === "connected"))
-  );
-  return { interruptAlways, interruptOwner };
 }
 
 export function getRepositoryName(repositoryURL: string): string {
