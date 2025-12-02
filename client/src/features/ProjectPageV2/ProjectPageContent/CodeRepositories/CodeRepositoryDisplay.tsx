@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  BoxArrowUpRight,
   CircleFill,
   FileCode,
   Pencil,
@@ -50,6 +49,7 @@ import {
 
 import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
+import { ExternalLink } from "~/components/ExternalLinks";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
@@ -614,15 +614,12 @@ function RepositoryView({
                 <h3>Repository</h3>
                 <p>
                   URL:{" "}
-                  <a
-                    href={webUrl}
-                    data-cy="code-repository-url"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    {webUrl}
-                    <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
-                  </a>
+                  <ExternalLink
+                    iconAfter={true}
+                    role="link"
+                    url={webUrl}
+                    title={webUrl}
+                  />
                 </p>
                 {data?.metadata?.git_url && (
                   <div>
