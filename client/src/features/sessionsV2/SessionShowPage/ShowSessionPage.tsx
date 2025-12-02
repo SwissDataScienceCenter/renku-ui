@@ -103,7 +103,6 @@ export default function ShowSessionPage() {
   const { data: alerts } = useGetAlertsQuery(
     sessionName ? { sessionName } : skipToken
   );
-  const hasAlerts = alerts && alerts.length > 0;
 
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
@@ -251,7 +250,7 @@ export default function ShowSessionPage() {
               />
             </div>
             <div
-              className={cx("pe-3", hasAlerts ? "text-warning" : "text-white")}
+              className={cx("pe-3", "text-white")}
             >
               <RenkuFrogIcon size={24} />
             </div>

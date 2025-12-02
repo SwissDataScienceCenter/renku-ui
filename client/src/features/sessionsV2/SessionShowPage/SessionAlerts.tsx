@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useRef } from "react";
-import { ExclamationTriangleFill } from "react-bootstrap-icons";
+import { ExclamationTriangleFill, ExclamationTriangle } from "react-bootstrap-icons";
 import ReactMarkdown from "react-markdown";
 import {
   Badge,
@@ -37,6 +37,15 @@ interface SessionAlertsProps {
 
 const POLL_INTERVAL = 12000;
 
+function LinkRenderer(props) {
+  console.log({ props });
+  return (
+    <a href={props.href} target="_blank" rel="noreferrer">
+      {props.children}
+    </a>
+  );
+}
+
 export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
   const { data: alerts } = useGetAlertsQuery(
     sessionName ? { sessionName } : skipToken,
@@ -45,10 +54,6 @@ export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
       refetchOnMountOrArgChange: true,
     }
   );
-
-  if (!alerts || alerts.length === 0) {
-    return null;
-  }
 
   return <Alerts alerts={alerts} />;
 }
@@ -60,57 +65,77 @@ interface AlertsProps {
 function Alerts({ alerts }: AlertsProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
-  return (
-    <>
-      <div className="position-relative">
+  if (!alerts || alerts.length === 0) {
+    return (
+      <div>
         <Button
-          innerRef={ref}
           className={cx(
-            "bg-danger",
+            "bg-transparent",
             "border-0",
             "no-focus",
-            "rounded",
+            "p-0",
             "shadow-none",
-            "text-white"
+            "text-dark"
           )}
-          style={{ padding: "0.25rem 0.5rem" }}
           data-cy="session-alerts"
+          innerRef={ref}
         >
-          <ExclamationTriangleFill className="bi" />
+          <ExclamationTriangle className="bi" />
         </Button>
-        {alerts.length > 1 && (
-          <Badge
-            color="dark"
-            pill
-            className="position-absolute"
-            style={{
-              fontSize: "0.65rem",
-              top: "-6px",
-              right: "-8px",
-              minWidth: "20px",
-            }}
-          >
-            {alerts.length}
-          </Badge>
-        )}
       </div>
-      <UncontrolledPopover
-        target={ref}
-        trigger="click"
-        placement="auto"
-        popperClassName="session-alerts-popover"
-      >
-        {alerts.map((alert) => (
-          <div key={alert.id}>
-            <PopoverHeader className="text-bg-danger">
-              {alert.title}
-            </PopoverHeader>
-            <PopoverBody className={cx("text-dark", "bg-danger-subtle")}>
-              <ReactMarkdown>{alert.message}</ReactMarkdown>
-            </PopoverBody>
-          </div>
-        ))}
-      </UncontrolledPopover>
-    </>
-  );
+    );
+  } else {
+    return (
+      <>
+        <div className="position-relative">
+          <Button
+            innerRef={ref}
+            className={cx(
+              "bg-transparent",
+              "border-0",
+              "no-focus",
+              "p-0",
+              "shadow-none",
+              "text-danger"
+            )}
+            data-cy="session-alerts"
+          >
+            <ExclamationTriangleFill className="bi" />
+          </Button>
+          {alerts.length > 1 && (
+            <Badge
+              color="dark"
+              pill
+              className="position-absolute"
+              style={{
+                fontSize: "0.65rem",
+                top: "-6px",
+                right: "-12px",
+                minWidth: "20px",
+              }}
+            >
+              {alerts.length}
+            </Badge>
+          )}
+        </div>
+        <UncontrolledPopover
+          target={ref}
+          trigger="click"
+          placement="auto"
+          popperClassName="session-alerts-popover"
+        >
+          {alerts.map((alert) => (
+            <div key={alert.id}>
+              <PopoverHeader className="text-bg-danger">
+                {alert.title}
+              </PopoverHeader>
+              <PopoverBody className={cx("text-dark", "bg-danger-subtle")}>
+                <ReactMarkdown components={{ a: LinkRenderer }}>{alert.message}</ReactMarkdown>
+              </PopoverBody>
+            </div>
+          ))}
+        </UncontrolledPopover>
+      </>
+    );
+  }
 }
