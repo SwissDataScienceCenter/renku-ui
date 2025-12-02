@@ -156,9 +156,7 @@ function EditCodeRepositoryModal({
           <Row>
             <Col>
               <FormGroup className="field-group" noMargin>
-                <Label for={`project-${project.id}-edit-repository-url`}>
-                  Repository URL
-                </Label>
+                <Label>Repository URL</Label>
                 <Controller
                   control={control}
                   name="repositoryUrl"
