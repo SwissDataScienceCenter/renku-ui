@@ -55,6 +55,7 @@ import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBad
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import { RenkuContactEmail } from "~/utils/constants/Docs";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -810,7 +811,7 @@ export function RepositoryCallToActionAlert({
                 <a
                   target="_blank"
                   rel="noreferrer noopener"
-                  href="mailto:hello@renku.io"
+                  href={`mailto:${RenkuContactEmail}`}
                 >
                   <Send className={cx("bi", "me-1")} />
                   contact us
