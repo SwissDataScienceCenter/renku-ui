@@ -19,15 +19,12 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { ExclamationTriangleFill, ExclamationTriangle } from "react-bootstrap-icons";
-import ReactMarkdown from "react-markdown";
 import {
-  Badge,
-  Button,
-  Popover,
-  PopoverBody,
-  PopoverHeader,
-} from "reactstrap";
+  ExclamationTriangle,
+  ExclamationTriangleFill,
+} from "react-bootstrap-icons";
+import ReactMarkdown from "react-markdown";
+import { Badge, Button, Popover, PopoverBody, PopoverHeader } from "reactstrap";
 
 import { useGetAlertsQuery, type Alert } from "../api/sessionsV2.api";
 
@@ -37,7 +34,12 @@ interface SessionAlertsProps {
 
 const POLL_INTERVAL = 12000;
 
-function LinkRenderer(props) {
+interface LinkRendererProps {
+  href?: string;
+  children?: React.ReactNode;
+}
+
+function LinkRenderer(props: LinkRendererProps) {
   return (
     <a href={props.href} target="_blank" rel="noreferrer">
       {props.children}
@@ -54,7 +56,7 @@ export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
     }
   );
 
-  return <Alerts alerts={alerts} />;
+  return <Alerts alerts={alerts ?? []} />;
 }
 
 interface AlertsProps {
@@ -154,7 +156,9 @@ function Alerts({ alerts }: AlertsProps) {
                 {alert.title}
               </PopoverHeader>
               <PopoverBody className={cx("text-dark", "bg-danger-subtle")}>
-                <ReactMarkdown components={{ a: LinkRenderer }}>{alert.message}</ReactMarkdown>
+                <ReactMarkdown components={{ a: LinkRenderer }}>
+                  {alert.message}
+                </ReactMarkdown>
               </PopoverBody>
             </div>
           ))}

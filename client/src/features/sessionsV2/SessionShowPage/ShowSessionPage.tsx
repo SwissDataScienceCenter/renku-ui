@@ -59,7 +59,7 @@ import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
-import { useGetAlertsQuery, useGetSessionsQuery } from "../api/sessionsV2.api";
+import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
@@ -100,9 +100,6 @@ export default function ShowSessionPage() {
     return sessions.find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
 
-  const { data: alerts } = useGetAlertsQuery(
-    sessionName ? { sessionName } : skipToken
-  );
 
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
@@ -249,9 +246,7 @@ export default function ShowSessionPage() {
                 slug={slug}
               />
             </div>
-            <div
-              className={cx("pe-3", "text-white")}
-            >
+            <div className={cx("pe-3", "text-white")}>
               <RenkuFrogIcon size={24} />
             </div>
           </div>
