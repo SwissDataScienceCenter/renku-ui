@@ -100,7 +100,6 @@ export default function ShowSessionPage() {
     return sessions.find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
 
-
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
       thisSession?.status?.state,
