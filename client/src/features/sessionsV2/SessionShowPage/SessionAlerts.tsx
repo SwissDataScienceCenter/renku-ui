@@ -107,63 +107,63 @@ function Alerts({ alerts }: AlertsProps) {
         </Button>
       </div>
     );
-  } else {
-    return (
-      <>
-        <div className="position-relative">
-          <Button
-            innerRef={ref}
-            onClick={togglePopover}
-            className={cx(
-              "bg-transparent",
-              "border-0",
-              "no-focus",
-              "p-0",
-              "shadow-none",
-              "text-danger"
-            )}
-            data-cy="session-alerts"
-          >
-            <ExclamationTriangleFill className="bi" />
-          </Button>
-          {alerts.length > 1 && (
-            <Badge
-              color="dark"
-              pill
-              className="position-absolute"
-              style={{
-                fontSize: "0.65rem",
-                top: "-6px",
-                right: "-12px",
-                minWidth: "20px",
-              }}
-            >
-              {alerts.length}
-            </Badge>
-          )}
-        </div>
-        <Popover
-          target={ref}
-          isOpen={isOpen}
-          toggle={togglePopover}
-          trigger="legacy"
-          placement="auto"
-          popperClassName="session-alerts-popover"
-        >
-          {alerts.map((alert) => (
-            <div key={alert.id}>
-              <PopoverHeader className="text-bg-danger">
-                {alert.title}
-              </PopoverHeader>
-              <PopoverBody className={cx("text-dark", "bg-danger-subtle")}>
-                <ReactMarkdown components={{ a: LinkRenderer }}>
-                  {alert.message}
-                </ReactMarkdown>
-              </PopoverBody>
-            </div>
-          ))}
-        </Popover>
-      </>
-    );
   }
+
+  return (
+    <>
+      <div className="position-relative">
+        <Button
+          innerRef={ref}
+          onClick={togglePopover}
+          className={cx(
+            "bg-transparent",
+            "border-0",
+            "no-focus",
+            "p-0",
+            "shadow-none",
+            "text-danger"
+          )}
+          data-cy="session-alerts"
+        >
+          <ExclamationTriangleFill className="bi" />
+        </Button>
+        {alerts.length > 1 && (
+          <Badge
+            color="dark"
+            pill
+            className="position-absolute"
+            style={{
+              fontSize: "0.65rem",
+              top: "-6px",
+              right: "-12px",
+              minWidth: "20px",
+            }}
+          >
+            {alerts.length}
+          </Badge>
+        )}
+      </div>
+      <Popover
+        target={ref}
+        isOpen={isOpen}
+        toggle={togglePopover}
+        trigger="legacy"
+        placement="auto"
+        popperClassName="session-alerts-popover"
+      >
+        {alerts.map((alert) => (
+          <div key={alert.id}>
+            <PopoverHeader className="text-bg-danger">
+              {alert.title}
+            </PopoverHeader>
+            <PopoverBody className={cx("text-dark", "bg-danger-subtle")}>
+              <ReactMarkdown components={{ a: LinkRenderer }}>
+                {alert.message}
+              </ReactMarkdown>
+            </PopoverBody>
+          </div>
+        ))}
+      </Popover>
+    </>
+  );
 }
