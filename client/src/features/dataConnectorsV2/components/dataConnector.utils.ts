@@ -221,6 +221,9 @@ export function useGetDataConnectorSource(dataConnector: DataConnector) {
       : skipToken
   );
   const source = useMemo(() => {
+    if (dataConnector.publisher_name != null) {
+      return dataConnector.publisher_name;
+    }
     if (
       scope !== "global" ||
       typeof dataConnector.storage.configuration["doi"] !== "string"
@@ -257,6 +260,7 @@ export function useGetDataConnectorSource(dataConnector: DataConnector) {
   }, [
     dataConnector.namespace,
     dataConnector.storage.configuration,
+    dataConnector.publisher_name,
     isSuccess,
     resolverResponse,
     scope,

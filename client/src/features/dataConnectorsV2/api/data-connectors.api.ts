@@ -361,6 +361,7 @@ export type Description = string;
 export type ETag = string;
 export type Keyword = string;
 export type KeywordsList = Keyword[];
+export type Doi = string;
 export type DataConnector = {
   id: Ulid;
   name: DataConnectorName;
@@ -373,6 +374,11 @@ export type DataConnector = {
   description?: Description;
   etag: ETag;
   keywords?: KeywordsList;
+  doi?: Doi;
+  /** The publisher of the dataset. */
+  publisher_name?: string;
+  /** The URL for the publisher of the dataset. */
+  publisher_url?: string;
 };
 export type DataConnectorRead = {
   id: Ulid;
@@ -386,6 +392,11 @@ export type DataConnectorRead = {
   description?: Description;
   etag: ETag;
   keywords?: KeywordsList;
+  doi?: Doi;
+  /** The publisher of the dataset. */
+  publisher_name?: string;
+  /** The URL for the publisher of the dataset. */
+  publisher_url?: string;
 };
 export type DataConnectorsList = DataConnector[];
 export type DataConnectorsListRead = DataConnectorRead[];
