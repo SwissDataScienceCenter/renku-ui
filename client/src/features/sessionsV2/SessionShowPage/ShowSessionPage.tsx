@@ -86,6 +86,8 @@ export default function ShowSessionPage() {
     slug: slug ?? "",
   });
 
+  // ? We use useGetSessionsQuery instead of useGetSessionsQueryBySessionId to benefit
+  // ? from the response refresh triggered by the WebSocket channel messages
   const {
     data: sessions,
     isLoading,
