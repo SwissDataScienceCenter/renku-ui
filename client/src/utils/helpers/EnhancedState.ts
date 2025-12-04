@@ -50,7 +50,7 @@ import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
-import repositoriesApi from "../../features/repositories/repositories.api";
+import { repositoriesApi } from "../../features/repositories/api/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import sessionsApi from "../../features/session/sessions.api";
