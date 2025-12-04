@@ -59,7 +59,7 @@ import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
-import { useGetSessionsBySessionIdQuery } from "../api/sessionsV2.api";
+import { useGetSessionsQuery } from "../api/sessionsV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
@@ -87,13 +87,17 @@ export default function ShowSessionPage() {
   });
 
   const {
-    data: thisSession,
+    data: sessions,
     isLoading,
     isFetching,
-  } = useGetSessionsBySessionIdQuery(
-    { sessionId: sessionName },
-    { refetchOnMountOrArgChange: true }
-  );
+  } = useGetSessionsQuery(undefined, { refetchOnMountOrArgChange: true });
+
+  const thisSession = useMemo(() => {
+    if (sessions == null) {
+      return undefined;
+    }
+    return sessions.find(({ name }) => name === sessionName);
+  }, [sessionName, sessions]);
 
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
