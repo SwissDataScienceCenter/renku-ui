@@ -41,8 +41,8 @@ import {
   STEP_SESSION_STORAGE_GB,
 } from "~/features/session/startSessionOptions.constants";
 import {
-  type ResourceClassWithId,
   useGetResourcePoolsQuery,
+  type ResourceClassWithId,
 } from "../../api/computeResources.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../../api/sessionLaunchersV2.api";
 import {
@@ -236,14 +236,14 @@ export function ModifyResourcesLauncherModal({
                       Gigabytes
                     </UncontrolledTooltip>
                   </InputGroup>
-                  <FormText>
-                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
-                    {watchCurrentSessionClass.max_storage} GB
-                  </FormText>
                   <div className="invalid-feedback">
                     {error?.message ||
                       "Please provide a valid value for disk storage."}
                   </div>
+                  <FormText>
+                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                    {watchCurrentSessionClass.max_storage} GB
+                  </FormText>
                 </>
               )}
               rules={{

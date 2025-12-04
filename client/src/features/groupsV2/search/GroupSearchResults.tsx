@@ -29,10 +29,11 @@ import {
 } from "react-bootstrap-icons";
 import { generatePath, Link, useSearchParams } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
-import Pagination from "~/components/Pagination";
-import { TimeCaption } from "~/components/TimeCaption";
+
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import Pagination from "~/components/Pagination";
+import { TimeCaption } from "~/components/TimeCaption";
 import { ShowGlobalDataConnector } from "~/features/searchV2/components/SearchV2Results";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";

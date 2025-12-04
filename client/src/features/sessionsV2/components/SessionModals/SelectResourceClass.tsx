@@ -35,8 +35,8 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
 import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
+import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -219,14 +219,14 @@ export function SelectResourceClassModal({
                       Gigabytes
                     </UncontrolledTooltip>
                   </InputGroup>
-                  <FormText>
-                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
-                    {watchCurrentSessionClass.max_storage} GB
-                  </FormText>
                   <div className="invalid-feedback">
                     {error?.message ||
                       "Please provide a valid value for disk storage."}
                   </div>
+                  <FormText>
+                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                    {watchCurrentSessionClass.max_storage} GB
+                  </FormText>
                 </>
               )}
               rules={{

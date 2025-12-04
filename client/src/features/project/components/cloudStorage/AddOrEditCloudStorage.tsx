@@ -397,7 +397,9 @@ function CheckboxOptionItem({
           />
         )}
       />
-      <label htmlFor={option.name}>{option.friendlyName ?? option.name}</label>
+      <label className="form-label" htmlFor={option.name}>
+        {option.friendlyName ?? option.name}
+      </label>
     </>
   );
 }
@@ -444,7 +446,7 @@ function PasswordOptionItem({
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <>
-      <Label htmlFor={option.name}>
+      <label className="form-label" htmlFor={option.name}>
         {option.friendlyName ?? option.name}{" "}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
@@ -469,7 +471,7 @@ function PasswordOptionItem({
             </span>
           )}
         </UncontrolledTooltip>
-      </Label>
+      </label>
 
       <InputGroup>
         <Controller
@@ -525,7 +527,7 @@ function PasswordOptionItemStored({
   const tooltipContainerId = `option-is-secret-${option.name}`;
   return (
     <>
-      <label htmlFor={option.name}>
+      <label className="form-label" htmlFor={option.name}>
         {option.friendlyName ?? option.name}{" "}
         <div id={tooltipContainerId} className="d-inline">
           <KeyFill className={cx("bi", "ms-1")} />
@@ -593,10 +595,10 @@ function InputOptionItem({
       : option.friendlyName ?? option.name;
   return (
     <>
-      <Label htmlFor={option.name}>
+      <label className="form-label" htmlFor={option.name}>
         {inputName}
         {option.required && <BadgeRequired />}
-      </Label>
+      </label>
       <Controller
         name={option.name}
         control={control}

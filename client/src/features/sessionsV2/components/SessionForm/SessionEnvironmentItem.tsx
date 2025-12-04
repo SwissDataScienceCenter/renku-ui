@@ -26,6 +26,7 @@ import {
 } from "react-hook-form";
 import { SingleValue } from "react-select";
 import { Card, CardBody, Input, Label, ListGroupItem } from "reactstrap";
+
 import { TimeCaption } from "~/components/TimeCaption";
 import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
@@ -114,12 +115,14 @@ export function SessionEnvironmentItem({
           for={`addSessionLauncherGlobalEnvironment-${id}`}
         >
           <h4 className="fw-semibold">{name}</h4>
-          <p className="mb-2">
+          <p className={cx("mb-2", "fw-normal")}>
             <EnvironmentIcon type="global" className="me-1" />
             Global environment
           </p>
-          {description ? <p className="mb-2">{description}</p> : null}
-          <p className="m-0">
+          {description ? (
+            <p className={cx("mb-2", "fw-normal")}>{description}</p>
+          ) : null}
+          <p className={cx("m-0", "fw-normal")}>
             <TimeCaption
               datetime={creation_date}
               enableTooltip

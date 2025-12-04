@@ -17,6 +17,7 @@
  */
 
 import { ReactNode } from "react";
+
 import type { SearchQuery } from "~/features/searchV2/api/searchV2Api.api";
 import {
   KEY_VALUE_SEPARATOR,

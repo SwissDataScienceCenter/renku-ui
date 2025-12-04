@@ -36,6 +36,7 @@ import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespa
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
 import { ProjectMigrationForm } from "./ProjectMigration.types";
+
 import styles from "../../../projectsV2/fields/RenkuV1FormFields.module.scss";
 
 interface ProjectMigrationFormInputsProps {
@@ -111,8 +112,6 @@ export default function ProjectMigrationFormInputs({
             errors={errors}
             name="namespace"
           />
-        </div>
-        <div>
           <SlugPreviewFormField
             compact={true}
             control={control}

@@ -32,6 +32,7 @@ import {
   Row,
   UncontrolledAccordion,
 } from "reactstrap";
+
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";

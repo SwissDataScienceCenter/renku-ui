@@ -22,6 +22,7 @@ import cx from "classnames";
 import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
+
 import SessionButton from "../../features/session/components/SessionButton";
 import SessionStatusBadge from "../../features/session/components/status/SessionStatusBadge";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
@@ -30,14 +31,14 @@ import AppContext from "../../utils/context/appContext";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { Clipboard } from "../clipboard/Clipboard";
-import { ExternalLink } from "../ExternalLinks";
-import { TimeCaption } from "../TimeCaption";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import PinnedBadge from "./PinnedBadge";
+import { ExternalLink } from "../ExternalLinks";
+import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
+import PinnedBadge from "./PinnedBadge";
 
 import "./ListBar.scss";
 

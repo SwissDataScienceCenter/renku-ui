@@ -17,15 +17,16 @@
  */
 
 import cx from "classnames";
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import type { FieldValues } from "react-hook-form";
 import { FormText } from "reactstrap";
 
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon.tsx";
 import AppContext from "../../../utils/context/appContext.ts";
-
 import { SlugPreviewFormFieldProps } from "./formField.types.ts";
 import SlugFormField from "./SlugFormField";
+
+import styles from "./SlugPreviewFormField.module.scss";
 
 export default function SlugPreviewFormField<T extends FieldValues>({
   compact = false,
@@ -54,7 +55,13 @@ export default function SlugPreviewFormField<T extends FieldValues>({
         </span>
       </FormText>
       <button
-        className={cx("btn", "btn-link", "p-0", "mb-1", "text-decoration-none")}
+        className={cx(
+          "btn",
+          "btn-link",
+          "p-0",
+          "text-decoration-none",
+          styles.slugPreviewButton
+        )}
         data-cy={`${entityName}-slug-toggle`}
         onClick={toggleCollapse}
         type="button"
@@ -66,9 +73,8 @@ export default function SlugPreviewFormField<T extends FieldValues>({
   );
 
   return (
-    <div>
+    <div className={cx(styles.slugPreviewGroup)}>
       {slugPreview}
-
       {isCollapseOpen && (
         <>
           <div

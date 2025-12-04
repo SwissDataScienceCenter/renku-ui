@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
 import faviconSVG from "../../styles/assets/favicon/Favicon.svg";
 import favicon16px from "../../styles/assets/favicon/Favicon16px.png";

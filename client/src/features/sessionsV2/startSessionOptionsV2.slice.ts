@@ -33,6 +33,7 @@ const initialState: StartSessionOptionsV2 = {
   imageReady: false,
   lfsAutoFetch: false,
   repositories: [],
+  repositoriesReady: false,
   sessionClass: 0,
   storage: MIN_SESSION_STORAGE_GB,
   userSecretsReady: false,
@@ -83,6 +84,9 @@ const startSessionOptionsV2Slice = createSlice({
     },
     setRepositories: (state, action: PayloadAction<SessionRepository[]>) => {
       state.repositories.splice(0, Infinity, ...action.payload);
+    },
+    setRepositoriesReady: (state, action: PayloadAction<boolean>) => {
+      state.repositoriesReady = action.payload;
     },
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;

@@ -19,6 +19,7 @@
 import type { DataServicesError } from "../../dataServices/dataServices.types";
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
+  usersGeneratedApi,
   type DeleteUserPreferencesPinnedProjectsApiArg,
   type DeleteUserPreferencesPinnedProjectsApiResponse,
   type GetUserApiArg,
@@ -29,7 +30,6 @@ import {
   type GetUsersApiResponse,
   type GetUserSecretsApiArg,
   type GetUserSecretsApiResponse,
-  usersGeneratedApi,
 } from "./users.generated-api";
 import type { UserInfo } from "./users.types";
 

@@ -1,0 +1,9 @@
+{
+  "status": "invalid",
+  "provider": {
+    "id": "github.com",
+    "name": "GitHub.com",
+    "url": "https://github.com"
+  },
+  "error_code": "metadata_unknown"
+}

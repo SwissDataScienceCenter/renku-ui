@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+
 import { Loader } from "~/components/Loader";
 
 export default function InputOverlayLoader() {

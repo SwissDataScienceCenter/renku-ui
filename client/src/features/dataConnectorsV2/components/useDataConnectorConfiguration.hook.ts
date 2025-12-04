@@ -19,11 +19,10 @@
 import { useMemo } from "react";
 
 import { CLOUD_OPTIONS_OVERRIDE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
+import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 import { RCloneOption } from "../api/data-connectors.api";
 import type { DataConnectorRead } from "../api/data-connectors.api";
 import { useGetDataConnectorsListSecretsQuery } from "../api/data-connectors.enhanced-api";
-
-import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 
 export interface DataConnectorConfiguration
   extends Omit<SessionStartDataConnectorConfiguration, "cloudStorage"> {

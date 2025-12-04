@@ -31,6 +31,7 @@ import {
   UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { LoginHelper } from "../../authentication";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem.tsx";
@@ -45,8 +46,8 @@ import {
   gitLabUrlFromProfileUrl,
 } from "../../utils/helpers/HelperFunctions";
 import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
-import { Loader } from "../Loader";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
+import { Loader } from "../Loader";
 
 import styles from "./NavBarItem.module.scss";
 

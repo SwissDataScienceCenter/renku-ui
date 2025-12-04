@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
+
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { RenkuContactEmail } from "../../../../utils/constants/Docs.js";
 import collaborationGraphic from "../../assets/boxes.svg";

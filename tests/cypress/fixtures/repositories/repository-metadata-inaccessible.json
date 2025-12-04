@@ -1,0 +1,14 @@
+{
+  "status": "invalid",
+  "connection": {
+    "id": "0100933QTQVNX4R5CC8P177VTC",
+    "provider_id": "github.com",
+    "status": "connected"
+  },
+  "provider": {
+    "id": "github.com",
+    "name": "GitHub.com",
+    "url": "https://github.com"
+  },
+  "error_code": "metadata_unknown"
+}

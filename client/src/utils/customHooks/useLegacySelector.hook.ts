@@ -18,6 +18,7 @@
 
 import type { TypedUseSelectorHook } from "react-redux";
 import { useSelector } from "react-redux";
+
 import type { LegacyRootState } from "../helpers/EnhancedState";
 
 const useLegacySelector: TypedUseSelectorHook<LegacyRootState> = useSelector;

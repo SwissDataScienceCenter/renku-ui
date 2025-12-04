@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { API_ERRORS, alertAPIErrors } from "./errors";
+import { alertAPIErrors, API_ERRORS } from "./errors";
 
 function addRepositoryMethods(client) {
   client.postCommit = (projectId, commitPayload) => {

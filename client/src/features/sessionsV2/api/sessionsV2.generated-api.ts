@@ -1,4 +1,5 @@
 import { sessionsV2EmptyApi as api } from "./sessionsV2.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getNotebooksImages: build.query<
@@ -229,6 +230,14 @@ export type GetSessionsImagesApiArg = {
   /** The Docker image URL (tag included) that should be fetched. */
   imageUrl: string;
 };
+export type ImagePlatform = {
+  architecture: string;
+  os: string;
+  "os.version"?: string;
+  "os.features"?: string[];
+  variant?: string;
+};
+export type ImagePlatforms = ImagePlatform[];
 export type ImageConnectionStatus =
   | "connected"
   | "pending"
@@ -246,6 +255,7 @@ export type ImageProvider = {
 export type ImageCheckResponse = {
   /** Whether the image is accessible or not. */
   accessible: boolean;
+  platforms?: ImagePlatforms;
   connection?: ImageConnection;
   provider?: ImageProvider;
 };

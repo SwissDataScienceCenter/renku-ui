@@ -17,8 +17,8 @@
  */
 
 import cx from "classnames";
-import { BoxArrowUpRight } from "react-bootstrap-icons";
 import { useRef } from "react";
+import { BoxArrowUpRight } from "react-bootstrap-icons";
 import { UncontrolledTooltip } from "reactstrap";
 
 type ExternalLinkButtonProps = Pick<

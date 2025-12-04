@@ -31,8 +31,8 @@ import {
 } from "reactstrap";
 
 import ScrollableModal from "~/components/modal/ScrollableModal";
-import { Loader } from "../../components/Loader";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
 import {
   Provider,
   ProviderKind,

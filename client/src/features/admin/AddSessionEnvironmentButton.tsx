@@ -29,8 +29,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Loader } from "~/components/Loader";
 import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
 import { usePostEnvironmentsMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
 import SessionEnvironmentFormContent, {
@@ -45,7 +45,7 @@ export default function AddSessionEnvironmentButton() {
 
   return (
     <>
-      <Button className="btn-outline-rk-green" onClick={toggle}>
+      <Button color="primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
         Add Session Environment
       </Button>
@@ -128,7 +128,7 @@ function AddSessionEnvironmentModal({
       toggle={toggle}
     >
       <Form
-        className="form-rk-green"
+        className="modal-content"
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -140,11 +140,11 @@ function AddSessionEnvironmentModal({
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading} type="submit">
+          <Button color="primary" disabled={result.isLoading} type="submit">
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (

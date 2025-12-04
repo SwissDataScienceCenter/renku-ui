@@ -17,6 +17,7 @@
  */
 
 import { ReactNode } from "react";
+
 import type { Permissions, RequestedPermission } from "./permissions.types";
 
 interface PermissionsGuardProps {

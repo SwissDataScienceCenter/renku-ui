@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { Lock, NodeMinus, Pencil, Trash, XLg } from "react-bootstrap-icons";
@@ -36,11 +37,9 @@ import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
@@ -51,7 +50,6 @@ import {
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
 } from "../api/data-connectors.enhanced-api";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
-
 import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 

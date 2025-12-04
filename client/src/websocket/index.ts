@@ -16,29 +16,29 @@
  * limitations under the License.
  */
 
-import {
-  checkWsServerMessage,
-  sendPullKgActivationStatus,
-  WsMessage,
-  WsServerMessage,
-} from "./WsMessages";
-import {
-  handleUserInit,
-  handleUserUiVersion,
-  handleUserError,
-} from "./handlers/userHandlers";
-import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
+import APIClient from "../api-client";
+import type { KgInactiveProjectsState } from "../features/inactiveKgProjects/";
+import { ActivationStatusProgressError } from "../features/inactiveKgProjects/";
+import { StateModel } from "../model";
 import {
   handleKgActivationStatus,
   handleWebSocketErrorForKgActivationStatus,
   handleWebSocketPing,
   updateStatus,
 } from "./handlers/kgActivationStatusHandler";
-import type { KgInactiveProjectsState } from "../features/inactiveKgProjects/";
-import { ActivationStatusProgressError } from "../features/inactiveKgProjects/";
-import { StateModel } from "../model";
-import APIClient from "../api-client";
+import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
 import { handleSessionsStatusV2 } from "./handlers/sessionStatusHandlerV2";
+import {
+  handleUserError,
+  handleUserInit,
+  handleUserUiVersion,
+} from "./handlers/userHandlers";
+import {
+  checkWsServerMessage,
+  sendPullKgActivationStatus,
+  WsMessage,
+  WsServerMessage,
+} from "./WsMessages";
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
 const reconnectIntervalMs = 10 * 1000;

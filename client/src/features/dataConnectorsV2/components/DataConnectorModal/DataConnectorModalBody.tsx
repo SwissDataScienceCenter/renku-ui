@@ -29,11 +29,12 @@ import {
   Label,
   Row,
 } from "reactstrap";
+
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
-import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import { slugFromTitle } from "../../../../utils/helpers/HelperFunctions";
@@ -405,9 +406,6 @@ export function DataConnectorMount({
         <div className="invalid-feedback">
           {errors.name?.message?.toString()}
         </div>
-      </div>
-
-      <div className="mb-3">
         <SlugPreviewFormField
           compact={true}
           control={control}
@@ -562,20 +560,20 @@ export function DataConnectorMount({
                 This cloud storage only supports read-only access.
               </p>
             </InfoAlert>
-          ) : (
-            !flatDataConnector.readOnly &&
-            (!hasPasswordFieldWithInput &&
+          ) : !flatDataConnector.readOnly &&
+            !hasPasswordFieldWithInput &&
             flatDataConnector.visibility === "public" ? (
-              <ErrorAlert className="mt-1" dismissible={false}>
-                <p className="mb-0">
-                  Data security warning: This public and writable data connector
-                  is not protected by a password. Anyone on RenkuLab will be
-                  able to edit the data connected here. Protect your data with a
-                  password, select private visibility, or limit access to
-                  read-only.
-                </p>
-              </ErrorAlert>
-            ) : (
+            <ErrorAlert className="mt-1" dismissible={false}>
+              <p className="mb-0">
+                Data security warning: This public and writable data connector
+                is not protected by a password. Anyone on RenkuLab will be able
+                to edit the data connected here. Protect your data with a
+                password, select private visibility, or limit access to
+                read-only.
+              </p>
+            </ErrorAlert>
+          ) : (
+            !flatDataConnector.readOnly && (
               <WarnAlert className="mt-1" dismissible={false}>
                 <p className="mb-0">
                   You are mounting this storage in read-write mode. If you have
@@ -583,7 +581,7 @@ export function DataConnectorMount({
                   prevent errors with some storage types.
                 </p>
               </WarnAlert>
-            ))
+            )
           )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write

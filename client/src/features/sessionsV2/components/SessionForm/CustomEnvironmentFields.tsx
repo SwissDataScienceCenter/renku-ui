@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import { ExclamationTriangle } from "react-bootstrap-icons";
 import { Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
+
 import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
@@ -129,7 +130,7 @@ export function CustomEnvironmentFields({
       </div>
 
       <div>
-        <h4 className="fw-bold">Advanced settings</h4>
+        <h3 className={cx("fw-bold", "mt-3")}>Advanced settings</h3>
 
         <InfoAlert dismissible={false} timeout={0}>
           <p className="mb-0">

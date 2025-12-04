@@ -25,7 +25,7 @@
 
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { Url, UrlRule, getSearchParams, isSessionUrl } from "./Url";
+import { getSearchParams, isSessionUrl, Url, UrlRule } from "./Url";
 
 describe("UrlRule private class", () => {
   it("Initialization values and errors", () => {

@@ -23,9 +23,9 @@ import { Button, Table } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import AppContext from "../../utils/context/appContext";
-import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { sendPullKgActivationStatus } from "../../websocket/WsMessages";
 import { useActivateIndexingMutation } from "../project/projectKg.api";

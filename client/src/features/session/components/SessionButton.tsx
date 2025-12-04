@@ -44,13 +44,13 @@ import {
 } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
-import { Loader } from "~/components/Loader";
 import { ButtonWithMenu } from "~/components/buttons/Button";
 import SessionPausedIcon from "~/components/icons/SessionPausedIcon";
+import { Loader } from "~/components/Loader";
 import { SshDropdown } from "~/components/ssh/ssh";
 import {
-  type ResourceClassWithId,
   useGetResourcePoolsQuery,
+  type ResourceClassWithId,
 } from "~/features/sessionsV2/api/computeResources.api";
 import { User } from "~/model/renkuModels.types";
 import { NotebooksHelper } from "~/notebooks";
@@ -77,10 +77,10 @@ import {
 import { Session, SessionStatusState } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+import { SessionClassSelector } from "./options/SessionClassOption";
 import { SessionRowResourceRequests } from "./SessionsList";
 import SimpleSessionButton from "./SimpleSessionButton";
 import UnsavedWorkWarning from "./UnsavedWorkWarning";
-import { SessionClassSelector } from "./options/SessionClassOption";
 
 interface SessionButtonProps {
   className?: string;

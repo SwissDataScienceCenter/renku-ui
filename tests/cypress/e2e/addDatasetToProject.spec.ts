@@ -48,6 +48,8 @@ describe("No legacy support", () => {
   it("displays warning when dataset doesn't exist", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
     cy.visit(`datasets/${datasetIdentifier}/add`);
-    cy.contains("Legacy not supported").should("be.visible");
+    cy.contains("This version of Renku is no longer supported").should(
+      "be.visible"
+    );
   });
 });

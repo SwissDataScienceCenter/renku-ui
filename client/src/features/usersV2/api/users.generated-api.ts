@@ -1,4 +1,5 @@
 import { usersEmptyApi as api } from "./users.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getUser: build.query<GetUserApiResponse, GetUserApiArg>({

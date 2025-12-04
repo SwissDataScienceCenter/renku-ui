@@ -21,6 +21,7 @@ import cx from "classnames";
 import { useCallback, useEffect } from "react";
 import { Database, XLg } from "react-bootstrap-icons";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import { ErrorAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -42,9 +43,10 @@ import {
   dataConnectorToFlattened,
   getDataConnectorScope,
 } from "../dataConnector.utils";
-import styles from "./DataConnectorModal.module.scss";
 import DataConnectorModalBody from "./DataConnectorModalBody";
 import DataConnectorModalFooter from "./DataConnectorModalFooter";
+
+import styles from "./DataConnectorModal.module.scss";
 
 export function DataConnectorModalBodyAndFooter({
   dataConnector = null,

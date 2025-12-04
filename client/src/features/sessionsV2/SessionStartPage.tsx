@@ -26,11 +26,11 @@ import {
   useSearchParams,
 } from "react-router";
 
-import PageLoader from "../../components/PageLoader";
 import {
   RtkErrorAlert,
   RtkOrNotebooksError,
 } from "../../components/errors/RtkErrorAlert";
+import PageLoader from "../../components/PageLoader";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
@@ -40,7 +40,6 @@ import ProgressStepsIndicator, {
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { resetFavicon, setFavicon } from "../display";
@@ -48,12 +47,10 @@ import {
   dataConnectorsOverrideFromConfig,
   storageDefinitionAfterSavingCredentialsFromConfig,
 } from "../project/utils/projectCloudStorage.utils";
+import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
-import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
-import SessionImageModal from "./SessionImageModal";
-import SessionSecretsModal from "./SessionSecretsModal";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
@@ -61,8 +58,12 @@ import {
   type SessionPostRequest,
 } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
+import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 import { validateEnvVariableName } from "./session.utils";
+import SessionImageModal from "./SessionImageModal";
+import SessionRepositoriesModal from "./SessionRepositoriesModal";
+import SessionSecretsModal from "./SessionSecretsModal";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type {
   SessionStartDataConnectorConfiguration,
@@ -453,6 +454,7 @@ function StartSessionFromLauncher({
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
+
   const {
     containerImage,
     isFetchingOrLoadingStorages,
@@ -462,6 +464,7 @@ function StartSessionFromLauncher({
     sessionSecretSlotsWithSecrets,
     isLoadingSessionImage,
     sessionImage,
+    isFetchingRepositories,
   } = useSessionLaunchState({
     launcher,
     project,
@@ -481,11 +484,13 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.sessionClass !== 0 &&
     startSessionOptionsV2.dataConnectors != null &&
     !isFetchingOrLoadingStorages &&
+    !isFetchingRepositories &&
     !isFetchingSessionSecrets &&
     !isLoadingSessionImage;
 
   const fetchingApi =
     isFetchingOrLoadingStorages ||
+    isFetchingRepositories ||
     isFetchingSessionSecrets ||
     isLoadingSessionImage;
 
@@ -516,10 +521,11 @@ function StartSessionFromLauncher({
     if (
       allDataFetched &&
       !needsCredentials &&
-      startSessionOptionsV2.dataConnectors &&
       !shouldSaveCredentials &&
-      startSessionOptionsV2.userSecretsReady &&
+      startSessionOptionsV2.dataConnectors &&
       startSessionOptionsV2.imageReady &&
+      startSessionOptionsV2.repositoriesReady &&
+      startSessionOptionsV2.userSecretsReady &&
       !sessionStarted
     ) {
       setSessionStarted(true);
@@ -531,6 +537,7 @@ function StartSessionFromLauncher({
     shouldSaveCredentials,
     startSessionOptionsV2.dataConnectors,
     startSessionOptionsV2.imageReady,
+    startSessionOptionsV2.repositoriesReady,
     startSessionOptionsV2.userSecretsReady,
   ]);
 
@@ -564,6 +571,12 @@ function StartSessionFromLauncher({
     !startSessionOptionsV2.imageReady
   ) {
     return <StartSessionImageModal launcher={launcher} project={project} />;
+  }
+
+  if (!fetchingApi && !startSessionOptionsV2.repositoriesReady) {
+    return (
+      <StartSessionRepositoriesModal launcher={launcher} project={project} />
+    );
   }
 
   if (
@@ -745,6 +758,45 @@ function StartSessionImageModal({
           launcher={launcher}
           project={project}
         />
+      </div>
+    </div>
+  );
+}
+
+function StartSessionRepositoriesModal({
+  launcher,
+  project,
+}: StartSessionFromLauncherProps) {
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+  );
+
+  const showModal = !startSessionOptionsV2.repositoriesReady;
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Launching session ${launcher.name}`}
+          status={steps}
+        />
+        <SessionRepositoriesModal isOpen={showModal} project={project} />
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ jobs:
       run:
         working-directory: ./client
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up node ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
@@ -46,7 +46,7 @@ jobs:
       run:
         working-directory: ./server
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up node ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
@@ -74,7 +74,7 @@ jobs:
       run:
         working-directory: ./client
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: "22"
@@ -91,7 +91,7 @@ jobs:
       run:
         working-directory: ./tests
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up node ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install client
         uses: cypress-io/github-action@v6
         with:
@@ -129,13 +129,13 @@ jobs:
           wait-on: http://localhost:3000/
           wait-on-timeout: 300
           working-directory: tests
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure() # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
         with:
           name: cypress-screenshots
           path: tests/cypress/screenshots
           retention-days: 7
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always() # Cypress test video is always captured, so this action uses "always()" condition
         with:
           name: cypress-videos
@@ -147,7 +147,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "startsWith(github.ref, 'refs/tags/')"
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Set up QEMU

@@ -39,8 +39,8 @@ import {
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { ErrorAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import DataConnectorBoxListDisplay, {
   DataConnectorBoxListDisplayPlaceholder,
 } from "../../../dataConnectorsV2/components/DataConnectorsBoxListDisplay";

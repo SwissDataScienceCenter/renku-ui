@@ -15,22 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { SerializedError } from "@reduxjs/toolkit";
-import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
+
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  BoxArrowUpRight,
   CircleFill,
   FileCode,
   Pencil,
+  Plugin,
+  Send,
   Trash,
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import {
-  Badge,
   Button,
   Col,
   DropdownItem,
@@ -48,35 +47,21 @@ import {
   Row,
 } from "reactstrap";
 
+import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
+import { CommandCopy } from "~/components/commandCopy/CommandCopy";
+import { ExternalLink } from "~/components/ExternalLinks";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
-
-import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
-import {
-  ErrorAlert,
-  RenkuAlert,
-  WarnAlert,
-} from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
+import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import { RenkuContactEmail } from "~/utils/constants/Docs";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
-import {
-  connectedServicesApi,
-  useGetOauth2ProvidersQuery,
-  type Provider,
-} from "../../../connectedServices/api/connectedServices.api";
-import { ConnectButton } from "../../../connectedServices/ConnectedServicesPage";
-import { INTERNAL_GITLAB_PROVIDER_ID } from "../../../connectedServices/connectedServices.constants";
+import { Loader } from "../../../../components/Loader";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-import repositoriesApi, {
-  useGetRepositoryMetadataQuery,
-  useGetRepositoryProbeQuery,
-} from "../../../repositories/repositories.api";
-import { NotebooksErrorResponse } from "../../../session/sessions.types";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import { SshRepositoryUrlWarning } from "./AddCodeRepositoryModal";
 import {
@@ -170,7 +155,14 @@ function EditCodeRepositoryModal({
           <p>Specify a code repository by its URL.</p>
           <Row>
             <Col>
-              <FormGroup className="field-group" noMargin>
+              <FormGroup
+                className="field-group"
+                noMargin
+                onClickCapture={(e) => {
+                  // ? Prevent offcanvas from toggling when clicking inside the form group
+                  e.stopPropagation();
+                }}
+              >
                 <Label for={`project-${project.id}-edit-repository-url`}>
                   Repository URL
                 </Label>
@@ -393,56 +385,6 @@ function CodeRepositoryActions({
   );
 }
 
-interface CodeRepositoryErrorProps {
-  error: FetchBaseQueryError | SerializedError;
-  provider: Pick<Provider, "id" | "kind" | "image_registry_url"> | undefined;
-}
-
-function CodeRepositoryError({ error, provider }: CodeRepositoryErrorProps) {
-  if (!("data" in error))
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
-  if (typeof error.data != "object")
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
-  if (error.data == null)
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
-  if (!("error" in error.data))
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
-  const errorData = error.data as NotebooksErrorResponse;
-
-  if (errorData.error.code == 1401) {
-    if (provider == null)
-      return (
-        <WarnAlert dismissible={false}>
-          There is a problem with the integration to the repository host. You
-          can check the{" "}
-          <Link to={ABSOLUTE_ROUTES.v2.integrations}>connected services</Link>{" "}
-          for more details.
-        </WarnAlert>
-      );
-
-    return (
-      <WarnAlert dismissible={false}>
-        <div>
-          There is a problem with the integration to the repository host. You
-          can try to reconnect or check the{" "}
-          <Link to={ABSOLUTE_ROUTES.v2.integrations}>connected services</Link>{" "}
-          for more details.
-        </div>
-        <div className="mt-2">
-          <ConnectButton
-            className="btn-sm"
-            connectionStatus="connected"
-            id={provider.id}
-            kind={provider.kind}
-            registryUrl={provider.image_registry_url}
-          />
-        </div>
-      </WarnAlert>
-    );
-  }
-  return <RtkOrNotebooksError error={error} dismissible={false} />;
-}
-
 interface RepositoryItemProps {
   project: Project;
   readonly?: boolean;
@@ -453,31 +395,16 @@ export function RepositoryItem({
   readonly = false,
   url,
 }: RepositoryItemProps) {
+  const projectPermissions = useProjectPermissions({ projectId: project.id });
   const [showDetails, setShowDetails] = useState(false);
   const toggleDetails = useCallback(() => {
     setShowDetails((open) => !open);
   }, []);
-  const canonicalUrlStr = useMemo(() => `${url.replace(/.git$/i, "")}`, [url]);
-
+  const canonicalUrlStr = useMemo(
+    () => `${url.replace(/(?:\.git|\/)$/i, "")}`,
+    [url]
+  );
   const title = getRepositoryName(url);
-  // ! Product team wants this restored -- keeping the code for the next iteration
-  // const urlDisplay = (
-  //   <div className={cx("d-flex", "align-items-center", "gap-2")}>
-  //     <RepositoryIcon
-  //       className="flex-shrink-0"
-  //       provider={canonicalUrl?.origin ?? window.location.origin}
-  //     />
-  //     <div className={cx("d-flex", "flex-column")}>
-  //       {canonicalUrl?.hostname && (
-  //         <span data-cy="code-repository-title">{canonicalUrl.hostname}</span>
-  //       )}
-  //       <a href={canonicalUrlStr} target="_blank" rel="noreferrer noopener">
-  //         {title || canonicalUrlStr}
-  //         <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
-  //       </a>
-  //     </div>
-  //   </div>
-  // );
 
   const listGroupProps = !readonly
     ? {
@@ -495,12 +422,18 @@ export function RepositoryItem({
         <Row className={cx("align-items-center", "g-2")}>
           <Col className={cx("align-items-center", "flex-row")}>
             <div>
-              <span className={cx("me-2", !readonly && "fw-bold")}>
+              <span
+                className={cx("me-2", !readonly && "fw-bold")}
+                data-cy="code-repository-title"
+              >
                 {title || canonicalUrlStr || (
                   <span className="fwd-italic">Unknown repository</span>
                 )}
               </span>
-              <RepositoryPermissions repositoryUrl={url} />
+              <RepositoryPermissionsBadge
+                hasWriteAccess={projectPermissions?.write}
+                repositoryUrl={url}
+              />
             </div>
           </Col>
           {!readonly && (
@@ -513,7 +446,7 @@ export function RepositoryItem({
         </Row>
         <Row>
           <Col data-cy="repo-gitlab-warning">
-            <RepositoryGitLabWarnBadge project={project} />
+            <RepositoryGitLabWarnBadge project={project} url={url} />
           </Col>
         </Row>
       </ListGroupItem>
@@ -530,63 +463,67 @@ export function RepositoryItem({
   );
 }
 
-interface RepositoryIconProps {
-  className?: string;
-  provider?: string | null;
-}
-
-function RepositoryIcon({ className, provider }: RepositoryIconProps) {
-  const iconUrl = useMemo(
-    // eslint-disable-next-line spellcheck/spell-checker
-    () => (provider != null ? safeNewUrl("/favicon.ico", provider) : null),
-    [provider]
-  );
-
-  if (iconUrl == null) {
-    return null;
-  }
-
-  return (
-    <img
-      className={className}
-      src={iconUrl.toString()}
-      width={16}
-      height={16}
-    />
-  );
-}
-
 interface RepositoryPermissionsProps {
+  hasWriteAccess?: boolean;
   repositoryUrl: string;
 }
+export function RepositoryPermissionsBadge({
+  hasWriteAccess,
+  repositoryUrl,
+}: RepositoryPermissionsProps) {
+  const { data, isLoading, error } = useGetRepositoryQuery({
+    url: repositoryUrl,
+  });
 
-function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
-  const {
-    data: repositoryProviderMatch,
-    isLoading: isLoadingRepositoryProviderMatch,
-    error,
-  } = useGetRepositoryMetadataQuery({ repositoryUrl });
+  let badgeColor: "light" | "danger" | "warning" | "success";
+  let badgeText: string;
 
-  const isNotFound = error != null && "status" in error && error.status == 404;
-
-  const { data: repositoryProbe, isLoading: isLoadingRepositoryProbe } =
-    useGetRepositoryProbeQuery(isNotFound ? { repositoryUrl } : skipToken);
-
-  const isLoading =
-    isLoadingRepositoryProviderMatch || isLoadingRepositoryProbe;
-
-  const permissions = useMemo(() => {
-    if (isNotFound && repositoryProbe) {
-      return { pull: true, push: false };
-    }
-    const { pull, push } = repositoryProviderMatch?.repository_metadata
-      ?.permissions ?? { pull: false, push: false };
-    return { pull, push };
-  }, [
-    isNotFound,
-    repositoryProbe,
-    repositoryProviderMatch?.repository_metadata?.permissions,
-  ]);
+  if (isLoading) {
+    badgeColor = "light";
+    badgeText = "Loading...";
+  } else if (error) {
+    badgeColor = "danger";
+    badgeText = "Error";
+  } else if (!data?.metadata?.pull_permission && !data?.provider?.id) {
+    badgeColor = "danger";
+    badgeText = "Inaccessible";
+  } else if (
+    !data?.metadata?.pull_permission &&
+    data?.connection?.status !== "connected"
+  ) {
+    badgeColor = "danger";
+    badgeText = "Integration required";
+  } else if (
+    !data?.metadata?.pull_permission &&
+    data?.connection?.status === "connected"
+  ) {
+    badgeColor = "danger";
+    badgeText = "Inaccessible";
+  } else if (!data?.metadata?.push_permission && !data?.provider?.id) {
+    badgeText = hasWriteAccess ? "Request integration" : "Read only";
+    badgeColor = hasWriteAccess ? "warning" : "success";
+  } else if (
+    !data?.metadata?.push_permission &&
+    data?.connection?.status !== "connected"
+  ) {
+    badgeText = hasWriteAccess ? "Integration recommended" : "Read only";
+    badgeColor = hasWriteAccess ? "warning" : "success";
+  } else if (
+    !data?.metadata?.push_permission &&
+    data?.connection?.status === "connected"
+  ) {
+    badgeColor = "success";
+    badgeText = "Read only";
+  } else if (
+    data?.metadata?.push_permission &&
+    data?.connection?.status === "connected"
+  ) {
+    badgeColor = "success";
+    badgeText = "Read & write";
+  } else {
+    badgeColor = "light";
+    badgeText = "Unexpected";
+  }
 
   const badgeIcon = isLoading ? (
     <Loader className="me-1" inline size={12} />
@@ -594,27 +531,16 @@ function RepositoryPermissions({ repositoryUrl }: RepositoryPermissionsProps) {
     <CircleFill className={cx("me-1", "bi")} />
   );
 
-  const badgeText = isLoading
-    ? null
-    : permissions.push
-    ? "Push & pull"
-    : permissions.pull
-    ? "Pull only"
-    : "No access";
-
-  const badgeColorClasses = isLoading
-    ? ["border-dark-subtle", "bg-light", "text-dark-emphasis"]
-    : permissions.push
-    ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
-    : permissions.pull
-    ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
-    : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
-
   return (
-    <Badge pill className={cx("border", badgeColorClasses)}>
+    <RenkuBadge
+      className="fw-normal"
+      color={badgeColor}
+      data-cy="code-repository-permission-badge"
+      pill
+    >
       {badgeIcon}
-      {badgeText && <span className="fw-normal">{badgeText}</span>}
-    </Badge>
+      {badgeText}
+    </RenkuBadge>
   );
 }
 
@@ -632,49 +558,23 @@ function RepositoryView({
   title,
   toggleDetails,
 }: RepositoryViewProps) {
-  const {
-    data: repositoryProviderMatch,
-    isLoading: isLoadingRepositoryProviderMatch,
-    error,
-  } = repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
-    repositoryUrl,
+  const { pathname, hash } = useLocation();
+  const { data, isLoading, error } = useGetRepositoryQuery({
+    url: repositoryUrl,
   });
-  const { isLoading: isLoadingProviders, error: providersError } =
-    useGetOauth2ProvidersQuery();
 
-  const isNotFound = error != null && "status" in error && error.status == 404;
+  const webUrl = useMemo(() => {
+    return data?.metadata?.web_url ? data.metadata.web_url : repositoryUrl;
+  }, [data, repositoryUrl]);
 
-  const { data: repositoryProbe, isLoading: isLoadingRepositoryProbe } =
-    repositoriesApi.endpoints.getRepositoryProbe.useQueryState(
-      isNotFound ? { repositoryUrl } : skipToken
-    );
+  const search = useMemo(() => {
+    return `?${new URLSearchParams({
+      targetProvider: data?.provider?.id ?? "",
+      source: `${pathname}${hash}`,
+    }).toString()}`;
+  }, [data, pathname, hash]);
 
-  const isLoading =
-    isLoadingRepositoryProviderMatch ||
-    isLoadingProviders ||
-    isLoadingRepositoryProbe;
-
-  const permissions = useMemo(() => {
-    if (isNotFound && repositoryProbe) {
-      return { pull: true, push: false };
-    }
-    const { pull, push } = repositoryProviderMatch?.repository_metadata
-      ?.permissions ?? { pull: false, push: false };
-    return { pull, push };
-  }, [
-    isNotFound,
-    repositoryProbe,
-    repositoryProviderMatch?.repository_metadata?.permissions,
-  ]);
-
-  const canonicalUrlStr = useMemo(
-    () => `${repositoryUrl.replace(/.git$/i, "")}`,
-    [repositoryUrl]
-  );
-  const canonicalUrl = useMemo(
-    () => safeNewUrl(canonicalUrlStr),
-    [canonicalUrlStr]
-  );
+  const projectPermissions = useProjectPermissions({ projectId: project.id });
 
   return (
     <Offcanvas
@@ -684,7 +584,7 @@ function RepositoryView({
       direction="end"
       backdrop={true}
     >
-      <OffcanvasBody>
+      <OffcanvasBody data-cy="code-repository-details">
         <div className="mb-3">
           <button
             aria-label="Close"
@@ -714,322 +614,338 @@ function RepositoryView({
             </div>
           </div>
 
-          <div className={cx("d-flex", "flex-column", "gap-3")}>
+          {isLoading ? (
+            <Loader />
+          ) : (
             <div>
-              <h3>Repository</h3>
-              <p className="mb-0">
-                URL:{" "}
-                <a
-                  href={canonicalUrlStr}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  {repositoryUrl}
-                  <BoxArrowUpRight className={cx("bi", "ms-1")} size={16} />
-                </a>
-              </p>
+              <div className="mb-4">
+                <h3>Repository</h3>
+                <p>
+                  URL:{" "}
+                  <ExternalLink
+                    iconAfter={true}
+                    role="link"
+                    url={webUrl}
+                    title={webUrl}
+                  />
+                </p>
+                {data?.metadata?.git_url && (
+                  <div>
+                    <span>Git command: </span>
+                    <CommandCopy
+                      command={`git clone ${data.metadata.git_url}`}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <h3>Permissions</h3>
+                {error ? (
+                  <RtkOrNotebooksError error={error} dismissible={false} />
+                ) : (
+                  <>
+                    <div
+                      className={cx("d-flex", "flex-column", "gap-2", "mb-3")}
+                    >
+                      <div>
+                        <RepositoryPermissionsBadge
+                          hasWriteAccess={projectPermissions?.write}
+                          repositoryUrl={repositoryUrl}
+                        />
+                      </div>
+                      <RepositoryCallToActionAlert
+                        hasWriteAccess={projectPermissions?.write}
+                        repositoryUrl={repositoryUrl}
+                      />
+                    </div>
+
+                    <div
+                      className="mb-3"
+                      data-cy="code-repository-pull-permission"
+                    >
+                      <span>
+                        Pull:{" "}
+                        <YesNoBadge
+                          value={data?.metadata?.pull_permission ?? false}
+                        />
+                      </span>
+                    </div>
+
+                    <div
+                      className="mb-3"
+                      data-cy="code-repository-push-permission"
+                    >
+                      <span>
+                        Push:{" "}
+                        <YesNoBadge
+                          value={data?.metadata?.push_permission ?? false}
+                        />
+                      </span>
+                    </div>
+
+                    <p>
+                      Integration:{" "}
+                      {!data?.provider?.id ? (
+                        "None"
+                      ) : (
+                        <span>
+                          {data?.connection?.status === "connected"
+                            ? "connected"
+                            : "not connected"}{" "}
+                          (
+                          <Link
+                            to={{
+                              pathname: ABSOLUTE_ROUTES.v2.integrations,
+                              search,
+                            }}
+                          >
+                            check details
+                          </Link>
+                          )
+                        </span>
+                      )}
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
-            {canonicalUrl && (
-              <p className="mb-0">
-                From:{" "}
-                <RepositoryIcon
-                  className="me-1"
-                  provider={canonicalUrl?.origin}
-                />
-                <span data-cy="code-repository-title">
-                  {canonicalUrl?.hostname}
-                </span>
-              </p>
-            )}
-            {providersError && (
-              <RtkOrNotebooksError error={providersError} dismissible={false} />
-            )}
-            {error && !isNotFound && (
-              <RtkOrNotebooksError error={error} dismissible={false} />
-            )}
-            {!isLoading && !permissions.push && (
-              <RepositoryPermissionsAlert repositoryUrl={repositoryUrl} />
-            )}
-            <div>
-              <h3>Permissions</h3>
-              <Row>
-                <Col xs={6}>
-                  Clone, Pull:{" "}
-                  {isLoading ? (
-                    <Loader className="bi" inline size={12} />
-                  ) : permissions.pull ? (
-                    <YesBadge />
-                  ) : (
-                    <NoBadge />
-                  )}
-                </Col>
-                <Col xs={6}>
-                  Push:{" "}
-                  {isLoading ? (
-                    <Loader className="bi" inline size={12} />
-                  ) : permissions.push ? (
-                    <YesBadge />
-                  ) : (
-                    <NoBadge />
-                  )}
-                </Col>
-              </Row>
-            </div>
-            <Col xs={12}>
-              <RepositoryProviderDetails repositoryUrl={repositoryUrl} />
-            </Col>
-          </div>
+          )}
         </div>
       </OffcanvasBody>
     </Offcanvas>
   );
 }
 
-function RepositoryPermissionsAlert({
-  repositoryUrl,
-}: RepositoryPermissionsProps) {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
-
-  const { data: repositoryProviderMatch, error } =
-    repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
-      repositoryUrl,
-    });
-  const { data: providers } =
-    connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
-
-  const isNotFound = error != null && "status" in error && error.status == 404;
-
-  const { data: repositoryProbe } =
-    repositoriesApi.endpoints.getRepositoryProbe.useQueryState(
-      isNotFound ? { repositoryUrl } : skipToken
-    );
-
-  const permissions = useMemo(() => {
-    if (isNotFound && repositoryProbe) {
-      return { pull: true, push: false };
-    }
-    const { pull, push } = repositoryProviderMatch?.repository_metadata
-      ?.permissions ?? { pull: false, push: false };
-    return { pull, push };
-  }, [
-    isNotFound,
-    repositoryProbe,
-    repositoryProviderMatch?.repository_metadata?.permissions,
-  ]);
-
-  const provider = useMemo(
-    () =>
-      repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID
-        ? { id: INTERNAL_GITLAB_PROVIDER_ID, display_name: "Internal GitLab" }
-        : providers?.find(
-            ({ id }) => id === repositoryProviderMatch?.provider_id
-          ),
-    [providers, repositoryProviderMatch?.provider_id]
-  );
-
-  const status =
-    repositoryProviderMatch?.connection_id ||
-    (userLogged &&
-      repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID)
-      ? "connected"
-      : "not-connected";
-
-  const loginUrl = useLoginUrl();
-
-  if (error && isNotFound) {
-    const color = permissions.pull ? "warning" : "danger";
-
-    return (
-      <Col xs={12}>
-        <RenkuAlert
-          color={color}
-          className="mb-0"
-          dismissible={false}
-          timeout={0}
-        >
-          <p className="mb-1">No git provider found for this repository.</p>
-          {permissions.pull ? (
-            <p className={cx("mb-0", "fst-italic")}>
-              This repository seems to be publicly available so you may be able
-              to clone and pull.
-            </p>
-          ) : (
-            <p className={cx("mb-0")}>
-              This repository does not exist or RenkuLab cannot access it.
-            </p>
-          )}
-        </RenkuAlert>
-      </Col>
-    );
-  }
-
-  if (error == null && !permissions.pull) {
-    return (
-      <Col xs={12}>
-        <ErrorAlert className="mb-0" dismissible={false} timeout={0}>
-          <p className="mb-0">
-            This repository does not exist or you do not have access to it.
-          </p>
-          {!userLogged ? (
-            <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              You need to <a href={loginUrl.href}>log in</a> to perform pushes
-              to git repositories.
-            </p>
-          ) : provider && status === "not-connected" ? (
-            <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              Your user account is not currently connected to{" "}
-              {provider.display_name}. See{" "}
-              <Link to={ABSOLUTE_ROUTES.v2.integrations}>
-                connected services
-              </Link>
-              .
-            </p>
-          ) : null}
-        </ErrorAlert>
-      </Col>
-    );
-  }
-
-  if (error == null && !permissions.push) {
-    return (
-      <Col xs={12}>
-        <WarnAlert className="mb-0" dismissible={false} timeout={0}>
-          <p className="mb-0">
-            You are not allowed to push to this repository.
-          </p>
-          {!userLogged ? (
-            <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              You need to <a href={loginUrl.href}>log in</a> to perform pushes
-              to git repositories.
-            </p>
-          ) : provider && status === "not-connected" ? (
-            <p className={cx("mt-1", "mb-0", "fst-italic")}>
-              Your user account is not currently connected to{" "}
-              {provider.display_name}. See{" "}
-              <Link to={ABSOLUTE_ROUTES.v2.integrations}>
-                connected services
-              </Link>
-              .
-            </p>
-          ) : null}
-        </WarnAlert>
-      </Col>
-    );
-  }
-
-  return null;
-}
-
-function YesBadge() {
+function LogInWarning() {
   return (
-    <Badge
-      className={cx(
-        "border",
-        "rounded-pill",
-        "border-success",
-        "bg-success-subtle",
-        "text-success-emphasis"
-      )}
-    >
-      <CircleFill className={cx("bi", "me-1")} />
-      Yes
-    </Badge>
+    <p className="mb-0">
+      You need to be logged in to activate integrations and access private
+      repositories.
+    </p>
   );
 }
 
-function NoBadge() {
-  return (
-    <Badge
-      className={cx(
-        "border",
-        "rounded-pill",
-        "border-danger",
-        "bg-danger-subtle",
-        "text-danger-emphasis"
-      )}
-    >
-      <CircleFill className={cx("bi", "me-1")} />
-      No
-    </Badge>
-  );
+interface RepositoryCallToActionAlertProps {
+  hasWriteAccess: boolean;
+  repositoryUrl: string;
 }
-
-function RepositoryProviderDetails({
+export function RepositoryCallToActionAlert({
+  hasWriteAccess,
   repositoryUrl,
-}: RepositoryPermissionsProps) {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
-
-  const {
-    data: repositoryProviderMatch,
-    isLoading: isLoadingRepositoryProviderMatch,
-    error: repositoryProviderMatchError,
-  } = repositoriesApi.endpoints.getRepositoryMetadata.useQueryState({
-    repositoryUrl,
+}: RepositoryCallToActionAlertProps) {
+  const { pathname, hash } = useLocation();
+  const { data, isLoading, error } = useGetRepositoryQuery({
+    url: repositoryUrl,
   });
-  const {
-    data: providers,
-    isLoading: isLoadingProviders,
-    error: providersError,
-  } = connectedServicesApi.endpoints.getOauth2Providers.useQueryState();
 
-  const isLoading = isLoadingRepositoryProviderMatch || isLoadingProviders;
-  const error = repositoryProviderMatchError ?? providersError;
+  const { data: userInfo } = useGetUserQueryState();
+  const anonymousUser = useMemo(() => {
+    return userInfo && !userInfo?.isLoggedIn;
+  }, [userInfo]);
 
-  const isNotFound =
-    repositoryProviderMatchError != null &&
-    "status" in repositoryProviderMatchError &&
-    repositoryProviderMatchError.status == 404;
+  const search = useMemo(() => {
+    return `?${new URLSearchParams({
+      targetProvider: data?.provider?.id ?? "",
+      source: `${pathname}${hash}`,
+    }).toString()}`;
+  }, [data, pathname, hash]);
 
-  const provider = useMemo(() => {
-    const canonicalUrl = safeNewUrl(repositoryUrl);
-    const providerId =
-      repositoryProviderMatch?.provider_id ?? canonicalUrl?.host;
-    if (repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID)
-      return {
-        id: INTERNAL_GITLAB_PROVIDER_ID,
-        display_name: "Internal GitLab",
-        kind: "gitlab" as const,
-      };
-    return providers?.find(({ id }) => id === providerId);
-  }, [providers, repositoryProviderMatch?.provider_id, repositoryUrl]);
+  if (isLoading) return null;
 
-  const status =
-    repositoryProviderMatch?.connection_id ||
-    (userLogged &&
-      repositoryProviderMatch?.provider_id === INTERNAL_GITLAB_PROVIDER_ID)
-      ? "Connected"
-      : "Not connected";
+  if (error) return <RtkOrNotebooksError error={error} dismissible={false} />;
 
-  if (isLoading) {
+  if (!data?.metadata?.pull_permission) {
     return (
-      <>
-        <Loader inline className={cx("bi", "me-1")} size={16} />
-        Loading git provider details...
-      </>
+      <ErrorAlert
+        className="mb-0"
+        dismissible={false}
+        data-cy="code-repository-alert"
+      >
+        {data?.provider?.id ? (
+          <>
+            <p className="mb-2">
+              Either the repository does not exist, or you do not have access to
+              it.
+            </p>
+            {anonymousUser ? (
+              <LogInWarning />
+            ) : (
+              <>
+                <p className="mb-2">
+                  If you think you should have access, check your integration{" "}
+                  <span className="fst-italic">{data.provider.name}</span>.
+                </p>
+                <Link
+                  className={cx("btn", "btn-primary", "btn-sm")}
+                  to={{
+                    pathname: ABSOLUTE_ROUTES.v2.integrations,
+                    search,
+                  }}
+                >
+                  <Plugin className={cx("bi", "me-1")} />
+                  View integration
+                </Link>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <p className={cx(!hasWriteAccess && "mb-0")}>
+              The repository URL is invalid or points to a version control
+              platform we currently do not support.
+              {hasWriteAccess && (
+                <>
+                  {" "}
+                  Please verify the URL and check if the platform is in the
+                  currently supported{" "}
+                  <Link
+                    to={{
+                      pathname: ABSOLUTE_ROUTES.v2.integrations,
+                      search,
+                    }}
+                  >
+                    <Plugin className={cx("bi", "me-1")} />
+                    integrations list.
+                  </Link>
+                </>
+              )}
+            </p>
+
+            {hasWriteAccess && (
+              <p className="mb-0">
+                If you&apos;re certain the URL is correct,{" "}
+                <a
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  href={`mailto:${RenkuContactEmail}`}
+                >
+                  <Send className={cx("bi", "me-1")} />
+                  contact us
+                </a>{" "}
+                about adding an integration.
+              </p>
+            )}
+          </>
+        )}
+      </ErrorAlert>
     );
   }
 
-  if (error && isNotFound) {
-    return null;
-  }
-
-  if (error) {
-    return <CodeRepositoryError error={error} provider={provider} />;
-  }
-
-  if (provider) {
+  if (
+    !data?.metadata?.push_permission &&
+    !data?.provider?.id &&
+    hasWriteAccess
+  ) {
     return (
-      <div>
-        <h5>Git provider</h5>
-        <p className="mb-2">{provider.display_name}</p>
-        <p>Status: {status}</p>
-      </div>
+      <WarnAlert
+        className="mb-0"
+        dismissible={false}
+        data-cy="code-repository-alert"
+      >
+        <p>
+          The repository URL is valid. However, we don&apos;t currently support
+          this version control platform and you won&apos;t have the credentials
+          to push your code.
+        </p>
+
+        <p className="mb-0">
+          If you want a smooth experience,{" "}
+          <a
+            target="_blank"
+            rel="noreferrer noopener"
+            href="mailto:hello@renku.io"
+          >
+            <Send className={cx("bi", "me-1")} />
+            contact us
+          </a>{" "}
+          about adding an integration.
+        </p>
+      </WarnAlert>
+    );
+  }
+
+  if (
+    !data?.metadata?.push_permission &&
+    data?.provider?.id &&
+    data?.connection?.status !== "connected" &&
+    hasWriteAccess
+  ) {
+    return (
+      <WarnAlert
+        className="mb-0"
+        dismissible={false}
+        data-cy="code-repository-alert"
+      >
+        <p className="mb-2">
+          You can log in through the integration{" "}
+          <span className="fst-italic">{data.provider.name}</span> to enable
+          pushing to repositories for which you have permissions.
+        </p>
+        <Link
+          className={cx("btn", "btn-primary", "btn-sm")}
+          to={{
+            pathname: ABSOLUTE_ROUTES.v2.integrations,
+            search,
+          }}
+        >
+          <Plugin className={cx("bi", "me-1")} />
+          View integration
+        </Link>
+      </WarnAlert>
+    );
+  }
+
+  if (
+    !data?.metadata?.push_permission &&
+    data?.provider?.id &&
+    data?.connection?.status !== "connected" &&
+    !hasWriteAccess
+  ) {
+    return (
+      <InfoAlert
+        className="mb-0"
+        dismissible={false}
+        data-cy="code-repository-alert"
+        timeout={0}
+      >
+        <p className="mb-2">
+          If you want to enable pushing to repositories for which you have
+          permissions, you can log in through the integration{" "}
+          <span className="fst-italic">{data.provider.name}</span>.
+        </p>
+        {anonymousUser ? (
+          <LogInWarning />
+        ) : (
+          <Link
+            className={cx("btn", "btn-primary", "btn-sm")}
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.integrations,
+              search,
+            }}
+          >
+            <Plugin className={cx("bi", "me-1")} />
+            View integration
+          </Link>
+        )}
+      </InfoAlert>
     );
   }
 
   return null;
+}
+
+interface YesNoBadgeProps {
+  value: boolean;
+}
+function YesNoBadge({ value }: YesNoBadgeProps) {
+  return value ? (
+    <RenkuBadge color="success" pill>
+      Yes
+    </RenkuBadge>
+  ) : (
+    <RenkuBadge color="danger" pill>
+      No
+    </RenkuBadge>
+  );
 }

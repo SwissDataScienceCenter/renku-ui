@@ -207,7 +207,8 @@ describe("Set up data connectors", () => {
         namespace: "user1-uuid/test-2-v2-project",
         visibility: "public",
       })
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
+      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" })
+      .readProjectV2Namespace();
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
@@ -795,7 +796,7 @@ describe("Repository connection cases", () => {
       });
   });
 
-  it("handle connected", () => {
+  it("read and write", () => {
     fixtures
       .getRepositoryMetadata({
         repositoryUrl: "https://github.com/renku/url-repo.git",
@@ -807,21 +808,24 @@ describe("Repository connection cases", () => {
     cy.wait("@getRepositoryMetadata");
 
     // check badge
-    cy.getDataCy("code-repository-item")
-      .contains("Push & pull")
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Read & write")
       .should("be.visible");
 
     cy.getDataCy("code-repository-item").click();
-    cy.contains("Clone, Pull: Yes").should("be.visible");
-    cy.contains("Push: Yes").should("be.visible");
+    cy.getDataCy("code-repository-push-permission")
+      .contains("Yes")
+      .should("be.visible");
+    cy.getDataCy("code-repository-pull-permission")
+      .contains("Yes")
+      .should("be.visible");
   });
 
-  it("handle token error", () => {
+  it("read only", () => {
     fixtures
       .getRepositoryMetadata({
         repositoryUrl: "https://github.com/renku/url-repo.git",
-        fixture: "repositories/repository-metadata-token-error.json",
-        statusCode: 400,
+        fixture: "repositories/repository-metadata-readonly.json",
       })
       .listConnectedServicesConnections()
       .listConnectedServicesProviders();
@@ -830,15 +834,94 @@ describe("Repository connection cases", () => {
     cy.wait("@getRepositoryMetadata");
 
     // check badge
-    cy.getDataCy("code-repository-item")
-      .contains("No access")
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Read only")
       .should("be.visible");
 
     cy.getDataCy("code-repository-item").click();
-    cy.contains("Clone, Pull: No").should("be.visible");
-    cy.contains(
-      "There is a problem with the integration to the repository host."
-    ).should("be.visible");
-    cy.get("a").contains("Reconnect").should("be.visible");
+    cy.getDataCy("code-repository-push-permission")
+      .contains("No")
+      .should("be.visible");
+    cy.getDataCy("code-repository-pull-permission")
+      .contains("Yes")
+      .should("be.visible");
+  });
+
+  it("inaccessible", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture: "repositories/repository-metadata-inaccessible.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    // check badge
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Inaccessible")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-push-permission")
+      .contains("No")
+      .should("be.visible");
+    cy.getDataCy("code-repository-pull-permission")
+      .contains("No")
+      .should("be.visible");
+  });
+
+  it("request integration", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture: "repositories/repository-metadata-requestintegration.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    // check badge
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Request integration")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-push-permission")
+      .contains("No")
+      .should("be.visible");
+    cy.getDataCy("code-repository-pull-permission")
+      .contains("Yes")
+      .should("be.visible");
+  });
+
+  it("integration required", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture: "repositories/repository-metadata-required.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    // check badge
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Integration required")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-push-permission")
+      .contains("No")
+      .should("be.visible");
+    cy.getDataCy("code-repository-pull-permission")
+      .contains("No")
+      .should("be.visible");
   });
 });

@@ -21,7 +21,9 @@ import {
   SlashCircle,
   XCircleFill,
 } from "react-bootstrap-icons";
+
 import { Loader } from "../Loader";
+
 import "./Progress.css";
 
 /**

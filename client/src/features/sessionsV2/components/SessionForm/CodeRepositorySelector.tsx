@@ -27,24 +27,24 @@ import {
   type UseControllerProps,
 } from "react-hook-form";
 import Select, {
+  components,
   type ClassNamesConfig,
   type GroupBase,
   type OptionProps,
   type SelectComponentsConfig,
   type SingleValue,
   type SingleValueProps,
-  components,
 } from "react-select";
 import { Label } from "reactstrap";
 
+import { GetRepositoriesApiResponse } from "~/features/repositories/api/repositories.api";
 import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
-import type { RepositoryWithProbe } from "../../../repositories/repositories.types";
 
 import styles from "./Select.module.scss";
 
 interface CodeRepositorySelectorProps<T extends FieldValues>
   extends UseControllerProps<T> {
-  repositoriesDetails: RepositoryWithProbe[];
+  repositoriesDetails: GetRepositoriesApiResponse[];
 }
 
 export default function CodeRepositorySelector<T extends FieldValues>({
@@ -55,7 +55,8 @@ export default function CodeRepositorySelector<T extends FieldValues>({
     () =>
       controllerProps.defaultValue
         ? controllerProps.defaultValue
-        : repositoriesDetails.find(({ probe }) => probe)?.repositoryUrl,
+        : repositoriesDetails.find((repo) => repo.data?.status === "valid")
+            ?.url,
     [controllerProps.defaultValue, repositoriesDetails]
   );
 
@@ -107,11 +108,8 @@ export default function CodeRepositorySelector<T extends FieldValues>({
 
 interface CodeRepositorySelectProps {
   name: string;
-
   defaultValue?: string;
-
-  options: RepositoryWithProbe[];
-
+  options: GetRepositoriesApiResponse[];
   onChange?: (newValue?: string) => void;
   onBlur?: () => void;
   value: string;
@@ -128,22 +126,17 @@ function CodeRepositorySelect({
   disabled,
 }: CodeRepositorySelectProps) {
   const defaultValue = useMemo(
-    () => options.find(({ repositoryUrl }) => repositoryUrl === defaultValue_),
+    () => options.find((repository) => repository.url === defaultValue_),
     [defaultValue_, options]
   );
   const value = useMemo(
-    () => options.find(({ repositoryUrl }) => repositoryUrl === value_),
+    () => options.find((repository) => repository.url === value_),
     [options, value_]
   );
 
   const onChange = useCallback(
-    (
-      newValue: SingleValue<{
-        repositoryUrl: string;
-        probe: boolean;
-      }>
-    ) => {
-      onChange_?.(newValue?.repositoryUrl);
+    (newValue: SingleValue<GetRepositoriesApiResponse>) => {
+      onChange_?.(newValue?.url);
     },
     [onChange_]
   );
@@ -163,10 +156,10 @@ function CodeRepositorySelect({
       isClearable={false}
       isSearchable={false}
       options={options}
-      getOptionLabel={(option) => option.repositoryUrl}
-      getOptionValue={(option) => option.repositoryUrl}
+      getOptionLabel={(option) => option.url}
+      getOptionValue={(option) => option.url}
       unstyled
-      isOptionDisabled={(option) => !option.probe}
+      isOptionDisabled={(option) => option.data?.status !== "valid"}
       onChange={onChange}
       onBlur={onBlur}
       value={value}
@@ -178,7 +171,7 @@ function CodeRepositorySelect({
   );
 }
 
-const selectClassNames: ClassNamesConfig<RepositoryWithProbe, false> = {
+const selectClassNames: ClassNamesConfig<GetRepositoriesApiResponse, false> = {
   control: ({ menuIsOpen }) =>
     cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
   dropdownIndicator: () => cx("pe-3"),
@@ -201,7 +194,7 @@ const selectClassNames: ClassNamesConfig<RepositoryWithProbe, false> = {
 };
 
 interface OptionOrSingleValueContentProps {
-  option: RepositoryWithProbe;
+  option: GetRepositoriesApiResponse;
 }
 
 function OptionOrSingleValueContent({
@@ -209,8 +202,8 @@ function OptionOrSingleValueContent({
 }: OptionOrSingleValueContentProps) {
   return (
     <>
-      <span>{option.repositoryUrl}</span>
-      {!option.probe && (
+      <span>{option.url}</span>
+      {option.data?.status !== "valid" && (
         <span>
           <XLg className={cx("bi", "me-1")} />
           No public access
@@ -221,9 +214,9 @@ function OptionOrSingleValueContent({
 }
 
 const selectComponents: SelectComponentsConfig<
-  RepositoryWithProbe,
+  GetRepositoriesApiResponse,
   false,
-  GroupBase<RepositoryWithProbe>
+  GroupBase<GetRepositoriesApiResponse>
 > = {
   DropdownIndicator: (props) => {
     return (
@@ -234,25 +227,25 @@ const selectComponents: SelectComponentsConfig<
   },
   Option: (
     props: OptionProps<
-      RepositoryWithProbe,
+      GetRepositoriesApiResponse,
       false,
-      GroupBase<RepositoryWithProbe>
+      GroupBase<GetRepositoriesApiResponse>
     >
   ) => {
     const { data } = props;
-    const title = getRepositoryName(data.repositoryUrl);
+    const title = getRepositoryName(data.url);
     return (
       <components.Option {...props}>
         <div className="fw-bold">{title}</div>
-        <div>{data.repositoryUrl}</div>
+        <div>{data.url}</div>
       </components.Option>
     );
   },
   SingleValue: (
     props: SingleValueProps<
-      RepositoryWithProbe,
+      GetRepositoriesApiResponse,
       false,
-      GroupBase<RepositoryWithProbe>
+      GroupBase<GetRepositoriesApiResponse>
     >
   ) => {
     const { data } = props;

@@ -30,13 +30,14 @@ import {
   Pencil,
   PersonBadge,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import {
   Button,
   Offcanvas,
   OffcanvasBody,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { WarnAlert } from "../../../components/Alert";

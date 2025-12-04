@@ -25,8 +25,8 @@ import { useGetResourcePoolsQuery } from "~/features/sessionsV2/api/computeResou
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
   projectCoreApi,
-  type ProjectMetadataParams,
   useGetConfigQuery,
+  type ProjectMetadataParams,
 } from "../projectCoreApi";
 import projectGitLabApi, {
   useGetAllRepositoryBranchesQuery,

@@ -1,4 +1,5 @@
 import { searchV2EmptyApi as api } from "./searchV2-empty.api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getSearchQuery: build.query<
