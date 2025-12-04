@@ -211,6 +211,7 @@ export function SessionV2Actions({
             <>
               <ButtonWithMenuV2
                 color="outline-primary"
+                dataCy="session-launcher-menu-dropdown"
                 default={defaultAction}
                 preventPropagation
                 size="sm"

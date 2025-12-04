@@ -267,6 +267,7 @@ function CustomImageEnvironmentValues({
         )}
       </div>
       <EnvironmentRowWithLabel
+        dataCy="session-view-session-environment-image"
         label="Container image"
         value={environment?.container_image || ""}
       />
@@ -470,15 +471,17 @@ function EnvironmentRow({ children }: { children?: ReactNode }) {
 function EnvironmentRowWithLabel({
   label,
   value,
+  dataCy,
 }: {
   label: string;
   value?: string | number | null;
+  dataCy?: string;
 }) {
   return (
     <EnvironmentRow>
       <div className="d-block">
         <label className={cx("text-nowrap", "mb-0", "me-2")}>{label}:</label>
-        <code>{value ?? "-"}</code>
+        <code data-cy={dataCy}>{value ?? "-"}</code>
       </div>
     </EnvironmentRow>
   );
