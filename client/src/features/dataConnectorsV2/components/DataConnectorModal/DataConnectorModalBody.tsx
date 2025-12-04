@@ -32,7 +32,7 @@ import {
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
-import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
@@ -50,7 +50,10 @@ import type {
   AddCloudStorageState,
   CloudStorageDetails,
 } from "../../../project/components/cloudStorage/projectCloudStorage.types";
-import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
+import {
+  getSchema,
+  getSchemaOptions,
+} from "../../../project/utils/projectCloudStorage.utils";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
@@ -295,16 +298,19 @@ export function DataConnectorMount({
   const { validationResult } = useAppSelector(
     (state) => state.dataConnectorFormSlice
   );
-  const options = getSchemaOptions(
+  const schema = getSchema(schemata, flatDataConnector.schema);
+  const schemaOptions = getSchemaOptions(
     schemata,
     true,
     flatDataConnector.schema,
     flatDataConnector.provider
   );
   const secretFields =
-    options == null
+    schemaOptions == null
       ? []
-      : Object.values(options).filter((o) => o && o.convertedType === "secret");
+      : Object.values(schemaOptions).filter(
+          (o) => o && o.convertedType === "secret"
+        );
   const hasPasswordFieldWithInput = secretFields.some(
     (o) => flatDataConnector.options && flatDataConnector.options[o.name]
   );
@@ -512,6 +518,7 @@ export function DataConnectorMount({
                       field.onChange(e);
                       onFieldValueChange("readOnly", !!e.target.value);
                     }}
+                    disabled={schema?.forceReadOnly ?? false}
                   />
                   <Label
                     for="data-connector-readonly-true"
@@ -533,6 +540,7 @@ export function DataConnectorMount({
                       field.onChange(e);
                       onFieldValueChange("readOnly", false);
                     }}
+                    disabled={schema?.forceReadOnly ?? false}
                   />
                   <Label
                     for="data-connector-readonly-false"
@@ -546,9 +554,15 @@ export function DataConnectorMount({
             )}
             rules={{ required: true }}
           />
-          {!flatDataConnector.readOnly &&
-          !hasPasswordFieldWithInput &&
-          flatDataConnector.visibility === "public" ? (
+          {schema?.forceReadOnly ? (
+            <InfoAlert className="mt-1" dismissible={false} timeout={0}>
+              <p className="mb-0">
+                This cloud storage only supports read-only access.
+              </p>
+            </InfoAlert>
+          ) : !flatDataConnector.readOnly &&
+            !hasPasswordFieldWithInput &&
+            flatDataConnector.visibility === "public" ? (
             <ErrorAlert className="mt-1" dismissible={false}>
               <p className="mb-0">
                 Data security warning: This public and writable data connector

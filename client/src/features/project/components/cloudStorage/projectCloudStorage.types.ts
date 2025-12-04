@@ -63,6 +63,7 @@ export interface CloudStorageSchemaOption extends RCloneOption {
 export interface CloudStorageSchema extends RCloneEntry {
   hide?: boolean;
   position?: number;
+  forceReadOnly?: boolean; // ? Forces read-only access e.g. for storage that do not support write access
   options: CloudStorageSchemaOption[];
 }
 
