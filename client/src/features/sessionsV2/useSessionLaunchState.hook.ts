@@ -26,7 +26,10 @@ import {
   useGetProjectsByProjectIdDataConnectorLinksQuery,
 } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
+import { shouldInterrupt } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
+import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
+import { useGetRepositoriesQuery } from "../repositories/api/repositories.api";
 import { useGetResourcePoolsQuery } from "./api/computeResources.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
@@ -141,6 +144,11 @@ export default function useSessionLauncherState({
     isReadyDataConnectorConfigs,
   } = useDataConnectorConfiguration({ dataConnectors });
 
+  const { data: repositories, isFetching: isFetchingRepositories } =
+    useGetRepositoriesQuery(project.repositories ?? []);
+
+  const projectPermissions = useProjectPermissions({ projectId: project.id });
+
   const isFetchingOrLoadingStorages =
     isFetchingDataConnectorLinks ||
     isLoadingDataConnectorLinks ||
@@ -167,8 +175,8 @@ export default function useSessionLauncherState({
     isReadyDataConnectorConfigs,
   ]);
 
+  // check session image availability -- it should block only for external images
   useEffect(() => {
-    // check session image availability -- it should block only for external images
     if (
       !isExternalImageEnvironment ||
       (!!sessionImage && sessionImage.accessible)
@@ -177,14 +185,33 @@ export default function useSessionLauncherState({
     }
   }, [dispatch, isExternalImageEnvironment, sessionImage]);
 
+  // Check for code repos availability -- it should only block if any repo requires it
+  useEffect(() => {
+    const interrupt = !!repositories?.find(
+      (repo) =>
+        repo.error ||
+        (repo.data && shouldInterrupt(repo.data, !!projectPermissions?.write))
+    );
+    if (!isFetchingRepositories && !interrupt) {
+      dispatch(startSessionOptionsV2Slice.actions.setRepositoriesReady(true));
+    }
+  }, [
+    dispatch,
+    isFetchingRepositories,
+    projectPermissions?.write,
+    repositories,
+  ]);
+
   return {
     containerImage,
     sessionImage,
     defaultSessionClass,
     isFetchingOrLoadingStorages,
+    isFetchingRepositories,
     isFetchingSessionSecrets,
     isLoadingSessionImage,
     isPendingResourceClass,
+    repositories,
     resourcePools,
     sessionSecretSlotsWithSecrets,
     setResourceClass,

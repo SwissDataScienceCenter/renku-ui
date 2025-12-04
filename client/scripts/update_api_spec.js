@@ -42,6 +42,8 @@ async function main() {
       updateProjectCloudStorageApi();
     } else if (arg.trim() === "projectV2") {
       updateProjectV2Api();
+    } else if (arg.trim() === "repositories") {
+      updateRepositoriesApi();
     } else if (arg.trim() === "searchV2") {
       updateSearchV2Api();
     } else if (arg.trim() === "sessionLaunchersV2") {
@@ -102,6 +104,13 @@ async function updateProjectV2Api() {
   updateApiFiles({
     specFile: "components/renku_data_services/project/api.spec.yaml",
     destFile: "src/features/projectsV2/api/projectV2.openapi.json",
+  });
+}
+
+async function updateRepositoriesApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/repositories/api.spec.yaml",
+    destFile: "src/features/repositories/api/repositories.openapi.json",
   });
 }
 
