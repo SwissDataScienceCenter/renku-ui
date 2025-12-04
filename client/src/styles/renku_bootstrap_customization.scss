@@ -121,6 +121,12 @@ $list-group-item-padding-y: $spacer;
   }
 }
 
+// Make form labels bold
+.form-label {
+  font-weight: $font-weight-semibold;
+  margin-bottom: $spacer * 0.25 !important;
+}
+
 // Adjust Accordion
 $accordion-padding-x: $spacer;
 $accordion-body-padding-x: $spacer;

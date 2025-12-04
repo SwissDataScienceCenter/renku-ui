@@ -1,0 +1,9 @@
+{
+  "id": "namespace-id",
+  "name": "test-2-v2-project",
+  "slug": "test-2-v2-project",
+  "path": "user1-uuid/test-2-v2-project",
+  "creation_date": "2023-11-15T09:55:59Z",
+  "created_by": "user-id",
+  "namespace_kind": "project"
+}

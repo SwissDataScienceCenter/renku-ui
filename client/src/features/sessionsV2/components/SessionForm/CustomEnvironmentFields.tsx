@@ -130,7 +130,7 @@ export function CustomEnvironmentFields({
       </div>
 
       <div>
-        <h4 className="fw-bold">Advanced settings</h4>
+        <h3 className={cx("fw-bold", "mt-3")}>Advanced settings</h3>
 
         <InfoAlert dismissible={false} timeout={0}>
           <p className="mb-0">

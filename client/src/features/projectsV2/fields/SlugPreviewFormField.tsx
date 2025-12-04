@@ -26,6 +26,8 @@ import AppContext from "../../../utils/context/appContext.ts";
 import { SlugPreviewFormFieldProps } from "./formField.types.ts";
 import SlugFormField from "./SlugFormField";
 
+import styles from "./SlugPreviewFormField.module.scss";
+
 export default function SlugPreviewFormField<T extends FieldValues>({
   compact = false,
   control,
@@ -53,7 +55,13 @@ export default function SlugPreviewFormField<T extends FieldValues>({
         </span>
       </FormText>
       <button
-        className={cx("btn", "btn-link", "p-0", "mb-1", "text-decoration-none")}
+        className={cx(
+          "btn",
+          "btn-link",
+          "p-0",
+          "text-decoration-none",
+          styles.slugPreviewButton
+        )}
         data-cy={`${entityName}-slug-toggle`}
         onClick={toggleCollapse}
         type="button"
@@ -65,9 +73,8 @@ export default function SlugPreviewFormField<T extends FieldValues>({
   );
 
   return (
-    <div>
+    <div className={cx(styles.slugPreviewGroup)}>
       {slugPreview}
-
       {isCollapseOpen && (
         <>
           <div
