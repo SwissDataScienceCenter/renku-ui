@@ -74,8 +74,8 @@ export default function ShowSessionPage() {
   const dispatch = useAppDispatch();
   const {
     namespace,
-    slug,
     session: sessionName_,
+    slug,
   } = useParams<"namespace" | "slug" | "session">();
   const sessionName = sessionName_ ?? "";
 
