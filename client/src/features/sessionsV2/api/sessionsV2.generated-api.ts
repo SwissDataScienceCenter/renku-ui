@@ -131,6 +131,12 @@ const injectedRtkApi = api.injectEndpoints({
         params: { image_url: queryArg.imageUrl },
       }),
     }),
+    getAlerts: build.query<GetAlertsApiResponse, GetAlertsApiArg>({
+      query: (queryArg) => ({
+        url: `/alerts`,
+        params: { session_name: queryArg.sessionName },
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -229,6 +235,11 @@ export type GetSessionsImagesApiResponse =
 export type GetSessionsImagesApiArg = {
   /** The Docker image URL (tag included) that should be fetched. */
   imageUrl: string;
+};
+export type GetAlertsApiResponse = /** status 200 List of alerts */ AlertList;
+export type GetAlertsApiArg = {
+  /** Filter alerts by session name */
+  sessionName?: string;
 };
 export type ImagePlatform = {
   architecture: string;
@@ -485,6 +496,17 @@ export type SessionPatchRequest = {
 export type SessionLogsResponse = {
   [key: string]: string;
 };
+export type Alert = {
+  id: string;
+  title: string;
+  message: string;
+  event_type: string;
+  user_id: string;
+  session_name?: string;
+  creation_date: string;
+  resolved_date?: string;
+};
+export type AlertList = Alert[];
 export const {
   useGetNotebooksImagesQuery,
   useGetNotebooksLogsByServerNameQuery,
@@ -501,4 +523,5 @@ export const {
   usePatchSessionsBySessionIdMutation,
   useGetSessionsBySessionIdLogsQuery,
   useGetSessionsImagesQuery,
+  useGetAlertsQuery,
 } = injectedRtkApi;
