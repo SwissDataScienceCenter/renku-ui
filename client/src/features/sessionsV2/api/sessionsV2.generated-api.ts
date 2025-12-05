@@ -504,7 +504,7 @@ export type Alert = {
   user_id: string;
   session_name?: string;
   creation_date: string;
-  resolved_at?: string;
+  resolved_date?: string;
 };
 export type AlertList = Alert[];
 export const {
