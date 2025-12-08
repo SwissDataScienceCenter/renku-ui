@@ -315,12 +315,15 @@ export type EnvironmentWithImageGet = Environment & {
   environment_kind: EnvironmentKind;
 };
 export type Repository = string;
+export type BuildPlatform = "linux/amd64" | "linux/arm64";
+export type BuildPlatforms = BuildPlatform[];
 export type BuilderVariant = string;
 export type FrontendVariant = string;
 export type RepositoryRevision = string;
 export type BuildContextDir = string;
 export type BuildParameters = {
   repository: Repository;
+  platforms?: BuildPlatforms;
   builder_variant: BuilderVariant;
   frontend_variant: FrontendVariant;
   repository_revision?: RepositoryRevision;
@@ -385,6 +388,7 @@ export type RepositoryRevisionPatch = string;
 export type BuildContextDirPatch = string;
 export type BuildParametersPatch = {
   repository?: Repository;
+  platforms?: BuildPlatforms;
   builder_variant?: BuilderVariant;
   frontend_variant?: FrontendVariant;
   repository_revision?: RepositoryRevisionPatch;

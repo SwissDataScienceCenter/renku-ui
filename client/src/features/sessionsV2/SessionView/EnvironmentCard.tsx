@@ -32,6 +32,7 @@ import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
+import { computeResourcesApi } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import {
   sessionLaunchersV2Api,
@@ -115,6 +116,7 @@ export default function EnvironmentCard({
             </EnvironmentRow>
             {environment_kind === "GLOBAL" && (
               <>
+                <GlobalEnvironmentSessionImageBadge launcher={launcher} />
                 <EnvironmentRow>
                   {environment?.description ? (
                     <p className={cx("text-truncate", "text-wrap")}>
@@ -150,11 +152,45 @@ export default function EnvironmentCard({
   );
 }
 
+function GlobalEnvironmentSessionImageBadge({
+  launcher,
+}: {
+  launcher: SessionLauncher;
+}) {
+  const environment = launcher.environment;
+  const { data, isLoading } = useGetSessionsImagesQuery(
+    environment && environment.container_image
+      ? { imageUrl: environment.container_image }
+      : skipToken
+  );
+  const { data: resourcePools, isLoading: isLoadingResourcePools } =
+    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
+  const resourcePool = useMemo(() => {
+    if (launcher?.resource_class_id == null || resourcePools == null) {
+      return undefined;
+    }
+    return resourcePools.find(({ classes }) =>
+      classes.some(({ id }) => id === launcher.resource_class_id)
+    );
+  }, [launcher?.resource_class_id, resourcePools]);
+
+  return (
+    <div className="mb-2">
+      <SessionImageBadge
+        data={data}
+        isLoading={isLoading}
+        resourcePool={resourcePool}
+        isLoadingResourcePools={isLoadingResourcePools}
+      />
+    </div>
+  );
+}
+
 function CustomEnvironmentValues({ launcher }: { launcher: SessionLauncher }) {
   const { environment } = launcher;
 
   if (environment.environment_image_source === "image") {
-    return <CustomImageEnvironmentValues launcher={launcher} />;
+    return <CustomImageEnvironmentValues launcher={launcher} showImageBadge />;
   }
 
   return <CustomBuildEnvironmentValues launcher={launcher} />;
@@ -162,8 +198,10 @@ function CustomEnvironmentValues({ launcher }: { launcher: SessionLauncher }) {
 
 function CustomImageEnvironmentValues({
   launcher,
+  showImageBadge,
 }: {
   launcher: SessionLauncher;
+  showImageBadge?: boolean;
 }) {
   const { pathname, hash } = useLocation();
   const environment = launcher.environment;
@@ -175,6 +213,16 @@ function CustomImageEnvironmentValues({
       ? { imageUrl: environment.container_image }
       : skipToken
   );
+  const { data: resourcePools, isLoading: isLoadingResourcePools } =
+    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
+  const resourcePool = useMemo(() => {
+    if (launcher?.resource_class_id == null || resourcePools == null) {
+      return undefined;
+    }
+    return resourcePools.find(({ classes }) =>
+      classes.some(({ id }) => id === launcher.resource_class_id)
+    );
+  }, [launcher?.resource_class_id, resourcePools]);
   const search = useMemo(() => {
     return `?${new URLSearchParams({
       targetProvider: data?.provider?.id ?? "",
@@ -188,7 +236,14 @@ function CustomImageEnvironmentValues({
   return (
     <>
       <div className="mb-2">
-        <SessionImageBadge data={data} loading={isLoading} />
+        {showImageBadge && (
+          <SessionImageBadge
+            data={data}
+            isLoading={isLoading}
+            resourcePool={resourcePool}
+            isLoadingResourcePools={isLoadingResourcePools}
+          />
+        )}
         {!isLoading && data?.accessible === false && (
           <div className="mt-2">
             {!data.connection && !data.provider ? (
@@ -336,6 +391,23 @@ function CustomBuildEnvironmentValues({
     }
   );
 
+  const { data: imageCheck, isLoading: isLoadingContainerImage } =
+    useGetSessionsImagesQuery(
+      environment.container_image != null
+        ? { imageUrl: environment.container_image }
+        : skipToken
+    );
+  const { data: resourcePools, isLoading: isLoadingResourcePools } =
+    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
+  const resourcePool = useMemo(() => {
+    if (launcher?.resource_class_id == null || resourcePools == null) {
+      return undefined;
+    }
+    return resourcePools.find(({ classes }) =>
+      classes.some(({ id }) => id === launcher.resource_class_id)
+    );
+  }, [launcher?.resource_class_id, resourcePools]);
+
   // Invalidate launchers if the container image is not the same as the
   // image from the last successful build
   const dispatch = useAppDispatch();
@@ -368,7 +440,12 @@ function CustomBuildEnvironmentValues({
           <NotReadyStatusBadge />
         ) : (
           <>
-            <ReadyStatusBadge />
+            <SessionImageBadge
+              data={imageCheck}
+              isLoading={isLoadingContainerImage}
+              resourcePool={resourcePool}
+              isLoadingResourcePools={isLoadingResourcePools}
+            />
             {lastSuccessfulBuild && (
               <BuildStatusDescription
                 isOldImage={
@@ -415,7 +492,7 @@ function CustomBuildEnvironmentValues({
               Last build status:
             </label>
             <span>
-              <BuildStatusBadge status={lastBuild.status} />
+              <BuildStatusBadge buildStatus={lastBuild.status} />
             </span>
           </div>
         )}
@@ -502,25 +579,6 @@ function EnvironmentJSONArrayRowWithLabel({
         )}
       </div>
     </EnvironmentRow>
-  );
-}
-
-function ReadyStatusBadge() {
-  return (
-    <Badge
-      className={cx(
-        "border",
-        "bg-success-subtle",
-        "border-success",
-        "text-success-emphasis",
-        "fs-small",
-        "fw-normal"
-      )}
-      pill
-    >
-      <CircleFill className={cx("bi", "me-1")} />
-      Ready
-    </Badge>
   );
 }
 
