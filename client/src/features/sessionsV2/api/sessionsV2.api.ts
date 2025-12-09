@@ -80,8 +80,6 @@ export const {
   useDeleteSessionsBySessionIdMutation,
   useGetSessionsBySessionIdLogsQuery,
   useGetSessionsImagesQuery,
-  // "alerts" hooks
-  useGetAlertsQuery,
 } = sessionsV2Api;
 
 export type * from "./sessionsV2.generated-api";
