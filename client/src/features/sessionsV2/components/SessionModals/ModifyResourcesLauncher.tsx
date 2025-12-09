@@ -236,14 +236,14 @@ export function ModifyResourcesLauncherModal({
                       Gigabytes
                     </UncontrolledTooltip>
                   </InputGroup>
-                  <FormText>
-                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
-                    {watchCurrentSessionClass.max_storage} GB
-                  </FormText>
                   <div className="invalid-feedback">
                     {error?.message ||
                       "Please provide a valid value for disk storage."}
                   </div>
+                  <FormText>
+                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                    {watchCurrentSessionClass.max_storage} GB
+                  </FormText>
                 </>
               )}
               rules={{

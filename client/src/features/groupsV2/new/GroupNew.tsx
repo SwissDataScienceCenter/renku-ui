@@ -174,15 +174,14 @@ function GroupV2CreationDetails() {
         >
           <FormGroup className="d-inline" disabled={result.isLoading}>
             <div className={cx("d-flex", "flex-column", "gap-3")}>
+              {/* No margin bottom because the SlugPreviewFormField is larger */}
               <div>
-                <div className="mb-1">
-                  <NameFormField
-                    control={control}
-                    entityName="group"
-                    errors={errors}
-                    name="name"
-                  />
-                </div>
+                <NameFormField
+                  control={control}
+                  entityName="group"
+                  errors={errors}
+                  name="name"
+                />
 
                 <SlugPreviewFormField
                   compact={true}

@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
@@ -29,6 +29,7 @@ import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
+import { computeResourcesApi } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import {
   sessionLaunchersV2Api,
@@ -127,14 +128,23 @@ export default function SessionLauncherCard({
     "text-muted",
   ];
 
-  const { data: containerImage, isLoading: loadingContainerImage } =
+  const { data: containerImage, isLoading: isLoadingContainerImage } =
     useGetSessionsImagesQuery(
-      environment &&
-        environment.environment_kind === "CUSTOM" &&
-        environment.container_image
+      environment?.container_image != null
         ? { imageUrl: environment.container_image }
         : skipToken
     );
+
+  const { data: resourcePools, isLoading: isLoadingResourcePools } =
+    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
+  const resourcePool = useMemo(() => {
+    if (launcher?.resource_class_id == null || resourcePools == null) {
+      return undefined;
+    }
+    return resourcePools.find(({ classes }) =>
+      classes.some(({ id }) => id === launcher.resource_class_id)
+    );
+  }, [launcher?.resource_class_id, resourcePools]);
 
   return (
     <Card
@@ -203,10 +213,13 @@ export default function SessionLauncherCard({
                   <SessionEnvironmentGitLabWarningBadge launcher={launcher} />
                 </Col>
               </Row>
-              {isCodeEnvironment && (
+              {isCodeEnvironment ? (
                 <Row className="g-2">
                   <Col xs={12} xl={4}>
-                    {isCodeEnvironment && isLoading ? (
+                    {isCodeEnvironment &&
+                    (isLoading ||
+                      isLoadingContainerImage ||
+                      isLoadingResourcePools) ? (
                       <SessionBadge
                         className={cx("border-warning", "bg-warning-subtle")}
                       >
@@ -220,7 +233,11 @@ export default function SessionLauncherCard({
                         </span>
                       </SessionBadge>
                     ) : isCodeEnvironment && lastBuild ? (
-                      <BuildStatusBadge status={lastBuild?.status} />
+                      <BuildStatusBadge
+                        buildStatus={lastBuild?.status}
+                        imageCheck={containerImage}
+                        resourcePool={resourcePool}
+                      />
                     ) : !hasSession ? (
                       <SessionBadge
                         className={cx("border-dark-subtle", "bg-light")}
@@ -253,13 +270,14 @@ export default function SessionLauncherCard({
                     />
                   </Col>
                 </Row>
-              )}
-              {isExternalImageEnvironment && (
+              ) : (
                 <Row>
                   <Col>
                     <SessionImageBadge
                       data={containerImage}
-                      loading={loadingContainerImage}
+                      isLoading={isLoadingContainerImage}
+                      resourcePool={resourcePool}
+                      isLoadingResourcePools={isLoadingResourcePools}
                     />
                   </Col>
                 </Row>
