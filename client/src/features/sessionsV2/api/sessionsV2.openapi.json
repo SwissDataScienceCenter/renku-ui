@@ -591,38 +591,6 @@
         },
         "tags": ["sessions"]
       }
-    },
-    "/alerts": {
-      "get": {
-        "summary": "Get alerts for the user",
-        "parameters": [
-          {
-            "description": "Filter alerts by session name",
-            "in": "query",
-            "name": "session_name",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of alerts",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AlertList"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["alerts"]
-      }
     }
   },
   "components": {
@@ -1602,52 +1570,6 @@
           }
         },
         "required": ["architecture", "os"]
-      },
-      "Alert": {
-        "type": "object",
-        "description": "An alert notification for a session event.",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "event_type": {
-            "type": "string"
-          },
-          "user_id": {
-            "type": "string"
-          },
-          "session_name": {
-            "type": "string"
-          },
-          "creation_date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "resolved_date": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "title",
-          "message",
-          "event_type",
-          "user_id",
-          "creation_date"
-        ]
-      },
-      "AlertList": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/Alert"
-        }
       }
     },
     "responses": {

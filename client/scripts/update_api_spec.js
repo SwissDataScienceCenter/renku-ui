@@ -36,6 +36,8 @@ async function main() {
       updateDataConnectorsApi();
     } else if (arg.trim() === "namespaceV2") {
       updateNamespaceV2Api();
+    } else if (arg.trim() === "notifications") {
+      updateNotificationsApi();
     } else if (arg.trim() === "platform") {
       updatePlatformApi();
     } else if (arg.trim() === "projectCloudStorage") {
@@ -53,6 +55,13 @@ async function main() {
     } else if (arg.trim() === "users") {
       updateUsersApi();
     }
+  });
+}
+
+async function updateNotificationsApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/notifications/api.spec.yaml",
+    destFile: "src/features/notifications/api/notifications.openapi.json",
   });
 }
 

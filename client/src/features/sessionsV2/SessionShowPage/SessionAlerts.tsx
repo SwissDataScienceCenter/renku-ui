@@ -28,7 +28,10 @@ import ReactMarkdown from "react-markdown";
 import { Badge, Button, Popover, PopoverBody, PopoverHeader } from "reactstrap";
 import { Link } from "react-router";
 
-import { useGetAlertsQuery, type Alert } from "../api/sessionsV2.api";
+import {
+  useGetAlertsQuery,
+  type Alert,
+} from "~/features/notifications/api/notifications.api";
 
 interface SessionAlertsProps {
   sessionName?: string;
@@ -54,7 +57,7 @@ function LinkRenderer(props: LinkRendererProps) {
 
 export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
   const { data: alerts } = useGetAlertsQuery(
-    sessionName ? { sessionName } : skipToken,
+    sessionName ? { params: { session_name: sessionName } } : skipToken,
     {
       pollingInterval: ONE_SECOND,
       refetchOnMountOrArgChange: true,
