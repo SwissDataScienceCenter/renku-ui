@@ -18,15 +18,15 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useRef, useState, Fragment } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
+  BoxArrowUpRight,
   ExclamationTriangle,
   ExclamationTriangleFill,
-  BoxArrowUpRight,
 } from "react-bootstrap-icons";
 import ReactMarkdown from "react-markdown";
-import { Badge, Button, Popover, PopoverBody, PopoverHeader } from "reactstrap";
 import { Link } from "react-router";
+import { Badge, Button, Popover, PopoverBody, PopoverHeader } from "reactstrap";
 
 import {
   useGetAlertsQuery,
@@ -45,15 +45,18 @@ interface LinkRendererProps {
 }
 
 function LinkRenderer(props: LinkRendererProps) {
+  if (!props.href) {
+    return <span>{props.children}</span>;
+  }
+
   return (
     <Link to={props.href} target="_blank" rel="noreferrer">
-
       {props.children}
-
       <BoxArrowUpRight className={cx("bi", "ms-1")} />
     </Link>
   );
 }
+
 
 export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
   const { data: alerts } = useGetAlertsQuery(
@@ -135,19 +138,19 @@ function Alerts({ alerts }: AlertsProps) {
         >
           <ExclamationTriangleFill className="bi" />
         </Button>
-          <Badge
-            color="dark"
-            pill
-            className="position-absolute"
-            style={{
-              fontSize: "0.65rem",
-              top: "-6px",
-              right: "-12px",
-              minWidth: "20px",
-            }}
-          >
-            {alerts.length}
-          </Badge>
+        <Badge
+          color="dark"
+          pill
+          className="position-absolute"
+          style={{
+            fontSize: "0.65rem",
+            top: "-6px",
+            right: "-12px",
+            minWidth: "20px",
+          }}
+        >
+          {alerts.length}
+        </Badge>
       </div>
       <Popover
         target={ref}
@@ -159,7 +162,9 @@ function Alerts({ alerts }: AlertsProps) {
       >
         {alerts.map((alert, idx) => (
           <Fragment key={alert.id}>
-            <PopoverHeader className={cx("text-bg-danger", idx > 0 && "rounded-0")}>
+            <PopoverHeader
+              className={cx("text-bg-danger", idx > 0 && "rounded-0")}
+            >
               {alert.title}
             </PopoverHeader>
             <PopoverBody className={cx("text-dark", "bg-danger-subtle")}>
