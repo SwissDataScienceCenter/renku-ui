@@ -134,6 +134,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(doiResolverApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(notificationsApi.middleware)
         .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)

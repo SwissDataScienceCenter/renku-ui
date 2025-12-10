@@ -50,7 +50,7 @@ function LinkRenderer(props: LinkRendererProps) {
   }
 
   return (
-    <Link to={props.href} target="_blank" rel="noreferrer">
+    <Link to={props.href} target="_blank" rel="noreferrer noopener">
       {props.children}
       <BoxArrowUpRight className={cx("bi", "ms-1")} />
     </Link>
@@ -76,25 +76,27 @@ interface AlertsProps {
 function Alerts({ alerts }: AlertsProps) {
   const ref = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [prevAlertIds, setPrevAlertIds] = useState<Set<string>>(new Set());
+  const prevAlertIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!alerts || alerts.length === 0) {
-      setPrevAlertIds(new Set());
+      prevAlertIdsRef.current = new Set();
       setIsOpen(false);
       return;
     }
 
     const currentAlertIds = new Set(alerts.map((alert) => alert.id));
 
-    const hasNewAlerts = alerts.some((alert) => !prevAlertIds.has(alert.id));
+    const hasNewAlerts = alerts.some(
+      (alert) => !prevAlertIdsRef.current.has(alert.id)
+    );
 
     if (hasNewAlerts) {
       setIsOpen(true);
     }
 
-    setPrevAlertIds(currentAlertIds);
-  }, [alerts, prevAlertIds]);
+    prevAlertIdsRef.current = currentAlertIds;
+  }, [alerts]);
 
   const togglePopover = () => setIsOpen(!isOpen);
 
