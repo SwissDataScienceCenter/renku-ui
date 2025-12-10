@@ -18,13 +18,15 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import {
   ExclamationTriangle,
   ExclamationTriangleFill,
+  BoxArrowUpRight,
 } from "react-bootstrap-icons";
 import ReactMarkdown from "react-markdown";
 import { Badge, Button, Popover, PopoverBody, PopoverHeader } from "reactstrap";
+import { Link } from "react-router";
 
 import { useGetAlertsQuery, type Alert } from "../api/sessionsV2.api";
 
@@ -32,7 +34,7 @@ interface SessionAlertsProps {
   sessionName?: string;
 }
 
-const POLL_INTERVAL = 12000;
+const ONE_SECOND = 1_000; // milliseconds
 
 interface LinkRendererProps {
   href?: string;
@@ -41,9 +43,12 @@ interface LinkRendererProps {
 
 function LinkRenderer(props: LinkRendererProps) {
   return (
-    <a href={props.href} target="_blank" rel="noreferrer">
+    <Link to={props.href} target="_blank" rel="noreferrer">
+
       {props.children}
-    </a>
+
+      <BoxArrowUpRight className={cx("bi", "ms-1")} />
+    </Link>
   );
 }
 
@@ -51,7 +56,7 @@ export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
   const { data: alerts } = useGetAlertsQuery(
     sessionName ? { sessionName } : skipToken,
     {
-      pollingInterval: POLL_INTERVAL,
+      pollingInterval: ONE_SECOND,
       refetchOnMountOrArgChange: true,
     }
   );
@@ -127,7 +132,6 @@ function Alerts({ alerts }: AlertsProps) {
         >
           <ExclamationTriangleFill className="bi" />
         </Button>
-        {alerts.length > 1 && (
           <Badge
             color="dark"
             pill
@@ -141,7 +145,6 @@ function Alerts({ alerts }: AlertsProps) {
           >
             {alerts.length}
           </Badge>
-        )}
       </div>
       <Popover
         target={ref}
@@ -151,9 +154,9 @@ function Alerts({ alerts }: AlertsProps) {
         placement="auto"
         popperClassName="session-alerts-popover"
       >
-        {alerts.map((alert) => (
-          <div key={alert.id}>
-            <PopoverHeader className="text-bg-danger">
+        {alerts.map((alert, idx) => (
+          <Fragment key={alert.id}>
+            <PopoverHeader className={cx("text-bg-danger", idx > 0 && "rounded-0")}>
               {alert.title}
             </PopoverHeader>
             <PopoverBody className={cx("text-dark", "bg-danger-subtle")}>
@@ -161,7 +164,7 @@ function Alerts({ alerts }: AlertsProps) {
                 {alert.message}
               </ReactMarkdown>
             </PopoverBody>
-          </div>
+          </Fragment>
         ))}
       </Popover>
     </>
