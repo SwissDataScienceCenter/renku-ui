@@ -57,7 +57,6 @@ function LinkRenderer(props: LinkRendererProps) {
   );
 }
 
-
 export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
   const { data: alerts } = useGetAlertsQuery(
     sessionName ? { params: { session_name: sessionName } } : skipToken,
