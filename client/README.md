@@ -9,3 +9,5 @@ The project is now using [rect-18](https://github.com/facebook/react/blob/main/C
 ## RTK Query Code Generation
 
 Please refer to the [README file in the .rtk folder](./.rtk/README.md) for more details.
+
+Irrelevant change to get a PR deployment
