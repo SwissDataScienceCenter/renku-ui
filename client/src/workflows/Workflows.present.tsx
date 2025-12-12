@@ -59,8 +59,11 @@ import { CommandCopy } from "../components/commandCopy/CommandCopy";
 import EntityCreators from "../components/entities/Creators";
 import { EntityType } from "../components/entities/entities.types";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
-import { ExternalDocsLink, ExternalLink } from "../components/ExternalLinks";
 import InformativeIcon from "../components/InformativeIcon";
+import {
+  ExternalDocsLink,
+  ExternalLink,
+} from "../components/LegacyExternalLinks";
 import LinkWithTooltip from "../components/LinkWithTooltip";
 import { Loader } from "../components/Loader";
 import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";

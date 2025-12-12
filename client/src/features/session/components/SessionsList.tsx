@@ -24,7 +24,7 @@ import Media from "react-media";
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { EnvironmentLogs } from "../../../components/Logs";
 import { NotebooksHelper } from "../../../notebooks";
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";

@@ -36,8 +36,8 @@ import {
 
 import { SuccessAlert } from "../../components/Alert";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../components/ExternalLinks";
 import { LoadingLabel } from "../../components/formlabels/FormLabels";
+import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { Loader } from "../../components/Loader";
 import VisibilitiesInput, {
   Visibilities,

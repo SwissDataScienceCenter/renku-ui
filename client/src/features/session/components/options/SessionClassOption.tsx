@@ -38,7 +38,7 @@ import Select, {
 } from "react-select";
 
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
-import { ExternalLink } from "~/components/ExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithIdFiltered,

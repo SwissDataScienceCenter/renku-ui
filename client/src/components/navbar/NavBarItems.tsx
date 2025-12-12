@@ -45,8 +45,8 @@ import {
   getActiveProjectPathWithNamespace,
   gitLabUrlFromProfileUrl,
 } from "../../utils/helpers/HelperFunctions";
-import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
+import { ExternalDocsLink, ExternalLink } from "../LegacyExternalLinks.tsx";
 import { Loader } from "../Loader";
 
 import styles from "./NavBarItem.module.scss";

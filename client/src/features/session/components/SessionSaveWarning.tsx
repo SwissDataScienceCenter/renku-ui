@@ -21,7 +21,7 @@ import cx from "classnames";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { InfoAlert } from "../../../components/Alert";
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { User } from "../../../model/renkuModels.types";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { Docs } from "../../../utils/constants/Docs";

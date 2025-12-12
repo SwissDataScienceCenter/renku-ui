@@ -44,7 +44,7 @@ import {
 } from "reactstrap";
 
 import { WarnAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { DataConnectorSecret } from "../../../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils";

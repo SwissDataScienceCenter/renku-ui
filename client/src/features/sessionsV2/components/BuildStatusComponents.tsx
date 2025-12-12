@@ -43,7 +43,7 @@ import {
 
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { EnvironmentLogsPresent, ILogs } from "../../../components/Logs";
 import ScrollableModal from "../../../components/modal/ScrollableModal";

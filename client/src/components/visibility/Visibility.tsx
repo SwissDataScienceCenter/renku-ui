@@ -34,7 +34,6 @@ import { FormText } from "reactstrap";
 
 import { GitlabLinks } from "../../utils/constants/Docs";
 import { computeVisibilities } from "../../utils/helpers/HelperFunctions";
-import { ExternalLink } from "../ExternalLinks";
 import {
   ErrorLabel,
   HelperLabel,
@@ -42,6 +41,7 @@ import {
   LoadingLabel,
   RequiredLabel,
 } from "../formlabels/FormLabels";
+import { ExternalLink } from "../LegacyExternalLinks";
 
 /**
  *  renku-ui

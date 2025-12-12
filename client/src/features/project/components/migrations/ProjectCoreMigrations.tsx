@@ -28,7 +28,7 @@ import { Collapse } from "reactstrap";
 
 import { CoreErrorAlert } from "../../../../components/errors/CoreErrorAlert";
 import { RtkOrCoreError } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Docs } from "../../../../utils/constants/Docs";
 import { TemplateSourceRenku } from "../../../../utils/constants/Migrations";
 import { RenkuRepositories } from "../../../../utils/constants/Repositories";

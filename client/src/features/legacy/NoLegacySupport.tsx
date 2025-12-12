@@ -22,7 +22,7 @@ import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
-import { ExternalLink } from "~/components/ExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { Links, RenkuContactEmail } from "~/utils/constants/Docs";
 import Background from "./Background.svg";
 

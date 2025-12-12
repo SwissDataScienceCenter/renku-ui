@@ -34,8 +34,8 @@ import {
 import { Collapse } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
-import { ExternalLink } from "~/components/ExternalLinks";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
 import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResources.api";
 import { Links } from "~/utils/constants/Docs";

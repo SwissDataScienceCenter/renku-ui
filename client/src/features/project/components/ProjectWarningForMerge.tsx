@@ -3,7 +3,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 import { WarnAlert } from "../../../components/Alert";
 import { extractRkErrorRemoteBranch } from "../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 
 interface ProjectWarningMessageForMergeProps {
   defaultBranch?: string;

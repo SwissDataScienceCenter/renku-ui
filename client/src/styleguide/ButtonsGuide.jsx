@@ -27,7 +27,7 @@ import {
 } from "../components/Alert";
 import { ButtonWithMenu, GoBackButton } from "../components/buttons/Button";
 import { Clipboard } from "../components/clipboard/Clipboard";
-import { ExternalLink } from "../components/ExternalLinks";
+import { ExternalLink } from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
 
 function Switch() {

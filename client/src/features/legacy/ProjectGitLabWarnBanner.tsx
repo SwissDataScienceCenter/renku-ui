@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { EmojiDizzy } from "react-bootstrap-icons";
 
-import { ExternalLink } from "~/components/ExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import TakeActionAlert from "~/components/TakeActionAlert";
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";

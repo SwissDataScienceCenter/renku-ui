@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import ModalHeader from "../../../../components/modal/ModalHeader";

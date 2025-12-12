@@ -26,7 +26,7 @@ import {
 } from "react-hook-form";
 import { Label } from "reactstrap";
 
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { BUILDER_TYPES, IMAGE_BUILD_DOCS } from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 

@@ -48,7 +48,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { ExternalLink } from "../components/ExternalLinks";
+import { ExternalLink } from "../components/LegacyExternalLinks";
 import { TimeCaption } from "../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../routing/routes.constants";
 import { NotificationsInfo } from "./Notifications.state";
