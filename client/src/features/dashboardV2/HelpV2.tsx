@@ -28,7 +28,7 @@ import {
 import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
 
-import { ExternalIconLink } from "../../components/ExternalLinks";
+import { ExternalIconLink } from "../../components/LegacyExternalLinks";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";

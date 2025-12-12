@@ -50,8 +50,8 @@ import {
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
-import { ExternalLink } from "../../../components/ExternalLinks";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { LockStatus, User } from "../../../model/renkuModels.types";

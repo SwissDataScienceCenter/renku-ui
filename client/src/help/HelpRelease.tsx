@@ -21,7 +21,7 @@ import { useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
-import { ExternalLink } from "../components/ExternalLinks";
+import { ExternalLink } from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
 import {
   useGetCoreVersionsQuery,

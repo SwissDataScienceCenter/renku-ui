@@ -45,7 +45,7 @@ import { ACCESS_LEVELS } from "../api-client";
 import { ContainerWrap } from "../App";
 import { InfoAlert } from "../components/Alert";
 import { RoundButtonGroup } from "../components/buttons/Button";
-import { ExternalLink } from "../components/ExternalLinks";
+import { ExternalLink } from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import RenkuNavLinkV2, {

@@ -22,7 +22,7 @@ import { PlusSquare } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { ExternalLink } from "~/components/ExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import TakeActionAlert from "~/components/TakeActionAlert";
 import { PROJECT_CREATION_HASH } from "~/features/projectsV2/new/createProjectV2.constants";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";

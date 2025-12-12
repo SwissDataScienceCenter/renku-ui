@@ -35,8 +35,11 @@ import {
 } from "reactstrap";
 
 import { Clipboard } from "../components/clipboard/Clipboard";
-import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
+import {
+  ExternalIconLink,
+  ExternalLink,
+} from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
 import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
 import { TimeCaption } from "../components/TimeCaption";

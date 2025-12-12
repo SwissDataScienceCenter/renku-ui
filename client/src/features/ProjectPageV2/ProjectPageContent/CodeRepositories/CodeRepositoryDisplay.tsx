@@ -49,7 +49,7 @@ import {
 
 import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
-import { ExternalLink } from "~/components/ExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";

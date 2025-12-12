@@ -34,7 +34,7 @@ import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import {
   ExternalDocsLink,
   ExternalIconLink,
-} from "../components/ExternalLinks";
+} from "../components/LegacyExternalLinks";
 import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
 import StatusSummary from "../features/platform/components/StatusSummary";
 import { isStatusConfigured } from "../statuspage";
