@@ -28,6 +28,7 @@ import {
 import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
 import { ExternalIconLink } from "../../components/LegacyExternalLinks";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
@@ -122,11 +123,14 @@ function HelpGetting() {
           <Card className={cardClasses}>
             <CardHeader>
               <h2 className="mb-0">
-                <ExternalIconLink
-                  url={Links.RENKU_2_DOCUMENTATION}
-                  icon={<FileEarmarkText className={cx("bi", "me-1")} />}
-                  text="RenkuLab Documentation"
-                />
+                <ExternalLink
+                  icon={null}
+                  href={Links.RENKU_2_DOCUMENTATION}
+                  data-cy="foo"
+                >
+                  <FileEarmarkText className={cx("bi", "me-1")} />
+                  RenkuLab Documentation
+                </ExternalLink>
               </h2>
             </CardHeader>
             <CardBody>
