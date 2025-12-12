@@ -1318,8 +1318,23 @@
           "state": {
             "enum": ["running", "hibernated"],
             "type": "string"
+          },
+          "lastInteraction": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "$ref": "#/components/schemas/CurrentTime"
+              }
+            ]
           }
         }
+      },
+      "CurrentTime": {
+        "type": "string",
+        "enum": ["now"]
       },
       "SessionStatus": {
         "properties": {
