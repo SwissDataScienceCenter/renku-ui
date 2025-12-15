@@ -32,9 +32,119 @@ import {
   Build,
   SessionLauncher,
 } from "../api/sessionLaunchersV2.generated-api";
-import { useGetSessionsImagesQuery } from "../api/sessionsV2.api";
+import {
+  useGetSessionsImagesQuery,
+  type ImageCheckResponse,
+} from "../api/sessionsV2.api";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "../session.constants";
-import BuildLauncherButtons from "./BuildLauncherButtons";
+import BuildLauncherButtons, {
+  RebuildLauncherDropdownItem,
+} from "./BuildLauncherButtons";
+
+interface SessionLauncherDefaultAction
+  extends Pick<
+    SessionLauncherButtonsProps,
+    "hasSession" | "launcher" | "namespace" | "slug"
+  > {
+  displayBuildActions: boolean;
+  displayLaunchSession: boolean;
+  imageCheckData: ImageCheckResponse | undefined;
+  imageCheckLoading: boolean;
+}
+
+function SessionLauncherDefaultAction({
+  displayBuildActions,
+  displayLaunchSession,
+  hasSession,
+  imageCheckData,
+  imageCheckLoading,
+  launcher,
+  namespace,
+  slug,
+}: SessionLauncherDefaultAction) {
+  const { environment } = launcher;
+  const isExternalImageEnvironment =
+    environment.environment_kind === "CUSTOM" &&
+    environment.environment_image_source === "image";
+
+  const [, setHash] = useLocationHash();
+  const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
+  const toggleLauncherView = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === launcherHash;
+      return isOpen ? "" : launcherHash;
+    });
+  }, [launcherHash, setHash]);
+
+  const startUrl = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
+    {
+      launcherId: launcher.id,
+      namespace,
+      slug,
+    }
+  );
+
+  if (imageCheckLoading)
+    return (
+      <Button color="outline-primary" className={cx("disabled")} size="sm">
+        <Loader size={12} inline /> Checking launcher
+      </Button>
+    );
+
+  const launchAction = !displayLaunchSession ? null : (
+    <span id={`launch-btn-${launcher.id}`}>
+      <Link
+        className={cx(
+          "btn",
+          "btn-sm",
+          hasSession ? "btn-outline-primary" : "btn-primary",
+          hasSession && "disabled",
+          displayBuildActions ? "rounded-0" : "rounded-end-0"
+        )}
+        to={startUrl}
+        data-cy="start-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        Launch
+      </Link>
+    </span>
+  );
+
+  if (displayBuildActions) {
+    return (
+      <ButtonGroup onClick={(e) => e.stopPropagation()}>
+        <BuildLauncherButtons
+          launcher={launcher}
+          isMainButton={displayLaunchSession}
+        />
+        {launchAction}
+      </ButtonGroup>
+    );
+  }
+
+  if (
+    displayLaunchSession &&
+    (!isExternalImageEnvironment || imageCheckData?.accessible)
+  ) {
+    return launchAction;
+  }
+
+  return (
+    <span id={`open-panel-btn-${launcher.id}`}>
+      <Button
+        className="rounded-end-0"
+        color="outline-primary"
+        size="sm"
+        onClick={toggleLauncherView}
+        data-cy="open-panel-button"
+      >
+        <Gear className={cx("bi", "me-1")} />
+        Show launcher details
+      </Button>
+    </span>
+  );
+}
 
 interface SessionLauncherButtonsProps {
   hasSession?: boolean;
@@ -61,15 +171,6 @@ export function SessionLauncherButtons({
     environment.environment_kind === "CUSTOM" &&
     environment.environment_image_source === "image";
 
-  const [, setHash] = useLocationHash();
-  const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
-  const toggleLauncherView = useCallback(() => {
-    setHash((prev) => {
-      const isOpen = prev === launcherHash;
-      return isOpen ? "" : launcherHash;
-    });
-  }, [launcherHash, setHash]);
-
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
@@ -83,79 +184,31 @@ export function SessionLauncherButtons({
       ? { imageUrl: environment.container_image }
       : skipToken
   );
-  const onClickFix = (e: React.MouseEvent) => e.stopPropagation();
   const displayLaunchSession =
     !isCodeEnvironment ||
     (isCodeEnvironment && lastBuild?.status === "succeeded") ||
     (isCodeEnvironment && data?.accessible) ||
-    useOldImage;
+    (useOldImage ?? false);
 
-  const buildActions = isCodeEnvironment &&
+  const displayBuildActions =
+    isCodeEnvironment &&
     permissions.write &&
-    (useOldImage || lastBuild?.status !== "succeeded") && (
-      <BuildLauncherButtons
-        launcher={launcher}
-        isMainButton={!displayLaunchSession}
-      />
-    );
+    (useOldImage || lastBuild?.status !== "succeeded");
 
-  const launchAction = displayLaunchSession && (
-    <span id={`launch-btn-${launcher.id}`}>
-      <Link
-        className={cx(
-          "btn",
-          "btn-sm",
-          hasSession ? "btn-outline-primary" : "btn-primary",
-          hasSession && "disabled",
-          buildActions ? "rounded-0" : "rounded-end-0"
-        )}
-        to={startUrl}
-        data-cy="start-session-button"
-      >
-        <PlayCircle className={cx("bi", "me-1")} />
-        Launch
-      </Link>
-    </span>
+  const defaultAction = (
+    <SessionLauncherDefaultAction
+      displayBuildActions={displayBuildActions}
+      displayLaunchSession={displayLaunchSession}
+      imageCheckData={data}
+      imageCheckLoading={isLoading}
+      hasSession={hasSession}
+      launcher={launcher}
+      namespace={namespace}
+      slug={slug}
+    />
   );
 
-  const openPanelAction = displayLaunchSession &&
-    isExternalImageEnvironment &&
-    !data?.accessible && (
-      <span id={`open-panel-btn-${launcher.id}`}>
-        <Button
-          className="rounded-end-0"
-          color="outline-primary"
-          size="sm"
-          onClick={toggleLauncherView}
-          data-cy="open-panel-button"
-        >
-          <Gear className={cx("bi", "me-1")} />
-          Show launcher details
-        </Button>
-      </span>
-    );
-
-  const loadingPlaceholder = isLoading && (
-    <Button color="outline-primary" className={cx("disabled")} size="sm">
-      <Loader size={12} inline /> Checking launcher
-    </Button>
-  );
-
-  const defaultAction = buildActions ? (
-    <ButtonGroup onClick={onClickFix}>
-      {buildActions}
-      {launchAction}
-    </ButtonGroup>
-  ) : launchAction && (!isExternalImageEnvironment || data?.accessible) ? (
-    launchAction
-  ) : (isExternalImageEnvironment && !isLoading) ||
-    (!isExternalImageEnvironment && !data?.accessible) ? (
-    openPanelAction
-  ) : (
-    loadingPlaceholder
-  );
-
-  const force = defaultAction === openPanelAction;
+  const force = isExternalImageEnvironment && !isLoading && !data?.accessible;
 
   const customizeLaunch = displayLaunchSession && (
     <Link
@@ -197,6 +250,9 @@ export function SessionLauncherButtons({
       >
         {isExternalImageEnvironment && !data?.accessible && launchAnyway}
         {customizeLaunch}
+        {isCodeEnvironment && permissions.write && !displayBuildActions && (
+          <RebuildLauncherDropdownItem launcher={launcher} />
+        )}
         {otherActions}
       </ButtonWithMenuV2>
       {hasSession && displayLaunchSession && !data?.accessible === false ? (
