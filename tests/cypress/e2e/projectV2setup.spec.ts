@@ -73,7 +73,7 @@ describe("Set up project components", () => {
     // delete code repository
     cy.getDataCy("button-with-menu-dropdown").first().click();
     cy.getDataCy("code-repository-delete").click();
-    cy.getDataCy("delete-modal-button").click();
+    cy.getDataCy("delete-code-repository-modal-button").click();
     cy.wait("@updateProjectV2");
   });
 
@@ -128,7 +128,7 @@ describe("Set up project components", () => {
     // check session launcher view and edit session launcher
     cy.getDataCy("session-name").click();
     cy.getDataCy("session-view-menu-edit").should("be.visible");
-    cy.get(".offcanvas [data-cy=button-with-menu-dropdown]").first().click();
+    cy.getDataCy("session-launcher-menu-dropdown").first().click();
     cy.getDataCy("session-view-menu-delete").should("be.visible");
     cy.getDataCy("session-view-menu-edit").should("be.visible").click();
     cy.getDataCy("edit-session-name").clear().type("Session custom");
@@ -137,7 +137,7 @@ describe("Set up project components", () => {
     cy.getDataCy("close-cancel-button").click();
 
     cy.getDataCy("session-view-menu-edit").should("be.visible");
-    cy.get(".offcanvas [data-cy=button-with-menu-dropdown]").first().click();
+    cy.getDataCy("session-launcher-menu-dropdown").first().click();
     cy.getDataCy("session-view-menu-update-environment")
       .should("be.visible")
       .click();
@@ -383,7 +383,7 @@ describe("Set up data connectors", () => {
     cy.getDataCy("data-connector-credentials")
       .should("be.visible")
       .parent()
-      .find("[data-cy=button-with-menu-dropdown]")
+      .find("[data-cy=data-connector-menu-dropdown]")
       .click();
     cy.getDataCy("data-connector-unlink").should("be.visible").click();
     cy.wait("@getProjectV2Permissions");
