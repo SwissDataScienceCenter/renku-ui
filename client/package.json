@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "4.12.0",
+  "version": "4.13.0",
   "private": true,
   "scripts": {
     "start": "react-router dev --port 3000",
@@ -70,7 +70,7 @@
     "dagre-d3-es": "^7.0.10",
     "dompurify": "^3.2.4",
     "dropzone": "^6.0.0-beta.2",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "express-prom-bundle": "^8.0.0",
     "file-saver": "^2.0.5",
     "filesize": "^6.4.0",
