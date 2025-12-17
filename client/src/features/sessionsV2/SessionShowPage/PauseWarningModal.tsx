@@ -18,16 +18,31 @@
 
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 
+import { toHumanDuration } from "~/utils/helpers/DurationUtils";
 import { PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS } from "../session.constants";
 
 interface PauseWarningModalProps {
   close: () => void;
   isOpen: boolean;
+  targetPauseDate?: Date | string;
 }
 export default function PauseWarningModal({
   close,
   isOpen,
+  targetPauseDate,
 }: PauseWarningModalProps) {
+  const deltaPause = targetPauseDate
+    ? (new Date(targetPauseDate).getTime() - new Date().getTime()) / 1_000
+    : null;
+  const stringyDuration =
+    deltaPause == null
+      ? toHumanDuration({
+          duration: PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS,
+        })
+      : deltaPause > 0
+      ? toHumanDuration({ duration: deltaPause })
+      : "a few seconds";
+
   return (
     <Modal
       backdrop="static"
@@ -36,13 +51,13 @@ export default function PauseWarningModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader tag="h2">Session will pause soon</ModalHeader>
+      <ModalHeader tag="h2">Session inactive</ModalHeader>
       <ModalBody>
-        <p>
-          Your session will shut down in{" "}
-          {PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS} seconds if there is no
-          activity. To keep your session active, please click the button below.
+        <p className="mb-2">
+          Your sessions appears to be inactive and will be paused in{" "}
+          {stringyDuration}.
         </p>
+        <p>To keep your session active, please click the button below.</p>
         <Button color="primary" onClick={close}>
           Keep my session active
         </Button>
