@@ -78,6 +78,7 @@ export default function ProvideSessionSecretModalContent({
           <Label
             for="provide-session-secret-mode-new-value"
             className={cx("btn", "btn-outline-primary")}
+            data-cy="provide-session-secret-mode-new-value-tab"
           >
             <PlusLg className={cx("bi", "me-1")} />
             Provide a new secret value
@@ -93,6 +94,7 @@ export default function ProvideSessionSecretModalContent({
           <Label
             for="provide-session-secret-mode-existing"
             className={cx("btn", "btn-outline-primary")}
+            data-cy="provide-session-secret-mode-existing-tab"
           >
             <BoxArrowInLeft className={cx("bi", "me-1")} />
             Use an existing secret value
@@ -190,6 +192,7 @@ function ProvideSessionSecretModalNewValueContent({
                 className={cx("form-control", errors.value && "is-invalid")}
                 placeholder="Your secret value..."
                 rows={6}
+                data-cy="provide-session-secret-mode-new-value-input"
                 {...field}
               />
             )}
@@ -205,11 +208,20 @@ function ProvideSessionSecretModalNewValueContent({
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-primary" onClick={toggle}>
+        <Button
+          color="outline-primary"
+          data-cy="provide-session-secret-close-button"
+          onClick={toggle}
+        >
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button color="primary" disabled={result.isLoading} type="submit">
+        <Button
+          color="primary"
+          disabled={result.isLoading}
+          data-cy="provide-session-secret-save-button"
+          type="submit"
+        >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
@@ -298,11 +310,20 @@ function ProvideSessionSecretModalExistingContent({
         />
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-primary" onClick={toggle}>
+        <Button
+          color="outline-primary"
+          data-cy="provide-session-secret-close-button"
+          onClick={toggle}
+        >
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button color="primary" disabled={result.isLoading} type="submit">
+        <Button
+          color="primary"
+          data-cy="provide-session-secret-use-secret-button"
+          disabled={result.isLoading}
+          type="submit"
+        >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (

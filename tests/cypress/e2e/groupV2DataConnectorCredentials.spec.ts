@@ -21,7 +21,7 @@ import fixtures from "../support/renkulab-fixtures";
 function openDataConnectorMenu() {
   cy.getDataCy("data-connector-edit")
     .parent()
-    .find("[data-cy=button-with-menu-dropdown]")
+    .find("[data-cy=data-connector-menu-dropdown]")
     .first()
     .click();
 }
