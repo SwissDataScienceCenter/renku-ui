@@ -68,7 +68,6 @@ import {
 } from "../api/sessionsV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import {
-  PAUSE_SESSION_REFRESH_DATA_AFTER_PATCH_SECONDS,
   PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS,
   PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS,
 } from "../session.constants";
@@ -109,7 +108,6 @@ export default function ShowSessionPage() {
     data: sessions,
     isLoading,
     isFetching,
-    refetch, // ! TEMP
   } = useGetSessionsQuery(undefined, { refetchOnMountOrArgChange: true });
 
   const thisSession = useMemo(() => {
@@ -127,11 +125,10 @@ export default function ShowSessionPage() {
     setLastClosedWarningModal(new Date());
     patchSession({
       sessionId: sessionName,
-      sessionPatchRequest: { lastInteraction: new Date().toISOString() },
+      sessionPatchRequest: {
+        lastInteraction: "now",
+      },
     });
-    setTimeout(() => {
-      refetch(); // ! TEMP
-    }, PAUSE_SESSION_REFRESH_DATA_AFTER_PATCH_SECONDS * 1000);
   };
 
   // Show error toast if postponing pause failed
@@ -296,6 +293,7 @@ export default function ShowSessionPage() {
     <PauseWarningModal
       close={closePauseWarningModal}
       isOpen={showPauseWarningModal}
+      targetPauseDate={thisSession?.status.will_hibernate_at ?? undefined}
     />
   );
 
