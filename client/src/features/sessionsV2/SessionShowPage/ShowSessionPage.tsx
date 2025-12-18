@@ -120,7 +120,7 @@ export default function ShowSessionPage() {
   const [patchSession, { error: postponePauseError }] =
     usePatchSessionsBySessionIdMutation();
 
-  const closePauseWarningModal = () => {
+  const closePauseWarningModal = useCallback(() => {
     setShowPauseWarningModal(false);
     setLastClosedWarningModal(new Date());
     patchSession({
@@ -129,7 +129,7 @@ export default function ShowSessionPage() {
         lastInteraction: "now",
       },
     });
-  };
+  }, [patchSession, sessionName]);
 
   // Show error toast if postponing pause failed
   const [showPatchErrorToast, setShowPatchErrorToast] = useState(false);
@@ -181,11 +181,11 @@ export default function ShowSessionPage() {
       showWarningIfNeeded();
       return;
     }
-    const id = window.setTimeout(showWarningIfNeeded, nextNotificationDelay);
+    const id = setTimeout(showWarningIfNeeded, nextNotificationDelay);
 
     // Cleanup timeout on unmount or when nextPauseWarning changes
     return () => {
-      window.clearTimeout(id);
+      clearTimeout(id);
     };
   }, [lastClosedWarningModal, nextPauseWarning]);
 
