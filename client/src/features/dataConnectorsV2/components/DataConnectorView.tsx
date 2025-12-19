@@ -490,7 +490,13 @@ function DataConnectorViewMetadata({
       typeof dataConnector.storage.configuration["doi"] === "string"
         ? parseDoi(dataConnector.storage.configuration["doi"])
         : null;
-    return doi || dataConnector.doi;
+    if (doi) {
+      return doi;
+    }
+    if (dataConnector.doi) {
+      return parseDoi(dataConnector.doi);
+    }
+    return null;
   }, [dataConnector.storage.configuration, scope, dataConnector.doi]);
 
   const sortedKeywords = useMemo(() => {
