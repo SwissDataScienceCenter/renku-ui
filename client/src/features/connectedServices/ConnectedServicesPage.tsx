@@ -23,6 +23,7 @@ import {
   BoxArrowUpRight,
   CircleFill,
   HandIndexThumb,
+  InfoCircle,
   Plugin,
   XLg,
 } from "react-bootstrap-icons";
@@ -64,6 +65,7 @@ import {
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
 import {
+  SEARCH_PARAM_ACTION_REQUIRED,
   SEARCH_PARAM_PROVIDER,
   SEARCH_PARAM_SOURCE,
 } from "./connectedServices.constants";
@@ -79,6 +81,7 @@ export default function ConnectedServicesPage() {
   const [searchParams] = useSearchParams();
   const targetProviderId = searchParams.get(SEARCH_PARAM_PROVIDER);
   const source = searchParams.get(SEARCH_PARAM_SOURCE);
+  const actionRequired = searchParams.get(SEARCH_PARAM_ACTION_REQUIRED);
 
   const {
     data: providers,
@@ -120,6 +123,7 @@ export default function ConnectedServicesPage() {
       {sortedProviders.map((provider) => (
         <ConnectedServiceCard
           key={provider.id}
+          actionRequired={!!actionRequired}
           highlighted={provider.id === targetProviderId}
           provider={provider}
           source={
@@ -187,12 +191,14 @@ function ConnectedServiceStatus({ connection }: ConnectedServiceStatusProps) {
 }
 
 interface ConnectedServiceCardProps {
+  actionRequired?: boolean;
   highlighted?: boolean;
   provider: Provider;
   source?: string;
 }
 
 function ConnectedServiceCard({
+  actionRequired = false,
   highlighted = false,
   provider,
   source,
@@ -207,6 +213,12 @@ function ConnectedServiceCard({
     [connections, id]
   );
 
+  const goBackButton = source && (
+    <Link to={source} className={cx("primary")}>
+      go back to your project
+    </Link>
+  );
+
   return (
     <div data-cy="connected-services-card" className={cx("col-12", "col-lg-6")}>
       <Card
@@ -215,25 +227,35 @@ function ConnectedServiceCard({
         <CardBody>
           {highlighted && (
             <Alert
-              color="warning"
-              className={cx("border-warning", "shadow-sm")}
+              color={actionRequired ? "warning" : "info"}
+              className={cx(
+                actionRequired ? "border-warning" : "border-info",
+                "shadow-sm"
+              )}
             >
               <p className="mb-0">
-                <HandIndexThumb className={cx("bi", "me-1")} />
-                Action required. Please connect to this integration
-                {source && (
+                {actionRequired ? (
                   <>
-                    {" "}
-                    and then{" "}
-                    <Link to={source} className={cx("primary")}>
-                      go back to your project
-                    </Link>
+                    <HandIndexThumb className={cx("bi", "me-1")} />
+                    Action required. Please connect to this integration
+                    {source && <> and then {goBackButton}</>}.
+                  </>
+                ) : (
+                  <>
+                    <InfoCircle className={cx("bi", "me-1")} />
+                    Check your integration settings here.
+                    {source && (
+                      <span>
+                        <br />
+                        You can later {goBackButton}.
+                      </span>
+                    )}
                   </>
                 )}
-                .
               </p>
             </Alert>
           )}
+
           <CardTitle>
             <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
               <h2 className="me-2">{display_name}</h2>

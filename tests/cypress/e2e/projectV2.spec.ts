@@ -438,7 +438,7 @@ describe("Edit v2 project", () => {
     cy.wait("@readProjectV2");
     cy.contains("@user3").should("be.visible");
     cy.getDataCy("project-member-edit-2").should("be.visible").click();
-    cy.getDataCy("member-role").select("Viewer");
+    cy.get("#member-role").click().contains("Viewer").click();
     fixtures.listProjectV2Members({
       removeMemberId: projectMemberToEdit,
       addMember: {
@@ -479,7 +479,7 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-member-edit-0").should("be.enabled");
     cy.getDataCy("project-member-edit-1").should("be.enabled");
     cy.getDataCy("project-member-edit-0").should("be.visible").click();
-    cy.getDataCy("member-role").select("Viewer");
+    cy.get("#member-role").click().contains("Viewer").click();
     fixtures.listProjectV2Members({
       fixture: "projectV2/list-projectV2-members-many.json",
       removeMemberId: projectMemberToEdit,

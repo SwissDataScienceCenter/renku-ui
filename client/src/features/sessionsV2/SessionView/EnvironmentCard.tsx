@@ -322,31 +322,49 @@ function CustomImageEnvironmentValues({
         )}
       </div>
       <EnvironmentRowWithLabel
+        dataCy="session-view-session-environment-image"
         label="Container image"
         value={environment?.container_image || ""}
       />
       <EnvironmentRowWithLabel
         label="Default URL path"
         value={environment.default_url}
+        dataCy="session-view-default-url"
       />
-      <EnvironmentRowWithLabel label="Port" value={environment.port} />
+      <EnvironmentRowWithLabel
+        label="Port"
+        value={environment.port}
+        dataCy="session-view-port"
+      />
       <EnvironmentRowWithLabel
         label="Working directory"
         value={environment.working_directory}
+        dataCy="session-view-working-directory"
       />
       <EnvironmentRowWithLabel
         label="Mount directory"
         value={environment.mount_directory}
+        dataCy="session-view-mount-directory"
       />
-      <EnvironmentRowWithLabel label="UID" value={environment.uid} />
-      <EnvironmentRowWithLabel label="GID" value={environment.gid} />
+      <EnvironmentRowWithLabel
+        label="UID"
+        value={environment.uid}
+        dataCy="session-view-uid"
+      />
+      <EnvironmentRowWithLabel
+        label="GID"
+        value={environment.gid}
+        dataCy="session-view-gid"
+      />
       <EnvironmentJSONArrayRowWithLabel
         label="Command"
         value={safeStringify(environment.command)}
+        dataCy="session-view-command"
       />
       <EnvironmentJSONArrayRowWithLabel
         label="Args"
         value={safeStringify(environment.args)}
+        dataCy="session-view-args"
       />
       <EnvironmentRowWithLabel
         label="Strip session URL path prefix"
@@ -547,15 +565,17 @@ function EnvironmentRow({ children }: { children?: ReactNode }) {
 function EnvironmentRowWithLabel({
   label,
   value,
+  dataCy,
 }: {
   label: string;
   value?: string | number | null;
+  dataCy?: string;
 }) {
   return (
     <EnvironmentRow>
       <div className="d-block">
         <label className={cx("text-nowrap", "mb-0", "me-2")}>{label}:</label>
-        <code>{value ?? "-"}</code>
+        <code data-cy={dataCy}>{value ?? "-"}</code>
       </div>
     </EnvironmentRow>
   );
@@ -564,9 +584,11 @@ function EnvironmentRowWithLabel({
 function EnvironmentJSONArrayRowWithLabel({
   label,
   value,
+  dataCy,
 }: {
   label: string;
   value?: string | number | null;
+  dataCy?: string;
 }) {
   return (
     <EnvironmentRow>
@@ -575,7 +597,7 @@ function EnvironmentJSONArrayRowWithLabel({
         {value === null ? (
           <ErrorLabel text={"Invalid JSON array value"} />
         ) : (
-          <code> {value} </code>
+          <code data-cy={dataCy}> {value} </code>
         )}
       </div>
     </EnvironmentRow>
