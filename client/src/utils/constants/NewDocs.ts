@@ -52,3 +52,6 @@ export const NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS =
   newDocsAdminOperationsRemoteSessionsFn(DEFAULT_NEW_DOC_LINK_ARGS);
 export const NEW_DOCS_ADMIN_HOW_TO_GUIDE_INCIDENTS =
   "https://docs.renkulab.io/en/0.70.0/how-to-guides/admin/incidents-maintenance.html";
+
+export const NEW_DOCS_DATA_CONNECTORS_FROM_REPO =
+  "docs/users/data/guides/connect-data/connect-data-from-data-repositories";
