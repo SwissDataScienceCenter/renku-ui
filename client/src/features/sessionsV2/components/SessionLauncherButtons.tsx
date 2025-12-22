@@ -92,7 +92,7 @@ function SessionLauncherDefaultAction({
       </Button>
     );
 
-  const launchAction = !displayLaunchSession ? null : (
+  const launchAction = displayLaunchSession && (
     <span id={`launch-btn-${launcher.id}`}>
       <Link
         className={cx(
