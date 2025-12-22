@@ -140,11 +140,19 @@ export default function SessionSecretsModal({
       <ModalHeader tag="h2">Session secrets</ModalHeader>
       <ModalBody>{content}</ModalBody>
       <ModalFooter>
-        <Button color="outline-danger" onClick={onCancel}>
+        <Button
+          color="outline-danger"
+          data-cy="session-secrets-modal-cancel-button"
+          onClick={onCancel}
+        >
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
-        <Button color="outline-primary" onClick={onSkip}>
+        <Button
+          color="outline-primary"
+          data-cy="session-secrets-modal-skip-button"
+          onClick={onSkip}
+        >
           <SkipForward className={cx("bi", "me-1")} />
           Skip
         </Button>
@@ -271,6 +279,7 @@ function UnreadySessionSecretItem({
             <Label
               for={newValueId}
               className={cx("btn", "btn-outline-primary")}
+              data-cy="session-secrets-unready-new-value-tab"
             >
               <PlusLg className={cx("bi", "me-1")} />
               Provide a new secret value
@@ -286,6 +295,7 @@ function UnreadySessionSecretItem({
             <Label
               for={existingId}
               className={cx("btn", "btn-outline-primary")}
+              data-cy="session-secrets-unready-existing-tab"
             >
               <BoxArrowInLeft className={cx("bi", "me-1")} />
               Use an existing secret value
@@ -362,6 +372,7 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
                 className={cx("form-control", errors.value && "is-invalid")}
                 placeholder="Your secret value..."
                 rows={6}
+                data-cy="session-secrets-unready-new-value-input"
                 {...field}
               />
             )}
@@ -377,7 +388,12 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
         </div>
       </CardBody>
       <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
-        <Button color="primary" disabled={result.isLoading} type="submit">
+        <Button
+          color="primary"
+          disabled={result.isLoading}
+          type="submit"
+          data-cy="session-secrets-unready-save-button"
+        >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (

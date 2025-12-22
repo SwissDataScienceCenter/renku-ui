@@ -174,6 +174,7 @@ export function DataConnectorModalContinueButton({
           continueId="add-data-connector-continue"
           step={cloudStorageState.step}
           testId="test-data-connector"
+          disableContinueButton={disableContinueButton}
           editDataConnector={addOrEditStorage}
         />
         {disableContinueButton && (
@@ -181,11 +182,7 @@ export function DataConnectorModalContinueButton({
             placement="top"
             target={`${continueButtonId}-div`}
           >
-            {!flatDataConnector.schema
-              ? "Please select a storage type"
-              : selectedSchemaHasAccessMode
-              ? "Please select a mode or change storage type"
-              : "Please select a provider or change storage type"}
+            Please fill out all fields labeled as required
           </UncontrolledTooltip>
         )}
       </div>
@@ -209,10 +206,19 @@ export function DataConnectorModalContinueButton({
             id="add-data-connector-continue-button"
             data-cy="add-data-connector-continue-button"
             className={cx("btn-primary")}
+            disabled={disableContinueButton}
             onClick={addOrEditStorage}
           >
             <PencilSquare className={cx("bi", "me-1")} /> Update connector
           </Button>
+          {disableContinueButton && (
+            <UncontrolledTooltip
+              placement="top"
+              target="add-data-connector-continue-div"
+            >
+              Please fill out all fields labeled as required
+            </UncontrolledTooltip>
+          )}
         </div>
       </div>
     );
@@ -292,12 +298,14 @@ interface TestConnectionAndContinueButtonsProps
   continueId: string;
   step: number;
   testId: string;
+  disableContinueButton: boolean;
   editDataConnector?: () => void;
 }
 function TestConnectionAndContinueButtons({
   continueId,
   step,
   testId,
+  disableContinueButton,
   editDataConnector,
 }: TestConnectionAndContinueButtonsProps) {
   const dispatch = useAppDispatch();
@@ -393,7 +401,7 @@ function TestConnectionAndContinueButtons({
         color={testConnectionColor}
         id={buttonTestId}
         data-cy={buttonTestId}
-        disabled={validationResult.isLoading}
+        disabled={disableContinueButton || validationResult.isLoading}
         onClick={() => validateConnection()}
       >
         {testConnectionContent}
