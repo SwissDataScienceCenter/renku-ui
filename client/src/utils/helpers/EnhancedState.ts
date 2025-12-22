@@ -28,6 +28,7 @@ import {
   StoreEnhancer,
 } from "@reduxjs/toolkit";
 
+import { notificationsEmptyApi as notificationsApi } from "~/features/notifications/api/notifications.empty-api";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
@@ -95,6 +96,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [doiResolverApi.reducerPath]: doiResolverApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
+    [notificationsApi.reducerPath]: notificationsApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
@@ -132,6 +134,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(doiResolverApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(notificationsApi.middleware)
         .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)
