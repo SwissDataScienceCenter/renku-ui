@@ -142,7 +142,8 @@ jobs:
     steps:
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
-      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.20.0
+      - name: Run Cypress tests
+        uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.20.0
         with:
           e2e-folder: cypress/e2e/v2/
           e2e-target: ${{ matrix.tests }}
@@ -155,6 +156,11 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.deploy == 'true' && needs.check-deploy.outputs.test-slow-enabled == 'true'
+    permissions:
+      pull-requests: write
+      id-token: write
+    env:
+      KUBECONFIG: "${{ github.workspace }}/renkubot-kube.config"
     strategy:
       fail-fast: false
       matrix:
@@ -162,9 +168,31 @@ jobs:
           - sessions
           - sessionSecrets
     steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CI_RENKU_AZURE_SUBSCRIPTION_ID }}
+      - name: Set AKS context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: "renku-dev"
+          cluster-name: "aks-switzerlandnorth-renku-dev"
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials --resource-group renku-dev --name aks-switzerlandnorth-renku-dev --file "${{ github.workspace }}/renkubot-kube.config"
+          chmod 400 "${{ github.workspace }}/renkubot-kube.config"
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: "latest"
+      - name: Check kubectl config and access to cluster
+        run: kubectl get pods -A
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
-      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.20.0
+      - name: Run Cypress slow tests
+        uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.20.0
         with:
           e2e-folder: cypress/e2e/slow/
           e2e-target: ${{ matrix.tests }}
