@@ -231,15 +231,23 @@ export default function HelpRelease() {
           <ComponentDetails />
         </Col>
       </Row>
+      <Row className="mt-5">
+        <Col>
+          <h2>License</h2>
+        </Col>
+      </Row>
       <Row className="mt-3">
         <Col xs={12}>
           <>
+            Renku is developed under the
             <ExternalLink
+              className="ms-1"
               url={`${Links.GITHUB}/blob/master/LICENSE`}
-              title="Renku License"
+              title="Apache License"
               role="text"
               showLinkIcon={true}
             />
+            .
           </>
         </Col>
       </Row>
