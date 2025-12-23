@@ -55,4 +55,4 @@ export const NEW_DOCS_ADMIN_HOW_TO_GUIDE_INCIDENTS =
 
 export const NEW_DOCS_DATA_CONNECTORS_FROM_REPO = newDocsLinkPage(
   "docs/users/data/guides/connect-data/connect-data-from-data-repositories"
-);
+)(DEFAULT_NEW_DOC_LINK_ARGS);
