@@ -20,6 +20,7 @@ import { useContext } from "react";
 import { useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import { Links } from "~/utils/constants/Docs";
 import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
 import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
@@ -213,7 +214,8 @@ export default function HelpRelease() {
         <Col>
           <h2>Release Information</h2>
         </Col>
-
+      </Row>
+      <Row className="mt-3">
         <Col xs={12}>
           <p>
             For detailed information about new Renku features and the latest
@@ -227,6 +229,26 @@ export default function HelpRelease() {
 
         <Col xs={12}>
           <ComponentDetails />
+        </Col>
+      </Row>
+      <Row className="mt-5">
+        <Col>
+          <h2>License</h2>
+        </Col>
+      </Row>
+      <Row className="mt-3">
+        <Col xs={12}>
+          <>
+            Renku is developed under the
+            <ExternalLink
+              className="ms-1"
+              url={`${Links.GITHUB}/blob/master/LICENSE`}
+              title="Apache License"
+              role="text"
+              showLinkIcon={true}
+            />
+            .
+          </>
         </Col>
       </Row>
     </>
