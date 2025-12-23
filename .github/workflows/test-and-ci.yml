@@ -129,13 +129,13 @@ jobs:
           wait-on: http://localhost:3000/
           wait-on-timeout: 300
           working-directory: tests
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure() # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
         with:
           name: cypress-screenshots
           path: tests/cypress/screenshots
           retention-days: 7
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always() # Cypress test video is always captured, so this action uses "always()" condition
         with:
           name: cypress-videos
@@ -159,13 +159,13 @@ jobs:
           echo "GIT_USER=Renku Bot" >> $GITHUB_ENV
           echo "GIT_EMAIL=renku@datascience.ch" >> $GITHUB_ENV
       - name: Push images
-        uses: SwissDataScienceCenter/renku-actions/publish-chartpress-images@v1.19.1
+        uses: SwissDataScienceCenter/renku-actions/publish-chartpress-images@v1.20.0
         env:
           PLATFORMS: "linux/amd64,linux/arm64"
           DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
       - name: Update ui version
-        uses: SwissDataScienceCenter/renku-actions/update-component-version@v1.19.1
+        uses: SwissDataScienceCenter/renku-actions/update-component-version@v1.20.0
         env:
           GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
           COMPONENT_NAME: renku-ui
