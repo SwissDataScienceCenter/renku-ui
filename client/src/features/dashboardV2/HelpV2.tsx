@@ -67,7 +67,7 @@ function HelpNav({ statuspageId }: HelpNavProps) {
       )}
       <NavItem>
         <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.release}>
-          Release Information
+          Release and License
         </RenkuNavLinkV2>
       </NavItem>
       {termsConfigured && (

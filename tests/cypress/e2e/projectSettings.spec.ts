@@ -288,7 +288,8 @@ describe("Cloud storage settings page", () => {
   });
 
   it("can update an existing storage", () => {
-    fixtures.versions().cloudStorageStar().testCloudStorage();
+    fixtures.getStorageSchema();
+    fixtures.versions().cloudStorage().testCloudStorage();
     fixtures.patchCloudStorage();
     cy.visit("/projects/e2e/local-test-project/settings/storage");
     cy.wait("@getNotebooksVersions");
@@ -419,7 +420,10 @@ describe("Cloud storage settings page", () => {
       .click();
     cy.getDataCy("cloud-storage-edit-next-button").should("be.visible").click();
 
+    cy.getDataCy("test-cloud-storage-button").should("be.disabled");
     cy.get("#sourcePath").should("have.value", "").type("bucket/my-source");
+    cy.getDataCy("test-cloud-storage-button").should("be.disabled");
+    cy.get("#url").type("https://example.com"); // Because this field is required.
     cy.getDataCy("test-cloud-storage-button").should("be.visible").click();
     cy.getDataCy("add-cloud-storage-continue-button")
       .should("be.visible")

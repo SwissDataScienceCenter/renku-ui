@@ -163,10 +163,16 @@ export default function SessionImageModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader tag="h2">Session image not accessible</ModalHeader>
+      <ModalHeader tag="h2" data-cy="session-image-not-accessible-header">
+        Session image not accessible
+      </ModalHeader>
       <ModalBody>{content}</ModalBody>
       <ModalFooter>
-        <Button color="outline-danger" onClick={onCancel}>
+        <Button
+          color="outline-danger"
+          onClick={onCancel}
+          data-cy="session-image-not-accessible-cancel-button"
+        >
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>

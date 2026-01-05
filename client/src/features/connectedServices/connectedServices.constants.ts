@@ -18,4 +18,5 @@
 
 export const INTERNAL_GITLAB_PROVIDER_ID = "INTERNAL_GITLAB";
 export const SEARCH_PARAM_PROVIDER = "targetProvider";
+export const SEARCH_PARAM_ACTION_REQUIRED = "actionRequired";
 export const SEARCH_PARAM_SOURCE = "source";

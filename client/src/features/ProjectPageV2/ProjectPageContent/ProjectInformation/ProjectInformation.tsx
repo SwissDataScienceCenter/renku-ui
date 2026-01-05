@@ -160,7 +160,9 @@ export default function ProjectInformation({
         title="Namespace:"
       >
         <p className="mb-0">
-          <Link to={namespaceUrl}>{namespaceName}</Link>
+          <Link data-cy="project-namespace-link" to={namespaceUrl}>
+            {namespaceName}
+          </Link>
         </p>
       </ProjectInformationBox>
       <ProjectInformationBox icon={<Eye className="bi" />} title="Visibility:">

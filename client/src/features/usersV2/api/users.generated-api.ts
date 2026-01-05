@@ -245,16 +245,18 @@ export type UserWithId = {
 export type UsersWithId = UserWithId[];
 export type Ulid = string;
 export type SecretName = string;
-export type SecretDefaultFilename = string;
-export type ModificationDate = string;
 export type SecretKind = "general" | "storage";
+export type ExpirationTimestamp = string | null;
+export type ModificationDate = string;
+export type SecretDefaultFilename = string;
 export type UlidList = Ulid[];
 export type SecretWithId = {
   id: Ulid;
   name: SecretName;
-  default_filename: SecretDefaultFilename;
-  modification_date: ModificationDate;
   kind: SecretKind;
+  expiration_timestamp?: ExpirationTimestamp;
+  modification_date: ModificationDate;
+  default_filename: SecretDefaultFilename;
   session_secret_slot_ids: UlidList;
   data_connector_ids: UlidList;
 };
@@ -262,14 +264,16 @@ export type SecretsList = SecretWithId[];
 export type SecretValue = string;
 export type SecretPost = {
   name: SecretName;
-  default_filename?: SecretDefaultFilename;
   value: SecretValue;
   kind?: SecretKind & any;
+  expiration_timestamp?: ExpirationTimestamp;
+  default_filename?: SecretDefaultFilename;
 };
 export type SecretPatch = {
   name?: SecretName;
-  default_filename?: SecretDefaultFilename;
   value?: SecretValue;
+  expiration_timestamp?: ExpirationTimestamp;
+  default_filename?: SecretDefaultFilename;
 };
 export type Version = {
   version: string;

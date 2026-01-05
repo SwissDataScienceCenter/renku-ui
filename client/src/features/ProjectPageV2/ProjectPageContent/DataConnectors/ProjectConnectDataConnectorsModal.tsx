@@ -39,6 +39,7 @@ import {
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "~/features/dataConnectorsV2/components/DataConnectorModal";
+import { NEW_DOCS_DATA_CONNECTORS_FROM_REPO } from "~/utils/constants/NewDocs";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
@@ -51,7 +52,6 @@ import {
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsGlobalMutation,
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import { DATA_CONNECTORS_DOI_DOCS_URL } from "../../../dataConnectorsV2/components/dataConnector.constants";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 
@@ -506,7 +506,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
             iconAfter={true}
             role="link"
             title="in our documentation"
-            url={DATA_CONNECTORS_DOI_DOCS_URL}
+            url={NEW_DOCS_DATA_CONNECTORS_FROM_REPO}
           />
           .
         </p>

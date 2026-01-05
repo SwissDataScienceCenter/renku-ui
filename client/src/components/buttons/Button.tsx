@@ -125,6 +125,7 @@ interface ButtonWithMenuV2Props {
   children?: React.ReactNode;
   className?: string;
   color?: string;
+  dataCy?: string;
   default: React.ReactNode;
   direction?: "up" | "down" | "start" | "end";
   disabled?: boolean;
@@ -139,6 +140,7 @@ export function SplitButtonWithMenu({
   children,
   className,
   color,
+  dataCy,
   default: defaultButton,
   direction,
   disabled,
@@ -168,7 +170,7 @@ export function SplitButtonWithMenu({
         className={cx("border-start-0", "dropdown-toggle-split")}
         data-bs-toggle="dropdown"
         color={color ?? "primary"}
-        data-cy="button-with-menu-dropdown"
+        data-cy={dataCy ?? "button-with-menu-dropdown"}
         disabled={isDisabledDropdownToggle ?? disabled}
       />
       <DropdownMenu end>{children}</DropdownMenu>

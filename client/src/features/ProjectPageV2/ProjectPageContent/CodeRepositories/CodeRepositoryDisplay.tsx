@@ -51,6 +51,11 @@ import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import { ExternalLink } from "~/components/LegacyExternalLinks";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import {
+  SEARCH_PARAM_ACTION_REQUIRED,
+  SEARCH_PARAM_PROVIDER,
+  SEARCH_PARAM_SOURCE,
+} from "~/features/connectedServices/connectedServices.constants";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
@@ -569,8 +574,8 @@ function RepositoryView({
 
   const search = useMemo(() => {
     return `?${new URLSearchParams({
-      targetProvider: data?.provider?.id ?? "",
-      source: `${pathname}${hash}`,
+      [SEARCH_PARAM_PROVIDER]: data?.provider?.id ?? "",
+      [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
     }).toString()}`;
   }, [data, pathname, hash]);
 
@@ -746,8 +751,15 @@ export function RepositoryCallToActionAlert({
 
   const search = useMemo(() => {
     return `?${new URLSearchParams({
-      targetProvider: data?.provider?.id ?? "",
-      source: `${pathname}${hash}`,
+      [SEARCH_PARAM_PROVIDER]: data?.provider?.id ?? "",
+      [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
+    }).toString()}`;
+  }, [data, pathname, hash]);
+  const searchActionRequired = useMemo(() => {
+    return `?${new URLSearchParams({
+      [SEARCH_PARAM_PROVIDER]: data?.provider?.id ?? "",
+      [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
+      [SEARCH_PARAM_ACTION_REQUIRED]: "true",
     }).toString()}`;
   }, [data, pathname, hash]);
 
@@ -780,7 +792,10 @@ export function RepositoryCallToActionAlert({
                   className={cx("btn", "btn-primary", "btn-sm")}
                   to={{
                     pathname: ABSOLUTE_ROUTES.v2.integrations,
-                    search,
+                    search:
+                      data?.connection?.status === "connected"
+                        ? search
+                        : searchActionRequired,
                   }}
                 >
                   <Plugin className={cx("bi", "me-1")} />
@@ -802,7 +817,6 @@ export function RepositoryCallToActionAlert({
                   <Link
                     to={{
                       pathname: ABSOLUTE_ROUTES.v2.integrations,
-                      search,
                     }}
                   >
                     <Plugin className={cx("bi", "me-1")} />
@@ -886,7 +900,7 @@ export function RepositoryCallToActionAlert({
           className={cx("btn", "btn-primary", "btn-sm")}
           to={{
             pathname: ABSOLUTE_ROUTES.v2.integrations,
-            search,
+            search: searchActionRequired,
           }}
         >
           <Plugin className={cx("bi", "me-1")} />
@@ -921,7 +935,7 @@ export function RepositoryCallToActionAlert({
             className={cx("btn", "btn-primary", "btn-sm")}
             to={{
               pathname: ABSOLUTE_ROUTES.v2.integrations,
-              search,
+              search: searchActionRequired,
             }}
           >
             <Plugin className={cx("bi", "me-1")} />
