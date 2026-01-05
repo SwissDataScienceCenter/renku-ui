@@ -34,6 +34,24 @@ interface ExternalLinkProps extends AnchorProps {
   icon?: ReactNode;
 }
 
+/**
+ * Usage:
+ *
+ * Simple external link:
+ * ```tsx
+ * <ExternalLink href={href}>link text<ExternalLink>
+ * ```
+ *
+ * Without the icon:
+ * ```tsx
+ * <ExternalLink icon={null} href={href}>link text<ExternalLink>
+ * ```
+ *
+ * With additional props:
+ * ```tsx
+ * <ExternalLink classname="text-danger" data-cy="my-link" href={href}>link text<ExternalLink>
+ * ```
+ */
 export default function ExternalLink({
   icon: icon_,
   rel: rel_,
