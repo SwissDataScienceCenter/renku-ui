@@ -20,9 +20,9 @@ import { useContext } from "react";
 import { useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
 import { Links } from "~/utils/constants/Docs";
 import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
-import { ExternalLink } from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
 import {
   useGetCoreVersionsQuery,
@@ -60,7 +60,9 @@ function ComponentAndDevVersion({
   const releaseUrl = componentDocsUrl(componentUrl, taggedVersion, devHash);
   return (
     <>
-      <ExternalLink role="text" title={taggedVersion} url={releaseUrl} />
+      <ExternalLink icon={null} href={releaseUrl}>
+        {taggedVersion}
+      </ExternalLink>
       {devHash != null && (
         <>
           {" "}
@@ -239,14 +241,10 @@ export default function HelpRelease() {
       <Row className="mt-3">
         <Col xs={12}>
           <>
-            Renku is developed under the
-            <ExternalLink
-              className="ms-1"
-              url={`${Links.GITHUB}/blob/master/LICENSE`}
-              title="Apache License"
-              role="text"
-              showLinkIcon={true}
-            />
+            Renku is developed under the{" "}
+            <ExternalLink href={`${Links.GITHUB}/blob/master/LICENSE`}>
+              Apache License
+            </ExternalLink>
             .
           </>
         </Col>
