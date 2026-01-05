@@ -49,7 +49,7 @@ import {
 
 import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
-import { ExternalLink } from "~/components/LegacyExternalLinks";
+import ExternalLink from "~/components/ExternalLink";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
   SEARCH_PARAM_ACTION_REQUIRED,
@@ -626,13 +626,7 @@ function RepositoryView({
               <div className="mb-4">
                 <h3>Repository</h3>
                 <p>
-                  URL:{" "}
-                  <ExternalLink
-                    iconAfter={true}
-                    role="link"
-                    url={webUrl}
-                    title={webUrl}
-                  />
+                  URL: <ExternalLink href={webUrl}>{webUrl}</ExternalLink>
                 </p>
                 {data?.metadata?.git_url && (
                   <div>
