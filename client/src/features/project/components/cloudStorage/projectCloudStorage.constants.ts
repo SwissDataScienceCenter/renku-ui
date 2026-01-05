@@ -74,6 +74,11 @@ export const CLOUD_STORAGE_OVERRIDE = {
       description: "Cloud storage service for the Swiss university community",
       position: 4,
     },
+    openbis: {
+      name: "openBIS",
+      forceReadOnly: true,
+      position: 6,
+    },
   } as Record<string, Partial<CloudStorageOverride>>,
 };
 
@@ -223,12 +228,12 @@ export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
   polybox: {
     help: "Specify a path to a sub folder to connect to. When left blank, the connection will be made to the default (root) folder.",
     placeholder: "'/' or 'optional-sub-folder(s)/'",
-    label: "Sub path (optional)",
+    label: "Sub path",
   },
   switchDrive: {
     help: "Specify a path to a sub folder to connect to. When left blank, the connection will be made to the default (root) folder.",
     placeholder: "'/' or 'optional-sub-folder(s)/'",
-    label: "Sub path (optional)",
+    label: "Sub path",
   },
   generic: {
     help:
@@ -246,6 +251,7 @@ export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
   "webdav",
   "azureblob",
   "sftp",
+  "openbis",
 ];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {

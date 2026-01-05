@@ -639,14 +639,17 @@
           "name": {
             "$ref": "#/components/schemas/SecretName"
           },
-          "default_filename": {
-            "$ref": "#/components/schemas/SecretDefaultFilename"
+          "kind": {
+            "$ref": "#/components/schemas/SecretKind"
+          },
+          "expiration_timestamp": {
+            "$ref": "#/components/schemas/ExpirationTimestamp"
           },
           "modification_date": {
             "$ref": "#/components/schemas/ModificationDate"
           },
-          "kind": {
-            "$ref": "#/components/schemas/SecretKind"
+          "default_filename": {
+            "$ref": "#/components/schemas/SecretDefaultFilename"
           },
           "session_secret_slot_ids": {
             "$ref": "#/components/schemas/UlidList"
@@ -673,9 +676,6 @@
           "name": {
             "$ref": "#/components/schemas/SecretName"
           },
-          "default_filename": {
-            "$ref": "#/components/schemas/SecretDefaultFilename"
-          },
           "value": {
             "$ref": "#/components/schemas/SecretValue"
           },
@@ -689,6 +689,12 @@
               }
             ],
             "default": "general"
+          },
+          "expiration_timestamp": {
+            "$ref": "#/components/schemas/ExpirationTimestamp"
+          },
+          "default_filename": {
+            "$ref": "#/components/schemas/SecretDefaultFilename"
           }
         },
         "required": ["name", "value"]
@@ -701,11 +707,14 @@
           "name": {
             "$ref": "#/components/schemas/SecretName"
           },
-          "default_filename": {
-            "$ref": "#/components/schemas/SecretDefaultFilename"
-          },
           "value": {
             "$ref": "#/components/schemas/SecretValue"
+          },
+          "expiration_timestamp": {
+            "$ref": "#/components/schemas/ExpirationTimestamp"
+          },
+          "default_filename": {
+            "$ref": "#/components/schemas/SecretDefaultFilename"
           }
         }
       },
@@ -757,6 +766,14 @@
       "ShowProjectMigrationBanner": {
         "description": "Should display project migration banner",
         "type": "boolean"
+      },
+      "ExpirationTimestamp": {
+        "description": "The date and time the secret is not valid anymore (this is in any timezone)",
+        "type": "string",
+        "nullable": true,
+        "format": "date-time",
+        "example": "2030-11-01T17:32:28UTC+01:00",
+        "default": null
       },
       "UserPreferences": {
         "type": "object",

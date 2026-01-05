@@ -23,7 +23,6 @@ import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Input,
   Label,
   Modal,
   ModalBody,
@@ -33,6 +32,7 @@ import {
 
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
+import ProjectMemberRoleSelect from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectMemberRoleSelect";
 import type {
   ProjectMemberPatchRequest,
   ProjectMemberResponse,
@@ -115,19 +115,33 @@ function EditProjectMemberAccessForm({
             <Controller
               control={control}
               name="role"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", "ms-3")}
-                  data-cy="member-role"
-                  id="member-role"
-                  type="select"
-                  style={{ maxWidth: "7em" }}
-                  {...field}
-                >
-                  <option value="viewer">Viewer</option>
-                  <option value="editor">Editor</option>
-                  <option value="owner">Owner</option>
-                </Input>
+              render={({
+                field: { onBlur, onChange, value, disabled },
+                fieldState: { error },
+              }) => (
+                <>
+                  <div
+                    className={cx("ms-1", "flex-grow-1", error && "is-invalid")}
+                  >
+                    <ProjectMemberRoleSelect
+                      disabled={disabled}
+                      data-cy="member-role-select"
+                      id="member-role"
+                      inputId="member-role-select-input"
+                      name="role"
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      value={value ?? ""}
+                    />
+                  </div>
+                  <div className="invalid-feedback">
+                    {error?.message ? (
+                      <>{error.message}</>
+                    ) : (
+                      <>Please select a role.</>
+                    )}
+                  </div>
+                </>
               )}
               rules={{ required: true }}
             />

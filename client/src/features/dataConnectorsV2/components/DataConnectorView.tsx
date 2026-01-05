@@ -483,15 +483,21 @@ function DataConnectorViewMetadata({
     [dataConnector.namespace, dataConnector.slug, scope]
   );
 
-  const doiReference = useMemo(
-    () =>
+  const doiReference = useMemo(() => {
+    const doi =
       scope === "global" &&
       dataConnector.storage.configuration["doi"] &&
       typeof dataConnector.storage.configuration["doi"] === "string"
         ? parseDoi(dataConnector.storage.configuration["doi"])
-        : null,
-    [dataConnector.storage.configuration, scope]
-  );
+        : null;
+    if (doi) {
+      return doi;
+    }
+    if (dataConnector.doi) {
+      return parseDoi(dataConnector.doi);
+    }
+    return null;
+  }, [dataConnector.storage.configuration, scope, dataConnector.doi]);
 
   const sortedKeywords = useMemo(() => {
     if (!dataConnector.keywords) return [];

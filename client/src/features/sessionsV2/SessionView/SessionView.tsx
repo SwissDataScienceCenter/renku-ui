@@ -383,6 +383,7 @@ export function SessionView({
                     <>
                       <Button
                         color="outline-primary"
+                        data-cy="session-view-modify-session-environment-button"
                         id="modify-session-environment-button"
                         onClick={toggle}
                         size="sm"
@@ -409,7 +410,12 @@ export function SessionView({
           )}
           <div>
             <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-              <h3 className="my-auto">Default Resource Class</h3>
+              <h3
+                className="my-auto"
+                data-cy="session-view-resource-class-heading"
+              >
+                Default Resource Class
+              </h3>
               {launcher && (
                 <PermissionsGuard
                   disabled={null}
@@ -421,6 +427,7 @@ export function SessionView({
                         onClick={toggleModifyResources}
                         size="sm"
                         tabIndex={0}
+                        data-cy="session-view-resource-class-edit-button"
                       >
                         <Pencil className="bi" />
                       </Button>

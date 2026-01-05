@@ -110,6 +110,7 @@ export default function SessionSecretActions({
       ? [
           {
             key: "provide-secret",
+            dataCy: "session-secret-provide-button",
             onClick: toggleProvide,
             content: (
               <>
@@ -124,6 +125,7 @@ export default function SessionSecretActions({
       ? [
           {
             key: "edit-secret",
+            dataCy: "session-secret-edit-button",
             onClick: toggleEdit,
             content: (
               <>
@@ -138,6 +140,7 @@ export default function SessionSecretActions({
       ? [
           {
             key: "replace-secret-value",
+            dataCy: "session-secret-replace-button",
             onClick: toggleReplace,
             content: (
               <>
@@ -148,6 +151,7 @@ export default function SessionSecretActions({
           },
           {
             key: "clear-secret",
+            dataCy: "session-secret-clear-button",
             onClick: toggleClear,
             content: (
               <>
@@ -162,6 +166,7 @@ export default function SessionSecretActions({
       ? [
           {
             key: "remove-secret",
+            dataCy: "session-secret-remove-button",
             onClick: toggleRemove,
             content: (
               <>
@@ -186,7 +191,12 @@ export default function SessionSecretActions({
         sm="auto"
         className="ms-auto"
       >
-        <Button color="outline-primary" onClick={actions[0].onClick} size="sm">
+        <Button
+          color="outline-primary"
+          data-cy={actions[0].dataCy}
+          onClick={actions[0].onClick}
+          size="sm"
+        >
           {actions[0].content}
         </Button>
       </Col>
@@ -202,6 +212,7 @@ export default function SessionSecretActions({
           default={
             <Button
               color="outline-primary"
+              data-cy={actions[0].dataCy}
               onClick={actions[0].onClick}
               size="sm"
             >
@@ -210,8 +221,8 @@ export default function SessionSecretActions({
           }
           size="sm"
         >
-          {actions.slice(1).map(({ key, onClick, content }) => (
-            <DropdownItem key={key} onClick={onClick}>
+          {actions.slice(1).map(({ key, dataCy, onClick, content }) => (
+            <DropdownItem data-cy={dataCy} key={key} onClick={onClick}>
               {content}
             </DropdownItem>
           ))}
@@ -363,6 +374,7 @@ function EditSessionSecretModal({
           </Button>
           <Button
             color="primary"
+            data-cy="edit-session-secret-modal-button"
             disabled={!isDirty || result.isLoading}
             type="submit"
           >
@@ -437,7 +449,7 @@ function RemoveSessionSecretModal({
         </Button>
         <Button
           color="danger"
-          data-cy="delete-code-repository-modal-button"
+          data-cy="delete-modal-button"
           type="button"
           onClick={onRemove}
         >
@@ -526,7 +538,12 @@ function ClearSessionSecretModal({
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button color="primary" type="button" onClick={onClear}>
+        <Button
+          color="primary"
+          data-cy="clear-session-secret-modal-button"
+          type="button"
+          onClick={onClear}
+        >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
