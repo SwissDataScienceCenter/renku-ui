@@ -25,7 +25,7 @@ import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks.js";
 import { Links } from "../../../utils/constants/Docs.js";
 
 const logo = "/static/public/img/logo.svg";

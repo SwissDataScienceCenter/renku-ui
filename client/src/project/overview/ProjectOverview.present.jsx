@@ -42,8 +42,8 @@ import {
 
 import { RefreshButton } from "../../components/buttons/Button";
 import { CommitsView } from "../../components/commits/Commits";
-import { ExternalLink } from "../../components/ExternalLinks";
 import BootstrapGitLabIcon from "../../components/icons/BootstrapGitLabIcon";
+import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { Loader } from "../../components/Loader";
 import Pagination from "../../components/Pagination";
 import { StatusHelper } from "../../model/Model";

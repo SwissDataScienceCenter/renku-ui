@@ -27,7 +27,7 @@ import cx from "classnames";
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { ExternalLink } from "../components/ExternalLinks";
+import { ExternalLink } from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
 import NotFound from "../not-found/NotFound";
 import { ABSOLUTE_ROUTES } from "../routing/routes.constants";

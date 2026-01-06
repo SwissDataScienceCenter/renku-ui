@@ -37,7 +37,7 @@ import {
 
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { Clipboard } from "../clipboard/Clipboard";
-import { ExternalLink } from "../ExternalLinks";
+import { ExternalLink } from "../LegacyExternalLinks";
 import { Loader } from "../Loader";
 import { TimeCaption } from "../TimeCaption";
 

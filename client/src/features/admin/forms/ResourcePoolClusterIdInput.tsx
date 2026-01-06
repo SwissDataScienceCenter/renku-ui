@@ -25,7 +25,7 @@ import {
 } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 
-import { ExternalLink } from "~/components/ExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_CLUSTERS } from "~/utils/constants/NewDocs";
 
 const DEFAULT_ERROR_MESSAGE =

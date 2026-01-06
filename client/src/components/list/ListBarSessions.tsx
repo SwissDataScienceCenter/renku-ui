@@ -35,7 +35,7 @@ import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import { ExternalLink } from "../ExternalLinks";
+import { ExternalLink } from "../LegacyExternalLinks";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
 import PinnedBadge from "./PinnedBadge";

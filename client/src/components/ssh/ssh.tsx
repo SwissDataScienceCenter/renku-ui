@@ -39,7 +39,7 @@ import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
 import { apiVersionForMetadataVersion, Url } from "../../utils/helpers/url";
 import { InfoAlert } from "../Alert";
 import { CommandCopy } from "../commandCopy/CommandCopy";
-import { ExternalDocsLink } from "../ExternalLinks";
+import { ExternalDocsLink } from "../LegacyExternalLinks";
 import { Loader } from "../Loader";
 
 const docsIconStyle = {

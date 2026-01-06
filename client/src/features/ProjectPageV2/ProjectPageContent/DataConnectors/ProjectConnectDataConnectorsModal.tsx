@@ -41,7 +41,7 @@ import DataConnectorModal, {
 } from "~/features/dataConnectorsV2/components/DataConnectorModal";
 import { NEW_DOCS_DATA_CONNECTORS_FROM_REPO } from "~/utils/constants/NewDocs";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import ModalHeader from "../../../../components/modal/ModalHeader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";

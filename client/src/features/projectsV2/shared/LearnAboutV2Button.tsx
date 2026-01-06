@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 
 interface LearnAboutV2ButtonProps {
   children?: React.ReactNode;

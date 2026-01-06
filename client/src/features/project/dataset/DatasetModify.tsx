@@ -23,7 +23,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, type NavigateFunction } from "react-router";
 import { Button, FormGroup, UncontrolledAlert } from "reactstrap";
 
-import { ExternalLink } from "../../../components/ExternalLinks";
 import CreatorsInput, {
   validateCreators,
 } from "../../../components/form-field/CreatorsInput";
@@ -34,6 +33,7 @@ import ImageInput from "../../../components/form-field/ImageInput";
 import KeywordsInput from "../../../components/form-field/KeywordsInput";
 import TextAreaInput from "../../../components/form-field/TextAreaInput";
 import TextInput from "../../../components/form-field/TextInput";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
 import type { RenkuUser } from "../../../model/renkuModels.types";
 import { FormErrorFields } from "../../../project/components/FormValidations";
