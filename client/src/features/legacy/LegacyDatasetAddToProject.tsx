@@ -16,21 +16,8 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { useContext } from "react";
-
-import AppContext from "../../utils/context/appContext";
-import SunsetBanner from "../projectsV2/shared/SunsetV1Banner";
 import NoLegacySupport from "./NoLegacySupport";
 
 export default function LegacyDatasetAddToProject() {
-  const { params } = useContext(AppContext);
-  if (params && !params.LEGACY_SUPPORT.enabled) {
-    return <NoLegacySupport />;
-  }
-  return (
-    <div className={cx("d-flex", "flex-column", "align-items-center", "w-100")}>
-      <SunsetBanner />
-    </div>
-  );
+  return <NoLegacySupport />;
 }

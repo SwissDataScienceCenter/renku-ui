@@ -154,9 +154,6 @@ function ComponentDetails() {
   const location = useLocation();
   const isLegacy = isRenkuLegacy(location.pathname);
 
-  const { params } = useContext(AppContext);
-  const isLegacyEnabled = params?.LEGACY_SUPPORT.enabled;
-
   if (isLegacy) {
     return (
       <>
@@ -190,19 +187,6 @@ function ComponentDetails() {
           Data Services: <DataServicesRelease />
         </li>
       </ul>
-      {isLegacyEnabled && (
-        <>
-          <div className="fw-bold">Renku legacy component versions</div>
-          <ul>
-            <li>
-              Core: <CoreRelease />
-            </li>
-            <li>
-              Knowledge Graph: <KgRelease />
-            </li>
-          </ul>
-        </>
-      )}
     </>
   );
 }

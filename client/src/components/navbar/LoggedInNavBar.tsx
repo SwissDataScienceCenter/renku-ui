@@ -38,7 +38,6 @@ import RenkuNavLinkV2 from "../RenkuNavLinkV2";
 import AnnounceV2Banner from "./AnnounceV2Banner";
 import { RENKU_LOGO } from "./navbar.constants";
 import {
-  RenkuToolbarGitLabMenu,
   RenkuToolbarHelpMenu,
   RenkuToolbarItemPlus,
   RenkuToolbarItemUser,
@@ -53,7 +52,6 @@ export default function LoggedInNavBar() {
   }, []);
   if (!params) return null;
   const uiShortSha = params?.UI_SHORT_SHA;
-  const isLegacySupported = !!params.LEGACY_SUPPORT.enabled;
 
   return (
     <>
@@ -126,11 +124,7 @@ export default function LoggedInNavBar() {
               <NavItem className="nav-item col-auto ms-sm-auto">
                 <RenkuToolbarItemPlus />
               </NavItem>
-              {isLegacySupported && (
-                <NavItem className="nav-item col-auto">
-                  <RenkuToolbarGitLabMenu />
-                </NavItem>
-              )}
+
               <NavItem className="nav-item col-auto">
                 <RenkuToolbarHelpMenu />
               </NavItem>

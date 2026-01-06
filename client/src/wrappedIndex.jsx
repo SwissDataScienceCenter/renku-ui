@@ -48,21 +48,16 @@ function appIndexInner() {
       const params = validatedAppParams(params_);
 
       // configure core api versioned url helper (only used if legacy support is enabled)
-      const coreApiVersionedUrlConfig = params.LEGACY_SUPPORT.enabled
-        ? createCoreApiVersionedUrlConfig(params.CORE_API_VERSION_CONFIG)
-        : null;
+      const coreApiVersionedUrlConfig = null;
 
       // configure base url
       Url.setBaseUrl(params.BASE_URL);
 
       // create client to be passed to coordinators (only if legacy support is enabled)
-      const client = params.LEGACY_SUPPORT.enabled
-        ? new APIClient(
-            `${params.UISERVER_URL}/api`,
-            params.UISERVER_URL,
-            coreApiVersionedUrlConfig
-          )
-        : new ApiClientV2Compat(`${params.BASE_URL}/api`, params.UISERVER_URL);
+      const client = new ApiClientV2Compat(
+        `${params.BASE_URL}/api`,
+        params.UISERVER_URL
+      );
 
       // Create the global model containing the formal schema definition and the redux store
       const model = new StateModel(globalSchema);
@@ -112,7 +107,7 @@ function appIndexInner() {
         return { user: state.stateModel.user, ...ownProps };
       }
 
-      const forceV2Style = params && !params.LEGACY_SUPPORT.enabled;
+      const forceV2Style = true;
 
       // Render UI application
       const VisibleApp = connect(mapStateToProps)(uiApplication);

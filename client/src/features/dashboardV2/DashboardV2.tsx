@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 import {
   Calendar3Week,
   Eye,
@@ -43,13 +43,11 @@ import {
   Row,
 } from "reactstrap";
 
-import AppContext from "~/utils/context/appContext";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
-import ProjectMigrationBanner from "../projectMigrationV2/ProjectMigrationBanner";
 import {
   GetGroupsApiResponse,
   GetProjectsApiResponse,
@@ -68,9 +66,6 @@ import DashboardV2Sessions from "./DashboardV2Sessions";
 import DashboardStyles from "./DashboardV2.module.scss";
 
 export default function DashboardV2() {
-  const { params } = useContext(AppContext);
-  const legacySupported = params?.LEGACY_SUPPORT.enabled ?? true;
-
   return (
     <div className={cx("position-relative", "d-flex")}>
       <HeaderDashboard />
@@ -96,7 +91,6 @@ export default function DashboardV2() {
             >
               <SessionsDashboard />
               <ProjectsDashboard />
-              {legacySupported && <ProjectMigrationBanner />}
               <FooterDashboard />
             </Col>
           </Row>
