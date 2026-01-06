@@ -39,17 +39,17 @@ interface ExternalLinkProps extends AnchorProps {
  *
  * Simple external link:
  * ```tsx
- * <ExternalLink href={href}>link text<ExternalLink>
+ * <ExternalLink href={href}>link text</ExternalLink>
  * ```
  *
  * Without the icon:
  * ```tsx
- * <ExternalLink icon={null} href={href}>link text<ExternalLink>
+ * <ExternalLink icon={null} href={href}>link text</ExternalLink>
  * ```
  *
  * With additional props:
  * ```tsx
- * <ExternalLink classname="text-danger" data-cy="my-link" href={href}>link text<ExternalLink>
+ * <ExternalLink className="text-danger" data-cy="my-link" href={href}>link text</ExternalLink>
  * ```
  */
 export default function ExternalLink({
