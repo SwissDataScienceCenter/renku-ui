@@ -53,25 +53,12 @@ interface ExternalLinkProps extends AnchorProps {
  * ```
  */
 export default function ExternalLink({
-  icon: icon_,
-  rel: rel_,
-  target: target_,
+  icon = DEFAULT_EXTERNAL_LINK_ICON,
+  rel = DEFAULT_EXTERNAL_LINK_REL,
+  target = DEFAULT_EXTERNAL_LINK_TARGET,
   children,
   ...props
 }: ExternalLinkProps) {
-  const icon = icon_ === undefined ? DEFAULT_EXTERNAL_LINK_ICON : icon_;
-  const rel =
-    rel_ === undefined
-      ? DEFAULT_EXTERNAL_LINK_REL
-      : rel_ === ""
-      ? undefined
-      : rel_;
-  const target =
-    target_ === undefined
-      ? DEFAULT_EXTERNAL_LINK_TARGET
-      : target_ === ""
-      ? undefined
-      : target_;
   return (
     <a rel={rel} target={target} {...props}>
       {children}
