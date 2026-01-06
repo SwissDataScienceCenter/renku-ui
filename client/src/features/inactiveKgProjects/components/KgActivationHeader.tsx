@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { WarnAlert } from "../../../components/Alert";
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Docs } from "../../../utils/constants/Docs";
 
 interface KgActivationHeaderProps {

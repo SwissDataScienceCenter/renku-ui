@@ -32,7 +32,7 @@ import { Input, Label, ListGroup } from "reactstrap";
 import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { Links } from "../../../../utils/constants/Docs";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";

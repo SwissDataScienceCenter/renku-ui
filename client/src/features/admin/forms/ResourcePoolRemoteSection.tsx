@@ -27,7 +27,7 @@ import {
 import { Collapse, FormText, Input, Label } from "reactstrap";
 
 import CollapseBody from "~/components/container/CollapseBody";
-import { ExternalLink } from "~/components/ExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS } from "~/utils/constants/NewDocs";
 import type { RemoteConfiguration } from "../adminComputeResources.types";
 

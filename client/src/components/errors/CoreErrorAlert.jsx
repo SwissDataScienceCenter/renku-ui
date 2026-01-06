@@ -26,7 +26,7 @@ import { Fragment, useState } from "react";
 import { Button, Collapse } from "reactstrap";
 
 import { RenkuAlert } from "../Alert";
-import { ExternalLink } from "../ExternalLinks";
+import { ExternalLink } from "../LegacyExternalLinks";
 import { CoreError } from "./CoreErrorHelpers";
 
 function CoreErrorAlert({

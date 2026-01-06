@@ -22,7 +22,7 @@ import { Col } from "reactstrap";
 import "./SessionCheatSheet.css";
 
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
-import { ExternalDocsLink } from "../../components/ExternalLinks";
+import { ExternalDocsLink } from "../../components/LegacyExternalLinks";
 import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
 import * as cheatsheetJson from "./cheatsheet.json";
 

@@ -27,8 +27,8 @@ import { UncontrolledTooltip } from "reactstrap";
 
 import { InfoAlert, WarnAlert } from "../../../components/Alert";
 import { extractRkErrorMessage } from "../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../components/ExternalLinks";
 import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import ListDisplay from "../../../components/List";
 import ListBarSession from "../../../components/list/ListBarSessions";
 import { Loader } from "../../../components/Loader";
