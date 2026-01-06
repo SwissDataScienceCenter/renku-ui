@@ -64,6 +64,7 @@ import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
+import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
@@ -225,6 +226,7 @@ export default function ShowSessionPage() {
               namespace={namespace}
               slug={slug}
             />
+            <SessionAlerts sessionName={sessionName} />
           </div>
           <div
             className={cx(
