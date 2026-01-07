@@ -54,6 +54,7 @@ import {
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
+import { doiFromUrl } from "../../utils/dataConnectorUtils";
 
 import styles from "~/features/dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
@@ -454,12 +455,13 @@ function ProjectDoiDataConnectorBodyAndFooter({
 
   const onSubmit = useCallback(
     (values: DataConnectorDoiFormFields) => {
+      const doi = doiFromUrl(values.doi);
       postDataConnector({
         globalDataConnectorPost: {
           storage: {
             configuration: {
               type: "doi",
-              doi: values.doi,
+              doi: doi,
             },
             source_path: "/",
             target_path: "/",
