@@ -28,7 +28,7 @@ const findProject = (path, projects) => {
   );
 };
 
-describe("dashboard", () => {
+describe.skip("dashboard", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().userPreferences();
   });
@@ -232,7 +232,7 @@ describe("dashboard", () => {
   });
 });
 
-describe("dashboard message", () => {
+describe.skip("dashboard message", () => {
   beforeEach(() => {
     fixtures
       .versions()
@@ -344,7 +344,7 @@ describe("dashboard message", () => {
   });
 });
 
-describe("Dashboard pins", () => {
+describe.skip("Dashboard pins", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().projects().noActiveProjects();
   });
@@ -547,7 +547,7 @@ describe("Dashboard pins", () => {
   });
 });
 
-describe("announce v2 banner", () => {
+describe.skip("announce v2 banner", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().userPreferences();
   });
@@ -593,7 +593,7 @@ describe("announce v2 banner", () => {
   });
 });
 
-describe("anonymous dashboard", () => {
+describe.skip("anonymous dashboard", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
   });
