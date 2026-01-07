@@ -58,6 +58,10 @@ interface PatchDataConnectorSecretsArgs extends DataConnectorIdArgs {
   shouldNotBeCalled?: boolean;
 }
 
+interface PostGlobalDataConnectorArgs extends SimpleFixture {
+  doi: string;
+}
+
 interface ProjectDataConnectorArgs extends SimpleFixture {
   projectId?: string;
 }
@@ -454,13 +458,22 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    postGlobalDataConnector(args?: SimpleFixture) {
+    postGlobalDataConnector(args?: PostGlobalDataConnectorArgs) {
       const {
         fixture = "dataConnector/data-connector-global.json",
         name = "postGlobalDataConnector",
       } = args ?? {};
+      const doi = args?.doi ?? "10.1234/zenodo.123456";
       cy.fixture(fixture).then((dataConnector) => {
         cy.intercept("POST", "/api/data/data_connectors/global", (req) => {
+          if (req.body.storage.configuration.type != "doi") {
+            throw new Error("storage.configuration.type must be 'doi'");
+          }
+          if (req.body.storage.configuration.doi != doi) {
+            throw new Error(
+              `storage.configuration.doi ${req.body.storage.configuration.doi} must equal ${doi}`
+            );
+          }
           req.reply({ body: dataConnector, statusCode: 201, delay: 1000 });
         }).as(name);
       });
