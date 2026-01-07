@@ -27,18 +27,18 @@ export function User<T extends FixturesConstructor>(Parent: T) {
   return class UserFixtures extends Parent {
     userTest(args?: UserTestArgs) {
       const { user, dataServiceUser } = Cypress._.defaultsDeep({}, args, {
-        user: {
-          fixture: "user.json",
-          name: "getUser",
-        },
+        // user: {
+        //   fixture: "user.json",
+        //   name: "getUser",
+        // },
         dataServiceUser: {
           fixture: "data-service-user.json",
-          name: "getDataServiceUser",
+          name: "getUser",
         },
       }) as DeepRequired<UserTestArgs>;
 
-      const userResponse = { fixture: user.fixture };
-      cy.intercept("GET", "/ui-server/api/user", userResponse).as(user.name);
+      // const userResponse = { fixture: user.fixture };
+      // cy.intercept("GET", "/ui-server/api/user", userResponse).as(user.name);
 
       const dataServiceUserResponse = { fixture: dataServiceUser.fixture };
       cy.intercept("GET", "/api/data/user", dataServiceUserResponse).as(
@@ -53,22 +53,22 @@ export function User<T extends FixturesConstructor>(Parent: T) {
         {},
         args,
         {
-          user: {
-            name: "getUser",
-          },
+          // user: {
+          //   name: "getUser",
+          // },
           dataServiceUser: {
-            name: "getDataServiceUser",
+            name: "getUser",
           },
           delay: null,
         }
       ) as DeepRequired<UserNoneArgs>;
 
-      const responseGitLab = {
-        body: {},
-        statusCode: 401,
-        ...(delay != null ? { delay } : {}),
-      };
-      cy.intercept("GET", "/ui-server/api/user", responseGitLab).as(user.name);
+      // const responseGitLab = {
+      //   body: {},
+      //   statusCode: 401,
+      //   ...(delay != null ? { delay } : {}),
+      // };
+      // cy.intercept("GET", "/ui-server/api/user", responseGitLab).as(user.name);
 
       const responseDataService = {
         body: {
@@ -90,7 +90,8 @@ export function User<T extends FixturesConstructor>(Parent: T) {
     renkuDown(args?: NameOnlyFixture) {
       const { name = "getUser" } = args ?? {};
       const response = { body: {}, statusCode: 500 };
-      cy.intercept("GET", "/ui-server/api/user", response).as(name);
+      // cy.intercept("GET", "/ui-server/api/user", response).as(name);
+      cy.intercept("GET", "/api/data/user", response).as(name);
       return this;
     }
 
@@ -102,7 +103,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
         },
         dataServiceUser: {
           fixture: "data-service-admin-user.json",
-          name: "getDataServiceUser",
+          name: "getUser",
         },
       }) as DeepRequired<UserTestArgs>;
       this.userTest({ user, dataServiceUser });
