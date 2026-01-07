@@ -31,6 +31,11 @@ describe("Test doiFromUrl", () => {
     expect(
       doiFromUrl("https://dataverse.org/?persistentId=doi:10.1234/dataverse")
     ).toBe("10.1234/dataverse");
+    expect(
+      doiFromUrl(
+        "https://dataverse.org/?persistentId=doi:10.1234/dataverse&version=2.0"
+      )
+    ).toBe("10.1234/dataverse");
   });
   it("returns other input unchanged", () => {
     expect(doiFromUrl("https://example.com/some/path")).toBe(

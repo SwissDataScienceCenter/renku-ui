@@ -31,7 +31,9 @@ export function doiFromUrl(url: string): string {
 
   if (dataverseUrl.test(url)) {
     const parts = url.split("doi:");
-    return parts[parts.length - 1];
+    const lastPart = parts[parts.length - 1];
+    const doiPart = lastPart.split("&")[0];
+    return doiPart;
   }
 
   return url;
