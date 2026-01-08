@@ -20,6 +20,7 @@ import cx from "classnames";
 import { CodeSquare, InfoCircle } from "react-bootstrap-icons";
 import { Col, Container, Row } from "reactstrap";
 
+import { NEW_DOCS_COMMUNITY_PORTAL } from "~/utils/constants/NewDocs";
 import { Links } from "../../../../utils/constants/Docs.js";
 import { FooterDashboardCard } from "../../../dashboardV2/DashboardV2.js";
 import renkuBlackIcon from "../../assets/renkuBlack.svg";
@@ -35,7 +36,7 @@ export function ResourcesAndSupport() {
       <Row className={cx("text-center", "g-5", "mb-3")}>
         <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
           <FooterDashboardCard
-            url={Links.RENKU_2_GET_HELP}
+            url={NEW_DOCS_COMMUNITY_PORTAL}
             className={cx("text-decoration-none", "text-body")}
           >
             <InfoCircle size={60} />
@@ -47,7 +48,7 @@ export function ResourcesAndSupport() {
         </Col>
         <Col xs={12} lg={4} className={cx("px-3", "text-center")}>
           <FooterDashboardCard
-            url={Links.RENKU_2_COMMUNITY_PORTAL}
+            url={NEW_DOCS_COMMUNITY_PORTAL}
             className={cx(
               "text-decoration-none",
               "text-body",
