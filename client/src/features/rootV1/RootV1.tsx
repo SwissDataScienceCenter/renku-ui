@@ -26,7 +26,6 @@ import LazyHelp from "../../help/LazyHelp";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
-import LazyStyleGuide from "../../styleguide/LazyStyleGuide";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import LazyDashboard from "../dashboard/LazyDashboard";
 import LazyInactiveKGProjectsPage from "../inactiveKgProjects/LazyInactiveKGProjectsPage";
@@ -71,14 +70,6 @@ export default function RootV1() {
             element={
               <ContainerWrap>
                 <LazyNotificationsPage />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.styleGuide}
-            element={
-              <ContainerWrap>
-                <LazyStyleGuide />
               </ContainerWrap>
             }
           />
