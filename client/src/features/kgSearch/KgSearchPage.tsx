@@ -31,7 +31,6 @@ import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntit
 import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
 
@@ -150,7 +149,6 @@ function SearchPage() {
   return (
     <>
       <Row>
-        <ProjectsInactiveKGWarning />
         <Col className="col-12">{searchNav}</Col>
         <Col
           className={
