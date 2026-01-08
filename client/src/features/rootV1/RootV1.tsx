@@ -22,7 +22,6 @@ import { Navigate, Route, Routes } from "react-router";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import AnonymousNavBar from "../../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../../components/navbar/LoggedInNavBar";
-import LazyHelp from "../../help/LazyHelp";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
@@ -40,14 +39,6 @@ export default function RootV1() {
       {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
-          <Route
-            path={RELATIVE_ROUTES.v1.help}
-            element={
-              <ContainerWrap>
-                <LazyHelp />
-              </ContainerWrap>
-            }
-          />
           <Route
             path={RELATIVE_ROUTES.v1.search}
             element={
