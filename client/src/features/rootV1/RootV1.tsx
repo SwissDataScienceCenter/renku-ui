@@ -27,7 +27,6 @@ import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import LazyInactiveKGProjectsPage from "../inactiveKgProjects/LazyInactiveKGProjectsPage";
-import LazySearchPage from "../kgSearch/LazySearchPage";
 import LazySecrets from "../secrets/LazySecrets";
 import LazyAnonymousSessionsList from "../session/components/LazyAnonymousSessionsList";
 import ProjectRootV1 from "./ProjectRootV1";
@@ -39,14 +38,6 @@ export default function RootV1() {
       {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
-          <Route
-            path={RELATIVE_ROUTES.v1.search}
-            element={
-              <ContainerWrap>
-                <LazySearchPage />
-              </ContainerWrap>
-            }
-          />
           <Route
             path={RELATIVE_ROUTES.v1.notifications}
             element={
