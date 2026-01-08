@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { Plugin, Send, SkipForward, XLg } from "react-bootstrap-icons";
 import { generatePath, Link, useLocation, useNavigate } from "react-router";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -26,6 +26,8 @@ import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
@@ -43,6 +45,9 @@ export default function SessionImageModal({
   launcher,
   project,
 }: SessionImageModalProps) {
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   const navigate = useNavigate();
   const onCancel = useCallback(() => {
     const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
@@ -101,7 +106,7 @@ export default function SessionImageModal({
               <a
                 target="_blank"
                 rel="noreferrer noopener"
-                href="mailto:hello@renku.io"
+                href={`mailto:${renkuContactEmail}`}
               >
                 <Send className={cx("bi", "me-1")} />
                 contact us

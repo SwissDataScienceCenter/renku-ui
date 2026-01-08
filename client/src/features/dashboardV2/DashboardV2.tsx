@@ -44,6 +44,7 @@ import {
 } from "reactstrap";
 
 import { NEW_DOCS_DOCUMENTATION } from "~/utils/constants/NewDocs";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -119,6 +120,9 @@ function HeaderDashboard() {
 }
 
 function FooterDashboard() {
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   return (
     <Row className="g-3">
       <Col xs={12} lg={6} xl={3}>
@@ -140,7 +144,7 @@ function FooterDashboard() {
         </FooterDashboardCard>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <FooterDashboardCard url="mailto:hello@renku.io">
+        <FooterDashboardCard url={`mailto:${renkuContactEmail}`}>
           <Send size={27} />
           Contact us
         </FooterDashboardCard>

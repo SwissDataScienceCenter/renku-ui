@@ -206,6 +206,10 @@ function CustomImageEnvironmentValues({
   const { pathname, hash } = useLocation();
   const environment = launcher.environment;
 
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
+
   const { data, isLoading } = useGetSessionsImagesQuery(
     environment &&
       environment.environment_kind === "CUSTOM" &&
@@ -266,7 +270,7 @@ function CustomImageEnvironmentValues({
                   <a
                     target="_blank"
                     rel="noreferrer noopener"
-                    href="mailto:hello@renku.io"
+                    href={`mailto:${renkuContactEmail}`}
                   >
                     <Send className={cx("bi", "me-1")} />
                     contact us

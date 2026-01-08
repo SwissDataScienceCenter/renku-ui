@@ -47,6 +47,7 @@ export interface AppParams {
   UISERVER_URL: string;
   UPLOAD_THRESHOLD: UploadThresholdParams;
   USER_PREFERENCES_MAX_PINNED_PROJECTS: number;
+  CONTACT_EMAIL: string;
 }
 
 export type AppParamsStrings = {
