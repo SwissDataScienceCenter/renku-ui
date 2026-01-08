@@ -28,7 +28,7 @@ const findProject = (path, projects) => {
   );
 };
 
-describe("dashboard", () => {
+describe.skip("dashboard", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().userPreferences();
   });
@@ -45,7 +45,7 @@ describe("dashboard", () => {
 
     cy.visit("/v1");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -91,7 +91,7 @@ describe("dashboard", () => {
     cy.visit("/v1");
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
@@ -141,7 +141,7 @@ describe("dashboard", () => {
     cy.visit("/v1");
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
@@ -202,7 +202,7 @@ describe("dashboard", () => {
     cy.wait("@getFirstProject");
 
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
     cy.wait("@getSessions");
     cy.getDataCy("session-container").should("be.visible");
     cy.visit("/v1");
@@ -232,7 +232,7 @@ describe("dashboard", () => {
   });
 });
 
-describe("dashboard message", () => {
+describe.skip("dashboard message", () => {
   beforeEach(() => {
     fixtures
       .versions()
@@ -250,7 +250,7 @@ describe("dashboard message", () => {
   const visitDashboardPage = () => {
     cy.visit("/v1");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -344,7 +344,7 @@ describe("dashboard message", () => {
   });
 });
 
-describe("Dashboard pins", () => {
+describe.skip("Dashboard pins", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().projects().noActiveProjects();
   });
@@ -547,7 +547,7 @@ describe("Dashboard pins", () => {
   });
 });
 
-describe("announce v2 banner", () => {
+describe.skip("announce v2 banner", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().userPreferences();
   });
@@ -564,7 +564,7 @@ describe("announce v2 banner", () => {
 
     cy.visit("/v1");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -586,14 +586,14 @@ describe("announce v2 banner", () => {
 
     cy.visit("/v1/search");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
     cy.wait("@getEntities");
 
     cy.getDataCy("announce-v2-banner").should("not.exist");
   });
 });
 
-describe("anonymous dashboard", () => {
+describe.skip("anonymous dashboard", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
   });

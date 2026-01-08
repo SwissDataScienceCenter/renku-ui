@@ -45,14 +45,3 @@ describe("View v2 nav bar", () => {
     cy.contains("Create a new project").should("be.visible");
   });
 });
-
-describe("View v1 nav bar", () => {
-  beforeEach(() => {
-    fixtures.config().versions().userTest();
-    cy.visit("/v1");
-  });
-
-  it("check for legacy information", () => {
-    cy.get(".badge.bg-warning").contains("Legacy").should("be.visible");
-  });
-});

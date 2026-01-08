@@ -121,6 +121,10 @@ export default class ApiClientV2Compat {
       headers: headers,
     });
 
+    if (response.status >= 500) {
+      throw new Error("Error while getting user info");
+    }
+
     if (!response.ok) return null;
 
     const data = await response.json();
