@@ -23,18 +23,13 @@
  *  Presentational components.
  */
 
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useContext } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { Url } from "../../utils/helpers/url";
-import { stateToSearchString } from "../kgSearch";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import VisualHead from "./assets/Visual_Head.svg";
 import { BottomNav, TopNav } from "./components/anonymousHomeNav";
@@ -88,47 +83,6 @@ export function HomeHeader(props: AnonymousHomeConfig) {
   );
 }
 
-type SearchInputFormFields = {
-  phrase: string;
-};
-
-export function SearchInput() {
-  const navigate = useNavigate();
-  const { handleSubmit, register } = useForm<SearchInputFormFields>({
-    defaultValues: { phrase: "" },
-  });
-  const onSubmit = (inputs: SearchInputFormFields) => {
-    const searchState = { phrase: inputs.phrase };
-    const searchString = stateToSearchString(searchState);
-    const searchUrl = `${Url.get(Url.pages.search)}/?${searchString}`;
-    navigate(searchUrl);
-  };
-  return (
-    <div className="d-flex flex-nowrap w-100 mx-0">
-      <div className="search-box flex-nowrap justify-content-center m-auto">
-        <form
-          className="quick-nav input-group flex-nowrap input-group-sm justify-content-center"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <input
-            type="text"
-            autoComplete="off"
-            className="form-control form-control-sm rk-landing-search"
-            placeholder="Explore public projects and datasets"
-            aria-label="Search input"
-            {...register("phrase")}
-          />
-          <span
-            className="quick-nav-icon d-flex justify-content-center align-items-center mx-4 cursor-pointer"
-            onClick={handleSubmit(onSubmit)}
-          >
-            <FontAwesomeIcon icon={faSearch} />
-          </span>
-        </form>
-      </div>
-    </div>
-  );
-}
 function StandardHome(props: AnonymousHomeConfig) {
   return (
     <>

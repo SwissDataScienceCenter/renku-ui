@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { Link } from "react-router";
 
-import { EntityType } from "../../features/kgSearch";
 import SessionButton from "../../features/session/components/SessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import EntityCreators from "../entities/Creators";
@@ -31,6 +30,8 @@ import { ListElementProps } from "./list.types";
 import PinnedBadge from "./PinnedBadge";
 
 import "./ListBar.scss";
+
+import { EntityType } from "../entities/entities.types";
 
 export function getMainActionByEntity(
   entityType: EntityType,
