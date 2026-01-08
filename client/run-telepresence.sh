@@ -202,7 +202,7 @@ tee > ./public/config.json << EOF
   "SESSION_CLASS_EMAIL_US": { "enabled": false },
   "IMAGE_BUILDERS_ENABLED": true,
   "LEGACY_SUPPORT": { "enabled": false },
-  "CONTACT_EMAIL":  ${CONTACT_EMAIL}
+  "CONTACT_EMAIL":  "hello@renku.io"
 }
 EOF
 
