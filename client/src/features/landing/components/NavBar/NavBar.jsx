@@ -57,7 +57,6 @@ function RenkuNavBarInner({ user }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
-  const { params } = useContext(AppContext);
   const forceV2 = true;
   const sessionShowUrl =
     projectMetadata == null
@@ -109,7 +108,6 @@ function RenkuNavBarInner({ user }) {
 }
 
 function FooterNavbarLoggedInLinks({ privacyLink }) {
-  const { params } = useContext(AppContext);
   const location = useLocation();
   const forceV2 = true;
   const helpLocation = isRenkuLegacy(location.pathname, forceV2)

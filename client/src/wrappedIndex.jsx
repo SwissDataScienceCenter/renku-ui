@@ -9,7 +9,6 @@ import "bootstrap";
 import StyleHandler from "~/features/rootV2/StyleHandler";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
-import APIClient from "./api-client";
 import App from "./App";
 import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
@@ -23,7 +22,7 @@ import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import { Sentry } from "./utils/helpers/sentry";
-import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
+import { Url } from "./utils/helpers/url";
 
 let hasRendered = false;
 
