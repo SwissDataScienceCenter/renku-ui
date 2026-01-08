@@ -39,7 +39,6 @@ import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
-import { kgSearchApi } from "../../features/kgSearch";
 import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
 import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
 import { projectCloudStorageEmptyApi as projectCloudStorageApi } from "../../features/project/components/cloudStorage/api/projectCloudStorage.empty-api";
@@ -93,7 +92,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [doiResolverApi.reducerPath]: doiResolverApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
-    [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [notificationsApi.reducerPath]: notificationsApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
@@ -131,7 +129,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(datasetsCoreApi.middleware)
         .concat(doiResolverApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
-        .concat(kgSearchApi.middleware)
         .concat(notificationsApi.middleware)
         .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
