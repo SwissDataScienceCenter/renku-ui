@@ -46,7 +46,7 @@ import {
   ButtonWithMenu,
   GoBackButton,
 } from "../../../components/buttons/Button";
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
 import ProgressStepsIndicator, {
   ProgressStyle,

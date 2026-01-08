@@ -4,7 +4,7 @@ import { generatePath, Link } from "react-router";
 import { Button } from "reactstrap";
 
 import { InfoAlert, WarnAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { Links } from "../../../../utils/constants/Docs";

@@ -28,7 +28,7 @@ import { useContext } from "react";
 import { Link, Route, Routes, useLocation } from "react-router";
 
 import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
-import { ExternalDocsLink } from "../../../../components/ExternalLinks";
+import { ExternalDocsLink } from "../../../../components/LegacyExternalLinks";
 import AnonymousNavBar from "../../../../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../../../../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../../../../components/navbar/navbar.constants";

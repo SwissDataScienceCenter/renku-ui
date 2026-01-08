@@ -25,7 +25,7 @@ import { Input, Label } from "reactstrap";
 
 import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Links } from "../../../../utils/constants/Docs";
 import { useGetSessionsImagesQuery } from "../../api/sessionsV2.api";
 import {
