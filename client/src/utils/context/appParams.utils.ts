@@ -18,7 +18,6 @@
 
 import { clamp } from "lodash-es";
 
-import type { DashboardMessageParams } from "../../features/dashboard/message/DashboardMessage.types";
 import type { HomepageParams } from "../../features/landing/anonymousHome.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 import { DEFAULT_APP_PARAMS } from "./appParams.constants";
@@ -80,7 +79,6 @@ export function validatedAppParams(params: unknown): AppParams {
 
   // Object params
   const CORE_API_VERSION_CONFIG = validateCoreApiVersionConfig(params_);
-  const DASHBOARD_MESSAGE = validateDashboardMessage(params_);
   const HOMEPAGE = validateHomepage(params_);
   const PREVIEW_THRESHOLD = validatePreviewThreshold(params_);
   const PRIVACY_BANNER_LAYOUT = validatePrivacyBannerLayout(params_);
@@ -93,7 +91,6 @@ export function validatedAppParams(params: unknown): AppParams {
     BASE_URL,
     CONTACT_EMAIL,
     CORE_API_VERSION_CONFIG,
-    DASHBOARD_MESSAGE,
     GATEWAY_URL,
     HOMEPAGE,
     IMAGE_BUILDERS_ENABLED,
@@ -193,60 +190,6 @@ function validateCoreApiVersionConfig(
     return DEFAULT_APP_PARAMS["CORE_API_VERSION_CONFIG"];
   }
   return value;
-}
-
-function validateDashboardMessage(
-  params: RawAppParams
-): DashboardMessageParams {
-  const value = params["DASHBOARD_MESSAGE"];
-  if (typeof value !== "object" || value == null) {
-    return DEFAULT_APP_PARAMS["DASHBOARD_MESSAGE"];
-  }
-
-  const rawDashboardParams = value as {
-    [key: string]: unknown;
-  };
-
-  const enabled = !!rawDashboardParams.enabled;
-
-  const text =
-    typeof rawDashboardParams.text === "string" ? rawDashboardParams.text : "";
-
-  const additionalText =
-    typeof rawDashboardParams.additionalText === "string"
-      ? rawDashboardParams.additionalText
-      : "";
-
-  const dismissible = !!rawDashboardParams.dismissible;
-
-  const rawStyle =
-    typeof rawDashboardParams.style === "string"
-      ? rawDashboardParams.style.trim().toLowerCase()
-      : "";
-  const style =
-    rawStyle === "plain"
-      ? "plain"
-      : rawStyle === "success"
-      ? "success"
-      : rawStyle === "info"
-      ? "info"
-      : rawStyle === "warning"
-      ? "warning"
-      : rawStyle === "danger"
-      ? "danger"
-      : "plain";
-
-  if (enabled && text && style) {
-    return {
-      enabled,
-      text,
-      additionalText,
-      style,
-      dismissible,
-    };
-  }
-
-  return DEFAULT_APP_PARAMS["DASHBOARD_MESSAGE"];
 }
 
 function validateHomepage(params: RawAppParams): HomepageParams {
