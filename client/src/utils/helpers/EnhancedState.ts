@@ -32,7 +32,6 @@ import { notificationsEmptyApi as notificationsApi } from "~/features/notificati
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
-import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { doiResolverEmptyApi as doiResolverApi } from "../../features/dataConnectorsV2/api/doiResolver.empty-api";
 import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataConnectors.slice";
@@ -76,7 +75,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
   const enhancedReducer = {
     ...renkuStateModelReducer,
     // Slices
-    [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
     [dataConnectorFormSlice.name]: dataConnectorFormSlice.reducer,
     [datasetFormSlice.name]: datasetFormSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
