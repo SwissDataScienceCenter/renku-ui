@@ -77,6 +77,7 @@ export const CONFIG_JSON = {
   SESSION_CLASS_EMAIL_US: safeJsonToObject(process.env.SESSION_CLASS_EMAIL_US),
   IMAGE_BUILDERS_ENABLED: process.env.IMAGE_BUILDERS_ENABLED,
   LEGACY_SUPPORT: safeJsonToObject(process.env.LEGACY_SUPPORT),
+  CONTACT_EMAIL: process.env.CONTACT_EMAIL || "hello@renku.io",
 };
 
 export const SAMPLE_PRIVACY_CONTENT = `# Privacy statement
