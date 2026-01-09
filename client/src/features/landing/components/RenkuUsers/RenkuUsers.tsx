@@ -20,6 +20,10 @@ import cx from "classnames";
 import { ReactNode } from "react";
 import { Card, Col, Row } from "reactstrap";
 
+import {
+  NEW_DOCS_RESEARCH,
+  NEW_DOCS_TEACHING,
+} from "~/utils/constants/NewDocs";
 import { Links } from "../../../../utils/constants/Docs.js";
 import educatorIcon from "../../assets/educatorIcon.svg";
 import organizerIcon from "../../assets/organizerIcon.svg";
@@ -80,7 +84,7 @@ export function RenkuUsers() {
       title: "Unified Research",
       description:
         "Connect your entire research workflow in one place, and collaborate across specialties without technical barriers.",
-      link: Links.RENKU_2_RESEARCH,
+      link: NEW_DOCS_RESEARCH,
       icon: (
         <img
           src={researcherIcon}
@@ -94,7 +98,7 @@ export function RenkuUsers() {
       title: "Computing Courses made easy",
       description:
         "Help your students focus on the material, not getting lost during setup. Ideal for project-based coursework and time-sensitive workshops.",
-      link: Links.RENKU_2_TEACHING,
+      link: NEW_DOCS_TEACHING,
       icon: (
         <img
           src={educatorIcon}

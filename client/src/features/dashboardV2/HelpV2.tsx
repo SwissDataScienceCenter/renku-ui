@@ -29,6 +29,10 @@ import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
 
 import ExternalLink from "~/components/ExternalLink";
+import {
+  NEW_DOCS_COMMUNITY_PORTAL,
+  NEW_DOCS_DOCUMENTATION,
+} from "~/utils/constants/NewDocs";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
@@ -122,14 +126,14 @@ function HelpGetting() {
           <Card className={cardClasses}>
             <CardHeader>
               <h2 className="mb-0">
-                <ExternalLink icon={null} href={Links.RENKU_2_DOCUMENTATION}>
+                <ExternalLink icon={null} href={NEW_DOCS_DOCUMENTATION}>
                   <FileEarmarkText className={cx("bi", "me-1")} />
                   RenkuLab Documentation
                 </ExternalLink>
               </h2>
             </CardHeader>
             <CardBody>
-              <HelpCardBodyContent url={Links.RENKU_2_DOCUMENTATION}>
+              <HelpCardBodyContent url={NEW_DOCS_DOCUMENTATION}>
                 <p className="mb-0">
                   Find tutorials, how-to guides, and reference materials for
                   learning how to use Renku.
@@ -143,14 +147,14 @@ function HelpGetting() {
           <Card className={cardClasses}>
             <CardHeader>
               <h2 className="mb-0">
-                <ExternalLink icon={null} href={Links.RENKU_2_COMMUNITY_PORTAL}>
+                <ExternalLink icon={null} href={NEW_DOCS_COMMUNITY_PORTAL}>
                   <Share className={cx("bi", "me-1")} />
                   Renku Community Portal
                 </ExternalLink>
               </h2>
             </CardHeader>
             <CardBody>
-              <HelpCardBodyContent url={Links.RENKU_2_COMMUNITY_PORTAL}>
+              <HelpCardBodyContent url={NEW_DOCS_COMMUNITY_PORTAL}>
                 <p className="mb-0">
                   Find dedicated best practices for teaching, research and
                   events with Renku, information about community events, how to

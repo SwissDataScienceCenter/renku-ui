@@ -38,7 +38,7 @@ import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
 import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResources.api";
-import { Links } from "~/utils/constants/Docs";
+import { NEW_DOCS_MIGRATION_INFO } from "~/utils/constants/NewDocs";
 import type { GitLabRepositoryCommit } from "../../GitLab.types";
 
 interface DetailsMigrationProps {
@@ -143,7 +143,7 @@ export function DetailsMigration({
         showLinkIcon={true}
         title="Learn more"
         className={cx("text-info")}
-        url={Links.RENKU_2_MIGRATION_INFO}
+        url={NEW_DOCS_MIGRATION_INFO}
       />
     </InfoAlert>
   );

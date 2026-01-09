@@ -27,6 +27,11 @@ import TakeActionAlert from "~/components/TakeActionAlert";
 import { PROJECT_CREATION_HASH } from "~/features/projectsV2/new/createProjectV2.constants";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import { Links } from "~/utils/constants/Docs";
+import {
+  NEW_DOCS_COMMUNITY_PORTAL,
+  NEW_DOCS_CREATE_PROJECT,
+  NEW_DOCS_HOW_RENKU_WORKS,
+} from "~/utils/constants/NewDocs";
 import Background from "./Background.svg";
 import MigrateRepo from "./MigrateRepo.svg";
 
@@ -176,7 +181,7 @@ function LegacyNotSupportedFooter() {
             className="text-dark"
             role="text"
             title="How is Renku 2.0 different from Renku Legacy?"
-            url={Links.RENKU_2_WHY_RENKU}
+            url={NEW_DOCS_HOW_RENKU_WORKS}
           />
         </Col>
       </Row>
@@ -187,7 +192,7 @@ function LegacyNotSupportedFooter() {
             className="text-dark"
             role="text"
             title="contact us"
-            url={Links.CONTACT_US}
+            url={NEW_DOCS_COMMUNITY_PORTAL}
           />{" "}
           or read our blog post about{" "}
           <ExternalLink
@@ -299,7 +304,7 @@ function ProjectNoLegacyMigrateStep2() {
             <ExternalLink
               role="text"
               title="Step-by-step instructions"
-              url={Links.RENKU_2_CREATE_PROJECT}
+              url={NEW_DOCS_CREATE_PROJECT}
             />
           </span>
           <Link

@@ -24,6 +24,12 @@ import { Link } from "react-router";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
 
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import {
+  NEW_DOCS_COMMUNITY_PORTAL,
+  NEW_DOCS_DOCUMENTATION,
+  NEW_DOCS_HOW_RENKU_WORKS,
+  NEW_DOCS_QUICK_START_TUTORIAL,
+} from "~/utils/constants/NewDocs";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../../../components/LegacyExternalLinks.js";
 import { Links } from "../../../utils/constants/Docs.js";
@@ -91,11 +97,11 @@ function BottomNav() {
             <BottomNavSection sectionTitle="Learn">
               <BottomNavExternalLink
                 title="Documentation"
-                url={Links.RENKU_2_DOCUMENTATION}
+                url={NEW_DOCS_DOCUMENTATION}
               />
               <BottomNavExternalLink
                 title="Get Started"
-                url={Links.RENKU_2_QUICK_START_TUTORIAL}
+                url={NEW_DOCS_QUICK_START_TUTORIAL}
               />
               <BottomNavLink title="Help" to={ABSOLUTE_ROUTES.v2.help.root} />
             </BottomNavSection>
@@ -125,7 +131,7 @@ function BottomNav() {
               />
               <BottomNavExternalLink
                 title="Why Renku?"
-                url={Links.RENKU_2_WHY_RENKU}
+                url={NEW_DOCS_HOW_RENKU_WORKS}
               />
               <BottomNavExternalLink
                 title="Who we are?"
@@ -214,13 +220,13 @@ function TopNav() {
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
                   title="Documentation"
-                  url={Links.RENKU_2_DOCUMENTATION}
+                  url={NEW_DOCS_DOCUMENTATION}
                 />
               </NavItem>
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
                   title="Community Portal"
-                  url={Links.RENKU_2_COMMUNITY_PORTAL}
+                  url={NEW_DOCS_COMMUNITY_PORTAL}
                 />
               </NavItem>
               <NavItem>
