@@ -93,9 +93,7 @@ export default function StartNewSession() {
   const { params } = useContext(AppContext);
   const anonymousSessionsEnabled =
     params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
-  const supportLegacySessions =
-    params?.LEGACY_SUPPORT.supportLegacySessions ??
-    DEFAULT_APP_PARAMS.LEGACY_SUPPORT.supportLegacySessions;
+  const supportLegacySessions = false;
 
   const location = useLocation();
   const searchParams = useMemo(

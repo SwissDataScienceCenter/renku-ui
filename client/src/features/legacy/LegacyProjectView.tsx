@@ -16,17 +16,8 @@
  * limitations under the License.
  */
 
-import { useContext } from "react";
-
-import LazyProjectView from "../../project/LazyProjectView";
-import AppContext from "../../utils/context/appContext";
 import CheckForRedirect from "./CheckForRedirect";
 
 export default function LegacyProjectView() {
-  const { params } = useContext(AppContext);
-  if (params && !params.LEGACY_SUPPORT.enabled) {
-    return <CheckForRedirect />;
-  }
-
-  return <LazyProjectView />;
+  return <CheckForRedirect />;
 }

@@ -59,7 +59,6 @@ import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
 import { NotificationsManager } from "~/notifications/notifications.types";
 import rkIconStartWithOptions from "~/styles/icons/start-with-options.svg";
 import AppContext from "~/utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import RtkQueryErrorsContext from "~/utils/helpers/RtkQueryErrorsContext";
@@ -120,10 +119,7 @@ export default function SessionButton({
       ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
       : null;
 
-  const { params } = useContext(AppContext);
-  const supportLegacySessions =
-    params?.LEGACY_SUPPORT.supportLegacySessions ??
-    DEFAULT_APP_PARAMS.LEGACY_SUPPORT.supportLegacySessions;
+  const supportLegacySessions = false;
 
   if (isLoading) {
     return (

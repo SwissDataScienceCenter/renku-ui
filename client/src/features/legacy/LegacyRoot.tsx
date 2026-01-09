@@ -16,16 +16,8 @@
  * limitations under the License.
  */
 
-import { useContext } from "react";
-
-import AppContext from "../../utils/context/appContext";
-import LazyRootV1 from "../rootV1/LazyRootV1";
 import NoLegacySupport from "./NoLegacySupport";
 
 export default function LegacyRoot() {
-  const { params } = useContext(AppContext);
-  if (params && !params.LEGACY_SUPPORT.enabled) {
-    return <NoLegacySupport />;
-  }
-  return <LazyRootV1 />;
+  return <NoLegacySupport />;
 }

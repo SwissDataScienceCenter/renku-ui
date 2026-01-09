@@ -29,7 +29,6 @@ export interface AppParams {
   HOMEPAGE: HomepageParams;
   IMAGE_BUILDERS_ENABLED: boolean;
   KEYCLOAK_REALM: string;
-  LEGACY_SUPPORT: LegacySupportParams;
   MAINTENANCE: string;
   PREVIEW_THRESHOLD: PreviewThresholdParams;
   PRIVACY_BANNER_CONTENT: string;
@@ -67,11 +66,6 @@ export type AppParamsNumbers = {
     ? K
     : never]: AppParams[K];
 };
-
-export interface LegacySupportParams {
-  enabled: boolean;
-  supportLegacySessions: boolean;
-}
 
 export interface PreviewThresholdParams {
   hard: number;
