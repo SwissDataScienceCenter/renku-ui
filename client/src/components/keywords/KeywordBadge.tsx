@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useMemo } from "react";
 import { XCircle } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router";
+import { Link } from "react-router";
 
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import RenkuBadge from "../renkuBadge/RenkuBadge";
@@ -52,12 +52,10 @@ export default function KeywordBadge({
       <XCircle className="bi" />
     </button>
   ) : null;
-  const linkPath = useMemo(() => {
+  const search = useMemo(() => {
     if (searchKeyword == null || searchKeyword.length < 1) return null;
-    const searchPath = generatePath(ABSOLUTE_ROUTES.v2.search);
     return (
-      `${searchPath}?` +
-      new URLSearchParams({ q: `keyword:"${searchKeyword}"` }).toString()
+      `?` + new URLSearchParams({ q: `keyword:"${searchKeyword}"` }).toString()
     );
   }, [searchKeyword]);
 
@@ -79,9 +77,12 @@ export default function KeywordBadge({
       {removeButton}
     </RenkuBadge>
   );
-  if (linkPath) {
+  if (search) {
     return (
-      <Link to={linkPath} className="text-decoration-none">
+      <Link
+        to={{ pathname: ABSOLUTE_ROUTES.v2.search, search }}
+        className="text-decoration-none"
+      >
         {badge}
       </Link>
     );
