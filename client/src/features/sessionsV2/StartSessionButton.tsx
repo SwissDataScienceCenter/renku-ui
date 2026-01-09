@@ -18,10 +18,13 @@
 
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import cx from "classnames";
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 
+import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api.ts";
+import AppContext from "~/utils/context/appContext.ts";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants.ts";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
@@ -62,8 +65,23 @@ export default function StartSessionButton({
       ? { imageUrl: environment.container_image }
       : skipToken
   );
+  const { params } = useContext(AppContext);
+  const imageBuildersEnabled =
+    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+  const { data: builds } = useGetBuildsQuery(
+    imageBuildersEnabled && environment.environment_image_source === "build"
+      ? { environmentId: environment.id }
+      : skipToken
+  );
+
+  const lastBuild = builds?.at(0);
+  const lastSuccessfulBuild = builds?.find(
+    (build) => build.status === "succeeded" && build.id !== lastBuild?.id
+  );
 
   const force = isExternalImageEnvironment && !isLoading && !data?.accessible;
+  if (environment.environment_image_source === "build" && !lastSuccessfulBuild)
+    return null;
 
   const launchAction = (
     <span id={`launch-btn-${launcher.id}`}>
