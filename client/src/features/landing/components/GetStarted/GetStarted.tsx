@@ -17,16 +17,22 @@
  */
 
 import cx from "classnames";
+import { useContext } from "react";
 import { Col, Container, Row } from "reactstrap";
 
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks.js";
-import { RenkuContactEmail } from "../../../../utils/constants/Docs.js";
 import getStartedGraphic from "../../assets/getStarted.svg";
 
 import styles from "./GetStarted.module.scss";
 
 export function GetStarted() {
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
+
   const loginUrl = useLoginUrl();
   return (
     <div className={cx("my-5")}>
@@ -87,7 +93,7 @@ export function GetStarted() {
                     "btn-lg"
                   )}
                   role="link"
-                  url={`mailto:${RenkuContactEmail}?subject=Requesting%20Pricing%20Details `}
+                  url={`mailto:${renkuContactEmail}?subject=Requesting%20Pricing%20Details `}
                   title="Contact us for pricing"
                 />
               </div>
