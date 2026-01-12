@@ -564,6 +564,14 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-settings-keywords")
       .should("contain", keywords[0])
       .should("contain", keywords[1]);
+
+    // the keywords should not be links on the settings page
+    cy.getDataCy("project-settings-keywords")
+      .first()
+      .and("not.have.attr", "href");
+    // the keywords should be links on the project overview page
+    cy.getDataCy("project-overview-link").click();
+    cy.getDataCy("keyword").parent().should("have.attr", "href");
   });
 });
 
