@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import {
   Calendar3Week,
   Eye,
@@ -44,6 +44,7 @@ import {
 } from "reactstrap";
 
 import { NEW_DOCS_DOCUMENTATION } from "~/utils/constants/NewDocs";
+import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
