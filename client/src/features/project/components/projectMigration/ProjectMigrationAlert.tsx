@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { generatePath, Link } from "react-router";
 import { Button } from "reactstrap";
 
+import { NEW_DOCS_MIGRATION_INFO } from "~/utils/constants/NewDocs";
 import { InfoAlert, WarnAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
@@ -99,7 +100,7 @@ export default function ProjectMigrationAlert({
             showLinkIcon={true}
             title="Learn more"
             color="outline-warning"
-            url={Links.RENKU_2_MIGRATION_INFO}
+            url={NEW_DOCS_MIGRATION_INFO}
           />
         </div>
       </WarnAlert>
