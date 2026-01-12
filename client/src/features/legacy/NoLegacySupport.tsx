@@ -24,9 +24,9 @@ import { Col, Row } from "reactstrap";
 import { InfoAlert } from "~/components/Alert";
 import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { Links } from "~/utils/constants/Docs";
+import { NEW_DOCS_HOW_RENKU_WORKS } from "~/utils/constants/NewDocs";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
-import { NEW_DOCS_HOW_RENKU_WORKS } from "~/utils/constants/NewDocs";
 import Background from "./Background.svg";
 
 import styles from "./NoLegacySupport.module.css";
