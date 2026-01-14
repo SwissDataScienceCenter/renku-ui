@@ -24,6 +24,7 @@ import { Col, Row } from "reactstrap";
 import { InfoAlert } from "~/components/Alert";
 import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { Links, RenkuContactEmail } from "~/utils/constants/Docs";
+import { NEW_DOCS_HOW_RENKU_WORKS } from "~/utils/constants/NewDocs";
 import Background from "./Background.svg";
 
 import styles from "./NoLegacySupport.module.css";
@@ -123,7 +124,7 @@ export default function NoLegacySupport() {
                 className="text-dark"
                 role="text"
                 title="Learn more"
-                url={Links.RENKU_2_WHY_RENKU}
+                url={NEW_DOCS_HOW_RENKU_WORKS}
               />
             </div>
             <MigrateContentInfo />

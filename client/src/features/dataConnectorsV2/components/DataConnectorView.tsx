@@ -626,7 +626,9 @@ function DataConnectorViewMetadata({
         <DataConnectorPropertyValue title="Keywords">
           <KeywordContainer>
             {sortedKeywords.map((keyword, index) => (
-              <KeywordBadge key={index}>{keyword}</KeywordBadge>
+              <KeywordBadge key={index} searchKeyword={keyword}>
+                {keyword}
+              </KeywordBadge>
             ))}
           </KeywordContainer>
         </DataConnectorPropertyValue>

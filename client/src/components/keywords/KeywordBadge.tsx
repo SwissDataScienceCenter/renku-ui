@@ -17,8 +17,11 @@
  */
 
 import cx from "classnames";
+import { useMemo } from "react";
 import { XCircle } from "react-bootstrap-icons";
+import { Link } from "react-router";
 
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import RenkuBadge from "../renkuBadge/RenkuBadge";
 
 interface KeywordBadgeProps {
@@ -27,6 +30,7 @@ interface KeywordBadgeProps {
   "data-cy"?: string;
   highlighted?: boolean;
   remove?: () => void;
+  searchKeyword?: string;
 }
 
 export default function KeywordBadge({
@@ -35,6 +39,7 @@ export default function KeywordBadge({
   "data-cy": dataCy = "keyword",
   highlighted,
   remove,
+  searchKeyword,
 }: KeywordBadgeProps) {
   const removeButton = remove ? (
     <button
@@ -47,8 +52,14 @@ export default function KeywordBadge({
       <XCircle className="bi" />
     </button>
   ) : null;
+  const search = useMemo(() => {
+    if (searchKeyword == null || searchKeyword.length < 1) return null;
+    return (
+      `?` + new URLSearchParams({ q: `keyword:"${searchKeyword}"` }).toString()
+    );
+  }, [searchKeyword]);
 
-  return (
+  const badge = (
     <RenkuBadge
       className={cx(
         "d-flex",
@@ -66,4 +77,15 @@ export default function KeywordBadge({
       {removeButton}
     </RenkuBadge>
   );
+  if (search) {
+    return (
+      <Link
+        to={{ pathname: ABSOLUTE_ROUTES.v2.search, search }}
+        className="text-decoration-none"
+      >
+        {badge}
+      </Link>
+    );
+  }
+  return badge;
 }

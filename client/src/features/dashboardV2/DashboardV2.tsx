@@ -43,6 +43,7 @@ import {
   Row,
 } from "reactstrap";
 
+import { NEW_DOCS_DOCUMENTATION } from "~/utils/constants/NewDocs";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -127,7 +128,7 @@ function FooterDashboard() {
         </FooterDashboardCard>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <FooterDashboardCard url="https://renku.notion.site/Documentation-db396cfc9a664cd2b161e4c6068a5ec9">
+        <FooterDashboardCard url={NEW_DOCS_DOCUMENTATION}>
           <FileEarmarkText size={27} />
           Documentation
         </FooterDashboardCard>

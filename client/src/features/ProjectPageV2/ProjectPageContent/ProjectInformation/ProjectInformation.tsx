@@ -201,7 +201,9 @@ export default function ProjectInformation({
         {keywordsSorted.length > 0 && (
           <KeywordContainer className="mt-1">
             {keywordsSorted.map((keyword, index) => (
-              <KeywordBadge key={`keyword-${index}`}>{keyword}</KeywordBadge>
+              <KeywordBadge key={`keyword-${index}`} searchKeyword={keyword}>
+                {keyword}
+              </KeywordBadge>
             ))}
           </KeywordContainer>
         )}
