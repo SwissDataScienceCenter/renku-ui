@@ -44,8 +44,8 @@ const DEFAULT_HOMEPAGE: AppParams["HOMEPAGE"] = {
 };
 
 const DEFAULT_LEGACY_SUPPORT: AppParams["LEGACY_SUPPORT"] = {
-  enabled: true,
-  supportLegacySessions: true,
+  enabled: false,
+  supportLegacySessions: false,
 };
 
 const DEFAULT_PREVIEW_THRESHOLD: AppParams["PREVIEW_THRESHOLD"] = {

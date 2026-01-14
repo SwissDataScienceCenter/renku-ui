@@ -21,7 +21,7 @@ import fixtures from "../support/renkulab-fixtures";
 describe("display the maintenance page", () => {
   // e of the resources on RenkuLab are t
   it("Shows the standard error when UI is down but no maintenance is set", () => {
-    fixtures.config();
+    fixtures.config().renkuDown();
     cy.visit("/");
     cy.get("h1").first().should("contain.text", "RenkuLab Down");
     cy.visit("/projects");
@@ -59,7 +59,7 @@ describe("display the maintenance page when there is no user response", () => {
   it("displays status page information", () => {
     // if the call to get the user fails (e.g., no .userNone() fixture)
     // then show the status page
-    fixtures.getStatuspageInfo();
+    fixtures.getStatuspageInfo().renkuDown();
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
     cy.get("h1").should("have.length", 1);

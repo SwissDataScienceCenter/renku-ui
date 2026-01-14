@@ -25,7 +25,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { Badge, Button, Collapse, FormText, Input } from "reactstrap";
 
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { Docs } from "../../../../utils/constants/Docs";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";

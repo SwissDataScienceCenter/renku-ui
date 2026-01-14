@@ -27,7 +27,8 @@ import cx from "classnames";
 import { useContext } from "react";
 import { Link, Route, Routes, useLocation } from "react-router";
 
-import { ExternalDocsLink } from "../../../../components/ExternalLinks";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+import { ExternalDocsLink } from "../../../../components/LegacyExternalLinks";
 import AnonymousNavBar from "../../../../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../../../../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../../../../components/navbar/navbar.constants";
@@ -38,7 +39,6 @@ import { Links } from "../../../../utils/constants/Docs";
 import AppContext from "../../../../utils/context/appContext";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import { Url } from "../../../../utils/helpers/url";
-import useLegacySelector from "../../../rootV2/NavbarV2";
 import NavbarV2 from "../../../rootV2/NavbarV2";
 
 import "./NavBar.css";
@@ -108,18 +108,6 @@ function RenkuNavBarInner({ user }) {
   );
 }
 
-function FooterNavbarAnonymousLinks() {
-  return (
-    <>
-      <ExternalDocsLink
-        url={`${Links.GITHUB}/blob/master/LICENSE`}
-        title="Renku License"
-        className="nav-link"
-      />
-    </>
-  );
-}
-
 function FooterNavbarLoggedInLinks({ privacyLink }) {
   const { params } = useContext(AppContext);
   const location = useLocation();
@@ -159,7 +147,6 @@ function FooterNavbarInner() {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
-  const user = useLegacySelector((state) => state.stateModel.user);
   const sessionShowUrl =
     projectMetadata == null
       ? null
@@ -220,15 +207,10 @@ function FooterNavbarInner() {
         </div>
         <div className={cx("d-lg-flex", "d-none", "navbar-nav")}>
           <div className={cx("d-flex", "flex-row", "gap-3", "ms-auto")}>
-            {!user?.logged &&
-            location.pathname === Url.get(Url.pages.landing) ? (
-              <FooterNavbarAnonymousLinks />
-            ) : (
-              <FooterNavbarLoggedInLinks
-                location={location}
-                privacyLink={privacyLink}
-              />
-            )}
+            <FooterNavbarLoggedInLinks
+              location={location}
+              privacyLink={privacyLink}
+            />
           </div>
         </div>
       </div>

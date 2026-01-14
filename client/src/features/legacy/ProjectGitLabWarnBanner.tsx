@@ -19,14 +19,14 @@
 import cx from "classnames";
 import { EmojiDizzy } from "react-bootstrap-icons";
 
-import { ExternalLink } from "~/components/ExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import TakeActionAlert from "~/components/TakeActionAlert";
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { Links } from "~/utils/constants/Docs";
+import { NEW_DOCS_MIGRATE_AWAY_FROM_GITLAB } from "~/utils/constants/NewDocs";
 import { doesProjectReferenceRenkulabGitLab } from "./legacy.utils";
 
 function ProjectEditorWarnBanner() {
@@ -53,7 +53,7 @@ function ProjectEditorWarnBanner() {
                 data-cy="help-save-work-button"
                 role="button"
                 showLinkIcon={true}
-                url={Links.RENKU_2_MIGRATE_AWAY_FROM_GITLAB}
+                url={NEW_DOCS_MIGRATE_AWAY_FROM_GITLAB}
               >
                 Help me save my work
               </ExternalLink>

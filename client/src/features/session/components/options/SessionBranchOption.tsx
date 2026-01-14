@@ -43,7 +43,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";

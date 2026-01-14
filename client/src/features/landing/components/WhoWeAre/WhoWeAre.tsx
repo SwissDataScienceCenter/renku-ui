@@ -23,7 +23,7 @@ import { Col, Row } from "reactstrap";
 import {
   ExternalDocsLink,
   ExternalLink,
-} from "../../../../components/ExternalLinks";
+} from "../../../../components/LegacyExternalLinks.js";
 import { Links, RenkuContactEmail } from "../../../../utils/constants/Docs.js";
 import logo_EPFL from "../../assets/EPFL.svg";
 import logo_ETH from "../../assets/ETH.svg";

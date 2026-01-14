@@ -16,6 +16,7 @@
  * limitations under the License
  */
 
+import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
 import faviconSVG from "../../styles/assets/favicon/Favicon.svg";
 import favicon16px from "../../styles/assets/favicon/Favicon16px.png";
@@ -151,8 +152,7 @@ export const BUILDER_PLATFORMS = [
   },
 ] as readonly BuilderSelectorOption<"linux/amd64" | "linux/arm64">[];
 
-export const IMAGE_BUILD_DOCS =
-  "https://renku.notion.site/How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234";
+export const IMAGE_BUILD_DOCS = NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED;
 
 export const LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE = {
   required: "Please provide a container image.",

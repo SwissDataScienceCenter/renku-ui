@@ -23,10 +23,10 @@ import { ExclamationTriangle } from "react-bootstrap-icons";
 import { Controller } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
+import { NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE } from "~/utils/constants/NewDocs";
 import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import { Links } from "../../../../utils/constants/Docs";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { useGetSessionsImagesQuery } from "../../api/sessionsV2.api";
 import {
   CONTAINER_IMAGE_PATTERN,
@@ -137,7 +137,7 @@ export function CustomEnvironmentFields({
             Please see the{" "}
             <ExternalLink
               role="text"
-              url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
+              url={NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE}
               title="documentation"
               showLinkIcon
               iconAfter

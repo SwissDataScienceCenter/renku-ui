@@ -28,7 +28,11 @@ import {
 import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
 
-import { ExternalIconLink } from "../../components/ExternalLinks";
+import ExternalLink from "~/components/ExternalLink";
+import {
+  NEW_DOCS_COMMUNITY_PORTAL,
+  NEW_DOCS_DOCUMENTATION,
+} from "~/utils/constants/NewDocs";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
@@ -66,7 +70,7 @@ function HelpNav({ statuspageId }: HelpNavProps) {
       )}
       <NavItem>
         <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.release}>
-          Release Information
+          Release and License
         </RenkuNavLinkV2>
       </NavItem>
       {termsConfigured && (
@@ -122,15 +126,14 @@ function HelpGetting() {
           <Card className={cardClasses}>
             <CardHeader>
               <h2 className="mb-0">
-                <ExternalIconLink
-                  url={Links.RENKU_2_DOCUMENTATION}
-                  icon={<FileEarmarkText className={cx("bi", "me-1")} />}
-                  text="RenkuLab Documentation"
-                />
+                <ExternalLink icon={null} href={NEW_DOCS_DOCUMENTATION}>
+                  <FileEarmarkText className={cx("bi", "me-1")} />
+                  RenkuLab Documentation
+                </ExternalLink>
               </h2>
             </CardHeader>
             <CardBody>
-              <HelpCardBodyContent url={Links.RENKU_2_DOCUMENTATION}>
+              <HelpCardBodyContent url={NEW_DOCS_DOCUMENTATION}>
                 <p className="mb-0">
                   Find tutorials, how-to guides, and reference materials for
                   learning how to use Renku.
@@ -144,15 +147,14 @@ function HelpGetting() {
           <Card className={cardClasses}>
             <CardHeader>
               <h2 className="mb-0">
-                <ExternalIconLink
-                  url={Links.RENKU_2_COMMUNITY_PORTAL}
-                  icon={<Share className={cx("bi", "me-1")} />}
-                  text="Renku Community Portal"
-                />
+                <ExternalLink icon={null} href={NEW_DOCS_COMMUNITY_PORTAL}>
+                  <Share className={cx("bi", "me-1")} />
+                  Renku Community Portal
+                </ExternalLink>
               </h2>
             </CardHeader>
             <CardBody>
-              <HelpCardBodyContent url={Links.RENKU_2_COMMUNITY_PORTAL}>
+              <HelpCardBodyContent url={NEW_DOCS_COMMUNITY_PORTAL}>
                 <p className="mb-0">
                   Find dedicated best practices for teaching, research and
                   events with Renku, information about community events, how to
@@ -168,11 +170,10 @@ function HelpGetting() {
           <Card className={cardClasses}>
             <CardHeader>
               <h2 className="mb-0">
-                <ExternalIconLink
-                  url={Links.DISCOURSE}
-                  icon={<JournalText className={cx("bi", "me-1")} />}
-                  text="Forum"
-                />
+                <ExternalLink icon={null} href={Links.DISCOURSE}>
+                  <JournalText className={cx("bi", "me-1")} />
+                  Forum
+                </ExternalLink>
               </h2>
             </CardHeader>
             <CardBody>
@@ -190,11 +191,10 @@ function HelpGetting() {
           <Card className={cardClasses}>
             <CardHeader>
               <h2 className="mb-0">
-                <ExternalIconLink
-                  url={Links.GITTER}
-                  icon={<ChatSquareDots className={cx("bi", "me-1")} />}
-                  text="Gitter"
-                />
+                <ExternalLink icon={null} href={Links.GITTER}>
+                  <ChatSquareDots className={cx("bi", "me-1")} />
+                  Gitter
+                </ExternalLink>
               </h2>
             </CardHeader>
             <CardBody>
@@ -212,11 +212,10 @@ function HelpGetting() {
           <Card className={cardClasses}>
             <CardHeader>
               <h2 className="mb-0">
-                <ExternalIconLink
-                  url={Links.GITHUB}
-                  icon={<Github className={cx("bi", "me-1")} />}
-                  text="GitHub"
-                />
+                <ExternalLink icon={null} href={Links.GITHUB}>
+                  <Github className={cx("bi", "me-1")} />
+                  GitHub
+                </ExternalLink>
               </h2>
             </CardHeader>
             <CardBody>

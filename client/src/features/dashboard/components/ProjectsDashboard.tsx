@@ -25,10 +25,14 @@ import { Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
+import {
+  NEW_DOCS_COMMUNITY_PORTAL,
+  NEW_DOCS_QUICK_START_TUTORIAL,
+} from "~/utils/constants/NewDocs";
 import { InfoAlert, WarnAlert } from "../../../components/Alert";
 import { extractRkErrorMessage } from "../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../components/ExternalLinks";
 import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import ListDisplay from "../../../components/List";
 import ListBarSession from "../../../components/list/ListBarSessions";
 import { Loader } from "../../../components/Loader";
@@ -36,7 +40,6 @@ import { EnvironmentLogs } from "../../../components/Logs";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import { Notebook } from "../../../notebooks/components/session.types";
 import { urlMap } from "../../../project/list/ProjectList.container";
-import { Links } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
@@ -93,7 +96,7 @@ function ProjectAlert({ total }: ProjectAlertProps) {
           <ExternalLink
             role="text"
             title="hands-on tutorial"
-            url={Links.RENKU_2_HANDS_ON_TUTORIAL}
+            url={NEW_DOCS_QUICK_START_TUTORIAL}
             className="fw-bold"
           />
           . You may also{" "}
@@ -107,7 +110,7 @@ function ProjectAlert({ total }: ProjectAlertProps) {
           <ExternalLink
             role="text"
             title="Community Portal"
-            url={Links.RENKU_2_COMMUNITY_PORTAL}
+            url={NEW_DOCS_COMMUNITY_PORTAL}
             className="fw-bold"
           />
           .

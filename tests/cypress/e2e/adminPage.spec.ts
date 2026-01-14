@@ -36,7 +36,7 @@ describe("admin page", () => {
     fixtures.userTest();
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
 
     cy.visit("/admin");
     cy.contains("Page not found").should("be.visible");
@@ -46,7 +46,7 @@ describe("admin page", () => {
     fixtures.userTest();
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
 
     cy.get("#profile-dropdown").should("be.visible").click();
 
@@ -65,7 +65,7 @@ describe("admin page", () => {
     fixtures.userAdmin();
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
 
     cy.visit("/admin");
 
@@ -76,7 +76,7 @@ describe("admin page", () => {
     fixtures.userAdmin();
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
 
     cy.get("#profile-dropdown").should("be.visible").click();
 
@@ -101,7 +101,7 @@ describe("admin page", () => {
       .adminKeycloakUser();
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getDataServiceUser");
+    cy.wait("@getUser");
 
     cy.visit("/admin");
 

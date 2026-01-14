@@ -29,12 +29,12 @@ import {
 } from "react-hook-form";
 import { Input, Label, ListGroup } from "reactstrap";
 
+import { NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE } from "~/utils/constants/NewDocs";
 import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import { Links } from "../../../../utils/constants/Docs";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { useGetSessionsImagesQuery } from "../../api/sessionsV2.api";
 import {
@@ -224,7 +224,7 @@ export default function EditLauncherFormContent({
             Please see the{" "}
             <ExternalLink
               role="text"
-              url={Links.RENKU_2_HOW_TO_USE_OWN_DOCKER_IMAGE}
+              url={NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE}
               title="documentation"
               showLinkIcon
               iconAfter

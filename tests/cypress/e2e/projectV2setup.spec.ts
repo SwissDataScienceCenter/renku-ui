@@ -301,6 +301,42 @@ describe("Set up data connectors", () => {
     );
   });
 
+  it("creates and link global data connector by URL", () => {
+    fixtures
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
+      .listProjectDataConnectors()
+      .getDataConnector()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .testCloudStorage({ success: false })
+      .postGlobalDataConnector({ doi: "10.5281/zenodo.123456" })
+      .postDataConnectorProjectLink({ dataConnectorId: "ULID-DOI-1" });
+
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@listProjectDataConnectors");
+
+    // Open modal
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.getDataCy("project-data-controller-mode-doi").click();
+
+    // Check validation is working
+    cy.getDataCy("doi-data-connector-button").click();
+    cy.getDataCy("project-data-connector-connect-modal")
+      .find(".invalid-feedback")
+      .should("exist");
+
+    // Add DOI
+    cy.get("#doi").type("https://zenodo.org/records/123456");
+    cy.getDataCy("doi-data-connector-button").click();
+    cy.getDataCy("project-data-connector-connect-modal").should("be.visible");
+    cy.wait("@postGlobalDataConnector");
+    cy.get("[data-cy=project-data-connector-connect-modal]").should(
+      "not.exist"
+    );
+  });
+
   it("link a data connector", () => {
     fixtures
       .readProjectV2WithoutDocumentation({
