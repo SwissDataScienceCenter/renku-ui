@@ -35,9 +35,9 @@ export const CLOUD_STORAGE_OVERRIDE = {
     azureblob: {
       position: 2,
     },
-    drive: {
-      hide: true,
-    },
+    // drive: {
+    //   hide: true,
+    // },
     gcs: {
       hide: true,
     },
@@ -79,7 +79,7 @@ export const CLOUD_STORAGE_OVERRIDE = {
       forceReadOnly: true,
       position: 6,
     },
-  } as Record<string, Partial<CloudStorageOverride>>,
+  } as Record<string, Partial<CloudStorageOverride> | undefined>,
 };
 
 export const CLOUD_OPTIONS_OVERRIDE = {
@@ -177,7 +177,10 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     user: { friendlyName: "Username" },
     vendor: { advanced: true },
   },
-} as Record<string, Record<string, Partial<CloudStorageSchemaOption>>>;
+} as Record<
+  string,
+  Record<string, Partial<CloudStorageSchemaOption> | undefined> | undefined
+>;
 
 export const CLOUD_OPTIONS_PROVIDER_OVERRIDE = {
   polybox: {
@@ -214,7 +217,11 @@ export const CLOUD_OPTIONS_PROVIDER_OVERRIDE = {
   },
 } as Record<
   string,
-  Record<string, Record<string, Partial<CloudStorageSchemaOption>>>
+  | Record<
+      string,
+      Record<string, Partial<CloudStorageSchemaOption> | undefined>
+    >
+  | undefined
 >;
 
 export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
@@ -242,7 +249,10 @@ export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
     placeholder: "'/' or 'optional-sub-folder(s)/'",
     label: "Source path",
   },
-} as Record<string, Record<"help" | "placeholder" | "label", string>>;
+} as Record<
+  string,
+  Record<"help" | "placeholder" | "label", string> | undefined
+>;
 
 export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
   "s3",
@@ -256,7 +266,7 @@ export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
   s3: ["AWS", "GCS", "Switch"],
-} as Record<string, string[]>;
+} as Record<string, string[] | undefined>;
 
 export const CLOUD_STORAGE_TOTAL_STEPS = 3;
 

@@ -40,6 +40,7 @@ import type {
   CloudStorageCredential,
   CloudStorageDetails,
   CloudStorageOptionTypes,
+  CloudStorageOverride,
   CloudStorageProvider,
   CloudStorageSchema,
   CloudStorageSchemaOption,
@@ -243,8 +244,20 @@ export function hasProviderShortlist(targetProvider?: string): boolean {
 export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
   if (!targetSchema) return;
   const currentSchema = schema.find((s) => s.prefix === targetSchema);
+  // const override = CLOUD_STORAGE_OVERRIDE.storage[targetSchema] as
+  //   | Partial<CloudStorageOverride>
+  //   | undefined;
+  // if (currentSchema && !override?.hide) {
+  //   return {
+  //     ...currentSchema,
+  //     name: override?.name ?? currentSchema.name,
+  //     description: override?.description ?? currentSchema.description,
+  //     position: override?.position ?? currentSchema.position,
+  //     forceReadOnly: override?.forceReadOnly ?? currentSchema.forceReadOnly,
+  //   };
+  // }
   const override = CLOUD_STORAGE_OVERRIDE.storage[targetSchema];
-  if (currentSchema && !override.hide) {
+  if (currentSchema && override && !override.hide) {
     return {
       ...currentSchema,
       name: override.name ?? currentSchema.name,
