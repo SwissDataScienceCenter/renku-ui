@@ -21,8 +21,9 @@ import cx from "classnames";
 import { ReactNode, useContext } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
+import { UncontrolledTooltip } from "reactstrap";
 
-import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api.ts";
+import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 import AppContext from "~/utils/context/appContext.ts";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants.ts";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
@@ -74,14 +75,16 @@ export default function StartSessionButton({
       : skipToken
   );
 
-  const lastBuild = builds?.at(0);
-  const lastSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded" && build.id !== lastBuild?.id
+  const hasSuccessfulBuild = builds?.find(
+    (build) => build.status === "succeeded"
   );
 
   const force = isExternalImageEnvironment && !isLoading && !data?.accessible;
-  if (environment.environment_image_source === "build" && !lastSuccessfulBuild)
-    return null;
+
+  const isLaunchButtonDisabled =
+    environment.environment_image_source === "build" && !hasSuccessfulBuild;
+  const launchButtonDisableReason =
+    "No image available. Run the Build action to generate an image.";
 
   const launchAction = (
     <span id={`launch-btn-${launcher.id}`}>
@@ -90,7 +93,8 @@ export default function StartSessionButton({
           "btn",
           "btn-sm",
           force ? "btn-outline-primary" : "btn-primary",
-          "rounded-end-0"
+          "rounded-end-0",
+          isLaunchButtonDisabled && "disabled"
         )}
         to={startUrl}
         data-cy="start-session-button"
@@ -98,6 +102,14 @@ export default function StartSessionButton({
         <PlayCircle className={cx("bi", "me-1")} />
         {force ? "Force launch" : "Launch"}
       </Link>
+      {isLaunchButtonDisabled && (
+        <UncontrolledTooltip
+          placement="top"
+          target={`launch-btn-${launcher.id}`}
+        >
+          {launchButtonDisableReason}
+        </UncontrolledTooltip>
+      )}
     </span>
   );
 
@@ -124,6 +136,7 @@ export default function StartSessionButton({
         default={launchAction}
         preventPropagation
         size="sm"
+        disabled={isLaunchButtonDisabled}
       >
         {customizeLaunch}
       </ButtonWithMenuV2>
