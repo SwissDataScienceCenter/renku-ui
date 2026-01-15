@@ -442,6 +442,7 @@ export type SessionResponse = {
   name: ServerName;
   resources: SessionResources;
   started: string | null;
+  lastInteraction?: string | null;
   status: SessionStatus;
   url: string;
   project_id: Ulid;
