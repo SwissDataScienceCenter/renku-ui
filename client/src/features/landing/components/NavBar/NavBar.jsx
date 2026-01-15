@@ -57,8 +57,7 @@ function RenkuNavBarInner({ user }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
-  const { params } = useContext(AppContext);
-  const forceV2 = params && !params.LEGACY_SUPPORT.enabled;
+  const forceV2 = true;
   const sessionShowUrl =
     projectMetadata == null
       ? null
@@ -109,9 +108,8 @@ function RenkuNavBarInner({ user }) {
 }
 
 function FooterNavbarLoggedInLinks({ privacyLink }) {
-  const { params } = useContext(AppContext);
   const location = useLocation();
-  const forceV2 = params && !params.LEGACY_SUPPORT.enabled;
+  const forceV2 = true;
   const helpLocation = isRenkuLegacy(location.pathname, forceV2)
     ? ABSOLUTE_ROUTES.v1.help.root
     : ABSOLUTE_ROUTES.v2.help.root;
@@ -171,10 +169,7 @@ function FooterNavbarInner() {
       : isDevVersion
       ? `${taggedVersion} (dev)`
       : taggedVersion;
-  const isRenkuV1 = isRenkuLegacy(
-    location.pathname,
-    params && !params.LEGACY_SUPPORT.enabled
-  );
+  const isRenkuV1 = isRenkuLegacy(location.pathname, true);
   const releaseLocation = isRenkuV1
     ? ABSOLUTE_ROUTES.v1.help.release
     : ABSOLUTE_ROUTES.v2.help.release;
