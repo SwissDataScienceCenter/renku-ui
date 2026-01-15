@@ -244,7 +244,7 @@ export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
   if (!targetSchema) return;
   const currentSchema = schema.find((s) => s.prefix === targetSchema);
   const override = CLOUD_STORAGE_OVERRIDE.storage[targetSchema];
-  if (currentSchema && !override.hide) {
+  if (currentSchema && override && !override.hide) {
     return {
       ...currentSchema,
       name: override.name ?? currentSchema.name,
