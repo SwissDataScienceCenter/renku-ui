@@ -1275,6 +1275,11 @@
             "nullable": true,
             "type": "string"
           },
+          "lastInteraction": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
           "status": {
             "$ref": "#/components/schemas/SessionStatus"
           },
@@ -1318,8 +1323,23 @@
           "state": {
             "enum": ["running", "hibernated"],
             "type": "string"
+          },
+          "lastInteraction": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "$ref": "#/components/schemas/CurrentTime"
+              }
+            ]
           }
         }
+      },
+      "CurrentTime": {
+        "type": "string",
+        "enum": ["now"]
       },
       "SessionStatus": {
         "properties": {
