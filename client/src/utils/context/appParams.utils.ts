@@ -27,7 +27,6 @@ import type {
   AppParamsBooleans,
   AppParamsNumbers,
   AppParamsStrings,
-  LegacySupportParams,
   PreviewThresholdParams,
   PrivacyBannerLayoutParams,
   SessionClassEmailUsParams,
@@ -82,7 +81,6 @@ export function validatedAppParams(params: unknown): AppParams {
   const CORE_API_VERSION_CONFIG = validateCoreApiVersionConfig(params_);
   const DASHBOARD_MESSAGE = validateDashboardMessage(params_);
   const HOMEPAGE = validateHomepage(params_);
-  const LEGACY_SUPPORT = validateLegacySupport(params_);
   const PREVIEW_THRESHOLD = validatePreviewThreshold(params_);
   const PRIVACY_BANNER_LAYOUT = validatePrivacyBannerLayout(params_);
   const TEMPLATES = validateTemplates(params_);
@@ -98,7 +96,6 @@ export function validatedAppParams(params: unknown): AppParams {
     HOMEPAGE,
     IMAGE_BUILDERS_ENABLED,
     KEYCLOAK_REALM,
-    LEGACY_SUPPORT,
     MAINTENANCE,
     PREVIEW_THRESHOLD,
     PRIVACY_BANNER_CONTENT,
@@ -257,31 +254,6 @@ function validateHomepage(params: RawAppParams): HomepageParams {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return value as any;
-}
-
-function validateLegacySupport(params: RawAppParams): LegacySupportParams {
-  const value = params["LEGACY_SUPPORT"];
-  if (typeof value !== "object" || value == null) {
-    return DEFAULT_APP_PARAMS["LEGACY_SUPPORT"];
-  }
-
-  const rawLegacySupportParams = value as {
-    [key: string]: unknown;
-  };
-
-  const enabled =
-    rawLegacySupportParams.enabled != null
-      ? !!rawLegacySupportParams.enabled
-      : DEFAULT_APP_PARAMS["LEGACY_SUPPORT"].enabled;
-  const supportLegacySessions =
-    rawLegacySupportParams.supportLegacySessions != null
-      ? !!rawLegacySupportParams.supportLegacySessions
-      : DEFAULT_APP_PARAMS["LEGACY_SUPPORT"].supportLegacySessions;
-
-  return {
-    enabled,
-    supportLegacySessions,
-  };
 }
 
 function validatePreviewThreshold(

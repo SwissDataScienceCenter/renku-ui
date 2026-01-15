@@ -16,35 +16,8 @@
  * limitations under the License.
  */
 
-import { useContext } from "react";
-
-import { DatasetCoordinator } from "../../dataset/Dataset.state";
-import LazyShowDataset from "../../dataset/LazyShowDataset";
-import AppContext from "../../utils/context/appContext";
-import type { UserInfo } from "../usersV2/api/users.types";
 import NoLegacySupport from "./NoLegacySupport";
 
-interface LegacyDatasetProps {
-  userInfo: UserInfo;
-}
-
-export default function LegacyShowDataset({ userInfo }: LegacyDatasetProps) {
-  const { client, model: contextModel, params } = useContext(AppContext);
-  if (params && !params.LEGACY_SUPPORT.enabled) {
-    return <NoLegacySupport />;
-  }
-
-  const model = contextModel as { subModel: (arg0: string) => unknown };
-  return (
-    <LazyShowDataset
-      insideProject={false}
-      client={client}
-      projectsUrl="/projects"
-      datasetCoordinator={
-        new DatasetCoordinator(client, model.subModel("dataset"))
-      }
-      logged={userInfo?.isLoggedIn ?? false}
-      model={model}
-    />
-  );
+export default function LegacyShowDataset() {
+  return <NoLegacySupport />;
 }
