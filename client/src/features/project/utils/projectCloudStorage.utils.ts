@@ -142,21 +142,18 @@ export function getSchemaStorage(
         shortList &&
         !CLOUD_STORAGE_SCHEMA_SHORTLIST.includes(element.prefix) &&
         element.prefix !== currentSchema
-      )
-        return current;
-      if (
-        Object.keys(CLOUD_STORAGE_OVERRIDE.storage).includes(element.prefix)
       ) {
-        const override = CLOUD_STORAGE_OVERRIDE.storage[element.prefix];
-        if (!override.hide) {
-          current.push({
-            ...element,
-            name: override.name ?? element.name,
-            description: override.description ?? element.description,
-            position: override.position ?? element.position,
-            forceReadOnly: override.forceReadOnly ?? element.forceReadOnly,
-          });
-        }
+        return current;
+      }
+      const override = CLOUD_STORAGE_OVERRIDE.storage[element.prefix];
+      if (override && !override.hide) {
+        current.push({
+          ...element,
+          name: override.name ?? element.name,
+          description: override.description ?? element.description,
+          position: override.position ?? element.position,
+          forceReadOnly: override.forceReadOnly ?? element.forceReadOnly,
+        });
       } else {
         current.push(element);
       }
@@ -192,21 +189,21 @@ export function getSchemaProviders(
       friendlyName: a.value.charAt(0).toUpperCase() + a.value.slice(1),
     }));
 
-  const providerOverrides = Object.keys(
-    CLOUD_STORAGE_OVERRIDE.storage
-  ).includes(targetSchema)
-    ? CLOUD_STORAGE_OVERRIDE.storage[targetSchema].providers
-    : undefined;
+  const providerOverrides =
+    CLOUD_STORAGE_OVERRIDE.storage[targetSchema]?.providers;
 
   const finalProviders = providers?.examples?.reduce<CloudStorageProvider[]>(
     (current, e) => {
+      const providersShortlist =
+        CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetSchema];
       if (
         shortList &&
-        CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetSchema] &&
-        !CLOUD_STORAGE_PROVIDERS_SHORTLIST[targetSchema].includes(e.value) &&
+        providersShortlist &&
+        !providersShortlist.includes(e.value) &&
         e.value !== currentProvider
-      )
+      ) {
         return current;
+      }
       if (
         providerOverrides &&
         Object.keys(providerOverrides).includes(e.value)
@@ -243,9 +240,7 @@ export function hasProviderShortlist(targetProvider?: string): boolean {
 export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
   if (!targetSchema) return;
   const currentSchema = schema.find((s) => s.prefix === targetSchema);
-  const override = CLOUD_STORAGE_OVERRIDE.storage[
-    targetSchema
-  ] as Partial<CloudStorageSchema> | null;
+  const override = CLOUD_STORAGE_OVERRIDE.storage[targetSchema];
   if (currentSchema && override && !override.hide) {
     return {
       ...currentSchema,
