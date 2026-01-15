@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { ReactNode, useRef } from "react";
 import { Badge, UncontrolledTooltip } from "reactstrap";
+
 import styles from "./WipBadge.module.scss";
 
 interface WipBadeProps {

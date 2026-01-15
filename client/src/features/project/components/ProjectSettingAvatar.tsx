@@ -21,13 +21,13 @@ import { useCallback, useEffect, useState } from "react";
 import { Card, CardBody } from "reactstrap";
 
 import {
-  RtkErrorAlert,
   extractRkErrorRemoteBranch,
+  RtkErrorAlert,
 } from "../../../components/errors/RtkErrorAlert";
 import { ImageFieldPropertyName as Prop } from "../../../components/form-field/FormGeneratorImageInput";
 import InlineSubmitImageInput, {
-  INITIAL_IMAGE_VALUE,
   ImageValue,
+  INITIAL_IMAGE_VALUE,
 } from "../../../components/inlineSubmitImageInput/InlineSubmitImageInput";
 import { InputCard } from "../../../components/inlineSubmitInput/InlineSubmitInput";
 import { PROJECT_AVATAR_MAX_SIZE } from "../../../project/components/NewProjectAvatar";

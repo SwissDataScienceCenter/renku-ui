@@ -28,6 +28,7 @@ import {
 } from "react-hook-form";
 import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
+
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import { MoreInfo } from "../../../../components/MoreInfo";
 import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
@@ -37,6 +38,42 @@ import {
 } from "../../session.constants";
 import { isValidJSONStringArray } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+
+function OptionalLabel() {
+  return <span className={cx("small", "text-muted")}>(Optional)</span>;
+}
+
+interface FormFieldLabelProps<T extends FieldValues> {
+  info: string;
+  isOptional?: boolean;
+  label: ReactNode;
+  name: Path<T>;
+}
+
+function FormFieldLabel<T extends FieldValues>({
+  info,
+  isOptional,
+  label,
+  name,
+}: FormFieldLabelProps<T>) {
+  return (
+    <div className={cx("d-flex", "align-items-center", "gap-2", "mb-1")}>
+      <Label
+        for={`addSessionLauncher${name}`}
+        className="mb-0"
+        aria-required={isOptional ? "false" : "true"}
+      >
+        {label}
+      </Label>
+      {info && (
+        <MoreInfo>
+          <LazyRenkuMarkdown markdownText={info} />
+        </MoreInfo>
+      )}
+      {isOptional && <OptionalLabel />}
+    </div>
+  );
+}
 
 function FormField<T extends FieldValues>({
   control,
@@ -48,32 +85,37 @@ function FormField<T extends FieldValues>({
   rules,
   type = "text",
   isOptional,
-}: {
+}: FormFieldLabelProps<T> & {
   control: Control<T>;
   errors?: FieldErrors<T>;
-  info: string;
-  label: ReactNode;
-  name: Path<T>;
   placeholder?: string;
   rules?: ControllerProps<T>["rules"];
   type: InputType;
-  isOptional?: boolean;
 }) {
+  if (type === "checkbox" || type === "radio") {
+    return (
+      <CheckboxOrRadioFormField
+        control={control}
+        errors={errors}
+        info={info}
+        label={label}
+        name={name}
+        placeholder={placeholder}
+        rules={rules}
+        type={type}
+        isOptional={isOptional}
+      />
+    );
+  }
+
   return (
     <>
-      <Label
-        for={`addSessionLauncher${name}`}
-        className={cx("form-label", "me-2")}
-        aria-required={isOptional ? "false" : "true"}
-      >
-        {label}
-        {isOptional && (
-          <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
-        )}
-      </Label>
-      <MoreInfo>
-        <LazyRenkuMarkdown markdownText={info} />
-      </MoreInfo>
+      <FormFieldLabel
+        info={info}
+        isOptional={isOptional}
+        label={label}
+        name={name}
+      />
       <Controller
         control={control}
         name={name}
@@ -100,6 +142,70 @@ function FormField<T extends FieldValues>({
   );
 }
 
+// NOTE: checkbox and radio inputs require a different layout.
+function CheckboxOrRadioFormField<T extends FieldValues>({
+  control,
+  errors,
+  info,
+  label,
+  name,
+  placeholder,
+  rules,
+  type = "text",
+  isOptional,
+}: {
+  control: Control<T>;
+  errors?: FieldErrors<T>;
+  info: string;
+  label: ReactNode;
+  name: Path<T>;
+  placeholder?: string;
+  rules?: ControllerProps<T>["rules"];
+  type: InputType;
+  isOptional?: boolean;
+}) {
+  return (
+    <div className="form-check">
+      <Controller
+        control={control}
+        name={name}
+        rules={rules}
+        render={({ field }) => (
+          <Input
+            className={cx(errors?.[name] && "is-invalid")}
+            data-cy={`session-launcher-field-${name}`}
+            id={`addSessionLauncher${name}`}
+            placeholder={placeholder}
+            type={type}
+            checked={field.value}
+            {...field}
+          />
+        )}
+      />
+      <Label
+        for={`addSessionLauncher${name}`}
+        className={cx("d-flex", "align-items-center", "gap-2")}
+        aria-required={isOptional ? "false" : "true"}
+      >
+        {label}
+        {info && (
+          <MoreInfo>
+            <LazyRenkuMarkdown markdownText={info} />
+          </MoreInfo>
+        )}
+        {isOptional && <OptionalLabel />}
+      </Label>
+      {errors?.[name] && (
+        <div className={cx("d-block", "invalid-feedback")}>
+          {errors[name]?.message
+            ? errors[name]?.message?.toString()
+            : `Please provide a valid value for ${name}`}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface JsonFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
@@ -121,19 +227,12 @@ function JsonField<T extends FieldValues>({
 }: JsonFieldProps<T>) {
   return (
     <>
-      <Label
-        for={`addSessionLauncher${name}`}
-        className={cx("form-label", "me-2", "mb-0")}
-      >
-        {label}
-        {isOptional && (
-          <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
-        )}
-      </Label>
-      <MoreInfo>
-        <LazyRenkuMarkdown markdownText={info} />
-      </MoreInfo>
-      <FormText tag="div">{helpText}</FormText>
+      <FormFieldLabel
+        info={info}
+        isOptional={isOptional}
+        label={label}
+        name={name}
+      />
       <Controller
         control={control}
         name={name}
@@ -155,6 +254,7 @@ function JsonField<T extends FieldValues>({
           {errors[name]?.message?.toString()}
         </div>
       )}
+      <FormText tag="div">{helpText}</FormText>
     </>
   );
 }
@@ -168,9 +268,9 @@ export function AdvancedSettingsFields<
   T extends SessionLauncherForm | SessionEnvironmentForm
 >({ control, errors }: AdvancedSettingsProp<T>) {
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div className="row">
-        <div className={cx("col-12", "col-md-9")}>
+    <>
+      <div className={cx("row", "gy-3", "mb-3")}>
+        <div className={cx("col-12", "col-md-9", "mt-0")}>
           <FormField<T>
             control={control}
             name={"default_url" as Path<T>}
@@ -181,24 +281,18 @@ export function AdvancedSettingsFields<
             type="text"
           />
         </div>
-        <div className={cx("col-12", "col-md-3")}>
+        <div className={cx("col-12", "col-md-3", "mt-md-0")}>
           <FormField<T>
             control={control}
             name={"port" as Path<T>}
             label="Port"
             isOptional={true}
             placeholder="e.g. 8080"
-            errors={errors}
             info={ENVIRONMENT_VALUES_DESCRIPTION.port}
             type="number"
-            rules={{
-              min: 1,
-              max: 65535,
-            }}
+            rules={{ min: 1, max: 65535 }}
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12")}>
           <FormField<T>
             control={control}
@@ -211,14 +305,14 @@ export function AdvancedSettingsFields<
           />
         </div>
       </div>
+
       <div className="row">
         <div className={cx("col-12")}>
-          <Label className={cx("form-label", "me-2", "fw-bold")}>
-            Docker settings
-          </Label>
+          <h3 className={cx("fw-bold", "mt-3")}>Docker settings</h3>
         </div>
       </div>
-      <div className="row">
+
+      <div className={cx("row", "gy-3")}>
         <div className={cx("col-12")}>
           <FormField<T>
             control={control}
@@ -230,8 +324,6 @@ export function AdvancedSettingsFields<
             type="text"
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12", "col-md-6")}>
           <FormField<T>
             control={control}
@@ -258,8 +350,6 @@ export function AdvancedSettingsFields<
             rules={{ min: 1, max: 65535 }}
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12")}>
           <JsonField<T>
             control={control}
@@ -271,8 +361,6 @@ export function AdvancedSettingsFields<
             helpText='Please enter a valid JSON array format e.g. ["python3","main.py"]'
           />
         </div>
-      </div>
-      <div className="row">
         <div className={cx("col-12")}>
           <JsonField<T>
             control={control}
@@ -284,7 +372,18 @@ export function AdvancedSettingsFields<
             helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
           />
         </div>
+        <div className={cx("col-12")}>
+          <FormField<T>
+            control={control}
+            name={"strip_path_prefix" as Path<T>}
+            label="Strip session URL path prefix"
+            isOptional={true}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.stripPathPrefix}
+            errors={errors}
+            type="checkbox"
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

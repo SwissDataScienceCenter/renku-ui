@@ -17,6 +17,7 @@
  */
 
 import { clamp } from "lodash-es";
+
 import type { DashboardMessageParams } from "../../features/dashboard/message/DashboardMessage.types";
 import type { HomepageParams } from "../../features/landing/anonymousHome.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
@@ -26,7 +27,6 @@ import type {
   AppParamsBooleans,
   AppParamsNumbers,
   AppParamsStrings,
-  LegacySupportParams,
   PreviewThresholdParams,
   PrivacyBannerLayoutParams,
   SessionClassEmailUsParams,
@@ -81,7 +81,6 @@ export function validatedAppParams(params: unknown): AppParams {
   const CORE_API_VERSION_CONFIG = validateCoreApiVersionConfig(params_);
   const DASHBOARD_MESSAGE = validateDashboardMessage(params_);
   const HOMEPAGE = validateHomepage(params_);
-  const LEGACY_SUPPORT = validateLegacySupport(params_);
   const PREVIEW_THRESHOLD = validatePreviewThreshold(params_);
   const PRIVACY_BANNER_LAYOUT = validatePrivacyBannerLayout(params_);
   const TEMPLATES = validateTemplates(params_);
@@ -95,14 +94,13 @@ export function validatedAppParams(params: unknown): AppParams {
     DASHBOARD_MESSAGE,
     GATEWAY_URL,
     HOMEPAGE,
+    IMAGE_BUILDERS_ENABLED,
     KEYCLOAK_REALM,
-    LEGACY_SUPPORT,
     MAINTENANCE,
     PREVIEW_THRESHOLD,
     PRIVACY_BANNER_CONTENT,
     PRIVACY_BANNER_ENABLED,
     PRIVACY_BANNER_LAYOUT,
-    TERMS_PAGES_ENABLED,
     RENKU_CHART_VERSION,
     SENTRY_NAMESPACE,
     SENTRY_SAMPLE_RATE,
@@ -110,12 +108,12 @@ export function validatedAppParams(params: unknown): AppParams {
     SESSION_CLASS_EMAIL_US,
     STATUSPAGE_ID,
     TEMPLATES,
-    UISERVER_URL,
+    TERMS_PAGES_ENABLED,
     UI_SHORT_SHA,
     UI_VERSION,
+    UISERVER_URL,
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
-    IMAGE_BUILDERS_ENABLED,
   };
 }
 
@@ -256,26 +254,6 @@ function validateHomepage(params: RawAppParams): HomepageParams {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return value as any;
-}
-
-function validateLegacySupport(params: RawAppParams): LegacySupportParams {
-  const value = params["LEGACY_SUPPORT"];
-  if (typeof value !== "object" || value == null) {
-    return DEFAULT_APP_PARAMS["LEGACY_SUPPORT"];
-  }
-
-  const rawLegacySupportParams = value as {
-    [key: string]: unknown;
-  };
-
-  const enabled = !!rawLegacySupportParams.enabled;
-  1;
-  if (rawLegacySupportParams.enabled != null)
-    return {
-      enabled,
-    };
-
-  return DEFAULT_APP_PARAMS["LEGACY_SUPPORT"];
 }
 
 function validatePreviewThreshold(

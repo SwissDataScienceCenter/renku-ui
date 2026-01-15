@@ -30,44 +30,43 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import { ErrorAlert } from "../../components/Alert";
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
-import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
-import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
+import { ErrorAlert } from "~/components/Alert";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { Loader } from "~/components/Loader";
+import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
+import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
-  useDeleteResourcePoolMutation,
-  useGetResourcePoolUsersQuery,
+  useDeleteResourcePoolsByResourcePoolIdMutation,
+  useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
+  useGetResourcePoolsByResourcePoolIdUsersQuery,
   useGetResourcePoolsQuery,
-  useGetUsersQuery,
-  useRemoveUserFromResourcePoolMutation,
-} from "../dataServices/computeResources.api";
-import {
-  ResourceClass,
-  ResourcePool,
-} from "../dataServices/dataServices.types";
+  type PoolUserWithId,
+  type ResourceClassWithId,
+  type ResourcePoolWithId,
+} from "../sessionsV2/api/computeResources.api";
+import { useGetUsersQuery } from "../usersV2/api/users.api";
+import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
+import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
+import { KeycloakUser } from "./adminKeycloak.types";
+import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
+import UpdateResourcePoolRemoteButton from "./UpdateResourcePoolRemoteButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
-import { ResourcePoolUser } from "./adminComputeResources.types";
-import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
-import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
-import ConnectedServicesSection from "./ConnectedServicesSection";
 
 export default function AdminPage() {
   return (
     <>
-      <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
+      <h1 className="mb-3">Admin Panel</h1>
       <IncidentsAndMaintenanceSection />
       <ComputeResourcesSection />
       <ConnectedServicesSection />
@@ -78,8 +77,8 @@ export default function AdminPage() {
 
 function ComputeResourcesSection() {
   return (
-    <section className="mt-4">
-      <h2 className="fs-4">Compute Resources</h2>
+    <section>
+      <h2>Compute Resources</h2>
       <AdminComputeResourcesOverview />
     </section>
   );
@@ -89,7 +88,7 @@ function AdminComputeResourcesOverview() {
     data: rawUsers,
     error: rawUsersError,
     isLoading: rawUsersIsLoading,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery({});
   const {
     data: resourcePools,
     error: resourcePoolsError,
@@ -144,7 +143,7 @@ function ResourcePoolsList() {
 
   return (
     <div className="mt-2">
-      <h3 className="fs-6">Resource Pools</h3>
+      <h3 className="fs-4">Resource Pools</h3>
 
       <AddResourcePoolButton />
 
@@ -156,11 +155,19 @@ function ResourcePoolsList() {
 }
 
 interface ResourcePoolItemProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
-  const { name, default: isDefault, public: isPublic, quota } = resourcePool;
+  const {
+    name,
+    default: isDefault,
+    public: isPublic,
+    quota,
+    cluster,
+    remote,
+  } = resourcePool;
+  const clusterId = cluster?.id;
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
@@ -232,6 +239,52 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
               </div>
             ) : (
               <p className="mb-0">No quota</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {clusterId != null ? (
+              <p className="mb-0">
+                Remote cluster: <code>{clusterId}</code>
+              </p>
+            ) : (
+              <p className="mb-0">No remote cluster</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {remote != null ? (
+              <div
+                className={cx(
+                  "align-items-center",
+                  "row",
+                  "row-cols-1",
+                  "row-cols-sm-2"
+                )}
+              >
+                <div className={cx("col", "col-sm-10")}>
+                  Remote configuration: <code>{JSON.stringify(remote)}</code>
+                </div>
+                <div className={cx("col", "col-sm-2", "ms-auto", "text-end")}>
+                  <UpdateResourcePoolRemoteButton resourcePool={resourcePool} />
+                </div>
+              </div>
+            ) : (
+              <div
+                className={cx(
+                  "align-items-center",
+                  "row",
+                  "row-cols-1",
+                  "row-cols-sm-2"
+                )}
+              >
+                <div className={cx("col", "col-sm-10")}>
+                  Local resource pool
+                </div>
+                <div className={cx("col", "col-sm-2", "ms-auto", "text-end")}>
+                  <UpdateResourcePoolRemoteButton resourcePool={resourcePool} />
+                </div>
+              </div>
             )}
           </div>
 
@@ -318,8 +371,8 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
 }
 
 interface ResourceClassListProps {
-  classes: ResourceClass[];
-  resourcePool: ResourcePool;
+  classes: ResourceClassWithId[];
+  resourcePool: ResourcePoolWithId;
 }
 
 function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
@@ -343,8 +396,8 @@ function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
 }
 
 interface ResourceClassItemProps {
-  resourceClass: ResourceClass;
-  resourcePool: ResourcePool;
+  resourceClass: ResourceClassWithId;
+  resourcePool: ResourcePoolWithId;
 }
 
 function ResourceClassItem({
@@ -430,7 +483,7 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
     data: resourcePoolUsers,
     error: resourcePoolUsersError,
     isLoading: resourcePoolUsersIsLoading,
-  } = useGetResourcePoolUsersQuery({ resourcePoolId: id });
+  } = useGetResourcePoolsByResourcePoolIdUsersQuery({ resourcePoolId: id });
 
   const isLoading = resourcePoolUsersIsLoading;
   const error = resourcePoolUsersError;
@@ -465,8 +518,8 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
 }
 
 interface ResourcePoolUsersListProps {
-  resourcePool: ResourcePool;
-  resourcePoolUsers: ResourcePoolUser[];
+  resourcePool: ResourcePoolWithId;
+  resourcePoolUsers: PoolUserWithId[];
 }
 
 function ResourcePoolUsersList({
@@ -487,8 +540,8 @@ function ResourcePoolUsersList({
 }
 
 interface ResourcePoolUserItemProps {
-  resourcePool: ResourcePool;
-  resourcePoolUser: ResourcePoolUser;
+  resourcePool: ResourcePoolWithId;
+  resourcePoolUser: PoolUserWithId;
 }
 
 function ResourcePoolUserItem({
@@ -534,7 +587,7 @@ function ResourcePoolUserItem({
 }
 
 interface RemoveUserFromResourcePoolButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   user: KeycloakUser;
 }
 
@@ -565,7 +618,7 @@ function RemoveUserFromResourcePoolButton({
 
 interface RemoveUserFromResourcePoolModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
   user: KeycloakUser;
 }
@@ -577,7 +630,7 @@ function RemoveUserFromResourcePoolModal({
   user,
 }: RemoveUserFromResourcePoolModalProps) {
   const [removeUserFromResourcePool, result] =
-    useRemoveUserFromResourcePoolMutation();
+    useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation();
   const onRemove = useCallback(() => {
     removeUserFromResourcePool({
       resourcePoolId: resourcePool.id,
@@ -622,7 +675,7 @@ function RemoveUserFromResourcePoolModal({
 }
 
 interface DeleteResourcePoolButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 function DeleteResourcePoolButton({
@@ -656,7 +709,7 @@ function DeleteResourcePoolButton({
 
 interface DeleteResourcePoolModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -667,7 +720,8 @@ function DeleteResourcePoolModal({
 }: DeleteResourcePoolModalProps) {
   const { id, name } = resourcePool;
 
-  const [deleteResourcePool, result] = useDeleteResourcePoolMutation();
+  const [deleteResourcePool, result] =
+    useDeleteResourcePoolsByResourcePoolIdMutation();
   const onDelete = useCallback(() => {
     deleteResourcePool({ resourcePoolId: id });
   }, [deleteResourcePool, id]);
@@ -679,7 +733,7 @@ function DeleteResourcePoolModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalBody>
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
@@ -690,7 +744,7 @@ function DeleteResourcePoolModal({
         </p>
       </ModalBody>
       <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+        <Button className="ms-2" color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Cancel, keep resource pool
         </Button>

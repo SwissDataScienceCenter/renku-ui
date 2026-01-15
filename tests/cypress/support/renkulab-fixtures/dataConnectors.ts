@@ -58,6 +58,10 @@ interface PatchDataConnectorSecretsArgs extends DataConnectorIdArgs {
   shouldNotBeCalled?: boolean;
 }
 
+interface PostGlobalDataConnectorArgs extends SimpleFixture {
+  doi: string;
+}
+
 interface ProjectDataConnectorArgs extends SimpleFixture {
   projectId?: string;
 }
@@ -78,7 +82,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/data_connectors/${dataConnectorId}/secrets`,
+        `/api/data/data_connectors/${dataConnectorId}/secrets`,
         response
       ).as(name);
       return this;
@@ -87,11 +91,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
     deleteDataConnector(args?: DataConnectorListArgs) {
       const { name = "deleteDataConnector" } = args ?? {};
       const response = { statusCode: 204 };
-      cy.intercept(
-        "DELETE",
-        "/ui-server/api/data/data_connectors/*",
-        response
-      ).as(name);
+      cy.intercept("DELETE", "/api/data/data_connectors/*", response).as(name);
       return this;
     }
 
@@ -104,7 +104,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       const response = { statusCode: 204 };
       cy.intercept(
         "DELETE",
-        `/ui-server/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
+        `/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
         response
       ).as(name);
       return this;
@@ -130,7 +130,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       };
       cy.intercept(
         "DELETE",
-        `/ui-server/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
+        `/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
         response
       ).as(name);
       return this;
@@ -144,7 +144,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept(
         "DELETE",
-        `/ui-server/api/data/data_connectors/${dataConnectorId}/secrets`,
+        `/api/data/data_connectors/${dataConnectorId}/secrets`,
         { body: null, delay: 1000 }
       ).as(name);
       return this;
@@ -160,7 +160,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "GET",
-          `/ui-server/api/data/data_connectors/${dataConnectorId}`,
+          `/api/data/data_connectors/${dataConnectorId}`,
           (req) => {
             const response = dcs.map((dc) => {
               return {
@@ -186,7 +186,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "GET",
-          `/ui-server/api/data/namespaces/${namespace}/data_connectors/${slug}`,
+          `/api/data/namespaces/${namespace}/data_connectors/${slug}`,
           (req) => {
             const response = dcs.map((dc) => {
               return {
@@ -219,7 +219,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       };
       cy.intercept(
         "GET",
-        `/ui-server/api/data/namespaces/${namespace}/data_connectors/${slug}`,
+        `/api/data/namespaces/${namespace}/data_connectors/${slug}`,
         response
       ).as(name);
       return this;
@@ -235,7 +235,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "GET",
-          `/ui-server/api/data/data_connectors/global/${slug}`,
+          `/api/data/data_connectors/global/${slug}`,
           (req) => {
             req.reply({ body });
           }
@@ -254,7 +254,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "GET",
-          `/ui-server/api/data/data_connectors/${dataConnectorId}/permissions`,
+          `/api/data/data_connectors/${dataConnectorId}/permissions`,
           (req) => {
             req.reply({ body: permissions });
           }
@@ -273,7 +273,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "GET",
-          `/ui-server/api/data/data_connectors/${dataConnectorId}/project_links`,
+          `/api/data/data_connectors/${dataConnectorId}/project_links`,
           (req) => {
             const response = links.map((link) => {
               return {
@@ -298,7 +298,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "GET",
-          `/ui-server/api/data/data_connectors?namespace=${namespace}*`,
+          `/api/data/data_connectors?namespace=${namespace}*`,
           (req) => {
             const response = dcs.map((dc) => {
               return {
@@ -323,7 +323,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "GET",
-          `/ui-server/api/data/projects/${projectId}/data_connector_links`,
+          `/api/data/projects/${projectId}/data_connector_links`,
           (req) => {
             const response = links.map((link) => {
               return {
@@ -346,23 +346,19 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       cy.fixture(fixture).then((dataConnector) => {
         // eslint-disable-next-line max-nested-callbacks
-        cy.intercept(
-          "PATCH",
-          "/ui-server/api/data/data_connectors/*",
-          (req) => {
-            const newDataConnector = req.body;
-            expect(newDataConnector.namespace).to.not.be.undefined;
-            expect(newDataConnector.slug).to.not.be.undefined;
-            expect(newDataConnector.visibility).to.not.be.undefined;
-            if (namespace) {
-              expect(newDataConnector.namespace).equal(namespace);
-            }
-            dataConnector.namespace = newDataConnector.namespace;
-            dataConnector.slug = newDataConnector.slug;
-            dataConnector.visibility = newDataConnector.visibility;
-            req.reply({ body: dataConnector, statusCode: 201, delay: 1000 });
+        cy.intercept("PATCH", "/api/data/data_connectors/*", (req) => {
+          const newDataConnector = req.body;
+          expect(newDataConnector.namespace).to.not.be.undefined;
+          expect(newDataConnector.slug).to.not.be.undefined;
+          expect(newDataConnector.visibility).to.not.be.undefined;
+          if (namespace) {
+            expect(newDataConnector.namespace).equal(namespace);
           }
-        ).as(name);
+          dataConnector.namespace = newDataConnector.namespace;
+          dataConnector.slug = newDataConnector.slug;
+          dataConnector.visibility = newDataConnector.visibility;
+          req.reply({ body: dataConnector, statusCode: 201, delay: 1000 });
+        }).as(name);
       });
       return this;
     }
@@ -380,7 +376,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "PATCH",
-          `/ui-server/api/data/data_connectors/${dcId}/secrets`,
+          `/api/data/data_connectors/${dcId}/secrets`,
           (req) => {
             if (shouldNotBeCalled)
               throw new Error("No call to post secrets expected");
@@ -407,7 +403,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       cy.fixture(fixture).then((dataConnector) => {
         // eslint-disable-next-line max-nested-callbacks
-        cy.intercept("POST", "/ui-server/api/data/data_connectors", (req) => {
+        cy.intercept("POST", "/api/data/data_connectors", (req) => {
           const newDataConnector = req.body;
           expect(newDataConnector.namespace).to.not.be.undefined;
           expect(newDataConnector.slug).to.not.be.undefined;
@@ -441,7 +437,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-nested-callbacks
         cy.intercept(
           "POST",
-          `/ui-server/api/data/data_connectors/${dcId}/project_links`,
+          `/api/data/data_connectors/${dcId}/project_links`,
           (req) => {
             if (shouldNotBeCalled)
               throw new Error("No call to post project link expected");
@@ -462,19 +458,24 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    postGlobalDataConnector(args?: SimpleFixture) {
+    postGlobalDataConnector(args?: PostGlobalDataConnectorArgs) {
       const {
         fixture = "dataConnector/data-connector-global.json",
         name = "postGlobalDataConnector",
       } = args ?? {};
+      const doi = args?.doi ?? "10.1234/zenodo.123456";
       cy.fixture(fixture).then((dataConnector) => {
-        cy.intercept(
-          "POST",
-          "/ui-server/api/data/data_connectors/global",
-          (req) => {
-            req.reply({ body: dataConnector, statusCode: 201, delay: 1000 });
+        cy.intercept("POST", "/api/data/data_connectors/global", (req) => {
+          if (req.body.storage.configuration.type != "doi") {
+            throw new Error("storage.configuration.type must be 'doi'");
           }
-        ).as(name);
+          if (req.body.storage.configuration.doi != doi) {
+            throw new Error(
+              `storage.configuration.doi ${req.body.storage.configuration.doi} must equal ${doi}`
+            );
+          }
+          req.reply({ body: dataConnector, statusCode: 201, delay: 1000 });
+        }).as(name);
       });
       return this;
     }

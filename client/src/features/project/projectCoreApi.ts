@@ -17,10 +17,13 @@
  */
 
 import {
-  FetchBaseQueryError,
   createApi,
   fetchBaseQuery,
+  FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
+
+import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
+import { CoreVersionUrl } from "../../utils/types/coreService.types";
 import type {
   GetDatasetFilesParams,
   GetDatasetFilesResponse,
@@ -35,8 +38,6 @@ import type {
   ProjectConfigSection,
 } from "./project.types";
 import { MigrationStartScopes } from "./projectEnums";
-import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
-import { CoreVersionUrl } from "../../utils/types/coreService.types";
 
 interface GetConfigParams extends CoreVersionUrl {
   projectRepositoryUrl: string;

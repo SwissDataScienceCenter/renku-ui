@@ -17,8 +17,9 @@
  */
 
 // Run `npm run generate-api:users` to generate the API
-import type { ConfigFile } from "@rtk-query/codegen-openapi";
+
 import path from "path";
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
 
 const config: ConfigFile = {
   apiFile: "./users.empty-api.ts",

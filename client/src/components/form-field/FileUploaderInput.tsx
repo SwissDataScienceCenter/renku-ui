@@ -19,12 +19,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useContext } from "react";
-
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
-import { IDatasetFiles } from "../../features/project/project.types";
 import type { DatasetFormState } from "../../features/project/dataset";
 import { setFiles } from "../../features/project/dataset";
+import { IDatasetFiles } from "../../features/project/project.types";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";

@@ -28,16 +28,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import ButtonStyles from "../../components/buttons/Buttons.module.scss";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
 import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
+import { usePatchEnvironmentsByEnvironmentIdMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
+import { getSessionEnvironmentValues } from "./adminSessions.utils";
 import SessionEnvironmentFormContent, {
   SessionEnvironmentForm,
 } from "./SessionEnvironmentFormContent";
-import { useUpdateSessionEnvironmentMutation } from "./adminSessions.api";
-import { getSessionEnvironmentValues } from "./adminSessions.utils";
 
 interface UpdateSessionEnvironmentButtonProps {
   environment: SessionEnvironment;
@@ -53,17 +53,9 @@ export default function UpdateSessionEnvironmentButton({
 
   return (
     <>
-      <Button
-        className={cx(
-          "bg-transparent",
-          "shadow-none",
-          "border-0",
-          ButtonStyles.EditButton
-        )}
-        onClick={toggle}
-      >
-        <PencilSquare size={24} />
-        <span className="visually-hidden">Edit</span>
+      <Button color="outline-primary" onClick={toggle}>
+        <PencilSquare className={cx("bi", "me-1")} />
+        Edit
       </Button>
       <UpdateSessionEnvironmentModal
         environment={environment}
@@ -86,7 +78,7 @@ function UpdateSessionEnvironmentModal({
   toggle,
 }: UpdateSessionEnvironmentModalProps) {
   const [updateSessionEnvironment, result] =
-    useUpdateSessionEnvironmentMutation();
+    usePatchEnvironmentsByEnvironmentIdMutation();
 
   const {
     control,
@@ -103,17 +95,22 @@ function UpdateSessionEnvironmentModal({
       if (commandParsed.parsed && argsParsed.parsed)
         updateSessionEnvironment({
           environmentId: environment.id,
-          container_image: data.container_image,
-          name: data.name,
-          default_url: data.default_url?.trim() || "",
-          description: data.description?.trim() || "",
-          port: data.port ?? undefined,
-          working_directory: data.working_directory?.trim() || undefined,
-          mount_directory: data.mount_directory?.trim() || undefined,
-          uid: data.uid ?? undefined,
-          gid: data.gid ?? undefined,
-          command: commandParsed.data,
-          args: argsParsed.data,
+          environmentPatch: {
+            container_image: data.container_image,
+            default_url: data.default_url?.trim() || "",
+            description: data.description?.trim() || "",
+            gid: data.gid ?? undefined,
+            mount_directory: data.mount_directory?.trim() || undefined,
+            name: data.name,
+            port: data.port ?? undefined,
+            uid: data.uid ?? undefined,
+            working_directory: data.working_directory?.trim() || undefined,
+            strip_path_prefix: data.strip_path_prefix,
+            ...(commandParsed.data
+              ? { command: commandParsed.data }
+              : { command: null }),
+            ...(argsParsed.data ? { args: argsParsed.data } : { args: null }),
+          },
         });
     },
     [environment.id, updateSessionEnvironment]
@@ -146,21 +143,27 @@ function UpdateSessionEnvironmentModal({
       toggle={toggle}
     >
       <Form
-        className="form-rk-green"
+        className="modal-content"
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ModalHeader toggle={toggle}>Update session environment</ModalHeader>
+        <ModalHeader tag="h2" toggle={toggle}>
+          Update session environment
+        </ModalHeader>
         <ModalBody>
           {result.error && <RtkErrorAlert error={result.error} />}
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>
-          <Button className="btn-outline-rk-green" onClick={toggle}>
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button disabled={result.isLoading || !isDirty} type="submit">
+          <Button
+            color="primary"
+            disabled={result.isLoading || !isDirty}
+            type="submit"
+          >
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (

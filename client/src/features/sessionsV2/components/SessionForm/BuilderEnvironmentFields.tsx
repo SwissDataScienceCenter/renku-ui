@@ -22,15 +22,17 @@ import { useContext, useMemo } from "react";
 import { type Control } from "react-hook-form";
 
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
-import { useGetRepositoriesProbesQuery } from "../../../repositories/repositories.api";
+import { useGetRepositoriesQuery } from "../../../repositories/api/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
+import BuilderAdvancedSettings from "./BuilderAdvancedSettings";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
+import CodeRepositoryAdvancedSettings from "./CodeRepositoryAdvancedSettings";
 import CodeRepositorySelector from "./CodeRepositorySelector";
 
 interface BuilderEnvironmentFieldsProps {
@@ -49,17 +51,13 @@ export default function BuilderEnvironmentFields({
   const { project } = useProject();
   const repositories = project.repositories ?? [];
 
-  const {
-    data: repositoriesDetails,
-    isLoading,
-    error,
-  } = useGetRepositoriesProbesQuery(
-    repositories.length > 0 ? { repositoriesUrls: repositories } : skipToken
+  const { data, isLoading, error } = useGetRepositoriesQuery(
+    repositories.length > 0 ? repositories : skipToken
   );
 
   const firstEligibleRepository = useMemo(
-    () => repositoriesDetails?.findIndex(({ probe }) => probe),
-    [repositoriesDetails]
+    () => data?.findIndex((repo) => repo.data?.status === "valid"),
+    [data]
   );
 
   if (!imageBuildersEnabled) {
@@ -81,7 +79,7 @@ export default function BuilderEnvironmentFields({
       No repositories found in this project. Add a repository first before
       creating a session environment from one.
     </WarnAlert>
-  ) : error || repositoriesDetails == null ? (
+  ) : error || !data ? (
     <>
       <p className="mb-0">Error: could not check code repositories.</p>
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
@@ -93,13 +91,17 @@ export default function BuilderEnvironmentFields({
     </WarnAlert>
   ) : (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <CodeRepositorySelector
-        name="repository"
-        control={control}
-        repositoriesDetails={repositoriesDetails}
-      />
+      <div className={cx("d-flex", "flex-column", "gap-1")}>
+        <CodeRepositorySelector
+          name="repository"
+          control={control}
+          repositoriesDetails={data}
+        />
+        <CodeRepositoryAdvancedSettings control={control} />
+      </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
       <BuilderFrontendSelector name="frontend_variant" control={control} />
+      <BuilderAdvancedSettings control={control} />
     </div>
   );
 

@@ -22,6 +22,7 @@ import {
   DurationLikeObject,
   DurationObjectUnits,
 } from "luxon";
+
 import { ensureDateTime } from "./DateTimeUtils";
 
 /**
@@ -148,12 +149,13 @@ export function toShortHumanDuration({
  */
 export function toHumanRelativeDuration({
   datetime: datetime_,
-  now,
+  now: now_,
 }: {
   datetime: DateTime | Date | string;
-  now: DateTime;
+  now: DateTime | Date;
 }): string {
   const datetime = ensureDateTime(datetime_);
+  const now = ensureDateTime(now_);
 
   if (!datetime.isValid) {
     return "invalid datetime";

@@ -1,4 +1,5 @@
 import { projectCloudStorageEmptyApi as api } from "./projectCloudStorage.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getStorageByStorageId: build.query<
@@ -225,6 +226,7 @@ export type RCloneOption = {
     | "int"
     | "bool"
     | "string"
+    | "stringArray"
     | "Time"
     | "Duration"
     | "MultiEncoder"

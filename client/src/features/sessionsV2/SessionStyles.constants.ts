@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 
-import linePlaying from "../../styles/assets/linePlaying.svg";
+import blockIcon from "../../styles/assets/block.svg";
+import failedIcon from "../../styles/assets/failed.svg";
+import lineBlock from "../../styles/assets/lineBlock.svg";
 import lineFailed from "../../styles/assets/lineFailed.svg";
 import linePaused from "../../styles/assets/linePaused.svg";
+import linePlaying from "../../styles/assets/linePlaying.svg";
 import lineStopped from "../../styles/assets/lineStopped.svg";
-import lineBlock from "../../styles/assets/lineBlock.svg";
-
-import playingIcon from "../../styles/assets/playing.svg";
-import failedIcon from "../../styles/assets/failed.svg";
 import pausedIcon from "../../styles/assets/paused.svg";
+import playingIcon from "../../styles/assets/playing.svg";
 import stoppedIcon from "../../styles/assets/stopped.svg";
-import blockIcon from "../../styles/assets/block.svg";
 
 export const SESSION_STATES = {
   RUNNING: "running",

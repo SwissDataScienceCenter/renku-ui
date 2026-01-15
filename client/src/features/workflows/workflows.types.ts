@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 
+import { WorkflowType } from "../../components/entities/entities.types";
 import {
   CoreRepositoryParams,
   CoreVersionUrl,
 } from "../../utils/types/coreService.types";
-
-import { WorkflowType } from "../../components/entities/entities.types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

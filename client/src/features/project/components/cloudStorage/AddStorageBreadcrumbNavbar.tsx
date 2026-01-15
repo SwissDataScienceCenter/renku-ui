@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useMemo } from "react";
-import { Breadcrumb, BreadcrumbItem, Button } from "reactstrap";
+import { BreadcrumbItem, Button } from "reactstrap";
 
 import { CLOUD_STORAGE_TOTAL_STEPS } from "./projectCloudStorage.constants";
 import { AddCloudStorageState } from "./projectCloudStorage.types";
@@ -46,18 +46,19 @@ export default function AddStorageBreadcrumbNavbar({
       const active = stepNumber === step;
       const disabled = stepNumber > completedSteps + 1;
       return (
-        <BreadcrumbItem active={active} key={stepNumber}>
+        <BreadcrumbItem
+          className={cx("d-flex", "my-auto")}
+          active={active}
+          key={stepNumber}
+        >
           {active ? (
-            <span className={cx(active && "fw-bold", "align-self-end")}>
+            <span className={cx(active && "fw-bold")}>
               {mapStepToName[stepNumber]}
             </span>
           ) : (
             <>
               <Button
-                className={cx(
-                  "p-0",
-                  (active || disabled) && "text-decoration-none"
-                )}
+                className={cx(disabled && "text-decoration-none", "p-0")}
                 color="link"
                 disabled={disabled}
                 onClick={() => {
@@ -75,7 +76,11 @@ export default function AddStorageBreadcrumbNavbar({
   }, [completedSteps, setState, step, state.advancedMode]);
 
   return (
-    <Breadcrumb data-cy="cloud-storage-edit-navigation">{items}</Breadcrumb>
+    <nav aria-label="breadcrumb" data-cy="cloud-storage-edit-navigation">
+      <ol className={cx("align-items-center", "breadcrumb", "d-flex", "m-0")}>
+        {items}
+      </ol>
+    </nav>
   );
 }
 

@@ -25,11 +25,11 @@ import { ChevronDown, ThreeDots } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import Select, {
   ClassNamesConfig,
+  components,
   GroupBase,
   MenuListProps,
   SelectComponentsConfig,
   SingleValue,
-  components,
 } from "react-select";
 import {
   Button,
@@ -43,7 +43,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -51,8 +51,8 @@ import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.h
 import { Url } from "../../../../utils/helpers/url";
 import type { GitLabRepositoryBranch } from "../../../project/GitLab.types";
 import projectGitLabApi, {
-  useGetRepositoryBranchQuery,
   useGetRepositoryBranchesQuery,
+  useGetRepositoryBranchQuery,
   useRefetchBranchesMutation,
 } from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";

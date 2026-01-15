@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { Clock, InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { Card, CardBody, CardHeader } from "reactstrap";
+
 import { TimeCaption } from "../../../components/TimeCaption";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
 import { useGroup } from "./GroupPageContainer";
@@ -50,7 +51,7 @@ export default function GroupInformation({
   return output === "plain" ? (
     information
   ) : (
-    <Card data-cy="project-info-card">
+    <Card data-cy="group-info-card">
       <CardHeader>
         <div
           className={cx(
@@ -59,10 +60,10 @@ export default function GroupInformation({
             "justify-content-between"
           )}
         >
-          <h4 className="m-0">
+          <h2 className="m-0">
             <InfoCircle className={cx("me-1", "bi")} />
             Info
-          </h4>
+          </h2>
         </div>
       </CardHeader>
       <CardBody>{information}</CardBody>

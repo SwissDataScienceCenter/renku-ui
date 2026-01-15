@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -32,13 +33,14 @@ import { TimeCaption } from "../../../../components/TimeCaption";
 import { PrettySessionErrorMessage } from "../../../session/components/status/SessionStatusBadge";
 import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
-import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
 import {
   SESSION_STATES,
   SESSION_STYLES,
   SESSION_TITLE,
   SESSION_TITLE_DASHBOARD,
 } from "../../SessionStyles.constants";
+import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
+
 export function SessionBadge({
   children,
   className,
@@ -172,7 +174,7 @@ export function SessionStatusV2Label({
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
-      <div className={cx("fs-6", "fw-bold")}>
+      <div className={cx("fs-4", "fw-bold")}>
         <span
           className={
             variant === "list" ? styles.textColorList : styles.textColorCard

@@ -21,8 +21,8 @@ import { useContext } from "react";
 import { Col, Row } from "reactstrap";
 
 import { ErrorAlert, InfoAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
+import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/renkuModels.types";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";

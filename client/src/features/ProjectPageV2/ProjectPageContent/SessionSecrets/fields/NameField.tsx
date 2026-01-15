@@ -39,6 +39,7 @@ export default function NameField<T extends FieldValues>({
         render={({ field: { ref, ...rest } }) => (
           <Input
             className={cx(errors.name && "is-invalid")}
+            data-cy="add-session-secret-name-input"
             id={fieldId}
             innerRef={ref}
             placeholder="Secret name, e.g., API Token"

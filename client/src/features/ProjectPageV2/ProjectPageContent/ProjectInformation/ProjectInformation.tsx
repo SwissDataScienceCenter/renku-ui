@@ -28,13 +28,14 @@ import {
   JournalAlbum,
   People,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
+
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
-import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import type {
@@ -50,8 +51,9 @@ import {
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import styles from "./ProjectInformation.module.scss";
 import ProjectInformationButton from "./ProjectInformationButton";
+
+import styles from "./ProjectInformation.module.scss";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 
@@ -76,28 +78,8 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
   if (!project.template_id) return null;
   if (isLoadingTemplateInformation) return <Loader />;
   if (!templateProject || !templateProjectNamespace) {
-    const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
-      id: project.template_id,
-    });
-    return (
-      <ProjectInformationBox
-        icon={<Diagram3Fill className="bi" />}
-        title="Copied from:"
-      >
-        <div className="mb-0">
-          <div>
-            <Link
-              color="outline-secondary"
-              className={cx("d-flex", "align-items-center")}
-              data-cy="copy-project-template-link"
-              to={projectUrl}
-            >
-              {project.template_id}
-            </Link>
-          </div>
-        </div>
-      </ProjectInformationBox>
-    );
+    // The user does not have access to this project
+    return null;
   }
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: templateProject.namespace,
@@ -178,7 +160,9 @@ export default function ProjectInformation({
         title="Namespace:"
       >
         <p className="mb-0">
-          <Link to={namespaceUrl}>{namespaceName}</Link>
+          <Link data-cy="project-namespace-link" to={namespaceUrl}>
+            {namespaceName}
+          </Link>
         </p>
       </ProjectInformationBox>
       <ProjectInformationBox icon={<Eye className="bi" />} title="Visibility:">
@@ -217,7 +201,9 @@ export default function ProjectInformation({
         {keywordsSorted.length > 0 && (
           <KeywordContainer className="mt-1">
             {keywordsSorted.map((keyword, index) => (
-              <KeywordBadge key={`keyword-${index}`}>{keyword}</KeywordBadge>
+              <KeywordBadge key={`keyword-${index}`} searchKeyword={keyword}>
+                {keyword}
+              </KeywordBadge>
             ))}
           </KeywordContainer>
         )}
@@ -237,10 +223,10 @@ export default function ProjectInformation({
             "justify-content-between"
           )}
         >
-          <h4 className="m-0">
+          <h2 className="m-0">
             <InfoCircle className={cx("me-1", "bi")} />
             Info
-          </h4>
+          </h2>
 
           <div>
             <ProjectInformationButton

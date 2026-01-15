@@ -122,14 +122,6 @@
             "schema": {
               "$ref": "#/components/schemas/WithDocumentation"
             }
-          },
-          {
-            "in": "query",
-            "name": "with_documentation",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/WithDocumentation"
-            }
           }
         ],
         "responses": {
@@ -234,6 +226,37 @@
         "tags": ["projects"]
       }
     },
+    "/renku_v1_projects/migrations": {
+      "get": {
+        "summary": "Return list of projects migrated from v1",
+        "responses": {
+          "200": {
+            "description": "List of project migrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectMigrationList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No exist project migration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects_migrations"]
+      }
+    },
     "/renku_v1_projects/{v1_id}/migrations": {
       "get": {
         "summary": "Check if a v1 project has been migrated to v2",
@@ -282,7 +305,7 @@
             "in": "path",
             "name": "v1_id",
             "required": true,
-            "description": "The ID of the project in Renku v1",
+            "description": "The ID of the Gitlab repository that represents the project in Renku v1",
             "schema": {
               "type": "integer"
             }
@@ -314,37 +337,6 @@
           }
         },
         "tags": ["projects"]
-      }
-    },
-    "/renku_v1_projects/migrations": {
-      "get": {
-        "summary": "Return list of projects migrated from v1",
-        "responses": {
-          "200": {
-            "description": "List of project migrations",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectMigrationList"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No exist project migration",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["projects_migrations"]
       }
     },
     "/namespaces/{namespace}/projects/{slug}": {
@@ -722,38 +714,6 @@
         "tags": ["projects"]
       }
     },
-    "/projects/{project_id}/data_connector_links": {
-      "parameters": [
-        {
-          "in": "path",
-          "name": "project_id",
-          "required": true,
-          "schema": {
-            "$ref": "#/components/schemas/Ulid"
-          },
-          "description": "the ID of the project"
-        }
-      ],
-      "get": {
-        "summary": "Get all links from data connectors to a given project",
-        "responses": {
-          "200": {
-            "description": "List of data connector to project links",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DataConnectorToProjectLinksList"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["projects"]
-      }
-    },
     "/projects/{project_id}/session_secret_slots": {
       "parameters": [
         {
@@ -1028,10 +988,10 @@
             "$ref": "#/components/schemas/ProjectName"
           },
           "namespace": {
-            "$ref": "#/components/schemas/Slug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "slug": {
-            "$ref": "#/components/schemas/LegacySlug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "creation_date": {
             "$ref": "#/components/schemas/CreationDate"
@@ -1149,6 +1109,9 @@
           "namespace": {
             "$ref": "#/components/schemas/Slug"
           },
+          "slug": {
+            "$ref": "#/components/schemas/Slug"
+          },
           "repositories": {
             "$ref": "#/components/schemas/RepositoriesList"
           },
@@ -1243,56 +1206,6 @@
         "maxLength": 200,
         "example": "/lab"
       },
-      "EnvironmentUid": {
-        "type": "integer",
-        "minimum": 0,
-        "exclusiveMinimum": true,
-        "maximum": 65535,
-        "description": "The user ID used to run the session"
-      },
-      "EnvironmentGid": {
-        "type": "integer",
-        "minimum": 0,
-        "exclusiveMinimum": true,
-        "maximum": 65535,
-        "description": "The group ID used to run the session"
-      },
-      "EnvironmentWorkingDirectory": {
-        "type": "string",
-        "description": "The location where the session will start, if left unset it will default to the session image working directory.",
-        "minLength": 1,
-        "example": "/home/jovyan/work"
-      },
-      "EnvironmentMountDirectory": {
-        "type": "string",
-        "description": "The location where the persistent storage for the session will be mounted, usually it should be identical to or a parent of the working directory, if left unset will default to the working directory.",
-        "minLength": 1,
-        "example": "/home/jovyan/work"
-      },
-      "EnvironmentCommand": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "description": "The command that will be run i.e. will overwrite the image Dockerfile ENTRYPOINT, equivalent to command in Kubernetes",
-        "minLength": 1
-      },
-      "EnvironmentArgs": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "description": "The arguments that will follow the command, i.e. will overwrite the image Dockerfile CMD, equivalent to args in Kubernetes",
-        "minLength": 1
-      },
-      "EnvironmentPort": {
-        "type": "integer",
-        "minimum": 0,
-        "exclusiveMinimum": true,
-        "exclusiveMaximum": true,
-        "maximum": 65400,
-        "description": "The TCP port (on any container in the session) where user requests will be routed to from the ingress"
-      },
       "ResourceClassId": {
         "description": "The identifier of a resource class",
         "type": "integer",
@@ -1323,20 +1236,18 @@
         "maxLength": 99,
         "example": "My Renku Project :)"
       },
-      "LegacySlug": {
-        "description": "A command-line/url friendly name for a namespace",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 99,
-        "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-zA-Z0-9][a-zA-Z0-9\\-_.]*$",
-        "example": "a-slug-example"
-      },
       "Slug": {
         "description": "A command-line/url friendly name for a namespace",
         "type": "string",
         "minLength": 1,
         "maxLength": 99,
         "pattern": "^(?!.*\\.git$|.*\\.atom$|.*[\\-._][\\-._].*)[a-z0-9][a-z0-9\\-_.]*$",
+        "example": "a-slug-example"
+      },
+      "SlugResponse": {
+        "description": "A command-line/url friendly name for a namespace",
+        "type": "string",
+        "minLength": 1,
         "example": "a-slug-example"
       },
       "CreationDate": {
@@ -1360,8 +1271,7 @@
         "description": "A single keyword",
         "type": "string",
         "minLength": 1,
-        "maxLength": 99,
-        "pattern": "^[A-Za-z0-9\\s\\-_.]*$"
+        "maxLength": 99
       },
       "KeywordsList": {
         "description": "Project keywords",
@@ -1392,9 +1302,8 @@
         ]
       },
       "Repository": {
-        "description": "A project's repository",
-        "type": "string",
-        "example": "git@github.com:SwissDataScienceCenter/project-1.git"
+        "description": "A git repository URL",
+        "type": "string"
       },
       "Visibility": {
         "description": "Project's visibility levels",
@@ -1406,7 +1315,7 @@
         "type": "boolean"
       },
       "SecretsMountDirectory": {
-        "description": "The location where the secrets will be provided inside sessions, if left unset it will default to `/secrets`.",
+        "description": "The location where the secrets will be provided inside sessions, if left unset it will default to `/secrets`.\nRelative locations are supported and will be mounted relative to the session environment's mount directory.\n",
         "type": "string",
         "minLength": 1,
         "default": "/secrets",
@@ -1469,7 +1378,7 @@
             "$ref": "#/components/schemas/UserId"
           },
           "namespace": {
-            "$ref": "#/components/schemas/LegacySlug"
+            "$ref": "#/components/schemas/SlugResponse"
           },
           "first_name": {
             "$ref": "#/components/schemas/UserFirstLastName"

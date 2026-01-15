@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
+import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
 import faviconSVG from "../../styles/assets/favicon/Favicon.svg";
 import favicon16px from "../../styles/assets/favicon/Favicon16px.png";
@@ -88,6 +90,7 @@ Default: \`1000\`.`,
   mountDirectory: `Renku will provide persistent storage for your session even when you pause or resume it. Set the location where this storage should be mounted. It should be the same as or a parent of the working directory to avoid data loss. Defaults to the working directory if not specified.`,
   command: `The command that will be run i.e. will overwrite the image Dockerfile \`ENTRYPOINT\`.`,
   args: `The arguments that will follow the command, i.e. will overwrite the image Dockerfile \`CMD\`.`,
+  stripPathPrefix: `When this is activated then the server that is running in the session container will receive all requests with the path prefix stripped out. Note that this is an advanced feature which usually requires the server application running inside the session to be made aware that a proxy is rewriting the URL paths and also to be informed of the real path prefix that is being stripped.`,
 };
 
 export const CONTAINER_IMAGE_PATTERN =
@@ -125,7 +128,35 @@ export const BUILDER_FRONTENDS = [
       "Web-based interactive development environment for Jupyter notebooks, code and data.",
     /* eslint-enable spellcheck/spell-checker */
   },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "ttyd",
+    label: "ttyd",
+    description: "Web-based terminal, with minimalist interface.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
 ] as readonly BuilderSelectorOption[];
 
-export const IMAGE_BUILD_DOCS =
-  "https://renku.notion.site/How-to-create-a-custom-environment-from-a-code-repository-1960df2efafc801b88f6da59a0aa8234";
+export const BUILDER_PLATFORMS = [
+  {
+    value: "linux/amd64" as const,
+    label: "linux/amd64",
+    description:
+      "The default runtime platform. Select this option unless you know your session will run on a different platform.",
+  },
+  {
+    value: "linux/arm64" as const,
+    label: "linux/arm64",
+    description:
+      "Select this option if your session will run on ARM64 compute resources.",
+  },
+] as readonly BuilderSelectorOption<"linux/amd64" | "linux/arm64">[];
+
+export const IMAGE_BUILD_DOCS = NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED;
+
+export const LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE = {
+  required: "Please provide a container image.",
+  pattern: "Please provide a valid container image.",
+};
+
+export const LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE = 1_000;

@@ -16,49 +16,6 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  classes: ResourceClass[];
-  default: boolean;
-  hibernation_threshold?: number;
-  id: number;
-  idle_threshold?: number;
-  name: string;
-  public: boolean;
-  quota?: Resources;
-}
-
-export interface ResourceClass {
-  cpu: number;
-  default_storage: number; // Default disk storage in Gigabytes
-  default: boolean;
-  gpu: number;
-  id: number;
-  matching: boolean;
-  max_storage: number; // Max disk storage in Gigabytes
-  memory: number; // Memory (RAM) in Gigabytes
-  name: string;
-  node_affinities?: NodeAffinity[];
-  tolerations?: string[];
-}
-
-export interface NodeAffinity {
-  key: string;
-  required_during_scheduling?: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-}
-
-export interface ResourcePoolsQueryParams {
-  cpuRequest?: number;
-  gpuRequest?: number;
-  memoryRequest?: number;
-  storageRequest?: number;
-}
-
 export interface DataServicesError {
   error: {
     code: number;

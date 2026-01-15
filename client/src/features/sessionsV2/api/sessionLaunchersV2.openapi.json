@@ -592,6 +592,14 @@
           },
           "is_archived": {
             "$ref": "#/components/schemas/IsArchived"
+          },
+          "strip_path_prefix": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StripPathPrefix"
+              }
+            ],
+            "default": false
           }
         },
         "required": [
@@ -647,7 +655,7 @@
                     "$ref": "#/components/schemas/EnvironmentKind"
                   }
                 ],
-                "default": "custom"
+                "default": "CUSTOM"
               }
             },
             "required": ["environment_image_source", "environment_kind"]
@@ -677,7 +685,7 @@
                     "$ref": "#/components/schemas/EnvironmentKind"
                   }
                 ],
-                "default": "custom"
+                "default": "CUSTOM"
               }
             },
             "required": [
@@ -781,6 +789,14 @@
           },
           "environment_image_source": {
             "$ref": "#/components/schemas/EnvironmentImageSourceImage"
+          },
+          "strip_path_prefix": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StripPathPrefix"
+              }
+            ],
+            "default": false
           }
         },
         "required": ["name", "container_image", "environment_image_source"]
@@ -839,13 +855,16 @@
             "$ref": "#/components/schemas/EnvironmentPort"
           },
           "command": {
-            "$ref": "#/components/schemas/EnvironmentCommand"
+            "$ref": "#/components/schemas/EnvironmentPatchCommand"
           },
           "args": {
-            "$ref": "#/components/schemas/EnvironmentArgs"
+            "$ref": "#/components/schemas/EnvironmentPatchArgs"
           },
           "is_archived": {
-            "$ref": "#/components/schemas/IsArchived"
+            "$ref": "#/components/schemas/IsArchivedPatch"
+          },
+          "strip_path_prefix": {
+            "$ref": "#/components/schemas/StripPathPrefixPatch"
           }
         }
       },
@@ -987,6 +1006,18 @@
         "maxLength": 99,
         "example": "My Renku Session :)"
       },
+      "BuildPlatforms": {
+        "description": "The target runtime platforms of a session environment.",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/BuildPlatform"
+        }
+      },
+      "BuildPlatform": {
+        "description": "A runtime platform, e.g. \"linux/amd64\".",
+        "type": "string",
+        "enum": ["linux/amd64", "linux/arm64"]
+      },
       "BuilderVariant": {
         "description": "Type of virtual environment manager when building custom environments.",
         "type": "string",
@@ -998,6 +1029,28 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 99
+      },
+      "RepositoryRevision": {
+        "description": "A git revision",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "RepositoryRevisionPatch": {
+        "description": "A git revision",
+        "type": "string",
+        "maxLength": 500
+      },
+      "BuildContextDir": {
+        "description": "The relative path to a folder",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "BuildContextDirPatch": {
+        "description": "The relative path to a folder",
+        "type": "string",
+        "maxLength": 500
       },
       "EnvironmentIdOnlyPatch": {
         "type": "object",
@@ -1065,11 +1118,20 @@
           "repository": {
             "$ref": "#/components/schemas/Repository"
           },
+          "platforms": {
+            "$ref": "#/components/schemas/BuildPlatforms"
+          },
           "builder_variant": {
             "$ref": "#/components/schemas/BuilderVariant"
           },
           "frontend_variant": {
             "$ref": "#/components/schemas/FrontendVariant"
+          },
+          "repository_revision": {
+            "$ref": "#/components/schemas/RepositoryRevision"
+          },
+          "context_dir": {
+            "$ref": "#/components/schemas/BuildContextDir"
           }
         },
         "required": ["repository", "builder_variant", "frontend_variant"]
@@ -1097,11 +1159,20 @@
           "repository": {
             "$ref": "#/components/schemas/Repository"
           },
+          "platforms": {
+            "$ref": "#/components/schemas/BuildPlatforms"
+          },
           "builder_variant": {
             "$ref": "#/components/schemas/BuilderVariant"
           },
           "frontend_variant": {
             "$ref": "#/components/schemas/FrontendVariant"
+          },
+          "repository_revision": {
+            "$ref": "#/components/schemas/RepositoryRevisionPatch"
+          },
+          "context_dir": {
+            "$ref": "#/components/schemas/BuildContextDirPatch"
           }
         }
       },
@@ -1189,6 +1260,15 @@
         "description": "The command that will be run i.e. will overwrite the image Dockerfile ENTRYPOINT, equivalent to command in Kubernetes",
         "minItems": 1
       },
+      "EnvironmentPatchCommand": {
+        "type": "array",
+        "description": "The command that will be run i.e. will overwrite the image Dockerfile ENTRYPOINT, equivalent to command in Kubernetes",
+        "items": {
+          "type": "string"
+        },
+        "nullable": true,
+        "minItems": 1
+      },
       "EnvironmentArgs": {
         "type": "array",
         "items": {
@@ -1197,10 +1277,23 @@
         "description": "The arguments that will follow the command, i.e. will overwrite the image Dockerfile CMD, equivalent to args in Kubernetes",
         "minItems": 1
       },
+      "EnvironmentPatchArgs": {
+        "type": "array",
+        "description": "The arguments that will follow the command, i.e. will overwrite the image Dockerfile CMD, equivalent to args in Kubernetes",
+        "items": {
+          "type": "string"
+        },
+        "nullable": true,
+        "minItems": 1
+      },
       "IsArchived": {
         "type": "boolean",
         "description": "Whether this environment is archived and not for use in new projects or not",
         "default": false
+      },
+      "IsArchivedPatch": {
+        "type": "boolean",
+        "description": "Whether this environment is archived and not for use in new projects or not"
       },
       "Build": {
         "description": "A container image build",
@@ -1273,6 +1366,15 @@
         "items": {
           "$ref": "#/components/schemas/Build"
         }
+      },
+      "StripPathPrefix": {
+        "type": "boolean",
+        "default": false,
+        "description": "If set to true the default url and the base path where sessions are\nserved will be removed from all URL paths before the requests reach\nthe server running in the session. So the server in the session will\nreceive HTTP requests whose base path will be \"/\". However this will\nnot work unless the server running inside the session can be made\naware that paths are rewritten. For example, if the application/server\nrunning in the session serves a HTML page that then loads javascript\nand CSS, the path where these assets should be loaded from in the browser\nwill not be \"/\" but it has to include the prefix that was stripped. And\nthe server from the session that generated the HTML page needs to know\nwhat is the full base path (including the part that was stripped) so that\nit can make the URLs to such assets be reachable from the browser."
+      },
+      "StripPathPrefixPatch": {
+        "type": "boolean",
+        "description": "If set to true the default url and the base path where sessions are\nserved will be removed from all URL paths before the requests reach\nthe server running in the session. So the server in the session will\nreceive HTTP requests whose base path will be \"/\". However this will\nnot work unless the server running inside the session can be made\naware that paths are rewritten. For example, if the application/server\nrunning in the session serves a HTML page that then loads javascript\nand CSS, the path where these assets should be loaded from in the browser\nwill not be \"/\" but it has to include the prefix that was stripped. And\nthe server from the session that generated the HTML page needs to know\nwhat is the full base path (including the part that was stripped) so that\nit can make the URLs to such assets be reachable from the browser."
       },
       "BuildPatch": {
         "description": "The requested update of a container image build",

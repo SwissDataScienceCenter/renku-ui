@@ -1,4 +1,5 @@
 import { sessionsV2EmptyApi as api } from "./sessionsV2.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getNotebooksImages: build.query<
@@ -134,7 +135,8 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as sessionsV2GeneratedApi };
-export type GetNotebooksImagesApiResponse = unknown;
+export type GetNotebooksImagesApiResponse =
+  /** status 200 The image check has completed successfully */ ImageCheckResponse;
 export type GetNotebooksImagesApiArg = {
   /** The Docker image URL (tag included) that should be fetched. */
   imageUrl: string;
@@ -223,14 +225,39 @@ export type GetSessionsBySessionIdLogsApiArg = {
   maxLines?: number;
 };
 export type GetSessionsImagesApiResponse =
-  /** status 200 The docker image can be found */ void;
+  /** status 200 Information about the accessibility of the image */ ImageCheckResponse;
 export type GetSessionsImagesApiArg = {
   /** The Docker image URL (tag included) that should be fetched. */
   imageUrl: string;
 };
-export type ServerLogs = {
-  "jupyter-server"?: string;
-  [key: string]: any;
+export type ImagePlatform = {
+  architecture: string;
+  os: string;
+  "os.version"?: string;
+  "os.features"?: string[];
+  variant?: string;
+};
+export type ImagePlatforms = ImagePlatform[];
+export type ImageConnectionStatus =
+  | "connected"
+  | "pending"
+  | "invalid_credentials";
+export type ImageConnection = {
+  id: string;
+  provider_id: string;
+  status: ImageConnectionStatus;
+};
+export type ImageProvider = {
+  id: string;
+  name: string;
+  url: string;
+};
+export type ImageCheckResponse = {
+  /** Whether the image is accessible or not. */
+  accessible: boolean;
+  platforms?: ImagePlatforms;
+  connection?: ImageConnection;
+  provider?: ImageProvider;
 };
 export type ErrorResponse = {
   error: {
@@ -238,6 +265,10 @@ export type ErrorResponse = {
     detail?: string;
     message: string;
   };
+};
+export type ServerLogs = {
+  "jupyter-server"?: string;
+  [key: string]: any;
 };
 export type ServerName = string;
 export type Generated = {
@@ -417,16 +448,22 @@ export type SessionResponse = {
   launcher_id: Ulid;
   resource_class_id: number;
 };
-export type SessionCloudStoragePost = {
-  configuration?: {
-    [key: string]: any;
-  };
-  readonly?: boolean;
-  source_path?: string;
-  target_path?: string;
-  storage_id: Ulid & any;
+export type RCloneConfig = {
+  [key: string]: number | (string | null) | boolean | object;
 };
-export type SessionCloudStoragePostList = SessionCloudStoragePost[];
+export type SourcePath = string;
+export type TargetPath = string;
+export type StorageReadOnly = boolean;
+export type SessionDataConnectorOverride = {
+  /** The corresponding data connector will not be mounted if `skip` is set to `true`. */
+  skip?: boolean;
+  data_connector_id: Ulid & any;
+  configuration?: RCloneConfig;
+  source_path?: SourcePath;
+  target_path?: TargetPath;
+  readonly?: StorageReadOnly;
+};
+export type SessionDataConnectorsOverrideList = SessionDataConnectorOverride[];
 export type EnvVarOverride = {
   name: string;
   value: string;
@@ -437,7 +474,7 @@ export type SessionPostRequest = {
   /** The size of disk storage for the session, in gigabytes */
   disk_storage?: number;
   resource_class_id?: number | null;
-  cloudstorage?: SessionCloudStoragePostList;
+  data_connectors_overrides?: SessionDataConnectorsOverrideList;
   env_variable_overrides?: EnvVariableOverrides;
 };
 export type SessionListResponse = SessionResponse[];

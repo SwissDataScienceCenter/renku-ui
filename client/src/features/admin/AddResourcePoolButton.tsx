@@ -31,15 +31,18 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
-import { toFullHumanDuration } from "../../utils/helpers/DurationUtils";
+import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
-  useAddResourcePoolMutation,
   useGetResourcePoolsQuery,
-} from "../dataServices/computeResources.api";
+  usePostResourcePoolsMutation,
+  type RemoteConfiguration,
+} from "../sessionsV2/api/computeResources.api";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
-import { AddResourcePoolForm } from "./adminComputeResources.types";
+import type { ResourcePoolForm } from "./adminComputeResources.types";
+import ResourcePoolClusterIdInput from "./forms/ResourcePoolClusterIdInput";
+import ResourcePoolRemoteSection from "./forms/ResourcePoolRemoteSection";
 
 export default function AddResourcePoolButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +52,7 @@ export default function AddResourcePoolButton() {
 
   return (
     <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
+      <Button color="primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
         Add Resource Pool
       </Button>
@@ -92,22 +95,33 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<AddResourcePoolForm>({
+  } = useForm<ResourcePoolForm>({
     defaultValues: {
       name: "",
       public: false,
-      quotaCpu: defaultQuota.cpu,
-      quotaMemory: defaultQuota.memory,
-      quotaGpu: defaultQuota.gpu,
+      quota: {
+        cpu: defaultQuota.cpu,
+        memory: defaultQuota.memory,
+        gpu: defaultQuota.gpu,
+      },
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
+      clusterId: "",
+      remote: {
+        enabled: false,
+        kind: "firecrest",
+        providerId: "",
+        apiUrl: "",
+        systemName: "",
+        partition: "",
+      },
     },
   });
 
   // Handle invoking API to add resource pools
-  const [addResourcePool, result] = useAddResourcePoolMutation();
+  const [addResourcePool, result] = usePostResourcePoolsMutation();
   const onSubmit = useCallback(
-    (data: AddResourcePoolForm) => {
+    (data: ResourcePoolForm) => {
       const populatedClass = defaultSessionClass
         ? {
             name: defaultSessionClass.name,
@@ -119,21 +133,38 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             default: true,
           }
         : null;
+      const clusterId = data.clusterId?.trim()
+        ? data.clusterId.trim()
+        : undefined;
+      const remote: RemoteConfiguration | undefined = data.remote.enabled
+        ? {
+            kind: data.remote.kind,
+            provider_id: data.remote.providerId?.trim()
+              ? data.remote.providerId.trim()
+              : undefined,
+            api_url: data.remote.apiUrl.trim(),
+            system_name: data.remote.systemName.trim(),
+            partition: data.remote.partition?.trim()
+              ? data.remote.partition.trim()
+              : undefined,
+          }
+        : undefined;
       addResourcePool({
-        name: data.name,
-        public: data.public,
-        classes: populatedClass ? [populatedClass] : [],
-        quota: {
-          cpu: data.quotaCpu,
-          memory: data.quotaMemory,
-          gpu: data.quotaGpu,
+        resourcePool: {
+          classes: populatedClass ? [populatedClass] : [],
+          default: false,
+          hibernation_threshold: data.hibernationThresholdMinutes
+            ? data.hibernationThresholdMinutes * 60
+            : undefined,
+          idle_threshold: data.idleThresholdMinutes
+            ? data.idleThresholdMinutes * 60
+            : undefined,
+          name: data.name,
+          public: data.public,
+          quota: data.quota,
+          cluster_id: clusterId,
+          remote: remote,
         },
-        idle_threshold: data.idleThresholdMinutes
-          ? data.idleThresholdMinutes * 60
-          : undefined,
-        hibernation_threshold: data.hibernationThresholdMinutes
-          ? data.hibernationThresholdMinutes * 60
-          : undefined,
       });
     },
     [addResourcePool, defaultSessionClass]
@@ -143,11 +174,22 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
     reset({
       name: "",
       public: false,
-      quotaCpu: defaultQuota.cpu,
-      quotaMemory: defaultQuota.memory,
-      quotaGpu: defaultQuota.gpu,
+      quota: {
+        cpu: defaultQuota.cpu,
+        memory: defaultQuota.memory,
+        gpu: defaultQuota.gpu,
+      },
       idleThresholdMinutes: undefined,
       hibernationThresholdMinutes: undefined,
+      clusterId: "",
+      remote: {
+        enabled: false,
+        kind: "firecrest",
+        providerId: "",
+        apiUrl: "",
+        systemName: "",
+        partition: "",
+      },
     });
   }, [defaultQuota, reset]);
 
@@ -175,16 +217,18 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>Add resource pool</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Add resource pool
+      </ModalHeader>
       <ModalBody>
         <Form
-          className="form-rk-green"
+          className={cx("d-flex", "flex-column", "gap-3")}
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
           {result.error && <RtkOrNotebooksError error={result.error} />}
 
-          <div className="mb-3">
+          <div>
             <Label className="form-label" for="addResourcePoolName">
               Name
             </Label>
@@ -204,7 +248,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             />
             <div className="invalid-feedback">Please provide a name</div>
           </div>
-          <div className="mb-3">
+          <div>
             <Label className="form-label" for="addResourcePoolIdleThreshold">
               Maximum idle time before hibernating (minutes)
             </Label>
@@ -238,7 +282,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               isLoading={notebookVersion.isLoading}
             />
           </div>
-          <div className="mb-3">
+          <div>
             <Label
               className="form-label"
               for="addResourcePoolHibernationThreshold"
@@ -323,14 +367,27 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               )}
             />
           </div>
+
+          <ResourcePoolClusterIdInput
+            control={control}
+            formPrefix="addResourcePool"
+            name="clusterId"
+          />
+
+          <ResourcePoolRemoteSection
+            control={control}
+            formPrefix="addResourcePool"
+            name="remote"
+          />
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button
+          color="primary"
           disabled={result.isLoading}
           onClick={handleSubmit(onSubmit)}
           type="submit"

@@ -22,30 +22,34 @@
  *  not-found
  *  Components for the not-found page
  */
+
 import cx from "classnames";
 import { ReactNode } from "react";
+import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
 
-import { ArrowLeft } from "react-bootstrap-icons";
 import ContainerWrap from "../components/container/ContainerWrap";
 import rkNotFoundImg from "../styles/assets/not-found.svg";
 import rkNotFoundImgV2 from "../styles/assets/not-foundV2.svg";
 import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
+
 import "./NotFound.css";
 
 interface NotFoundProps {
-  title?: string;
-  description?: string | ReactNode;
   children?: ReactNode;
+  description?: string | ReactNode;
+  forceV2?: boolean;
+  title?: string;
 }
 
 export default function NotFound({
   title: title_,
   description: description_,
   children,
+  forceV2,
 }: NotFoundProps) {
   const location = useLocation();
-  const isV2 = !isRenkuLegacy(location.pathname);
+  const isV2 = forceV2 || !isRenkuLegacy(location.pathname);
   const title = title_ ?? "Page not found";
   const description =
     description_ ??

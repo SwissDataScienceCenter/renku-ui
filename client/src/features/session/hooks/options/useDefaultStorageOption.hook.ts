@@ -18,10 +18,10 @@
 
 import { useEffect } from "react";
 
-import { ProjectStatistics } from "../../../../notebooks/components/session.types";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { ProjectConfig } from "../../../project/project.types";
+import type { ProjectConfig } from "~/features/project/project.types";
+import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResources.api";
+import type { ProjectStatistics } from "~/notebooks/components/session.types";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { setError } from "../../startSession.slice";
 import { setStorage } from "../../startSessionOptionsSlice";
 import {
@@ -30,7 +30,7 @@ import {
 } from "../../utils/sessionOptions.utils";
 
 interface UseDefaultStorageOptionArgs {
-  currentSessionClass: ResourceClass | null;
+  currentSessionClass: ResourceClassWithId | null;
   lfsAutoFetch: boolean;
   projectConfig: ProjectConfig | undefined;
   statistics: ProjectStatistics | null | undefined;

@@ -37,16 +37,19 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useAddUsersToResourcePoolMutation } from "../dataServices/computeResources.api";
-import { ResourcePool } from "../dataServices/dataServices.types";
+
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import {
+  usePostResourcePoolsByResourcePoolIdUsersMutation,
+  type ResourcePoolWithId,
+} from "../sessionsV2/api/computeResources.api";
 import adminKeycloakApi from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
 interface AddUserToResourcePoolButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 export default function AddUserToResourcePoolButton({
@@ -59,7 +62,7 @@ export default function AddUserToResourcePoolButton({
 
   return (
     <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PersonFillAdd className={cx("bi", "me-1")} />
         Add User
       </Button>
@@ -74,7 +77,7 @@ export default function AddUserToResourcePoolButton({
 
 interface AddUserToResourcePoolModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -85,7 +88,8 @@ function AddUserToResourcePoolModal({
 }: AddUserToResourcePoolModalProps) {
   const [pickedUser, setPickedUser] = useState<KeycloakUser | null>(null);
 
-  const [addUsersToResourcePool, result] = useAddUsersToResourcePoolMutation();
+  const [addUsersToResourcePool, result] =
+    usePostResourcePoolsByResourcePoolIdUsersMutation();
 
   const {
     formState: { errors },
@@ -102,7 +106,7 @@ function AddUserToResourcePoolModal({
     (data: AddUserToResourcePoolForm) => {
       addUsersToResourcePool({
         resourcePoolId: resourcePool.id,
-        userIds: [data.userId],
+        poolUsersWithId: [{ id: data.userId }],
       });
     },
     [addUsersToResourcePool, resourcePool.id]
@@ -149,7 +153,7 @@ function AddUserToResourcePoolModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         Add User to Resource Pool: {resourcePool.name}
       </ModalHeader>
       <ModalBody>

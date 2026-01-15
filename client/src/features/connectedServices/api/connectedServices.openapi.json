@@ -8,9 +8,6 @@
   "servers": [
     {
       "url": "/api/data"
-    },
-    {
-      "url": "/ui-server/api/data"
     }
   ],
   "paths": {
@@ -261,6 +258,28 @@
           }
         },
         "tags": ["oauth2"]
+      },
+      "delete": {
+        "summary": "Delete an OAuth2 connection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "If deleted successfully"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
       }
     },
     "/oauth2/connections/{connection_id}/account": {
@@ -405,6 +424,12 @@
           },
           "use_pkce": {
             "$ref": "#/components/schemas/UsePKCE"
+          },
+          "image_registry_url": {
+            "$ref": "#/components/schemas/ImageRegistryUrl"
+          },
+          "oidc_issuer_url": {
+            "$ref": "#/components/schemas/OidcIssuerUrl"
           }
         },
         "required": [
@@ -448,6 +473,12 @@
           },
           "use_pkce": {
             "$ref": "#/components/schemas/UsePKCE"
+          },
+          "image_registry_url": {
+            "$ref": "#/components/schemas/ImageRegistryUrl"
+          },
+          "oidc_issuer_url": {
+            "$ref": "#/components/schemas/OidcIssuerUrl"
           }
         },
         "required": ["id", "kind", "client_id", "display_name", "scope", "url"]
@@ -479,6 +510,12 @@
           },
           "use_pkce": {
             "$ref": "#/components/schemas/UsePKCE"
+          },
+          "image_registry_url": {
+            "$ref": "#/components/schemas/ImageRegistryUrl"
+          },
+          "oidc_issuer_url": {
+            "$ref": "#/components/schemas/OidcIssuerUrl"
           }
         }
       },
@@ -557,7 +594,7 @@
         "type": "string",
         "minLength": 26,
         "maxLength": 26,
-        "pattern": "^[A-Z0-9]{26}$"
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
       "ProviderId": {
         "description": "ID of a OAuth2 provider, e.g. \"gitlab.com\".",
@@ -566,7 +603,14 @@
       },
       "ProviderKind": {
         "type": "string",
-        "enum": ["gitlab", "github"],
+        "enum": [
+          "gitlab",
+          "github",
+          "drive",
+          "onedrive",
+          "dropbox",
+          "generic_oidc"
+        ],
         "example": "gitlab"
       },
       "ApplicationSlug": {
@@ -634,6 +678,16 @@
             "default": 20
           }
         }
+      },
+      "ImageRegistryUrl": {
+        "type": "string",
+        "description": "This should contain no paths, just the domain for the registry and the scheme\n(http or https) to access the image registry API.\n",
+        "example": "https://registry.gitlab.com"
+      },
+      "OidcIssuerUrl": {
+        "type": "string",
+        "description": "The URL for OpenID Connect client discovery. Used for providers of kind 'generic_oidc'.\n",
+        "example": "https://renkulab.io/auth/realms/Renku"
       },
       "ErrorResponse": {
         "type": "object",

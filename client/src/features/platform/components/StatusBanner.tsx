@@ -48,7 +48,7 @@ import StatusPageIncidentUpdates from "./StatusPageIncidentUpdates";
 const FIVE_MINUTES_MILLIS = Duration.fromObject({ minutes: 5 }).valueOf();
 
 const SOON_MAINTENANCE_CUTOFF = Duration.fromObject({ days: 2 });
-const MAINTENANCE_CUTOFF = Duration.fromObject({ days: 7 });
+const MAINTENANCE_CUTOFF = Duration.fromObject({ days: 14 });
 
 interface StatusBannerProps {
   params: AppParams | undefined;

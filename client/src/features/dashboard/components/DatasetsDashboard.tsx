@@ -15,21 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import cx from "classnames";
 import { Fragment } from "react";
 import { Search } from "react-bootstrap-icons";
 import { Link } from "react-router";
+
+import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
+import ListDisplay from "../../../components/List";
+import { Loader } from "../../../components/Loader";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
+import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
+import { Url } from "../../../utils/helpers/url";
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,
 } from "../../kgSearch/KgSearchApi";
-
-import cx from "classnames";
-import ListDisplay from "../../../components/List";
-import { Loader } from "../../../components/Loader";
-import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
-import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
-import { Url } from "../../../utils/helpers/url";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
 
 interface OtherDatasetsButtonProps {

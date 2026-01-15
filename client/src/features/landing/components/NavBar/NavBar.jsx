@@ -26,19 +26,19 @@
 import cx from "classnames";
 import { useContext } from "react";
 import { Link, Route, Routes, useLocation } from "react-router";
-import { ExternalDocsLink } from "../../../../components/ExternalLinks";
+
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+import { ExternalDocsLink } from "../../../../components/LegacyExternalLinks";
 import AnonymousNavBar from "../../../../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../../../../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../../../../components/navbar/navbar.constants";
 import RenkuNavLinkV2 from "../../../../components/RenkuNavLinkV2";
 import { parseChartVersion } from "../../../../help/release.utils";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import AppContext from "../../../../utils/context/appContext";
 import { Links } from "../../../../utils/constants/Docs";
-import useLegacySelector from "../../../rootV2/NavbarV2";
+import AppContext from "../../../../utils/context/appContext";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import { Url } from "../../../../utils/helpers/url";
-
 import NavbarV2 from "../../../rootV2/NavbarV2";
 
 import "./NavBar.css";
@@ -57,6 +57,7 @@ function RenkuNavBarInner({ user }) {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
+  const forceV2 = true;
   const sessionShowUrl =
     projectMetadata == null
       ? null
@@ -69,37 +70,46 @@ function RenkuNavBarInner({ user }) {
   return (
     <Routes key="mainNav">
       <Route path={sessionShowUrl} element={null} />
-      <Route path={ABSOLUTE_ROUTES.v1.root} element={null} />
-      <Route path={ABSOLUTE_ROUTES.v1.splat} element={null} />
+      <Route
+        path={ABSOLUTE_ROUTES.v1.root}
+        element={forceV2 ? <NavbarV2 /> : null}
+      />
+      <Route
+        path={ABSOLUTE_ROUTES.v1.splat}
+        element={forceV2 ? <NavbarV2 /> : null}
+      />
       <Route
         path={ABSOLUTE_ROUTES.projects.splat}
-        element={!user?.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
+        element={
+          forceV2 ? (
+            <NavbarV2 />
+          ) : !user?.logged ? (
+            <AnonymousNavBar />
+          ) : (
+            <LoggedInNavBar />
+          )
+        }
       />
       <Route
         path={ABSOLUTE_ROUTES.datasets.splat}
-        element={!user?.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
+        element={
+          forceV2 ? (
+            <NavbarV2 />
+          ) : !user?.logged ? (
+            <AnonymousNavBar />
+          ) : (
+            <LoggedInNavBar />
+          )
+        }
       />
       <Route path="*" element={<NavbarV2 />} />
     </Routes>
   );
 }
 
-function FooterNavbarAnonymousLinks() {
-  return (
-    <>
-      <ExternalDocsLink
-        url={`${Links.GITHUB}/blob/master/LICENSE`}
-        title="Renku License"
-        className="nav-link"
-      />
-    </>
-  );
-}
-
 function FooterNavbarLoggedInLinks({ privacyLink }) {
-  const { params } = useContext(AppContext);
   const location = useLocation();
-  const forceV2 = params && !params.LEGACY_SUPPORT.enabled;
+  const forceV2 = true;
   const helpLocation = isRenkuLegacy(location.pathname, forceV2)
     ? ABSOLUTE_ROUTES.v1.help.root
     : ABSOLUTE_ROUTES.v2.help.root;
@@ -135,7 +145,6 @@ function FooterNavbarInner() {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
-  const user = useLegacySelector((state) => state.stateModel.user);
   const sessionShowUrl =
     projectMetadata == null
       ? null
@@ -160,10 +169,7 @@ function FooterNavbarInner() {
       : isDevVersion
       ? `${taggedVersion} (dev)`
       : taggedVersion;
-  const isRenkuV1 = isRenkuLegacy(
-    location.pathname,
-    params && !params.LEGACY_SUPPORT.enabled
-  );
+  const isRenkuV1 = isRenkuLegacy(location.pathname, true);
   const releaseLocation = isRenkuV1
     ? ABSOLUTE_ROUTES.v1.help.release
     : ABSOLUTE_ROUTES.v2.help.release;
@@ -196,15 +202,10 @@ function FooterNavbarInner() {
         </div>
         <div className={cx("d-lg-flex", "d-none", "navbar-nav")}>
           <div className={cx("d-flex", "flex-row", "gap-3", "ms-auto")}>
-            {!user?.logged &&
-            location.pathname === Url.get(Url.pages.landing) ? (
-              <FooterNavbarAnonymousLinks />
-            ) : (
-              <FooterNavbarLoggedInLinks
-                location={location}
-                privacyLink={privacyLink}
-              />
-            )}
+            <FooterNavbarLoggedInLinks
+              location={location}
+              privacyLink={privacyLink}
+            />
           </div>
         </div>
       </div>

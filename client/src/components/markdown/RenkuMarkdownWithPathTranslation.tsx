@@ -1,8 +1,9 @@
 import cx from "classnames";
-import { FileEarmarkFill } from "react-bootstrap-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { FileEarmarkFill } from "react-bootstrap-icons";
 import ReactDOMServer from "react-dom/server";
 import { Card, CardBody } from "reactstrap";
+
 import FilePreview from "../../file/FilePreview";
 import type { FilePreviewProps } from "../../file/FilePreview";
 import { Url } from "../../utils/helpers/url";

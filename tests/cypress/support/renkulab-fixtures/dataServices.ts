@@ -32,6 +32,11 @@ interface ExactUser {
   last_name?: string;
 }
 
+interface UrlRedirectFixture extends NameOnlyFixture {
+  sourceUrl: string;
+  targetUrl: string | null;
+}
+
 /**
  * Fixtures for Data Services
  */
@@ -44,9 +49,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
         name = "getResourcePools",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/data/resource_pools*", response).as(
-        name
-      );
+      cy.intercept("GET", "/api/data/resource_pools*", response).as(name);
       return this;
     }
 
@@ -54,10 +57,10 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       name = "getAdminResourcePoolUsers",
       fixture = "dataServices/resource-pool-users.json"
     ) {
-      cy.intercept("/ui-server/api/data/users", {
+      cy.intercept("/api/data/users", {
         fixture,
       }).as(name);
-      cy.intercept("/ui-server/api/data/resource_pools/*/users", {
+      cy.intercept("/api/data/resource_pools/*/users", {
         fixture,
       });
       return this;
@@ -81,7 +84,20 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
         name = "getResourceClass",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/data/classes/*", response).as(name);
+      cy.intercept("GET", "/api/data/classes/*", response).as(name);
+      return this;
+    }
+
+    urlRedirect(args: UrlRedirectFixture) {
+      const { sourceUrl, targetUrl, name = "getUrlRedirect" } = args;
+      const response = {
+        source_url: sourceUrl,
+        target_url: targetUrl,
+      };
+      cy.intercept("GET", `/api/data/platform/redirects/${sourceUrl}`, {
+        body: response,
+        statusCode: targetUrl ? 200 : 404,
+      }).as(name);
       return this;
     }
   };

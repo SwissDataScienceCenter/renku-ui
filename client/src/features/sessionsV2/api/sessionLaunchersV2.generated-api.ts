@@ -1,4 +1,5 @@
 import { sessionLaunchersV2EmptyApi as api } from "./sessionLaunchersV2.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getEnvironments: build.query<
@@ -241,6 +242,7 @@ export type EnvironmentPort = number;
 export type EnvironmentCommand = string[];
 export type EnvironmentArgs = string[];
 export type IsArchived = boolean;
+export type StripPathPrefix = boolean;
 export type EnvironmentWithoutContainerImage = {
   id: Ulid;
   name: SessionName;
@@ -255,6 +257,7 @@ export type EnvironmentWithoutContainerImage = {
   command?: EnvironmentCommand;
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
+  strip_path_prefix?: StripPathPrefix;
 };
 export type ContainerImage = string;
 export type Environment = EnvironmentWithoutContainerImage & {
@@ -283,9 +286,14 @@ export type EnvironmentPost = {
   args?: EnvironmentArgs;
   is_archived?: IsArchived;
   environment_image_source: EnvironmentImageSourceImage;
+  strip_path_prefix?: StripPathPrefix;
 };
 export type EnvironmentWorkingDirectoryPatch = string;
 export type EnvironmentMountDirectoryPatch = string;
+export type EnvironmentPatchCommand = string[] | null;
+export type EnvironmentPatchArgs = string[] | null;
+export type IsArchivedPatch = boolean;
+export type StripPathPrefixPatch = boolean;
 export type EnvironmentPatch = {
   name?: SessionName;
   description?: Description;
@@ -296,9 +304,10 @@ export type EnvironmentPatch = {
   working_directory?: EnvironmentWorkingDirectoryPatch;
   mount_directory?: EnvironmentMountDirectoryPatch;
   port?: EnvironmentPort;
-  command?: EnvironmentCommand;
-  args?: EnvironmentArgs;
-  is_archived?: IsArchived;
+  command?: EnvironmentPatchCommand;
+  args?: EnvironmentPatchArgs;
+  is_archived?: IsArchivedPatch;
+  strip_path_prefix?: StripPathPrefixPatch;
 };
 export type EnvironmentKind = "GLOBAL" | "CUSTOM";
 export type EnvironmentWithImageGet = Environment & {
@@ -306,12 +315,19 @@ export type EnvironmentWithImageGet = Environment & {
   environment_kind: EnvironmentKind;
 };
 export type Repository = string;
+export type BuildPlatform = "linux/amd64" | "linux/arm64";
+export type BuildPlatforms = BuildPlatform[];
 export type BuilderVariant = string;
 export type FrontendVariant = string;
+export type RepositoryRevision = string;
+export type BuildContextDir = string;
 export type BuildParameters = {
   repository: Repository;
+  platforms?: BuildPlatforms;
   builder_variant: BuilderVariant;
   frontend_variant: FrontendVariant;
+  repository_revision?: RepositoryRevision;
+  context_dir?: BuildContextDir;
 };
 export type EnvironmentImageSourceBuild = "build";
 export type EnvironmentWithBuildGet = EnvironmentWithoutContainerImage & {
@@ -368,10 +384,15 @@ export type DiskStoragePatch = number | null;
 export type EnvironmentImageSource =
   | EnvironmentImageSourceImage
   | EnvironmentImageSourceBuild;
+export type RepositoryRevisionPatch = string;
+export type BuildContextDirPatch = string;
 export type BuildParametersPatch = {
   repository?: Repository;
+  platforms?: BuildPlatforms;
   builder_variant?: BuilderVariant;
   frontend_variant?: FrontendVariant;
+  repository_revision?: RepositoryRevisionPatch;
+  context_dir?: BuildContextDirPatch;
 };
 export type EnvironmentPatchInLauncher = EnvironmentPatch & {
   environment_kind?: EnvironmentKind;

@@ -36,8 +36,12 @@ import {
   ModalFooter,
 } from "reactstrap";
 
+import DataConnectorModal, {
+  DataConnectorModalBodyAndFooter,
+} from "~/features/dataConnectorsV2/components/DataConnectorModal";
+import { NEW_DOCS_DATA_CONNECTORS_FROM_REPO } from "~/utils/constants/NewDocs";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import ModalHeader from "../../../../components/modal/ModalHeader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
@@ -48,15 +52,11 @@ import {
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsGlobalMutation,
 } from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import { DATA_CONNECTORS_DOI_DOCS_URL } from "../../../dataConnectorsV2/components/dataConnector.constants";
-import DataConnectorModal, {
-  DataConnectorModalBodyAndFooter,
-} from "../../../dataConnectorsV2/components/DataConnectorModal/index";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-import { projectV2Api } from "../../../projectsV2/api/projectV2.enhanced-api";
+import { doiFromUrl } from "../../utils/dataConnectorUtils";
 
-import styles from "../../../dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
+import styles from "~/features/dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -146,7 +146,6 @@ function ProjectConnectDataConnectorModalTitle() {
   return (
     <>
       <Database className={cx("bi", "me-1")} />
-      {/* // ! TODO: adjust this */}
       Link or create data connector {title.trim()}
     </>
   );
@@ -336,11 +335,10 @@ function ProjectLinkDataConnectorBodyAndFooter({
 
   useEffect(() => {
     if (isSuccess) {
-      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       reset();
       toggle();
     }
-  }, [dispatch, isSuccess, reset, toggle]);
+  }, [isSuccess, reset, toggle]);
 
   const error = currentQuery?.error ?? linkDataConnectorError;
 
@@ -375,10 +373,6 @@ function ProjectLinkDataConnectorBodyAndFooter({
               pattern: /^[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+){0,2}$/,
             }}
           />
-          <div className="form-text">
-            Paste a data connector identifier. You can find it on the the data
-            connector&apos;s side panel
-          </div>
           <div className="invalid-feedback">
             {errors.dataConnectorIdentifier == null
               ? undefined
@@ -386,6 +380,10 @@ function ProjectLinkDataConnectorBodyAndFooter({
                 errors.dataConnectorIdentifier.message.length > 0
               ? errors.dataConnectorIdentifier.message
               : "Please provide an identifier for the data connector"}
+          </div>
+          <div className="form-text">
+            Paste a data connector identifier. You can find it on the the data
+            connector&apos;s side panel
           </div>
         </div>
         {error != null && <RtkOrNotebooksError error={error} />}
@@ -422,8 +420,6 @@ function ProjectDoiDataConnectorBodyAndFooter({
   project,
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
-  const dispatch = useAppDispatch();
-
   const [
     postDataConnector,
     {
@@ -459,12 +455,13 @@ function ProjectDoiDataConnectorBodyAndFooter({
 
   const onSubmit = useCallback(
     (values: DataConnectorDoiFormFields) => {
+      const doi = doiFromUrl(values.doi);
       postDataConnector({
         globalDataConnectorPost: {
           storage: {
             configuration: {
               type: "doi",
-              doi: values.doi,
+              doi: doi,
             },
             source_path: "/",
             target_path: "/",
@@ -496,11 +493,10 @@ function ProjectDoiDataConnectorBodyAndFooter({
   // Close the modal and reset the Form if linking was successful
   useEffect(() => {
     if (linkDataConnectorSuccess) {
-      dispatch(projectV2Api.util.invalidateTags(["DataConnectors"]));
       reset();
       toggle();
     }
-  }, [dispatch, linkDataConnectorSuccess, reset, toggle]);
+  }, [linkDataConnectorSuccess, reset, toggle]);
 
   return (
     <Form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -512,7 +508,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
             iconAfter={true}
             role="link"
             title="in our documentation"
-            url={DATA_CONNECTORS_DOI_DOCS_URL}
+            url={NEW_DOCS_DATA_CONNECTORS_FROM_REPO}
           />
           .
         </p>
@@ -536,10 +532,10 @@ function ProjectDoiDataConnectorBodyAndFooter({
               required: true,
             }}
           />
+          <div className="invalid-feedback">Please provide a valid DOI</div>
           <div className="form-text">
             Paste a DOI, e.g. <code>10.5281/zenodo.3831980</code>.
           </div>
-          <div className="invalid-feedback">Please provide a valid DOI</div>
         </div>
         {error !== null && <RtkOrNotebooksError error={error} />}
       </ModalBody>

@@ -1,3 +1,21 @@
+/*!
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
@@ -8,22 +26,24 @@ import {
   Input,
   InputGroup,
   InputGroupText,
+  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { SuccessAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
-import ScrollableModal from "../../../../components/modal/ScrollableModal";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+import { SuccessAlert } from "~/components/Alert";
+import { Loader } from "~/components/Loader";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../session/startSessionOptions.constants";
+} from "~/features/session/startSessionOptions.constants";
+import {
+  useGetResourcePoolsQuery,
+  type ResourceClassWithId,
+} from "../../api/computeResources.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../../api/sessionLaunchersV2.api";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -141,20 +161,29 @@ export function ModifyResourcesLauncherModal({
   );
 
   return (
-    <ScrollableModal
+    <Modal
       centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
       toggle={toggleModal}
     >
-      <ModalHeader toggle={toggleModal}>Set default resource class</ModalHeader>
+      <ModalHeader
+        tag="h2"
+        toggle={toggleModal}
+        data-cy="set-resource-class-header"
+      >
+        Set default resource class
+      </ModalHeader>
       <ModalBody>
         {result.error && (
           <ErrorOrNotAvailableResourcePools title="Error modifying resources" />
         )}
         {result.isSuccess && (
-          <SuccessAlert dismissible={false}>
+          <SuccessAlert
+            dismissible={false}
+            data-cy="set-resource-class-success-alert"
+          >
             <h3 className={cx("fs-6", "fw-bold")}>
               Default resource class updated
             </h3>
@@ -214,14 +243,14 @@ export function ModifyResourcesLauncherModal({
                       Gigabytes
                     </UncontrolledTooltip>
                   </InputGroup>
-                  <FormText>
-                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
-                    {watchCurrentSessionClass.max_storage} GB
-                  </FormText>
                   <div className="invalid-feedback">
                     {error?.message ||
                       "Please provide a valid value for disk storage."}
                   </div>
+                  <FormText>
+                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                    {watchCurrentSessionClass.max_storage} GB
+                  </FormText>
                 </>
               )}
               rules={{
@@ -247,7 +276,11 @@ export function ModifyResourcesLauncherModal({
         )}
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-primary" onClick={toggleModal}>
+        <Button
+          color="outline-primary"
+          onClick={toggleModal}
+          data-cy="set-resource-class-cancel-button"
+        >
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
@@ -262,6 +295,7 @@ export function ModifyResourcesLauncherModal({
           }
           onClick={onSubmit}
           type="submit"
+          data-cy="set-resource-class-submit-button"
         >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
@@ -271,11 +305,11 @@ export function ModifyResourcesLauncherModal({
           Modify resources
         </Button>
       </ModalFooter>
-    </ScrollableModal>
+    </Modal>
   );
 }
 
 interface ModifyResourcesLauncherForm {
-  resourceClass: ResourceClass | undefined;
+  resourceClass: ResourceClassWithId | undefined;
   diskStorage: number | undefined;
 }

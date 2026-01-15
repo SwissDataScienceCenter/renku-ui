@@ -30,16 +30,16 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { Loader } from "../../../../components/Loader";
+import { SuccessAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
+import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import DescriptionField from "./fields/DescriptionField";
-import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import FilenameField from "./fields/FilenameField";
 import NameField from "./fields/NameField";
 import ProvideSessionSecretModalContent from "./ProvideSessionSecretModalContent";
-import { SuccessAlert } from "../../../../components/Alert";
 
 export default function AddSessionSecretButton() {
   const ref = useRef<HTMLButtonElement>(null);
@@ -49,7 +49,13 @@ export default function AddSessionSecretButton() {
 
   return (
     <>
-      <Button color="outline-primary" innerRef={ref} onClick={toggle} size="sm">
+      <Button
+        color="outline-primary"
+        data-cy="add-session-secret-button"
+        innerRef={ref}
+        onClick={toggle}
+        size="sm"
+      >
         <PlusLg className="bi" />
         <span className="visually-hidden">Add session secret slot</span>
       </Button>
@@ -92,7 +98,14 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
   );
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal
+      backdrop="static"
+      centered
+      data-cy="add-session-secret-modal"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       {step === "add-secret-slot" && (
         <AddSessionSecretModalContentStep1
           isOpen={isOpen}
@@ -180,7 +193,7 @@ function AddSessionSecretModalContentStep1({
 
   return (
     <Form noValidate onSubmit={onSubmit}>
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         <ShieldLock className={cx("me-1", "bi")} />
         Add session secret slot
       </ModalHeader>
@@ -205,11 +218,20 @@ function AddSessionSecretModalContentStep1({
         />
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-primary" onClick={toggle}>
+        <Button
+          color="outline-primary"
+          data-cy="add-session-secret-close-button"
+          onClick={toggle}
+        >
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button color="primary" disabled={result.isLoading} type="submit">
+        <Button
+          color="primary"
+          data-cy="add-session-secret-submit-button"
+          disabled={result.isLoading}
+          type="submit"
+        >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (

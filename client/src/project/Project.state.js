@@ -24,7 +24,7 @@
  */
 
 import { API_ERRORS } from "../api-client";
-import { SpecialPropVal, projectSchema } from "../model";
+import { projectSchema, SpecialPropVal } from "../model";
 import {
   refreshIfNecessary,
   splitAutosavedBranches,

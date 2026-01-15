@@ -20,12 +20,12 @@ import {
   ContainerImage,
   DefaultUrl,
   KeywordsList,
-  LegacySlug,
   ProjectName,
   RepositoriesList,
   ResourceClassId,
   SessionName,
   Slug,
+  SlugResponse,
   Visibility,
 } from "../../../projectsV2/api/projectV2.api";
 
@@ -33,7 +33,7 @@ export interface ProjectMigrationForm {
   v1Id: number;
   name: ProjectName;
   namespace: Slug;
-  slug: LegacySlug;
+  slug: SlugResponse;
   visibility: Visibility;
   description: string;
   keywords: KeywordsList;

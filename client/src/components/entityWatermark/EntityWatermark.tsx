@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { People, Person } from "react-bootstrap-icons";
+
 import styles from "./entityWatermark.module.scss";
 
 interface EntityWatermarkProps {

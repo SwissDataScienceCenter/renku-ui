@@ -33,10 +33,7 @@ export function MoreInfo({
   return (
     <>
       <span ref={ref}>
-        <InfoCircle
-          className={cx("bi", "ms-1", "cursor-pointer")}
-          tabIndex={0}
-        />
+        <InfoCircle className={cx("bi", "cursor-pointer")} tabIndex={0} />
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger={trigger}>
         <PopoverBody>{children}</PopoverBody>

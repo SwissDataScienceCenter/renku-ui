@@ -23,19 +23,19 @@
 import {
   Action,
   AnyAction,
+  configureStore,
   ReducersMapObject,
   StoreEnhancer,
-  configureStore,
 } from "@reduxjs/toolkit";
 
+import { notificationsEmptyApi as notificationsApi } from "~/features/notifications/api/notifications.empty-api";
+import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
-import adminSessionsApi from "../../features/admin/adminSessions.api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { doiResolverEmptyApi as doiResolverApi } from "../../features/dataConnectorsV2/api/doiResolver.empty-api";
 import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataConnectors.slice";
-import computeResourcesApi from "../../features/dataServices/computeResources.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
@@ -51,7 +51,7 @@ import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
-import repositoriesApi from "../../features/repositories/repositories.api";
+import { repositoriesApi } from "../../features/repositories/api/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import sessionsApi from "../../features/session/sessions.api";
@@ -89,7 +89,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
-    [adminSessionsApi.reducerPath]: adminSessionsApi.reducer,
     [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
@@ -97,6 +96,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [doiResolverApi.reducerPath]: doiResolverApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
+    [notificationsApi.reducerPath]: notificationsApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
@@ -127,7 +127,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         serializableCheck: false,
       })
         .concat(adminKeycloakApi.middleware)
-        .concat(adminSessionsApi.middleware)
         .concat(computeResourcesApi.middleware)
         .concat(connectedServicesApi.middleware)
         .concat(dataConnectorsApi.middleware)
@@ -135,6 +134,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(doiResolverApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(notificationsApi.middleware)
         .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)

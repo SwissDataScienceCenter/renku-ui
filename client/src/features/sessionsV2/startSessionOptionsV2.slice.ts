@@ -27,11 +27,13 @@ import {
 } from "./startSessionOptionsV2.types";
 
 const initialState: StartSessionOptionsV2 = {
-  cloudStorage: undefined,
+  dataConnectors: undefined,
   defaultUrl: "",
   environmentVariables: [],
+  imageReady: false,
   lfsAutoFetch: false,
   repositories: [],
+  repositoriesReady: false,
   sessionClass: 0,
   storage: MIN_SESSION_STORAGE_GB,
   userSecretsReady: false,
@@ -41,20 +43,23 @@ const startSessionOptionsV2Slice = createSlice({
   name: "startSessionOptionsV2",
   initialState,
   reducers: {
-    addCloudStorageItem: (
+    addDataConnectorOverrideItem: (
       state,
       action: PayloadAction<SessionStartDataConnectorConfiguration>
     ) => {
-      state.cloudStorage?.push(action.payload);
+      if (state.dataConnectors == null) {
+        state.dataConnectors = [];
+      }
+      state.dataConnectors.push(action.payload);
     },
     addEnvironmentVariable: (state) => {
       state.environmentVariables.push({ name: "", value: "" });
     },
-    removeCloudStorageItem: (
+    removeDataConnectorOverrideItem: (
       state,
       action: PayloadAction<{ index: number }>
     ) => {
-      state.cloudStorage?.splice(action.payload.index, 1);
+      state.dataConnectors?.splice(action.payload.index, 1);
     },
     removeEnvironmentVariable: (
       state,
@@ -62,20 +67,26 @@ const startSessionOptionsV2Slice = createSlice({
     ) => {
       state.environmentVariables.splice(action.payload.index, 1);
     },
-    setCloudStorage: (
+    setDataConnectorsOverrides: (
       state,
       action: PayloadAction<SessionStartDataConnectorConfiguration[]>
     ) => {
-      state.cloudStorage = action.payload;
+      state.dataConnectors = action.payload;
     },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
+    },
+    setImageReady: (state, action: PayloadAction<boolean>) => {
+      state.imageReady = action.payload;
     },
     setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
       state.lfsAutoFetch = action.payload;
     },
     setRepositories: (state, action: PayloadAction<SessionRepository[]>) => {
       state.repositories.splice(0, Infinity, ...action.payload);
+    },
+    setRepositoriesReady: (state, action: PayloadAction<boolean>) => {
+      state.repositoriesReady = action.payload;
     },
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
@@ -86,15 +97,16 @@ const startSessionOptionsV2Slice = createSlice({
     setUserSecretsReady: (state, action: PayloadAction<boolean>) => {
       state.userSecretsReady = action.payload;
     },
-    updateCloudStorageItem: (
+    updateDataConnectorOverrideItem: (
       state,
       action: PayloadAction<{
         index: number;
         storage: SessionStartDataConnectorConfiguration;
       }>
     ) => {
-      if (state.cloudStorage)
-        state.cloudStorage[action.payload.index] = action.payload.storage;
+      if (state.dataConnectors) {
+        state.dataConnectors[action.payload.index] = action.payload.storage;
+      }
     },
     updateEnvironmentVariable: (
       state,

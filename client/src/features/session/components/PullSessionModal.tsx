@@ -23,8 +23,8 @@ import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import {
   CenteredLoader,
-  InformationalBody,
   commitsPhrasing,
+  InformationalBody,
 } from "../../../notebooks/components/Sidecar";
 import {
   useGitStatusQuery,

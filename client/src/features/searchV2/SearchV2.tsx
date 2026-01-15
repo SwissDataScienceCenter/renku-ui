@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import { Col, Row } from "reactstrap";
 
 import SearchV2Bar from "./components/SearchV2Bar";
@@ -23,6 +24,7 @@ import SearchV2Header from "./components/SearchV2Header";
 import SearchV2Results from "./components/SearchV2Results";
 import useSearch from "./hooks/useSearch.hook";
 
+// ? Mind that SearchV2 components should be soon replaced by GroupV2Search components
 export default function SearchV2() {
   useSearch();
 
@@ -30,7 +32,7 @@ export default function SearchV2() {
     <>
       <Row className="mb-3">
         <Col>
-          <h2>Renku 2.0 Search</h2>
+          <h1>Renku Search</h1>
         </Col>
       </Row>
       <Row className="mb-3">

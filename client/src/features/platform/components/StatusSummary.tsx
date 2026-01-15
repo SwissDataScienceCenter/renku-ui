@@ -32,9 +32,9 @@ import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { WarnAlert } from "../../../components/Alert";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
@@ -43,7 +43,7 @@ import {
   toHumanDateTime,
 } from "../../../utils/helpers/DateTimeUtils";
 import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
-import { useGetUserQuery, usersApi } from "../../usersV2/api/users.api";
+import { useGetUserQueryState, usersApi } from "../../usersV2/api/users.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
   ScheduledMaintenance,
@@ -70,13 +70,13 @@ function NoStatusPage() {
   const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
-  const { data: userInfo } = useGetUserQuery(
+  const { data: userInfo } = useGetUserQueryState(
     userLogged ? undefined : skipToken
   );
 
   return (
     <WarnAlert dismissible={false}>
-      <h3>Status Page not configured</h3>
+      <h2>Status Page not configured</h2>
       <p className="mb-0">
         This instance of Renku cannot provide its current status.
       </p>
@@ -137,13 +137,13 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
     <>
       <Row>
         <Col>
-          <h3>RenkuLab Status</h3>
+          <h2>RenkuLab Status</h2>
           <OverallStatus summary={summary} />
 
-          <h3>Scheduled Maintenance</h3>
+          <h2>Scheduled Maintenance</h2>
           <ScheduledMaintenanceDisplay summary={summary} />
 
-          <h3 className="mt-3">Components</h3>
+          <h2 className="mt-3">Components</h2>
           <ComponentsStatus summary={summary} />
 
           <p className={cx("mt-3", "mb-0")}>
@@ -262,7 +262,7 @@ function MaintenanceItem({ maintenance }: MaintenanceItemProps) {
 
   return (
     <Col key={maintenance.id} xs={12}>
-      <h4 className={cx("fw-bold", "fs-6")}>
+      <h4 className={cx("fw-bold")}>
         {maintenance.name} on {displayStart} for {displayTime}
       </h4>
       <StatusPageIncidentUpdates

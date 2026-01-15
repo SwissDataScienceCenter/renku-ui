@@ -15,7 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import type { InactiveKgProjects } from "./inactiveKgProjects.types";
 
 export enum ActivationStatusProgressError {

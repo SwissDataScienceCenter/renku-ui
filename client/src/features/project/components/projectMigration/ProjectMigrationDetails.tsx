@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -31,13 +32,14 @@ import {
   PlayCircle,
 } from "react-bootstrap-icons";
 import { Collapse } from "reactstrap";
-import { InfoAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { Links } from "../../../../utils/constants/Docs";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
-import { GitLabRepositoryCommit } from "../../GitLab.types";
+
+import { InfoAlert } from "~/components/Alert";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
+import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
+import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResources.api";
+import { NEW_DOCS_MIGRATION_INFO } from "~/utils/constants/NewDocs";
+import type { GitLabRepositoryCommit } from "../../GitLab.types";
 
 interface DetailsMigrationProps {
   isPinnedImage?: boolean;
@@ -47,7 +49,7 @@ interface DetailsMigrationProps {
   keywords?: string;
   description?: string;
   codeRepository: string;
-  resourceClass?: ResourceClass;
+  resourceClass?: ResourceClassWithId;
   isProjectSupported: boolean;
 }
 export function DetailsMigration({
@@ -141,7 +143,7 @@ export function DetailsMigration({
         showLinkIcon={true}
         title="Learn more"
         className={cx("text-info")}
-        url={Links.RENKU_2_MIGRATION_INFO}
+        url={NEW_DOCS_MIGRATION_INFO}
       />
     </InfoAlert>
   );

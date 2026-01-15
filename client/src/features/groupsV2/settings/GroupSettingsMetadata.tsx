@@ -31,6 +31,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -89,7 +90,7 @@ function GroupDeleteConfirmation({
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader>Are you absolutely sure?</ModalHeader>
+      <ModalHeader tag="h2">Are you absolutely sure?</ModalHeader>
       <ModalBody>
         <p>
           Deleting a group{" "}

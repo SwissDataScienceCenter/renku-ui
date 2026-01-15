@@ -26,11 +26,11 @@ import {
   useSearchParams,
 } from "react-router";
 
-import PageLoader from "../../components/PageLoader";
 import {
   RtkErrorAlert,
   RtkOrNotebooksError,
 } from "../../components/errors/RtkErrorAlert";
+import PageLoader from "../../components/PageLoader";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
@@ -40,34 +40,39 @@ import ProgressStepsIndicator, {
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { resetFavicon, setFavicon } from "../display";
 import {
+  dataConnectorsOverrideFromConfig,
   storageDefinitionAfterSavingCredentialsFromConfig,
-  storageDefinitionFromConfig,
 } from "../project/utils/projectCloudStorage.utils";
+import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
-import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
-import SessionSecretsModal from "./SessionSecretsModal";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
-import { usePostSessionsMutation as useLaunchSessionMutation } from "./api/sessionsV2.api";
-import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
-import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import {
+  usePostSessionsMutation as useLaunchSessionMutation,
+  type SessionPostRequest,
+} from "./api/sessionsV2.api";
+import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
+import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
+import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
+import { validateEnvVariableName } from "./session.utils";
+import SessionImageModal from "./SessionImageModal";
+import SessionRepositoriesModal from "./SessionRepositoriesModal";
+import SessionSecretsModal from "./SessionSecretsModal";
+import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import type {
   SessionStartDataConnectorConfiguration,
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
-import { validateEnvVariableName } from "./session.utils";
 
 interface SaveCloudStorageProps
-  extends Omit<StartSessionFromLauncherProps, "containerImage" | "project"> {
+  extends Omit<StartSessionFromLauncherProps, "project"> {
   startSessionOptionsV2: StartSessionOptionsV2;
 }
 
@@ -81,8 +86,8 @@ function SaveCloudStorage({
     usePatchDataConnectorsByDataConnectorIdSecretsMutation();
 
   const credentialsToSave = useMemo(() => {
-    return startSessionOptionsV2.cloudStorage
-      ? startSessionOptionsV2.cloudStorage
+    return startSessionOptionsV2.dataConnectors
+      ? startSessionOptionsV2.dataConnectors
           .filter(shouldCloudStorageSaveCredentials)
           .map((cs) => ({
             storageName: cs.dataConnector.name,
@@ -90,7 +95,7 @@ function SaveCloudStorage({
             secrets: cs.sensitiveFieldValues,
           }))
       : [];
-  }, [startSessionOptionsV2.cloudStorage]);
+  }, [startSessionOptionsV2.dataConnectors]);
 
   const [results, setResults] = useState<StatusStepProgressBar[]>(
     credentialsToSave.map(() => StatusStepProgressBar.WAITING)
@@ -153,15 +158,19 @@ function SaveCloudStorage({
   }, [index, saveCredentialsResult]);
 
   useEffect(() => {
-    if (saveCredentialsResult.isLoading || !startSessionOptionsV2.cloudStorage)
+    if (
+      saveCredentialsResult.isLoading ||
+      !startSessionOptionsV2.dataConnectors
+    ) {
       return;
+    }
     if (index >= credentialsToSave.length) {
-      const cloudStorageConfigs = startSessionOptionsV2.cloudStorage?.map(
+      const cloudStorageConfigs = startSessionOptionsV2.dataConnectors?.map(
         (cs) => storageDefinitionAfterSavingCredentialsFromConfig(cs)
       );
       if (cloudStorageConfigs)
         dispatch(
-          startSessionOptionsV2Slice.actions.setCloudStorage(
+          startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
             cloudStorageConfigs
           )
         );
@@ -171,7 +180,7 @@ function SaveCloudStorage({
     credentialsToSave,
     index,
     saveCredentialsResult,
-    startSessionOptionsV2.cloudStorage,
+    startSessionOptionsV2.dataConnectors,
   ]);
 
   return (
@@ -202,13 +211,13 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   ] = useLaunchSessionMutation();
 
   const launcherToStart = useMemo(() => {
-    return {
+    const request: SessionPostRequest = {
       launcher_id: launcher.id,
       disk_storage: startSessionOptionsV2.storage,
       resource_class_id: startSessionOptionsV2.sessionClass,
-      cloudstorage: startSessionOptionsV2.cloudStorage
-        ?.filter(({ active }) => active)
-        .map((cs) => storageDefinitionFromConfig(cs)),
+      data_connectors_overrides: startSessionOptionsV2.dataConnectors?.flatMap(
+        dataConnectorsOverrideFromConfig
+      ),
       env_variable_overrides: Array.from(searchParams)
         .filter(([name]) => validateEnvVariableName(name) === true)
         .map(([name, value]) => ({
@@ -216,11 +225,12 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
           value,
         })),
     };
+    return request;
   }, [
     launcher.id,
     startSessionOptionsV2.storage,
     startSessionOptionsV2.sessionClass,
-    startSessionOptionsV2.cloudStorage,
+    startSessionOptionsV2.dataConnectors,
     searchParams,
   ]);
 
@@ -298,7 +308,10 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
 function doesCloudStorageNeedCredentials(
   config: SessionStartDataConnectorConfiguration
 ) {
-  if (config.active === false) return false;
+  if (!config.active || config.skip) {
+    return false;
+  }
+
   const sensitiveFields = Object.keys(config.sensitiveFieldValues);
   const credentialFieldDict = config.savedCredentialFields
     ? Object.fromEntries(
@@ -308,8 +321,9 @@ function doesCloudStorageNeedCredentials(
         ])
       )
     : {};
-  if (sensitiveFields.every((key) => credentialFieldDict[key] != null))
+  if (sensitiveFields.every((key) => credentialFieldDict[key] != null)) {
     return false;
+  }
   return Object.values(config.sensitiveFieldValues).some(
     (value) => value === ""
   );
@@ -322,17 +336,14 @@ function shouldCloudStorageSaveCredentials(
 }
 
 interface StartSessionWithCloudStorageModalProps
-  extends Omit<StartSessionFromLauncherProps, "cloudStorages"> {
-  cloudStorageConfigs: Omit<
-    SessionStartDataConnectorConfiguration,
-    "sensitiveFields"
-  >[];
+  extends StartSessionFromLauncherProps {
+  dataConnectors: SessionStartDataConnectorConfiguration[];
 }
 
 function StartSessionWithCloudStorageModal({
+  dataConnectors,
   launcher,
   project,
-  cloudStorageConfigs,
 }: StartSessionWithCloudStorageModalProps) {
   const [showDataConnectorSecretsModal, setShowDataConnectorSecretsModal] =
     useState<boolean>(false);
@@ -340,18 +351,18 @@ function StartSessionWithCloudStorageModal({
 
   const configsWithCredentials = useMemo(
     () =>
-      cloudStorageConfigs.filter(
+      dataConnectors.filter(
         (config) => !doesCloudStorageNeedCredentials(config)
       ),
-    [cloudStorageConfigs]
+    [dataConnectors]
   );
 
   const configsNeedingCredentials = useMemo(
     () =>
-      cloudStorageConfigs.filter((config) =>
+      dataConnectors.filter((config) =>
         doesCloudStorageNeedCredentials(config)
       ),
-    [cloudStorageConfigs]
+    [dataConnectors]
   );
 
   useEffect(() => {
@@ -368,7 +379,9 @@ function StartSessionWithCloudStorageModal({
         ...changedCloudStorageConfigs,
       ];
       dispatch(
-        startSessionOptionsV2Slice.actions.setCloudStorage(cloudStorageConfigs)
+        startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
+          cloudStorageConfigs
+        )
       );
     },
     [dispatch, configsWithCredentials]
@@ -441,6 +454,7 @@ function StartSessionFromLauncher({
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
+
   const {
     containerImage,
     isFetchingOrLoadingStorages,
@@ -448,25 +462,37 @@ function StartSessionFromLauncher({
     setResourceClass,
     isFetchingSessionSecrets,
     sessionSecretSlotsWithSecrets,
+    isLoadingSessionImage,
+    sessionImage,
+    isFetchingRepositories,
   } = useSessionLaunchState({
     launcher,
     project,
     isCustomLaunch: hasCustomQuery,
   });
 
-  const needsCredentials = startSessionOptionsV2.cloudStorage?.some(
+  const needsCredentials = startSessionOptionsV2.dataConnectors?.some(
     doesCloudStorageNeedCredentials
   );
 
-  const shouldSaveCredentials = startSessionOptionsV2.cloudStorage?.some(
+  const shouldSaveCredentials = startSessionOptionsV2.dataConnectors?.some(
     shouldCloudStorageSaveCredentials
   );
 
   const allDataFetched =
     containerImage &&
     startSessionOptionsV2.sessionClass !== 0 &&
+    startSessionOptionsV2.dataConnectors != null &&
     !isFetchingOrLoadingStorages &&
-    !isFetchingSessionSecrets;
+    !isFetchingRepositories &&
+    !isFetchingSessionSecrets &&
+    !isLoadingSessionImage;
+
+  const fetchingApi =
+    isFetchingOrLoadingStorages ||
+    isFetchingRepositories ||
+    isFetchingSessionSecrets ||
+    isLoadingSessionImage;
 
   // set favicon during session launch
   useEffect(() => {
@@ -484,28 +510,35 @@ function StartSessionFromLauncher({
     if (
       allDataFetched &&
       !needsCredentials &&
-      startSessionOptionsV2.cloudStorage &&
+      startSessionOptionsV2.dataConnectors &&
       shouldSaveCredentials
-    )
-      setShowSaveCredentials(shouldSaveCredentials);
-    else setShowSaveCredentials(false);
+    ) {
+      setShowSaveCredentials(true);
+    } else {
+      setShowSaveCredentials(false);
+    }
 
     if (
       allDataFetched &&
       !needsCredentials &&
-      startSessionOptionsV2.cloudStorage &&
       !shouldSaveCredentials &&
+      startSessionOptionsV2.dataConnectors &&
+      startSessionOptionsV2.imageReady &&
+      startSessionOptionsV2.repositoriesReady &&
       startSessionOptionsV2.userSecretsReady &&
       !sessionStarted
-    )
+    ) {
       setSessionStarted(true);
+    }
   }, [
     allDataFetched,
     needsCredentials,
-    startSessionOptionsV2.cloudStorage,
-    startSessionOptionsV2.userSecretsReady,
-    shouldSaveCredentials,
     sessionStarted,
+    shouldSaveCredentials,
+    startSessionOptionsV2.dataConnectors,
+    startSessionOptionsV2.imageReady,
+    startSessionOptionsV2.repositoriesReady,
+    startSessionOptionsV2.userSecretsReady,
   ]);
 
   const steps = [
@@ -533,6 +566,21 @@ function StartSessionFromLauncher({
     return <SessionStarting launcher={launcher} project={project} />;
 
   if (
+    !fetchingApi &&
+    !sessionImage?.accessible &&
+    !startSessionOptionsV2.imageReady
+  ) {
+    return <StartSessionImageModal launcher={launcher} project={project} />;
+  }
+
+  if (!fetchingApi && !startSessionOptionsV2.repositoriesReady) {
+    return (
+      <StartSessionRepositoriesModal launcher={launcher} project={project} />
+    );
+  }
+
+  if (
+    !fetchingApi &&
     sessionSecretSlotsWithSecrets &&
     !startSessionOptionsV2.userSecretsReady
   ) {
@@ -549,11 +597,11 @@ function StartSessionFromLauncher({
   if (
     allDataFetched &&
     needsCredentials &&
-    startSessionOptionsV2.cloudStorage
+    startSessionOptionsV2.dataConnectors
   ) {
     return (
       <StartSessionWithCloudStorageModal
-        cloudStorageConfigs={startSessionOptionsV2.cloudStorage}
+        dataConnectors={startSessionOptionsV2.dataConnectors}
         launcher={launcher}
         project={project}
       />
@@ -614,7 +662,7 @@ export default function SessionStartPage() {
   if (error || launcher == null || project == null) {
     return (
       <div>
-        <h1 className="fs-5">Error: could not load session</h1>
+        <h3>Error: could not load session</h3>
         {error && <RtkOrNotebooksError error={error} dismissible={false} />}
       </div>
     );
@@ -667,6 +715,88 @@ function StartSessionWithSessionSecretsModal({
           project={project}
           sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
         />
+      </div>
+    </div>
+  );
+}
+
+function StartSessionImageModal({
+  launcher,
+  project,
+}: StartSessionFromLauncherProps) {
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+  );
+
+  const showModal = !startSessionOptionsV2.imageReady;
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Launching session ${launcher.name}`}
+          status={steps}
+        />
+        <SessionImageModal
+          isOpen={showModal}
+          launcher={launcher}
+          project={project}
+        />
+      </div>
+    </div>
+  );
+}
+
+function StartSessionRepositoriesModal({
+  launcher,
+  project,
+}: StartSessionFromLauncherProps) {
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+  );
+
+  const showModal = !startSessionOptionsV2.repositoriesReady;
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div>
+      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Launching session ${launcher.name}`}
+          status={steps}
+        />
+        <SessionRepositoriesModal isOpen={showModal} project={project} />
       </div>
     </div>
   );

@@ -19,10 +19,10 @@
 import cx from "classnames";
 import { useEffect, useState } from "react";
 import {
+  generatePath,
   Navigate,
   Route,
   Routes,
-  generatePath,
   useMatch,
   useNavigate,
 } from "react-router";
@@ -41,6 +41,7 @@ import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
 import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
+import LazyGroupV2Search from "../groupsV2/LazyGroupV2Search";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
@@ -198,6 +199,10 @@ function GroupsV2Routes() {
       <Route path={RELATIVE_ROUTES.v2.groups.show.root}>
         <Route element={<LazyGroupContainer />}>
           <Route index element={<LazyGroupV2Overview />} />
+          <Route
+            path={RELATIVE_ROUTES.v2.groups.show.search}
+            element={<LazyGroupV2Search />}
+          />
           <Route
             path={RELATIVE_ROUTES.v2.groups.show.settings}
             element={<LazyGroupV2Settings />}

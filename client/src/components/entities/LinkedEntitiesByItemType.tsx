@@ -20,9 +20,11 @@ import { ReactNode, useRef } from "react";
 import { Briefcase, HddStack } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
+
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel } from "../formlabels/FormLabels";
 import { EntityType } from "./entities.types";
+
 import "./Entities.css";
 
 /**

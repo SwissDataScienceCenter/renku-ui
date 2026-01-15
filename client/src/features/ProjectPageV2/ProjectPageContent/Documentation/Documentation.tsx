@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import ModalHeader from "../../../../components/modal/ModalHeader";
@@ -72,10 +72,10 @@ export default function Documentation({ project }: DocumentationProps) {
               "justify-content-between"
             )}
           >
-            <h4 className="m-0">
+            <h2 className="m-0">
               <FileEarmarkText className={cx("me-1", "bi")} />
               Documentation
-            </h4>
+            </h2>
             <div className="my-auto">
               <PermissionsGuard
                 disabled={null}

@@ -16,22 +16,23 @@
  * limitations under the License.
  */
 
+import { isEqual } from "lodash-es";
+
+import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
+import { ListElementProps } from "../../components/list/list.types";
+import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
+import { Visibilities } from "../../components/visibility/Visibility";
 import {
   EntityType,
   KgSearchResult,
   KgSearchResultLink,
 } from "../../features/kgSearch";
-import { ListElementProps } from "../../components/list/list.types";
-import { Url } from "./url";
-import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
-import { isEqual } from "lodash-es";
-import { getEntityImageUrl } from "./HelperFunctions";
 import {
   DatasetKg,
   KgMetadataResponse,
 } from "../../features/project/project.types";
-import { Visibilities } from "../../components/visibility/Visibility";
-import type { UserRoles } from "../../components/userRolesFilter/userRolesFilter.types";
+import { getEntityImageUrl } from "./HelperFunctions";
+import { Url } from "./url";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {
   try {
@@ -50,8 +51,12 @@ const getDatasetUrl = (links: KgSearchResultLink[]) => {
 };
 
 const getProjectUrl = (path: string) => {
+  const v1Prefix = "/v1";
   const projectBase = Url.pages.projects.base.get();
-  return `${projectBase}/${path}`;
+  const currentProjectBase = projectBase.startsWith(v1Prefix)
+    ? projectBase.substring(v1Prefix.length)
+    : projectBase;
+  return `${currentProjectBase}/${path}`;
 };
 
 export const mapSearchResultToEntity = (

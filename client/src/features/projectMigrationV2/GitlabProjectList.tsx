@@ -21,13 +21,14 @@ import { useCallback, useMemo, useState } from "react";
 import { CheckCircle, Folder } from "react-bootstrap-icons";
 import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
+
+import { ErrorAlert } from "../../components/Alert";
 import VisibilityIcon from "../../components/entities/VisibilityIcon";
 import { Loader } from "../../components/Loader";
 import Pagination from "../../components/Pagination";
+import { useGetAllProjectsQuery } from "../project/projectGitLab.api";
 import { useGetRenkuV1ProjectsMigrationsQuery } from "../projectsV2/api/projectV2.api.ts";
 import { GitlabProjectsToMigrate } from "./ProjectMigration.types";
-import { useGetAllProjectsQuery } from "../project/projectGitLab.api";
-import { ErrorAlert } from "../../components/Alert";
 
 export const DEFAULT_PER_PAGE_PROJECT_MIGRATION = 5;
 
@@ -183,7 +184,7 @@ export default function GitlabProjectList({
             onClick={() => onSelectProject(project)}
           >
             <div>
-              <h6 className={cx("mb-0", "fw-bold")}>
+              <h4 className={cx("mb-0", "fw-bold")}>
                 <Folder className={cx("bi", "me-1")} /> {project.name}
                 {project.alreadyMigrated && (
                   <span
@@ -201,7 +202,7 @@ export default function GitlabProjectList({
                     migrated
                   </span>
                 )}
-              </h6>
+              </h4>
               <small className="text-muted">
                 @{project.namespace.full_path}
               </small>

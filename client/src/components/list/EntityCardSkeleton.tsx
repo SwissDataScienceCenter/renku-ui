@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+
 import styles from "./EntityCardSkeleton.module.scss";
 
 interface EntityCardSkeletonProps {

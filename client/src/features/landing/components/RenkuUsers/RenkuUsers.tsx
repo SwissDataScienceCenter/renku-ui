@@ -19,6 +19,11 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { Card, Col, Row } from "reactstrap";
+
+import {
+  NEW_DOCS_RESEARCH,
+  NEW_DOCS_TEACHING,
+} from "~/utils/constants/NewDocs";
 import { Links } from "../../../../utils/constants/Docs.js";
 import educatorIcon from "../../assets/educatorIcon.svg";
 import organizerIcon from "../../assets/organizerIcon.svg";
@@ -47,23 +52,22 @@ function RenkuUserCard({
         "h-100",
         "bg-white",
         "align-items-center",
-        "gap-5",
         "p-4"
       )}
     >
       <div
         className={cx("d-flex", "flex-column", "gap-4", "align-items-center")}
       >
-        <h3 className={cx("text-uppercase", "fw-normal", "fs-4", "my-0")}>
+        <h3 className={cx("fs-2", "fw-normal", "my-0", "text-uppercase")}>
           {user}
         </h3>
         {icon}
-        <h4 className={cx("fw-bold", "my-0", "text-center")}>{title}</h4>
-        <p className={cx("mb-0", "fs-4", "text-center")}>{description}</p>
+        <p className={cx("fs-3", "fw-bold", "my-0", "text-center")}>{title}</p>
+        <p className={cx("fs-3", "mb-0", "text-center")}>{description}</p>
       </div>
-      <div className="pt-5">
+      <div className="mt-5">
         <a
-          className={cx("btn", "btn-primary", "text-decoration-none", "fs-5")}
+          className={cx("btn", "btn-primary", "btn-lg")}
           href={linkUrl}
           target="_blank"
           rel="noreferrer noopener"
@@ -80,7 +84,7 @@ export function RenkuUsers() {
       title: "Unified Research",
       description:
         "Connect your entire research workflow in one place, and collaborate across specialties without technical barriers.",
-      link: Links.RENKU_2_RESEARCH,
+      link: NEW_DOCS_RESEARCH,
       icon: (
         <img
           src={researcherIcon}
@@ -94,7 +98,7 @@ export function RenkuUsers() {
       title: "Computing Courses made easy",
       description:
         "Help your students focus on the material, not getting lost during setup. Ideal for project-based coursework and time-sensitive workshops.",
-      link: Links.RENKU_2_TEACHING,
+      link: NEW_DOCS_TEACHING,
       icon: (
         <img
           src={educatorIcon}
@@ -121,23 +125,13 @@ export function RenkuUsers() {
   };
   return (
     <div className="bg-navy">
-      <div className={cx("container", "py-5", "px-3")}>
-        <div className={cx("pt-5", "pb-4", "pb-lg-5")}>
-          <h2
-            className={cx(
-              "text-center",
-              "fs-1",
-              "mt-0",
-              "mt-lg-5",
-              "text-white",
-              "fw-bold",
-              "mb-0"
-            )}
-          >
-            Who is Renku for?
-          </h2>
-        </div>
-        <Row className={cx("pb-5", "gap-4", "gap-lg-0")}>
+      <div className={cx("container", "py-5")}>
+        <h2
+          className={cx("fs-1", "fw-bold", "mb-4", "text-center", "text-white")}
+        >
+          Who is Renku for?
+        </h2>
+        <Row className={cx("mb-5", "gap-4", "gap-lg-0")}>
           <Col xs={12} lg={4} className="px-4">
             <RenkuUserCard
               user="Researchers"

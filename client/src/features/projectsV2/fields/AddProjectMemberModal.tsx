@@ -24,14 +24,15 @@ import { SingleValue } from "react-select";
 import {
   Button,
   Form,
-  Input,
   Label,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import ProjectMemberRoleSelect from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectMemberRoleSelect";
 import type { User } from "../../searchV2/api/searchV2Api.api";
 import type {
   ProjectMemberPatchRequest,
@@ -127,24 +128,36 @@ function AddProjectMemberAccessForm({
             />
             <div className="invalid-feedback">Please select a user to add</div>
           </div>
-          <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
-            <Label for="member-role">Role</Label>
+          <div className={cx("align-items-baseline", "d-flex", "flex-column")}>
+            <Label for="member-role-select-input">Role</Label>
             <Controller
               control={control}
               name="role"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", "ms-3")}
-                  data-cy="member-role"
-                  id="member-role"
-                  type="select"
-                  style={{ maxWidth: "7em" }}
-                  {...field}
-                >
-                  <option value="viewer">Viewer</option>
-                  <option value="editor">Editor</option>
-                  <option value="owner">Owner</option>
-                </Input>
+              render={({
+                field: { onBlur, onChange, value, disabled },
+                fieldState: { error },
+              }) => (
+                <>
+                  <div className={cx("w-100", error && "is-invalid")}>
+                    <ProjectMemberRoleSelect
+                      disabled={disabled}
+                      data-cy="member-role-select"
+                      id="member-role"
+                      inputId="member-role-select-input"
+                      name="role"
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      value={value ?? ""}
+                    />
+                  </div>
+                  <div className="invalid-feedback">
+                    {error?.message ? (
+                      <>{error.message}</>
+                    ) : (
+                      <>Please select a role.</>
+                    )}
+                  </div>
+                </>
               )}
               rules={{ required: true }}
             />
@@ -180,7 +193,7 @@ export default function AddProjectMemberModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         <PersonGear className={cx("me-1", "bi")} />
         Add a project member
       </ModalHeader>

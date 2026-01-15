@@ -7,6 +7,7 @@ import type {
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Button, FormText, Label } from "reactstrap";
+
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import type { ProjectV2MetadataWithKeyword } from "../../settings/projectSettings.types";
@@ -27,7 +28,7 @@ export default function ProjectKeywordsFormField({
     const currentKeywords = getValues("keywords");
     if (!currentKeywords.includes(newValue)) {
       const newKeywords = [...currentKeywords, newValue];
-      setValue("keywords", newKeywords);
+      setValue("keywords", newKeywords, { shouldDirty: true });
     }
     setValue("keyword", "");
   };
@@ -97,7 +98,9 @@ export default function ProjectKeywordsFormField({
                         const newKeywords = field.value.filter(
                           (k) => k !== keyword
                         );
-                        setValue("keywords", newKeywords);
+                        setValue("keywords", newKeywords, {
+                          shouldDirty: true,
+                        });
                       }}
                     >
                       {keyword}

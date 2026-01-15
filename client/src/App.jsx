@@ -24,31 +24,29 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 
 import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
-
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import { Favicon } from "./features/favicon/Favicon";
-import { Unavailable } from "./features/maintenance/Maintenance";
-import LazyRootV2 from "./features/rootV2/LazyRootV2";
-import { useGetUserQuery } from "./features/usersV2/api/users.api";
-import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
 import {
   FooterNavbar,
   RenkuNavBar,
 } from "./features/landing/components/NavBar/NavBar";
-import {
-  LegacyDatasetAddToProject,
-  LegacyDatasets,
-  LegacyProjectView,
-  LegacyRoot,
-  LegacyShowDataset,
-} from "./features/legacy";
+import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
+import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
+import LegacyDatasets from "./features/legacy/LegacyDatasets";
+import LegacyProjectView from "./features/legacy/LegacyProjectView";
+import LegacyRoot from "./features/legacy/LegacyRoot";
+import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
+import LoginHandler from "./features/loginHandler/LoginHandler";
+import { Unavailable } from "./features/maintenance/Maintenance";
+import LazyRootV2 from "./features/rootV2/LazyRootV2";
+import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 import NotificationsManager from "./notifications/NotificationsManager";
 import Cookie from "./privacy/Cookie";
 import AppContext from "./utils/context/appContext";
@@ -66,7 +64,7 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 };
 
 function CentralContentContainer({ user }) {
-  const { data: userInfo } = useGetUserQuery(
+  const { data: userInfo } = useGetUserQueryState(
     user.logged ? undefined : skipToken
   );
 
@@ -80,9 +78,7 @@ function CentralContentContainer({ user }) {
           index
           element={
             user.logged ? (
-              <ContainerWrap fullSize={true}>
-                <LazyRootV2 />
-              </ContainerWrap>
+              <LazyRootV2 />
             ) : (
               <div className="w-100">
                 <LazyAnonymousHome />
@@ -119,12 +115,17 @@ function CentralContentContainer({ user }) {
 
 function App(props) {
   const location = useLocation();
+  const locationRef = useRef(location);
 
   const [webSocket, setWebSocket] = useState(null);
   const [notifications, setNotifications] = useState(null);
 
   useEffect(() => {
-    const getLocation = () => location;
+    locationRef.current = location;
+  }, [location]);
+
+  useEffect(() => {
+    const getLocation = () => locationRef.current;
     const notificationManager = new NotificationsManager(
       props.model,
       props.client
@@ -150,7 +151,7 @@ function App(props) {
       )
     );
     // ! Ignoring the rule of hooks creates issues, we should refactor this hook
-  }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Avoid rendering the application while authenticating the user
   const user = useLegacySelector((state) => state.stateModel.user);
@@ -184,6 +185,7 @@ function App(props) {
         <RenkuNavBar user={user} />
         <CentralContentContainer user={user} socket={webSocket} />
         <FooterNavbar />
+        <LoginHandler />
       </AppContext.Provider>
       <Cookie />
       <ToastContainer />

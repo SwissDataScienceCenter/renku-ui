@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
+
 import { Project } from "../../projectsV2/api/projectV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
@@ -27,6 +28,7 @@ import {
 } from "../components/SessionStatus/SessionStatus";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
+
 import styles from "./Session.module.scss";
 
 interface SessionCardProps {

@@ -39,14 +39,14 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { Loader } from "../../../../components/Loader";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
+import { Loader } from "../../../../components/Loader";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import { getCredentialFieldDefinitions } from "../../utils/projectCloudStorage.utils";
 import AddOrEditCloudStorageButton from "./AddOrEditCloudStorageButton";
 import {
-  type CloudStorageWithId,
   useDeleteStorageByStorageIdMutation,
+  type CloudStorageWithId,
 } from "./api/projectCloudStorage.api";
 import type { CloudStorage } from "./projectCloudStorage.types";
 

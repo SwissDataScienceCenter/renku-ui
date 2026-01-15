@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from "@storybook/react";
-
 import { Badge } from "reactstrap";
 
 const componentDescription = `
@@ -79,12 +78,6 @@ export const BadgeSizes_: Story = {
       <h4>
         Example Heading h4 <Badge {..._args}>{_args.children}</Badge>
       </h4>
-      <h5>
-        Example Heading h5 <Badge {..._args}>{_args.children}</Badge>
-      </h5>
-      <h6>
-        Example Heading h6 <Badge {..._args}>{_args.children}</Badge>
-      </h6>
       <p>
         Example Paragraph <Badge {..._args}>{_args.children}</Badge>
       </p>

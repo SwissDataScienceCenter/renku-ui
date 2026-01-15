@@ -74,6 +74,7 @@ export const sessionsV2Api = withTagHandling.injectEndpoints({
 export const {
   // "sessions" hooks
   useGetSessionsQuery,
+  useGetSessionsBySessionIdQuery,
   usePostSessionsMutation,
   usePatchSessionsBySessionIdMutation,
   useDeleteSessionsBySessionIdMutation,

@@ -17,6 +17,7 @@
  */
 
 import { People, Person } from "react-bootstrap-icons";
+
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityType } from "./entities.types";
 

@@ -33,6 +33,7 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { TimeCaption } from "../../../components/TimeCaption";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
@@ -133,11 +134,11 @@ export default function DataConnectorBoxListDisplay({
               )}
             >
               {scopeIcon}
-              <p className={cx("mb-0", "text-truncate", "text-muted")}>
+              <p className={cx("mb-0", "text-truncate")}>
                 {dataConnectorSource}
               </p>
             </div>
-            {extendedPreview && <div className="text-muted">{type}</div>}
+            {extendedPreview && <div>{type}</div>}
             <div
               className={cx(
                 "align-items-center",
@@ -201,9 +202,9 @@ export function DataConnectorBoxListDisplayPlaceholder() {
     <ListGroupItem data-cy="data-connector-box-placeholder">
       <Row>
         <Col className={cx("d-flex", "flex-column")}>
-          <h5 className="mb-0">
+          <h3 className="mb-0">
             <span className={cx("bg-secondary", "col-8", "placeholder")}></span>
-          </h5>
+          </h3>
           <p className="mb-0">
             <span className={cx("bg-secondary", "col-5", "placeholder")}></span>
           </p>

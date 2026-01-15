@@ -17,15 +17,17 @@
  */
 
 import { useContext } from "react";
+import { useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { ExternalLink } from "../components/ExternalLinks";
+import ExternalLink from "~/components/ExternalLink";
+import { Links } from "~/utils/constants/Docs";
+import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
 import { Loader } from "../components/Loader";
 import {
   useGetCoreVersionsQuery,
   useGetDataServicesVersionQuery,
   useGetKgVersionQuery,
-  useGetNotebooksVersionQuery,
 } from "../features/versions/versions.api";
 import { RenkuRepositories } from "../utils/constants/Repositories";
 import AppContext from "../utils/context/appContext";
@@ -58,7 +60,9 @@ function ComponentAndDevVersion({
   const releaseUrl = componentDocsUrl(componentUrl, taggedVersion, devHash);
   return (
     <>
-      <ExternalLink role="text" title={taggedVersion} url={releaseUrl} />
+      <ExternalLink icon={null} href={releaseUrl}>
+        {taggedVersion}
+      </ExternalLink>
       {devHash != null && (
         <>
           {" "}
@@ -119,22 +123,6 @@ function KgRelease() {
   );
 }
 
-function NotebookRelease() {
-  const { data, isFetching } = useGetNotebooksVersionQuery();
-  if (isFetching) {
-    return <Loader inline size={16} />;
-  }
-  const notebooksVersion = data?.version;
-  const { taggedVersion, devHash } = parseChartVersion(notebooksVersion);
-  return (
-    <ComponentAndDevVersion
-      componentUrl={RenkuRepositories.Notebooks}
-      devHash={devHash}
-      taggedVersion={taggedVersion}
-    />
-  );
-}
-
 function RenkuRelease() {
   const { params } = useContext(AppContext);
   const chartVersion =
@@ -165,6 +153,31 @@ function UiRelease() {
 }
 
 function ComponentDetails() {
+  const location = useLocation();
+  const isLegacy = isRenkuLegacy(location.pathname);
+
+  if (isLegacy) {
+    return (
+      <>
+        <div className="fw-bold">Renku legacy component versions</div>
+        <ul>
+          <li>
+            UI: <UiRelease />
+          </li>
+          <li>
+            Core: <CoreRelease />
+          </li>
+          <li>
+            Data Services: <DataServicesRelease />
+          </li>
+          <li>
+            Knowledge Graph: <KgRelease />
+          </li>
+        </ul>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="fw-bold">Renku component versions</div>
@@ -173,16 +186,7 @@ function ComponentDetails() {
           UI: <UiRelease />
         </li>
         <li>
-          Core: <CoreRelease />
-        </li>
-        <li>
           Data Services: <DataServicesRelease />
-        </li>
-        <li>
-          Knowledge Graph: <KgRelease />
-        </li>
-        <li>
-          Notebooks: <NotebookRelease />
         </li>
       </ul>
     </>
@@ -193,7 +197,12 @@ export default function HelpRelease() {
   return (
     <>
       <Row>
-        <Col md={6}>
+        <Col>
+          <h2>Release Information</h2>
+        </Col>
+      </Row>
+      <Row className="mt-3">
+        <Col xs={12}>
           <p>
             For detailed information about new Renku features and the latest
             improvements to individual components, please refer to the following
@@ -203,10 +212,25 @@ export default function HelpRelease() {
             <span className="fw-bold">Renku version</span> <RenkuRelease />
           </p>
         </Col>
-      </Row>
-      <Row>
-        <Col>
+
+        <Col xs={12}>
           <ComponentDetails />
+        </Col>
+      </Row>
+      <Row className="mt-5">
+        <Col>
+          <h2>License</h2>
+        </Col>
+      </Row>
+      <Row className="mt-3">
+        <Col xs={12}>
+          <>
+            Renku is developed under the{" "}
+            <ExternalLink href={`${Links.GITHUB}/blob/master/LICENSE`}>
+              Apache License
+            </ExternalLink>
+            .
+          </>
         </Col>
       </Row>
     </>

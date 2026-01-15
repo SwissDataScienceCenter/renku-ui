@@ -36,13 +36,18 @@ import { Button, Col, DropdownItem, Form, Row } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
-import { InfoAlert, RenkuAlert, WarnAlert } from "../../../components/Alert";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Loader } from "../../../components/Loader";
+import {
+  ErrorAlert,
+  InfoAlert,
+  RenkuAlert,
+  WarnAlert,
+} from "../../../components/Alert";
 import {
   ButtonWithMenu,
   GoBackButton,
 } from "../../../components/buttons/Button";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
+import { Loader } from "../../../components/Loader";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
@@ -74,7 +79,6 @@ import startSessionSlice, {
 } from "../startSession.slice";
 import { startSessionOptionsSlice } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
-import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import AutostartSessionOptions from "./options/AutostartSessionOptions";
 import SessionBranchOption from "./options/SessionBranchOption";
 import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
@@ -83,11 +87,13 @@ import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import SessionUserSecrets from "./options/SessionUserSecrets";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
+import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
   const anonymousSessionsEnabled =
     params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
+  const supportLegacySessions = false;
 
   const location = useLocation();
   const searchParams = useMemo(
@@ -110,6 +116,13 @@ export default function StartNewSession() {
   const { starting, error } = useAppSelector(
     ({ startSession }) => startSession
   );
+
+  const accessLevel = useLegacySelector<number | null>(
+    (state) => state.stateModel.project.metadata.accessLevel ?? null
+  );
+  const devAccess = accessLevel
+    ? accessLevel >= ACCESS_LEVELS.DEVELOPER
+    : false;
 
   const dispatch = useAppDispatch();
 
@@ -159,6 +172,21 @@ export default function StartNewSession() {
     );
   }
 
+  const newSessionContent = supportLegacySessions ? (
+    <StartNewSessionContent />
+  ) : (
+    <ErrorAlert timeout={0}>
+      <p className="mb-0">
+        Starting sessions is no longer supported in Renku Legacy.
+      </p>
+      {devAccess && (
+        <p className={cx("mb-0", "mt-2")}>
+          Migrate to Renku 2.0 to continue creating and managing your work.
+        </p>
+      )}
+    </ErrorAlert>
+  );
+
   return (
     <>
       <BackButton />
@@ -168,7 +196,7 @@ export default function StartNewSession() {
         </Col>
         <Col sm={12} md={9} lg={8}>
           <SessionStartError />
-          <StartNewSessionContent />
+          {newSessionContent}
         </Col>
       </Row>
     </>

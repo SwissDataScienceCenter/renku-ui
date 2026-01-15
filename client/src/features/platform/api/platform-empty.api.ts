@@ -20,7 +20,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const platformEmptyApi = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
   endpoints: () => ({}),
   reducerPath: "platformApi",
 });

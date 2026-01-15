@@ -18,8 +18,8 @@
 
 import cx from "classnames";
 import { ChangeEvent, useCallback } from "react";
-
 import { Input, Label } from "reactstrap";
+
 import type { UserRoles } from "./userRolesFilter.types";
 
 type UserRoleKey = keyof UserRoles;

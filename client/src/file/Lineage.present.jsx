@@ -23,10 +23,10 @@ import { Download } from "react-bootstrap-icons";
 import { useNavigate } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
-import { ExternalIconLink } from "../components/ExternalLinks";
 import { Clipboard } from "../components/clipboard/Clipboard";
 import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { KgStatusWrapper } from "../components/kgStatus/KgStatus";
+import { ExternalIconLink } from "../components/LegacyExternalLinks";
 import SessionFileButton from "../features/session/components/SessionFileButton";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";

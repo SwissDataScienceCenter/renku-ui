@@ -19,14 +19,20 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 
-import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import {
+  useGetDataConnectorsListByDataConnectorIdsQuery,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+} from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
-import { useGetResourcePoolsQuery } from "../dataServices/computeResources.api";
+import { shouldInterrupt } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
+import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetRepositoriesQuery } from "../repositories/api/repositories.api";
+import { useGetResourcePoolsQuery } from "./api/computeResources.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
 import { DEFAULT_URL } from "./session.constants";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
@@ -75,6 +81,22 @@ export default function useSessionLauncherState({
   } = useSessionSecrets({ projectId: project.id });
 
   const containerImage = launcher.environment?.container_image ?? "";
+  const isExternalImageEnvironment =
+    containerImage &&
+    launcher.environment?.environment_kind === "CUSTOM" &&
+    launcher.environment?.environment_image_source === "image";
+  const { data: dataSessionImage, isLoading: isLoadingSessionImage } =
+    useGetSessionsImagesQuery(
+      isExternalImageEnvironment && containerImage
+        ? { imageUrl: containerImage }
+        : skipToken
+    );
+  const sessionImage = useMemo(() => {
+    if (isExternalImageEnvironment && containerImage) {
+      return dataSessionImage;
+    }
+    return { accessible: true };
+  }, [containerImage, dataSessionImage, isExternalImageEnvironment]);
 
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
@@ -122,29 +144,76 @@ export default function useSessionLauncherState({
     isReadyDataConnectorConfigs,
   } = useDataConnectorConfiguration({ dataConnectors });
 
+  const { data: repositories, isFetching: isFetchingRepositories } =
+    useGetRepositoriesQuery(project.repositories ?? []);
+
+  const projectPermissions = useProjectPermissions({ projectId: project.id });
+
+  const isFetchingOrLoadingStorages =
+    isFetchingDataConnectorLinks ||
+    isLoadingDataConnectorLinks ||
+    isLoadingDataConnectors ||
+    isFetchingDataConnectors ||
+    !isReadyDataConnectorConfigs;
+
   useEffect(() => {
-    if (initialDataConnectorConfigs && isReadyDataConnectorConfigs) {
+    if (
+      !isFetchingOrLoadingStorages &&
+      initialDataConnectorConfigs &&
+      isReadyDataConnectorConfigs
+    ) {
       dispatch(
-        startSessionOptionsV2Slice.actions.setCloudStorage(
+        startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
           initialDataConnectorConfigs
         )
       );
     }
-  }, [initialDataConnectorConfigs, isReadyDataConnectorConfigs, dispatch]);
+  }, [
+    dispatch,
+    initialDataConnectorConfigs,
+    isFetchingOrLoadingStorages,
+    isReadyDataConnectorConfigs,
+  ]);
+
+  // check session image availability -- it should block only for external images
+  useEffect(() => {
+    if (
+      !isExternalImageEnvironment ||
+      (!!sessionImage && sessionImage.accessible)
+    ) {
+      dispatch(startSessionOptionsV2Slice.actions.setImageReady(true));
+    }
+  }, [dispatch, isExternalImageEnvironment, sessionImage]);
+
+  // Check for code repos availability -- it should only block if any repo requires it
+  useEffect(() => {
+    const interrupt = !!repositories?.find(
+      (repo) =>
+        repo.error ||
+        (repo.data && shouldInterrupt(repo.data, !!projectPermissions?.write))
+    );
+    if (!isFetchingRepositories && !interrupt) {
+      dispatch(startSessionOptionsV2Slice.actions.setRepositoriesReady(true));
+    }
+  }, [
+    dispatch,
+    isFetchingRepositories,
+    projectPermissions?.write,
+    repositories,
+  ]);
 
   return {
     containerImage,
+    sessionImage,
     defaultSessionClass,
-    isFetchingOrLoadingStorages:
-      isFetchingDataConnectorLinks ||
-      isLoadingDataConnectorLinks ||
-      isLoadingDataConnectors ||
-      isFetchingDataConnectors ||
-      !isReadyDataConnectorConfigs,
-    resourcePools,
-    isPendingResourceClass,
-    setResourceClass,
+    isFetchingOrLoadingStorages,
+    isFetchingRepositories,
     isFetchingSessionSecrets,
+    isLoadingSessionImage,
+    isPendingResourceClass,
+    repositories,
+    resourcePools,
     sessionSecretSlotsWithSecrets,
+    setResourceClass,
   };
 }

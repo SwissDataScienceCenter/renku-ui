@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
-import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
 import type { DataConnectorRead } from "../dataConnectorsV2/api/data-connectors.api";
+import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
 
 export interface SessionStartDataConnectorConfiguration {
   active: boolean;
+  skip: boolean;
+  touched: boolean;
   dataConnector: DataConnectorRead;
   sensitiveFieldDefinitions: {
     friendlyName: string;
@@ -33,11 +35,13 @@ export interface SessionStartDataConnectorConfiguration {
 }
 
 export interface StartSessionOptionsV2 {
-  cloudStorage?: SessionStartDataConnectorConfiguration[];
+  dataConnectors?: SessionStartDataConnectorConfiguration[];
   defaultUrl: string;
   environmentVariables: SessionEnvironmentVariable[];
+  imageReady: boolean;
   lfsAutoFetch: boolean;
   repositories: SessionRepository[];
+  repositoriesReady: boolean;
   sessionClass: number;
   storage: number;
   userSecretsReady: boolean;

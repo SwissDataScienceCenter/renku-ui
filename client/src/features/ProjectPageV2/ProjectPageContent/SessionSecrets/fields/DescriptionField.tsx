@@ -44,6 +44,7 @@ export default function DescriptionField<T extends FieldValues>({
           <textarea
             id={fieldId}
             className={cx("form-control", errors.description && "is-invalid")}
+            data-cy="add-session-secret-description-input"
             placeholder="A short description..."
             rows={3}
             {...field}

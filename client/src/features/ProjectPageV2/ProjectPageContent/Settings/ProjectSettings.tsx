@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Diagram3Fill, Pencil, Sliders } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { generatePath, useLocation, useNavigate } from "react-router";
@@ -32,9 +32,11 @@ import {
   Input,
   Label,
 } from "reactstrap";
+
+import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
@@ -99,6 +101,24 @@ function ProjectReadOnlyNamespaceField({ namespace }: { namespace: string }) {
         id="project-namespace"
         type="text"
         value={namespace}
+        disabled={true}
+        readOnly
+      />
+    </div>
+  );
+}
+
+function ProjectReadOnlySlugField({ slug }: { slug: string }) {
+  return (
+    <div>
+      <Label className="form-label" for="project-slug">
+        Slug
+      </Label>
+      <Input
+        className="form-control"
+        id="project-slug"
+        type="text"
+        value={slug}
         disabled={true}
         readOnly
       />
@@ -180,7 +200,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const permissions = useProjectPermissions({ projectId: project.id });
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { errors, dirtyFields },
     getValues,
     handleSubmit,
     watch,
@@ -191,6 +211,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
       description: project.description ?? "",
       name: project.name,
       namespace: project.namespace,
+      slug: project.slug,
       visibility: project.visibility,
       keywords: project.keywords ?? [],
       keyword: "",
@@ -199,6 +220,10 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   });
   const currentNamespace = watch("namespace");
   const currentName = watch("name");
+  const isDirtyExceptKeyword = Object.keys(dirtyFields).some(
+    (f) => f !== "keyword"
+  );
+
   const navigate = useNavigate();
   const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
   const { notifications } = useContext(AppContext);
@@ -224,12 +249,29 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
     [project, updateProject]
   );
 
+  const { params } = useContext(AppContext);
+  const baseUrl = params?.BASE_URL ?? window.location.origin;
+  const groupPath = useMemo(() => {
+    return generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+      namespace: currentNamespace,
+      slug: "",
+    });
+  }, [currentNamespace]);
+  const url = `${baseUrl}${groupPath}/`;
+
+  const resetUrl = useCallback(() => {
+    setValue("slug", project.slug, {
+      shouldValidate: true,
+    });
+  }, [setValue, project.slug]);
+
   useEffect(() => {
     if (isSuccess && updatedProject != null) {
       reset({
         description: updatedProject.description ?? "",
         name: updatedProject.name,
         namespace: updatedProject.namespace,
+        slug: updatedProject.slug,
         visibility: updatedProject.visibility,
         keywords: updatedProject.keywords ?? [],
         is_template: updatedProject.is_template ?? false,
@@ -309,6 +351,35 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
             change is saved, it will redirect to the updated project URL.
           </RenkuAlert>
         )}
+
+        <PermissionsGuard
+          disabled={<ProjectReadOnlySlugField slug={project.slug} />}
+          enabled={
+            <div>
+              <Label className="form-label" for="group-slug">
+                Slug
+              </Label>
+              <SlugFormField
+                compact={true}
+                control={control}
+                entityName="project"
+                errors={errors}
+                name="slug"
+                resetFunction={resetUrl}
+                url={url}
+              />
+              {errors.slug && dirtyFields.slug && (
+                <div className={cx("d-block", "invalid-feedback")}>
+                  <p className="mb-1">
+                    {errors?.slug?.message?.toString() ?? ""}
+                  </p>
+                </div>
+              )}
+            </div>
+          }
+          requestedPermission="delete"
+          userPermissions={permissions}
+        />
 
         <PermissionsGuard
           disabled={
@@ -422,7 +493,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
               <Button
                 color="primary"
                 data-cy="project-update-button"
-                disabled={isUpdating || !isDirty}
+                disabled={isUpdating || !isDirtyExceptKeyword}
                 type="submit"
               >
                 {isUpdating ? (
@@ -446,10 +517,10 @@ function ProjectSettingsMetadata({ project }: ProjectPageSettingsProps) {
   return (
     <Card data-cy="project-settings-general" id="general">
       <CardHeader>
-        <h4 className="m-0">
+        <h2 className="m-0">
           <Sliders className={cx("me-1", "bi")} />
           General settings
-        </h4>
+        </h2>
       </CardHeader>
       <CardBody>
         <ProjectSettingsForm project={project} />

@@ -26,12 +26,13 @@ import {
 } from "react-hook-form";
 import { SingleValue } from "react-select";
 import { Card, CardBody, Input, Label, ListGroupItem } from "reactstrap";
-import { TimeCaption } from "../../../../components/TimeCaption";
+
+import { TimeCaption } from "~/components/TimeCaption";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
-  ResourceClass,
-  ResourcePool,
-} from "../../../dataServices/dataServices.types";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+  type ResourceClassWithId,
+  type ResourcePoolWithId,
+} from "../../api/computeResources.api";
 import type { Environment as SessionEnvironment } from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentIcon } from "./LauncherEnvironmentIcon";
@@ -42,12 +43,14 @@ interface SessionEnvironmentItemProps {
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
   >;
-  resourcePools?: ResourcePool[];
+  resourcePools?: ResourcePoolWithId[];
   isLoadingResourcesPools?: boolean;
-  onChangeResourceClass?: (resourceClass: SingleValue<ResourceClass>) => void;
+  onChangeResourceClass?: (
+    resourceClass: SingleValue<ResourceClassWithId>
+  ) => void;
   errors: FieldErrors<SessionLauncherForm>;
   control: Control<SessionLauncherForm, unknown>;
-  defaultSessionClass?: ResourceClass;
+  defaultSessionClass?: ResourceClassWithId;
 }
 
 export function SessionEnvironmentItem({
@@ -111,13 +114,15 @@ export function SessionEnvironmentItem({
           className={cx("cursor-pointer", "m-0", "w-100")}
           for={`addSessionLauncherGlobalEnvironment-${id}`}
         >
-          <h5>{name}</h5>
-          <p className="mb-2">
+          <h4 className="fw-semibold">{name}</h4>
+          <p className={cx("mb-2", "fw-normal")}>
             <EnvironmentIcon type="global" className="me-1" />
             Global environment
           </p>
-          {description ? <p className="mb-2">{description}</p> : null}
-          <p className="m-0">
+          {description ? (
+            <p className={cx("mb-2", "fw-normal")}>{description}</p>
+          ) : null}
+          <p className={cx("m-0", "fw-normal")}>
             <TimeCaption
               datetime={creation_date}
               enableTooltip

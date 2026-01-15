@@ -17,13 +17,13 @@
  */
 
 import {
+  sessionLaunchersV2GeneratedApi,
   type EnvironmentIdOnlyPatch,
   type EnvironmentIdOnlyPost,
   type EnvironmentPatchInLauncher,
   type EnvironmentPostInLauncher,
   type GetEnvironmentsApiArg,
   type GetEnvironmentsApiResponse,
-  sessionLaunchersV2GeneratedApi,
 } from "./sessionLaunchersV2.generated-api";
 
 // Fixes some API endpoints
@@ -57,6 +57,16 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
               "Environment",
             ]
           : ["Environment"],
+    },
+    postEnvironments: {
+      invalidatesTags: ["Environment"],
+    },
+    patchEnvironmentsByEnvironmentId: {
+      invalidatesTags: (result) =>
+        result ? [{ id: result.id, type: "Environment" }] : ["Environment"],
+    },
+    deleteEnvironmentsByEnvironmentId: {
+      invalidatesTags: ["Environment"],
     },
     getSessionLaunchersByLauncherId: {
       providesTags: (result) =>
@@ -125,6 +135,9 @@ export const sessionLaunchersV2Api = withTagHandling.injectEndpoints({
 export const {
   // "environments" hooks
   useGetEnvironmentsQuery,
+  usePostEnvironmentsMutation,
+  usePatchEnvironmentsByEnvironmentIdMutation,
+  useDeleteEnvironmentsByEnvironmentIdMutation,
   // "launchers" hooks
   useGetSessionLaunchersByLauncherIdQuery,
   usePostSessionLaunchersMutation,

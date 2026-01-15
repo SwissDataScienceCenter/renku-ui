@@ -30,10 +30,10 @@ import {
   Control,
   Controller,
   FieldArrayWithId,
-  UseFormSetValue,
-  UseFormWatch,
   useFieldArray,
   useForm,
+  UseFormSetValue,
+  UseFormWatch,
 } from "react-hook-form";
 import {
   Button,
@@ -46,11 +46,13 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import ScrollableModal from "../../components/modal/ScrollableModal";
-import { useAddUsersToResourcePoolMutation } from "../dataServices/computeResources.api";
-import { ResourcePool } from "../dataServices/dataServices.types";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import ScrollableModal from "~/components/modal/ScrollableModal";
+import {
+  usePostResourcePoolsByResourcePoolIdUsersMutation,
+  type ResourcePoolWithId,
+} from "../sessionsV2/api/computeResources.api";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
@@ -60,7 +62,7 @@ const USERS_EMAILS_PLACEHOLDER =
   "user_1@example.com\nuser_2@example.com\nuser_3@example.com";
 
 interface AddManyUsersToResourcePoolButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 export default function AddManyUsersToResourcePoolButton({
@@ -73,7 +75,7 @@ export default function AddManyUsersToResourcePoolButton({
 
   return (
     <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PeopleFill className={cx("bi", "me-1")} />
         Add a batch of users
       </Button>
@@ -88,7 +90,7 @@ export default function AddManyUsersToResourcePoolButton({
 
 interface AddManyUsersToResourcePoolModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -104,7 +106,8 @@ function AddManyUsersToResourcePoolModal({
     setStep("input-emails");
   }, []);
 
-  const [addUsersToResourcePool, result] = useAddUsersToResourcePoolMutation();
+  const [addUsersToResourcePool, result] =
+    usePostResourcePoolsByResourcePoolIdUsersMutation();
 
   const {
     control,
@@ -149,8 +152,11 @@ function AddManyUsersToResourcePoolModal({
       const usersToAdd = data.users.filter(
         ({ addToResourcePool }) => addToResourcePool
       );
-      const userIds = usersToAdd.map(({ keycloakId }) => keycloakId);
-      addUsersToResourcePool({ resourcePoolId: resourcePool.id, userIds });
+      const userIds = usersToAdd.map(({ keycloakId }) => ({ id: keycloakId }));
+      addUsersToResourcePool({
+        resourcePoolId: resourcePool.id,
+        poolUsersWithId: userIds,
+      });
     },
     [addUsersToResourcePool, resourcePool.id, setError, setValue, step]
   );
@@ -192,7 +198,7 @@ function AddManyUsersToResourcePoolModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         Add a batch of users to Resource Pool: {resourcePool.name}
       </ModalHeader>
       <ModalBody>

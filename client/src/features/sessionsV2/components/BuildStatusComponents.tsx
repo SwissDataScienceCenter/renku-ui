@@ -40,15 +40,22 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { EnvironmentLogsPresent, ILogs } from "../../../components/Logs";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { TimeCaption } from "../../../components/TimeCaption";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import type { ResourcePoolWithId } from "../api/computeResources.api";
+import type {
+  Build,
+  BuildList,
+  CreationDate,
+} from "../api/sessionLaunchersV2.api";
 import {
   SessionLauncher,
   useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
@@ -56,38 +63,52 @@ import {
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
 } from "../api/sessionLaunchersV2.api";
-import {
-  Build,
-  BuildList,
-  CreationDate,
-} from "../api/sessionLaunchersV2.generated-api";
+import type { ImageCheckResponse } from "../api/sessionsV2.api";
 import { IMAGE_BUILD_DOCS } from "../session.constants";
+import { isImageCompatibleWith } from "../session.utils";
 
 interface BuildStatusBadgeProps {
-  status: Build["status"];
+  buildStatus: Build["status"];
+  imageCheck?: ImageCheckResponse | null;
+  resourcePool?: ResourcePoolWithId;
 }
 
-export function BuildStatusBadge({ status }: BuildStatusBadgeProps) {
+export function BuildStatusBadge({
+  buildStatus,
+  imageCheck,
+  resourcePool,
+}: BuildStatusBadgeProps) {
+  const isCompatible = useMemo(() => {
+    if (imageCheck == null || resourcePool == null) {
+      return "unknown";
+    }
+    return isImageCompatibleWith(imageCheck, resourcePool.platform);
+  }, [imageCheck, resourcePool]);
+
   const badgeIcon =
-    status === "in_progress" ? (
+    buildStatus === "in_progress" ? (
       <Loader className="me-1" inline size={12} />
     ) : (
       <CircleFill className={cx("me-1", "bi")} />
     );
 
   const badgeText =
-    status === "in_progress"
+    isCompatible === false
+      ? "Image incompatible"
+      : buildStatus === "in_progress"
       ? "Build in progress"
-      : status === "cancelled"
+      : buildStatus === "cancelled"
       ? "Build cancelled"
-      : status === "succeeded"
+      : buildStatus === "succeeded"
       ? "Build succeeded"
       : "Build failed";
 
   const badgeColorClasses =
-    status === "in_progress"
+    isCompatible === false
+      ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
+      : buildStatus === "in_progress"
       ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
-      : status === "succeeded"
+      : buildStatus === "succeeded"
       ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
       : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
 
@@ -174,7 +195,9 @@ export function BuildActionFailedModal({
       size="lg"
       toggle={reset}
     >
-      <ModalHeader toggle={reset}>{title}</ModalHeader>
+      <ModalHeader tag="h2" toggle={reset}>
+        {title}
+      </ModalHeader>
       <ModalBody>
         <RtkOrNotebooksError error={error} dismissible={false} />
       </ModalBody>

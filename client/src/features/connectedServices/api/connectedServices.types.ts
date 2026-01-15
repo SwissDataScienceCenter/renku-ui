@@ -19,12 +19,8 @@
 import type {
   Pagination as BasePagination,
   PaginatedResponse,
-} from "../../../utils/types/pagination.types";
-import type {
-  AppInstallation,
-  ProviderPatch,
-  ProviderPost,
-} from "./connectedServices.generated-api";
+} from "~/utils/types/pagination.types";
+import type { AppInstallation, ProviderPost } from "./connectedServices.api";
 
 export type Pagination = Required<
   Pick<BasePagination, "currentPage" | "perPage" | "totalItems" | "totalPages">
@@ -36,38 +32,4 @@ export type AppInstallationsPaginated = PaginatedResponse<
   Pagination
 >;
 
-export interface Provider {
-  id: string;
-  kind: string;
-  client_id: string;
-  client_secret: string;
-  display_name: string;
-  scope: string;
-  url: string;
-  use_pkce: boolean;
-}
-
-export type ProviderList = Provider[];
-
-export interface Connection {
-  id: string;
-  provider_id: string;
-  status: ConnectionStatus;
-}
-
-export type ConnectionList = Connection[];
-
-export type ConnectionStatus = "pending" | "connected";
-
-export interface ConnectedAccount {
-  username: string;
-  web_url: string;
-}
-
-export interface GetConnectedAccountParams {
-  connectionId: string;
-}
-
-export type UpdateProviderParams = ProviderPatch;
-export type ConnectedServiceForm = ProviderPost;
-export type CreateProviderParams = ProviderPost;
+export type ProviderForm = ProviderPost;

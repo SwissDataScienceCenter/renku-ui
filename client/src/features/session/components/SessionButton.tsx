@@ -40,26 +40,29 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
 
-import { WarnAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
-import { ButtonWithMenu } from "../../../components/buttons/Button";
-import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
-import { SshDropdown } from "../../../components/ssh/ssh";
-import { User } from "../../../model/renkuModels.types";
-import { NotebooksHelper } from "../../../notebooks";
-import { NotebookAnnotations } from "../../../notebooks/components/session.types";
-import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../../notifications/notifications.types";
-import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
-import AppContext from "../../../utils/context/appContext";
-import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
-import { Url } from "../../../utils/helpers/url";
-import { useGetResourcePoolsQuery } from "../../dataServices/computeResources.api";
-import { ResourceClass } from "../../dataServices/dataServices.types";
+import { WarnAlert } from "~/components/Alert";
+import { ButtonWithMenu } from "~/components/buttons/Button";
+import SessionPausedIcon from "~/components/icons/SessionPausedIcon";
+import { Loader } from "~/components/Loader";
+import { SshDropdown } from "~/components/ssh/ssh";
+import {
+  useGetResourcePoolsQuery,
+  type ResourceClassWithId,
+} from "~/features/sessionsV2/api/computeResources.api";
+import { User } from "~/model/renkuModels.types";
+import { NotebooksHelper } from "~/notebooks";
+import { NotebookAnnotations } from "~/notebooks/components/session.types";
+import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
+import { NotificationsManager } from "~/notifications/notifications.types";
+import rkIconStartWithOptions from "~/styles/icons/start-with-options.svg";
+import AppContext from "~/utils/context/appContext";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+import RtkQueryErrorsContext from "~/utils/helpers/RtkQueryErrorsContext";
+import { Url } from "~/utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -73,10 +76,10 @@ import {
 import { Session, SessionStatusState } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+import { SessionClassSelector } from "./options/SessionClassOption";
 import { SessionRowResourceRequests } from "./SessionsList";
 import SimpleSessionButton from "./SimpleSessionButton";
 import UnsavedWorkWarning from "./UnsavedWorkWarning";
-import { SessionClassSelector } from "./options/SessionClassOption";
 
 interface SessionButtonProps {
   className?: string;
@@ -116,6 +119,8 @@ export default function SessionButton({
       ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
       : null;
 
+  const supportLegacySessions = false;
+
   if (isLoading) {
     return (
       <Button className={cx("btn-sm", className)} disabled>
@@ -140,14 +145,27 @@ export default function SessionButton({
         isPrincipal
         size="sm"
       >
-        <li>
-          <Link className="dropdown-item" to={sessionStartUrl}>
+        <li id="start-legacy-session-with-options-container">
+          <Link
+            className={cx(
+              "dropdown-item",
+              !supportLegacySessions && "disabled"
+            )}
+            data-cy="start-legacy-session-with-options"
+            to={sessionStartUrl}
+          >
             <img
               src={rkIconStartWithOptions}
               className="rk-icon rk-icon-md me-2"
             />
             Start with options
           </Link>
+          {!supportLegacySessions && (
+            <UncontrolledTooltip target="start-legacy-session-with-options-container">
+              Starting sessions is no longer supported in Renku Legacy. Migrate
+              to Renku 2.0 to continue creating and managing your work.
+            </UncontrolledTooltip>
+          )}
         </li>
         {gitUrl && branch && (
           <SshDropdown fullPath={fullPath} gitUrl={gitUrl} branch={branch} />
@@ -226,10 +244,12 @@ function SessionActions({ className, session }: SessionActionsProps) {
     skip: !isResuming,
   });
   useEffect(() => {
-    if (isSuccessResumeSession && !isWaitingForResumedSession) {
+    if (isResuming && isSuccessResumeSession && !isWaitingForResumedSession) {
+      setIsResuming(false);
       navigate({ pathname: showSessionUrl });
     }
   }, [
+    isResuming,
     isSuccessResumeSession,
     isWaitingForResumedSession,
     navigate,
@@ -692,10 +712,10 @@ function ModifySessionModalContent({
   } = useGetResourcePoolsQuery({});
 
   const [currentSessionClass, setCurrentSessionClass] = useState<
-    ResourceClass | undefined
+    ResourceClassWithId | undefined
   >(undefined);
 
-  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
+  const onChange = useCallback((newValue: SingleValue<ResourceClassWithId>) => {
     if (newValue) {
       setCurrentSessionClass(newValue);
     }

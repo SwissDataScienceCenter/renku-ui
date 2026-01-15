@@ -32,13 +32,13 @@ import {
   DropdownMenu,
   DropdownToggle,
   Nav,
-  NavItem,
   NavbarToggler,
+  NavItem,
 } from "reactstrap";
 
-import { ExternalDocsLink } from "../../components/ExternalLinks";
-import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
+import { ExternalDocsLink } from "../../components/LegacyExternalLinks";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
+import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
@@ -65,7 +65,7 @@ function NavbarItemPlus() {
     <Dropdown isOpen={isOpen} toggle={toggleOpen} className="nav-item">
       <DropdownToggle
         nav
-        className={cx("nav-link", "fs-5")}
+        className={cx("nav-link", "fs-3")}
         data-cy="navbar-new-entity"
         id="plus-dropdown"
       >
@@ -94,7 +94,7 @@ function NavbarItemHelp() {
       toggle={toggleOpen}
       className="nav-item"
     >
-      <DropdownToggle nav className={cx("nav-link", "fs-5")}>
+      <DropdownToggle nav className={cx("nav-link", "fs-3")}>
         <QuestionCircle className="bi" id="helpDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu>

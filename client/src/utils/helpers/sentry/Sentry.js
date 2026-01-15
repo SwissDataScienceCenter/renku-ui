@@ -25,6 +25,7 @@
 
 import * as SentryLib from "@sentry/react";
 import { clamp } from "lodash-es";
+
 import { API_ERRORS } from "../../../api-client/errors";
 
 const NAMESPACE_DEFAULT = "unknown";

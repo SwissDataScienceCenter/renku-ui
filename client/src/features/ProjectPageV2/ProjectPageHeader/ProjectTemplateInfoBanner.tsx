@@ -15,21 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import cx from "classnames";
 import { useCallback, useState } from "react";
-import { Button, ListGroup, ModalBody, ModalHeader } from "reactstrap";
 import { Diagram3Fill } from "react-bootstrap-icons";
+import { Button, ListGroup, ModalBody, ModalHeader } from "reactstrap";
 
-import PrimaryAlert from "../../../components/PrimaryAlert";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
-
+import PrimaryAlert from "../../../components/PrimaryAlert";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
-import ProjectShortHandDisplay from "../../projectsV2/show/ProjectShortHandDisplay";
 import { useGetProjectsByProjectIdCopiesQuery } from "../../projectsV2/api/projectV2.api";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
-
+import ProjectShortHandDisplay from "../../projectsV2/show/ProjectShortHandDisplay";
 import useProjectPermissions from "../utils/useProjectPermissions.hook";
+
 import styles from "./ProjectTemplateInfoBanner.module.css";
 
 interface ProjectCopyListModalProps {
@@ -72,7 +72,7 @@ export function ProjectCopyListModal({
 }
 
 function ProjectTemplateEditorBanner({ project }: { project: Project }) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
   const { data: copies } = useGetProjectsByProjectIdCopiesQuery({
     projectId: project.id,
   });
@@ -146,7 +146,7 @@ export default function ProjectTemplateInfoBanner({
 }: {
   project: Project;
 }) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
   const userPermissions = useProjectPermissions({ projectId: project.id });
   if (currentUser == null) return null;
   if (project.template_id === null) return null;

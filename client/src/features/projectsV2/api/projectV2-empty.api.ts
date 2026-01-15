@@ -22,7 +22,7 @@ import queryString from "query-string";
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const projectV2EmptyApi = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data",
+    baseUrl: "/api/data",
     paramsSerializer: (params: Record<string, unknown>) =>
       // NOTE: arrayFormat: none will serialize arrays by using duplicate keys
       // like foo: [1, 2, 3] => 'foo=1&foo=2&foo=3' -> this is compatible

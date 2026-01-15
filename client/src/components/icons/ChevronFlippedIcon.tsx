@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { ChevronDown, IconProps } from "react-bootstrap-icons";
+
 import styles from "./ChevronFlippedIcon.module.scss";
 
 interface ChevronFlippedIconProps extends IconProps {

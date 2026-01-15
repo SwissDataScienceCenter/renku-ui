@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
@@ -41,22 +42,20 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { TimeCaption } from "../../../components/TimeCaption";
+import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
+import { TimeCaption } from "../../../components/TimeCaption";
+import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
-import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
-import {
-  useGetResourceClassByIdQuery,
-  useGetResourcePoolsQuery,
-} from "../../dataServices/computeResources.api";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import { SessionV2Actions, getShowSessionUrlByProject } from "../SessionsV2";
-import StartSessionButton from "../StartSessionButton";
+import {
+  useGetClassesByClassIdQuery,
+  useGetResourcePoolsQuery,
+} from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
@@ -68,7 +67,9 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
+import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
+import StartSessionButton from "../StartSessionButton";
 import EnvironmentCard from "./EnvironmentCard";
 import EnvVariablesCard from "./EnvVariablesCard";
 import EnvVariablesModal from "./EnvVariablesModal";
@@ -247,7 +248,11 @@ export function SessionView({
   const {
     data: launcherResourceClass,
     isLoading: isLoadingLauncherResourceClass,
-  } = useGetResourceClassByIdQuery(launcher?.resource_class_id ?? skipToken);
+  } = useGetClassesByClassIdQuery(
+    launcher?.resource_class_id
+      ? { classId: `${launcher.resource_class_id}` }
+      : skipToken
+  );
 
   const totalSession = sessions ? Object.keys(sessions).length : 0;
   const title = launcher ? launcher.name : "Orphan Session";
@@ -345,7 +350,7 @@ export function SessionView({
           {description && <p className="m-0">{description}</p>}
 
           <div className={cx("d-flex", "flex-column", "gap-2")}>
-            <h4 className="mb-0">Launched Session</h4>
+            <h3 className="mb-0">Launched Session</h3>
             {totalSession > 0 ? (
               sessions &&
               Object.entries(sessions).map(([key, session]) => (
@@ -371,13 +376,14 @@ export function SessionView({
           {launcher && (
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-                <h4 className="my-auto">Session Environment</h4>
+                <h3 className="my-auto">Session Environment</h3>
                 <PermissionsGuard
                   disabled={null}
                   enabled={
                     <>
                       <Button
                         color="outline-primary"
+                        data-cy="session-view-modify-session-environment-button"
                         id="modify-session-environment-button"
                         onClick={toggle}
                         size="sm"
@@ -404,7 +410,12 @@ export function SessionView({
           )}
           <div>
             <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-              <h4 className="my-auto">Default Resource Class</h4>
+              <h3
+                className="my-auto"
+                data-cy="session-view-resource-class-heading"
+              >
+                Default Resource Class
+              </h3>
               {launcher && (
                 <PermissionsGuard
                   disabled={null}
@@ -416,6 +427,7 @@ export function SessionView({
                         onClick={toggleModifyResources}
                         size="sm"
                         tabIndex={0}
+                        data-cy="session-view-resource-class-edit-button"
                       >
                         <Pencil className="bi" />
                       </Button>
@@ -460,7 +472,7 @@ export function SessionView({
           </div>
 
           <div>
-            <h4>Default URL</h4>
+            <h3>Default URL</h3>
             <p className="mb-2">
               The default URL specifies the URL pathname on the session to go to
               upon launch
@@ -481,10 +493,10 @@ export function SessionView({
 
           <div>
             <div className={cx("align-items-center", "d-flex", "mb-2")}>
-              <h4 className={cx("mb-0", "me-2")}>
+              <h3 className={cx("mb-0", "me-2")}>
                 <Database className={cx("me-1", "bi")} />
                 Data Connectors
-              </h4>
+              </h3>
               <Badge>{dataConnectors?.length || 0}</Badge>
             </div>
             {dataConnectors && dataConnectors.length > 0 ? (
@@ -505,12 +517,12 @@ export function SessionView({
 
           <div>
             <div className={cx("align-items-center", "d-flex", "mb-2")}>
-              <h4
+              <h3
                 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
               >
                 <FileCode className={cx("me-1", "bi")} />
                 Code Repositories
-              </h4>
+              </h3>
               {project?.repositories?.length != null && (
                 <Badge>{project?.repositories?.length}</Badge>
               )}
@@ -544,10 +556,10 @@ export function SessionView({
                   "mb-2"
                 )}
               >
-                <h4 className={cx("mb-0", "me-2")}>
+                <h3 className={cx("mb-0", "me-2")}>
                   <Braces className={cx("me-1", "bi")} />
                   Environment Variables
-                </h4>
+                </h3>
                 <PermissionsGuard
                   disabled={null}
                   enabled={

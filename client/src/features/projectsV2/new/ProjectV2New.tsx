@@ -25,11 +25,12 @@ import {
   Button,
   Form,
   FormGroup,
-  Label,
+  FormText,
   ModalBody,
   ModalFooter,
 } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -38,7 +39,6 @@ import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
-import { useGetUserQuery } from "../../usersV2/api/users.api";
 import { usePostProjectsMutation } from "../api/projectV2.enhanced-api";
 import ProjectDescriptionFormField from "../fields/ProjectDescriptionFormField";
 import ProjectNameFormField from "../fields/ProjectNameFormField";
@@ -49,7 +49,7 @@ import { PROJECT_CREATION_HASH } from "./createProjectV2.constants";
 import { NewProjectForm } from "./projectV2New.types";
 
 export default function ProjectV2New() {
-  const { data: userInfo, isLoading: userLoading } = useGetUserQuery();
+  const { data: userInfo, isLoading: userLoading } = useGetUserQueryState();
 
   const [hash, setHash] = useLocationHash();
   const showProjectCreationModal = hash === PROJECT_CREATION_HASH;
@@ -199,17 +199,16 @@ function ProjectV2CreationDetails() {
                 formId={formId}
                 name="name"
               />
-              <div>
-                <div className="mb-1">
-                  <ProjectNamespaceFormField
-                    control={control}
-                    ensureNamespace={defaultNamespace}
-                    entityName={`${formId}-project`}
-                    errors={errors}
-                    name="namespace"
-                  />
-                </div>
 
+              {/* No margin bottom because the SlugPreviewFormField is larger */}
+              <div>
+                <ProjectNamespaceFormField
+                  control={control}
+                  ensureNamespace={defaultNamespace}
+                  entityName={`${formId}-project`}
+                  errors={errors}
+                  name="namespace"
+                />
                 <SlugPreviewFormField
                   compact={true}
                   control={control}
@@ -241,10 +240,10 @@ function ProjectV2CreationDetails() {
               />
 
               <div>
-                <Label className="mb-0" for="projectV2NewForm-users">
+                <FormText className="mb-0" color="body">
                   <InfoCircle className="bi" /> You can add members after
                   creating the project.
-                </Label>
+                </FormText>
               </div>
 
               {result.error && <RtkOrNotebooksError error={result.error} />}

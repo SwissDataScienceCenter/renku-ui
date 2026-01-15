@@ -30,13 +30,14 @@ import {
   Pencil,
   PersonBadge,
 } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import {
   Button,
   Offcanvas,
   OffcanvasBody,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { WarnAlert } from "../../../components/Alert";
@@ -200,10 +201,10 @@ function DataConnectorViewAccess({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-access-section"
     >
-      <h4 className="mb-4">
+      <h3 className="mb-4">
         <PersonBadge className={cx("bi", "me-1")} />
         Credentials
-      </h4>
+      </h3>
       <div>
         <DataConnectorPropertyValue title="Requires credentials">
           <span data-cy="requires-credentials-section">
@@ -313,10 +314,10 @@ function DataConnectorViewConfiguration({
       data-cy="data-connector-configuration-section"
     >
       <div className={cx("d-flex", "justify-content-between", "mb-4")}>
-        <h4>
+        <h3>
           <Gear className={cx("bi", "me-1")} />
           {scope === "global" ? "Configuration" : "Connection Information"}
-        </h4>
+        </h3>
         <PermissionsGuard
           disabled={null}
           enabled={
@@ -394,10 +395,10 @@ function DataConnectorViewProjects({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-projects-section"
     >
-      <h4 className="mb-4">
+      <h3 className="mb-4">
         <Folder className={cx("bi", "me-1")} />
         Projects
-      </h4>
+      </h3>
       <div>
         {isLoading && <p>Retrieving projects...</p>}
         {!isLoading && projects.length === 0 && <p>None</p>}
@@ -482,15 +483,21 @@ function DataConnectorViewMetadata({
     [dataConnector.namespace, dataConnector.slug, scope]
   );
 
-  const doiReference = useMemo(
-    () =>
+  const doiReference = useMemo(() => {
+    const doi =
       scope === "global" &&
       dataConnector.storage.configuration["doi"] &&
       typeof dataConnector.storage.configuration["doi"] === "string"
         ? parseDoi(dataConnector.storage.configuration["doi"])
-        : null,
-    [dataConnector.storage.configuration, scope]
-  );
+        : null;
+    if (doi) {
+      return doi;
+    }
+    if (dataConnector.doi) {
+      return parseDoi(dataConnector.doi);
+    }
+    return null;
+  }, [dataConnector.storage.configuration, scope, dataConnector.doi]);
 
   const sortedKeywords = useMemo(() => {
     if (!dataConnector.keywords) return [];
@@ -619,7 +626,9 @@ function DataConnectorViewMetadata({
         <DataConnectorPropertyValue title="Keywords">
           <KeywordContainer>
             {sortedKeywords.map((keyword, index) => (
-              <KeywordBadge key={index}>{keyword}</KeywordBadge>
+              <KeywordBadge key={index} searchKeyword={keyword}>
+                {keyword}
+              </KeywordBadge>
             ))}
           </KeywordContainer>
         </DataConnectorPropertyValue>

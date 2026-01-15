@@ -30,17 +30,17 @@ import { Github } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router";
 import { Col, Nav, NavItem, Row } from "reactstrap";
 
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import {
   ExternalDocsLink,
   ExternalIconLink,
-} from "../components/ExternalLinks";
+} from "../components/LegacyExternalLinks";
 import RenkuNavLinkV2 from "../components/RenkuNavLinkV2";
+import StatusSummary from "../features/platform/components/StatusSummary";
 import { isStatusConfigured } from "../statuspage";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import AppContext from "../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
-
-import StatusSummary from "../features/platform/components/StatusSummary";
 import HelpRelease from "./HelpRelease";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
@@ -56,29 +56,39 @@ function HelpNav({ statuspageId }: HelpNavProps) {
   return (
     <Nav pills className={"nav-pills-underline"}>
       <NavItem>
-        <RenkuNavLinkV2 end to="/help">
+        <RenkuNavLinkV2 end to={ABSOLUTE_ROUTES.v1.help.root}>
           Getting Help
         </RenkuNavLinkV2>
       </NavItem>
       <NavItem>
-        <RenkuNavLinkV2 to="/help/docs">Documentation</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.documentation}>
+          Documentation
+        </RenkuNavLinkV2>
       </NavItem>
       {isStatusConfigured(statuspageId) && (
         <NavItem>
-          <RenkuNavLinkV2 to="/help/status">Status</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.status}>
+            Status
+          </RenkuNavLinkV2>
         </NavItem>
       )}
       <NavItem>
-        <RenkuNavLinkV2 to="/help/release">Release Information</RenkuNavLinkV2>
+        <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.release}>
+          Release Information
+        </RenkuNavLinkV2>
       </NavItem>
       {termsConfigured && (
         <NavItem>
-          <RenkuNavLinkV2 to="/help/tos">Terms of Use</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.tos}>
+            Terms of Use
+          </RenkuNavLinkV2>
         </NavItem>
       )}
       {privacyPolicyConfigured && (
         <NavItem>
-          <RenkuNavLinkV2 to="/help/privacy">Privacy Policy</RenkuNavLinkV2>
+          <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v1.help.privacy}>
+            Privacy Policy
+          </RenkuNavLinkV2>
         </NavItem>
       )}
     </Nav>

@@ -31,6 +31,7 @@ function LoggedOutDashboard() {
   return (
     <div className="rk-dashboard">
       <DashboardMessage />
+      <SunsetBanner />
       <div className="mt-5">
         <LoginAlert
           logged={false}

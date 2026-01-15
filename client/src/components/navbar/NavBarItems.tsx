@@ -37,6 +37,7 @@ import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem.tsx";
 import { User } from "../../model/renkuModels.types";
 import NotificationsMenu from "../../notifications/NotificationsMenu";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
@@ -44,11 +45,10 @@ import {
   getActiveProjectPathWithNamespace,
   gitLabUrlFromProfileUrl,
 } from "../../utils/helpers/HelperFunctions";
-import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
-import { Loader } from "../Loader";
 import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
+import { ExternalDocsLink, ExternalLink } from "../LegacyExternalLinks.tsx";
+import { Loader } from "../Loader";
 
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import styles from "./NavBarItem.module.scss";
 
 export function RenkuToolbarItemPlus() {
@@ -286,9 +286,9 @@ export function RenkuToolbarItemUser({
   const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   const gatewayURL = params.GATEWAY_URL;
-  const uiserverURL = params.UISERVER_URL;
-  const redirect_url = encodeURIComponent(params.BASE_URL);
-  const isLegacyEnabled = params.LEGACY_SUPPORT.enabled;
+  const logoutURL = `${gatewayURL}/auth/logout?redirect_url=${encodeURIComponent(
+    params.BASE_URL
+  )}`;
 
   const loginUrl = useLoginUrl({ params });
 
@@ -309,7 +309,7 @@ export function RenkuToolbarItemUser({
   return (
     <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
       <DropdownToggle
-        className={cx("nav-link", "fs-5")}
+        className={cx("nav-link", "fs-3")}
         data-cy="navbar-toggle-user-menu"
         id="profile-dropdown"
         nav
@@ -347,14 +347,6 @@ export function RenkuToolbarItemUser({
             >
               Integrations
             </Link>
-            {isLegacyEnabled && (
-              <>
-                <DropdownItem divider />
-                <Link to={ABSOLUTE_ROUTES.v1.root} className="dropdown-item">
-                  Go to <span className="fw-bold">Renku Legacy</span>
-                </Link>
-              </>
-            )}
           </>
         )}
 
@@ -371,7 +363,7 @@ export function RenkuToolbarItemUser({
         <a
           className="dropdown-item"
           data-cy="navbar-logout"
-          href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
+          href={logoutURL}
           id="logout-link"
           onClick={() => {
             LoginHelper.notifyLogout();

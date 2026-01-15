@@ -28,6 +28,7 @@ import {
   VisibilitiesFilter,
   VisibilityFilter,
 } from "../visibilityFilter/VisibilityFilter";
+
 import "./EntitySearchFilter.css";
 
 /**

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { APIError, API_ERRORS, throwAPIErrors, throwAuthError } from "./errors";
+import { API_ERRORS, APIError, throwAPIErrors, throwAuthError } from "./errors";
 
 const RETURN_TYPES = {
   json: "json",

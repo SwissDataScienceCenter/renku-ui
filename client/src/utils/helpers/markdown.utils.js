@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
+import DOMPurify from "dompurify";
 import showdown from "showdown";
 import showdownHighlight from "showdown-highlight";
 // Version 0.8.0 of showdown-katex breaks the tests so do not update the library
 import showdownKatex from "showdown-katex";
 import showdownMermaid from "showdown-mermaid";
-import DOMPurify from "dompurify";
 
 // ! This functions should only be imported from src/components/markdown/RenkuMarkdown.js
 // ! If imported multiple times, the main bundle will contain showdown and

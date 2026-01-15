@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { generatePath, Link } from "react-router";
+
 import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -54,16 +55,12 @@ export default function ProjectShortHandDisplay({
         )}
       >
         <UserAvatar namespace={project.namespace} size="sm" />
-        <p className={cx("mb-0", "text-truncate", "text-muted")}>
-          {project.namespace}
-        </p>
+        <p className={cx("mb-0", "text-truncate")}>{project.namespace}</p>
       </div>
 
       {project.description && (
         <div className={cx("d-flex", "flex-column", "flex-md-row")}>
-          <p className={cx("mb-0", "text-truncate", "text-muted")}>
-            {project.description}
-          </p>
+          <p className={cx("mb-0", "text-truncate")}>{project.description}</p>
         </div>
       )}
 

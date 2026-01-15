@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import {
@@ -28,7 +29,7 @@ import {
   Person,
   Question,
 } from "react-bootstrap-icons";
-import { Link, generatePath, useLocation } from "react-router";
+import { generatePath, Link, useLocation } from "react-router";
 import {
   Badge,
   Card,
@@ -39,7 +40,6 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
@@ -51,12 +51,12 @@ import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { useGetDataConnectorsByDataConnectorIdQuery } from "../../dataConnectorsV2/api/data-connectors.api";
 import DataConnectorView from "../../dataConnectorsV2/components/DataConnectorView";
 import {
+  searchV2Api,
   type DataConnector,
   type Group,
   type Project,
   type SearchEntity,
   type User,
-  searchV2Api,
 } from "../api/searchV2Api.api";
 import useClampSearchPage from "../hooks/useClampSearchPage.hook";
 import { toDisplayName } from "../searchV2.utils";
@@ -83,7 +83,7 @@ export default function SearchV2Results() {
     <>
       <Row data-cy="search-results">
         <Col className="d-sm-none" xs={12}>
-          <h4>Results</h4>
+          <h2>Results</h2>
         </Col>
         <Col xs={12}>
           <SearchV2ResultsContent />
@@ -197,11 +197,11 @@ function SearchV2CardTitle({
   return (
     <CardHeader className={cx("d-flex", "gap-2")}>
       <div>
-        <h5 className="mb-1">
+        <h3 className="mb-1">
           <Link data-cy="search-card-entity-link" to={entityUrl}>
             {name}
           </Link>
-        </h5>
+        </h3>
         <p className="mb-0">
           {namespace == null || namespaceUrl == null ? (
             <span className="fst-italic">
@@ -453,7 +453,6 @@ function SearchV2ResultDataConnector({
         namespace={namespace?.path ?? ""}
         namespaceUrl={namespaceUrl}
       />
-      {/* <CardBody /> */}
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
         {description && <ClampedParagraph>{description}</ClampedParagraph>}
         <div
@@ -490,7 +489,7 @@ function SearchV2ResultsUnknown() {
   return (
     <SearchV2ResultsContainer>
       <CardHeader>
-        <h5 className="mb-0">Unknown entity</h5>
+        <h3 className="mb-0">Unknown entity</h3>
       </CardHeader>
       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
         <p className="mb-0">This entity type is not supported yet.</p>
@@ -499,7 +498,7 @@ function SearchV2ResultsUnknown() {
   );
 }
 
-function ShowGlobalDataConnector() {
+export function ShowGlobalDataConnector() {
   const [hash, setHash] = useLocationHash();
 
   const dataConnectorId = useMemo(

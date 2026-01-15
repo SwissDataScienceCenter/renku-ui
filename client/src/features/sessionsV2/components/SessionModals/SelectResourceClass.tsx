@@ -35,17 +35,17 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import {
-  useGetResourceClassByIdQuery,
-  useGetResourcePoolsQuery,
-} from "../../../dataServices/computeResources.api";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
+import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../session/startSessionOptions.constants";
+} from "~/features/session/startSessionOptions.constants";
+import {
+  useGetClassesByClassIdQuery,
+  useGetResourcePoolsQuery,
+  type ResourceClassWithIdFiltered,
+} from "../../api/computeResources.api";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
@@ -53,7 +53,10 @@ import {
 
 interface SelectResourceClassModalProps {
   isOpen: boolean;
-  onContinue: (env: ResourceClass, diskStorage: number | undefined) => void;
+  onContinue: (
+    env: ResourceClassWithIdFiltered,
+    diskStorage: number | undefined
+  ) => void;
   projectUrl: string;
   resourceClassId?: number | null;
   isCustom: boolean;
@@ -72,7 +75,9 @@ export function SelectResourceClassModal({
   } = useGetResourcePoolsQuery({});
 
   const { data: launcherClass, isLoading: isLoadingLauncherClass } =
-    useGetResourceClassByIdQuery(resourceClassId ?? skipToken);
+    useGetClassesByClassIdQuery(
+      resourceClassId ? { classId: `${resourceClassId}` } : skipToken
+    );
 
   const {
     control,
@@ -145,7 +150,7 @@ export function SelectResourceClassModal({
 
   return (
     <Modal centered isOpen={isOpen} size="lg">
-      <ModalHeader>
+      <ModalHeader tag="h2">
         {isCustom
           ? "Modify session launch before start"
           : "Complete missing information for session launch"}
@@ -214,14 +219,14 @@ export function SelectResourceClassModal({
                       Gigabytes
                     </UncontrolledTooltip>
                   </InputGroup>
-                  <FormText>
-                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
-                    {watchCurrentSessionClass.max_storage} GB
-                  </FormText>
                   <div className="invalid-feedback">
                     {error?.message ||
                       "Please provide a valid value for disk storage."}
                   </div>
+                  <FormText>
+                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                    {watchCurrentSessionClass.max_storage} GB
+                  </FormText>
                 </>
               )}
               rules={{
@@ -264,6 +269,6 @@ export function SelectResourceClassModal({
 }
 
 interface SelectResourceClassForm {
-  resourceClass: ResourceClass | undefined;
+  resourceClass: ResourceClassWithIdFiltered | undefined;
   diskStorage: number | undefined;
 }

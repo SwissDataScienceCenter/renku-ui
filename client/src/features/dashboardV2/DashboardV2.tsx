@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 import {
   Calendar3Week,
   Eye,
@@ -26,7 +27,6 @@ import {
   Folder,
   Megaphone,
   People,
-  PersonFillExclamation,
   PlayCircle,
   PlusLg,
   PlusSquare,
@@ -43,16 +43,12 @@ import {
   Row,
 } from "reactstrap";
 
-import AppContext from "~/utils/context/appContext";
-
-import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
+import { NEW_DOCS_DOCUMENTATION } from "~/utils/constants/NewDocs";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
-import ProjectMigrationBanner from "../projectMigrationV2/ProjectMigrationBanner";
 import {
   GetGroupsApiResponse,
   GetProjectsApiResponse,
@@ -63,23 +59,14 @@ import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constan
 import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
-import SearchV2Bar from "../searchV2/components/SearchV2Bar";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
-import { useGetUserQuery } from "../usersV2/api/users.api";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
 
 import DashboardStyles from "./DashboardV2.module.scss";
 
 export default function DashboardV2() {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
-  const { params } = useContext(AppContext);
-  const legacySupported = params?.LEGACY_SUPPORT.enabled ?? true;
-
-  if (!userLogged) return <AnonymousDashboard />;
-
   return (
     <div className={cx("position-relative", "d-flex")}>
       <HeaderDashboard />
@@ -105,7 +92,6 @@ export default function DashboardV2() {
             >
               <SessionsDashboard />
               <ProjectsDashboard />
-              {legacySupported && <ProjectMigrationBanner />}
               <FooterDashboard />
             </Col>
           </Row>
@@ -125,9 +111,9 @@ function HeaderDashboard() {
         "bg-navy"
       )}
     >
-      <div
-        className={cx("container-xxl", DashboardStyles.DashboardHeaderImg)}
-      ></div>
+      <div className={cx("container-xxl", DashboardStyles.DashboardHeaderImg)}>
+        <h1 className="visually-hidden">Renku Dashboard</h1>
+      </div>
     </div>
   );
 }
@@ -142,7 +128,7 @@ function FooterDashboard() {
         </FooterDashboardCard>
       </Col>
       <Col xs={12} lg={6} xl={3}>
-        <FooterDashboardCard url="https://renku.notion.site/Documentation-db396cfc9a664cd2b161e4c6068a5ec9">
+        <FooterDashboardCard url={NEW_DOCS_DOCUMENTATION}>
           <FileEarmarkText size={27} />
           Documentation
         </FooterDashboardCard>
@@ -198,23 +184,6 @@ export function FooterDashboardCard({
     </Card>
   );
 }
-function DashboardSearch() {
-  return (
-    <Row>
-      <Col xs={12}>
-        <Card className="bg-white">
-          <CardHeader>
-            <h3>Explore Renkulab</h3>
-            <p>Explore projects on RenkuLab.</p>
-          </CardHeader>
-          <CardBody>
-            <SearchV2Bar />
-          </CardBody>
-        </Card>
-      </Col>
-    </Row>
-  );
-}
 
 function ProjectsDashboard() {
   const { data, error, isLoading } = useGetProjectsQuery({
@@ -229,10 +198,10 @@ function ProjectsDashboard() {
     <Card data-cy="projects-container">
       <CardHeader className={cx("d-flex", "gap-2")}>
         <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("mb-0", "me-2")}>
+          <h2 className={cx("mb-0", "me-2")}>
             <Folder className={cx("bi", "me-1")} />
             My projects
-          </h4>
+          </h2>
           <Badge>{data?.total ?? 0}</Badge>
         </div>
         {hasProjects && (
@@ -318,10 +287,10 @@ function GroupsDashboard() {
     <Card data-cy="groups-container">
       <CardHeader className={cx("d-flex", "gap-2")}>
         <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("mb-0", "me-2")}>
+          <h2 className={cx("mb-0", "me-2")}>
             <People className={cx("bi", "me-1")} />
             My groups
-          </h4>
+          </h2>
           <Badge>{data?.total ?? 0}</Badge>
         </div>
         {hasGroups && (
@@ -343,7 +312,7 @@ function GroupsDashboard() {
 }
 
 function UserDashboard() {
-  const { data: userInfo, isLoading } = useGetUserQuery();
+  const { data: userInfo, isLoading } = useGetUserQueryState();
 
   if (!userInfo?.isLoggedIn || isLoading) {
     return null;
@@ -366,118 +335,18 @@ function UserDashboard() {
         )}
       >
         <UserAvatar namespace={userInfo.username} size="lg" />
-        <h3 className={cx("text-center", "mb-0")}>
+        <h2 className={cx("fs-1", "mb-0", "text-center")}>
           {userInfo.first_name} {userInfo.last_name}
-        </h3>
+        </h2>
         <p className="mb-0">
           <Link
             to={userPageUrl}
             className={cx("link-primary", "stretched-link")}
+            data-cy="user-namespace-link"
           >
             @{userInfo.username ?? "unknown"}
           </Link>
         </p>
-      </CardBody>
-    </Card>
-  );
-}
-
-function AnonymousDashboard() {
-  return (
-    <div className={cx("position-relative", "d-flex")}>
-      <HeaderDashboard />
-      <div
-        className={cx("container-xxl", "px-2", "px-sm-3", "px-xxl-0", "my-5")}
-      >
-        <div className={cx("d-flex", "flex-column", "gap-4", "mb-4")}>
-          <Row className="g-4">
-            <Col
-              xs={12}
-              lg={4}
-              xl={3}
-              className={cx("d-flex", "flex-column", "gap-4")}
-            >
-              <LoginCard />
-            </Col>
-            <Col
-              xs={12}
-              lg={8}
-              xl={9}
-              className={cx(
-                "d-flex",
-                "flex-column",
-                "gap-4",
-                "gap-xl-0",
-                "justify-content-between"
-              )}
-            >
-              <DashboardSearch />
-              <FooterDashboard />
-            </Col>
-          </Row>
-        </div>
-      </div>
-    </div>
-  );
-}
-function LoginCard() {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
-  const loginUrl = useLoginUrl();
-  if (userLogged) {
-    return null;
-  }
-  return (
-    <Card data-cy="user-container" className={cx("bg-primary", "text-white")}>
-      <CardBody
-        className={cx(
-          "d-flex",
-          "flex-column",
-          "align-items-center",
-          "gap-5",
-          "my-5"
-        )}
-      >
-        <div
-          className={cx("d-flex", "flex-column", "align-items-center", "gap-2")}
-        >
-          <div
-            className={cx(
-              "border",
-              "rounded-pill",
-              "bg-white",
-              "text-primary",
-              DashboardStyles.AnonymousAvatar,
-              "d-flex",
-              "justify-content-center",
-              "align-items-center"
-            )}
-          >
-            <PersonFillExclamation size={48} />
-          </div>
-          <p className="mb-0">You are not logged in.</p>
-        </div>
-        <div
-          className={cx(
-            "d-flex",
-            "flex-column",
-            "align-items-center",
-            "gap-2",
-            "text-center"
-          )}
-        >
-          <a
-            className={cx("btn", "bg-white", "text-primary")}
-            id="login-button"
-            href={loginUrl.href}
-          >
-            Log in
-          </a>
-          <p className="mb-0">
-            To create projects, groups and launch sessions.
-          </p>
-        </div>
       </CardBody>
     </Card>
   );
@@ -551,10 +420,10 @@ function SessionsDashboard() {
     <Card data-cy="sessions-container">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
-          <h4 className={cx("mb-0", "me-2")}>
+          <h2 className={cx("mb-0", "me-2")}>
             <PlayCircle className={cx("me-1", "bi")} />
             My sessions
-          </h4>
+          </h2>
           <Badge>{totalSessions}</Badge>
         </div>
       </CardHeader>

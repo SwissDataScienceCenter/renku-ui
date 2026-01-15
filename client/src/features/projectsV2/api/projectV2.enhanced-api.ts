@@ -1,18 +1,7 @@
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
 import { usersApi } from "../../usersV2/api/users.api";
-
 import { projectAndNamespaceApi as api } from "./namespace.api";
-
-import type {
-  GetProjectsApiArg,
-  GetProjectsApiResponse as GetProjectsApiResponseOrig,
-  GetProjectsByProjectIdApiArg,
-  GetProjectsByProjectIdApiResponse,
-  ProjectsList,
-  SessionSecretSlot,
-} from "./projectV2.api";
-
 import type {
   GetGroupsApiArg,
   GetGroupsApiResponse as GetGroupsApiResponseOrig,
@@ -21,6 +10,14 @@ import type {
   GroupResponseList,
   NamespaceResponseList,
 } from "./namespace.api";
+import type {
+  GetProjectsApiArg,
+  GetProjectsApiResponse as GetProjectsApiResponseOrig,
+  GetProjectsByProjectIdApiArg,
+  GetProjectsByProjectIdApiResponse,
+  ProjectsList,
+  SessionSecretSlot,
+} from "./projectV2.api";
 
 export interface GetGroupsApiResponse extends AbstractKgPaginatedResponse {
   groups: GetGroupsApiResponseOrig;
@@ -181,7 +178,6 @@ const injectedApi = api.injectEndpoints({
 
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: [
-    "DataConnectors",
     "Group",
     "GroupMembers",
     "Namespace",
@@ -254,9 +250,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     getProjectsByProjectIdCopies: {
       providesTags: ["Project"],
-    },
-    getProjectsByProjectIdDataConnectorLinks: {
-      providesTags: ["DataConnectors"],
     },
     getProjectsByProjectIdMembers: {
       providesTags: ["ProjectMembers"],
@@ -397,9 +390,6 @@ export const {
   useDeleteSessionSecretSlotsBySlotIdMutation,
   useGetProjectsByProjectIdSessionSecretsQuery,
   usePatchProjectsByProjectIdSessionSecretsMutation,
-
-  // data connector hooks
-  useGetProjectsByProjectIdDataConnectorLinksQuery,
 
   // group hooks
   useGetGroupsPagedQuery: useGetGroupsQuery,

@@ -26,7 +26,7 @@
 import { describe, expect, it } from "vitest";
 
 import { testClient as client } from "../api-client";
-import { StateModel, globalSchema } from "../model";
+import { globalSchema, StateModel } from "../model";
 import { mapProjectFeatures } from "./Project";
 import { filterPaths } from "./Project.present";
 import { ProjectCoordinator } from "./Project.state";

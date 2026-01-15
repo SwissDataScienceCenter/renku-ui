@@ -44,22 +44,24 @@ import {
   Row,
 } from "reactstrap";
 
-import { WarnAlert } from "../../../../components/Alert";
-import { Loader } from "../../../../components/Loader";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
-import { User } from "../../../../model/renkuModels.types";
-import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../../../notifications/notifications.types";
-import AppContext from "../../../../utils/context/appContext";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { ResourceClass } from "../../../dataServices/dataServices.types";
+import { WarnAlert } from "~/components/Alert";
+import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { Loader } from "~/components/Loader";
+import { User } from "~/model/renkuModels.types";
+import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
+import { NotificationsManager } from "~/notifications/notifications.types";
+import AppContext from "~/utils/context/appContext";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
-import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
+import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
 import { SessionStatusState } from "../../../session/sessions.types";
 import { useWaitForSessionStatusV2 } from "../../../session/useWaitForSessionStatus.hook";
+import {
+  useGetResourcePoolsQuery,
+  type ResourceClassWithId,
+} from "../../api/computeResources.api";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
@@ -73,6 +75,7 @@ import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
 } from "../SessionModals/ResourceClassWarning";
+import ShutdownSessionContent from "../SessionModals/ShoutdownSessionContent";
 
 interface ActiveSessionButtonProps {
   className?: string;
@@ -444,6 +447,8 @@ export default function ActiveSessionButton({
         isStopping={isStopping}
         onStopSession={onStopSession}
         sessionName={session.name}
+        sessionProjectId={session.project_id}
+        sessionLauncherId={session.launcher_id}
         status={status}
         toggleModal={toggleStopSession}
       />
@@ -464,14 +469,17 @@ interface ConfirmDeleteModalProps {
   isStopping: boolean;
   onStopSession: () => void;
   sessionName: string;
+  sessionLauncherId?: string;
+  sessionProjectId: string;
   status: SessionStatusState;
   toggleModal: () => void;
 }
-
 function ConfirmDeleteModal({
   isOpen,
   isStopping,
   onStopSession,
+  sessionLauncherId,
+  sessionProjectId,
   toggleModal,
 }: ConfirmDeleteModalProps) {
   const onClick = useCallback(() => {
@@ -485,16 +493,10 @@ function ConfirmDeleteModal({
         Shut Down Session
       </ModalHeader>
       <ModalBody>
-        <Row>
-          <Col>
-            <p className="mb-1">
-              Are you sure you want to shut down this session?
-            </p>
-            <p className="fw-bold">
-              Shutting down a session will permanently remove any unsaved work.
-            </p>
-          </Col>
-        </Row>
+        <ShutdownSessionContent
+          sessionLauncherId={sessionLauncherId}
+          sessionProjectId={sessionProjectId}
+        />
       </ModalBody>
       <ModalFooter>
         <Button
@@ -512,7 +514,8 @@ function ConfirmDeleteModal({
           type="submit"
           onClick={onClick}
         >
-          <Trash className={cx("bi", "me-1")} /> Shut down this session
+          <Trash className={cx("bi", "me-1")} />
+          Shut down session
         </Button>
       </ModalFooter>
     </Modal>
@@ -580,10 +583,10 @@ function ModifySessionModalContent({
   } = useGetResourcePoolsQuery({});
 
   const [currentSessionClass, setCurrentSessionClass] = useState<
-    ResourceClass | undefined
+    ResourceClassWithId | undefined
   >(undefined);
 
-  const onChange = useCallback((newValue: SingleValue<ResourceClass>) => {
+  const onChange = useCallback((newValue: SingleValue<ResourceClassWithId>) => {
     if (newValue) {
       setCurrentSessionClass(newValue);
     }
@@ -642,14 +645,14 @@ function ModifySessionModalContent({
         <Row>
           <Col>
             {message}
-            <p>
+            <div className="mb-3">
               <span className={cx("fw-bold", "me-3")}>Current resources:</span>
               <span>
                 <SessionRowResourceRequests
                   resourceRequests={resources?.requests}
                 />
               </span>
-            </p>
+            </div>
             <div className="field-group">{selector}</div>
           </Col>
         </Row>

@@ -17,6 +17,7 @@
  */
 
 import { Briefcase, CardList, Diagram3, HddStack } from "react-bootstrap-icons";
+
 import { EntityType, WorkflowType } from "./entities.types";
 
 /**

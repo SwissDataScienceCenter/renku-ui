@@ -17,4 +17,5 @@
  */
 
 import { QuickNavContainer as QuickNav } from "./QuickNav.container";
+
 export default QuickNav;

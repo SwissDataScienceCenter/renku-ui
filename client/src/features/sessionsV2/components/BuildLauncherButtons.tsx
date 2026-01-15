@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
@@ -23,7 +24,8 @@ import {
   FileEarmarkText,
   XOctagon,
 } from "react-bootstrap-icons";
-import { Button, ButtonGroup } from "reactstrap";
+import { Button, ButtonGroup, DropdownItem } from "reactstrap";
+
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import {
@@ -36,6 +38,22 @@ import {
   BuildActionsProps,
   BuildLogsModal,
 } from "./BuildStatusComponents";
+
+export function RebuildLauncherDropdownItem({ launcher }: BuildActionsProps) {
+  const [postBuild] = usePostBuildMutation();
+  const triggerBuild = useCallback(() => {
+    postBuild({ environmentId: launcher.environment.id });
+  }, [launcher.environment.id, postBuild]);
+
+  if (launcher.environment.environment_image_source !== "build") return null;
+
+  return (
+    <DropdownItem data-cy="session-view-menu-rebuild" onClick={triggerBuild}>
+      <BootstrapReboot className={cx("bi", "me-1")} />
+      Rebuild
+    </DropdownItem>
+  );
+}
 
 export default function BuildLauncherButtons({
   launcher,
@@ -104,16 +122,18 @@ export default function BuildLauncherButtons({
     </>
   ) : (
     <>
-      <Button
-        className="text-nowrap"
-        color="outline-primary"
-        data-cy="session-view-menu-show-logs"
-        onClick={toggleLogs}
-        size="sm"
-      >
-        <FileEarmarkText className={cx("bi", "me-1")} />
-        Logs
-      </Button>
+      {builds && builds.length > 0 && (
+        <Button
+          className="text-nowrap"
+          color="outline-primary"
+          data-cy="session-view-menu-show-logs"
+          onClick={toggleLogs}
+          size="sm"
+        >
+          <FileEarmarkText className={cx("bi", "me-1")} />
+          Logs
+        </Button>
+      )}
       <Button
         className={cx("text-nowrap", "rounded-end-0")}
         color={isMainButton ? "primary" : "outline-primary"}

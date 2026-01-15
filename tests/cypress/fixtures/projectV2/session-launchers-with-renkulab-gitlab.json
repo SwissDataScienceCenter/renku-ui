@@ -1,0 +1,52 @@
+[
+  {
+    "id": "01HYJE99XEKWNKPYN8WRB6QA8Z",
+    "project_id": "THEPROJECTULID26CHARACTERS",
+    "name": "Session-custom",
+    "creation_date": "2024-05-23T09:59:59Z",
+    "environment": {
+      "id": "01JBXS0N2RESJP9W7ZWGZV3A2K",
+      "name": "Session-custom",
+      "creation_date": "2024-11-05T09:03:12.977947Z",
+      "container_image": "renku/renkulab-py:latest",
+      "default_url": "/jdbqksdgsahd/bsajhfdjhsdv/jasgdjhf/lab",
+      "uid": 1000,
+      "gid": 1000,
+      "working_directory": "/",
+      "mount_directory": "",
+      "port": 8080,
+      "environment_kind": "CUSTOM"
+    },
+    "resource_class_id": 2,
+    "env_variables": [
+      {
+        "name": "VAR_1",
+        "value": "value1"
+      },
+      {
+        "name": "VAR_WITH_LONGER_NAME",
+        "value": "value2"
+      }
+    ]
+  },
+  {
+    "id": "01HYJE99XEKWNKPYN8WRB6QA8Y",
+    "project_id": "THEPROJECTULID26CHARACTERS",
+    "name": "Renkulab-GitLab",
+    "creation_date": "2024-05-23T09:59:59Z",
+    "environment": {
+      "id": "01JBXS0N2RESJP9W7ZWGZV3A2L",
+      "name": "Session-custom",
+      "creation_date": "2024-11-05T09:03:12.977947Z",
+      "container_image": "registry.renkulab.io/ns/project:latest",
+      "default_url": "/lab",
+      "uid": 1000,
+      "gid": 1000,
+      "working_directory": "/",
+      "mount_directory": "",
+      "port": 8080,
+      "environment_kind": "CUSTOM"
+    },
+    "resource_class_id": 2
+  }
+]

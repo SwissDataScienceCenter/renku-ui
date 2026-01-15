@@ -19,11 +19,10 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
 
+import { useGetProjectsByProjectIdsQuery } from "../../projectsV2/api/projectV2.enhanced-api";
+import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 import type { DataConnectorRead } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdProjectLinksQuery } from "../api/data-connectors.enhanced-api";
-import { useGetProjectsByProjectIdsQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-
-import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 
 export interface DataConnectorConfiguration
   extends Omit<SessionStartDataConnectorConfiguration, "cloudStorage"> {

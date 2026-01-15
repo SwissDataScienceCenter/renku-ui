@@ -26,16 +26,17 @@ describe("display the home page", () => {
 
   it("displays the home page intro text", () => {
     cy.get("h1").should("have.length", 1);
-    cy.get("h1")
-      .first()
-      .should("have.text", "Connecting data, code, compute, and people.");
+    cy.get("h1").should(
+      "have.text",
+      "Connecting data, code, compute, and people."
+    );
   });
 });
 
 describe("404 page", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
-    cy.visit("/xzy");
+    cy.visit("/xzy", { failOnStatusCode: false });
   });
 
   it("show error page", () => {
@@ -68,8 +69,6 @@ describe("display version information", () => {
     cy.getDataCy("version-info").should("be.visible").click();
     cy.contains("Renku version 3.10.0").should("be.visible");
     cy.contains("UI: 3.10.0").should("be.visible");
-    cy.contains("Core: v2.4.1").should("be.visible");
-    cy.contains("Notebooks: 1.22.0").should("be.visible");
   });
 });
 
@@ -78,9 +77,9 @@ describe("shows terms of use", () => {
     fixtures.versions().userNone();
   });
 
-  it("Default terms are visible visible", () => {
+  it("Default terms are visible", () => {
     fixtures.config();
-    cy.visit("/v1/help/tos");
+    cy.visit("/help/tos");
     cy.contains("No terms of use have been configured.").should("be.visible");
     cy.get("a").contains("Terms of Use").should("not.exist");
   });
@@ -89,7 +88,7 @@ describe("shows terms of use", () => {
     fixtures
       .config({ overrides: { TERMS_PAGES_ENABLED: true } })
       .overrideTermsOfUse();
-    cy.visit("/v1/help/tos");
+    cy.visit("/help/tos");
     cy.wait("@getOverrideTermsOfUse");
     cy.get("h1").contains("Override terms of use").should("be.visible");
     cy.get("a").contains("Terms of Use").should("exist").should("be.visible");
@@ -103,7 +102,7 @@ describe("shows privacy policy", () => {
 
   it("Default privacy policy is visible", () => {
     fixtures.config();
-    cy.visit("/v1/help/privacy");
+    cy.visit("/help/privacy");
     cy.contains("No privacy policy has been configured.").should("be.visible");
     cy.get("a").contains("Privacy Policy").should("not.exist");
   });
@@ -112,7 +111,7 @@ describe("shows privacy policy", () => {
     fixtures
       .config({ overrides: { TERMS_PAGES_ENABLED: true } })
       .overridePrivacyPolicy();
-    cy.visit("/v1/help/privacy");
+    cy.visit("/help/privacy");
     cy.wait("@getOverridePrivacyPolicy");
     cy.get("h1").contains("Override privacy policy").should("be.visible");
     cy.get("a").contains("Privacy Policy").should("exist").should("be.visible");

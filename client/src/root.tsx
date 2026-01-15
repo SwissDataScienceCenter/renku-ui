@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import {
+  isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
@@ -26,6 +27,10 @@ import {
   type MetaDescriptor,
   type MetaFunction,
 } from "react-router";
+
+import v2Styles from "~/styles/renku_bootstrap.scss?url";
+import type { Route } from "./+types/root";
+import NotFound from "./not-found/NotFound";
 
 export const DEFAULT_META_TITLE: string =
   "Reproducible Data Science | Open Research | Renku";
@@ -51,6 +56,40 @@ export const DEFAULT_META: MetaDescriptor[] = [
     content: DEFAULT_META_DESCRIPTION,
   },
 ];
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  if (isRouteErrorResponse(error)) {
+    return (
+      <html lang="en">
+        <head>
+          <link rel="stylesheet" type="text/css" href={v2Styles} />
+          <title>Page Not Found | Renku</title>
+          <Links />
+        </head>
+        <body>
+          <NotFound forceV2={true} />
+        </body>
+      </html>
+    );
+  } else if (error instanceof Error) {
+    return (
+      <html lang="en">
+        <head>
+          <link rel="stylesheet" type="text/css" href={v2Styles} />
+          <title>Error | Renku</title>
+          <Links />
+        </head>
+        <body>
+          <div>
+            <h1>Error</h1>
+            <p>{error.message}</p>
+          </div>
+        </body>
+      </html>
+    );
+  }
+  return <h1>Unknown Error</h1>;
+}
 
 export const meta: MetaFunction = () => {
   return DEFAULT_META;

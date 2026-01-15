@@ -27,6 +27,7 @@ import {
   type FieldErrors,
   type UseFormRegister,
 } from "react-hook-form";
+import { generatePath } from "react-router";
 import {
   Button,
   Col,
@@ -40,14 +41,12 @@ import {
   ModalFooter,
   Row,
 } from "reactstrap";
-import { generatePath } from "react-router";
 
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import ModalHeader from "../../../components/modal/ModalHeader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
-
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 

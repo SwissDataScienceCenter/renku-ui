@@ -20,11 +20,11 @@ import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useMemo } from "react";
 import { People } from "react-bootstrap-icons";
-import { Link, generatePath } from "react-router";
+import { generatePath, Link } from "react-router";
 import { Badge } from "reactstrap";
 
-import { Loader } from "../../../components/Loader";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toSortedMembers } from "../../ProjectPageV2/utils/roleUtils";
 import type { ProjectMemberResponse } from "../../projectsV2/api/projectV2.api";

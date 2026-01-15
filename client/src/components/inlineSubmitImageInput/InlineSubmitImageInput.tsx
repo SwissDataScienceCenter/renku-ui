@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
-import { Button } from "reactstrap";
 import { ChangeEvent, useState } from "react";
+import { Button } from "reactstrap";
+
 import { InlineSubmitButton } from "../buttons/Button";
 import ImageInput, {
-  ImageFieldPropertyName as Prop,
   ImageInputMode,
+  ImageFieldPropertyName as Prop,
 } from "../form-field/FormGeneratorImageInput";
 
 interface OptionType {

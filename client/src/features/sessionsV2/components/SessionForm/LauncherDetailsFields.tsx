@@ -27,16 +27,17 @@ import {
   Label,
   UncontrolledTooltip,
 } from "reactstrap";
-import { WarnAlert } from "../../../../components/Alert";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import { Loader } from "../../../../components/Loader";
-import { useGetResourcePoolsQuery } from "../../../dataServices/computeResources.api";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
-import { SessionLauncherForm } from "../../sessionsV2.types";
+
+import { WarnAlert } from "~/components/Alert";
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../session/startSessionOptions.constants";
+} from "~/features/session/startSessionOptions.constants";
+import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
+import { SessionLauncherForm } from "../../sessionsV2.types";
 
 interface LauncherDetailsFieldsProps {
   control: Control<SessionLauncherForm>;
@@ -68,9 +69,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div className={cx("form-label", "mb-0")}>
-        <span className="fw-bold">2 of 2. Define launcher details</span>
-      </div>
+      <h3 className="mb-0">2 of 2. Define launcher details</h3>
       <div>
         <Label className="form-label" for="addSessionLauncherName">
           Session launcher name
@@ -185,14 +184,14 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
                       Gigabytes
                     </UncontrolledTooltip>
                   </InputGroup>
-                  <FormText>
-                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
-                    {watchCurrentSessionClass.max_storage} GB
-                  </FormText>
                   <div className="invalid-feedback">
                     {error?.message ||
                       "Please provide a valid value for disk storage."}
                   </div>
+                  <FormText>
+                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                    {watchCurrentSessionClass.max_storage} GB
+                  </FormText>
                 </>
               )}
               rules={{

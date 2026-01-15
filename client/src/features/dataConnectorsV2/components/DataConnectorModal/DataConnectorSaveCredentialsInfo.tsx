@@ -22,7 +22,6 @@ import { Label } from "reactstrap";
 
 import { InfoAlert } from "../../../../components/Alert";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-
 import { DataConnectorMountForm } from "./DataConnectorModalBody";
 
 type DataConnectorSaveCredentialsInfoProps = {

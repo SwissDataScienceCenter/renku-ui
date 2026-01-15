@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { Alert } from "reactstrap";
+
 import styles from "./PrimaryAlert.module.scss";
 
 interface PrimaryAlertProps {

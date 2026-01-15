@@ -32,9 +32,9 @@ import { Alert, Button, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, WarnAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
 import { GoBackButton } from "../../../components/buttons/Button";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import { Loader } from "../../../components/Loader";
 import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";

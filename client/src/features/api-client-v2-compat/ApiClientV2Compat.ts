@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import {
-  RETURN_TYPES,
-  renkuFetch,
-  type FetchOptions,
-} from "~/api-client/utils";
 import { API_ERRORS, APIError } from "~/api-client/errors";
 import processPaginationHeaders from "~/api-client/pagination";
+import {
+  renkuFetch,
+  RETURN_TYPES,
+  type FetchOptions,
+} from "~/api-client/utils";
 
 /**
  * A compatibility layer implementation of the old APIClient supporting only the
@@ -40,7 +40,7 @@ const FETCH_DEFAULT = {
 
 export default class ApiClientV2Compat {
   baseUrl: string;
-  uiserverUrl: string;
+  uiserverUrl: string; // Still used by the WebSocket channel
   supportsLegacy = false;
 
   constructor(baseUrl: string, uiserverUrl: string) {
@@ -96,13 +96,13 @@ export default class ApiClientV2Compat {
   doLogin() {
     // This is invoked to perform authentication.
     window.location.href = `${
-      this.uiserverUrl
+      this.baseUrl
     }/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   doLogout() {
     window.location.href = `${
-      this.uiserverUrl
+      this.baseUrl
     }/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
@@ -120,6 +120,10 @@ export default class ApiClientV2Compat {
       method: "GET",
       headers: headers,
     });
+
+    if (response.status >= 500) {
+      throw new Error("Error while getting user info");
+    }
 
     if (!response.ok) return null;
 

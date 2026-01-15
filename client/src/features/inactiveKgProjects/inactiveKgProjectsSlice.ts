@@ -17,6 +17,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import type { InactiveKgProjects } from "./inactiveKgProjects.types";
 import { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
 

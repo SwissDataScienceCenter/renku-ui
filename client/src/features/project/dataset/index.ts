@@ -1,5 +1,4 @@
-import { datasetFormSlice, setFiles, reset } from "./datasetForm.slice";
-
+import { datasetFormSlice, reset, setFiles } from "./datasetForm.slice";
 import type {
   DatasetFormState,
   DatasetUploaderFile,

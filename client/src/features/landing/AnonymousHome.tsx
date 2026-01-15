@@ -31,30 +31,28 @@ import { useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
-import { stateToSearchString } from "../kgSearch";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { Url } from "../../utils/helpers/url";
-import { RenkuBenefits } from "./components/Benefits/Benefits";
-import { Introduction } from "./components/Introduction/Introduction";
-
-import { NavBarWarnings } from "./components/NavBar/NavBarWarnings";
-
+import { stateToSearchString } from "../kgSearch";
+import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import VisualHead from "./assets/Visual_Head.svg";
-
+import { BottomNav, TopNav } from "./components/anonymousHomeNav";
+import { RenkuBenefits } from "./components/Benefits/Benefits";
 import DividerLandingPage from "./components/Dividier/Divider";
 import HeroLanding from "./components/HeroLanding/HeroLanding";
+import { Introduction } from "./components/Introduction/Introduction";
+import { NavBarWarnings } from "./components/NavBar/NavBarWarnings";
 import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport";
 import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./components/WhoWeAre/WhoWeAre";
-import type { AnonymousHomeConfig } from "./anonymousHome.types";
-import { BottomNav, TopNav } from "./components/anonymousHomeNav";
 
 // ? react-autosuggest styles are defined there q_q
 // ? also, the order of import matters here q_q
 import "../../project/Project.style.css";
 // ? the "quick-nav" class is used in this file
 import "../../components/quicknav/QuickNav.style.css";
+
 import { GetStarted } from "./components/GetStarted/GetStarted";
 import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 

@@ -17,6 +17,7 @@
  */
 
 // TODO: Upgrade to ckeditor5 v6.0.0 to get TS support
+
 import cx from "classnames";
 import React from "react";
 import { Controller } from "react-hook-form";
@@ -27,11 +28,10 @@ import type {
   Path,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { Input, FormGroup, FormText, Label } from "reactstrap";
+import { FormGroup, FormText, Input, Label } from "reactstrap";
 
-import FormLabel from "./FormLabel";
 import { ErrorLabel } from "../formlabels/FormLabels";
-
+import FormLabel from "./FormLabel";
 import LazyCkEditor from "./LazyCkEditor";
 
 type EditMarkdownSwitchProps = {

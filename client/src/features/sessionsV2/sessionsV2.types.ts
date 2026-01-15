@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
-import { ReactNode } from "react";
-import { ResourceClass } from "../dataServices/dataServices.types";
-import { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type { ReactNode } from "react";
+
+import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
   BuildParametersPost,
   DefaultUrl,
@@ -88,9 +89,13 @@ export interface SessionLauncherForm
     >,
     Pick<
       BuildParametersPost,
-      "builder_variant" | "frontend_variant" | "repository"
+      | "builder_variant"
+      | "context_dir"
+      | "frontend_variant"
+      | "repository_revision"
+      | "repository"
     > {
-  resourceClass: ResourceClass;
+  resourceClass: ResourceClassWithId;
 
   // Substitute for Environment Kind and Environment Image Source in forms
   environmentSelect: "global" | "custom + image" | "custom + build";
@@ -98,7 +103,7 @@ export interface SessionLauncherForm
   // For "global" environments
   environmentId: EnvironmentId;
 
-  // For "custom" + "image" environments
+  // For "custom + image" environments
   default_url: DefaultUrl;
   uid: EnvironmentUid;
   gid: EnvironmentGid;
@@ -106,6 +111,10 @@ export interface SessionLauncherForm
 
   args: string;
   command: string;
+  strip_path_prefix: boolean;
+
+  // For "custom + build" environments
+  platform: string;
 }
 
 export interface SessionResources {
@@ -176,9 +185,9 @@ export interface DockerImage {
   error?: unknown;
 }
 
-export interface BuilderSelectorOption {
+export interface BuilderSelectorOption<T extends string = string> {
   label: string;
-  value: string;
+  value: T;
   description?: ReactNode;
 }
 

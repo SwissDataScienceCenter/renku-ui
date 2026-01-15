@@ -15,15 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { generatePath, useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { UnderlineArrowLink } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
+import ProjectGitLabWarnBanner from "../../legacy/ProjectGitLabWarnBanner";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
-
 import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
 import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
@@ -52,7 +53,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
         <Col xs={12} lg={10}>
           <Row>
             <Col>
-              <h2 data-cy="project-name">{project.name}</h2>
+              <h1 data-cy="project-name">{project.name}</h1>
             </Col>
           </Row>
           <Col>
@@ -73,6 +74,11 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
               )}
             </div>
           </Col>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ProjectGitLabWarnBanner project={project} />
         </Col>
       </Row>
       <Row>

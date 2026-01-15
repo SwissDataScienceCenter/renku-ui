@@ -28,10 +28,24 @@
         ],
         "responses": {
           "200": {
-            "description": "The Docker image is available."
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageCheckResponse"
+                }
+              }
+            },
+            "description": "The image check has completed successfully"
           },
-          "404": {
-            "description": "The Docker image is not available."
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The image url is malformed."
           }
         },
         "tags": ["notebooks"]
@@ -555,10 +569,17 @@
         ],
         "responses": {
           "200": {
-            "description": "The docker image can be found"
+            "description": "Information about the accessibility of the image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageCheckResponse"
+                }
+              }
+            }
           },
-          "404": {
-            "description": "The docker image cannot be found or the user does not have permissions to access it",
+          "422": {
+            "description": "The image url is malformed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -566,9 +587,6 @@
                 }
               }
             }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
           }
         },
         "tags": ["sessions"]
@@ -1224,17 +1242,15 @@
             "$ref": "#/components/schemas/Ulid"
           },
           "disk_storage": {
-            "default": 1,
             "type": "integer",
             "description": "The size of disk storage for the session, in gigabytes"
           },
           "resource_class_id": {
-            "default": null,
             "nullable": true,
             "type": "integer"
           },
-          "cloudstorage": {
-            "$ref": "#/components/schemas/SessionCloudStoragePostList"
+          "data_connectors_overrides": {
+            "$ref": "#/components/schemas/SessionDataConnectorsOverrideList"
           },
           "env_variable_overrides": {
             "$ref": "#/components/schemas/EnvVariableOverrides"
@@ -1388,40 +1404,80 @@
         "maxLength": 26,
         "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
-      "SessionCloudStoragePostList": {
+      "SessionDataConnectorsOverrideList": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/SessionCloudStoragePost"
+          "$ref": "#/components/schemas/SessionDataConnectorOverride"
         }
       },
-      "SessionCloudStoragePost": {
+      "SessionDataConnectorOverride": {
         "type": "object",
         "properties": {
-          "configuration": {
-            "type": "object",
-            "additionalProperties": true
+          "skip": {
+            "type": "boolean",
+            "description": "The corresponding data connector will not be mounted if `skip` is set to `true`.",
+            "default": false
           },
-          "readonly": {
-            "type": "boolean"
-          },
-          "source_path": {
-            "type": "string"
-          },
-          "target_path": {
-            "type": "string"
-          },
-          "storage_id": {
+          "data_connector_id": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Ulid"
               },
               {
-                "description": "If the storage_id is provided then this config must replace an existing storage config in the session"
+                "description": "The `data_connector_id` must match an existing data connector from the session launcher's project.\n"
               }
             ]
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/RCloneConfig"
+          },
+          "source_path": {
+            "$ref": "#/components/schemas/SourcePath"
+          },
+          "target_path": {
+            "$ref": "#/components/schemas/TargetPath"
+          },
+          "readonly": {
+            "$ref": "#/components/schemas/StorageReadOnly"
           }
         },
-        "required": ["storage_id"]
+        "required": ["data_connector_id"]
+      },
+      "RCloneConfig": {
+        "type": "object",
+        "description": "Dictionary of rclone key:value pairs (based on schema from '/storage_schema')",
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string",
+              "nullable": true
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "SourcePath": {
+        "description": "the source path to mount, usually starts with bucket/container name",
+        "type": "string",
+        "example": "bucket/my/storage/folder/"
+      },
+      "TargetPath": {
+        "description": "the target path relative to the working directory where the storage should be mounted",
+        "type": "string",
+        "example": "my/project/folder"
+      },
+      "StorageReadOnly": {
+        "description": "Whether this storage should be mounted readonly or not",
+        "type": "boolean",
+        "default": true
       },
       "ServerName": {
         "type": "string",
@@ -1429,9 +1485,97 @@
         "maxLength": 50,
         "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
         "example": "d185e68d-d43-renku-2-b9ac279a4e8a85ac28d08"
+      },
+      "ImageCheckResponse": {
+        "type": "object",
+        "properties": {
+          "accessible": {
+            "type": "boolean",
+            "description": "Whether the image is accessible or not."
+          },
+          "platforms": {
+            "$ref": "#/components/schemas/ImagePlatforms"
+          },
+          "connection": {
+            "$ref": "#/components/schemas/ImageConnection"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ImageProvider"
+          }
+        },
+        "required": ["accessible"]
+      },
+      "ImageConnection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "provider_id": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ImageConnectionStatus"
+          }
+        },
+        "required": ["id", "provider_id", "status"]
+      },
+      "ImageConnectionStatus": {
+        "type": "string",
+        "enum": ["connected", "pending", "invalid_credentials"]
+      },
+      "ImageProvider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "url"]
+      },
+      "ImagePlatforms": {
+        "type": "array",
+        "description": "The list of platforms an image can run on.",
+        "items": {
+          "$ref": "#/components/schemas/ImagePlatform"
+        }
+      },
+      "ImagePlatform": {
+        "type": "object",
+        "description": "A runtime platform.",
+        "properties": {
+          "architecture": {
+            "type": "string"
+          },
+          "os": {
+            "type": "string"
+          },
+          "os.version": {
+            "type": "string"
+          },
+          "os.features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "variant": {
+            "type": "string"
+          }
+        },
+        "required": ["architecture", "os"]
       }
     },
     "responses": {
+      "ImageCheckResponse": {
+        "description": "Information about whether a docker image is available or not and if there is a connected service then which connected service can be used to access the image."
+      },
       "Error": {
         "description": "The schema for all 4xx and 5xx responses",
         "content": {

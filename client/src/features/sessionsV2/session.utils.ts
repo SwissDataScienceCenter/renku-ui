@@ -18,17 +18,20 @@
 
 import { FaviconStatus } from "../display/display.types";
 import { SessionStatusState } from "../session/sessions.types";
+import type { ResourcePoolWithId } from "./api/computeResources.api";
 import type {
   EnvironmentList as SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherEnvironmentParams,
   SessionLauncherEnvironmentPatchParams,
 } from "./api/sessionLaunchersV2.api";
+import type { ImageCheckResponse } from "./api/sessionsV2.api";
 import {
+  BUILDER_PLATFORMS,
   DEFAULT_URL,
   ENV_VARIABLES_RESERVED_PREFIX,
 } from "./session.constants";
-import { SessionLauncherForm } from "./sessionsV2.types";
+import type { SessionLauncherForm } from "./sessionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
@@ -95,6 +98,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     builder_variant,
     command,
     container_image,
+    context_dir: context_dir_,
     default_url,
     environmentId,
     environmentSelect,
@@ -102,10 +106,13 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     gid,
     mount_directory,
     name,
+    platform: platform_,
     port,
+    repository_revision: repository_revision_,
     repository,
     uid,
     working_directory,
+    strip_path_prefix,
   } = data;
 
   if (environmentSelect === "global") {
@@ -113,6 +120,12 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
   }
 
   if (environmentSelect === "custom + build") {
+    const context_dir = context_dir_?.trim();
+    const repository_revision = repository_revision_?.trim();
+    const platform =
+      BUILDER_PLATFORMS.map(({ value }) => value).find(
+        (value) => value === platform_
+      ) ?? BUILDER_PLATFORMS[0].value;
     return {
       success: true,
       data: {
@@ -120,6 +133,9 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
         builder_variant,
         frontend_variant,
         repository,
+        platforms: [platform],
+        ...(context_dir ? { context_dir } : {}),
+        ...(repository_revision ? { repository_revision } : {}),
       },
     };
   }
@@ -144,6 +160,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
       gid,
       command: commandFormatted.data ?? undefined,
       args: argsFormatted.data ?? undefined,
+      strip_path_prefix: strip_path_prefix ?? false,
     },
   };
 }
@@ -172,10 +189,37 @@ export function getFormattedEnvironmentValuesForEdit(
     environmentSelect === "global" ||
     environmentSelect === "custom + image"
   ) {
-    return getFormattedEnvironmentValues(data);
+    const result = getFormattedEnvironmentValues(data);
+    if (!result.success) {
+      return result;
+    }
+    const { data: environment } = result;
+    const commandParsed = safeParseJSONStringArray(data.command);
+    const argsParsed = safeParseJSONStringArray(data.args);
+    return {
+      ...result,
+      data: {
+        ...environment,
+        ...(commandParsed.data
+          ? { command: commandParsed.data }
+          : { command: null }),
+        ...(argsParsed.data ? { args: argsParsed.data } : { args: null }),
+      },
+    };
   }
 
-  const { builder_variant, frontend_variant, repository } = data;
+  const {
+    builder_variant,
+    context_dir,
+    frontend_variant,
+    platform: platform_,
+    repository_revision,
+    repository,
+  } = data;
+  const platform =
+    BUILDER_PLATFORMS.map(({ value }) => value).find(
+      (value) => value === platform_
+    ) ?? BUILDER_PLATFORMS[0].value;
 
   return {
     success: true,
@@ -186,6 +230,9 @@ export function getFormattedEnvironmentValuesForEdit(
         builder_variant,
         frontend_variant,
         repository,
+        repository_revision: repository_revision ?? "",
+        context_dir: context_dir ?? "",
+        platforms: [platform],
       },
     },
   };
@@ -224,6 +271,7 @@ export function getLauncherDefaultValues(
     gid: launcher.environment?.gid,
     command: getJSONStringArray(launcher.environment?.command),
     args: getJSONStringArray(launcher.environment?.args),
+    strip_path_prefix: launcher.environment?.strip_path_prefix ?? false,
     builder_variant:
       launcher.environment.environment_image_source === "build"
         ? launcher.environment.build_parameters.builder_variant
@@ -235,6 +283,18 @@ export function getLauncherDefaultValues(
     repository:
       launcher.environment.environment_image_source === "build"
         ? launcher.environment.build_parameters.repository
+        : "",
+    repository_revision:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.repository_revision ?? ""
+        : "",
+    context_dir:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.context_dir ?? ""
+        : "",
+    platform:
+      launcher.environment.environment_image_source === "build"
+        ? launcher.environment.build_parameters.platforms?.at(0) ?? ""
         : "",
   };
 }
@@ -343,4 +403,17 @@ export function validateEnvVariableName(name: string): true | string {
     return `Variable names cannot start with '${ENV_VARIABLES_RESERVED_PREFIX}'.`;
   }
   return true;
+}
+
+export function isImageCompatibleWith(
+  image: ImageCheckResponse,
+  platform: ResourcePoolWithId["platform"]
+): boolean | "unknown" {
+  if (image.platforms == null) {
+    return "unknown";
+  }
+  const imagePlatforms = image.platforms?.map(
+    ({ os, architecture }) => `${os}/${architecture}`
+  );
+  return imagePlatforms.some((p) => p === platform);
 }

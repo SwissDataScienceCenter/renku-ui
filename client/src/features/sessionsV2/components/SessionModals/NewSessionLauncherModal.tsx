@@ -29,6 +29,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
 import { SuccessAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -71,6 +72,7 @@ export default function NewSessionLauncherModal({
       default_url: DEFAULT_URL,
       port: DEFAULT_PORT,
       repository: "",
+      platform: "",
     },
   });
   const {
@@ -200,7 +202,7 @@ export default function NewSessionLauncherModal({
       size="lg"
       toggle={toggle}
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         <PlayCircle className={cx("bi", "me-1")} />
         Add session launcher
       </ModalHeader>
@@ -221,11 +223,11 @@ export default function NewSessionLauncherModal({
               {result.error && <RtkOrNotebooksError error={result.error} />}
               {step === "environment" && (
                 <EnvironmentFields
-                  errors={errors}
-                  touchedFields={touchedFields}
                   control={control}
-                  watch={watch}
+                  errors={errors}
                   setValue={setValue}
+                  touchedFields={touchedFields}
+                  watch={watch}
                 />
               )}
               {step === "launcherDetails" && (

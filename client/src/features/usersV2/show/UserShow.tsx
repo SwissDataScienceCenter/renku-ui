@@ -23,9 +23,9 @@ import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Badge, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
-import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
+import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
@@ -33,7 +33,7 @@ import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import {
   useGetUserByIdQuery,
-  useGetUserQuery,
+  useGetUserQueryState,
   UserWithId,
 } from "../api/users.api";
 import UserAvatar, { AvatarTypeWrap } from "./UserAvatar";
@@ -134,7 +134,7 @@ export default function UserShow() {
               </Row>
             </Col>
             <Col xs={12} md={4} xl={3}>
-              <Card data-cy="project-info-card">
+              <Card data-cy="user-info-card">
                 <CardHeader>
                   <div
                     className={cx(
@@ -143,10 +143,10 @@ export default function UserShow() {
                       "justify-content-between"
                     )}
                   >
-                    <h4 className="m-0">
+                    <h2 className="m-0">
                       <InfoCircle className={cx("me-1", "bi")} />
                       Info
-                    </h4>
+                    </h2>
                   </div>
                 </CardHeader>
                 <CardBody>{information}</CardBody>
@@ -164,7 +164,7 @@ interface ItsYouBadgeProps {
 }
 
 function ItsYouBadge({ username }: ItsYouBadgeProps) {
-  const { data: currentUser } = useGetUserQuery();
+  const { data: currentUser } = useGetUserQueryState();
 
   if (currentUser?.isLoggedIn && currentUser.username === username) {
     return (
@@ -199,8 +199,10 @@ function UserHeader({
         <AvatarTypeWrap type={"User"}>
           <UserAvatar namespace={username} size="lg" />
         </AvatarTypeWrap>
-        <div className="d-flex gap-2">
-          <h2 className="mb-0">{name}</h2>
+        <div className={cx("d-flex", "gap-2")}>
+          <h1 className="mb-0" data-cy="group-name">
+            {name}
+          </h1>
           <div>
             <ItsYouBadge username={username} />
           </div>

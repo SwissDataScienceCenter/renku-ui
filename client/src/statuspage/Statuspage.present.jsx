@@ -23,8 +23,6 @@
  *  Components for the displaying information from statuspage.io
  */
 
-import cx from "classnames";
-import { Fragment, useState } from "react";
 import {
   faCheckCircle,
   faExclamationCircle,
@@ -33,7 +31,9 @@ import {
   faWrench,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { DateTime } from "luxon";
+import { Fragment, useState } from "react";
 import { Link } from "react-router";
 import { Alert, Badge, Col, Row, Table } from "reactstrap";
 

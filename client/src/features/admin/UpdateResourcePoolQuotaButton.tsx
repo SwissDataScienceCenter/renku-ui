@@ -30,13 +30,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { useUpdateResourcePoolMutation } from "../dataServices/computeResources.api";
-import { ResourcePool } from "../dataServices/dataServices.types";
+
+import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import {
+  usePatchResourcePoolsByResourcePoolIdMutation,
+  type ResourcePoolWithId,
+} from "../sessionsV2/api/computeResources.api";
 
 interface UpdateResourcePoolQuotaButtonProps {
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
 }
 
 export default function UpdateResourcePoolQuotaButton({
@@ -54,8 +57,8 @@ export default function UpdateResourcePoolQuotaButton({
   return (
     <>
       <Button
-        className="btn-sm"
-        color="outline-rk-green"
+        size="sm"
+        color="outline-primary"
         disabled={resourcePool.quota == null}
         onClick={toggle}
       >
@@ -72,7 +75,7 @@ export default function UpdateResourcePoolQuotaButton({
 
 interface UpdateResourcePoolQuotaModalProps {
   isOpen: boolean;
-  resourcePool: ResourcePool;
+  resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
 
@@ -84,7 +87,8 @@ function UpdateResourcePoolQuotaModal({
   const { id, name, quota, idle_threshold, hibernation_threshold } =
     resourcePool;
 
-  const [updateResourcePool, result] = useUpdateResourcePoolMutation();
+  const [updateResourcePool, result] =
+    usePatchResourcePoolsByResourcePoolIdMutation();
 
   const { control, handleSubmit } = useForm<UpdateResourcePoolQuotaForm>({
     defaultValues: {
@@ -97,9 +101,11 @@ function UpdateResourcePoolQuotaModal({
     (data: UpdateResourcePoolQuotaForm) => {
       updateResourcePool({
         resourcePoolId: id,
-        quota: { ...data },
-        idle_threshold: idle_threshold,
-        hibernation_threshold: hibernation_threshold,
+        resourcePoolPatch: {
+          quota: { ...data },
+          idle_threshold: idle_threshold,
+          hibernation_threshold: hibernation_threshold,
+        },
       });
     },
     [id, idle_threshold, hibernation_threshold, updateResourcePool]
@@ -113,7 +119,9 @@ function UpdateResourcePoolQuotaModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>Update {name}&apos;s quota</ModalHeader>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Update {name}&apos;s quota
+      </ModalHeader>
       <ModalBody>
         <Form
           className="form-rk-green"
@@ -190,11 +198,12 @@ function UpdateResourcePoolQuotaModal({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         <Button
+          color="primary"
           disabled={result.isLoading}
           onClick={handleSubmit(onSubmit)}
           type="submit"

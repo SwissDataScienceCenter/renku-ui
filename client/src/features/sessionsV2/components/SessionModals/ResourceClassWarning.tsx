@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+
 import { ErrorAlert } from "../../../../components/Alert.jsx";
 import { Loader } from "../../../../components/Loader.tsx";
 
@@ -37,9 +38,9 @@ export function ErrorOrNotAvailableResourcePools({
 }: ErrorOrNotAvailableResourcePoolsProps) {
   return (
     <ErrorAlert dismissible={false}>
-      <h3 className={cx("fs-6", "fw-bold")}>
+      <h4 className="fw-bold">
         {title ?? "Error on loading available session resource pools"}
-      </h3>
+      </h4>
       <p className="mb-0">
         Modifying the session is not possible at the moment. You can try to{" "}
         <a

@@ -42,13 +42,13 @@ import {
 
 import { NewProjectTemplate, Repository } from "../../model/renkuModels.types";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
-import { ExternalLink } from "../ExternalLinks";
 import {
   ErrorLabel,
   HelperLabel,
   InputLabel,
   LoadingLabel,
 } from "../formlabels/FormLabels";
+import { ExternalLink } from "../LegacyExternalLinks";
 
 import styles from "./TemplateSelector.module.scss";
 

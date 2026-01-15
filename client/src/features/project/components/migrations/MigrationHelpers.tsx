@@ -21,9 +21,10 @@ import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Button, UncontrolledTooltip } from "reactstrap";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import { Loader } from "../../../../components/Loader";
+
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks";
+import { Loader } from "../../../../components/Loader";
 import { simpleHash } from "../../../../utils/helpers/HelperFunctions";
 
 import styles from "./migrations.module.scss";
@@ -130,7 +131,7 @@ export function CompositeTitle({
     <>
       <div id={sectionIdFull} className={styles.projectStatusSection}>
         <div className="d-flex align-items-center w-100 mb-0">
-          <h6
+          <h4
             className={cx(
               styles.sectionTitle,
               !loading && [styles.sectionTitleExpandable, "cursor-pointer"],
@@ -147,7 +148,7 @@ export function CompositeTitle({
                 flipped={showDetails}
               />
             )}
-          </h6>
+          </h4>
           {!loading && (
             <div className="ms-auto" data-cy={buttonDataCy}>
               {button}

@@ -52,15 +52,24 @@ describe("launch sessions with data connectors", () => {
       })
       .sessionSecrets({
         fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo1.git",
       });
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
   });
 
   it("launch session with public data connector", () => {
-    fixtures.testCloudStorage().listProjectDataConnectors().getDataConnector({
-      fixture: "dataConnector/data-connector-public.json",
-    });
+    fixtures
+      .testCloudStorage()
+      .listProjectDataConnectors()
+      .getDataConnector({
+        fixture: "dataConnector/data-connector-public.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
+      });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -99,8 +108,8 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -121,6 +130,9 @@ describe("launch sessions with data connectors", () => {
       .getDataConnector()
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -156,13 +168,15 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.configuration).to.have.property("access_key_id");
-        expect(storage.configuration).to.have.property("secret_access_key");
-        expect(storage.configuration["access_key_id"]).to.equal("access key");
-        expect(storage.configuration["secret_access_key"]).to.equal(
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(1);
+        const override = dcOverrides[0];
+        expect(override.skip).to.be.false;
+        expect(override.data_connector_id).to.equal("ULID-1");
+        expect(override.configuration).to.have.property("access_key_id");
+        expect(override.configuration).to.have.property("secret_access_key");
+        expect(override.configuration["access_key_id"]).to.equal("access key");
+        expect(override.configuration["secret_access_key"]).to.equal(
           "secret key"
         );
         req.reply({ body: session, delay: 2000 });
@@ -225,6 +239,9 @@ describe("launch sessions with data connectors", () => {
             value: "secret key",
           },
         ],
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -237,13 +254,8 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        // Since the session has already been saved, it doesn't need to be sent again
-        expect(storage.configuration).to.not.have.property("access_key_id");
-        expect(storage.configuration).to.not.have.property("secret_access_key");
-
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -297,7 +309,7 @@ describe("launch sessions with data connectors", () => {
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 
-  it("launch session with data connector, saving credentials on skip", () => {
+  it("launch session with skipped data connector", () => {
     fixtures
       .testCloudStorage()
       .listProjectDataConnectors()
@@ -318,6 +330,9 @@ describe("launch sessions with data connectors", () => {
             value: "secret key",
           },
         ],
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -330,11 +345,11 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.configuration).to.not.have.property("access_key_id");
-        expect(storage.configuration).to.not.have.property("secret_access_key");
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(1);
+        const override = dcOverrides[0];
+        expect(override.skip).to.be.true;
+        expect(override.data_connector_id).to.equal("ULID-1");
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -368,9 +383,6 @@ describe("launch sessions with data connectors", () => {
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Skip")
       .click();
-    cy.contains("Saving credentials...").should("be.visible");
-    cy.wait("@patchDataConnectorSecrets");
-    cy.wait("@getDataConnectorSecretsAfterSaving");
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
@@ -381,7 +393,10 @@ describe("launch sessions with data connectors", () => {
       .sessionServersEmptyV2()
       .listProjectDataConnectors()
       .getDataConnector()
-      .dataConnectorSecrets();
+      .dataConnectorSecrets()
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
+      });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -393,12 +408,8 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.storage_id).to.equal("ULID-1");
-        expect(storage.configuration).to.not.have.property("access_key_id");
-        expect(storage.configuration).to.not.have.property("secret_access_key");
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -421,6 +432,9 @@ describe("launch sessions with data connectors", () => {
       .getDataConnector()
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-partial.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -432,14 +446,15 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
-        const storage = csConfig[0];
-        expect(storage.storage_id).to.equal("ULID-1");
-        expect(storage.configuration).to.have.property("access_key_id");
-        expect(storage.configuration).to.have.property("secret_access_key");
-        expect(storage.configuration["access_key_id"]).to.equal("access key");
-        expect(storage.configuration["secret_access_key"]).to.equal(
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(1);
+        const override = dcOverrides[0];
+        expect(override.skip).to.be.false;
+        expect(override.data_connector_id).to.equal("ULID-1");
+        expect(override.configuration).to.have.property("access_key_id");
+        expect(override.configuration).to.have.property("secret_access_key");
+        expect(override.configuration["access_key_id"]).to.equal("access key");
+        expect(override.configuration["secret_access_key"]).to.equal(
           "secret key"
         );
         req.reply({ body: session, delay: 2000 });
@@ -467,6 +482,62 @@ describe("launch sessions with data connectors", () => {
     cy.wait("@testCloudStorage");
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  });
+
+  it("show warning on launch", () => {
+    fixtures.testCloudStorage().listProjectDataConnectors().getDataConnector({
+      fixture: "dataConnector/data-connector-public.json",
+    });
+
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // ensure the data connector is there
+    cy.getDataCy("data-connector-name").should(
+      "contain.text",
+      "example storage"
+    );
+    cy.getDataCy("data-connector-name").click();
+    cy.getDataCy("data-connector-title").should(
+      "contain.text",
+      "example storage"
+    );
+    cy.getDataCy("requires-credentials-section")
+      .contains("No")
+      .should("be.visible");
+    cy.getDataCy("data-connector-view-back-button").click();
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("session-name").should("contain.text", "Session-custom");
+        cy.getDataCy("start-session-button").should("contain.text", "Launch");
+      });
+
+    fixtures.dataConnectorSecrets({
+      dataConnectorId: "ULID-1",
+      fixture: "dataConnector/data-connector-secrets-empty.json",
+    });
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item").within(() => {
+      cy.getDataCy("start-session-button").click();
+    });
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+    cy.getDataCy("session-repositories-warning");
   });
 
   it.skip("launch session multiple data connectors requiring multiple credentials, saving all", () => {
@@ -510,6 +581,9 @@ describe("launch sessions with data connectors", () => {
             value: "webDav pass",
           },
         ],
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -594,6 +668,9 @@ describe("launch sessions with data connectors", () => {
       })
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -689,6 +766,9 @@ describe("launch sessions with data connectors", () => {
       })
       .dataConnectorSecrets({
         fixture: "dataConnector/data-connector-secrets-empty.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
@@ -790,6 +870,12 @@ describe("launch sessions with secrets", () => {
       .environments()
       .listProjectDataConnectors({
         fixture: "dataConnector/empty-list.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo1.git",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
       });
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
@@ -1022,8 +1108,8 @@ describe("view autostart link", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(1);
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(0);
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });

@@ -1,8 +1,8 @@
 import { namespaces } from "./namespaces";
 import {
-  projects,
-  projectReadme,
   projectNotebookFile,
+  projectReadme,
+  projects,
 } from "./project-samples";
 import { statuspage } from "./statuspage";
 import { user } from "./user";

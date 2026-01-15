@@ -33,6 +33,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -47,7 +48,6 @@ import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberMo
 import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
-import { useGetUserQuery } from "../../../usersV2/api/users.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 type MemberActionMenuProps = Omit<
@@ -111,7 +111,7 @@ function ProjectMemberAction({
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useGetUserQuery(logged ? undefined : skipToken);
+  } = useGetUserQueryState(logged ? undefined : skipToken);
   const userMember = useMemo(() => {
     if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;
@@ -300,10 +300,10 @@ export default function ProjectPageSettingsMembers({
     return (
       <>
         <CardHeader>
-          <h4>
+          <h2>
             <PersonGear className={cx("me-1", "bi")} />
             Project Members
-          </h4>
+          </h2>
         </CardHeader>
         <CardBody>
           <div className="mb-3">Could not load members</div>
@@ -317,10 +317,10 @@ export default function ProjectPageSettingsMembers({
     <Card id="members">
       <CardHeader>
         <div className={cx("d-flex", "gap-2", "justify-content-between")}>
-          <h4 className="m-0">
+          <h2 className="m-0">
             <PersonGear className={cx("me-1", "bi")} />
             Project Members
-          </h4>
+          </h2>
           <PermissionsGuard
             disabled={null}
             enabled={

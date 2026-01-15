@@ -1,4 +1,5 @@
 import { connectedServicesEmptyApi as api } from "./connectedServices.empty-api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getOauth2Providers: build.query<
@@ -67,6 +68,15 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/oauth2/connections/${queryArg.connectionId}`,
       }),
     }),
+    deleteOauth2ConnectionsByConnectionId: build.mutation<
+      DeleteOauth2ConnectionsByConnectionIdApiResponse,
+      DeleteOauth2ConnectionsByConnectionIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/oauth2/connections/${queryArg.connectionId}`,
+        method: "DELETE",
+      }),
+    }),
     getOauth2ConnectionsByConnectionIdAccount: build.query<
       GetOauth2ConnectionsByConnectionIdAccountApiResponse,
       GetOauth2ConnectionsByConnectionIdAccountApiArg
@@ -129,6 +139,11 @@ export type GetOauth2ConnectionsByConnectionIdApiResponse =
 export type GetOauth2ConnectionsByConnectionIdApiArg = {
   connectionId: string;
 };
+export type DeleteOauth2ConnectionsByConnectionIdApiResponse =
+  /** status 204 If deleted successfully */ void;
+export type DeleteOauth2ConnectionsByConnectionIdApiArg = {
+  connectionId: string;
+};
 export type GetOauth2ConnectionsByConnectionIdAccountApiResponse =
   /** status 200 The retrieved account information. */ ConnectedAccount;
 export type GetOauth2ConnectionsByConnectionIdAccountApiArg = {
@@ -142,7 +157,13 @@ export type GetOauth2ConnectionsByConnectionIdInstallationsApiArg = {
   params?: PaginationRequest;
 };
 export type ProviderId = string;
-export type ProviderKind = "gitlab" | "github";
+export type ProviderKind =
+  | "gitlab"
+  | "github"
+  | "drive"
+  | "onedrive"
+  | "dropbox"
+  | "generic_oidc";
 export type ApplicationSlug = string;
 export type ClientId = string;
 export type ClientSecret = string;
@@ -150,6 +171,8 @@ export type DisplayName = string;
 export type ApiScope = string;
 export type ProviderUrl = string;
 export type UsePkce = boolean;
+export type ImageRegistryUrl = string;
+export type OidcIssuerUrl = string;
 export type Provider = {
   id: ProviderId;
   kind: ProviderKind;
@@ -160,6 +183,8 @@ export type Provider = {
   scope: ApiScope;
   url: ProviderUrl;
   use_pkce: UsePkce;
+  image_registry_url?: ImageRegistryUrl;
+  oidc_issuer_url?: OidcIssuerUrl;
 };
 export type ProviderList = Provider[];
 export type ErrorResponse = {
@@ -179,6 +204,8 @@ export type ProviderPost = {
   scope: ApiScope;
   url: ProviderUrl;
   use_pkce?: UsePkce;
+  image_registry_url?: ImageRegistryUrl;
+  oidc_issuer_url?: OidcIssuerUrl;
 };
 export type ProviderPatch = {
   kind?: ProviderKind;
@@ -189,6 +216,8 @@ export type ProviderPatch = {
   scope?: ApiScope;
   url?: ProviderUrl;
   use_pkce?: UsePkce;
+  image_registry_url?: ImageRegistryUrl;
+  oidc_issuer_url?: OidcIssuerUrl;
 };
 export type Ulid = string;
 export type ConnectionStatus = "connected" | "pending";

@@ -15,16 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+
 import cx from "classnames";
 import { useContext } from "react";
-import { ChatSquareDots, Github, JournalText } from "react-bootstrap-icons";
+import {
+  ChatSquareDots,
+  FileEarmarkText,
+  Github,
+  JournalText,
+  Share,
+} from "react-bootstrap-icons";
 import { Route, Routes } from "react-router";
 import { Card, CardBody, CardHeader, Col, Nav, NavItem, Row } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
 import {
-  ExternalDocsLink,
-  ExternalIconLink,
-} from "../../components/ExternalLinks";
+  NEW_DOCS_COMMUNITY_PORTAL,
+  NEW_DOCS_DOCUMENTATION,
+} from "~/utils/constants/NewDocs";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
@@ -35,6 +43,8 @@ import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import StatusSummary from "../platform/components/StatusSummary";
+
+import HelpV2Styles from "./HelpV2.module.scss";
 
 type HelpNavProps = {
   statuspageId: string;
@@ -60,7 +70,7 @@ function HelpNav({ statuspageId }: HelpNavProps) {
       )}
       <NavItem>
         <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.release}>
-          Release Information
+          Release and License
         </RenkuNavLinkV2>
       </NavItem>
       {termsConfigured && (
@@ -81,7 +91,30 @@ function HelpNav({ statuspageId }: HelpNavProps) {
   );
 }
 
+interface HelpCardBodyContentProps {
+  children: React.ReactNode;
+  url: string;
+}
+function HelpCardBodyContent({ children, url }: HelpCardBodyContentProps) {
+  return (
+    <a
+      className={cx(
+        "link-primary",
+        "stretched-link",
+        "text-body",
+        "text-decoration-none"
+      )}
+      href={url}
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      {children}
+    </a>
+  );
+}
+
 function HelpGetting() {
+  const cardClasses = cx("h-100", HelpV2Styles.linkBgAction);
   return (
     <div>
       <p>
@@ -90,66 +123,110 @@ function HelpGetting() {
       </p>
       <Row className="g-3">
         <Col xs={12} md={6}>
-          <Card>
+          <Card className={cardClasses}>
             <CardHeader>
-              <h4 className="mb-0">
-                <ExternalIconLink
-                  url={Links.DISCOURSE}
-                  icon={<JournalText className={cx("bi", "me-1")} />}
-                  text="Forum"
-                />
-              </h4>
+              <h2 className="mb-0">
+                <ExternalLink icon={null} href={NEW_DOCS_DOCUMENTATION}>
+                  <FileEarmarkText className={cx("bi", "me-1")} />
+                  RenkuLab Documentation
+                </ExternalLink>
+              </h2>
             </CardHeader>
             <CardBody>
-              <p className="mb-0">
-                We maintain a{" "}
-                <ExternalDocsLink url={Links.DISCOURSE} title="help forum" />{" "}
-                for discussion about Renku. This is a good place to ask
-                questions and find answers.
-              </p>
+              <HelpCardBodyContent url={NEW_DOCS_DOCUMENTATION}>
+                <p className="mb-0">
+                  Find tutorials, how-to guides, and reference materials for
+                  learning how to use Renku.
+                </p>
+              </HelpCardBodyContent>
             </CardBody>
           </Card>
         </Col>
 
         <Col xs={12} md={6}>
-          <Card>
+          <Card className={cardClasses}>
             <CardHeader>
-              <h4 className="mb-0">
-                <ExternalIconLink
-                  url={Links.GITTER}
-                  icon={<ChatSquareDots className={cx("bi", "me-1")} />}
-                  text="Gitter"
-                />
-              </h4>
+              <h2 className="mb-0">
+                <ExternalLink icon={null} href={NEW_DOCS_COMMUNITY_PORTAL}>
+                  <Share className={cx("bi", "me-1")} />
+                  Renku Community Portal
+                </ExternalLink>
+              </h2>
             </CardHeader>
             <CardBody>
-              <p className="mb-0">
-                Want to reach out to the development team live? Contact us on{" "}
-                <ExternalDocsLink url={Links.GITTER} title="Gitter" />, we would
-                be happy to chat with you.
-              </p>
+              <HelpCardBodyContent url={NEW_DOCS_COMMUNITY_PORTAL}>
+                <p className="mb-0">
+                  Find dedicated best practices for teaching, research and
+                  events with Renku, information about community events, how to
+                  access dedicated compute resources, the Renku roadmap, and
+                  much more.
+                </p>
+              </HelpCardBodyContent>
             </CardBody>
           </Card>
         </Col>
+
         <Col xs={12} md={6}>
-          <Card>
+          <Card className={cardClasses}>
             <CardHeader>
-              <h4 className="mb-0">
-                <ExternalIconLink
-                  url={Links.GITHUB}
-                  icon={<Github className={cx("bi", "me-1")} />}
-                  text="GitHub"
-                />
-              </h4>
+              <h2 className="mb-0">
+                <ExternalLink icon={null} href={Links.DISCOURSE}>
+                  <JournalText className={cx("bi", "me-1")} />
+                  Forum
+                </ExternalLink>
+              </h2>
             </CardHeader>
             <CardBody>
-              <p className="mb-0">
-                Renku is open source and being developed on{" "}
-                <ExternalDocsLink url={Links.GITHUB} title="GitHub" />. This is
-                the best place to report issues and ask for new features, but
-                feel free to contact us with questions, comments, or any kind of
-                feedback.
-              </p>
+              <HelpCardBodyContent url={Links.DISCOURSE}>
+                <p className="mb-0">
+                  We maintain a help forum for discussion about Renku. This is a
+                  good place to ask questions and find answers.
+                </p>
+              </HelpCardBodyContent>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col xs={12} md={6}>
+          <Card className={cardClasses}>
+            <CardHeader>
+              <h2 className="mb-0">
+                <ExternalLink icon={null} href={Links.GITTER}>
+                  <ChatSquareDots className={cx("bi", "me-1")} />
+                  Gitter
+                </ExternalLink>
+              </h2>
+            </CardHeader>
+            <CardBody>
+              <HelpCardBodyContent url={Links.GITTER}>
+                <p className="mb-0">
+                  Want to reach out to the development team live? Contact us on
+                  Gitter, we would be happy to chat with you.
+                </p>
+              </HelpCardBodyContent>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col xs={12} md={6}>
+          <Card className={cardClasses}>
+            <CardHeader>
+              <h2 className="mb-0">
+                <ExternalLink icon={null} href={Links.GITHUB}>
+                  <Github className={cx("bi", "me-1")} />
+                  GitHub
+                </ExternalLink>
+              </h2>
+            </CardHeader>
+            <CardBody>
+              <HelpCardBodyContent url={Links.GITHUB}>
+                <p className="mb-0">
+                  Renku is open source and being developed on GitHub. This is
+                  the best place to report issues and ask for new features, but
+                  feel free to contact us with questions, comments, or any kind
+                  of feedback.
+                </p>
+              </HelpCardBodyContent>
             </CardBody>
           </Card>
         </Col>
@@ -179,7 +256,7 @@ export default function Help() {
   return (
     <Row>
       <Col xs={12}>
-        <h2>Help</h2>
+        <h1>Help</h1>
       </Col>
       <Col xs={12}>
         <HelpNav statuspageId={statuspageId} />

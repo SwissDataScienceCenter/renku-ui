@@ -14,6 +14,8 @@
     "/search/query": {
       "get": {
         "summary": "Run a search query.",
+        "tags": ["search"],
+        "description": "Please note: this description is replaced at runtime with the\ncontents of the query manual markdown file. Everything added\nin this file will be replaced.\n",
         "parameters": [
           {
             "in": "query",
@@ -195,9 +197,12 @@
           }
         ],
         "type": "object",
-        "required": ["entityType"],
+        "required": ["entityType", "keywords"],
         "properties": {
           "entityType": {
+            "$ref": "#/components/schemas/Map_EntityType_Int"
+          },
+          "keywords": {
             "$ref": "#/components/schemas/Map_EntityType_Int"
           }
         }
@@ -500,16 +505,7 @@
           {
             "$ref": "#/components/schemas/SearchDataConnector"
           }
-        ],
-        "discriminator": {
-          "propertyName": "type",
-          "mapping": {
-            "Group": "#/components/schemas/Group",
-            "Project": "#/components/schemas/SearchProject",
-            "User": "#/components/schemas/User",
-            "DataConnector": "#/components/schemas/SearchDataConnector"
-          }
-        }
+        ]
       },
       "SearchResult": {
         "title": "SearchResult",
@@ -590,14 +586,7 @@
           {
             "$ref": "#/components/schemas/User"
           }
-        ],
-        "discriminator": {
-          "propertyName": "type",
-          "mapping": {
-            "Group": "#/components/schemas/Group",
-            "User": "#/components/schemas/User"
-          }
-        }
+        ]
       },
       "UserOrGroupOrProject": {
         "title": "UserOrGroupOrProject",
@@ -621,15 +610,7 @@
           {
             "$ref": "#/components/schemas/SearchProject"
           }
-        ],
-        "discriminator": {
-          "propertyName": "type",
-          "mapping": {
-            "Group": "#/components/schemas/Group",
-            "User": "#/components/schemas/User",
-            "Project": "#/components/schemas/SearchProject"
-          }
-        }
+        ]
       },
       "Visibility": {
         "description": "Project's visibility levels",

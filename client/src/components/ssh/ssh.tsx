@@ -36,11 +36,11 @@ import AppContext from "../../utils/context/appContext";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
-import { Url, apiVersionForMetadataVersion } from "../../utils/helpers/url";
+import { apiVersionForMetadataVersion, Url } from "../../utils/helpers/url";
 import { InfoAlert } from "../Alert";
-import { ExternalDocsLink } from "../ExternalLinks";
-import { Loader } from "../Loader";
 import { CommandCopy } from "../commandCopy/CommandCopy";
+import { ExternalDocsLink } from "../LegacyExternalLinks";
+import { Loader } from "../Loader";
 
 const docsIconStyle = {
   showLinkIcon: true,

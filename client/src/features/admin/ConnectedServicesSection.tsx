@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { useCallback, useState } from "react";
 import {
   Card,
   CardBody,
@@ -27,7 +28,9 @@ import {
   Container,
   Row,
 } from "reactstrap";
+
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import {
   Provider,
@@ -35,15 +38,13 @@ import {
   useGetOauth2ProvidersQuery,
 } from "../connectedServices/api/connectedServices.api";
 import AddConnectedServiceButton from "./AddConnectedServiceButton";
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
-import { useCallback, useState } from "react";
 import DeleteConnectedServiceButton from "./DeleteConnectedServiceButton";
 import UpdateConnectedServiceButton from "./UpdateConnectedServiceButton";
 
 export default function ConnectedServicesSection() {
   return (
     <section className="mt-4">
-      <h2 className="fs-4">Connected Services - Renku 2.0</h2>
+      <h2>Integrations</h2>
       <ConnectedServices />
     </section>
   );
@@ -102,10 +103,7 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
   return (
     <Col xs={12} md={6}>
       <Card>
-        <CardHeader
-          className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
-          tag="h5"
-        >
+        <CardHeader className={cx("fs-4", "p-0")} tag="h3">
           <button
             className={cx(
               "align-items-center",
@@ -136,13 +134,26 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
             </CardText>
             <CardText className="mb-2">URL: {provider.url}</CardText>
             <CardText className="mb-2">
+              Image Registry URL:{" "}
+              {provider.image_registry_url ?? (
+                <span className="fst-italic">Not configured</span>
+              )}
+            </CardText>
+            <CardText className="mb-2">
               Client ID: {provider.client_id}
             </CardText>
             <CardText className="mb-2">
               Client secret: {provider.client_secret}
             </CardText>
             <CardText className="mb-2">Scope: {provider.scope}</CardText>
-            <CardText>Use PKCE: {provider.use_pkce.toString()}</CardText>
+            <CardText className="mb-2">
+              Use PKCE: {provider.use_pkce.toString()}
+            </CardText>
+            {provider.oidc_issuer_url && (
+              <CardText>
+                OpenID Connect Issuer URL: {provider.oidc_issuer_url}
+              </CardText>
+            )}
           </CardBody>
 
           <CardBody

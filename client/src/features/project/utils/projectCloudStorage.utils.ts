@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
+import { type SessionDataConnectorOverride } from "~/features/sessionsV2/api/sessionsV2.api";
 import type {
   RCloneConfig,
   RCloneOption,
 } from "../../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../../dataConnectorsV2/components/dataConnector.utils";
-import type { SessionCloudStorageV2 } from "../../sessionsV2/sessionsV2.types";
+import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 import type { CloudStorageGet } from "../components/cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_OPTIONS_OVERRIDE,
@@ -35,16 +36,14 @@ import {
   STORAGES_WITH_ACCESS_MODE,
 } from "../components/cloudStorage/projectCloudStorage.constants";
 import type {
+  CloudStorage,
   CloudStorageCredential,
   CloudStorageDetails,
   CloudStorageOptionTypes,
-  CloudStorageSchemaOption,
   CloudStorageProvider,
   CloudStorageSchema,
-  CloudStorage,
+  CloudStorageSchemaOption,
 } from "../components/cloudStorage/projectCloudStorage.types";
-
-import { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
 
 const LAST_POSITION = 1000;
 
@@ -155,6 +154,7 @@ export function getSchemaStorage(
             name: override.name ?? element.name,
             description: override.description ?? element.description,
             position: override.position ?? element.position,
+            forceReadOnly: override.forceReadOnly ?? element.forceReadOnly,
           });
         }
       } else {
@@ -240,6 +240,22 @@ export function hasProviderShortlist(targetProvider?: string): boolean {
   return false;
 }
 
+export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
+  if (!targetSchema) return;
+  const currentSchema = schema.find((s) => s.prefix === targetSchema);
+  const override = CLOUD_STORAGE_OVERRIDE.storage[targetSchema];
+  if (currentSchema && !override.hide) {
+    return {
+      ...currentSchema,
+      name: override.name ?? currentSchema.name,
+      description: override.description ?? currentSchema.description,
+      position: override.position ?? currentSchema.position,
+      forceReadOnly: override.forceReadOnly ?? currentSchema.forceReadOnly,
+    };
+  }
+  return currentSchema;
+}
+
 export function getSchemaOptions(
   schema: CloudStorageSchema[],
   shortList = false,
@@ -248,7 +264,7 @@ export function getSchemaOptions(
   flags = { override: true, convertType: true, filterHidden: true }
 ): CloudStorageSchemaOption[] | undefined {
   if (!targetSchema) return;
-  const storage = schema.find((s) => s.prefix === targetSchema);
+  const storage = getSchema(schema, targetSchema);
   if (!storage) return;
 
   const optionsOverridden = flags.override
@@ -324,8 +340,12 @@ export function findSensitive(
 
 export function storageDefinitionAfterSavingCredentialsFromConfig(
   cs: SessionStartDataConnectorConfiguration
-) {
-  const newCs = { ...cs, saveCredentials: false };
+): SessionStartDataConnectorConfiguration {
+  const newCs: SessionStartDataConnectorConfiguration = {
+    ...cs,
+    saveCredentials: false,
+    touched: false,
+  };
   const newStorage = { ...newCs.dataConnector.storage };
   // The following two lines remove the sensitive fields from the storage configuration,
   // which should be ok, but isn't; so keep in the sensitive fields.
@@ -339,27 +359,27 @@ export function storageDefinitionAfterSavingCredentialsFromConfig(
   return newCs;
 }
 
-export function storageDefinitionFromConfig(
+export function dataConnectorsOverrideFromConfig(
   config: SessionStartDataConnectorConfiguration
-): SessionCloudStorageV2 {
-  const storageDefinition = config.dataConnector.storage;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { sensitive_fields, ...s } = config.dataConnector.storage;
-  const newStorageDefinition = {
-    ...s,
-    name: config.dataConnector.slug,
-    storage_id: config.dataConnector.id,
-  };
-  newStorageDefinition.configuration = { ...storageDefinition.configuration };
-  const sensitiveFieldValues = config.sensitiveFieldValues;
-  Object.entries(sensitiveFieldValues).forEach(([name, value]) => {
+): SessionDataConnectorOverride[] {
+  if (!config.skip && !config.touched) {
+    return [];
+  }
+
+  const configuration = { ...config.dataConnector.storage.configuration };
+  Object.entries(config.sensitiveFieldValues).forEach(([name, value]) => {
     if (value != null && value !== "") {
-      newStorageDefinition.configuration[name] = value;
+      configuration[name] = value;
     } else {
-      delete newStorageDefinition.configuration[name];
+      delete configuration[name];
     }
   });
-  return newStorageDefinition;
+  const override: SessionDataConnectorOverride = {
+    skip: config.skip,
+    data_connector_id: config.dataConnector.id,
+    configuration,
+  };
+  return [override];
 }
 
 function overrideOptions(

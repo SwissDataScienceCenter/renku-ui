@@ -110,16 +110,12 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
       }) as DeepRequired<VersionsArgs>;
 
       const coreResponse = { fixture: core.fixture };
-      cy.intercept("GET", "/ui-server/api/renku/versions", coreResponse).as(
-        core.name
-      );
+      cy.intercept("GET", "/api/renku/versions", coreResponse).as(core.name);
 
       const notebooksResponse = { fixture: notebooks.fixture };
-      cy.intercept(
-        "GET",
-        "/ui-server/api/notebooks/version",
-        notebooksResponse
-      ).as(notebooks.name);
+      cy.intercept("GET", "/api/notebooks/version", notebooksResponse).as(
+        notebooks.name
+      );
 
       const uiResponse = { fixture: ui.fixture };
       cy.intercept("GET", "/ui-server/api/versions", uiResponse).as(ui.name);

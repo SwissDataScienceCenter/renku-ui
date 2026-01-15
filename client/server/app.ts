@@ -1,4 +1,5 @@
 import "react-router";
+
 import { createRequestHandler } from "@react-router/express";
 import express from "express";
 
@@ -9,3 +10,7 @@ app.use(
     build: () => import("virtual:react-router/server-build"),
   })
 );
+
+export * as constants from "./constants";
+
+export { metrics } from "./metrics";

@@ -19,6 +19,7 @@
 import DOMPurify from "dompurify";
 import hljs from "highlight.js";
 import { useEffect, useRef } from "react";
+
 import { atobUTF8 } from "../utils/helpers/Encoding";
 
 interface CodePreviewProps {

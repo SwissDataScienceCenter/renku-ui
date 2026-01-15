@@ -15,13 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import cx from "classnames";
 import { CircleFill } from "react-bootstrap-icons";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { getShowSessionUrlByProject } from "../SessionsV2";
-import StartSessionButton from "../StartSessionButton";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
@@ -29,7 +28,9 @@ import {
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "../components/SessionStatus/SessionStatus";
+import { getShowSessionUrlByProject } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
+import StartSessionButton from "../StartSessionButton";
 
 interface SessionItemProps {
   launcher?: SessionLauncher;

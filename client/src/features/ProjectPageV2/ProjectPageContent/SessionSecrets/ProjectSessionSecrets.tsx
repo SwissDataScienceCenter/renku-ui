@@ -107,10 +107,10 @@ export default function ProjectSessionSecrets() {
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>
-            <h4 className={cx("m-0", "me-2")}>
+            <h2 className={cx("m-0", "me-2")}>
               <ShieldLock className={cx("me-1", "bi")} />
               Session secret slots
-            </h4>
+            </h2>
             {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
           </div>
 
@@ -141,8 +141,8 @@ export default function ProjectSessionSecrets() {
       </CardHeader>
       <CardBody>
         <div className={cx(sessionSecretSlots?.length !== 0 && "mb-3")}>
-          <p className="mb-1">
-            Session secrets will be mounted at the following location:
+          <p className={cx("form-label", "mb-1")}>
+            Session secrets will be mounted at the following location
           </p>
           <SecretsMountDirectoryComponent />
         </div>

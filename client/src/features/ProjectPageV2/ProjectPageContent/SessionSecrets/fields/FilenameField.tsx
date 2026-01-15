@@ -51,6 +51,7 @@ export default function FilenameField<T extends FieldValues>({
           <Input
             aria-describedby={fieldHelpId}
             className={cx(errors.filename && "is-invalid")}
+            data-cy="add-session-secret-filename-input"
             id={fieldId}
             innerRef={ref}
             placeholder="Name of the file, e.g., api_token.txt"

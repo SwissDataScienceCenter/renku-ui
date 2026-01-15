@@ -376,11 +376,11 @@ describe("Edit v2 project", () => {
     fixtures
       .deleteProjectV2Member({ memberId: projectMemberToRemove })
       .listProjectV2Members({ removeMemberId: projectMemberToRemove });
-    cy.getDataCy("project-member-actions-1")
+    cy.getDataCy("project-member-actions-2")
       .find('[data-cy="button-with-menu-dropdown"]')
       .click();
-    cy.getDataCy("project-member-actions-1").contains("Remove").click();
-    cy.getDataCy("remove-member-form").should("be.visible");
+    cy.getDataCy("project-member-actions-2").contains("Remove").click();
+    cy.getDataCy("remove-member-form").should("be.visible").contains("@user3");
     cy.contains("Remove member").should("be.visible").click();
     cy.contains("@user3").should("not.exist");
   });
@@ -438,7 +438,7 @@ describe("Edit v2 project", () => {
     cy.wait("@readProjectV2");
     cy.contains("@user3").should("be.visible");
     cy.getDataCy("project-member-edit-2").should("be.visible").click();
-    cy.getDataCy("member-role").select("Viewer");
+    cy.get("#member-role").click().contains("Viewer").click();
     fixtures.listProjectV2Members({
       removeMemberId: projectMemberToEdit,
       addMember: {
@@ -479,7 +479,7 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-member-edit-0").should("be.enabled");
     cy.getDataCy("project-member-edit-1").should("be.enabled");
     cy.getDataCy("project-member-edit-0").should("be.visible").click();
-    cy.getDataCy("member-role").select("Viewer");
+    cy.get("#member-role").click().contains("Viewer").click();
     fixtures.listProjectV2Members({
       fixture: "projectV2/list-projectV2-members-many.json",
       removeMemberId: projectMemberToEdit,
@@ -564,6 +564,14 @@ describe("Edit v2 project", () => {
     cy.getDataCy("project-settings-keywords")
       .should("contain", keywords[0])
       .should("contain", keywords[1]);
+
+    // the keywords should not be links on the settings page
+    cy.getDataCy("project-settings-keywords")
+      .first()
+      .and("not.have.attr", "href");
+    // the keywords should be links on the project overview page
+    cy.getDataCy("project-overview-link").click();
+    cy.getDataCy("keyword").parent().should("have.attr", "href");
   });
 });
 
@@ -910,6 +918,24 @@ describe("Project templates and copies", () => {
     cy.wait("@readProjectV2");
     cy.wait("@readProjectV2ById");
     cy.contains("Copied from:").should("be.visible");
+  });
+
+  it("show a copied project, no access to source", () => {
+    fixtures
+      .readProjectV2({
+        overrides: {
+          template_id: "TEMPLATE-ULID",
+        },
+      })
+      .readProjectV2ById({
+        projectId: "TEMPLATE-ULID",
+        statusCode: 404,
+      })
+      .readUserV2Namespace();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2ById");
+    cy.contains("Copied from:").should("not.exist");
   });
 
   it("break the template link", () => {

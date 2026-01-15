@@ -18,16 +18,15 @@
 
 import * as Sentry from "@sentry/react";
 import cx from "classnames";
-import { ReactNode, useCallback, useContext } from "react";
-import { useLocation } from "react-router";
+import { ReactNode, useCallback } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
+import { useLocation } from "react-router";
 
+import StyleHandler from "~/features/rootV2/StyleHandler";
 import rkOopsImg from "../styles/assets/oops.svg";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
-import AppContext from "../utils/context/appContext";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
-import StyleHandler from "~/features/rootV2/StyleHandler";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -35,21 +34,34 @@ interface AppErrorBoundaryProps {
 
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
   // Handle chunk load errors by reloading the page
-  const onError = useCallback((error: Error) => {
-    if (error.name === "ChunkLoadError") {
-      const url = new URL(window.location.href);
-      const hasReloaded = !!+(
-        url.searchParams.get("reloadForChunkError") ?? ""
-      );
-      if (!hasReloaded) {
-        url.searchParams.set("reloadForChunkError", "1");
-        window.location.replace(url);
+  const beforeCapture = useCallback(
+    (scope: Sentry.Scope, error: Error | null) => {
+      if (
+        (error instanceof TypeError &&
+          (error.message.toLowerCase().includes("module") ||
+            error.message.toLowerCase().includes("text/html"))) ||
+        error?.name === "ChunkLoadError"
+      ) {
+        const url = new URL(window.location.href);
+        const hasReloaded = !!+(
+          url.searchParams.get("reloadForChunkError") ?? ""
+        );
+        if (!hasReloaded) {
+          scope.setTag("reloadForChunkError", true);
+          scope.setLevel("info");
+          url.searchParams.set("reloadForChunkError", "1");
+          setTimeout(() => window.location.replace(url), 0);
+        }
       }
-    }
-  }, []);
+    },
+    []
+  );
 
   return (
-    <Sentry.ErrorBoundary onError={onError} fallback={<ErrorPage />}>
+    <Sentry.ErrorBoundary
+      beforeCapture={beforeCapture}
+      fallback={<ErrorPage />}
+    >
       {children}
     </Sentry.ErrorBoundary>
   );
@@ -57,8 +69,7 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 
 function ErrorPage() {
   const location = useLocation();
-  const { params } = useContext(AppContext);
-  const forceV2Style = (params && !params.LEGACY_SUPPORT.enabled) || false;
+  const forceV2Style = true;
   const isLegacy = isRenkuLegacy(location.pathname, forceV2Style);
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (

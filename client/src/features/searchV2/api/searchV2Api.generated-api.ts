@@ -1,4 +1,5 @@
 import { searchV2EmptyApi as api } from "./searchV2-empty.api";
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getSearchQuery: build.query<
@@ -65,13 +66,7 @@ export type User = {
   score?: number;
   type: "User";
 };
-export type UserOrGroup =
-  | ({
-      type: "Group";
-    } & Group)
-  | ({
-      type: "User";
-    } & User);
+export type UserOrGroup = Group | User;
 export type Visibility = "private" | "public";
 export type Project = {
   id: string;
@@ -88,16 +83,7 @@ export type Project = {
   score?: number;
   type: "Project";
 };
-export type UserOrGroupOrProject =
-  | ({
-      type: "Group";
-    } & Group)
-  | ({
-      type: "User";
-    } & User)
-  | ({
-      type: "Project";
-    } & Project);
+export type UserOrGroupOrProject = Group | User | Project;
 export type DataConnector = {
   id: string;
   storageType: string;
@@ -114,24 +100,13 @@ export type DataConnector = {
   score?: number;
   type: "DataConnector";
 };
-export type SearchEntity =
-  | ({
-      type: "Group";
-    } & Group)
-  | ({
-      type: "Project";
-    } & Project)
-  | ({
-      type: "User";
-    } & User)
-  | ({
-      type: "DataConnector";
-    } & DataConnector);
+export type SearchEntity = Group | Project | User | DataConnector;
 export type MapEntityTypeInt = {
   [key: string]: number;
 };
 export type FacetData = {
   entityType: MapEntityTypeInt;
+  keywords: MapEntityTypeInt;
 };
 export type PageDef = {
   limit: number;

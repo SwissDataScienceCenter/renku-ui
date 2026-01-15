@@ -6,26 +6,23 @@ import { BrowserRouter, useLocation, useNavigate } from "react-router";
 
 import "bootstrap";
 
-// Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
-import v1Styles from "./styles/index.scss?inline";
-
-import App from "./App";
+import StyleHandler from "~/features/rootV2/StyleHandler";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
-import APIClient from "./api-client";
+import App from "./App";
 import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
+// Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
+import v1Styles from "./styles/index.scss?inline";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import { Sentry } from "./utils/helpers/sentry";
-import { createCoreApiVersionedUrlConfig, Url } from "./utils/helpers/url";
-
-import StyleHandler from "~/features/rootV2/StyleHandler";
+import { Url } from "./utils/helpers/url";
 
 let hasRendered = false;
 
@@ -50,24 +47,16 @@ function appIndexInner() {
       const params = validatedAppParams(params_);
 
       // configure core api versioned url helper (only used if legacy support is enabled)
-      const coreApiVersionedUrlConfig = params.LEGACY_SUPPORT.enabled
-        ? createCoreApiVersionedUrlConfig(params.CORE_API_VERSION_CONFIG)
-        : null;
+      const coreApiVersionedUrlConfig = null;
 
       // configure base url
       Url.setBaseUrl(params.BASE_URL);
 
       // create client to be passed to coordinators (only if legacy support is enabled)
-      const client = params.LEGACY_SUPPORT.enabled
-        ? new APIClient(
-            `${params.UISERVER_URL}/api`,
-            params.UISERVER_URL,
-            coreApiVersionedUrlConfig
-          )
-        : new ApiClientV2Compat(
-            `${params.UISERVER_URL}/api`,
-            params.UISERVER_URL
-          );
+      const client = new ApiClientV2Compat(
+        `${params.BASE_URL}/api`,
+        params.UISERVER_URL
+      );
 
       // Create the global model containing the formal schema definition and the redux store
       const model = new StateModel(globalSchema);
@@ -117,7 +106,7 @@ function appIndexInner() {
         return { user: state.stateModel.user, ...ownProps };
       }
 
-      const forceV2Style = params && !params.LEGACY_SUPPORT.enabled;
+      const forceV2Style = true;
 
       // Render UI application
       const VisibleApp = connect(mapStateToProps)(uiApplication);

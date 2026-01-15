@@ -29,10 +29,11 @@ import {
   Label,
   Row,
 } from "reactstrap";
+
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -49,7 +50,10 @@ import type {
   AddCloudStorageState,
   CloudStorageDetails,
 } from "../../../project/components/cloudStorage/projectCloudStorage.types";
-import { getSchemaOptions } from "../../../project/utils/projectCloudStorage.utils";
+import {
+  getSchema,
+  getSchemaOptions,
+} from "../../../project/utils/projectCloudStorage.utils";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";
@@ -294,16 +298,19 @@ export function DataConnectorMount({
   const { validationResult } = useAppSelector(
     (state) => state.dataConnectorFormSlice
   );
-  const options = getSchemaOptions(
+  const schema = getSchema(schemata, flatDataConnector.schema);
+  const schemaOptions = getSchemaOptions(
     schemata,
     true,
     flatDataConnector.schema,
     flatDataConnector.provider
   );
   const secretFields =
-    options == null
+    schemaOptions == null
       ? []
-      : Object.values(options).filter((o) => o && o.convertedType === "secret");
+      : Object.values(schemaOptions).filter(
+          (o) => o && o.convertedType === "secret"
+        );
   const hasPasswordFieldWithInput = secretFields.some(
     (o) => flatDataConnector.options && flatDataConnector.options[o.name]
   );
@@ -326,7 +333,7 @@ export function DataConnectorMount({
   const parentPath = `/${flatDataConnector.namespace}/`;
   return (
     <form className="form-rk-green" data-cy="data-connector-edit-mount">
-      {!dataConnectorId && <h5 className="fw-bold">Final details</h5>}
+      {!dataConnectorId && <h3>Final details</h3>}
       <p>
         Set how your data connector displays in Renku and who can access it.
       </p>
@@ -399,9 +406,6 @@ export function DataConnectorMount({
         <div className="invalid-feedback">
           {errors.name?.message?.toString()}
         </div>
-      </div>
-
-      <div className="mb-3">
         <SlugPreviewFormField
           compact={true}
           control={control}
@@ -514,6 +518,7 @@ export function DataConnectorMount({
                       field.onChange(e);
                       onFieldValueChange("readOnly", !!e.target.value);
                     }}
+                    disabled={schema?.forceReadOnly ?? false}
                   />
                   <Label
                     for="data-connector-readonly-true"
@@ -535,6 +540,7 @@ export function DataConnectorMount({
                       field.onChange(e);
                       onFieldValueChange("readOnly", false);
                     }}
+                    disabled={schema?.forceReadOnly ?? false}
                   />
                   <Label
                     for="data-connector-readonly-false"
@@ -548,16 +554,34 @@ export function DataConnectorMount({
             )}
             rules={{ required: true }}
           />
-          {!flatDataConnector.readOnly && (
-            <div className="mt-1">
-              <WarnAlert dismissible={false}>
+          {schema?.forceReadOnly ? (
+            <InfoAlert className="mt-1" dismissible={false} timeout={0}>
+              <p className="mb-0">
+                This cloud storage only supports read-only access.
+              </p>
+            </InfoAlert>
+          ) : !flatDataConnector.readOnly &&
+            !hasPasswordFieldWithInput &&
+            flatDataConnector.visibility === "public" ? (
+            <ErrorAlert className="mt-1" dismissible={false}>
+              <p className="mb-0">
+                Data security warning: This public and writable data connector
+                is not protected by a password. Anyone on RenkuLab will be able
+                to edit the data connected here. Protect your data with a
+                password, select private visibility, or limit access to
+                read-only.
+              </p>
+            </ErrorAlert>
+          ) : (
+            !flatDataConnector.readOnly && (
+              <WarnAlert className="mt-1" dismissible={false}>
                 <p className="mb-0">
                   You are mounting this storage in read-write mode. If you have
                   read-only access, please select &quot;Read Only&quot; to
                   prevent errors with some storage types.
                 </p>
               </WarnAlert>
-            </div>
+            )
           )}
           <div className={cx("form-text", "text-muted")}>
             Select &quot;Read Only&quot; to mount the storage without write
@@ -600,7 +624,9 @@ export function DataConnectorMount({
                           const newValue = field.value.trim();
                           if (!currentKeywords.includes(newValue)) {
                             const newKeywords = [...currentKeywords, newValue];
-                            setValue("keywords", newKeywords);
+                            setValue("keywords", newKeywords, {
+                              shouldDirty: true,
+                            });
                           }
                           setValue("keyword", "");
                           onFieldValueChange("keyword", "");
@@ -616,7 +642,9 @@ export function DataConnectorMount({
                           const newValue = field.value.trim();
                           if (!currentKeywords.includes(newValue)) {
                             const newKeywords = [...currentKeywords, newValue];
-                            setValue("keywords", newKeywords);
+                            setValue("keywords", newKeywords, {
+                              shouldDirty: true,
+                            });
                           }
                           setValue("keyword", "");
                           onFieldValueChange("keyword", "");
@@ -652,7 +680,9 @@ export function DataConnectorMount({
                               const newKeywords = currentKeywords.filter(
                                 (k) => k !== keyword
                               );
-                              setValue("keywords", newKeywords);
+                              setValue("keywords", newKeywords, {
+                                shouldDirty: true,
+                              });
                               onFieldValueChange("keyword", "");
                             }}
                           >
@@ -685,7 +715,7 @@ export function DataConnectorMount({
           </div>
         )}
 
-      <div className="mb-3">
+      <div className="mt-3 mb-2">
         <button
           className={cx(
             "d-flex",
@@ -693,7 +723,8 @@ export function DataConnectorMount({
             "w-100",
             "bg-transparent",
             "border-0",
-            "fw-bold",
+            "fw-medium",
+            "fs-3",
             "px-0"
           )}
           type="button"

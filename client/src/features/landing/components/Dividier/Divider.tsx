@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+
 import styles from "./Divider.module.css";
 
 export default function DividerLandingPage() {
