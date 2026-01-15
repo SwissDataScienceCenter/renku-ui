@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, PencilSquare, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -62,7 +62,8 @@ export default function UpdateResourcePoolQuotaButton({
         disabled={resourcePool.quota == null}
         onClick={toggle}
       >
-        Update
+        <PencilSquare className={cx("bi", "me-1")} />
+        Edit
       </Button>
       <UpdateResourcePoolQuotaModal
         isOpen={isOpen}
@@ -200,7 +201,7 @@ function UpdateResourcePoolQuotaModal({
       <ModalFooter>
         <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
-          Close
+          Cancel
         </Button>
         <Button
           color="primary"
