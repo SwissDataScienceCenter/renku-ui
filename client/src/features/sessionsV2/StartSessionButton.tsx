@@ -24,8 +24,8 @@ import { generatePath, Link } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
-import AppContext from "~/utils/context/appContext.ts";
-import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants.ts";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
