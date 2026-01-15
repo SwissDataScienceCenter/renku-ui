@@ -243,7 +243,9 @@ export function hasProviderShortlist(targetProvider?: string): boolean {
 export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
   if (!targetSchema) return;
   const currentSchema = schema.find((s) => s.prefix === targetSchema);
-  const override = CLOUD_STORAGE_OVERRIDE.storage[targetSchema];
+  const override = CLOUD_STORAGE_OVERRIDE.storage[
+    targetSchema
+  ] as Partial<CloudStorageSchema> | null;
   if (currentSchema && override && !override.hide) {
     return {
       ...currentSchema,
