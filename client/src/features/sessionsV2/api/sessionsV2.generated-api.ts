@@ -442,6 +442,7 @@ export type SessionResponse = {
   name: ServerName;
   resources: SessionResources;
   started: string | null;
+  lastInteraction?: string | null;
   status: SessionStatus;
   url: string;
   project_id: Ulid;
@@ -478,9 +479,11 @@ export type SessionPostRequest = {
   env_variable_overrides?: EnvVariableOverrides;
 };
 export type SessionListResponse = SessionResponse[];
+export type CurrentTime = "now";
 export type SessionPatchRequest = {
   resource_class_id?: number;
   state?: "running" | "hibernated";
+  lastInteraction?: string | CurrentTime;
 };
 export type SessionLogsResponse = {
   [key: string]: string;

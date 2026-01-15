@@ -653,6 +653,7 @@ export type RemoteConfigurationFirecrest = {
 export type RemoteConfiguration = RemoteConfigurationFirecrest;
 export type IdleThreshold = number;
 export type HibernationThreshold = number;
+export type HibernationWarningPeriod = number;
 export type RuntimePlatform = "linux/amd64" | "linux/arm64";
 export type ResourcePoolWithIdFiltered = {
   quota?: QuotaWithId;
@@ -664,6 +665,7 @@ export type ResourcePoolWithIdFiltered = {
   remote?: RemoteConfiguration;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
+  hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform: RuntimePlatform;
 };
@@ -681,6 +683,7 @@ export type ResourcePoolWithId = {
   remote?: RemoteConfiguration;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
+  hibernation_warning_period?: HibernationWarningPeriod;
   cluster?: {
     id: Ulid;
   };
@@ -713,6 +716,7 @@ export type ResourcePool = {
   remote?: RemoteConfiguration;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
+  hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform?: RuntimePlatform;
 };
@@ -726,6 +730,7 @@ export type ResourcePoolPut = {
   remote?: RemoteConfiguration;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
+  hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform: RuntimePlatform;
 };
@@ -770,6 +775,7 @@ export type ResourcePoolPatch = {
   remote?: RemoteConfigurationPatch;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
+  hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform?: RuntimePlatform;
 };
