@@ -18,7 +18,13 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
+import {
+  CheckLg,
+  PencilSquare,
+  PlusLg,
+  TrashFill,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Button,
@@ -60,7 +66,8 @@ export default function UpdateResourceClassButton({
   return (
     <>
       <Button size="sm" color="outline-primary" onClick={toggle}>
-        Update
+        <PencilSquare className={cx("bi", "me-1")} />
+        Edit
       </Button>
       <UpdateResourceClassModal
         isOpen={isOpen}
@@ -453,7 +460,7 @@ function UpdateResourceClassModal({
       <ModalFooter>
         <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
-          Close
+          Cancel
         </Button>
         <Button
           color="primary"

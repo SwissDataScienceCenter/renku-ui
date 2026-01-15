@@ -67,13 +67,11 @@ import {
   usePatchSessionsBySessionIdMutation,
 } from "../api/sessionsV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
-import {
-  PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS,
-  PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS,
-} from "../session.constants";
+import { PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS } from "../session.constants";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
+import useSessionPauseWarning from "../useSessionPauseWarning.hook";
 import PauseWarningModal from "./PauseWarningModal";
 import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
@@ -140,8 +138,15 @@ export default function ShowSessionPage() {
     }
   }, [postponePauseError]);
 
+  const sessionPauseWarning = useSessionPauseWarning({
+    classId: thisSession?.resource_class_id,
+  });
+
   // Set next pause warning notification based on the current session data
   useEffect(() => {
+    if (!sessionPauseWarning.isDone || !sessionPauseWarning.pauseWarningSeconds)
+      return;
+
     const willHibernateAt = thisSession?.status.will_hibernate_at
       ? new Date(thisSession.status.will_hibernate_at)
       : null;
@@ -150,11 +155,14 @@ export default function ShowSessionPage() {
       return;
     }
     const notificationTime = new Date(
-      willHibernateAt.getTime() -
-        PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS * 1000
+      willHibernateAt.getTime() - sessionPauseWarning.pauseWarningSeconds * 1000
     );
     setNextPauseWarning(notificationTime);
-  }, [thisSession?.status.will_hibernate_at]);
+  }, [
+    thisSession?.status.will_hibernate_at,
+    sessionPauseWarning.pauseWarningSeconds,
+    sessionPauseWarning.isDone,
+  ]);
 
   // Handle showing the pause warning
   useEffect(() => {

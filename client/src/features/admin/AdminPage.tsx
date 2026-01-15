@@ -314,6 +314,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
 function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
   const {
     idle_threshold: idleThreshold,
+    hibernation_warning_period: hibernationWarningPeriod,
     hibernation_threshold: hibernationThreshold,
   } = resourcePool;
 
@@ -325,8 +326,8 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
         "align-items-center",
         "row",
         "row-cols-1",
-        "row-cols-sm-3",
-        "row-cols-lg-4",
+        "row-cols-sm-4",
+        "row-cols-md-5",
         "text-end"
       )}
     >
@@ -345,6 +346,18 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
             : data?.defaultCullingThresholds?.registered.idle
             ? toFullHumanDuration(data.defaultCullingThresholds.registered.idle)
             : "unknown"}
+        </span>
+      </div>
+      <div className="col">
+        Warn in advance{" "}
+        <span className="text-nowrap">
+          {hibernationWarningPeriod
+            ? toFullHumanDuration(hibernationWarningPeriod)
+            : isLoading
+            ? "(Loading...)"
+            : isError
+            ? "unavailable"
+            : "(unknown default)"}
         </span>
       </div>
       <div className="col">

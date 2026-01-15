@@ -21,6 +21,7 @@ export interface ResourcePoolForm {
   public: boolean;
   quota: ResourcePoolFormQuota;
   hibernationThresholdMinutes?: number;
+  pauseWarningMinutes?: number;
   idleThresholdMinutes?: number;
   clusterId: string;
   remote: RemoteConfiguration;
@@ -65,5 +66,6 @@ export interface ResourceClassFormNodeAffinity {
 
 export interface UpdateResourcePoolThresholdsForm {
   idleThresholdMinutes?: number;
+  pauseWarningMinutes?: number;
   hibernationThresholdMinutes?: number;
 }

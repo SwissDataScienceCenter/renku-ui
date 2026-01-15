@@ -39,6 +39,7 @@ import {
   usePostResourcePoolsMutation,
   type RemoteConfiguration,
 } from "../sessionsV2/api/computeResources.api";
+import { PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS } from "../sessionsV2/session.constants";
 import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import type { ResourcePoolForm } from "./adminComputeResources.types";
 import ResourcePoolClusterIdInput from "./forms/ResourcePoolClusterIdInput";
@@ -105,6 +106,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
         gpu: defaultQuota.gpu,
       },
       idleThresholdMinutes: undefined,
+      pauseWarningMinutes: undefined,
       hibernationThresholdMinutes: undefined,
       clusterId: "",
       remote: {
@@ -159,6 +161,9 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           idle_threshold: data.idleThresholdMinutes
             ? data.idleThresholdMinutes * 60
             : undefined,
+          hibernation_warning_period: data.pauseWarningMinutes
+            ? data.pauseWarningMinutes * 60
+            : undefined,
           name: data.name,
           public: data.public,
           quota: data.quota,
@@ -180,6 +185,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
         gpu: defaultQuota.gpu,
       },
       idleThresholdMinutes: undefined,
+      pauseWarningMinutes: undefined,
       hibernationThresholdMinutes: undefined,
       clusterId: "",
       remote: {
@@ -248,9 +254,10 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             />
             <div className="invalid-feedback">Please provide a name</div>
           </div>
+
           <div>
             <Label className="form-label" for="addResourcePoolIdleThreshold">
-              Maximum idle time before hibernating (minutes)
+              Maximum idle time before pausing (minutes)
             </Label>
             <Controller
               control={control}
@@ -282,6 +289,44 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               isLoading={notebookVersion.isLoading}
             />
           </div>
+
+          <div>
+            <Label
+              className="form-label"
+              for="addResourcePoolPauseWarningMinutes"
+            >
+              How long in advance should users be warned about pausing (minutes)
+            </Label>
+            <Controller
+              control={control}
+              name="pauseWarningMinutes"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.pauseWarningMinutes && "is-invalid"
+                  )}
+                  id="addResourcePoolPauseWarningMinutes"
+                  min="0"
+                  placeholder="pause warning"
+                  step="1"
+                  type="number"
+                  {...field}
+                />
+              )}
+              rules={{ min: 0 }}
+            />
+            <div className="invalid-feedback">
+              Please enter 0 (or leave it blank) for default or anything greater
+              than 0 to specify a custom value.
+            </div>
+            <Label className="form-text">
+              Default:{" "}
+              {toFullHumanDuration(PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS)}.
+              The value cannot be higher than Max idle time.
+            </Label>
+          </div>
+
           <div>
             <Label
               className="form-label"
