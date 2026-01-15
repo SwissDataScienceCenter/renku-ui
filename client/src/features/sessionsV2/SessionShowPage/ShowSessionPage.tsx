@@ -37,6 +37,9 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
+  Toast,
+  ToastBody,
+  ToastHeader,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -59,11 +62,19 @@ import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
 } from "../api/sessionLaunchersV2.api";
-import { useGetSessionsQuery } from "../api/sessionsV2.api";
+import {
+  useGetSessionsQuery,
+  usePatchSessionsBySessionIdMutation,
+} from "../api/sessionsV2.api";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
+import {
+  PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS,
+  PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS,
+} from "../session.constants";
 import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
+import PauseWarningModal from "./PauseWarningModal";
 import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
@@ -72,6 +83,11 @@ import SessionUnavailable from "./SessionUnavailable";
 import styles from "../../session/components/ShowSession.module.scss";
 
 export default function ShowSessionPage() {
+  const [nextPauseWarning, setNextPauseWarning] = useState<Date | null>(null);
+  const [lastClosedWarningModal, setLastClosedWarningModal] =
+    useState<Date | null>(null);
+  const [showPauseWarningModal, setShowPauseWarningModal] = useState(false);
+
   const dispatch = useAppDispatch();
   const {
     namespace,
@@ -87,6 +103,8 @@ export default function ShowSessionPage() {
     slug: slug ?? "",
   });
 
+  // ? We use useGetSessionsQuery instead of useGetSessionsQueryBySessionId to benefit
+  // ? from the response refresh triggered by the WebSocket channel messages
   const {
     data: sessions,
     isLoading,
@@ -99,6 +117,78 @@ export default function ShowSessionPage() {
     }
     return sessions.find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
+
+  const [patchSession, { error: postponePauseError }] =
+    usePatchSessionsBySessionIdMutation();
+
+  const closePauseWarningModal = useCallback(() => {
+    setShowPauseWarningModal(false);
+    setLastClosedWarningModal(new Date());
+    patchSession({
+      sessionId: sessionName,
+      sessionPatchRequest: {
+        lastInteraction: "now",
+      },
+    });
+  }, [patchSession, sessionName]);
+
+  // Show error toast if postponing pause failed
+  const [showPatchErrorToast, setShowPatchErrorToast] = useState(false);
+  useEffect(() => {
+    if (postponePauseError) {
+      setShowPatchErrorToast(true);
+    }
+  }, [postponePauseError]);
+
+  // Set next pause warning notification based on the current session data
+  useEffect(() => {
+    const willHibernateAt = thisSession?.status.will_hibernate_at
+      ? new Date(thisSession.status.will_hibernate_at)
+      : null;
+    if (!willHibernateAt) {
+      setNextPauseWarning(null);
+      return;
+    }
+    const notificationTime = new Date(
+      willHibernateAt.getTime() -
+        PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS * 1000
+    );
+    setNextPauseWarning(notificationTime);
+  }, [thisSession?.status.will_hibernate_at]);
+
+  // Handle showing the pause warning
+  useEffect(() => {
+    if (!nextPauseWarning) {
+      setShowPauseWarningModal(false);
+      return;
+    }
+
+    const nextNotificationDelay = nextPauseWarning.getTime() - Date.now();
+
+    const showWarningIfNeeded = () => {
+      // Show the modal only if enough time has passed since last close
+      if (!lastClosedWarningModal) {
+        setShowPauseWarningModal(true);
+        return;
+      }
+      const timeSinceLastClose = Date.now() - lastClosedWarningModal.getTime();
+      if (timeSinceLastClose >= PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS * 1000) {
+        setShowPauseWarningModal(true);
+      }
+    };
+
+    // Either show it immediately or set a timeout
+    if (nextNotificationDelay <= 0) {
+      showWarningIfNeeded();
+      return;
+    }
+    const id = setTimeout(showWarningIfNeeded, nextNotificationDelay);
+
+    // Cleanup timeout on unmount or when nextPauseWarning changes
+    return () => {
+      clearTimeout(id);
+    };
+  }, [lastClosedWarningModal, nextPauseWarning]);
 
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
@@ -200,6 +290,14 @@ export default function ShowSessionPage() {
     </Link>
   );
 
+  const pauseWarningModal = (
+    <PauseWarningModal
+      close={closePauseWarningModal}
+      isOpen={showPauseWarningModal}
+      targetPauseDate={thisSession?.status.will_hibernate_at ?? undefined}
+    />
+  );
+
   return (
     <div className={cx("bg-white", "p-0")}>
       <div className={cx("d-lg-flex", "flex-column")}>
@@ -260,7 +358,33 @@ export default function ShowSessionPage() {
       {/* modals */}
       {logs}
       {pauseOrDeleteSessionModal}
+      {pauseWarningModal}
+      <PatchErrorToast
+        isOpen={showPatchErrorToast}
+        close={() => setShowPatchErrorToast(false)}
+      />
     </div>
+  );
+}
+
+interface PatchErrorToastProps {
+  close: () => void;
+  isOpen: boolean;
+}
+function PatchErrorToast({ close, isOpen }: PatchErrorToastProps) {
+  return (
+    <Toast
+      fade={true}
+      isOpen={isOpen}
+      className={cx("bottom-0", "end-0", "m-3", "position-fixed")}
+    >
+      <ToastHeader icon="danger" toggle={close}>
+        Error postponing session pause
+      </ToastHeader>
+      <ToastBody className="text-wrap">
+        There was an error while trying to postpone the session pause.
+      </ToastBody>
+    </Toast>
   );
 }
 

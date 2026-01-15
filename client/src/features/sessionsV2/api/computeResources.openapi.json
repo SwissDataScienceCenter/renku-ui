@@ -2017,6 +2017,9 @@
           "hibernation_threshold": {
             "$ref": "#/components/schemas/HibernationThreshold"
           },
+          "hibernation_warning_period": {
+            "$ref": "#/components/schemas/HibernationWarningPeriod"
+          },
           "cluster_id": {
             "$ref": "#/components/schemas/Ulid"
           },
@@ -2086,6 +2089,9 @@
           "hibernation_threshold": {
             "$ref": "#/components/schemas/HibernationThreshold"
           },
+          "hibernation_warning_period": {
+            "$ref": "#/components/schemas/HibernationWarningPeriod"
+          },
           "cluster_id": {
             "$ref": "#/components/schemas/Ulid"
           },
@@ -2136,6 +2142,9 @@
           },
           "hibernation_threshold": {
             "$ref": "#/components/schemas/HibernationThreshold"
+          },
+          "hibernation_warning_period": {
+            "$ref": "#/components/schemas/HibernationWarningPeriod"
           },
           "cluster_id": {
             "$ref": "#/components/schemas/Ulid"
@@ -2210,6 +2219,9 @@
           },
           "hibernation_threshold": {
             "$ref": "#/components/schemas/HibernationThreshold"
+          },
+          "hibernation_warning_period": {
+            "$ref": "#/components/schemas/HibernationWarningPeriod"
           },
           "cluster": {
             "type": "object",
@@ -2291,6 +2303,9 @@
           },
           "hibernation_threshold": {
             "$ref": "#/components/schemas/HibernationThreshold"
+          },
+          "hibernation_warning_period": {
+            "$ref": "#/components/schemas/HibernationWarningPeriod"
           },
           "cluster_id": {
             "$ref": "#/components/schemas/Ulid"
@@ -2691,6 +2706,12 @@
       "HibernationThreshold": {
         "type": "integer",
         "description": "A threshold in seconds after which a session gets culled/deleted (0 means no threshold)",
+        "minimum": 0,
+        "maximum": 2147483647
+      },
+      "HibernationWarningPeriod": {
+        "type": "integer",
+        "description": "A duration in seconds, lower than `HibernationThreshold`,\nwhich indicates when to let the user know about a session that\nis going to be hibernated. If `0` is specified, some default\nvalue will be chosen. If no `HibernationThreshold` is defined,\nthis value is ignored.\n",
         "minimum": 0,
         "maximum": 2147483647
       },
