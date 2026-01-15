@@ -19,18 +19,10 @@
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import {
-  MouseEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
-import AppContext from "~/utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { Loader } from "../../../components/Loader";
 import { NotebooksHelper } from "../../../notebooks";
 import { Url } from "../../../utils/helpers/url";
@@ -78,10 +70,7 @@ export default function SimpleSessionButton({
     ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
     : null;
 
-  const { params } = useContext(AppContext);
-  const supportLegacySessions =
-    params?.LEGACY_SUPPORT.supportLegacySessions ??
-    DEFAULT_APP_PARAMS.LEGACY_SUPPORT.supportLegacySessions;
+  const supportLegacySessions = false;
 
   if (isLoading) {
     return (

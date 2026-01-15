@@ -18,14 +18,13 @@
 
 import * as Sentry from "@sentry/react";
 import cx from "classnames";
-import { ReactNode, useCallback, useContext } from "react";
+import { ReactNode, useCallback } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { useLocation } from "react-router";
 
 import StyleHandler from "~/features/rootV2/StyleHandler";
 import rkOopsImg from "../styles/assets/oops.svg";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
-import AppContext from "../utils/context/appContext";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
 
@@ -70,8 +69,7 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 
 function ErrorPage() {
   const location = useLocation();
-  const { params } = useContext(AppContext);
-  const forceV2Style = (params && !params.LEGACY_SUPPORT.enabled) || false;
+  const forceV2Style = true;
   const isLegacy = isRenkuLegacy(location.pathname, forceV2Style);
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (

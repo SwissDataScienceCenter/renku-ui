@@ -16,22 +16,16 @@
  * limitations under the License.
  */
 
-import { useContext } from "react";
 import { Navigate } from "react-router";
 
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import AppContext from "../../utils/context/appContext";
 
 export default function LegacyDatasets() {
-  const { params } = useContext(AppContext);
-  if (params && !params.LEGACY_SUPPORT.enabled) {
-    return (
-      <Navigate
-        // eslint-disable-next-line spellcheck/spell-checker
-        to={`${ABSOLUTE_ROUTES.v2.search}?q=type%3Adataconnector`}
-        replace
-      />
-    );
-  }
-  return <Navigate to={`${ABSOLUTE_ROUTES.v1.search}?type=dataset`} replace />;
+  return (
+    <Navigate
+      // eslint-disable-next-line spellcheck/spell-checker
+      to={`${ABSOLUTE_ROUTES.v2.search}?q=type%3Adataconnector`}
+      replace
+    />
+  );
 }
