@@ -30,3 +30,23 @@ export function CopyIcon() {
     </span>
   );
 }
+
+export function rgbToHex(rgb: string) {
+  const match = rgb.match(/\d+/g);
+  if (!match) return "";
+  return (
+    "#" +
+    match
+      .slice(0, 3)
+      .map((x) => Number(x).toString(16).padStart(2, "0"))
+      .join("")
+  );
+}
+
+export function resolveCssVar(value: string) {
+  if (!value.startsWith("var(")) return value;
+  const varName = value.replace(/var\(|\)/g, "").trim();
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+}
