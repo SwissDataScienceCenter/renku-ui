@@ -1,42 +1,25 @@
-import cx from "classnames";
-import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
+import cx from "classnames";
+import { useState } from "react";
+
 import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx";
 
 const opacityTokens = {
-  "bg-opacity-0": {
-    value: "0",
-    type: "opacity",
-    description: "Fully transparent (0% opacity)",
-  },
-  "bg-opacity-25": {
-    value: "0.25",
-    type: "opacity",
-    description: "25% opaque",
-  },
-  "bg-opacity-50": {
-    value: "0.5",
-    type: "opacity",
-    description: "50% opaque",
-  },
-  "bg-opacity-75": {
-    value: "0.75",
-    type: "opacity",
-    description: "75% opaque",
-  },
-  "bg-opacity-100": {
-    value: "1",
-    type: "opacity",
-    description: "Fully opaque (100% opacity)",
-  },
+  "bg-opacity-0": "Fully transparent (0% opacity)",
+  "bg-opacity-25": "25% opaque",
+  "bg-opacity-50": "50% opaque",
+  "bg-opacity-75": "75% opaque",
+  "bg-opacity-100": "Fully opaque (100% opacity)",
 };
-
-const OpacityExampleCard: React.FC<{
+interface OpacityExampleCardProps {
   token: string;
-  value: string;
   description: string;
   backgroundColor: string;
-}> = ({ token, value, backgroundColor }) => {
+}
+function OpacityExampleCard({
+  token,
+  backgroundColor,
+}: OpacityExampleCardProps) {
   const [copied, setCopied] = useState("");
   return (
     <div
@@ -55,7 +38,7 @@ const OpacityExampleCard: React.FC<{
       style={{
         width: 250,
         height: 250,
-        backgroundColor: "#fff", // Card background
+        backgroundColor: "#fff",
       }}
     >
       <div
@@ -75,7 +58,6 @@ const OpacityExampleCard: React.FC<{
           zIndex: 0,
         }}
       ></div>
-
       <div
         className={cx(
           "position-absolute",
@@ -83,24 +65,23 @@ const OpacityExampleCard: React.FC<{
           "start-0",
           "w-100",
           "h-100",
-          token, // Apply Bootstrap's bg-opacity class directly
-          backgroundColor, // Apply the selected background color class here
+          token,
+          backgroundColor,
           "d-flex",
           "align-items-center",
           "justify-content-center",
-          value === "0" ? "text-dark" : "text-white", // Adjust text color for visibility on 0 opacity
+          "text-white",
           "fw-bold",
           "fs-5"
         )}
         style={{
-          backgroundColor: "#006e58", // Your primary brand color
           borderRadius: "inherit",
-          opacity: parseFloat(value), // Direct opacity for storybook render
           zIndex: 1,
-          textShadow: value === "0" ? "none" : "0 0 5px rgba(0,0,0,0.5)",
+          textShadow:
+            token === "bg-opacity-0" ? "none" : "0 0 5px rgba(0,0,0,0.5)",
         }}
       >
-        {`${parseFloat(value) * 100}%`}
+        {token}
       </div>
 
       <div
@@ -114,11 +95,7 @@ const OpacityExampleCard: React.FC<{
           "text-center",
           "text-dark"
         )}
-        style={{
-          backgroundColor: "rgba(255,255,255,0.8)", // Semi-transparent white background for text
-        }}
       >
-        <div className={cx("fw-semibold", "fs-6")}>{token}</div>
         <div
           className={cx("mt-2", "small")}
           onClick={() => token && Copy(token, setCopied)}
@@ -129,11 +106,10 @@ const OpacityExampleCard: React.FC<{
           )}
           {copied !== token && <CopyIcon />}
         </div>
-        <div className={cx("fs-6", "text-muted", "mt-1")}>Value: {value}</div>
       </div>
     </div>
   );
-};
+}
 
 const meta: Meta = {
   title: "Design Tokens/Opacity",
@@ -179,6 +155,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const OpacityLevels: Story = {
+  args: {
+    backgroundColor: "bg-primary",
+  },
   render: (args) => (
     <div className={cx("p-4", "mx-auto")} style={{ maxWidth: "1200px" }}>
       <section className="mb-5">
@@ -217,8 +196,7 @@ export const OpacityLevels: Story = {
             <OpacityExampleCard
               key={key}
               token={key}
-              value={data.value}
-              description={data.description}
+              description={data}
               backgroundColor={args.backgroundColor}
             />
           ))}

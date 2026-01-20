@@ -67,7 +67,7 @@ interface FontSizeExampleCardProps {
   token: string;
 }
 
-const FontSizeExampleCard: React.FC<FontSizeExampleCardProps> = ({ token }) => {
+function FontSizeExampleCard({ token }: FontSizeExampleCardProps) {
   const probeRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState("");
   const [value, setValue] = useState("N/A");
@@ -130,15 +130,13 @@ const FontSizeExampleCard: React.FC<FontSizeExampleCardProps> = ({ token }) => {
       </div>
     </>
   );
-};
+}
 
 interface LineHeightExampleCardProps {
   token: string;
 }
 
-const LineHeightExampleCard: React.FC<LineHeightExampleCardProps> = ({
-  token,
-}) => {
+function LineHeightExampleCard({ token }: LineHeightExampleCardProps) {
   const probeRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState("");
   const [value, setValue] = useState("N/A");
@@ -196,36 +194,36 @@ const LineHeightExampleCard: React.FC<LineHeightExampleCardProps> = ({
       </div>
     </>
   );
-};
+}
 
-const SectionHeader: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => (
-  <h2
-    className={cx(
-      "fw-bold",
-      "text-primary",
-      "border-bottom",
-      "border-primary",
-      "border-2",
-      "pb-2",
-      "mb-3"
-    )}
-  >
-    {children}
-  </h2>
-);
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <h2
+      className={cx(
+        "fw-bold",
+        "text-primary",
+        "border-bottom",
+        "border-primary",
+        "border-2",
+        "pb-2",
+        "mb-3"
+      )}
+    >
+      {children}
+    </h2>
+  );
+}
 
-const SectionDescription: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => (
-  <p
-    className={cx("text-muted", "mb-4")}
-    style={{ fontSize: "14px", maxWidth: "800px" }}
-  >
-    {children}
-  </p>
-);
+function SectionDescription({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      className={cx("text-muted", "mb-4")}
+      style={{ fontSize: "14px", maxWidth: "800px" }}
+    >
+      {children}
+    </p>
+  );
+}
 
 const meta: Meta = {
   title: "Design Tokens/Fonts",
