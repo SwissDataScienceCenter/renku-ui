@@ -36,7 +36,6 @@ import { Collapse } from "reactstrap";
 import { InfoAlert } from "~/components/Alert";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { ExternalLink } from "~/components/LegacyExternalLinks";
-import { SessionRowResourceRequests } from "~/features/session/components/SessionsList";
 import type { ResourceClassWithId } from "~/features/sessionsV2/api/computeResources.api";
 import { NEW_DOCS_MIGRATION_INFO } from "~/utils/constants/NewDocs";
 import type { GitLabRepositoryCommit } from "../../GitLab.types";
@@ -75,15 +74,6 @@ export function DetailsMigration({
     return commits ? commits[0].short_id : undefined;
   }, [commits]);
 
-  const resourceClassData = resourceClass
-    ? {
-        gpu: resourceClass.gpu,
-        cpu: resourceClass.cpu,
-        storage: resourceClass.max_storage,
-        memory: resourceClass.memory,
-      }
-    : undefined;
-
   const containerImageInfo = (
     <div>
       <span>- Container image:</span> <code>{containerImage}</code>
@@ -96,7 +86,6 @@ export function DetailsMigration({
         <>
           <span>{resourceClass?.name}</span>
           <span>|</span>
-          <SessionRowResourceRequests resourceRequests={resourceClassData} />
         </>
       ) : (
         <span className="fst-italic">Resource class not found</span>
