@@ -1,236 +1,200 @@
-import cx from "classnames";
-import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
-import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx";
+import cx from "classnames";
+import React, { useEffect, useRef, useState } from "react";
+
+import { Copy, CopyIcon, pxToRem } from "~/storybook/bootstrap/utils";
 
 const fontTokens = {
   typography: {
-    "body-font-family": { value: '"Inter", sans-serif', px: "" },
-    "body-font-size": { value: "1rem", px: "16px" },
-    "body-font-weight": { value: "400", px: "" },
-    "body-line-height": { value: "1.5", px: "" },
+    "body-font-family": "The primary typeface for body text",
+    "body-font-size": "Base font size for body copy",
+    "body-font-weight": "Default font weight",
+    "body-line-height": "Default line height for readability",
   },
-  fontSizes: {
-    "fs-1": { value: "2.5rem", px: "40px", type: "fontSizes" },
-    "fs-2": { value: "2rem", px: "32px", type: "fontSizes" },
-    "fs-3": { value: "1.75rem", px: "28px", type: "fontSizes" },
-    "fs-4": { value: "1.5rem", px: "24px", type: "fontSizes" },
-    "fs-5": { value: "1.25rem", px: "20px", type: "fontSizes" },
-    "fs-6": { value: "1rem", px: "16px", type: "fontSizes" },
-  },
-  lineHeight: {
-    "1": {
-      value: 1,
-      type: "lineHeight",
-      description: "Tight line height",
-      extensions: {
-        px: "16px",
-        rem: "1rem",
-      },
-    },
-    sm: {
-      value: 1.25,
-      type: "lineHeight",
-      description: "Small line height",
-      extensions: {
-        px: "20px",
-        rem: "1.25rem",
-      },
-    },
-    base: {
-      value: 1.5,
-      type: "lineHeight",
-      description: "Base/default line height",
-      extensions: {
-        px: "24px",
-        rem: "1.5rem",
-      },
-    },
-    lg: {
-      value: 2,
-      type: "lineHeight",
-      description: "Large line height",
-      extensions: {
-        px: "32px",
-        rem: "2rem",
-      },
-    },
-  },
+  fontSizes: ["fs-1", "fs-2", "fs-3", "fs-4", "fs-5", "fs-6"],
+  lineHeight: ["lh-1", "lh-sm", "lh-base", "lh-lg"],
 };
 
 interface FontPropertyCardProps {
   token: string;
-  value: string | number;
-  px?: string;
-  notes?: string;
+  notes: string;
 }
 
-const FontPropertyCard: React.FC<FontPropertyCardProps> = ({
-  token,
-  value,
-  px,
-  notes,
-}) => (
-  <div
-    className={cx(
-      "bg-white",
-      "p-3",
-      "rounded",
-      "shadow-sm",
-      "border",
-      "d-flex",
-      "flex-column",
-      "justify-content-between"
-    )}
-  >
-    <div>
-      <div
-        className={cx("fw-semibold", "text-primary", "mb-1")}
-        style={{ fontSize: "14px" }}
-      >
-        {token}
-      </div>
-      <div className={cx("text-dark", "mb-1")} style={{ fontSize: "13px" }}>
-        Value: <strong>{value}</strong>
-      </div>
-      {px && (
-        <div className="text-muted" style={{ fontSize: "13px" }}>
-          PX: {px}
-        </div>
-      )}
-    </div>
-    {notes && (
-      <div className={cx("text-muted", "mt-auto")} style={{ fontSize: "11px" }}>
-        {notes}
-      </div>
-    )}
-  </div>
-);
+function FontPropertyCard({ token, notes }: FontPropertyCardProps) {
+  const [value, setValue] = useState<string>("N/A");
 
-interface FontSizeExampleCardProps {
-  token: string;
-  value: string;
-  px: string;
-}
+  useEffect(() => {
+    const root = document.documentElement;
+    const styles = getComputedStyle(root);
 
-const FontSizeExampleCard: React.FC<FontSizeExampleCardProps> = ({
-  token,
-  value,
-  px,
-}) => {
-  const [copied, setCopied] = useState("");
+    const cssVarName = `--bs-${token}`;
+    const resolvedValue = styles.getPropertyValue(cssVarName).trim();
 
+    setValue(resolvedValue || "N/A");
+  }, [token]);
   return (
     <div
       className={cx(
         "bg-white",
+        "p-3",
         "rounded",
         "shadow-sm",
         "border",
-        "p-4",
         "d-flex",
         "flex-column",
-        "justify-content-center",
-        "align-items-start",
-        "w-100"
+        "justify-content-between"
       )}
     >
-      <div
-        className="text-dark"
-        style={{
-          fontSize: value,
-          lineHeight: fontTokens.typography["body-line-height"].value,
-          fontWeight: fontTokens.typography["body-font-weight"].value,
-          fontFamily: fontTokens.typography["body-font-family"].value,
-        }}
-      >
-        The quick brown fox jumps over the lazy dog.
-      </div>
-      <div className={cx("mt-3", "text-muted")} style={{ fontSize: "0.9rem" }}>
-        <strong>Token:</strong>
-        <span
-          className={cx("cursor-pointer", "ms-2")}
-          onClick={() => Copy(token, setCopied)}
+      <div>
+        <div
+          className={cx("fw-semibold", "text-primary", "mb-1")}
+          style={{ fontSize: "14px" }}
         >
-          <code>{token}</code>
-          {copied === token && (
-            <span className={cx("ms-1", "text-success")}>✓</span>
-          )}
-          {copied !== token && <CopyIcon />} | <strong>Value:</strong> {value} (
-          {px})
-        </span>
+          {token}
+        </div>
+        <div className={cx("text-dark", "mb-1")} style={{ fontSize: "13px" }}>
+          Value: <strong>{value}</strong>
+        </div>
       </div>
-      <div className={cx("text-muted", "mt-1")} style={{ fontSize: "0.8rem" }}>
-        Bootstrap class: <code>.fs-{token.split("-")[1]}</code>
+      <div className={cx("text-muted", "mt-auto")} style={{ fontSize: "11px" }}>
+        {notes}
       </div>
     </div>
+  );
+}
+
+interface FontSizeExampleCardProps {
+  token: string;
+}
+
+const FontSizeExampleCard: React.FC<FontSizeExampleCardProps> = ({ token }) => {
+  const probeRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState("");
+  const [value, setValue] = useState("N/A");
+  const [px, setPx] = useState("N/A");
+
+  useEffect(() => {
+    if (!probeRef.current) return;
+
+    const styles = getComputedStyle(probeRef.current);
+    const value = parseFloat(styles.fontSize);
+    const remValue = pxToRem(value);
+
+    setPx(`${value}px`);
+    setValue(`${remValue}rem`);
+  }, [token]);
+
+  return (
+    <>
+      <div ref={probeRef} className={token} style={{ display: "none" }} />
+      <div
+        className={cx(
+          "bg-white",
+          "rounded",
+          "shadow-sm",
+          "border",
+          "p-4",
+          "d-flex",
+          "flex-column",
+          "justify-content-center",
+          "align-items-start",
+          "w-100"
+        )}
+      >
+        <div className={cx("text-dark", token)}>
+          The quick brown fox jumps over the lazy dog.
+        </div>
+        <div
+          className={cx("mt-3", "text-muted")}
+          style={{ fontSize: "0.9rem" }}
+        >
+          <strong>Token:</strong>
+          <span
+            className={cx("cursor-pointer", "ms-2")}
+            onClick={() => Copy(token, setCopied)}
+          >
+            <code>{token}</code>
+            {copied === token && (
+              <span className={cx("ms-1", "text-success")}>✓</span>
+            )}
+            {copied !== token && <CopyIcon />} | <strong>Value:</strong> {value}{" "}
+            ({px})
+          </span>
+        </div>
+        <div
+          className={cx("text-muted", "mt-1")}
+          style={{ fontSize: "0.8rem" }}
+        >
+          Bootstrap class: <code>.fs-{token.split("-")[1]}</code>
+        </div>
+      </div>
+    </>
   );
 };
 
 interface LineHeightExampleCardProps {
   token: string;
-  value: number;
-  description: string;
-  px?: string;
-  rem: string;
 }
 
 const LineHeightExampleCard: React.FC<LineHeightExampleCardProps> = ({
   token,
-  value,
-  description,
-  px,
-  rem,
 }) => {
+  const probeRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState("");
+  const [value, setValue] = useState("N/A");
+  const [px, setPx] = useState("N/A");
+
+  useEffect(() => {
+    if (!probeRef.current) return;
+
+    const styles = getComputedStyle(probeRef.current);
+    const value = parseFloat(styles.lineHeight);
+    const remValue = pxToRem(value);
+
+    setPx(`${value}px`);
+    setValue(`${remValue}rem`);
+  }, [token]);
 
   return (
-    <div
-      className={cx(
-        "bg-white",
-        "rounded",
-        "shadow-sm",
-        "border",
-        "p-4",
-        "d-flex",
-        "flex-column",
-        "justify-content-center",
-        "align-items-start",
-        "w-100"
-      )}
-    >
+    <>
+      <div ref={probeRef} className={token} style={{ display: "none" }} />
       <div
-        className="text-dark"
-        style={{
-          fontSize: fontTokens.typography["body-font-size"].value,
-          lineHeight: value,
-          fontWeight: fontTokens.typography["body-font-weight"].value,
-          fontFamily: fontTokens.typography["body-font-family"].value,
-        }}
+        className={cx(
+          "bg-white",
+          "rounded",
+          "shadow-sm",
+          "border",
+          "p-4",
+          "d-flex",
+          "flex-column",
+          "justify-content-center",
+          "align-items-start",
+          "w-100"
+        )}
       >
-        This is an example of text with <b>line height {value}</b>. <br />
-        It demonstrates how spacing between lines changes. <br />
-        Readability is key to a great user experience.
-      </div>
-      <div className={cx("mt-3", "text-muted")} style={{ fontSize: "0.9rem" }}>
-        <strong>Token:</strong>
-        <span
-          className={cx("cursor-pointer", "ms-2")}
-          onClick={() => Copy(token, setCopied)}
+        <div className="text-dark">
+          This is an example of text with <b>line height {token}</b>. <br />
+          It demonstrates how spacing between lines changes. <br />
+        </div>
+        <div
+          className={cx("mt-3", "text-muted")}
+          style={{ fontSize: "0.9rem" }}
         >
-          <code>lh-{token}</code>
-          {copied === token && (
-            <span className={cx("ms-1", "text-success")}>✓</span>
-          )}
-          {copied !== token && <CopyIcon />} | <strong>Value:</strong> {value} (
-          {px})
-        </span>{" "}
-        | <strong>PX:</strong> {px} | <strong>REM:</strong> {rem}
+          <strong>Token:</strong>
+          <span
+            className={cx("cursor-pointer", "ms-2")}
+            onClick={() => Copy(token, setCopied)}
+          >
+            <code>{token}</code>
+            {copied === token && (
+              <span className={cx("ms-1", "text-success")}>✓</span>
+            )}
+            {copied !== token && <CopyIcon />} | <strong>Value:</strong> {value}{" "}
+            ({px})
+          </span>{" "}
+        </div>
       </div>
-      <div className={cx("text-muted", "mt-1")} style={{ fontSize: "0.8rem" }}>
-        {description} (Bootstrap class: <code>.lh-{token}</code>)
-      </div>
-    </div>
+    </>
   );
 };
 
@@ -288,23 +252,7 @@ export const FontSystem: Story = {
         <SectionHeader>1. Core Typography</SectionHeader>
         <div className={cx("d-flex", "flex-wrap", "gap-3")}>
           {Object.entries(fontTokens.typography).map(([key, data]) => (
-            <FontPropertyCard
-              key={key}
-              token={key}
-              value={data.value}
-              px={data.px ?? ""}
-              notes={
-                key === "body-font-family"
-                  ? "The primary typeface for body text"
-                  : key === "body-font-size"
-                  ? "Base font size for body copy"
-                  : key === "body-font-weight"
-                  ? "Default font weight"
-                  : key === "body-line-height"
-                  ? "Default line height for readability"
-                  : ""
-              }
-            />
+            <FontPropertyCard key={key} token={key} notes={data} />
           ))}
         </div>
       </section>
@@ -316,16 +264,9 @@ export const FontSystem: Story = {
           Bootstrap&apos;s `.fs-` classes for easy application.
         </SectionDescription>
         <div className={cx("d-flex", "flex-column", "gap-4")}>
-          {Object.entries(fontTokens.fontSizes)
-            .sort(([, a], [, b]) => parseFloat(b.px) - parseFloat(a.px))
-            .map(([key, data]) => (
-              <FontSizeExampleCard
-                key={key}
-                token={key}
-                value={data.value}
-                px={data.px}
-              />
-            ))}
+          {fontTokens.fontSizes.map((key) => (
+            <FontSizeExampleCard key={key} token={key} />
+          ))}
         </div>
       </section>
 
@@ -335,15 +276,8 @@ export const FontSystem: Story = {
           These tokens map directly to Bootstrap&apos;s `.lh-` classes.
         </SectionDescription>
         <div className={cx("d-flex", "flex-column", "gap-4")}>
-          {Object.entries(fontTokens.lineHeight).map(([key, data]) => (
-            <LineHeightExampleCard
-              key={key}
-              token={key}
-              value={data.value}
-              description={data.description}
-              px={data.extensions.px}
-              rem={data.extensions.rem}
-            />
+          {fontTokens.lineHeight.map((key) => (
+            <LineHeightExampleCard key={key} token={key} />
           ))}
         </div>
       </section>

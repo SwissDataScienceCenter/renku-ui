@@ -113,7 +113,6 @@ const BorderRadiusExampleCard: React.FC<BorderRadiusExampleCardProps> = ({
 
   return (
     <>
-      {/* Hidden probe */}
       <div ref={probeRef} className={token} style={{ display: "none" }} />
 
       <div

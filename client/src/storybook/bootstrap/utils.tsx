@@ -50,3 +50,11 @@ export function resolveCssVar(value: string) {
     .getPropertyValue(varName)
     .trim();
 }
+
+export function getRootFontSize(): number {
+  return parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
+
+export function pxToRem(px: number): number {
+  return px / getRootFontSize();
+}
