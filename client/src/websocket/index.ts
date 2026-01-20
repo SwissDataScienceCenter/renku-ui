@@ -17,15 +17,7 @@
  */
 
 import APIClient from "../api-client";
-import type { KgInactiveProjectsState } from "../features/inactiveKgProjects/";
-import { ActivationStatusProgressError } from "../features/inactiveKgProjects/";
 import { StateModel } from "../model";
-import {
-  handleKgActivationStatus,
-  handleWebSocketErrorForKgActivationStatus,
-  handleWebSocketPing,
-  updateStatus,
-} from "./handlers/kgActivationStatusHandler";
 import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
 import { handleSessionsStatusV2 } from "./handlers/sessionStatusHandlerV2";
 import {
@@ -33,12 +25,7 @@ import {
   handleUserInit,
   handleUserUiVersion,
 } from "./handlers/userHandlers";
-import {
-  checkWsServerMessage,
-  sendPullKgActivationStatus,
-  WsMessage,
-  WsServerMessage,
-} from "./WsMessages";
+import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
 const reconnectIntervalMs = 10 * 1000;
@@ -69,13 +56,6 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         required: ["version"],
         optional: ["start", "message"],
         handler: handleUserUiVersion,
-      },
-    ],
-    activation: [
-      {
-        required: null,
-        optional: ["message"],
-        handler: handleKgActivationStatus,
       },
     ],
     ack: [
@@ -148,7 +128,6 @@ function setupWebSocket(
       targetWebSocket.send(pingMessage.toString());
       // TODO: Should we remove the lastPing? It's not used anywhere and causes UI re-rendering.
       model.setObject({ lastPing: new Date(pingMessage.timestamp) });
-      handleWebSocketPing(model);
       setTimeout(() => pingWebSocketServer(targetWebSocket), timeoutIntervalMs);
     }
   }
@@ -165,42 +144,6 @@ function setupWebSocket(
     );
   }
 
-  function resumePendingKgActivation(model: any, socket: any) {
-    const state = model?.reduxStore?.getState();
-    if (state == null) return;
-    // kgInactiveProjects
-    const projectsInProgress: KgInactiveProjectsState | null =
-      state.kgInactiveProjects;
-    if (projectsInProgress == null) return;
-    const projectIds = projectsInProgress.inactiveProjects
-      .filter((project) => {
-        return (
-          project.progressActivation !== null &&
-          project.progressActivation !== 100
-        );
-      })
-      .map((p) => p.id);
-
-    if (projectIds.length < 1) return;
-
-    if (socket.readyState === socket.OPEN) {
-      // Send the resume request
-      sendPullKgActivationStatus(projectIds, socket);
-      return;
-    }
-
-    // There are projects to update, but the socket is not open
-    const kgActivation: Record<string, number> = {};
-    projectIds.forEach((id) => {
-      kgActivation[`${id}`] = ActivationStatusProgressError.WEB_SOCKET_ERROR;
-    });
-    updateStatus(kgActivation, model.reduxStore);
-  }
-
-  function resumePendingProcesses(model: any, socket: any) {
-    resumePendingKgActivation(model, socket);
-  }
-
   webSocket.onopen = (status) => {
     // start pinging regularly when the connection is open
     const target = status.target as WebSocket;
@@ -211,8 +154,6 @@ function setupWebSocket(
       startPullingSessionStatus(webSocket);
       // request session status V2
       startPullingSessionStatusV2(webSocket);
-      // resume running processes
-      resumePendingProcesses(fullModel, webSocket);
     }
 
     // Start a ping loop -- this should keep the connection alive
@@ -227,7 +168,6 @@ function setupWebSocket(
       errorObject: error,
       lastReceived: new Date(),
     });
-    handleWebSocketErrorForKgActivationStatus(model);
   };
 
   webSocket.onclose = (data) => {
