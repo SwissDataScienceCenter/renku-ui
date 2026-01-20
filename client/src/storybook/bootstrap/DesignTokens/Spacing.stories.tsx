@@ -1,7 +1,8 @@
+import { Meta, StoryObj } from "@storybook/react";
 import cx from "classnames";
 import React, { useState } from "react";
-import { Meta, StoryObj } from "@storybook/react";
-import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx";
+
+import { Copy, CopyIcon } from "~/storybook/bootstrap/utils";
 
 interface SpacingBoxProps {
   token: string;
@@ -10,12 +11,7 @@ interface SpacingBoxProps {
   value: string;
 }
 
-const SpacingBox: React.FC<SpacingBoxProps> = ({
-  token,
-  spacingClass,
-  type,
-  value,
-}) => {
+function SpacingBox({ token, spacingClass, type, value }: SpacingBoxProps) {
   const [copied, setCopied] = useState("");
 
   return (
@@ -119,35 +115,39 @@ const SpacingBox: React.FC<SpacingBoxProps> = ({
       </div>
     </div>
   );
-};
+}
 
 interface SectionHeaderProps {
   title: string;
 }
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({ title }) => (
-  <h2
-    className={cx("fw-bold", "mb-3", "pb-1")}
-    style={{
-      fontFamily: "sans-serif",
-      fontSize: 20,
-      borderBottom: "2px solid #006e58",
-      color: "#006e58",
-    }}
-  >
-    {title}
-  </h2>
-);
+function SectionHeader({ title }: SectionHeaderProps) {
+  return (
+    <h2
+      className={cx("fw-bold", "mb-3", "pb-1")}
+      style={{
+        fontFamily: "sans-serif",
+        fontSize: 20,
+        borderBottom: "2px solid #006e58",
+        color: "#006e58",
+      }}
+    >
+      {title}
+    </h2>
+  );
+}
 
 interface SpacingGridProps {
   children: React.ReactNode;
 }
 
-const SpacingGrid: React.FC<SpacingGridProps> = ({ children }) => (
-  <div className={cx("d-flex", "flex-wrap")} style={{ gap: 16 }}>
-    {children}
-  </div>
-);
+function SpacingGrid({ children }: SpacingGridProps) {
+  return (
+    <div className={cx("d-flex", "flex-wrap")} style={{ gap: 16 }}>
+      {children}
+    </div>
+  );
+}
 
 const meta: Meta = {
   title: "Design Tokens/Spacing",

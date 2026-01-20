@@ -3,7 +3,7 @@ import cx from "classnames";
 import { useRef, useState } from "react";
 
 import { CopyRow } from "~/storybook/CopyRow";
-import { useResolvedColor } from "~/storybook/useResolvedColor.ts";
+import { useResolvedColor } from "~/storybook/useResolvedColor";
 
 interface ColorToken {
   title: string;

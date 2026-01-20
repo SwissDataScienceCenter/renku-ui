@@ -78,9 +78,7 @@ interface BorderRadiusExampleCardProps {
   token: string;
 }
 
-const BorderRadiusExampleCard: React.FC<BorderRadiusExampleCardProps> = ({
-  token,
-}) => {
+function BorderRadiusExampleCard({ token }: BorderRadiusExampleCardProps) {
   const probeRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState("");
   const [value, setValue] = useState("N/A");
@@ -156,13 +154,13 @@ const BorderRadiusExampleCard: React.FC<BorderRadiusExampleCardProps> = ({
       </div>
     </>
   );
-};
+}
 
 interface ShadowExampleCardProps {
   token: string;
 }
 
-const ShadowExampleCard: React.FC<ShadowExampleCardProps> = ({ token }) => {
+function ShadowExampleCard({ token }: ShadowExampleCardProps) {
   const probeRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState("");
   const [value, setValue] = useState("N/A");
@@ -221,36 +219,36 @@ const ShadowExampleCard: React.FC<ShadowExampleCardProps> = ({ token }) => {
       </div>
     </>
   );
-};
+}
 
-const SectionHeader: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => (
-  <h2
-    className={cx(
-      "fw-bold",
-      "text-primary",
-      "border-bottom",
-      "border-primary",
-      "border-2",
-      "pb-2",
-      "mb-3"
-    )}
-  >
-    {children}
-  </h2>
-);
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <h2
+      className={cx(
+        "fw-bold",
+        "text-primary",
+        "border-bottom",
+        "border-primary",
+        "border-2",
+        "pb-2",
+        "mb-3"
+      )}
+    >
+      {children}
+    </h2>
+  );
+}
 
-const SectionDescription: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => (
-  <p
-    className="text-muted mb-4"
-    style={{ fontSize: "14px", maxWidth: "800px" }}
-  >
-    {children}
-  </p>
-);
+function SectionDescription({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      className="text-muted mb-4"
+      style={{ fontSize: "14px", maxWidth: "800px" }}
+    >
+      {children}
+    </p>
+  );
+}
 
 const meta: Meta = {
   title: "Design Tokens/Borders & Shadows",

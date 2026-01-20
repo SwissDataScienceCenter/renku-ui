@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import cx from "classnames";
 import { useState } from "react";
 
-import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx";
+import { Copy, CopyIcon } from "~/storybook/bootstrap/utils";
 
 const opacityTokens = {
   "bg-opacity-0": "Fully transparent (0% opacity)",
