@@ -26,8 +26,6 @@ import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import LazyInactiveKGProjectsPage from "../inactiveKgProjects/LazyInactiveKGProjectsPage";
-import LazySecrets from "../secrets/LazySecrets";
 import LazyAnonymousSessionsList from "../session/components/LazyAnonymousSessionsList";
 import ProjectRootV1 from "./ProjectRootV1";
 
@@ -43,22 +41,6 @@ export default function RootV1() {
             element={
               <ContainerWrap>
                 <LazyNotificationsPage />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.secrets}
-            element={
-              <ContainerWrap>
-                <LazySecrets />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.inactiveKGProjects}
-            element={
-              <ContainerWrap>
-                <LazyInactiveKGProjectsPage />
               </ContainerWrap>
             }
           />
