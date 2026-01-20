@@ -1,237 +1,226 @@
-import cx from "classnames";
-import React, { useState } from "react";
 import { Meta, StoryObj } from "@storybook/react";
-import { Copy, CopyIcon } from "~/storybook/bootstrap/utils.tsx";
+import cx from "classnames";
+import React, { useEffect, useRef, useState } from "react";
+
+import { Copy, CopyIcon } from "~/storybook/bootstrap/utils";
 
 const tokenData = {
-  border: {
-    "border-width": { value: "1px" },
-    "border-style": { value: "solid" },
+  "core borders": {
+    "border-width": { notes: "Default border thickness" },
+    "border-style": { notes: "Default border line style" },
   },
-  borderRadius: {
-    "rounded-0": {
-      value: "0rem",
-      type: "borderRadius",
-      description: "No border radius",
-      extensions: {
-        px: "0px",
-      },
-    },
-    "rounded-1": {
-      value: "0.2rem",
-      type: "borderRadius",
-      description: "Extra small border radius",
-      extensions: {
-        px: "3.2px",
-      },
-    },
-    "rounded-2": {
-      value: "0.25rem",
-      type: "borderRadius",
-      description: "Small border radius",
-      extensions: {
-        px: "4px",
-      },
-    },
-    "rounded-3": {
-      value: "0.3rem",
-      type: "borderRadius",
-      description: "Medium border radius",
-      extensions: {
-        px: "4.8px",
-      },
-    },
-    "rounded-circle": {
-      value: "50%",
-      type: "borderRadius",
-      description: "Perfect circle border radius",
-      extensions: {
-        px: "",
-      },
-    },
-    "rounded-pill": {
-      value: "50rem",
-      type: "borderRadius",
-      description: "Fully rounded pill shape",
-      extensions: {
-        px: "800px",
-      },
-    },
-  },
-  shadow: {
-    shadow: {
-      value: "0 .5rem 1rem rgba(0, 0, 0, .15)",
-      description: "Default box shadow",
-    },
-    "shadow-sm": {
-      value: "0 .125rem .25rem rgba(0, 0, 0, .075)",
-      description: "Small box shadow",
-    },
-    "shadow-lg": {
-      value: "0 1rem 3rem rgba(0, 0, 0, .175)",
-      description: "Large box shadow",
-    },
-    "shadow-inset": {
-      value: "inset 0 1px 2px rgba(0, 0, 0, .075)",
-      description: "Inset box shadow",
-    },
-  },
+  borderRadius: [
+    "rounded-0",
+    "rounded-1",
+    "rounded-2",
+    "rounded-3",
+    "rounded-circle",
+    "rounded-pill",
+  ],
+  shadow: ["shadow", "shadow-sm", "shadow-lg", "shadow-inset"],
 };
 
 interface PropertyCardProps {
   token: string;
-  value: string;
-  px?: string;
   notes?: string;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({
-  token,
-  value,
-  px,
-  notes,
-}) => (
-  <div
-    className={cx(
-      "bg-white",
-      "p-3",
-      "border",
-      "rounded",
-      "shadow-sm",
-      "d-flex",
-      "flex-column",
-      "justify-content-between"
-    )}
-  >
-    <div>
-      <div
-        className={cx("fw-semibold", "text-primary", "mb-1")}
-        style={{ fontSize: "14px" }}
-      >
-        {token}
-      </div>
-      <div className={cx("text-dark", "mb-1")} style={{ fontSize: "13px" }}>
-        Value: <strong>{value}</strong>
-      </div>
-      {px && (
-        <div className="text-muted" style={{ fontSize: "13px" }}>
-          PX: {px}
-        </div>
-      )}
-    </div>
-    {notes && (
-      <div className={cx("text-muted", "mt-auto")} style={{ fontSize: "11px" }}>
-        {notes}
-      </div>
-    )}
-  </div>
-);
+function PropertyCard({ token, notes }: PropertyCardProps) {
+  const [value, setValue] = useState<string>("N/A");
 
-interface BorderRadiusExampleCardProps {
-  token: string;
-  value: string;
-  px: string;
-}
+  useEffect(() => {
+    const root = document.documentElement;
+    const styles = getComputedStyle(root);
 
-const BorderRadiusExampleCard: React.FC<BorderRadiusExampleCardProps> = ({
-  token,
-  value,
-  px,
-}) => {
-  const [copied, setCopied] = useState("");
-  const isCircle = token === "rounded-circle";
+    const cssVarName = `--bs-${token}`;
+    const resolvedValue = styles.getPropertyValue(cssVarName).trim();
 
-  return (
-    <div
-      className={cx(
-        "border",
-        "border-2",
-        "border-primary",
-        "bg-light",
-        "d-flex",
-        "align-items-center",
-        "justify-content-center",
-        "text-center",
-        "flex-column",
-        "shadow-sm",
-        token
-      )}
-      style={{
-        width: "200px",
-        height: isCircle ? "200px" : "150px",
-        fontSize: "0.8rem",
-      }}
-    >
-      <div className="fw-semibold">{token}</div>
-      <div>
-        {value} ({px})
-      </div>
-      <div
-        className={cx("mt-3", "cursor-pointer")}
-        style={{ fontSize: "13px" }}
-        onClick={() => token && Copy(token, setCopied)}
-      >
-        <code>{token}</code>
-        {copied === token && (
-          <span className={cx("ms-1", "text-success")}>✓</span>
-        )}
-        {copied !== token && <CopyIcon />}
-      </div>
-    </div>
-  );
-};
-
-interface ShadowExampleCardProps {
-  token: string;
-  value: string;
-  description: string;
-  cssClass?: string;
-}
-
-const ShadowExampleCard: React.FC<ShadowExampleCardProps> = ({
-  token,
-  value,
-  description,
-}) => {
-  const [copied, setCopied] = useState("");
+    setValue(resolvedValue || "N/A");
+  }, [token]);
 
   return (
     <div
       className={cx(
         "bg-white",
-        "rounded",
+        "p-3",
         "border",
-        "border-light-subtle",
+        "rounded",
+        "shadow-sm",
         "d-flex",
         "flex-column",
-        "align-items-center",
-        "justify-content-center",
-        "text-center",
-        "p-3"
+        "justify-content-between"
       )}
-      style={{
-        width: "250px",
-        height: "150px",
-        fontSize: "0.9rem",
-        boxShadow: value,
-      }}
     >
-      <div className={cx("fw-semibold", "mb-2")}>{token}</div>
-      <div className="text-muted" style={{ fontSize: "0.85rem" }}>
-        {description}
+      <div>
+        <div
+          className={cx("fw-semibold", "text-primary", "mb-1")}
+          style={{ fontSize: "14px" }}
+        >
+          {token}
+        </div>
+        <div className={cx("text-dark", "mb-1")} style={{ fontSize: "13px" }}>
+          Value: <strong>{value}</strong>
+        </div>
       </div>
-      <div
-        className={cx("text-muted", "mt-2", "cursor-pointer")}
-        style={{ fontSize: "0.75rem" }}
-        onClick={() => token && Copy(token, setCopied)}
-      >
-        <code>{token || "Custom Shadow"}</code>
-        {copied === token && (
-          <span className={cx("ms-1", "text-success")}>✓</span>
-        )}
-        {copied !== token && <CopyIcon />}
-      </div>
+      {notes && (
+        <div
+          className={cx("text-muted", "mt-auto")}
+          style={{ fontSize: "11px" }}
+        >
+          {notes}
+        </div>
+      )}
     </div>
+  );
+}
+
+interface BorderRadiusExampleCardProps {
+  token: string;
+}
+
+const BorderRadiusExampleCard: React.FC<BorderRadiusExampleCardProps> = ({
+  token,
+}) => {
+  const probeRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState("");
+  const [value, setValue] = useState("N/A");
+  const [px, setPx] = useState("N/A");
+
+  const isCircle = token === "rounded-circle";
+
+  useEffect(() => {
+    if (!probeRef.current) return;
+
+    const styles = getComputedStyle(probeRef.current);
+    const radiusPx = styles.borderRadius;
+
+    if (!radiusPx || radiusPx === "0px") {
+      setValue("0");
+      setPx("0px");
+      return;
+    }
+
+    const pxNumber = parseFloat(radiusPx);
+    const rootFontSize = parseFloat(
+      getComputedStyle(document.documentElement).fontSize
+    );
+
+    const remValue = pxNumber / rootFontSize;
+
+    setPx(`${pxNumber}px`);
+    setValue(`${remValue}rem`);
+  }, [token]);
+
+  return (
+    <>
+      {/* Hidden probe */}
+      <div ref={probeRef} className={token} style={{ display: "none" }} />
+
+      <div
+        className={cx(
+          "border",
+          "border-2",
+          "border-primary",
+          "bg-light",
+          "d-flex",
+          "align-items-center",
+          "justify-content-center",
+          "text-center",
+          "flex-column",
+          "shadow-sm",
+          token
+        )}
+        style={{
+          width: "200px",
+          height: isCircle ? "200px" : "150px",
+          fontSize: "0.8rem",
+        }}
+      >
+        <div className="fw-semibold">{token}</div>
+
+        <div className="mb-2">
+          {value} ({px})
+        </div>
+
+        <div
+          className={cx("mt-2", "cursor-pointer")}
+          style={{ fontSize: "13px" }}
+          onClick={() => Copy(token, setCopied)}
+        >
+          <code>{token}</code>
+          {copied === token ? (
+            <span className="ms-1 text-success">✓</span>
+          ) : (
+            <CopyIcon />
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+interface ShadowExampleCardProps {
+  token: string;
+}
+
+const ShadowExampleCard: React.FC<ShadowExampleCardProps> = ({ token }) => {
+  const probeRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState("");
+  const [value, setValue] = useState("N/A");
+
+  useEffect(() => {
+    if (!probeRef.current) return;
+
+    const styles = getComputedStyle(probeRef.current);
+    const boxShadow = styles.boxShadow;
+
+    setValue(boxShadow && boxShadow !== "none" ? boxShadow : "none");
+  }, [token]);
+
+  return (
+    <>
+      <div ref={probeRef} className={token} style={{ display: "none" }} />
+
+      <div
+        className={cx(
+          "bg-white",
+          "rounded",
+          "border",
+          "border-light-subtle",
+          "d-flex",
+          "flex-column",
+          "align-items-center",
+          "justify-content-center",
+          "text-center",
+          "p-3",
+          token
+        )}
+        style={{
+          width: "250px",
+          height: "150px",
+          fontSize: "0.9rem",
+        }}
+      >
+        <div className={cx("fw-semibold", "mb-2")}>{token}</div>
+
+        <div className="text-muted" style={{ fontSize: "0.85rem" }}>
+          {value}
+        </div>
+
+        <div
+          className={cx("text-muted", "mt-2", "cursor-pointer")}
+          style={{ fontSize: "0.75rem" }}
+          onClick={() => Copy(token, setCopied)}
+        >
+          <code>{token || "Custom Shadow"}</code>
+          {copied === token ? (
+            <span className="ms-1 text-success">✓</span>
+          ) : (
+            <CopyIcon />
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -291,19 +280,8 @@ export const BordersAndShadows: Story = {
           Fundamental properties defining the default appearance of borders.
         </SectionDescription>
         <div className={cx("d-flex", "flex-wrap", "gap-3")}>
-          {Object.entries(tokenData.border).map(([key, data]) => (
-            <PropertyCard
-              key={key}
-              token={key}
-              value={data.value}
-              notes={
-                key === "border-width"
-                  ? "Default border thickness"
-                  : key === "border-style"
-                  ? "Default border line style"
-                  : ""
-              }
-            />
+          {Object.entries(tokenData["core borders"]).map(([key, data]) => (
+            <PropertyCard key={key} token={key} notes={data.notes} />
           ))}
         </div>
       </section>
@@ -322,13 +300,8 @@ export const BordersAndShadows: Story = {
             "justify-content-center"
           )}
         >
-          {Object.entries(tokenData.borderRadius).map(([key, data]) => (
-            <BorderRadiusExampleCard
-              key={key}
-              token={key}
-              value={data.value}
-              px={data.extensions?.px || ""}
-            />
+          {tokenData.borderRadius.map((key) => (
+            <BorderRadiusExampleCard key={key} token={key} />
           ))}
         </div>
       </section>
@@ -347,30 +320,9 @@ export const BordersAndShadows: Story = {
             "justify-content-center"
           )}
         >
-          <ShadowExampleCard
-            token="shadow-sm"
-            value={tokenData.shadow["shadow-sm"].value}
-            description={tokenData.shadow["shadow-sm"].description}
-            cssClass="shadow-sm"
-          />
-          <ShadowExampleCard
-            token="shadow"
-            value={tokenData.shadow["shadow"].value}
-            description={tokenData.shadow["shadow"].description}
-            cssClass="shadow"
-          />
-          <ShadowExampleCard
-            token="shadow-lg"
-            value={tokenData.shadow["shadow-lg"].value}
-            description={tokenData.shadow["shadow-lg"].description}
-            cssClass="shadow-lg"
-          />
-          <ShadowExampleCard
-            token="shadow-inset"
-            value={tokenData.shadow["shadow-inset"].value}
-            description={tokenData.shadow["shadow-inset"].description}
-            cssClass="shadow-inset"
-          />
+          {tokenData.shadow.map((key) => (
+            <ShadowExampleCard key={key} token={key} />
+          ))}
         </div>
       </section>
     </div>
