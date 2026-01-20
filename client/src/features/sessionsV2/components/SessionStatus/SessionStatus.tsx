@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode, useRef } from "react";
@@ -30,8 +33,6 @@ import {
 
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
-import { PrettySessionErrorMessage } from "../../../session/components/status/SessionStatusBadge";
-import { MissingHibernationInfo } from "../../../session/components/status/SessionStatusText";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   SESSION_STATES,
@@ -40,6 +41,63 @@ import {
   SESSION_TITLE_DASHBOARD,
 } from "../../SessionStyles.constants";
 import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
+
+interface PrettySessionErrorMessageProps {
+  message: string | null | undefined;
+}
+function PrettySessionErrorMessage({
+  message,
+}: PrettySessionErrorMessageProps) {
+  // eslint-disable-next-line spellcheck/spell-checker
+  if (message?.includes("Insufficient nvidia.com/gpu")) {
+    return (
+      <>
+        <p className="mb-2">
+          Scheduling error: there are not enough GPUs available to start or
+          resume the session.
+        </p>
+        <h3 className="fs-6">Original error message:</h3>
+        <p className="mb-0">{message}</p>
+      </>
+    );
+  }
+
+  if (
+    message?.includes("nodes are available") ||
+    message?.includes("The resource quota has been exceeded.")
+  ) {
+    return (
+      <>
+        <p className="mb-2">
+          Scheduling error: one or more compute resources have been exhausted in
+          the resource pool.
+        </p>
+        <h3 className="fs-6">Original error message:</h3>
+        <p className="mb-0">{message}</p>
+      </>
+    );
+  }
+
+  return <>{message}</>;
+}
+
+function MissingHibernationInfo() {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <>
+      <span ref={ref}>
+        <FontAwesomeIcon className="ms-1" icon={faExclamationTriangle} />
+      </span>
+      <UncontrolledPopover placement="bottom" target={ref} trigger="hover">
+        <PopoverHeader>Missing information</PopoverHeader>
+        <PopoverBody>
+          Information about when this session was paused is not available.
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
+  );
+}
 
 export function SessionBadge({
   children,

@@ -28,13 +28,13 @@ import { SingleValue } from "react-select";
 import { Card, CardBody, Input, Label, ListGroupItem } from "reactstrap";
 
 import { TimeCaption } from "~/components/TimeCaption";
-import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
 import {
   type ResourceClassWithId,
   type ResourcePoolWithId,
 } from "../../api/computeResources.api";
 import type { Environment as SessionEnvironment } from "../../api/sessionLaunchersV2.api";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import SessionClassSelector from "../SessionClassSelector";
 import { EnvironmentIcon } from "./LauncherEnvironmentIcon";
 
 interface SessionEnvironmentItemProps {
@@ -77,7 +77,7 @@ export function SessionEnvironmentItem({
           render={() => (
             <CardBody>
               <Label for="resource-class-selector">Compute resources</Label>
-              <SessionClassSelectorV2
+              <SessionClassSelector
                 id="resource-class-selector"
                 resourcePools={resourcePools}
                 onChange={onChangeResourceClass}

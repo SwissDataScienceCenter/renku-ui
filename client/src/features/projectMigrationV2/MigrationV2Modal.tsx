@@ -27,7 +27,6 @@ import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ScrollableModal from "../../components/modal/ScrollableModal";
 import { useMigrationForm } from "../project/components/projectMigration/hooks/useMigrationForm";
 import ProjectMigrationFooter from "../project/components/projectMigration/ProjectMigrationFooter";
-import MigrationForm from "../project/components/projectMigration/ProjectMigrationForm";
 import GitlabProjectList from "./GitlabProjectList";
 import { GitlabProjectsToMigrate } from "./ProjectMigration.types";
 
@@ -41,27 +40,17 @@ export default function MigrationV2Modal({
   toggle,
 }: MigrationV2ModalProps) {
   const [step, setStep] = useState(1);
-  const [selectedProject, setSelectedProject] =
-    useState<GitlabProjectsToMigrate | null>(null);
 
   const {
-    control,
-    errors,
-    watch,
-    setValue,
     reset,
-    handleSubmit,
-    dirtyFields,
     containerImage,
     defaultUrl,
     result,
-    onSubmit,
     linkToProject,
     resetResult,
   } = useMigrationForm();
 
   const handleProjectSelect = (project: GitlabProjectsToMigrate) => {
-    setSelectedProject(project);
     reset({
       name: project.name,
       namespace: "",
@@ -75,7 +64,6 @@ export default function MigrationV2Modal({
     reset();
     resetResult();
     setStep(1);
-    setSelectedProject(null);
     toggle();
   }, [reset, resetResult, setStep, toggle]);
 
@@ -101,20 +89,7 @@ export default function MigrationV2Modal({
               <GitlabProjectList onSelectProject={handleProjectSelect} />
             </div>
           </>
-        ) : (
-          <MigrationForm
-            codeRepository={selectedProject?.http_url_to_repo ?? ""}
-            isReadyMigrationResult={!!result.data}
-            control={control}
-            errors={errors}
-            setValue={setValue}
-            watch={watch}
-            dirtyFields={dirtyFields}
-            selectedProject={selectedProject}
-            onSubmit={onSubmit}
-            handleSubmit={handleSubmit}
-          />
-        )}
+        ) : null}
         {result?.data && (
           <SuccessAlert dismissible={false} timeout={0}>
             <p>This project has been successfully migrated to Renku 2.0</p>
@@ -133,7 +108,7 @@ export default function MigrationV2Modal({
         isLoadingSessionValues={!containerImage || !defaultUrl}
         step={step}
         setStep={setStep}
-        setSelectedProject={setSelectedProject}
+        setSelectedProject={() => {}}
         hasGitlabProjectList={true}
         toggle={handleClose}
       />

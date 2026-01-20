@@ -20,11 +20,17 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 import { UpdateProjectResponse } from "../../features/project/project.types";
-import { NotebooksErrorResponse } from "../../features/session/sessions.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 import { CoreErrorResponse } from "../../utils/types/coreService.types";
 import { ErrorAlert, RenkuAlert } from "../Alert";
 import { CoreErrorAlert } from "./CoreErrorAlert";
+
+export interface BackendErrorResponse {
+  error: {
+    code: number;
+    message: string;
+  };
+}
 
 export function extractRkErrorMessage(
   error: FetchBaseQueryError | SerializedError,
@@ -124,13 +130,13 @@ export function RtkOrNotebooksError({
     typeof error.data === "object" &&
     error.data &&
     "error" in error.data &&
-    (error.data as NotebooksErrorResponse).error
+    (error.data as BackendErrorResponse).error
   ) {
     return (
       <RenkuAlert color="danger" dismissible={dismissible} timeout={0}>
-        <h3>Error {(error.data as NotebooksErrorResponse).error.code}</h3>
+        <h3>Error {(error.data as BackendErrorResponse).error.code}</h3>
         <p className="mb-0">
-          {(error.data as NotebooksErrorResponse).error.message}
+          {(error.data as BackendErrorResponse).error.message}
         </p>
       </RenkuAlert>
     );

@@ -50,10 +50,6 @@ import { recentUserActivityApi } from "../../features/recentUserActivity/RecentU
 import { repositoriesApi } from "../../features/repositories/api/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
-import sessionsApi from "../../features/session/sessions.api";
-import sessionSidecarApi from "../../features/session/sidecar.api";
-import startSessionSlice from "../../features/session/startSession.slice";
-import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import { sessionLaunchersV2EmptyApi as sessionLaunchersV2Api } from "../../features/sessionsV2/api/sessionLaunchersV2.empty-api";
 import { sessionsV2EmptyApi as sessionsV2Api } from "../../features/sessionsV2/api/sessionsV2.empty-api";
 import startSessionOptionsV2Slice from "../../features/sessionsV2/startSessionOptionsV2.slice";
@@ -77,9 +73,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [displaySlice.name]: displaySlice.reducer,
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [searchV2Slice.name]: searchV2Slice.reducer,
-    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
-    [startSessionSlice.name]: startSessionSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
@@ -100,8 +94,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
     [sessionLaunchersV2Api.reducerPath]: sessionLaunchersV2Api.reducer,
-    [sessionsApi.reducerPath]: sessionsApi.reducer,
-    [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
     [statuspageApi.reducerPath]: statuspageApi.reducer,
     [termsApi.reducerPath]: termsApi.reducer,
@@ -136,8 +128,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(repositoriesApi.middleware)
         .concat(searchV2Api.middleware)
         .concat(sessionLaunchersV2Api.middleware)
-        .concat(sessionsApi.middleware)
-        .concat(sessionSidecarApi.middleware)
         .concat(sessionsV2Api.middleware)
         .concat(statuspageApi.middleware)
         .concat(termsApi.middleware)

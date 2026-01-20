@@ -18,7 +18,6 @@
 
 import APIClient from "../api-client";
 import { StateModel } from "../model";
-import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
 import { handleSessionsStatusV2 } from "./handlers/sessionStatusHandlerV2";
 import {
   handleUserError,
@@ -79,13 +78,6 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         required: null,
         optional: ["message"],
         handler: () => ({ test: true }),
-      },
-    ],
-    sessionStatus: [
-      {
-        required: null,
-        optional: ["message"],
-        handler: handleSessionsStatus,
       },
     ],
     sessionStatusV2: [
