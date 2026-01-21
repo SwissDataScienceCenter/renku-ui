@@ -27,7 +27,6 @@ import { Clipboard } from "../components/clipboard/Clipboard";
 import BootstrapGitLabIcon from "../components/icons/BootstrapGitLabIcon";
 import { KgStatusWrapper } from "../components/kgStatus/KgStatus";
 import { ExternalIconLink } from "../components/LegacyExternalLinks";
-import SessionFileButton from "../features/session/components/SessionFileButton";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";
 
@@ -318,9 +317,7 @@ class FileLineage extends Component {
       />
     );
 
-    const buttonJupyter = filePath.endsWith(".ipynb") ? (
-      <SessionFileButton filePath={this.props.filePath} />
-    ) : null;
+    const buttonJupyter = null;
 
     const fileInfo =
       this.props.filesTree?.hash && this.props.gitFilePath
