@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   CircleFill,
   FileCode,
@@ -60,7 +60,8 @@ import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBad
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { RenkuContactEmail } from "~/utils/constants/Docs";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -734,6 +735,9 @@ export function RepositoryCallToActionAlert({
   repositoryUrl,
 }: RepositoryCallToActionAlertProps) {
   const { pathname, hash } = useLocation();
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   const { data, isLoading, error } = useGetRepositoryQuery({
     url: repositoryUrl,
   });
@@ -826,7 +830,7 @@ export function RepositoryCallToActionAlert({
                 <a
                   target="_blank"
                   rel="noreferrer noopener"
-                  href={`mailto:${RenkuContactEmail}`}
+                  href={`mailto:${renkuContactEmail}`}
                 >
                   <Send className={cx("bi", "me-1")} />
                   contact us
@@ -862,7 +866,7 @@ export function RepositoryCallToActionAlert({
           <a
             target="_blank"
             rel="noreferrer noopener"
-            href="mailto:hello@renku.io"
+            href={`mailto:${renkuContactEmail}`}
           >
             <Send className={cx("bi", "me-1")} />
             contact us

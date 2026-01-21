@@ -17,20 +17,25 @@
  */
 
 import cx from "classnames";
+import { useContext } from "react";
 import { Envelope, Github, HeartFill } from "react-bootstrap-icons";
 import { Col, Row } from "reactstrap";
 
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import {
   ExternalDocsLink,
   ExternalLink,
 } from "../../../../components/LegacyExternalLinks.js";
-import { Links, RenkuContactEmail } from "../../../../utils/constants/Docs.js";
+import { Links } from "../../../../utils/constants/Docs.js";
 import logo_EPFL from "../../assets/EPFL.svg";
 import logo_ETH from "../../assets/ETH.svg";
 import logo_SDSC from "../../assets/SDSC.svg";
 
 export default function WhoWeAre() {
-  const contactEmail = RenkuContactEmail || "";
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   return (
     <div className="bg-light">
       <div className={cx("container", "py-5")}>
@@ -68,7 +73,7 @@ export default function WhoWeAre() {
                 color="primary"
                 role="button"
                 id="Contact_us_btn"
-                url={`mailto:${contactEmail}`}
+                url={`mailto:${renkuContactEmail}`}
                 title=""
               >
                 <Envelope size={20} /> Email us!

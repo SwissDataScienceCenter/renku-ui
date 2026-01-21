@@ -17,19 +17,24 @@
  */
 
 import cx from "classnames";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useContext, useEffect, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
 import { ExternalLink } from "~/components/LegacyExternalLinks";
-import { Links, RenkuContactEmail } from "~/utils/constants/Docs";
+import { Links } from "~/utils/constants/Docs";
 import { NEW_DOCS_HOW_RENKU_WORKS } from "~/utils/constants/NewDocs";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import Background from "./Background.svg";
 
 import styles from "./NoLegacySupport.module.css";
 
 function MigrateContentInfo() {
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   const [isRenkulabIo, setIsRenkulabIo] = useState(false);
   useEffect(() => {
     const hostname = window.location.hostname;
@@ -57,7 +62,7 @@ function MigrateContentInfo() {
           className="text-dark"
           role="text"
           title="Submit a data retrieval request."
-          url={`mailto:${RenkuContactEmail}`}
+          url={`mailto:${renkuContactEmail}`}
         />
       </InfoAlert>
     </div>

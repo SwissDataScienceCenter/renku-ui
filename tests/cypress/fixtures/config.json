@@ -68,5 +68,6 @@
     }
   },
   "USER_PREFERENCES_MAX_PINNED_PROJECTS": 5,
-  "IMAGE_BUILDERS_ENABLED": true
+  "IMAGE_BUILDERS_ENABLED": true,
+  "CONTACT_EMAIL": "hello@renku.io"
 }
