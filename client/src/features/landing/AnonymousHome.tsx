@@ -26,7 +26,6 @@
 import { Fragment, useContext } from "react";
 import { Col, Row } from "reactstrap";
 
-import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { Url } from "../../utils/helpers/url";
@@ -48,6 +47,7 @@ import "../../project/Project.style.css";
 // ? the "quick-nav" class is used in this file
 import "../../components/quicknav/QuickNav.style.css";
 
+import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
 import { GetStarted } from "./components/GetStarted/GetStarted";
 import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 
@@ -123,7 +123,7 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
       <div className="rk-anon-home-section-content">
         <Row>
           <Col className="rk-pt-l rk-w-s">
-            <LazyRenkuMarkdown key="home" markdownText={content} />
+            <LazyMarkdownHtmlRenderer>{content}</LazyMarkdownHtmlRenderer>
           </Col>
         </Row>
       </div>

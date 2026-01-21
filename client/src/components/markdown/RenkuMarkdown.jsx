@@ -71,33 +71,4 @@ function RenkuMarkdown(props) {
   );
 }
 
-/**
- * This component converts markdown to text. It is meant to be used when an extract of
- * a description in markdown should be be displayed.
- * @param {string} markdownText is the markdown text that wants to be displayed
- * @param {integer} charsLimit is the number of characters that will be displayed
- */
-function MarkdownTextExcerpt(props) {
-  // Alternative implementation to strip styling.
-  // const temp = document.createElement("div");
-  // temp.innerHTML = sanitizedHTMLFromMarkdown(this.props.markdownText, false);
-  // const innerText = temp.textContent || temp.innerText || "";
-  // return this.props.charsLimit !== undefined && innerText.length > this.props.charsLimit ?
-  //   innerText.substr(0, this.props.charsLimit) + "..." : innerText;
-  const style = props.heightLimit
-    ? { maxHeight: `${props.heightLimit}ch` }
-    : { maxWidth: `${props.charsLimit}ch` };
-  const text =
-    props.charsLimit && props.markdownText.length > props.charsLimit
-      ? props.markdownText.slice(0, props.charsLimit) + "..."
-      : props.markdownText;
-  return (
-    <RenkuMarkdown
-      markdownText={text}
-      singleLine={props.singleLine || false}
-      style={style}
-    />
-  );
-}
-
-export { MarkdownTextExcerpt, RenkuMarkdown };
+export { RenkuMarkdown };

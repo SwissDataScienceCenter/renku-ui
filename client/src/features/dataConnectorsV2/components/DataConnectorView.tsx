@@ -40,10 +40,10 @@ import {
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
 import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
-import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -524,7 +524,9 @@ function DataConnectorViewMetadata({
 
       {dataConnector.description && (
         <DataConnectorPropertyValue title="Description">
-          <LazyRenkuMarkdown markdownText={dataConnector.description} />
+          <LazyMarkdownHtmlRenderer>
+            {dataConnector.description}
+          </LazyMarkdownHtmlRenderer>
         </DataConnectorPropertyValue>
       )}
 

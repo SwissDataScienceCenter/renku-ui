@@ -19,7 +19,7 @@
 import React from "react";
 import { CardBody } from "reactstrap";
 
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
+import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
 import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 import { atobUTF8 } from "../utils/helpers/Encoding";
 import { FileNoPreview, StyledNotebook } from "./File.present";
@@ -221,15 +221,7 @@ function FilePreview(props: FilePreviewProps) {
     const content = atobUTF8(props.file.content);
     return (
       <CardBody key="file preview" className="pb-0">
-        <LazyRenkuMarkdown
-          projectPathWithNamespace={props.projectPathWithNamespace}
-          filePath={props.file.file_path}
-          markdownText={content}
-          projectId={props.projectId}
-          fixRelativePaths={props.insideProject}
-          branch={props.branch}
-          client={props.client}
-        />{" "}
+        <LazyMarkdownHtmlRenderer>{content}</LazyMarkdownHtmlRenderer>{" "}
       </CardBody>
     );
   }

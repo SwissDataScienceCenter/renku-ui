@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,24 +16,19 @@
  * limitations under the License.
  */
 
-import { ComponentProps, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
+import type { ComponentProps } from "react";
 
-import { Loader } from "../Loader";
+import PageLoader from "../../components/PageLoader";
 
-const RenkuMarkdown = lazy(() =>
-  import("./RenkuMarkdown").then((module) => ({
-    default: module.RenkuMarkdown,
-  }))
-);
+type Props = ComponentProps<typeof MarkdownHtmlRenderer>;
 
-// ? Lazy loading of Markdown components allows us to split off ~700kB from
-// ? the main bundle.
-export default function LazyRenkuMarkdown(
-  props: ComponentProps<typeof RenkuMarkdown>
-) {
+const MarkdownHtmlRenderer = lazy(() => import("./MarkdownHtmlRenderer"));
+
+export default function LazyMarkdownHtmlRenderer(props: Props) {
   return (
-    <Suspense fallback={<Loader size={30} />}>
-      <RenkuMarkdown {...props} />
+    <Suspense fallback={<PageLoader />}>
+      <MarkdownHtmlRenderer {...props} />
     </Suspense>
   );
 }
