@@ -61,7 +61,6 @@ import {
 import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import ProjectSettings from "../features/project/components/ProjectSettings";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
-import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import { Url } from "../utils/helpers/url";
@@ -968,10 +967,7 @@ function ProjectView(props) {
               />
             }
           />
-          <Route
-            path={notebookServersUrl}
-            element={<ProjectSessionsRouter key="sessions" />}
-          />
+          <Route path={notebookServersUrl} element={<null key="sessions" />} />
           <Route
             path="*"
             element={<NotFoundInsideProject baseUrl={props.baseUrl} />}
