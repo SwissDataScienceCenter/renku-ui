@@ -20,7 +20,6 @@ import React from "react";
 import { CardBody } from "reactstrap";
 
 import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
-import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 import { atobUTF8 } from "../utils/helpers/Encoding";
 import { FileNoPreview, StyledNotebook } from "./File.present";
 import LazyCodePreview from "./LazyCodePreview";
@@ -99,6 +98,11 @@ function filenameExtension(filename: string | undefined) {
   if (filename.match(/\.(.*)/) === null) return null;
   const extension = filename.split(".").pop();
   return extension?.toLowerCase() ?? null;
+}
+
+function encodeImageBase64(name: string, data: string) {
+  const subType = name.endsWith(".svg") ? "/svg+xml" : "";
+  return `data:image${subType};base64,${data}`;
 }
 
 type FileType =
