@@ -71,5 +71,6 @@
   "IMAGE_BUILDERS_ENABLED": true,
   "LEGACY_SUPPORT": {
     "enabled": false
-  }
+  },
+  "CONTACT_EMAIL": "hello@renku.io"
 }

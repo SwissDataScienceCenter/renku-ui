@@ -58,6 +58,7 @@ export function validatedAppParams(params: unknown): AppParams {
   const UISERVER_URL = validateString(params_, "UISERVER_URL");
   const UI_SHORT_SHA = validateString(params_, "UI_SHORT_SHA");
   const UI_VERSION = validateString(params_, "UI_VERSION");
+  const CONTACT_EMAIL = validateString(params_, "CONTACT_EMAIL");
 
   // Boolean params
   const ANONYMOUS_SESSIONS = validateBoolean(params_, "ANONYMOUS_SESSIONS");
@@ -90,6 +91,7 @@ export function validatedAppParams(params: unknown): AppParams {
   return {
     ANONYMOUS_SESSIONS,
     BASE_URL,
+    CONTACT_EMAIL,
     CORE_API_VERSION_CONFIG,
     DASHBOARD_MESSAGE,
     GATEWAY_URL,
