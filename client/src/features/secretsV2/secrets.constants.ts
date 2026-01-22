@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2024 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,27 +16,4 @@
  * limitations under the License.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
-
-interface DashboardMessageState {
-  dismissed: boolean;
-}
-
-const initialState: DashboardMessageState = {
-  dismissed: false,
-};
-
-export const dashboardMessageSlice = createSlice({
-  name: "dashboardMessage",
-  initialState,
-  reducers: {
-    dismiss: (state) => {
-      state.dismissed = true;
-    },
-    // eslint-disable-next-line spellcheck/spell-checker
-    undismiss: (state) => {
-      state.dismissed = false;
-    },
-    reset: () => initialState,
-  },
-});
+export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;

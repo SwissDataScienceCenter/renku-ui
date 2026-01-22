@@ -22,16 +22,10 @@ import { Navigate, Route, Routes } from "react-router";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import AnonymousNavBar from "../../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../../components/navbar/LoggedInNavBar";
-import LazyHelp from "../../help/LazyHelp";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
-import LazyStyleGuide from "../../styleguide/LazyStyleGuide";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import LazyDashboard from "../dashboard/LazyDashboard";
-import LazyInactiveKGProjectsPage from "../inactiveKgProjects/LazyInactiveKGProjectsPage";
-import LazySearchPage from "../kgSearch/LazySearchPage";
-import LazySecrets from "../secrets/LazySecrets";
 import LazyAnonymousSessionsList from "../session/components/LazyAnonymousSessionsList";
 import ProjectRootV1 from "./ProjectRootV1";
 
@@ -43,58 +37,10 @@ export default function RootV1() {
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
           <Route
-            index
-            element={
-              <ContainerWrap>
-                <LazyDashboard />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.help}
-            element={
-              <ContainerWrap>
-                <LazyHelp />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.search}
-            element={
-              <ContainerWrap>
-                <LazySearchPage />
-              </ContainerWrap>
-            }
-          />
-          <Route
             path={RELATIVE_ROUTES.v1.notifications}
             element={
               <ContainerWrap>
                 <LazyNotificationsPage />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.styleGuide}
-            element={
-              <ContainerWrap>
-                <LazyStyleGuide />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.secrets}
-            element={
-              <ContainerWrap>
-                <LazySecrets />
-              </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.inactiveKGProjects}
-            element={
-              <ContainerWrap>
-                <LazyInactiveKGProjectsPage />
               </ContainerWrap>
             }
           />

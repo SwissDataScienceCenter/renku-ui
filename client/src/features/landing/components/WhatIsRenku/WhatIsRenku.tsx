@@ -17,10 +17,12 @@
  */
 
 import cx from "classnames";
+import { useContext } from "react";
 import { Col, Row } from "reactstrap";
 
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks.js";
-import { RenkuContactEmail } from "../../../../utils/constants/Docs.js";
 import collaborationGraphic from "../../assets/boxes.svg";
 import computingGraphic from "../../assets/computing.svg";
 import connectionGraphic from "../../assets/network.svg";
@@ -135,6 +137,9 @@ function CollaborationFeatSection() {
 }
 
 function ComputingFeatSection() {
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   return (
     <Row className={cx("m-0", "m-lg-5", "gap-3", "gap-lg-0")}>
       <Col
@@ -159,7 +164,7 @@ function ComputingFeatSection() {
             className="fs-3"
             role="link"
             id="computeFeatLink"
-            url={`mailto:${RenkuContactEmail}?subject=RenkuLab%20compute%20resources`}
+            url={`mailto:${renkuContactEmail}?subject=RenkuLab%20compute%20resources`}
             title="Contact us for bigger compute options"
           />
         </div>
