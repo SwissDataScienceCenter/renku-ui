@@ -16,16 +16,4 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense } from "react";
-
-import PageLoader from "../../components/PageLoader";
-
-const SearchPage = lazy(() => import("./KgSearchPage"));
-
-export default function LazySearchPage() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <SearchPage />
-    </Suspense>
-  );
-}
+export const SECRETS_VALUE_LENGTH_LIMIT = 5_000;

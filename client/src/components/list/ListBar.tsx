@@ -19,11 +19,11 @@
 import cx from "classnames";
 import { Link } from "react-router";
 
-import { EntityType } from "../../features/kgSearch";
 import SessionButton from "../../features/session/components/SessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
+import { EntityType } from "../entities/entities.types";
 import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { TimeCaption } from "../TimeCaption";
