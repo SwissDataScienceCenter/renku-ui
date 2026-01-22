@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import type { DashboardMessageParams } from "../../features/dashboard/message/DashboardMessage.types";
 import type { HomepageParams } from "../../features/landing/anonymousHome.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 
@@ -24,7 +23,6 @@ export interface AppParams {
   ANONYMOUS_SESSIONS: boolean;
   BASE_URL: string;
   CORE_API_VERSION_CONFIG: Partial<CoreApiVersionedUrlConfig>;
-  DASHBOARD_MESSAGE: DashboardMessageParams;
   GATEWAY_URL: string;
   HOMEPAGE: HomepageParams;
   IMAGE_BUILDERS_ENABLED: boolean;
