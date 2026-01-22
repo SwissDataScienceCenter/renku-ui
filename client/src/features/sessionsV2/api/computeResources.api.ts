@@ -53,6 +53,10 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
             ]
           : ["ResourcePool"],
     },
+    getResourcePoolsByResourcePoolId: {
+      providesTags: (result, _error, { resourcePoolId }) =>
+        result ? [{ id: resourcePoolId, type: "ResourcePool" }] : [],
+    },
     postResourcePools: {
       invalidatesTags: ["ResourcePool", "ResourceClass"],
     },
@@ -114,6 +118,7 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
 export const {
   // "resource pools" hooks
   useGetResourcePoolsQuery,
+  useGetResourcePoolsByResourcePoolIdQuery,
   usePostResourcePoolsMutation,
   usePatchResourcePoolsByResourcePoolIdMutation,
   useDeleteResourcePoolsByResourcePoolIdMutation,
