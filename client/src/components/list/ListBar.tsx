@@ -23,6 +23,7 @@ import SessionButton from "../../features/session/components/SessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
+import { EntityType } from "../entities/entities.types";
 import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { TimeCaption } from "../TimeCaption";
@@ -30,8 +31,6 @@ import { ListElementProps } from "./list.types";
 import PinnedBadge from "./PinnedBadge";
 
 import "./ListBar.scss";
-
-import { EntityType } from "../entities/entities.types";
 
 export function getMainActionByEntity(
   entityType: EntityType,
