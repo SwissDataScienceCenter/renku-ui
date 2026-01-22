@@ -66,7 +66,7 @@ export default function GroupPageContainer() {
   useEffect(() => {
     if (slug && namespace?.namespace_kind === "user") {
       navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.users.show, { username: slug }),
+        generatePath(ABSOLUTE_ROUTES.v2.users.show.root, { username: slug }),
         {
           replace: true,
         }

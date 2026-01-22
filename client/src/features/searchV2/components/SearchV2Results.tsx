@@ -297,7 +297,7 @@ function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
 
   const namespaceUrl =
     namespace?.type === "User"
-      ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+      ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
           username: namespace?.path ?? "",
         })
       : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
@@ -389,7 +389,7 @@ interface SearchV2ResultUserProps {
 function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
   const { firstName, lastName, path: namespace } = user;
 
-  const userUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+  const userUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
     username: namespace ?? "",
   });
 
@@ -432,7 +432,7 @@ function SearchV2ResultDataConnector({
           id: namespace.path,
         })
       : namespace?.type === "User"
-      ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+      ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
           username: namespace.path,
         })
       : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {

@@ -318,7 +318,7 @@ function UserDashboard() {
     return null;
   }
 
-  const userPageUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+  const userPageUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
     username: userInfo?.username ?? "",
   });
 
