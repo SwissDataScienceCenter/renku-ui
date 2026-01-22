@@ -28,7 +28,6 @@ import {
 } from "react-router";
 
 import LazyUserContainer from "~/features/usersV2/LazyUserContainer";
-import LazyUserV2Search from "~/features/usersV2/LazyUserV2Search";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import {
@@ -309,10 +308,10 @@ function UserV2Routes() {
       <Route path={RELATIVE_ROUTES.v2.users.show.root}>
         <Route element={<LazyUserContainer />}>
           <Route index element={<LazyUserShow />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.users.show.search}
-            element={<LazyUserV2Search />}
-          />
+          {/*<Route*/}
+          {/*  path={RELATIVE_ROUTES.v2.users.show.search}*/}
+          {/*  element={<LazyGroupV2Search />}*/}
+          {/*/>*/}
         </Route>
       </Route>
       <Route
