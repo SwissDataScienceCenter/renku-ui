@@ -1,5 +1,5 @@
 /*!
- * Copyright 2026 - Swiss Data Science Center (SDSC)
+ * Copyright 2025 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -21,14 +21,14 @@ import { JournalAlbum } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { useUser } from "~/features/usersV2/show/UserPageContainer";
+import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 
 export default function UserShow() {
-  const { user } = useUser();
-  const username = user.username;
+  const context = useNamespaceContext();
+  const username = context.type === "user" ? context.user?.username : null;
 
   const information = (
     <div className={cx("d-flex", "flex-column")}>
@@ -40,6 +40,9 @@ export default function UserShow() {
     </div>
   );
 
+  if (context.type !== "user" || !username) {
+    return null;
+  }
   return (
     <Row className="g-4">
       <Col xs={12} md={8} xl={9}>

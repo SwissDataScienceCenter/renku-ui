@@ -158,8 +158,8 @@ export const RELATIVE_ROUTES = {
     users: {
       root: "u/*",
       show: {
-        root: ":username",
-        search: "username/search",
+        root: ":username/*",
+        search: "search",
       },
     },
   },

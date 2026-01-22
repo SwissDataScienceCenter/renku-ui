@@ -20,9 +20,9 @@ import cx from "classnames";
 import { Clock, InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
+import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
 import { TimeCaption } from "../../../components/TimeCaption";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
-import { useGroup } from "./GroupPageContainer";
 
 interface GroupInformationProps {
   output?: "plain" | "card";
@@ -30,22 +30,25 @@ interface GroupInformationProps {
 export default function GroupInformation({
   output = "plain",
 }: GroupInformationProps) {
-  const { group } = useGroup();
+  const context = useNamespaceContext();
 
-  const information = (
+  const information = context.type === "group" && (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <GroupInformationBox
         icon={<JournalAlbum className="bi" />}
         title="Identifier:"
       >
-        <p className="mb-0">@{group.slug}</p>
+        <p className="mb-0">@{context.namespace}</p>
       </GroupInformationBox>
       <GroupInformationBox icon={<Clock className="bi" />} title="Created:">
         <p className="mb-0">
-          <TimeCaption datetime={group.creation_date} className={cx("fs-6")} />
+          <TimeCaption
+            datetime={context.group?.creation_date}
+            className={cx("fs-6")}
+          />
         </p>
       </GroupInformationBox>
-      <GroupV2MemberListDisplay group={group.slug} />
+      <GroupV2MemberListDisplay group={context.namespace} />
     </div>
   );
   return output === "plain" ? (

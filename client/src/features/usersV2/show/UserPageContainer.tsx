@@ -19,17 +19,12 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
-import {
-  generatePath,
-  Outlet,
-  useNavigate,
-  useOutletContext,
-  useParams,
-} from "react-router";
+import { generatePath, Outlet, useNavigate, useParams } from "react-router";
 import { Badge, Col, Row } from "reactstrap";
 
 import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
 import { Loader } from "~/components/Loader";
+import { NamespaceContextType } from "~/features/groupsV2/search/useNamespaceContext";
 import UserNotFound from "~/features/projectsV2/notFound/UserNotFound";
 import {
   useGetUserByIdQuery,
@@ -122,17 +117,20 @@ export default function UserPageContainer() {
         </Col>
         <Col xs={12}>
           <main>
-            <Outlet context={{ user: user } satisfies ContextType} />
+            <Outlet
+              context={
+                {
+                  type: "user",
+                  namespace: username,
+                  user: user,
+                } satisfies NamespaceContextType
+              }
+            />
           </main>
         </Col>
       </Row>
     </ContainerWrap>
   );
-}
-
-type ContextType = { user: UserWithId };
-export function useUser() {
-  return useOutletContext<ContextType>();
 }
 
 function UserHeader({
