@@ -53,7 +53,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@ckeditor/ckeditor5-react": "^5.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
@@ -63,7 +62,6 @@
     "@react-router/express": "^7.12.0",
     "@react-router/node": "^7.12.0",
     "@reduxjs/toolkit": "^2.8.2",
-    "@renku/ckeditor5-build-renku": "0.0.6",
     "@sentry/react": "^7.119.1",
     "bootstrap": "^5.3.3",
     "classnames": "^2.3.2",
@@ -112,6 +110,7 @@
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
     "rehype-katex": "^6.0.3",
+    "rehype-sanitize": "^6.0.0",
     "rehype-stringify": "^9.0.3",
     "remark-math": "^5.1.1",
     "remark-rehype": "^10.1.0",

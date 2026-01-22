@@ -20,8 +20,6 @@ import cx from "classnames";
 import { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router";
 
-import LazyRenkuMarkdown from "../markdown/LazyRenkuMarkdown";
-
 export interface EntityDescriptionProps {
   className?: string;
   description: string | ReactNode;
@@ -48,10 +46,6 @@ export default function EntityDescription({
   const content =
     description && typeof description === "string" ? (
       <>
-        <LazyRenkuMarkdown
-          markdownText={description}
-          singleLine={numberLines === 1}
-        />
         <span className="ms-1">
           {description.includes("\n") ? " [...]" : ""}
         </span>

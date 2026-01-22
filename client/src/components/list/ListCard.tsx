@@ -21,7 +21,6 @@ import type { CSSProperties } from "react";
 import { Link } from "react-router";
 
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { EntityButton } from "../entities/Buttons";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
@@ -47,8 +46,6 @@ function ListCard({
   title,
   url,
   visibility,
-  animated = false,
-  fromLanding = false,
 }: ListElementProps) {
   const imageStyles: CSSProperties = imageUrl
     ? { backgroundImage: `url("${imageUrl}")` }
@@ -84,12 +81,6 @@ function ListCard({
               </div>
             )}
           </Link>
-          <EntityButton
-            type={itemType}
-            slug={path ?? ""}
-            animated={animated}
-            fromLanding={fromLanding}
-          />
           <Link
             className={cx("card-body", "d-block", "text-decoration-none")}
             to={url}

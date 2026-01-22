@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,12 +16,29 @@
  * limitations under the License.
  */
 
-function ProjectFileLineage() {
-  return null;
-}
+import ReactMarkdown, { type Options } from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
-function ProjectFileView() {
-  return null;
-}
+type MarkdownHtmlRendererProps = Options & {
+  children?: string;
+  sanitize?: boolean;
+};
 
-export { ProjectFileLineage, ProjectFileView };
+export default function MarkdownHtmlRenderer({
+  children,
+  sanitize = true,
+  rehypePlugins,
+  ...props
+}: MarkdownHtmlRendererProps) {
+  const basePlugins = [rehypeRaw, ...(sanitize ? [rehypeSanitize] : [])];
+
+  return (
+    <ReactMarkdown
+      rehypePlugins={[...basePlugins, ...(rehypePlugins ?? [])]}
+      {...props}
+    >
+      {children}
+    </ReactMarkdown>
+  );
+}

@@ -195,3 +195,18 @@ export enum LauncherStep {
   Environment = "environment",
   LauncherDetails = "launcherDetails",
 }
+
+export type SessionStatusState = keyof typeof SessionStatusStateEnum;
+
+export enum SessionStatusStateEnum {
+  failed = "failed",
+  running = "running",
+  starting = "starting",
+  stopping = "stopping",
+  hibernated = "hibernated",
+}
+
+export interface SessionEnvironmentVariable {
+  name: string;
+  value: string;
+}

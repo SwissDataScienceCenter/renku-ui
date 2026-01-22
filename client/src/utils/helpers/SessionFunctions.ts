@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { NotebooksHelper } from "../../notebooks";
+import { NotebooksHelper } from "../../notebooks/Notebooks.state";
 
 // ? Consider moving this under /features/session(s)/helpers
 

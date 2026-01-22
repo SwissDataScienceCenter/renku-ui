@@ -27,7 +27,6 @@ import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { useMigrationForm } from "./hooks/useMigrationForm";
 import { ProjectMetadata } from "./ProjectMigration.types";
 import ProjectMigrationFooter from "./ProjectMigrationFooter";
-import MigrationForm from "./ProjectMigrationForm";
 
 interface MigrationV1ModalProps {
   isOpen: boolean;
@@ -41,20 +40,12 @@ export default function MigrationV1Modal({
   isOpen,
   toggle,
   projectMetadata,
-  description,
   tagList,
 }: MigrationV1ModalProps) {
   const {
-    control,
-    errors,
-    watch,
-    setValue,
-    handleSubmit,
-    dirtyFields,
     containerImage,
     defaultUrl,
     result,
-    onSubmit,
     linkToProject,
     reset,
     resetResult,
@@ -88,20 +79,6 @@ export default function MigrationV1Modal({
       </ModalHeader>
       <ModalBody className="p-4">
         {result.error && <RtkErrorAlert error={result.error} />}
-        <MigrationForm
-          description={description}
-          keywords={tagList}
-          codeRepository={projectMetadata.httpUrl ?? ""}
-          isReadyMigrationResult={!!result.data}
-          control={control}
-          errors={errors}
-          setValue={setValue}
-          watch={watch}
-          dirtyFields={dirtyFields}
-          projectMetadata={projectMetadata}
-          onSubmit={onSubmit}
-          handleSubmit={handleSubmit}
-        />
         {result?.data && (
           <SuccessAlert dismissible={false} timeout={0}>
             <p>This project has been successfully migrated to Renku 2.0</p>

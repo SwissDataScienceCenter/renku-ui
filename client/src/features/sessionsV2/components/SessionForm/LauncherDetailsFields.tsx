@@ -31,13 +31,13 @@ import {
 import { WarnAlert } from "~/components/Alert";
 import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
-import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
+import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "~/features/session/startSessionOptions.constants";
-import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
+} from "../../session.constants";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import SessionClassSelector from "../SessionClassSelector";
 
 interface LauncherDetailsFieldsProps {
   control: Control<SessionLauncherForm>;
@@ -118,7 +118,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
                 fieldState: { error },
               }) => (
                 <>
-                  <SessionClassSelectorV2
+                  <SessionClassSelector
                     id="addSessionResourceClass"
                     currentSessionClass={value}
                     resourcePools={resourcePools}

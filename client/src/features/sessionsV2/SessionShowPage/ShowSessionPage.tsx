@@ -56,8 +56,6 @@ import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import { SessionRowResourceRequests } from "../../session/components/SessionsList";
-import { StartSessionProgressBarV2 } from "../../session/components/StartSessionProgressBar";
 import {
   useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery,
   type SessionLauncher,
@@ -66,6 +64,7 @@ import {
   useGetSessionsQuery,
   usePatchSessionsBySessionIdMutation,
 } from "../api/sessionsV2.api";
+import { SessionRowResourceRequests } from "../components/SessionsList";
 import PauseOrDeleteSessionModal from "../PauseOrDeleteSessionModal";
 import {
   PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS,
@@ -79,8 +78,9 @@ import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
+import { StartSessionProgressBarV2 } from "./StartSessionProgressBar";
 
-import styles from "../../session/components/ShowSession.module.scss";
+import styles from "./ShowSession.module.scss";
 
 export default function ShowSessionPage() {
   const [nextPauseWarning, setNextPauseWarning] = useState<Date | null>(null);

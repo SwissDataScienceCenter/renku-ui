@@ -25,12 +25,8 @@
 
 import cx from "classnames";
 
-import SessionButton from "../../features/session/components/SessionButton";
-import { useGetSessionsQuery } from "../../features/session/sessions.api";
-import { getRunningSession } from "../../features/session/sessions.utils";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { Url } from "../../utils/helpers/url";
 import Creators, { EntityCreator } from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import { EntityType } from "../entities/entities.types";
@@ -74,11 +70,9 @@ export interface EntityHeaderProps {
 
 function EntityHeader({
   creators,
-  defaultBranch,
   description,
   devAccess,
   fullPath,
-  gitUrl,
   hideEmptyTags = false,
   imageUrl,
   itemType,
@@ -94,28 +88,8 @@ function EntityHeader({
   url,
   visibility,
 }: EntityHeaderProps) {
-  // Find sessions
-  const { data: sessions } = useGetSessionsQuery();
-
-  const projectData = { namespace: "", path: fullPath };
-  const sessionAutostartUrl = Url.get(
-    Url.pages.project.session.autostart,
-    projectData
-  );
-
-  const runningSession = sessions
-    ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
-    : null;
-
   // Set the main button based on running sessions
-  const mainButton =
-    fullPath && gitUrl && defaultBranch ? (
-      <SessionButton
-        fullPath={fullPath}
-        gitUrl={gitUrl}
-        branch={defaultBranch}
-      />
-    ) : null;
+  const mainButton = null;
 
   // Set up support for logs modal
   const displayModal = useAppSelector(
@@ -123,10 +97,7 @@ function EntityHeader({
   );
   const envLogs =
     itemType === "project" ? (
-      <EnvironmentLogs
-        name={displayModal.targetServer}
-        annotations={runningSession?.annotations ?? {}}
-      />
+      <EnvironmentLogs name={displayModal.targetServer} annotations={{}} />
     ) : null;
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);

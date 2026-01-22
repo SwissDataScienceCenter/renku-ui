@@ -31,10 +31,10 @@ import {
   ModalFooter,
 } from "reactstrap";
 
+import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import ModalHeader from "../../../../components/modal/ModalHeader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
@@ -99,7 +99,9 @@ export default function Documentation({ project }: DocumentationProps) {
         <CardBody>
           <div data-cy="project-documentation-text">
             {project.documentation ? (
-              <LazyRenkuMarkdown markdownText={project.documentation} />
+              <LazyMarkdownHtmlRenderer>
+                {project.documentation}
+              </LazyMarkdownHtmlRenderer>
             ) : (
               <p className={cx("m-0", "text-body-secondary")}>
                 Describe your project, so others can understand what it does and
@@ -244,7 +246,9 @@ function DocumentationModal({
                 name="documentation"
               />
             ) : (
-              <LazyRenkuMarkdown markdownText={watch("documentation")} />
+              <LazyMarkdownHtmlRenderer>
+                {watch("documentation")}
+              </LazyMarkdownHtmlRenderer>
             )}
           </div>
         </ModalBody>

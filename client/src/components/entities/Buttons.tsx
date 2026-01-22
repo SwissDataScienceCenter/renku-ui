@@ -23,42 +23,10 @@
  *  Entity Button component
  */
 
-import { faCog, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cx from "classnames";
 import { Funnel, FunnelFill } from "react-bootstrap-icons";
-import { Link } from "react-router";
 import { Button, UncontrolledTooltip } from "reactstrap";
-
-import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { EntityType } from "./entities.types";
-
-export interface EntityButtonProps {
-  type: EntityType;
-  slug: string;
-  animated?: boolean;
-  fromLanding?: boolean;
-}
-function EntityButton({
-  type,
-  slug,
-  animated = false,
-  fromLanding = false,
-}: EntityButtonProps) {
-  switch (type) {
-    case "project":
-      return (
-        <div className={cx("card-button", animated && "btn-animation-pulse")}>
-          <SimpleSessionButton fullPath={slug} fromLanding={fromLanding} />
-        </div>
-      );
-    case "dataset":
-      return null; // not defined yet
-    default:
-      return null;
-  }
-}
 
 export interface EntityDeleteButtonProps {
   itemType: "project" | "dataset";
@@ -93,60 +61,6 @@ function EntityDeleteButtonButton({
     </>
   );
 }
-
-export interface EntityModifyButtonProps {
-  url: string;
-  itemType: "project" | "dataset";
-}
-function EntityModifyButton({ url, itemType }: EntityModifyButtonProps) {
-  const styles = stylesByItemType(itemType);
-
-  switch (itemType) {
-    case "project":
-      return (
-        <>
-          <Link
-            id="modifyButton"
-            key="modify-button"
-            to={`${url}/settings`}
-            className="btn-outline-rk-green text-decoration-none"
-          >
-            <FontAwesomeIcon icon={faCog} className={styles.colorText} />
-          </Link>
-          <UncontrolledTooltip
-            key="tooltip-modify-entity"
-            placement="top"
-            target="modifyButton"
-          >
-            Settings
-          </UncontrolledTooltip>
-        </>
-      );
-    case "dataset":
-      return (
-        <>
-          <Link
-            id="modifyButton"
-            key="modify-button"
-            to={`${url}/settings`}
-            className="btn-outline-rk-pink text-decoration-none"
-          >
-            <FontAwesomeIcon icon={faPen} className={styles.colorText} />
-          </Link>
-          <UncontrolledTooltip
-            key="tooltip-modify-entity"
-            placement="top"
-            target="modifyButton"
-          >
-            Modify Dataset
-          </UncontrolledTooltip>
-        </>
-      );
-    default:
-      return null;
-  }
-}
-
 interface FilterButtonProps {
   isOpen: boolean;
   toggle: any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -175,9 +89,4 @@ function FilterButton({ isOpen, toggle }: FilterButtonProps) {
   );
 }
 
-export {
-  EntityButton,
-  EntityDeleteButtonButton,
-  EntityModifyButton,
-  FilterButton,
-};
+export { EntityDeleteButtonButton, FilterButton };

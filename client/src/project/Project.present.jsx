@@ -47,7 +47,6 @@ import { InfoAlert } from "../components/Alert";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import { ExternalLink } from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import RenkuNavLinkV2, {
   RenkuNavLinkV2WithAlternates,
 } from "../components/RenkuNavLinkV2";
@@ -61,7 +60,6 @@ import {
 import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import ProjectSettings from "../features/project/components/ProjectSettings";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
-import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import { Url } from "../utils/helpers/url";
@@ -69,6 +67,7 @@ import { WorkflowsList } from "../workflows";
 
 import "./Project.css";
 
+import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
 import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
@@ -587,15 +586,7 @@ class ProjectViewReadme extends Component {
           className="p-4"
           data-cy="project-readme"
         >
-          <LazyRenkuMarkdown
-            projectPathWithNamespace={this.props.metadata.pathWithNamespace}
-            filePath={""}
-            fixRelativePaths={true}
-            branch={this.props.metadata.defaultBranch}
-            markdownText={this.props.readme.text}
-            client={this.props.client}
-            projectId={this.props.metadata.id}
-          />
+          <LazyMarkdownHtmlRenderer>{readmeText}</LazyMarkdownHtmlRenderer>
         </CardBody>
       </Card>
     );
@@ -968,10 +959,7 @@ function ProjectView(props) {
               />
             }
           />
-          <Route
-            path={notebookServersUrl}
-            element={<ProjectSessionsRouter key="sessions" />}
-          />
+          <Route path={notebookServersUrl} element={<null key="sessions" />} />
           <Route
             path="*"
             element={<NotFoundInsideProject baseUrl={props.baseUrl} />}

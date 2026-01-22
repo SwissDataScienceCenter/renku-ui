@@ -33,15 +33,15 @@ import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { useWaitForSessionStatusV2 } from "../session/useWaitForSessionStatus.hook";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
 } from "./api/sessionsV2.api";
 import ShutdownSessionContent from "./components/SessionModals/ShoutdownSessionContent";
 import { SessionV2 } from "./sessionsV2.types";
+import { useWaitForSessionStatusV2 } from "./useWaitForSessionStatus.hook";
 
-import styles from "../session/components/SessionModals.module.scss";
+import styles from "./SessionModals.module.scss";
 
 interface PauseOrDeleteSessionModalProps {
   action?: "pause" | "delete";

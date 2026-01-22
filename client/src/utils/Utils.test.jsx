@@ -27,7 +27,6 @@ import { DateTime } from "luxon";
 import { describe, expect, it } from "vitest";
 
 import { CommitsUtils } from "../components/commits/Commits";
-import { fixRelativePath } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 import {
   convertUnicodeToAscii,
   formatBytes,
@@ -252,46 +251,6 @@ describe("title related functions", () => {
     expect(verifyTitleCharacters("Test:-)")).toBeFalsy();
     expect(verifyTitleCharacters("test!_pro-ject~")).toBeFalsy(); // eslint-disable-line
     expect(verifyTitleCharacters("yeah 🚀")).toBeFalsy();
-  });
-});
-
-describe("Translate path for markdown", () => {
-  // This is the folder structure that will be used for testing
-  //
-  // /fileStructure
-  // ├── folder1
-  // │   ├── folder2
-  // │   │   ├── fileWithReferencesToFix.md
-  // │   │   └── testImage2.md
-  // │   └── folder3
-  // │       └── testImage3.md
-  // └── images
-  //     └── testImage1.png
-
-  const testCases = [
-    {
-      relativePath: "../../images/testImage1.png",
-      localFilePath: ["folder2", "folder1"],
-      expectedResult: "images/testImage1.png",
-    },
-    {
-      relativePath: "./testImage2.png",
-      localFilePath: ["folder2", "folder1"],
-      expectedResult: "folder1/folder2/testImage2.png",
-    },
-    {
-      relativePath: "../folder3/testImage3.png",
-      localFilePath: ["folder2", "folder1"],
-      expectedResult: "folder1/folder3/testImage3.png",
-    },
-  ];
-
-  it("function fixRelativePath", () => {
-    testCases.forEach((test) => {
-      expect(fixRelativePath(test.relativePath, test.localFilePath)).toEqual(
-        test.expectedResult
-      );
-    });
   });
 });
 

@@ -54,10 +54,6 @@ import AppContext from "~/utils/context/appContext";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
-import { SessionClassSelectorV2 } from "../../../session/components/options/SessionClassOption";
-import { SessionRowResourceRequests } from "../../../session/components/SessionsList";
-import { SessionStatusState } from "../../../session/sessions.types";
-import { useWaitForSessionStatusV2 } from "../../../session/useWaitForSessionStatus.hook";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
@@ -69,13 +65,17 @@ import {
 import {
   SessionResources,
   SessionStatus,
+  SessionStatusState,
   SessionV2,
 } from "../../sessionsV2.types";
+import { useWaitForSessionStatusV2 } from "../../useWaitForSessionStatus.hook";
+import SessionClassSelector from "../SessionClassSelector";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
 } from "../SessionModals/ResourceClassWarning";
 import ShutdownSessionContent from "../SessionModals/ShoutdownSessionContent";
+import { SessionRowResourceRequests } from "../SessionsList";
 
 interface ActiveSessionButtonProps {
   className?: string;
@@ -632,7 +632,7 @@ function ModifySessionModalContent({
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
     <ErrorOrNotAvailableResourcePools />
   ) : (
-    <SessionClassSelectorV2
+    <SessionClassSelector
       resourcePools={resourcePools}
       currentSessionClass={currentSessionClass}
       onChange={onChange}

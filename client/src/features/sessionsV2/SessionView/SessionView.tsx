@@ -51,7 +51,6 @@ import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepos
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { SessionRowResourceRequests } from "../../session/components/SessionsList";
 import {
   useGetClassesByClassIdQuery,
   useGetResourcePoolsQuery,
@@ -60,6 +59,7 @@ import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
+import { SessionRowResourceRequests } from "../components/SessionsList";
 import {
   SessionBadge,
   SessionStatusV2Badge,

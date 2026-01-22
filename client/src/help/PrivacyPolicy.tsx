@@ -22,9 +22,9 @@
 
 import { useContext } from "react";
 
+import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
 import { WarnAlert } from "../components/Alert";
 import { Loader } from "../components/Loader";
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { isValidMarkdownResponse } from "../components/markdown/utils";
 import { useGetPrivacyPolicyQuery } from "../features/terms/terms.api";
 import AppContext from "../utils/context/appContext";
@@ -50,5 +50,5 @@ export default function PrivacyPolicy() {
     );
   }
 
-  return <LazyRenkuMarkdown markdownText={content} />;
+  return <LazyMarkdownHtmlRenderer>{content}</LazyMarkdownHtmlRenderer>;
 }

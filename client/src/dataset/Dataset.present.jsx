@@ -40,7 +40,6 @@ import { CoreError } from "../components/errors/CoreErrorHelpers";
 import FileExplorer from "../components/FileExplorer";
 import { ExternalLink } from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import DeleteDataset from "../project/datasets/delete";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
@@ -184,21 +183,7 @@ function DisplayDescription(props) {
   return (
     <Card key="datasetDescription" className="mb-4">
       <CardHeader className="bg-white p-3 ps-4">Dataset description</CardHeader>
-      <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
-        {props.insideProject ? (
-          <LazyRenkuMarkdown
-            projectPathWithNamespace={props.projectPathWithNamespace}
-            filePath={""}
-            fixRelativePaths={true}
-            markdownText={props.description}
-            branch={props.defaultBranch}
-            client={props.client}
-            projectId={props.projectId}
-          />
-        ) : (
-          <LazyRenkuMarkdown markdownText={props.description} />
-        )}
-      </CardBody>
+      <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2"></CardBody>
     </Card>
   );
 }

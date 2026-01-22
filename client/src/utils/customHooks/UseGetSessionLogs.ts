@@ -19,40 +19,7 @@
 import { useEffect, useState } from "react";
 
 import { ILogs } from "../../components/Logs";
-import { useGetLogsQuery } from "../../features/session/sessions.api";
 import { useGetSessionsBySessionIdLogsQuery as useGetLogsQueryV2 } from "../../features/sessionsV2/api/sessionsV2.api";
-
-/**
- *  useGetSessionLogs custom hook
- *
- *  useGetSessionLogs.ts
- *  hook to fetch logs by serverName
- */
-function useGetSessionLogs(serverName: string, show: boolean | string) {
-  const { data, isFetching, isLoading, error, refetch } = useGetLogsQuery(
-    { serverName, lines: 250 },
-    { skip: !serverName }
-  );
-  const [logs, setLogs] = useState<ILogs | undefined>(undefined);
-  const fetchLogs = () => {
-    return refetch().then((result) => {
-      if (result.isSuccess)
-        return Promise.resolve(result.data as ILogs["data"]);
-      return Promise.reject({} as ILogs["data"]);
-    }) as Promise<ILogs["data"]>;
-  };
-
-  useEffect(() => {
-    setLogs({
-      data,
-      fetched: !isLoading && !error && data,
-      fetching: isFetching,
-      show: show ? serverName : false,
-    });
-  }, [data, error, show, isFetching, isLoading, serverName]);
-
-  return { logs, fetchLogs };
-}
 
 export function useGetSessionLogsV2(
   serverName: string,
@@ -82,5 +49,3 @@ export function useGetSessionLogsV2(
 
   return { logs, fetchLogs };
 }
-
-export default useGetSessionLogs;

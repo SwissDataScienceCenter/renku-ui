@@ -32,7 +32,6 @@ import { FormGroup, FormText, Input, Label } from "reactstrap";
 
 import { ErrorLabel } from "../formlabels/FormLabels";
 import FormLabel from "./FormLabel";
-import LazyCkEditor from "./LazyCkEditor";
 
 type EditMarkdownSwitchProps = {
   codeView: boolean;
@@ -65,10 +64,6 @@ type MarkdownInputProps<T extends FieldValues> = TextAreaInputProps<T> &
   Omit<EditMarkdownSwitchProps, "setCodeView">;
 
 function MarkdownInput<T extends FieldValues>(props: MarkdownInputProps<T>) {
-  const setInputs = (value: { target: { name: string; value: unknown } }) => {
-    props.register.onChange(value);
-  };
-  const outputType = "markdown";
   const value = props.getValue();
   if (props.codeView) {
     // User wants to input markdown directly
@@ -90,17 +85,7 @@ function MarkdownInput<T extends FieldValues>(props: MarkdownInputProps<T>) {
     );
   }
   // User wants to rich-text input
-  return (
-    <LazyCkEditor
-      id={props.name}
-      data={value || ""}
-      disabled={false}
-      invalid={props.error != null}
-      name={props.name}
-      outputType={outputType}
-      setInputs={setInputs}
-    />
-  );
+  return null;
 }
 
 interface TextAreaInputProps<T extends FieldValues> {
