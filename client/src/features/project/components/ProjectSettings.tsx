@@ -22,7 +22,6 @@ import { Col, Nav, NavItem, Row } from "reactstrap";
 import RenkuNavLinkV2 from "../../../components/RenkuNavLinkV2";
 import ProjectSettingsCloudStorage from "./ProjectSettingsCloudStorage";
 import { ProjectSettingsGeneral } from "./ProjectSettingsGeneral";
-import ProjectSettingsSessions from "./ProjectSettingsSessions";
 
 type ProjectSettingsProps = Parameters<typeof ProjectSettingsGeneral>[0];
 
@@ -36,7 +35,6 @@ export default function ProjectSettings({ ...props }: ProjectSettingsProps) {
         <Col key="content" sm={12} md={10} data-cy="settings-container">
           <Routes>
             <Route path="/" element={<ProjectSettingsGeneral {...props} />} />
-            <Route path="sessions" element={<ProjectSettingsSessions />} />
             <Route path="storage" element={<ProjectSettingsCloudStorage />} />
           </Routes>
         </Col>

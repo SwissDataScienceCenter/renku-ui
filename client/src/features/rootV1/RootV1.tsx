@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Navigate, Route, Routes } from "react-router";
+import { Route, Routes } from "react-router";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import AnonymousNavBar from "../../components/navbar/AnonymousNavBar";
@@ -26,7 +26,6 @@ import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import LazyAnonymousSessionsList from "../session/components/LazyAnonymousSessionsList";
 import ProjectRootV1 from "./ProjectRootV1";
 
 export default function RootV1() {
@@ -50,16 +49,6 @@ export default function RootV1() {
               <ContainerWrap>
                 <ProjectRootV1 />
               </ContainerWrap>
-            }
-          />
-          <Route
-            path={RELATIVE_ROUTES.v1.sessions}
-            element={
-              !user.logged ? (
-                <LazyAnonymousSessionsList />
-              ) : (
-                <Navigate to="/v1" replace />
-              )
             }
           />
           <Route

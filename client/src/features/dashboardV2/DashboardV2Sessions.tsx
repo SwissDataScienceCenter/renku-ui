@@ -37,8 +37,6 @@ import {
 import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
 
 import styles from "./DashboardV2Sessions.module.scss";
-// Required for logs formatting
-import "../../notebooks/Notebooks.css";
 
 interface DashboardV2SessionsProps {
   sessions?: SessionList;

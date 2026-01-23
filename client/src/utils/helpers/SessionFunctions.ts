@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { NotebooksHelper } from "../../notebooks";
+import { NotebookAnnotations } from "~/notebooks/notebooks.types";
+import { NotebooksHelper } from "../../notebooks/Notebooks.state";
 
 // ? Consider moving this under /features/session(s)/helpers
 
@@ -25,13 +26,6 @@ export interface Session {
   name: string;
 }
 
-interface NotebookAnnotations {
-  default_image_used: string;
-  branch: string;
-  "commit-sha": string;
-  gitlabProjectId: string;
-  renkuVersion?: string;
-}
 function getFormattedSessionsAnnotations(sessions: Record<string, Session>) {
   const sessionsFormatted: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
   for (const sessionKey of Object.keys(sessions)) {

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -18,57 +18,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
-import { useGetSessionsQuery } from "./sessions.api";
-import { SessionStatusState } from "./sessions.types";
-
-const DEFAULT_POLLING_INTERVAL_MS = 5_000;
+import { useGetSessionsQuery } from "./api/sessionsV2.api";
+import { DEFAULT_POLLING_INTERVAL_MS } from "./session.constants";
+import { SessionStatusState } from "./sessionsV2.types";
 
 interface UseWaitForSessionStatusArgs {
   desiredStatus: SessionStatusState | SessionStatusState[];
   pollingInterval?: number;
   sessionName: string;
   skip?: boolean;
-}
-
-export default function useWaitForSessionStatus({
-  desiredStatus,
-  pollingInterval = DEFAULT_POLLING_INTERVAL_MS,
-  sessionName,
-  skip,
-}: UseWaitForSessionStatusArgs) {
-  const [isWaiting, setIsWaiting] = useState(false);
-
-  const result = useGetSessionsQuery(undefined, {
-    pollingInterval,
-    skip: skip || !isWaiting,
-  });
-  const session = useMemo(() => {
-    if (result.data == null) {
-      return undefined;
-    }
-    return Object.values(result.data).find(({ name }) => name === sessionName);
-  }, [result.data, sessionName]);
-
-  useEffect(() => {
-    if (skip) {
-      setIsWaiting(false);
-    }
-  }, [skip]);
-
-  useEffect(() => {
-    if (skip) {
-      return;
-    }
-    const desiredStatuses =
-      typeof desiredStatus === "string" ? [desiredStatus] : desiredStatus;
-    const isWaiting =
-      (session != null && !desiredStatuses.includes(session.status.state)) ||
-      (session == null && !desiredStatuses.includes("stopping"));
-    setIsWaiting(isWaiting);
-  }, [desiredStatus, session, skip]);
-
-  return { isWaiting, session };
 }
 
 export function useWaitForSessionStatusV2({
@@ -79,7 +37,7 @@ export function useWaitForSessionStatusV2({
 }: UseWaitForSessionStatusArgs) {
   const [isWaiting, setIsWaiting] = useState(false);
 
-  const result = useGetSessionsQueryV2(undefined, {
+  const result = useGetSessionsQuery(undefined, {
     pollingInterval,
     skip: skip || !isWaiting,
   });

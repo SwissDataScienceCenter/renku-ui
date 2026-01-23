@@ -17,7 +17,7 @@
  */
 
 import type { DataConnectorRead } from "../dataConnectorsV2/api/data-connectors.api";
-import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
+import { SessionEnvironmentVariable } from "./sessionsV2.types";
 
 export interface SessionStartDataConnectorConfiguration {
   active: boolean;
