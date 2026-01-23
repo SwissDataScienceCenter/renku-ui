@@ -20,7 +20,6 @@ import React, { Component } from "react";
 
 import { API_ERRORS } from "../api-client";
 import { ShareLinkSessionIcon } from "../components/shareLinkSession/ShareLinkSession";
-import SessionFileButton from "../features/session/components/SessionFileButton";
 import { ShowFile as ShowFilePresent, StyledNotebook } from "./File.present";
 
 class JupyterNotebookContainer extends Component {
@@ -122,9 +121,7 @@ class ShowFile extends React.Component {
     if (this.state.error !== null)
       filePath = this.props.filePath.split("\\").pop().split("/").pop();
 
-    const buttonJupyter = this.props.filePath.endsWith(".ipynb") ? (
-      <SessionFileButton filePath={this.props.filePath} />
-    ) : null;
+    const buttonJupyter = null;
     const filters = {
       namespace: this.props.projectNamespace,
       project: this.props.projectPath,

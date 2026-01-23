@@ -18,8 +18,8 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { MIN_SESSION_STORAGE_GB } from "../session/startSessionOptions.constants";
-import type { SessionEnvironmentVariable } from "../session/startSessionOptions.types";
+import { MIN_SESSION_STORAGE_GB } from "./session.constants";
+import { SessionEnvironmentVariable } from "./sessionsV2.types";
 import {
   SessionRepository,
   SessionStartDataConnectorConfiguration,

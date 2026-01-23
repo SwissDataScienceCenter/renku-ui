@@ -42,15 +42,11 @@ import AddSessionLauncherButton from "./AddSessionLauncherButton";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.api";
+import { LauncherEnvironmentIcon } from "./components/SessionForm/LauncherEnvironmentIcon";
 import SessionLauncherCard from "./SessionList/SessionLauncherCard";
 import { SessionLauncherDisplay } from "./SessionList/SessionLauncherDisplay";
 import { SessionV2 } from "./sessionsV2.types";
 import { SessionView } from "./SessionView/SessionView";
-
-// Required for logs formatting
-import "../../notebooks/Notebooks.css";
-
-import { LauncherEnvironmentIcon } from "./components/SessionForm/LauncherEnvironmentIcon";
 
 export function getShowSessionUrlByProject(
   project: Project,
