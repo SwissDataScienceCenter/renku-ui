@@ -16,9 +16,12 @@
  * limitations under the License.
  */
 
+import mermaid from "mermaid";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
+import rehypeMermaid from "rehype-mermaid";
 import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
 type MarkdownProps = Options & {
   children?: string;
@@ -31,14 +34,53 @@ export default function Markdown({
   rehypePlugins,
   ...props
 }: MarkdownProps) {
-  const basePlugins = [rehypeRaw, ...(sanitize ? [rehypeSanitize] : [])];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [initDone, setInitDone] = useState(false);
+
+  const sanitizeSchema = useMemo(() => {
+    return {
+      ...defaultSchema,
+      attributes: {
+        ...defaultSchema.attributes,
+        pre: [...(defaultSchema.attributes?.pre ?? []), ["className"]],
+        code: [...(defaultSchema.attributes?.code ?? []), ["className"]],
+      },
+    };
+  }, []);
+
+  useEffect(() => {
+    // Initialize mermaid when needed
+    const element = containerRef.current;
+    if (!element) return;
+
+    const nodes = element.querySelectorAll<HTMLElement>("pre.mermaid");
+    if (nodes.length === 0) return;
+
+    if (!initDone) {
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "strict",
+      });
+      setInitDone(true);
+    }
+
+    mermaid.run({ nodes, suppressErrors: true });
+  }, [children, initDone]);
+
+  const basePlugins = [
+    rehypeRaw,
+    [rehypeMermaid, { strategy: "pre-mermaid" }],
+    ...(sanitize ? [[rehypeSanitize, sanitizeSchema]] : []),
+  ];
 
   return (
-    <ReactMarkdown
-      rehypePlugins={[...basePlugins, ...(rehypePlugins ?? [])]}
-      {...props}
-    >
-      {children}
-    </ReactMarkdown>
+    <div ref={containerRef}>
+      <ReactMarkdown
+        rehypePlugins={[...basePlugins, ...(rehypePlugins ?? [])]}
+        {...props}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
   );
 }
