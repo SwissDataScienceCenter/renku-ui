@@ -22,7 +22,7 @@
 
 import { useContext } from "react";
 
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { WarnAlert } from "../components/Alert";
 import { Loader } from "../components/Loader";
 import { isValidMarkdownResponse } from "../components/markdown/utils";
@@ -50,5 +50,5 @@ export default function PrivacyPolicy() {
     );
   }
 
-  return <LazyMarkdownHtmlRenderer>{content}</LazyMarkdownHtmlRenderer>;
+  return <LazyMarkdown>{content}</LazyMarkdown>;
 }

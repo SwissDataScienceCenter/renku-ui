@@ -42,7 +42,7 @@ import {
   TabPane,
 } from "reactstrap";
 
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
@@ -289,9 +289,7 @@ function IncidentBannerSection() {
                       fade={false}
                     >
                       <h3>Ongoing incident</h3>
-                      <LazyMarkdownHtmlRenderer>
-                        {incidentBanner}
-                      </LazyMarkdownHtmlRenderer>
+                      <LazyMarkdown>{incidentBanner}</LazyMarkdown>
                     </Alert>
                   ) : (
                     <p className="fst-italic">No content</p>

@@ -39,7 +39,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
 import { getCredentialFieldDefinitions } from "../../utils/projectCloudStorage.utils";
@@ -301,7 +301,7 @@ export function CredentialMoreInfo({ help }: { help: string }) {
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
         <PopoverBody>
-          <LazyMarkdownHtmlRenderer>{help}</LazyMarkdownHtmlRenderer>
+          <LazyMarkdown>{help}</LazyMarkdown>
         </PopoverBody>
       </UncontrolledPopover>
     </>

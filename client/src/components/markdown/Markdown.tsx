@@ -16,19 +16,29 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense } from "react";
-import type { ComponentProps } from "react";
+import ReactMarkdown, { type Options } from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
-import PageLoader from "../../components/PageLoader";
+type MarkdownProps = Options & {
+  children?: string;
+  sanitize?: boolean;
+};
 
-type Props = ComponentProps<typeof MarkdownHtmlRenderer>;
+export default function Markdown({
+  children,
+  sanitize = true,
+  rehypePlugins,
+  ...props
+}: MarkdownProps) {
+  const basePlugins = [rehypeRaw, ...(sanitize ? [rehypeSanitize] : [])];
 
-const MarkdownHtmlRenderer = lazy(() => import("./MarkdownHtmlRenderer"));
-
-export default function LazyMarkdownHtmlRenderer(props: Props) {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <MarkdownHtmlRenderer {...props} />
-    </Suspense>
+    <ReactMarkdown
+      rehypePlugins={[...basePlugins, ...(rehypePlugins ?? [])]}
+      {...props}
+    >
+      {children}
+    </ReactMarkdown>
   );
 }

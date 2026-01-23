@@ -27,7 +27,7 @@ import {
 import { Link, useLocation } from "react-router";
 import { Alert, Container } from "reactstrap";
 
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import { AppParams } from "../../../utils/context/appParams.types";
@@ -214,9 +214,7 @@ function ManuallyDeclaredIncident({
     >
       <Container className={cx("container-xxl", "renku-container")}>
         <h3>Ongoing incident</h3>
-        <LazyMarkdownHtmlRenderer>
-          {incidentBannerContent}
-        </LazyMarkdownHtmlRenderer>
+        <LazyMarkdown>{incidentBannerContent}</LazyMarkdown>
       </Container>
     </Alert>
   );

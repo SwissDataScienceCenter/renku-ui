@@ -47,7 +47,7 @@ import "../../project/Project.style.css";
 // ? the "quick-nav" class is used in this file
 import "../../components/quicknav/QuickNav.style.css";
 
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { GetStarted } from "./components/GetStarted/GetStarted";
 import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 
@@ -123,7 +123,7 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
       <div className="rk-anon-home-section-content">
         <Row>
           <Col className="rk-pt-l rk-w-s">
-            <LazyMarkdownHtmlRenderer>{content}</LazyMarkdownHtmlRenderer>
+            <LazyMarkdown>{content}</LazyMarkdown>
           </Col>
         </Row>
       </div>

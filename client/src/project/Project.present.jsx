@@ -67,7 +67,7 @@ import { WorkflowsList } from "../workflows";
 
 import "./Project.css";
 
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
@@ -586,7 +586,7 @@ class ProjectViewReadme extends Component {
           className="p-4"
           data-cy="project-readme"
         >
-          <LazyMarkdownHtmlRenderer>{readmeText}</LazyMarkdownHtmlRenderer>
+          <LazyMarkdown>{readmeText}</LazyMarkdown>
         </CardBody>
       </Card>
     );

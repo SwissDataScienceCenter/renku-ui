@@ -40,7 +40,7 @@ import {
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
@@ -524,9 +524,7 @@ function DataConnectorViewMetadata({
 
       {dataConnector.description && (
         <DataConnectorPropertyValue title="Description">
-          <LazyMarkdownHtmlRenderer>
-            {dataConnector.description}
-          </LazyMarkdownHtmlRenderer>
+          <LazyMarkdown>{dataConnector.description}</LazyMarkdown>
         </DataConnectorPropertyValue>
       )}
 

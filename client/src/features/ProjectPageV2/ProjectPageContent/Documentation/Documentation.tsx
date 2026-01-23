@@ -31,7 +31,7 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
@@ -99,9 +99,7 @@ export default function Documentation({ project }: DocumentationProps) {
         <CardBody>
           <div data-cy="project-documentation-text">
             {project.documentation ? (
-              <LazyMarkdownHtmlRenderer>
-                {project.documentation}
-              </LazyMarkdownHtmlRenderer>
+              <LazyMarkdown>{project.documentation}</LazyMarkdown>
             ) : (
               <p className={cx("m-0", "text-body-secondary")}>
                 Describe your project, so others can understand what it does and
@@ -246,9 +244,7 @@ function DocumentationModal({
                 name="documentation"
               />
             ) : (
-              <LazyMarkdownHtmlRenderer>
-                {watch("documentation")}
-              </LazyMarkdownHtmlRenderer>
+              <LazyMarkdown>{watch("documentation")}</LazyMarkdown>
             )}
           </div>
         </ModalBody>

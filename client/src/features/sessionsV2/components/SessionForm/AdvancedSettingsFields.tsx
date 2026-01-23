@@ -29,7 +29,7 @@ import {
 import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
 
-import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { MoreInfo } from "../../../../components/MoreInfo";
 import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
 import {
@@ -67,7 +67,7 @@ function FormFieldLabel<T extends FieldValues>({
       </Label>
       {info && (
         <MoreInfo>
-          <LazyMarkdownHtmlRenderer>{info}</LazyMarkdownHtmlRenderer>
+          <LazyMarkdown>{info}</LazyMarkdown>
         </MoreInfo>
       )}
       {isOptional && <OptionalLabel />}
@@ -190,7 +190,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
         {label}
         {info && (
           <MoreInfo>
-            <LazyMarkdownHtmlRenderer>{info}</LazyMarkdownHtmlRenderer>
+            <LazyMarkdown>{info}</LazyMarkdown>
           </MoreInfo>
         )}
         {isOptional && <OptionalLabel />}
