@@ -36,7 +36,7 @@ const LAYOUT = {
 };
 const CONTENT = `This website requires cookies in order to ensure basic functionality. By clicking
 or navigating the site, you consent to the use of cookies in accordance with
-our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.`;
+our <u><a class="text-white" href="/help/privacy">Privacy Policy</a></u>.`;
 
 export default function Cookie() {
   const { params } = useContext(AppContext);
