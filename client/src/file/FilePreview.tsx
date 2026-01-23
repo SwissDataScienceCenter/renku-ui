@@ -19,8 +19,7 @@
 import React from "react";
 import { CardBody } from "reactstrap";
 
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
-import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
+import LazyMarkdownHtmlRenderer from "~/components/markdown/LazyMarkdownHtmlRenderer";
 import { atobUTF8 } from "../utils/helpers/Encoding";
 import { FileNoPreview, StyledNotebook } from "./File.present";
 import LazyCodePreview from "./LazyCodePreview";
@@ -99,6 +98,11 @@ function filenameExtension(filename: string | undefined) {
   if (filename.match(/\.(.*)/) === null) return null;
   const extension = filename.split(".").pop();
   return extension?.toLowerCase() ?? null;
+}
+
+function encodeImageBase64(name: string, data: string) {
+  const subType = name.endsWith(".svg") ? "/svg+xml" : "";
+  return `data:image${subType};base64,${data}`;
 }
 
 type FileType =
@@ -221,15 +225,7 @@ function FilePreview(props: FilePreviewProps) {
     const content = atobUTF8(props.file.content);
     return (
       <CardBody key="file preview" className="pb-0">
-        <LazyRenkuMarkdown
-          projectPathWithNamespace={props.projectPathWithNamespace}
-          filePath={props.file.file_path}
-          markdownText={content}
-          projectId={props.projectId}
-          fixRelativePaths={props.insideProject}
-          branch={props.branch}
-          client={props.client}
-        />{" "}
+        <LazyMarkdownHtmlRenderer>{content}</LazyMarkdownHtmlRenderer>{" "}
       </CardBody>
     );
   }

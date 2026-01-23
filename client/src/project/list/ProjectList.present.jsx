@@ -51,7 +51,6 @@ import { Label } from "reactstrap";
 
 import ListDisplay from "../../components/List";
 import { Loader } from "../../components/Loader";
-import LazyMarkdownTextExcerpt from "../../components/markdown/LazyMarkdownTextExcerpt";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 
 function ProjectListRows(props) {
@@ -71,11 +70,6 @@ function ProjectListRows(props) {
       creators: project.owner ? [project.owner] : [project.namespace],
       description: project.description ? (
         <Fragment>
-          <LazyMarkdownTextExcerpt
-            markdownText={project.description}
-            singleLine={gridDisplay ? false : true}
-            charsLimit={gridDisplay ? 200 : 150}
-          />
           <span className="ms-1">
             {project.description.includes("\n") ? " [...]" : ""}
           </span>

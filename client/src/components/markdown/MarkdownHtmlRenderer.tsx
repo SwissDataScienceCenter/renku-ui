@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,24 +16,29 @@
  * limitations under the License.
  */
 
-import { ComponentProps, lazy, Suspense } from "react";
+import ReactMarkdown, { type Options } from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 
-import { Loader } from "../Loader";
+type MarkdownHtmlRendererProps = Options & {
+  children?: string;
+  sanitize?: boolean;
+};
 
-const MarkdownTextExcerpt = lazy(() =>
-  import("./RenkuMarkdown").then((module) => ({
-    default: module.MarkdownTextExcerpt,
-  }))
-);
+export default function MarkdownHtmlRenderer({
+  children,
+  sanitize = true,
+  rehypePlugins,
+  ...props
+}: MarkdownHtmlRendererProps) {
+  const basePlugins = [rehypeRaw, ...(sanitize ? [rehypeSanitize] : [])];
 
-// ? Lazy loading of CodePreview allows us to split off ~300kB from
-// ? the main bundle.
-export default function LazyMarkdownTextExcerpt(
-  props: ComponentProps<typeof MarkdownTextExcerpt>
-) {
   return (
-    <Suspense fallback={<Loader />}>
-      <MarkdownTextExcerpt {...props} />
-    </Suspense>
+    <ReactMarkdown
+      rehypePlugins={[...basePlugins, ...(rehypePlugins ?? [])]}
+      {...props}
+    >
+      {children}
+    </ReactMarkdown>
   );
 }
