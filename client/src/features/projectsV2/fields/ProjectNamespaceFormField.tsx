@@ -34,6 +34,7 @@ import Select, {
 } from "react-select";
 import { Button, Label } from "reactstrap";
 
+import { PaginatedState } from "~/components/pagination.types";
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import type { GetNamespacesApiResponse } from "../api/projectV2.enhanced-api";
@@ -48,13 +49,6 @@ import styles from "./ProjectNamespaceFormField.module.scss";
 
 type ResponseNamespaces = GetNamespacesApiResponse["namespaces"];
 type ResponseNamespace = ResponseNamespaces[number];
-
-interface PaginatedState<T = unknown> {
-  data: T[] | undefined;
-  fetchedPages: number;
-  hasMore: boolean;
-  currentRequestId: string;
-}
 
 const selectComponents: SelectComponentsConfig<
   ResponseNamespace,

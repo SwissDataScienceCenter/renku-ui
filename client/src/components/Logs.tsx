@@ -33,6 +33,7 @@ import {
 
 import { getSessionStatusStyles } from "~/features/sessionsV2/components/SessionStatus/SessionStatus";
 import { SessionV2 } from "~/features/sessionsV2/sessionsV2.types";
+import { NotebookAnnotations } from "~/notebooks/notebooks.types";
 import { useGetSessionLogsV2 } from "~/utils/customHooks/UseGetSessionLogs";
 import { displaySlice } from "../features/display";
 import { LOG_ERROR_KEY, NotebooksHelper } from "../notebooks/Notebooks.state";
@@ -46,31 +47,6 @@ import { ErrorAlert } from "./Alert";
 import { Loader } from "./Loader";
 import ScrollableModal from "./modal/ScrollableModal";
 
-interface NotebookAnnotations {
-  branch: string;
-  "commit-sha": string;
-  default_image_used: boolean;
-  namespace: string;
-  gitlabProjectId: number;
-  projectName: string;
-  repository: string;
-  resourceClassId: string;
-
-  hibernation: Record<string, unknown>;
-  hibernationBranch: string;
-  hibernationCommitSha: string;
-  hibernationDate: string;
-  hibernationDirty: boolean;
-  hibernationSynchronized: boolean;
-  hibernatedSecondsThreshold: string;
-
-  // Annotations for Renku 2.0
-  renkuVersion?: string;
-  projectId?: string;
-  launcherId?: string;
-
-  [key: string]: unknown;
-}
 export interface ILogs {
   data: Record<string, string>;
   fetching: boolean;

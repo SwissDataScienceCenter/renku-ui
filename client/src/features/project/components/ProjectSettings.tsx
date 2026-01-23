@@ -35,7 +35,6 @@ export default function ProjectSettings({ ...props }: ProjectSettingsProps) {
         <Col key="content" sm={12} md={10} data-cy="settings-container">
           <Routes>
             <Route path="/" element={<ProjectSettingsGeneral {...props} />} />
-            <Route path="sessions" element={null} />
             <Route path="storage" element={<ProjectSettingsCloudStorage />} />
           </Routes>
         </Col>
