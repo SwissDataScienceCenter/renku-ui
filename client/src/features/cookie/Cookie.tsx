@@ -23,7 +23,7 @@
 import { useContext } from "react";
 import CookieConsent from "react-cookie-consent";
 
-import AppContext from "../utils/context/appContext";
+import AppContext from "../../utils/context/appContext";
 import RoutedContent from "./RoutedContent";
 
 const LAYOUT = {
@@ -35,8 +35,8 @@ const LAYOUT = {
   buttonWrapperClasses: "mt-2",
 };
 const CONTENT = `This website requires cookies in order to ensure basic functionality. By clicking
-or navigating the site, you consent to the use of cookies in accordance with
-our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.`;
+or navigating the site, you consent to the use of cookies in accordance with our
+<u><a class="text-white" data-cy="privacy-policy-link" href="/help/privacy">Privacy Policy</a></u>.`;
 
 export default function Cookie() {
   const { params } = useContext(AppContext);
@@ -49,8 +49,10 @@ export default function Cookie() {
     : CONTENT;
 
   return (
-    <CookieConsent {...layout}>
-      <RoutedContent htmlContent={content} />
-    </CookieConsent>
+    <div data-cy="cookie-consent">
+      <CookieConsent {...layout}>
+        <RoutedContent htmlContent={content} />
+      </CookieConsent>
+    </div>
   );
 }

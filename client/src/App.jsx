@@ -32,6 +32,7 @@ import { ToastContainer } from "react-toastify";
 import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
+import Cookie from "./features/cookie/Cookie";
 import { Favicon } from "./features/favicon/Favicon";
 import {
   FooterNavbar,
@@ -48,7 +49,6 @@ import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 import NotificationsManager from "./notifications/NotificationsManager";
-import Cookie from "./privacy/Cookie";
 import AppContext from "./utils/context/appContext";
 import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
@@ -186,8 +186,8 @@ function App(props) {
         <CentralContentContainer user={user} socket={webSocket} />
         <FooterNavbar />
         <LoginHandler />
+        <Cookie />
       </AppContext.Provider>
-      <Cookie />
       <ToastContainer />
     </Fragment>
   );
