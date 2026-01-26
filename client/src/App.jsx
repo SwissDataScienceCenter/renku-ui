@@ -182,6 +182,7 @@ function App(props) {
     <Fragment>
       <Favicon />
       <AppContext.Provider value={appContext}>
+        {/* TODO: Handle logged out modal here (?) */}
         <RenkuNavBar user={user} />
         <CentralContentContainer user={user} socket={webSocket} />
         <FooterNavbar />
