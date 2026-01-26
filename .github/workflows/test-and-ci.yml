@@ -110,19 +110,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Install client
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           build: npm run client:install
           runTests: false
           working-directory: tests
       - name: Build client
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           build: npm run client:build
           runTests: false
           working-directory: tests
       - name: Cypress run
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           browser: chrome
           start: npm run client:preview
