@@ -31,6 +31,8 @@ const RenkuQueryParams = {
 
 const LOGOUT_EVENT_TIMEOUT = 5000;
 
+const YEAR_IN_MILLIS = 365 * 24 * 60 * 60 * 1000;
+
 /**
  * Manages communication of login/logout events between tabs. It uses localStorage to communicate
  * the events between tabs, and uses sessionStorage to remember an event after a refresh within a tab.
@@ -51,6 +53,16 @@ const LoginHelper = {
 
       // save the login time to localStorage to allow other tabs to handle the event
       localStorage.setItem(RenkuQueryParams.login, Date.now());
+
+      // save the login state in a client-side cookie
+      if (window.cookieStore) {
+        window.cookieStore.set({
+          name: "renku_user_signed_in",
+          value: "1",
+          expires: Date.now() + YEAR_IN_MILLIS,
+          sameSite: "strict",
+        });
+      }
     }
   },
   /**
@@ -100,6 +112,10 @@ const LoginHelper = {
    */
   notifyLogout: () => {
     localStorage.setItem(RenkuQueryParams.logout, Date.now());
+    // Manual logout: remove the `renku_user_signed_in` cookie
+    if (window.cookieStore) {
+      window.cookieStore.delete("renku_user_signed_in");
+    }
   },
   queryParams: RenkuQueryParams,
 };
