@@ -19,14 +19,14 @@
 import cx from "classnames";
 import { useSearchParams } from "react-router";
 
-import { useGroupSearch } from "./groupSearch.hook";
-import { getQueryHumanReadable } from "./groupSearch.utils";
-import { FILTER_QUERY } from "./groupsSearch.constants";
+import { FILTER_QUERY } from "./namespaceSearch.constants";
+import { useNamespaceSearch } from "./namespaceSearch.hook";
+import { getQueryHumanReadable } from "./namespaceSearch.utils";
 
-export default function GroupSearchResultRecap() {
+export default function NamespaceSearchResultRecap() {
   // Get the query and results data
   const [searchParams] = useSearchParams();
-  const { data, isFetching } = useGroupSearch();
+  const { data, isFetching } = useNamespaceSearch();
   const total = data?.pagingInfo.totalResult;
   const filters = getQueryHumanReadable(searchParams);
   const query = searchParams.get(FILTER_QUERY.name) ?? "";

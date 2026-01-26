@@ -20,7 +20,7 @@ import cx from "classnames";
 import { Clock, InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
+import { useNamespaceContext } from "~/features/namespaceSearch/useNamespaceContext";
 import { TimeCaption } from "../../../components/TimeCaption";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
 

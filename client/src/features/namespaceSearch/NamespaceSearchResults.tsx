@@ -37,15 +37,15 @@ import { TimeCaption } from "~/components/TimeCaption";
 import { ShowGlobalDataConnector } from "~/features/searchV2/components/SearchV2Results";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { useGroupSearch } from "./groupSearch.hook";
-import { GroupSearchEntity } from "./groupSearch.types";
-import { useGroupSearchResultMembers } from "./groupSearchResultMembers.hook";
-import { FILTER_PAGE, FILTER_PER_PAGE } from "./groupsSearch.constants";
+import { useGroupSearchResultMembers } from "../groupsV2/search/groupSearchResultMembers.hook";
+import { FILTER_PAGE, FILTER_PER_PAGE } from "./namespaceSearch.constants";
+import { useNamespaceSearch } from "./namespaceSearch.hook";
+import { NamespaceSearchEntity } from "./namespaceSearch.types";
 
-export default function GroupSearchResults() {
+export default function NamespaceSearchResults() {
   // Load and visualize the search results
   const [searchParams] = useSearchParams();
-  const { data } = useGroupSearch();
+  const { data } = useNamespaceSearch();
 
   const currentPage = useMemo(() => {
     const defaultValue = FILTER_PAGE.defaultValue;
@@ -82,7 +82,7 @@ export default function GroupSearchResults() {
               return (
                 <SearchResultListItem
                   key={item.id}
-                  item={item as GroupSearchEntity}
+                  item={item as NamespaceSearchEntity}
                 />
               );
             })}
@@ -104,7 +104,7 @@ export default function GroupSearchResults() {
 }
 
 interface SearchResultListItemProps {
-  item: GroupSearchEntity;
+  item: NamespaceSearchEntity;
 }
 function SearchResultListItem({ item }: SearchResultListItemProps) {
   const sortedKeywords = useMemo(() => {
@@ -217,7 +217,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
   );
 }
 
-function SearchResultListItemIcon({ item }: { item: GroupSearchEntity }) {
+function SearchResultListItemIcon({ item }: { item: NamespaceSearchEntity }) {
   return item.type === "Project" ? (
     <Folder2Open />
   ) : item.type === "DataConnector" ? (
@@ -228,7 +228,7 @@ function SearchResultListItemIcon({ item }: { item: GroupSearchEntity }) {
 }
 
 interface SearchResultItemMembersProps {
-  item: GroupSearchEntity;
+  item: NamespaceSearchEntity;
 }
 function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
   const members = useGroupSearchResultMembers(item);

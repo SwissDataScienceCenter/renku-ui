@@ -22,12 +22,7 @@ import type { SearchQuery } from "~/features/searchV2/api/searchV2Api.api";
 import {
   KEY_VALUE_SEPARATOR,
   TERM_SEPARATOR,
-} from "../../searchV2/searchV2.constants";
-import type {
-  Filter,
-  FilterWithValue,
-  SearchQueryFilters,
-} from "./groupSearch.types";
+} from "../searchV2/searchV2.constants";
 import {
   ALL_FILTERS,
   COMMON_FILTERS,
@@ -40,7 +35,12 @@ import {
   PROJECT_FILTERS,
   SELECTABLE_FILTERS,
   VALUE_SEPARATOR_AND,
-} from "./groupsSearch.constants";
+} from "./namespaceSearch.constants";
+import type {
+  Filter,
+  FilterWithValue,
+  SearchQueryFilters,
+} from "./namespaceSearch.types";
 
 export function getSearchQueryFilters(
   searchParams: URLSearchParams,

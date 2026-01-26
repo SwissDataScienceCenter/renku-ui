@@ -20,7 +20,7 @@ import { ReactNode } from "react";
 
 import type { SearchEntity } from "~/features/searchV2/api/searchV2Api.api";
 
-export type GroupSearchEntity = Exclude<
+export type NamespaceSearchEntity = Exclude<
   SearchEntity,
   { type: "Group" | "User" }
 >;
@@ -39,7 +39,7 @@ interface BaseFilter {
   mustQuote?: boolean;
   name: string;
   type: FilterType;
-  validFor?: GroupSearchEntity["type"][];
+  validFor?: NamespaceSearchEntity["type"][];
 }
 
 export interface StringFilter extends BaseFilter {

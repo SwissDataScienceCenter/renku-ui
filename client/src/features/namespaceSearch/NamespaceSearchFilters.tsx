@@ -34,11 +34,9 @@ import {
 } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
+import { useNamespaceContext } from "~/features/namespaceSearch/useNamespaceContext";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
-import { useGroupSearch } from "./groupSearch.hook";
-import { Filter, GroupSearchEntity } from "./groupSearch.types";
 import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
@@ -47,12 +45,14 @@ import {
   FILTER_PAGE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
-} from "./groupsSearch.constants";
+} from "./namespaceSearch.constants";
+import { useNamespaceSearch } from "./namespaceSearch.hook";
+import { Filter, NamespaceSearchEntity } from "./namespaceSearch.types";
 
-export default function GroupSearchFilters() {
+export default function NamespaceSearchFilters() {
   const [searchParams] = useSearchParams();
-  const { data: search } = useGroupSearch();
-  const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
+  const { data: search } = useNamespaceSearch();
+  const { data: searchAnyType } = useNamespaceSearch([FILTER_CONTENT.name]);
   const { namespace, type } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
@@ -230,7 +230,7 @@ function GroupSearchFilter({
   const isInvalid = useMemo(() => {
     return (
       filter.validFor &&
-      !filter.validFor.includes(searchedType as GroupSearchEntity["type"])
+      !filter.validFor.includes(searchedType as NamespaceSearchEntity["type"])
     );
   }, [filter.validFor, searchedType]);
   if (isInvalid && searchParams.get(filter.name) === null) return null;
