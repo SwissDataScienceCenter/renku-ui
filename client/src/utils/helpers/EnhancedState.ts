@@ -28,6 +28,7 @@ import {
   StoreEnhancer,
 } from "@reduxjs/toolkit";
 
+import { loginStateSlice } from "~/features/loginHandler/loginState.slice";
 import { notificationsEmptyApi as notificationsApi } from "~/features/notifications/api/notifications.empty-api";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
@@ -72,6 +73,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [datasetFormSlice.name]: datasetFormSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
+    [loginStateSlice.name]: loginStateSlice.reducer,
     [searchV2Slice.name]: searchV2Slice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,

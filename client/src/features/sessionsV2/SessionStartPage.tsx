@@ -655,6 +655,11 @@ export default function SessionStartPage() {
     [launcherId, launchers]
   );
 
+  const { isLoggedIn, shouldBeLoggedIn } = useAppSelector(
+    ({ loginState }) => loginState
+  );
+  const isShowingLoggedOutPrompt = !isLoggedIn && shouldBeLoggedIn;
+
   if (isLoading) {
     return <PageLoader />;
   }
@@ -666,6 +671,10 @@ export default function SessionStartPage() {
         {error && <RtkOrNotebooksError error={error} dismissible={false} />}
       </div>
     );
+  }
+
+  if (isShowingLoggedOutPrompt) {
+    return <PageLoader />;
   }
 
   return <StartSessionFromLauncher launcher={launcher} project={project} />;

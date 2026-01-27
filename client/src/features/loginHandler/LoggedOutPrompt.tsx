@@ -17,76 +17,22 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { ArrowRight, XLg } from "react-bootstrap-icons";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { useLoginUrl } from "~/authentication/useLoginUrl.hook";
 import ScrollableModal from "~/components/modal/ScrollableModal";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { usersApi } from "../usersV2/api/users.api";
+import { setIsLoggedIn, setShouldBeLoggedIn } from "./loginState.slice";
 
 export default function LoggedOutPrompt() {
-  const { currentData: user, error } =
-    usersApi.endpoints.getUser.useQueryState(undefined);
-
-  const [{ isLoggedIn, shouldBeLoggedIn }, setState] = useState<State>({
-    isLoggedIn: false,
-    shouldBeLoggedIn: false,
-  });
-
   const loginUrl = useLoginUrl();
 
-  useEffect(() => {
-    if (error != null) {
-      setState((prevState) => ({ ...prevState, isLoggedIn: false }));
-    } else if (user != null) {
-      setState((prevState) => ({ ...prevState, isLoggedIn: user.isLoggedIn }));
-    }
-  }, [error, user]);
-
-  useEffect(() => {
-    if (window.cookieStore == null) {
-      return;
-    }
-    let ignore: boolean = false;
-    window.cookieStore.get("renku_user_signed_in").then((cookie) => {
-      if (!ignore && cookie?.value === "1") {
-        setState((prevState) => ({ ...prevState, shouldBeLoggedIn: true }));
-      }
-    });
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (window.cookieStore == null) {
-      return;
-    }
-    let ignore: boolean = false;
-    function cookieListener() {
-      window.cookieStore.get("renku_user_signed_in").then((cookie) => {
-        if (!ignore) {
-          setState((prevState) => ({
-            ...prevState,
-            shouldBeLoggedIn: cookie?.value === "1",
-          }));
-        }
-      });
-    }
-    window.cookieStore.addEventListener("change", cookieListener);
-    return () => {
-      ignore = true;
-      window.cookieStore.removeEventListener("change", cookieListener);
-    };
-  }, []);
-
-  const onClickStayLoggedOut = useCallback(() => {
-    if (window.cookieStore == null) {
-      return;
-    }
-    window.cookieStore.delete("renku_user_signed_in");
-  }, []);
+  const { isLoggedIn, shouldBeLoggedIn, onClickStayLoggedOut } =
+    useLoggedOutPromptState();
 
   const isOpen = !isLoggedIn && shouldBeLoggedIn;
 
@@ -108,10 +54,7 @@ export default function LoggedOutPrompt() {
           Stay logged out
         </Button>
         <a
-          className={cx(
-            "btn",
-            "btn-primary" /*"btn-outline-light", "text-decoration-none"*/
-          )}
+          className={cx("btn", "btn-primary")}
           data-cy="login-button"
           href={loginUrl.href}
         >
@@ -119,52 +62,71 @@ export default function LoggedOutPrompt() {
           <ArrowRight className={cx("bi", "ms-1")} />
         </a>
       </ModalFooter>
-
-      {/* <ModalHeader tag="h2" toggle={toggle}>
-          Update intergation
-        </ModalHeader>
-        <ModalBody>
-          {result.error && <RtkOrNotebooksError error={result.error} />}
-
-          <div className="mb-3">
-            <Label className="form-label" for="addConnectedServiceId">
-              Id
-            </Label>
-            <Input
-              className={cx("form-control")}
-              disabled={true}
-              id="addConnectedServiceId"
-              placeholder="Provider id"
-              type="text"
-              value={provider.id}
-            />
-          </div>
-
-          <ConnectedServiceFormContent control={control} />
-        </ModalBody>
-        <ModalFooter>
-          <Button color="outline-primary" onClick={toggle}>
-            <XLg className={cx("bi", "me-1")} />
-            Cancel
-          </Button>
-          <Button
-            color="primary"
-            disabled={result.isLoading || !isDirty}
-            type="submit"
-          >
-            {result.isLoading ? (
-              <Loader className="me-1" inline size={16} />
-            ) : (
-              <CheckLg className={cx("bi", "me-1")} />
-            )}
-            Update integration
-          </Button>
-        </ModalFooter> */}
     </ScrollableModal>
   );
 }
 
-interface State {
-  isLoggedIn: boolean;
-  shouldBeLoggedIn: boolean;
+function useLoggedOutPromptState() {
+  const dispatch = useAppDispatch();
+  const { isLoggedIn, shouldBeLoggedIn } = useAppSelector(
+    ({ loginState }) => loginState
+  );
+
+  const { currentData: user, error } =
+    usersApi.endpoints.getUser.useQueryState(undefined);
+
+  useEffect(() => {
+    if (error != null) {
+      dispatch(setIsLoggedIn(false));
+    } else if (user != null) {
+      dispatch(setIsLoggedIn(user.isLoggedIn));
+    }
+  }, [dispatch, error, user]);
+
+  useEffect(() => {
+    if (window.cookieStore == null) {
+      return;
+    }
+    let ignore: boolean = false;
+    window.cookieStore.get("renku_user_signed_in").then((cookie) => {
+      if (!ignore && cookie?.value === "1") {
+        dispatch(setShouldBeLoggedIn(true));
+      }
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (window.cookieStore == null) {
+      return;
+    }
+    let ignore: boolean = false;
+    function cookieListener() {
+      window.cookieStore.get("renku_user_signed_in").then((cookie) => {
+        if (!ignore) {
+          dispatch(setShouldBeLoggedIn(cookie?.value === "1"));
+        }
+      });
+    }
+    window.cookieStore.addEventListener("change", cookieListener);
+    return () => {
+      ignore = true;
+      window.cookieStore.removeEventListener("change", cookieListener);
+    };
+  }, [dispatch]);
+
+  const onClickStayLoggedOut = useCallback(() => {
+    if (window.cookieStore == null) {
+      return;
+    }
+    window.cookieStore.delete("renku_user_signed_in");
+  }, []);
+
+  return {
+    isLoggedIn,
+    shouldBeLoggedIn,
+    onClickStayLoggedOut,
+  };
 }
