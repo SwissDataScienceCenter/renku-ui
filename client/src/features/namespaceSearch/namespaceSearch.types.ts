@@ -20,10 +20,7 @@ import { ReactNode } from "react";
 
 import type { SearchEntity } from "~/features/searchV2/api/searchV2Api.api";
 
-export type NamespaceSearchEntity = Exclude<
-  SearchEntity,
-  { type: "Group" | "User" }
->;
+export type NamespaceSearchEntity = SearchEntity;
 
 interface FilterValue {
   label: ReactNode;
