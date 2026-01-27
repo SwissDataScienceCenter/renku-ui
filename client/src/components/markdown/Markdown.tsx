@@ -19,9 +19,13 @@
 import mermaid from "mermaid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
+import rehypeKatex from "rehype-katex";
 import rehypeMermaid from "rehype-mermaid";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import remarkMath from "remark-math";
+
+import "katex/dist/katex.min.css";
 
 type MarkdownProps = Options & {
   children?: string;
@@ -32,6 +36,7 @@ export default function Markdown({
   children,
   sanitize = true,
   rehypePlugins,
+  remarkPlugins,
   ...props
 }: MarkdownProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -67,16 +72,20 @@ export default function Markdown({
     mermaid.run({ nodes, suppressErrors: true });
   }, [children, initDone]);
 
-  const basePlugins = [
+  const baseRehypePlugins = [
     rehypeRaw,
-    [rehypeMermaid, { strategy: "pre-mermaid" }],
     ...(sanitize ? [[rehypeSanitize, sanitizeSchema]] : []),
+    [rehypeMermaid, { strategy: "pre-mermaid" }],
+    rehypeKatex,
   ];
+
+  const baseRemarkPlugins = [remarkMath, ...(remarkPlugins ?? [])];
 
   return (
     <div ref={containerRef}>
       <ReactMarkdown
-        rehypePlugins={[...basePlugins, ...(rehypePlugins ?? [])]}
+        rehypePlugins={[...baseRehypePlugins, ...(rehypePlugins ?? [])]}
+        remarkPlugins={[...baseRemarkPlugins]}
         {...props}
       >
         {children}
