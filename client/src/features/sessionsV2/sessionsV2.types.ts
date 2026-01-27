@@ -18,7 +18,7 @@
 
 import type { ReactNode } from "react";
 
-import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type { CloudStorageDetailsOptions } from "../cloudStorage/projectCloudStorage.types";
 import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
   BuildParametersPost,

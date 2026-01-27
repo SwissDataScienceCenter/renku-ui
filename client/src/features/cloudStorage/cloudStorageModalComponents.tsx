@@ -30,9 +30,9 @@ import {
 } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
-import { SuccessAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import { Loader } from "../../../../components/Loader";
+import { SuccessAlert } from "../../components/Alert";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import { Loader } from "../../components/Loader";
 import AddOrEditCloudStorage from "./AddOrEditCloudStorage";
 import { usePostStorageSchemaTestConnectionMutation } from "./api/projectCloudStorage.api";
 import { CLOUD_STORAGE_TOTAL_STEPS } from "./projectCloudStorage.constants";

@@ -29,7 +29,7 @@
     "generate-api:namespaceV2": "rtk-query-codegen-openapi src/features/projectsV2/api/namespace.api-config.ts",
     "generate-api:notifications": "rtk-query-codegen-openapi src/features/notifications/api/notifications.api-config.ts",
     "generate-api:platform": "rtk-query-codegen-openapi src/features/platform/api/platform.api-config.ts",
-    "generate-api:projectCloudStorage": "rtk-query-codegen-openapi src/features/project/components/cloudStorage/api/projectCloudStorage.api-config.ts",
+    "generate-api:projectCloudStorage": "rtk-query-codegen-openapi src/features/cloudStorage/api/projectCloudStorage.api-config.ts",
     "generate-api:projectV2": "rtk-query-codegen-openapi src/features/projectsV2/api/projectV2.api-config.ts",
     "generate-api:repositories": "rtk-query-codegen-openapi src/features/repositories/api/repositories.api-config.ts",
     "generate-api:searchV2": "rtk-query-codegen-openapi src/features/searchV2/api/searchV2.api-config.ts",

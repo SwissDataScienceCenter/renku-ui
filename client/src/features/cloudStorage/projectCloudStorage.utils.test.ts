@@ -1,5 +1,5 @@
-import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
-import type { CloudStorageSchema } from "../components/cloudStorage/projectCloudStorage.types";
+import { SessionStartDataConnectorConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
+import { CloudStorageSchema } from "./projectCloudStorage.types";
 import {
   dataConnectorsOverrideFromConfig,
   getSchemaOptions,

@@ -20,10 +20,10 @@ import { type SessionDataConnectorOverride } from "~/features/sessionsV2/api/ses
 import type {
   RCloneConfig,
   RCloneOption,
-} from "../../dataConnectorsV2/api/data-connectors.api";
-import { hasSchemaAccessMode } from "../../dataConnectorsV2/components/dataConnector.utils";
-import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
-import type { CloudStorageGet } from "../components/cloudStorage/api/projectCloudStorage.api";
+} from "../dataConnectorsV2/api/data-connectors.api";
+import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
+import type { SessionStartDataConnectorConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
+import type { CloudStorageGet } from "./api/projectCloudStorage.api";
 import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_OPTIONS_PROVIDER_OVERRIDE,
@@ -34,7 +34,7 @@ import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   EMPTY_CLOUD_STORAGE_DETAILS,
   STORAGES_WITH_ACCESS_MODE,
-} from "../components/cloudStorage/projectCloudStorage.constants";
+} from "./projectCloudStorage.constants";
 import type {
   CloudStorage,
   CloudStorageCredential,
@@ -43,7 +43,7 @@ import type {
   CloudStorageProvider,
   CloudStorageSchema,
   CloudStorageSchemaOption,
-} from "../components/cloudStorage/projectCloudStorage.types";
+} from "./projectCloudStorage.types";
 
 const LAST_POSITION = 1000;
 
