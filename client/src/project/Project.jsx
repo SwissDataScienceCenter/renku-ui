@@ -29,7 +29,6 @@ import { Component } from "react";
 import { connect } from "react-redux";
 
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
-import { DatasetCoordinator } from "../dataset/Dataset.state";
 import Present from "./Project.present";
 import { MigrationStatus, ProjectCoordinator } from "./Project.state";
 
@@ -203,10 +202,6 @@ class View extends Component {
     this.projectCoordinator = new ProjectCoordinator(
       props.client,
       props.model.subModel("project")
-    );
-    this.datasetCoordinator = new DatasetCoordinator(
-      props.client,
-      props.model.subModel("dataset")
     );
   }
 

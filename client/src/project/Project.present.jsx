@@ -63,7 +63,6 @@ import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import { Url } from "../utils/helpers/url";
-import { WorkflowsList } from "../workflows";
 
 import "./Project.css";
 
@@ -686,20 +685,6 @@ function ProjectViewOverview(props) {
   );
 }
 
-function ProjectViewWorkflows(props) {
-  const reference = props.metadata?.defaultBranch
-    ? props.metadata?.defaultBranch
-    : "";
-
-  return (
-    <WorkflowsList
-      fullPath={props.projectPathWithNamespace}
-      reference={reference}
-      repositoryUrl={props.externalUrl}
-    />
-  );
-}
-
 class ProjectViewFiles extends Component {
   componentDidMount() {
     this.props.fetchFiles();
@@ -885,7 +870,6 @@ function ProjectView(props) {
   const filesUrl = `${baseUrl}/files/*`;
   const datasetsUrl = `${baseUrl}/datasets/*`;
   const datasetUrl = `${baseUrl}/datasets/:datasetId`;
-  const workflowsUrl = `${baseUrl}/workflows/*`;
   const settingsUrl = `${baseUrl}/settings/*`;
   const notebookServersUrl = `${baseUrl}/sessions/*`;
   const launchNotebookUrl = `${baseUrl}/sessions/new`;
@@ -942,12 +926,6 @@ function ProjectView(props) {
             path={datasetsUrl}
             element={<ProjectDatasetsView key="datasets" {...props} />}
           />
-          <Route
-            path={workflowsUrl}
-            element={<ProjectViewWorkflows key="workflows" {...props} />}
-          >
-            <Route path=":workflowId" element={null} />
-          </Route>
           <Route
             path={settingsUrl}
             element={
