@@ -655,6 +655,7 @@ export default function SessionStartPage() {
     [launcherId, launchers]
   );
 
+  //? We do not start the session while the logged out prompt is displayed.
   const { isLoggedIn, shouldBeLoggedIn } = useAppSelector(
     ({ loginState }) => loginState
   );
