@@ -1,14 +1,11 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { Helmet } from "react-helmet";
 import { connect, Provider } from "react-redux";
 import { BrowserRouter, useLocation, useNavigate } from "react-router";
 
-import "bootstrap";
-
-import StyleHandler from "~/features/rootV2/StyleHandler";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
+
 import App from "./App";
 import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
@@ -16,13 +13,14 @@ import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import { pollStatuspage } from "./statuspage";
-// Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
-import v1Styles from "./styles/index.scss?inline";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import { Sentry } from "./utils/helpers/sentry";
 import { Url } from "./utils/helpers/url";
+
+import "bootstrap";
+import "~/styles/renku_bootstrap.scss";
 
 let hasRendered = false;
 
@@ -66,9 +64,6 @@ function appIndexInner() {
       if (maintenance) {
         root.render(
           <Provider store={model.reduxStore}>
-            <Helmet>
-              <style type="text/css">{v1Styles}</style>
-            </Helmet>
             <Maintenance info={maintenance} />
           </Provider>
         );
@@ -106,8 +101,6 @@ function appIndexInner() {
         return { user: state.stateModel.user, ...ownProps };
       }
 
-      const forceV2Style = true;
-
       // Render UI application
       const VisibleApp = connect(mapStateToProps)(uiApplication);
       root.render(
@@ -116,7 +109,6 @@ function appIndexInner() {
             <AppErrorBoundary>
               <LoginHandler />
               <FeatureFlagHandler />
-              <StyleHandler forceV2Style={forceV2Style} />
               <VisibleApp
                 client={client}
                 coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
