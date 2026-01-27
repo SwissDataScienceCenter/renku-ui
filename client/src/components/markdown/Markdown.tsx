@@ -19,6 +19,7 @@
 import mermaid from "mermaid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
 import rehypeMermaid from "rehype-mermaid";
 import rehypeRaw from "rehype-raw";
@@ -27,6 +28,7 @@ import remarkGemoji from "remark-gemoji";
 import remarkMath from "remark-math";
 
 import "katex/dist/katex.min.css";
+import "highlight.js/styles/atom-one-light.min.css";
 
 type MarkdownProps = Options & {
   children?: string;
@@ -77,6 +79,10 @@ export default function Markdown({
     rehypeRaw,
     ...(sanitize ? [[rehypeSanitize, sanitizeSchema]] : []),
     [rehypeMermaid, { strategy: "pre-mermaid" }],
+    [
+      rehypeHighlight,
+      { detect: true, ignoreMissing: true, plainText: ["mermaid"] },
+    ],
     rehypeKatex,
   ];
 
