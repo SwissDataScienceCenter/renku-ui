@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,20 +16,19 @@
  * limitations under the License.
  */
 
-import { ComponentProps, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
+import type { ComponentProps } from "react";
 
-import { Loader } from "../components/Loader";
+import PageLoader from "../PageLoader";
 
-const CodePreview = lazy(() => import("./CodePreview"));
+type Props = ComponentProps<typeof Markdown>;
 
-// ? Lazy loading of CodePreview allows us to split off ~300kB from
-// ? the main bundle.
-export default function LazyCodePreview(
-  props: ComponentProps<typeof CodePreview>
-) {
+const Markdown = lazy(() => import("./Markdown"));
+
+export default function LazyMarkdown(props: Props) {
   return (
-    <Suspense fallback={<Loader />}>
-      <CodePreview {...props} />
+    <Suspense fallback={<PageLoader />}>
+      <Markdown {...props} />
     </Suspense>
   );
 }

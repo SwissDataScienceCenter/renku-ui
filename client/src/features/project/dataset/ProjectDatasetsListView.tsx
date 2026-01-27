@@ -4,15 +4,10 @@ import { Button, Col, Row, UncontrolledTooltip } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
-import LazyMarkdownTextExcerpt from "../../../components/markdown/LazyMarkdownTextExcerpt";
 import { getUpdatedDatasetImage } from "../../../dataset/DatasetFunctions";
 import type { DatasetCore } from "../project.types";
 
-function datasetToDict(
-  datasetsUrl: string,
-  gridDisplay: boolean,
-  dataset: DatasetCore
-) {
+function datasetToDict(datasetsUrl: string, dataset: DatasetCore) {
   const timeCaption =
     dataset.created_at != null ? new Date(dataset.created_at) : "";
   return {
@@ -25,11 +20,6 @@ function datasetToDict(
     description:
       dataset.description !== undefined && dataset.description !== null ? (
         <Fragment>
-          <LazyMarkdownTextExcerpt
-            markdownText={dataset.description}
-            singleLine={gridDisplay ? false : true}
-            charsLimit={gridDisplay ? 200 : 100}
-          />
           <span className="ms-1">
             {dataset.description.includes("\n") ? " [...]" : ""}
           </span>
@@ -52,7 +42,7 @@ function DatasetList({ datasets, datasetsUrl }: DatasetListProps) {
 
   const gridDisplay = true;
   const datasetItems = datasets.map((d) => {
-    return datasetToDict(datasetsUrl, gridDisplay, d);
+    return datasetToDict(datasetsUrl, d);
   });
   return (
     <ListDisplay
