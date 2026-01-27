@@ -24,7 +24,7 @@ import { Badge, Col, Row } from "reactstrap";
 
 import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
 import { Loader } from "~/components/Loader";
-import { NamespaceContextType } from "~/features/groupsV2/search/useNamespaceContext";
+import { NamespaceContextType } from "~/features/namespaceSearch/useNamespaceContext";
 import UserNotFound from "~/features/projectsV2/notFound/UserNotFound";
 import {
   useGetUserByIdQuery,
