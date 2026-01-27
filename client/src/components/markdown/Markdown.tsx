@@ -23,6 +23,7 @@ import rehypeKatex from "rehype-katex";
 import rehypeMermaid from "rehype-mermaid";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import remarkGemoji from "remark-gemoji";
 import remarkMath from "remark-math";
 
 import "katex/dist/katex.min.css";
@@ -79,7 +80,11 @@ export default function Markdown({
     rehypeKatex,
   ];
 
-  const baseRemarkPlugins = [remarkMath, ...(remarkPlugins ?? [])];
+  const baseRemarkPlugins = [
+    remarkMath,
+    remarkGemoji,
+    ...(remarkPlugins ?? []),
+  ];
 
   return (
     <div ref={containerRef}>
