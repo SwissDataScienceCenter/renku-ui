@@ -47,7 +47,6 @@ import { InfoAlert } from "../components/Alert";
 import { RoundButtonGroup } from "../components/buttons/Button";
 import { ExternalLink } from "../components/LegacyExternalLinks";
 import { Loader } from "../components/Loader";
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import RenkuNavLinkV2, {
   RenkuNavLinkV2WithAlternates,
 } from "../components/RenkuNavLinkV2";
@@ -68,6 +67,7 @@ import { WorkflowsList } from "../workflows";
 
 import "./Project.css";
 
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
@@ -586,15 +586,7 @@ class ProjectViewReadme extends Component {
           className="p-4"
           data-cy="project-readme"
         >
-          <LazyRenkuMarkdown
-            projectPathWithNamespace={this.props.metadata.pathWithNamespace}
-            filePath={""}
-            fixRelativePaths={true}
-            branch={this.props.metadata.defaultBranch}
-            markdownText={this.props.readme.text}
-            client={this.props.client}
-            projectId={this.props.metadata.id}
-          />
+          <LazyMarkdown>{readmeText}</LazyMarkdown>
         </CardBody>
       </Card>
     );
