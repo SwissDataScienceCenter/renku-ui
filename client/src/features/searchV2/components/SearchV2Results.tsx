@@ -18,46 +18,27 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Database,
   Folder2Open,
-  Globe2,
   Icon,
-  Lock,
   People,
   Person,
   Question,
 } from "react-bootstrap-icons";
-import { generatePath, Link, useLocation } from "react-router";
-import {
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Row,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Badge, Col, ListGroup, Row, UncontrolledTooltip } from "reactstrap";
 
-import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
+import { NamespaceSearchEntity } from "~/features/namespaceSearch/namespaceSearch.types";
+import { SearchResultListItem } from "~/features/namespaceSearch/NamespaceSearchResults";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
-import { TimeCaption } from "../../../components/TimeCaption";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { useGetDataConnectorsByDataConnectorIdQuery } from "../../dataConnectorsV2/api/data-connectors.api";
 import DataConnectorView from "../../dataConnectorsV2/components/DataConnectorView";
-import {
-  searchV2Api,
-  type DataConnector,
-  type Group,
-  type Project,
-  type SearchEntity,
-  type User,
-} from "../api/searchV2Api.api";
+import { SearchEntity, searchV2Api } from "../api/searchV2Api.api";
 import useClampSearchPage from "../hooks/useClampSearchPage.hook";
 import { toDisplayName } from "../searchV2.utils";
 
@@ -137,95 +118,106 @@ function SearchV2ResultsContent() {
     );
   }
 
-  const resultsOutput = searchResults.data.items.map((entity, index) => {
-    if (entity.type === "Project") {
-      return (
-        <SearchV2ResultProject
-          key={`project-result-${entity.id}`}
-          project={entity}
-        />
-      );
-    } else if (entity.type === "Group") {
-      return (
-        <SearchV2ResultGroup key={`group-result-${entity.id}`} group={entity} />
-      );
-    } else if (entity.type === "User") {
-      return (
-        <SearchV2ResultUser key={`user-result-${entity.id}`} user={entity} />
-      );
-    } else if (entity.type === "DataConnector") {
-      entity;
-      return (
-        <SearchV2ResultDataConnector
-          key={`user-result-${entity.id}`}
-          dataConnector={entity}
-        />
-      );
-    }
-    // Unknown entity type, in case backend introduces new types before the UI catches up
-    return <SearchV2ResultsUnknown key={`unknown-result-${index}`} />;
+  const resultsOutput = searchResults.data.items.map((item) => {
+    // if (entity.type === "Project") {
+    //   return (
+    //     <SearchV2ResultProject
+    //       key={`project-result-${entity.id}`}
+    //       project={entity}
+    //     />
+    //   );
+    // } else if (entity.type === "Group") {
+    //   return (
+    //     <SearchV2ResultGroup key={`group-result-${entity.id}`} group={entity} />
+    //   );
+    // } else if (entity.type === "User") {
+    //   return (
+    //     <SearchV2ResultUser key={`user-result-${entity.id}`} user={entity} />
+    //   );
+    // } else if (entity.type === "DataConnector") {
+    //   entity;
+    //   return (
+    //     <SearchV2ResultDataConnector
+    //       key={`user-result-${entity.id}`}
+    //       dataConnector={entity}
+    //     />
+    //   );
+    // }
+    // // Unknown entity type, in case backend introduces new types before the UI catches up
+    // return <SearchV2ResultsUnknown key={`unknown-result-${index}`} />;
+    return (
+      <SearchResultListItem
+        key={item.id}
+        item={item as NamespaceSearchEntity}
+      />
+    );
   });
 
-  return <Row className="g-3">{resultsOutput}</Row>;
-}
-
-interface SearchV2ResultsCardProps {
-  children?: ReactNode;
-}
-function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
+  // return <Row className="g-3">{resultsOutput}</Row>;
   return (
-    <Col xs={12} md={6} xl={4} data-cy="search-card">
-      <Card className="h-100">{children}</Card>
-    </Col>
+    <>
+      <ListGroup className="mb-3">{resultsOutput}</ListGroup>
+    </>
   );
 }
 
-interface SearchV2CardTitleProps {
-  entityType: SearchEntity["type"];
-  entityUrl: string;
-  name: string;
-  namespace?: string;
-  namespaceUrl?: string;
-}
-function SearchV2CardTitle({
-  entityType,
-  entityUrl,
-  name,
-  namespace,
-  namespaceUrl,
-}: SearchV2CardTitleProps) {
-  return (
-    <CardHeader className={cx("d-flex", "gap-2")}>
-      <div>
-        <h3 className="mb-1">
-          <Link data-cy="search-card-entity-link" to={entityUrl}>
-            {name}
-          </Link>
-        </h3>
-        <p className="mb-0">
-          {namespace == null || namespaceUrl == null ? (
-            <span className="fst-italic">
-              Global {toDisplayName(entityType)}
-            </span>
-          ) : (
-            <Link data-cy="search-card-namespace-link" to={namespaceUrl}>
-              @{namespace}
-            </Link>
-          )}
-        </p>
-      </div>
-      {entityType && (
-        <div className={cx("mb-auto", "ms-auto")}>
-          <EntityPill
-            entityType={entityType}
-            size="sm"
-            tooltipPlacement="bottom"
-          />
-        </div>
-      )}
-    </CardHeader>
-  );
-}
+// interface SearchV2ResultsCardProps {
+//   children?: ReactNode;
+// }
+// function SearchV2ResultsContainer({ children }: SearchV2ResultsCardProps) {
+//   return (
+//     <Col xs={12} md={6} xl={4} data-cy="search-card">
+//       <Card className="h-100">{children}</Card>
+//     </Col>
+//   );
+// }
+
+// interface SearchV2CardTitleProps {
+//   entityType: SearchEntity["type"];
+//   entityUrl: string;
+//   name: string;
+//   namespace?: string;
+//   namespaceUrl?: string;
+// }
+// function SearchV2CardTitle({
+//   entityType,
+//   entityUrl,
+//   name,
+//   namespace,
+//   namespaceUrl,
+// }: SearchV2CardTitleProps) {
+//   return (
+//     <CardHeader className={cx("d-flex", "gap-2")}>
+//       <div>
+//         <h3 className="mb-1">
+//           <Link data-cy="search-card-entity-link" to={entityUrl}>
+//             {name}
+//           </Link>
+//         </h3>
+//         <p className="mb-0">
+//           {namespace == null || namespaceUrl == null ? (
+//             <span className="fst-italic">
+//               Global {toDisplayName(entityType)}
+//             </span>
+//           ) : (
+//             <Link data-cy="search-card-namespace-link" to={namespaceUrl}>
+//               @{namespace}
+//             </Link>
+//           )}
+//         </p>
+//       </div>
+//       {entityType && (
+//         <div className={cx("mb-auto", "ms-auto")}>
+//           <EntityPill
+//             entityType={entityType}
+//             size="sm"
+//             tooltipPlacement="bottom"
+//           />
+//         </div>
+//       )}
+//     </CardHeader>
+//   );
+// }
 
 interface EntityPillProps {
   entityType: SearchEntity["type"];
@@ -288,215 +280,149 @@ export function EntityPill({
   );
 }
 
-interface SearchV2ResultProjectProps {
-  project: Project;
-}
-function SearchV2ResultProject({ project }: SearchV2ResultProjectProps) {
-  const { creationDate, description, id, name, namespace, slug, visibility } =
-    project;
-
-  const namespaceUrl =
-    namespace?.type === "User"
-      ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-          username: namespace?.path ?? "",
-        })
-      : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: namespace?.path ?? "",
-        });
-  const projectUrl =
-    namespace?.path != null
-      ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-          namespace: namespace.path,
-          slug,
-        })
-      : generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
-          id,
-        });
-
-  return (
-    <SearchV2ResultsContainer>
-      <SearchV2CardTitle
-        entityType="Project"
-        entityUrl={projectUrl}
-        name={name}
-        namespace={namespace?.path ?? ""}
-        namespaceUrl={namespaceUrl}
-      />
-      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
-        {description && <ClampedParagraph>{description}</ClampedParagraph>}
-        <div
-          className={cx(
-            "align-items-center",
-            "d-flex",
-            "flex-wrap",
-            "gap-2",
-            "justify-content-between",
-            "mt-auto"
-          )}
-        >
-          <div>
-            {visibility.toLowerCase() === "private" ? (
-              <>
-                <Lock className={cx("bi", "me-1")} />
-                Private
-              </>
-            ) : (
-              <>
-                <Globe2 className={cx("bi", "me-1")} />
-                Public
-              </>
-            )}
-          </div>
-          <TimeCaption datetime={creationDate} prefix="Created" enableTooltip />
-        </div>
-      </CardBody>
-    </SearchV2ResultsContainer>
-  );
-}
-
-interface SearchV2ResultGroupProps {
-  group: Group;
-}
-function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
-  const { name, path: namespace, description } = group;
-
-  const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-    slug: namespace,
-  });
-
-  return (
-    <SearchV2ResultsContainer>
-      <SearchV2CardTitle
-        entityType="Group"
-        entityUrl={groupUrl}
-        name={name}
-        namespace={namespace}
-        namespaceUrl={groupUrl}
-      />
-
-      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
-        {description && (
-          <ClampedParagraph className="mb-0">{description}</ClampedParagraph>
-        )}
-      </CardBody>
-    </SearchV2ResultsContainer>
-  );
-}
-
-interface SearchV2ResultUserProps {
-  user: User;
-}
-function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
-  const { firstName, lastName, path: namespace } = user;
-
-  const userUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-    username: namespace ?? "",
-  });
-
-  const displayName =
-    firstName && lastName
-      ? `${firstName} ${lastName}`
-      : firstName || lastName || namespace;
-
-  return (
-    <SearchV2ResultsContainer>
-      <SearchV2CardTitle
-        entityType="User"
-        entityUrl={userUrl}
-        name={displayName || "unknown"}
-        namespace={namespace || "unknown"}
-        namespaceUrl={userUrl}
-      />
-      <CardBody />
-    </SearchV2ResultsContainer>
-  );
-}
-
-interface SearchV2ResultDataConnectorProps {
-  dataConnector: DataConnector;
-}
-function SearchV2ResultDataConnector({
-  dataConnector,
-}: SearchV2ResultDataConnectorProps) {
-  const { id, name, namespace, description, visibility, creationDate } =
-    dataConnector;
-
-  const location = useLocation();
-
-  const namespaceUrl =
-    namespace == null
-      ? undefined
-      : namespace?.type === "Project"
-      ? generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
-          // NOTE: we use the `showById` route to not have to split the path
-          id: namespace.path,
-        })
-      : namespace?.type === "User"
-      ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-          username: namespace.path,
-        })
-      : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: namespace?.path ?? "",
-        });
-  const hash = `data-connector-${id}`;
-  const dcUrl =
-    namespace == null
-      ? `${location.search}#${hash}`
-      : `${namespaceUrl}#${hash}`;
-
-  return (
-    <SearchV2ResultsContainer>
-      <SearchV2CardTitle
-        entityType="DataConnector"
-        entityUrl={dcUrl}
-        name={name}
-        namespace={namespace?.path ?? ""}
-        namespaceUrl={namespaceUrl}
-      />
-      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
-        {description && <ClampedParagraph>{description}</ClampedParagraph>}
-        <div
-          className={cx(
-            "align-items-center",
-            "d-flex",
-            "flex-wrap",
-            "gap-2",
-            "justify-content-between",
-            "mt-auto"
-          )}
-        >
-          <div>
-            {visibility.toLowerCase() === "private" ? (
-              <>
-                <Lock className={cx("bi", "me-1")} />
-                Private
-              </>
-            ) : (
-              <>
-                <Globe2 className={cx("bi", "me-1")} />
-                Public
-              </>
-            )}
-          </div>
-          <TimeCaption datetime={creationDate} prefix="Created" enableTooltip />
-        </div>
-      </CardBody>
-    </SearchV2ResultsContainer>
-  );
-}
-
-function SearchV2ResultsUnknown() {
-  return (
-    <SearchV2ResultsContainer>
-      <CardHeader>
-        <h3 className="mb-0">Unknown entity</h3>
-      </CardHeader>
-      <CardBody className={cx("d-flex", "flex-column", "h-100")}>
-        <p className="mb-0">This entity type is not supported yet.</p>
-      </CardBody>
-    </SearchV2ResultsContainer>
-  );
-}
+// interface SearchV2ResultGroupProps {
+//   group: Group;
+// }
+// function SearchV2ResultGroup({ group }: SearchV2ResultGroupProps) {
+//   const { name, path: namespace, description } = group;
+//
+//   const groupUrl = generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+//     slug: namespace,
+//   });
+//
+//   return (
+//     <SearchV2ResultsContainer>
+//       <SearchV2CardTitle
+//         entityType="Group"
+//         entityUrl={groupUrl}
+//         name={name}
+//         namespace={namespace}
+//         namespaceUrl={groupUrl}
+//       />
+//
+//       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+//         {description && (
+//           <ClampedParagraph className="mb-0">{description}</ClampedParagraph>
+//         )}
+//       </CardBody>
+//     </SearchV2ResultsContainer>
+//   );
+// }
+//
+// interface SearchV2ResultUserProps {
+//   user: User;
+// }
+// function SearchV2ResultUser({ user }: SearchV2ResultUserProps) {
+//   const { firstName, lastName, path: namespace } = user;
+//
+//   const userUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+//     username: namespace ?? "",
+//   });
+//
+//   const displayName =
+//     firstName && lastName
+//       ? `${firstName} ${lastName}`
+//       : firstName || lastName || namespace;
+//
+//   return (
+//     <SearchV2ResultsContainer>
+//       <SearchV2CardTitle
+//         entityType="User"
+//         entityUrl={userUrl}
+//         name={displayName || "unknown"}
+//         namespace={namespace || "unknown"}
+//         namespaceUrl={userUrl}
+//       />
+//       <CardBody />
+//     </SearchV2ResultsContainer>
+//   );
+// }
+//
+// interface SearchV2ResultDataConnectorProps {
+//   dataConnector: DataConnector;
+// }
+// function SearchV2ResultDataConnector({
+//   dataConnector,
+// }: SearchV2ResultDataConnectorProps) {
+//   const { id, name, namespace, description, visibility, creationDate } =
+//     dataConnector;
+//
+//   const location = useLocation();
+//
+//   const namespaceUrl =
+//     namespace == null
+//       ? undefined
+//       : namespace?.type === "Project"
+//       ? generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
+//           // NOTE: we use the `showById` route to not have to split the path
+//           id: namespace.path,
+//         })
+//       : namespace?.type === "User"
+//       ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+//           username: namespace.path,
+//         })
+//       : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+//           slug: namespace?.path ?? "",
+//         });
+//   const hash = `data-connector-${id}`;
+//   const dcUrl =
+//     namespace == null
+//       ? `${location.search}#${hash}`
+//       : `${namespaceUrl}#${hash}`;
+//
+//   return (
+//     <SearchV2ResultsContainer>
+//       <SearchV2CardTitle
+//         entityType="DataConnector"
+//         entityUrl={dcUrl}
+//         name={name}
+//         namespace={namespace?.path ?? ""}
+//         namespaceUrl={namespaceUrl}
+//       />
+//       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+//         {description && <ClampedParagraph>{description}</ClampedParagraph>}
+//         <div
+//           className={cx(
+//             "align-items-center",
+//             "d-flex",
+//             "flex-wrap",
+//             "gap-2",
+//             "justify-content-between",
+//             "mt-auto"
+//           )}
+//         >
+//           <div>
+//             {visibility.toLowerCase() === "private" ? (
+//               <>
+//                 <Lock className={cx("bi", "me-1")} />
+//                 Private
+//               </>
+//             ) : (
+//               <>
+//                 <Globe2 className={cx("bi", "me-1")} />
+//                 Public
+//               </>
+//             )}
+//           </div>
+//           <TimeCaption datetime={creationDate} prefix="Created" enableTooltip />
+//         </div>
+//       </CardBody>
+//     </SearchV2ResultsContainer>
+//   );
+// }
+//
+// function SearchV2ResultsUnknown() {
+//   return (
+//     <SearchV2ResultsContainer>
+//       <CardHeader>
+//         <h3 className="mb-0">Unknown entity</h3>
+//       </CardHeader>
+//       <CardBody className={cx("d-flex", "flex-column", "h-100")}>
+//         <p className="mb-0">This entity type is not supported yet.</p>
+//       </CardBody>
+//     </SearchV2ResultsContainer>
+//   );
+// }
 
 export function ShowGlobalDataConnector() {
   const [hash, setHash] = useLocationHash();
