@@ -26,6 +26,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkGemoji from "remark-gemoji";
 import remarkMath from "remark-math";
+import type { Pluggable, PluggableList } from "unified";
 
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-light.min.css";
@@ -75,14 +76,18 @@ export default function Markdown({
     mermaid.run({ nodes, suppressErrors: true });
   }, [children, initDone]);
 
-  const baseRehypePlugins = [
+  const sanitizePlugin: Pluggable = [rehypeSanitize, sanitizeSchema];
+  const mermaidPlugin: Pluggable = [rehypeMermaid, { strategy: "pre-mermaid" }];
+  const highlightPlugin: Pluggable = [
+    rehypeHighlight,
+    { detect: true, ignoreMissing: true, plainText: ["mermaid"] },
+  ];
+
+  const baseRehypePlugins: PluggableList = [
     rehypeRaw,
-    ...(sanitize ? [[rehypeSanitize, sanitizeSchema]] : []),
-    [rehypeMermaid, { strategy: "pre-mermaid" }],
-    [
-      rehypeHighlight,
-      { detect: true, ignoreMissing: true, plainText: ["mermaid"] },
-    ],
+    ...(sanitize ? [sanitizePlugin] : []),
+    mermaidPlugin,
+    highlightPlugin,
     rehypeKatex,
   ];
 
