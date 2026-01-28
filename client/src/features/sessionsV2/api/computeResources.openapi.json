@@ -1550,6 +1550,10 @@
           },
           "service_account_name": {
             "$ref": "#/components/schemas/K8sResourceName"
+          },
+          "session_ingress_use_default_cluster_tls_cert": {
+            "type": "boolean",
+            "default": false
           }
         },
         "required": [
@@ -1559,8 +1563,7 @@
           "session_host",
           "session_port",
           "session_path",
-          "session_ingress_annotations",
-          "session_tls_secret_name"
+          "session_ingress_annotations"
         ]
       },
       "ClusterPatch": {
@@ -1592,13 +1595,23 @@
             "$ref": "#/components/schemas/IngressAnnotations"
           },
           "session_tls_secret_name": {
-            "$ref": "#/components/schemas/TlsSecretName"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TlsSecretName"
+              },
+              {
+                "description": "If you want to remove the secret name pass in an empty string \"\""
+              }
+            ]
           },
           "session_storage_class": {
             "$ref": "#/components/schemas/StorageClassName"
           },
           "service_account_name": {
             "$ref": "#/components/schemas/K8sResourceNamePatch"
+          },
+          "session_ingress_use_default_cluster_tls_cert": {
+            "type": "boolean"
           }
         }
       },
@@ -1641,6 +1654,9 @@
           },
           "service_account_name": {
             "type": "string"
+          },
+          "session_ingress_use_default_cluster_tls_cert": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -1651,8 +1667,8 @@
           "session_port",
           "session_path",
           "session_ingress_annotations",
-          "session_tls_secret_name",
-          "id"
+          "id",
+          "session_ingress_use_default_cluster_tls_cert"
         ]
       },
       "ClustersWithId": {
