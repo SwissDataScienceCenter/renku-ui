@@ -49,7 +49,7 @@ export default function LoggedOutPrompt() {
         It looks like you should log back into Renku before continuing.
       </ModalBody>
       <ModalFooter>
-        <Button color="outline-secondary" onClick={onClickStayLoggedOut}>
+        <Button color="outline-primary" onClick={onClickStayLoggedOut}>
           <XLg className={cx("bi", "me-1")} />
           Stay logged out
         </Button>
