@@ -20,7 +20,7 @@ import cx from "classnames";
 import { Control, Controller } from "react-hook-form";
 import { Label } from "reactstrap";
 
-import { InfoAlert } from "../../../../components/Alert";
+import { InfoAlert } from "../../components/Alert";
 import { AddStorageMountForm } from "./AddOrEditCloudStorage";
 import { AddCloudStorageState } from "./projectCloudStorage.types";
 

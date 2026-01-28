@@ -22,19 +22,19 @@ import { useCallback, useEffect, useMemo } from "react";
 import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import AddStorageBreadcrumbNavbar from "../../../project/components/cloudStorage/AddStorageBreadcrumbNavbar";
-import {
-  AddCloudStorageState,
-  CloudStorageDetailsOptions,
-} from "../../../project/components/cloudStorage/projectCloudStorage.types";
 import {
   findSensitive,
   getSchemaOptions,
   hasProviderShortlist,
-} from "../../../project/utils/projectCloudStorage.utils";
+} from "~/features/cloudStorage/projectCloudStorage.utils";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import AddStorageBreadcrumbNavbar from "../../../cloudStorage/AddStorageBreadcrumbNavbar";
+import {
+  AddCloudStorageState,
+  CloudStorageDetailsOptions,
+} from "../../../cloudStorage/projectCloudStorage.types";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 import {

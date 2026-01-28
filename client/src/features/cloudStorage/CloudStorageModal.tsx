@@ -23,15 +23,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
-import ScrollableModal from "../../../../components/modal/ScrollableModal";
-import {
-  findSensitive,
-  getCurrentStorageDetails,
-  getSchemaOptions,
-  getSchemaProviders,
-  hasProviderShortlist,
-} from "../../utils/projectCloudStorage.utils";
+import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import ScrollableModal from "../../components/modal/ScrollableModal";
 import {
   useGetStorageSchemaQuery,
   usePatchStorageByStorageIdMutation,
@@ -60,6 +53,13 @@ import type {
   CloudStorageDetails,
   CloudStorageDetailsOptions,
 } from "./projectCloudStorage.types";
+import {
+  findSensitive,
+  getCurrentStorageDetails,
+  getSchemaOptions,
+  getSchemaProviders,
+  hasProviderShortlist,
+} from "./projectCloudStorage.utils";
 
 import styles from "./CloudStorage.module.scss";
 

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,26 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense } from "react";
+import cx from "classnames";
+import { useRef } from "react";
+import { InfoCircle } from "react-bootstrap-icons";
+import { PopoverBody, UncontrolledPopover } from "reactstrap";
 
-import PageLoader from "../components/PageLoader";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 
-const ProjectView = lazy(() => import("./ProjectV2"));
+export function CredentialMoreInfo({ help }: { help: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
 
-export default function LazyProjectView() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <ProjectView />
-    </Suspense>
+    <>
+      <span ref={ref}>
+        <InfoCircle className={cx("bi", "ms-1")} tabIndex={0} />
+      </span>
+      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
+        <PopoverBody>
+          <LazyMarkdown>{help}</LazyMarkdown>
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
   );
 }

@@ -104,8 +104,7 @@ async function updatePlatformApi() {
 async function updateProjectCloudStorageApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/storage/api.spec.yaml",
-    destFile:
-      "src/features/project/components/cloudStorage/api/projectCloudStorage.openapi.json",
+    destFile: "src/features/cloudStorage/api/projectCloudStorage.openapi.json",
   });
 }
 

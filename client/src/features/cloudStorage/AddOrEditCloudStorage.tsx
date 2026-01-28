@@ -44,21 +44,11 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { InfoAlert, WarnAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/LegacyExternalLinks";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import type { DataConnectorSecret } from "../../../dataConnectorsV2/api/data-connectors.api";
-import { hasSchemaAccessMode } from "../../../dataConnectorsV2/components/dataConnector.utils";
-import {
-  convertFromAdvancedConfig,
-  getSchema,
-  getSchemaOptions,
-  getSchemaProviders,
-  getSchemaStorage,
-  getSourcePathHint,
-  hasProviderShortlist,
-  parseCloudStorageConfiguration,
-} from "../../utils/projectCloudStorage.utils";
+import { InfoAlert, WarnAlert } from "../../components/Alert";
+import { ExternalLink } from "../../components/LegacyExternalLinks";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
+import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
 import AddStorageBreadcrumbNavbar from "./AddStorageBreadcrumbNavbar";
 import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
 import {
@@ -73,6 +63,16 @@ import {
   CloudStorageSchema,
   CloudStorageSchemaOption,
 } from "./projectCloudStorage.types";
+import {
+  convertFromAdvancedConfig,
+  getSchema,
+  getSchemaOptions,
+  getSchemaProviders,
+  getSchemaStorage,
+  getSourcePathHint,
+  hasProviderShortlist,
+  parseCloudStorageConfiguration,
+} from "./projectCloudStorage.utils";
 
 import styles from "./CloudStorage.module.scss";
 

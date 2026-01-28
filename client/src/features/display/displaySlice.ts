@@ -18,22 +18,11 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import {
-  Display,
-  FaviconStatus,
-  ProjectConfig,
-  SessionConfig,
-} from "./display.types";
+import { Display, FaviconStatus, SessionConfig } from "./display.types";
 
 const initialState: Display = {
   favicon: "general",
   modals: {
-    ssh: {
-      show: false,
-      projectPath: "",
-      gitUrl: "",
-      branch: "",
-    },
     sessionLogs: {
       show: false,
       targetServer: "",
@@ -50,20 +39,6 @@ export const displaySlice = createSlice({
     },
     resetFavicon: (state) => {
       state.favicon = initialState.favicon;
-    },
-    showSshModal: (state, action: PayloadAction<ProjectConfig>) => {
-      state.modals.ssh = {
-        show: true,
-        projectPath: action.payload.projectPath,
-        gitUrl: action.payload.gitUrl,
-        branch: action.payload.branch,
-      };
-    },
-    hideSshModal: (state) => {
-      state.modals.ssh.show = false;
-    },
-    toggleSshModal: (state) => {
-      state.modals.ssh.show = !state.modals.ssh.show;
     },
 
     showSessionLogsModal: (state, action: PayloadAction<SessionConfig>) => {
@@ -86,12 +61,5 @@ export const displaySlice = createSlice({
   },
 });
 
-export const {
-  showSshModal,
-  hideSshModal,
-  toggleSshModal,
-  toggleSessionLogsModal,
-  reset,
-  resetFavicon,
-  setFavicon,
-} = displaySlice.actions;
+export const { toggleSessionLogsModal, reset, resetFavicon, setFavicon } =
+  displaySlice.actions;

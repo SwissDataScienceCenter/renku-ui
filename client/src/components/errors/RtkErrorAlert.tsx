@@ -19,7 +19,6 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
-import { UpdateProjectResponse } from "../../features/project/project.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 import { CoreErrorResponse } from "../../utils/types/coreService.types";
 import { ErrorAlert, RenkuAlert } from "../Alert";
@@ -52,20 +51,6 @@ export function extractRkErrorMessage(
   }
   if ("data" in error) return JSON.stringify(error.data);
   return "No details available.";
-}
-
-export function extractRkErrorRemoteBranch(
-  error: FetchBaseQueryError | SerializedError
-): string | undefined {
-  if (
-    "data" in error &&
-    typeof error.data === "object" &&
-    error.data !== null &&
-    "branch" in error.data
-  ) {
-    return (error?.data as UpdateProjectResponse)?.branch;
-  }
-  return undefined;
 }
 
 interface RtkErrorAlertProps {

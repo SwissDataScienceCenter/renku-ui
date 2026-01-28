@@ -17,15 +17,12 @@
  */
 
 import { CoreApiVersionedUrlHelper } from "../utils/helpers/url";
-import addDatasetMethods from "./dataset";
 import { alertAPIErrors, API_ERRORS, APIError } from "./errors";
-import addGraphMethods from "./graph";
 import addInstanceMethods from "./instance";
 import addJobMethods from "./job";
 import addNotebookServersMethods from "./notebook-servers";
 import processPaginationHeaders from "./pagination";
 import addPipelineMethods from "./pipeline";
-import addProjectMethods from "./project";
 import addRepositoryMethods from "./repository";
 import addTemplatesMethods from "./templates";
 import testClient from "./test-client";
@@ -67,13 +64,10 @@ class APIClient {
     this.returnTypes = RETURN_TYPES;
     this.supportsLegacy = true;
 
-    addDatasetMethods(this);
-    addGraphMethods(this);
     addInstanceMethods(this);
     addJobMethods(this);
     addNotebookServersMethods(this);
     addPipelineMethods(this);
-    addProjectMethods(this);
     addRepositoryMethods(this);
     addTemplatesMethods(this);
     addUserMethods(this);

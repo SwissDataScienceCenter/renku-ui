@@ -42,12 +42,6 @@ export type FaviconStatus =
 interface Display {
   favicon: FaviconStatus;
   modals: {
-    ssh: {
-      show: boolean;
-      projectPath: string;
-      gitUrl: string;
-      branch: string;
-    };
     sessionLogs: {
       show: boolean;
       targetServer: string;
