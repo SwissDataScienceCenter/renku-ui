@@ -56,9 +56,9 @@ export default function SearchFilters() {
   const { namespace, type } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
-      groupSlug: namespace,
+      groupSlug: namespace ?? "",
     },
-    { skip: type !== "group" }
+    { skip: type !== "group" || !namespace }
   );
 
   // Add numbers to the content types. Mind that this requires an additional request.

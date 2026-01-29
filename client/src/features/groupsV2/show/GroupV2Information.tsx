@@ -48,7 +48,9 @@ export default function GroupInformation({
           />
         </p>
       </GroupInformationBox>
-      <GroupV2MemberListDisplay group={context.namespace} />
+      {context.namespace && (
+        <GroupV2MemberListDisplay group={context.namespace} />
+      )}
     </div>
   );
   return output === "plain" ? (
