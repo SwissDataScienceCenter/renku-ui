@@ -34,6 +34,8 @@ type MarkdownProps = Options & {
   children?: string;
   sanitize?: boolean;
 };
+type PluggableList = Exclude<Options["rehypePlugins"], null | undefined>;
+type Pluggable = PluggableList[0];
 
 export default function Markdown({
   children,
@@ -75,14 +77,18 @@ export default function Markdown({
     mermaid.run({ nodes, suppressErrors: true });
   }, [children, initDone]);
 
-  const baseRehypePlugins = [
+  const sanitizePlugin: Pluggable = [rehypeSanitize, sanitizeSchema];
+  const mermaidPlugin: Pluggable = [rehypeMermaid, { strategy: "pre-mermaid" }];
+  const highlightPlugin: Pluggable = [
+    rehypeHighlight,
+    { detect: true, ignoreMissing: true, plainText: ["mermaid"] },
+  ];
+
+  const baseRehypePlugins: PluggableList = [
     rehypeRaw,
-    ...(sanitize ? [[rehypeSanitize, sanitizeSchema]] : []),
-    [rehypeMermaid, { strategy: "pre-mermaid" }],
-    [
-      rehypeHighlight,
-      { detect: true, ignoreMissing: true, plainText: ["mermaid"] },
-    ],
+    ...(sanitize ? [sanitizePlugin] : []),
+    mermaidPlugin,
+    highlightPlugin,
     rehypeKatex,
   ];
 
