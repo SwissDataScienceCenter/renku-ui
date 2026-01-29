@@ -34,9 +34,9 @@ import {
 } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
+import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
-import { useGroup } from "../show/GroupPageContainer";
 import { useGroupSearch } from "./groupSearch.hook";
 import { Filter, GroupSearchEntity } from "./groupSearch.types";
 import {
@@ -53,10 +53,13 @@ export default function GroupSearchFilters() {
   const [searchParams] = useSearchParams();
   const { data: search } = useGroupSearch();
   const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
-  const { group } = useGroup();
-  const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery({
-    groupSlug: group.slug,
-  });
+  const { namespace, type } = useNamespaceContext();
+  const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
+    {
+      groupSlug: namespace,
+    },
+    { skip: type !== "group" }
+  );
 
   // Add numbers to the content types. Mind that this requires an additional request.
   const hydratedFilterContentAllowedValues = useMemo(() => {
@@ -160,7 +163,9 @@ export default function GroupSearchFilters() {
       <h4 className={cx("d-sm-none", "mb-0")}>Filters</h4>
 
       <GroupSearchFilter filter={filterContentWithQuantities} />
-      <GroupSearchFilter filter={filterMembersWithValues} />
+      {type == "group" && (
+        <GroupSearchFilter filter={filterMembersWithValues} />
+      )}
       <GroupSearchFilter
         defaultElementsToShow={10}
         filter={filterKeywordWithQuantities}
