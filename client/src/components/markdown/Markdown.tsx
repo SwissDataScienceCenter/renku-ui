@@ -26,7 +26,6 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkGemoji from "remark-gemoji";
 import remarkMath from "remark-math";
-import type { Pluggable, PluggableList } from "unified";
 
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-light.min.css";
@@ -35,6 +34,8 @@ type MarkdownProps = Options & {
   children?: string;
   sanitize?: boolean;
 };
+type PluggableList = Exclude<Options["rehypePlugins"], null | undefined>;
+type Pluggable = PluggableList[0];
 
 export default function Markdown({
   children,
