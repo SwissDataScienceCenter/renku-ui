@@ -19,9 +19,9 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 
 import { useGetProjectsByProjectIdMembersQuery } from "~/features/projectsV2/api/projectV2.api";
-import { GroupSearchEntity } from "./groupSearch.types";
+import { GroupSearchEntity } from "../contextSearch.types";
 
-export function useGroupSearchResultMembers(item: GroupSearchEntity) {
+export function useSearchResultMembers(item: GroupSearchEntity) {
   const projectMembers = useGetProjectsByProjectIdMembersQuery(
     item.type === "Project" ? { projectId: item.id } : skipToken
   );

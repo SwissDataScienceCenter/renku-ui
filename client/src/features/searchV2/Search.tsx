@@ -20,15 +20,15 @@ import cx from "classnames";
 import { Navigate, useSearchParams } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { getSearchQueryMissingFilters } from "./groupSearch.utils";
-import GroupSearchBar from "./GroupSearchBar";
-import GroupSearchFilters from "./GroupSearchFilters";
-import GroupSearchResultRecap from "./GroupSearchResultRecap";
-import GroupSearchResults from "./GroupSearchResults";
+import SearchBar from "./components/SearchBar";
+import SearchFilters from "./components/SearchFilters";
+import SearchResultRecap from "./components/SearchResultRecap";
+import SearchResults from "./components/SearchResults";
+import { getSearchQueryMissingFilters } from "./contextSearch.utils";
 
 // ? The GroupV2Search components should be re-used in the User namespace and later
 // ? replace the global search components. Mind to rename them at that point.
-export default function GroupV2Search() {
+export default function Search() {
   const [searchParams] = useSearchParams();
 
   // Replace the location whenever parameters are missing
@@ -47,18 +47,18 @@ export default function GroupV2Search() {
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Row>
         <Col xs={12}>
-          <GroupSearchBar />
+          <SearchBar />
         </Col>
         <Col xs={12}>
-          <GroupSearchResultRecap />
+          <SearchResultRecap />
         </Col>
       </Row>
       <Row>
         <Col xs={12} sm={3} lg={2}>
-          <GroupSearchFilters />
+          <SearchFilters />
         </Col>
         <Col xs={12} sm={9} lg={10}>
-          <GroupSearchResults />
+          <SearchResults />
         </Col>
       </Row>
     </div>
