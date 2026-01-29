@@ -36,14 +36,14 @@ export const CLOUD_STORAGE_OVERRIDE = {
       position: 2,
     },
     drive: {
-      // hide: true,
+      usesIntegration: true,
     },
     gcs: {
       hide: true,
     },
     // eslint-disable-next-line spellcheck/spell-checker
     dropbox: {
-      // hide: true,
+      usesIntegration: true,
     },
     // eslint-disable-next-line spellcheck/spell-checker
     onedrive: {

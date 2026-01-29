@@ -248,6 +248,8 @@ export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
       description: override.description ?? currentSchema.description,
       position: override.position ?? currentSchema.position,
       forceReadOnly: override.forceReadOnly ?? currentSchema.forceReadOnly,
+      usesIntegration:
+        override.usesIntegration ?? currentSchema.usesIntegration,
     };
   }
   return currentSchema;
