@@ -21,7 +21,7 @@ import { JournalAlbum } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
+import { useNamespaceContext } from "~/features/namespaceSearch/useNamespaceContext";
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";

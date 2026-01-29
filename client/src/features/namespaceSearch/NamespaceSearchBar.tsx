@@ -23,17 +23,17 @@ import { Controller, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
 
-import { useGroupSearch } from "./groupSearch.hook";
-import { FILTER_PAGE, FILTER_QUERY } from "./groupsSearch.constants";
+import { FILTER_PAGE, FILTER_QUERY } from "./namespaceSearch.constants";
+import { useNamespaceSearch } from "./namespaceSearch.hook";
 
 interface SearchBarForm {
   query: string;
 }
-export default function GroupSearchBar() {
+export default function NamespaceSearchBar() {
   // Set the input properly
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get(FILTER_QUERY.name) ?? "";
-  const { refetch } = useGroupSearch();
+  const { refetch } = useNamespaceSearch();
 
   const { control, handleSubmit, reset, setFocus } = useForm<SearchBarForm>({
     defaultValues: { query },
