@@ -212,7 +212,7 @@ export default function NavbarV2() {
                 <NavbarItemHelp />
               </NavItem>
               <NavItem>
-                <RenkuToolbarItemUser isV2 params={params!} />
+                <RenkuToolbarItemUser params={params!} />
               </NavItem>
             </Nav>
           </Collapse>
