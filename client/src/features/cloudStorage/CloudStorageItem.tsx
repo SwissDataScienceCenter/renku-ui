@@ -16,37 +16,26 @@
  * limitations under the License.
  */
 
-interface ProjectConfig {
-  projectPath: string;
-  gitUrl: string;
-  branch: string;
-}
+import cx from "classnames";
+import { useRef } from "react";
+import { InfoCircle } from "react-bootstrap-icons";
+import { PopoverBody, UncontrolledPopover } from "reactstrap";
 
-interface SessionConfig {
-  targetServer: string;
-}
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 
-interface FaviconSet {
-  ico: string;
-  png_32x: string;
-  png_16x: string;
-  svg: string;
-}
+export function CredentialMoreInfo({ help }: { help: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
 
-export type FaviconStatus =
-  | "general"
-  | "running"
-  | "waiting"
-  | "error"
-  | "pause";
-interface Display {
-  favicon: FaviconStatus;
-  modals: {
-    sessionLogs: {
-      show: boolean;
-      targetServer: string;
-    };
-  };
+  return (
+    <>
+      <span ref={ref}>
+        <InfoCircle className={cx("bi", "ms-1")} tabIndex={0} />
+      </span>
+      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
+        <PopoverBody>
+          <LazyMarkdown>{help}</LazyMarkdown>
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
+  );
 }
-
-export type { Display, FaviconSet, ProjectConfig, SessionConfig };

@@ -40,13 +40,13 @@ import ProgressStepsIndicator, {
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
-import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
-import { resetFavicon, setFavicon } from "../display";
 import {
   dataConnectorsOverrideFromConfig,
   storageDefinitionAfterSavingCredentialsFromConfig,
-} from "../project/utils/projectCloudStorage.utils";
+} from "../cloudStorage/projectCloudStorage.utils";
+import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
+import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
+import { resetFavicon, setFavicon } from "../display";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
@@ -655,6 +655,12 @@ export default function SessionStartPage() {
     [launcherId, launchers]
   );
 
+  //? We do not start the session while the logged out prompt is displayed.
+  const { isLoggedIn, shouldBeLoggedIn } = useAppSelector(
+    ({ loginState }) => loginState
+  );
+  const isShowingLoggedOutPrompt = !isLoggedIn && shouldBeLoggedIn;
+
   if (isLoading) {
     return <PageLoader />;
   }
@@ -666,6 +672,10 @@ export default function SessionStartPage() {
         {error && <RtkOrNotebooksError error={error} dismissible={false} />}
       </div>
     );
+  }
+
+  if (isShowingLoggedOutPrompt) {
+    return <PageLoader />;
   }
 
   return <StartSessionFromLauncher launcher={launcher} project={project} />;

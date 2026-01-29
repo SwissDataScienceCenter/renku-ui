@@ -19,16 +19,16 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
 
-import type { PostStorageSchemaTestConnectionApiArg } from "../../project/components/cloudStorage/api/projectCloudStorage.api";
+import { findSensitive } from "~/features/cloudStorage/projectCloudStorage.utils";
+import type { PostStorageSchemaTestConnectionApiArg } from "../../cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   STORAGES_WITH_ACCESS_MODE,
-} from "../../project/components/cloudStorage/projectCloudStorage.constants";
+} from "../../cloudStorage/projectCloudStorage.constants";
 import type {
   CloudStorageDetailsOptions,
   CloudStorageSchema,
-} from "../../project/components/cloudStorage/projectCloudStorage.types";
-import { findSensitive } from "../../project/utils/projectCloudStorage.utils";
+} from "../../cloudStorage/projectCloudStorage.types";
 import type {
   CloudStorageCorePost,
   DataConnector,

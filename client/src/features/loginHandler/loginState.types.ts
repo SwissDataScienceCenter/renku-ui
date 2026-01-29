@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,37 +16,7 @@
  * limitations under the License.
  */
 
-interface ProjectConfig {
-  projectPath: string;
-  gitUrl: string;
-  branch: string;
+export interface LoginState {
+  isLoggedIn: boolean;
+  shouldBeLoggedIn: boolean;
 }
-
-interface SessionConfig {
-  targetServer: string;
-}
-
-interface FaviconSet {
-  ico: string;
-  png_32x: string;
-  png_16x: string;
-  svg: string;
-}
-
-export type FaviconStatus =
-  | "general"
-  | "running"
-  | "waiting"
-  | "error"
-  | "pause";
-interface Display {
-  favicon: FaviconStatus;
-  modals: {
-    sessionLogs: {
-      show: boolean;
-      targetServer: string;
-    };
-  };
-}
-
-export type { Display, FaviconSet, ProjectConfig, SessionConfig };

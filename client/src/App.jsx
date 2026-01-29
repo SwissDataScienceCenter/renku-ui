@@ -44,6 +44,7 @@ import LegacyDatasets from "./features/legacy/LegacyDatasets";
 import LegacyProjectView from "./features/legacy/LegacyProjectView";
 import LegacyRoot from "./features/legacy/LegacyRoot";
 import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
+import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
 import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
@@ -182,6 +183,7 @@ function App(props) {
     <Fragment>
       <Favicon />
       <AppContext.Provider value={appContext}>
+        <LoggedOutPrompt />
         <RenkuNavBar user={user} />
         <CentralContentContainer user={user} socket={webSocket} />
         <FooterNavbar />
