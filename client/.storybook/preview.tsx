@@ -35,7 +35,9 @@ export const decorators = [
       <MemoryRouter initialEntries={["/"]}>
         <AppContext.Provider value={appContext}>
           <Provider store={store}>
-            <Story />
+            <div style={{ fontFamily: "Inter" }}>
+              <Story />
+            </div>
           </Provider>
         </AppContext.Provider>
       </MemoryRouter>
@@ -56,6 +58,7 @@ const preview: Preview = {
     viewMode: "docs",
     docs: {
       toc: true,
+      inlineStories: true,
     },
     options: {
       storySort: {
