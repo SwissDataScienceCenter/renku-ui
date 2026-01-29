@@ -161,6 +161,41 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/projects/${queryArg.projectId}/inaccessible_data_connector_links`,
       }),
     }),
+    postDeposit: build.mutation<PostDepositApiResponse, PostDepositApiArg>({
+      query: (queryArg) => ({
+        url: `/deposit`,
+        method: "POST",
+        body: queryArg.depositPost,
+      }),
+    }),
+    getDeposit: build.query<GetDepositApiResponse, GetDepositApiArg>({
+      query: () => ({ url: `/deposit` }),
+    }),
+    getDepositByDepositId: build.query<
+      GetDepositByDepositIdApiResponse,
+      GetDepositByDepositIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/deposit/${queryArg.depositId}` }),
+    }),
+    patchDepositByDepositId: build.mutation<
+      PatchDepositByDepositIdApiResponse,
+      PatchDepositByDepositIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/deposit/${queryArg.depositId}`,
+        method: "PATCH",
+        body: queryArg.depositPatch,
+      }),
+    }),
+    deleteDepositByDepositId: build.mutation<
+      DeleteDepositByDepositIdApiResponse,
+      DeleteDepositByDepositIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/deposit/${queryArg.depositId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -280,6 +315,32 @@ export type GetProjectsByProjectIdInaccessibleDataConnectorLinksApiResponse =
 export type GetProjectsByProjectIdInaccessibleDataConnectorLinksApiArg = {
   /** the ID of the project */
   projectId: Ulid;
+};
+export type PostDepositApiResponse =
+  /** status 201 The newly created deposit */ Deposit;
+export type PostDepositApiArg = {
+  depositPost: DepositPost;
+};
+export type GetDepositApiResponse =
+  /** status 200 The list of data deposits */ DepositList;
+export type GetDepositApiArg = void;
+export type GetDepositByDepositIdApiResponse =
+  /** status 200 The data deposit */ Deposit;
+export type GetDepositByDepositIdApiArg = {
+  /** the ID of the data deposit */
+  depositId: Ulid;
+};
+export type PatchDepositByDepositIdApiResponse =
+  /** status 200 The data deposit */ Deposit;
+export type PatchDepositByDepositIdApiArg = {
+  /** the ID of the data deposit */
+  depositId: Ulid;
+  depositPatch: DepositPatch;
+};
+export type DeleteDepositByDepositIdApiResponse = unknown;
+export type DeleteDepositByDepositIdApiArg = {
+  /** the ID of the data deposit */
+  depositId: Ulid;
 };
 export type Ulid = string;
 export type DataConnectorName = string;
@@ -529,6 +590,30 @@ export type InaccessibleDataConnectorLinks = {
   /** The number of data links the user does not have access to */
   count?: number;
 };
+export type DepositProvider = "zenodo";
+export type DepositSourcePath = string;
+export type DepositPost = {
+  name: DataConnectorName;
+  provider: DepositProvider;
+  data_connector_id: Ulid;
+  path?: DepositSourcePath;
+};
+export type DepositStatus =
+  | "complete"
+  | "in_progress"
+  | "cancelled"
+  | "missing";
+export type Deposit = DepositPost & {
+  id?: Ulid;
+  status?: DepositStatus;
+  /** The URL from the provider where the deposit can be accessed */
+  external_url?: string;
+};
+export type DepositList = Deposit[];
+export type DepositPatch = {
+  name?: DataConnectorName;
+  status?: DepositStatus;
+};
 export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
@@ -548,4 +633,9 @@ export const {
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
+  usePostDepositMutation,
+  useGetDepositQuery,
+  useGetDepositByDepositIdQuery,
+  usePatchDepositByDepositIdMutation,
+  useDeleteDepositByDepositIdMutation,
 } = injectedRtkApi;
