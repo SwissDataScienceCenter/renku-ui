@@ -357,6 +357,31 @@ function DataConnectorActionsInner({
   toggleView,
   toggleEdit,
 }: DataConnectorActionsProps) {
+  // Local states
+  const [isCredentialsOpen, setCredentialsOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
+
+  // Actions
+  const toggleCredentials = useCallback(() => {
+    setCredentialsOpen((open) => !open);
+  }, []);
+  const toggleDelete = useCallback(() => {
+    setIsDeleteOpen((open) => !open);
+  }, []);
+  const toggleUnlink = useCallback(() => {
+    setIsUnlinkOpen((open) => !open);
+  }, []);
+  const onDelete = useCallback(() => {
+    if (toggleView) toggleView();
+    setIsDeleteOpen(false);
+  }, [toggleView]);
+  const onUnlink = useCallback(() => {
+    if (toggleView) toggleView();
+    setIsUnlinkOpen(false);
+  }, [toggleView]);
+
+  // Data
   const { id: dataConnectorId } = dataConnector;
   const scope = getDataConnectorScope(dataConnector.namespace);
   const { permissions } = useDataConnectorPermissions({ dataConnectorId });
@@ -365,7 +390,6 @@ function DataConnectorActionsInner({
   const projectPermissions = useProjectPermissions({
     projectId: projectId ?? "",
   });
-
   const location = useLocation();
   const pathMatch = matchPath(
     ABSOLUTE_ROUTES.v2.projects.show.root,
@@ -382,30 +406,10 @@ function DataConnectorActionsInner({
       : "unlink";
   const requiresCredentials =
     dataConnector.storage.sensitive_fields?.length > 0;
-  const [isCredentialsOpen, setCredentialsOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
-  const onDelete = useCallback(() => {
-    toggleView();
-    setIsDeleteOpen(false);
-  }, [toggleView]);
-  const onUnlink = useCallback(() => {
-    toggleView();
-    setIsUnlinkOpen(false);
-  }, [toggleView]);
-  const toggleCredentials = useCallback(() => {
-    setCredentialsOpen((open) => !open);
-  }, []);
-  const toggleDelete = useCallback(() => {
-    setIsDeleteOpen((open) => !open);
-  }, []);
 
-  const toggleUnlink = useCallback(() => {
-    setIsUnlinkOpen((open) => !open);
-  }, []);
-
+  // List of actionable items
   const actions = [
-    ...(permissions.write
+    ...(permissions.write && scope !== "global"
       ? [
           {
             key: "data-connector-edit",
@@ -501,6 +505,7 @@ function DataConnectorActionsInner({
             {actions[0].content}
           </Button>
         }
+        preventPropagation
         size="sm"
       >
         {actions.slice(1).map(({ key, onClick, content }) => (
@@ -544,7 +549,7 @@ function DataConnectorActionsInner({
 interface DataConnectorActionsProps {
   dataConnector: DataConnectorRead;
   dataConnectorLink?: DataConnectorToProjectLink;
-  toggleView: () => void;
+  toggleView?: () => void;
   toggleEdit: (initialStep: number) => void;
 }
 
