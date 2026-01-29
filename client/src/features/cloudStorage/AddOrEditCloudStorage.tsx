@@ -962,7 +962,7 @@ export function AddStorageOptions({
       );
     });
 
-  const advancedOptions = options && (
+  const advancedOptions = options != null && (
     <>
       <div className={cx("form-check", "form-switch", "mb-3", "d-flex")}>
         <Input

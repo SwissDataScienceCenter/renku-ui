@@ -603,14 +603,7 @@
       },
       "ProviderKind": {
         "type": "string",
-        "enum": [
-          "gitlab",
-          "github",
-          "drive",
-          "onedrive",
-          "dropbox",
-          "generic_oidc"
-        ],
+        "enum": ["dropbox", "generic_oidc", "github", "gitlab", "google"],
         "example": "gitlab"
       },
       "ApplicationSlug": {

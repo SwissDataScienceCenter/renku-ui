@@ -36,14 +36,14 @@ export const CLOUD_STORAGE_OVERRIDE = {
       position: 2,
     },
     drive: {
-      hide: true,
+      // hide: true,
     },
     gcs: {
       hide: true,
     },
     // eslint-disable-next-line spellcheck/spell-checker
     dropbox: {
-      hide: true,
+      // hide: true,
     },
     // eslint-disable-next-line spellcheck/spell-checker
     onedrive: {
@@ -176,6 +176,11 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     url: { friendlyName: "URL" },
     user: { friendlyName: "Username" },
     vendor: { advanced: true },
+  },
+  drive: {
+    alternate_export: { advanced: true },
+    scope: { advanced: true },
+    service_account_file: { advanced: true },
   },
 } as Record<
   string,
