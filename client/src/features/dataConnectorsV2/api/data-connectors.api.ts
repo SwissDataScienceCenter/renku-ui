@@ -31,6 +31,15 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.globalDataConnectorPost,
       }),
     }),
+    getDataConnectorsSearch: build.query<
+      GetDataConnectorsSearchApiResponse,
+      GetDataConnectorsSearchApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/search`,
+        params: { doi: queryArg.doi },
+      }),
+    }),
     getDataConnectorsByDataConnectorId: build.query<
       GetDataConnectorsByDataConnectorIdApiResponse,
       GetDataConnectorsByDataConnectorIdApiArg
@@ -97,6 +106,7 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/data_connectors/${queryArg.dataConnectorId}/project_links`,
+        params: { params: queryArg.params },
       }),
     }),
     postDataConnectorsByDataConnectorIdProjectLinks: build.mutation<
@@ -183,6 +193,12 @@ export type PostDataConnectorsGlobalApiResponse =
 export type PostDataConnectorsGlobalApiArg = {
   globalDataConnectorPost: GlobalDataConnectorPost;
 };
+export type GetDataConnectorsSearchApiResponse =
+  /** status 200 The data connector */ DataConnectorRead;
+export type GetDataConnectorsSearchApiArg = {
+  /** The DOI of the data connector */
+  doi: Doi;
+};
 export type GetDataConnectorsByDataConnectorIdApiResponse =
   /** status 200 The data connector */ DataConnectorRead;
 export type GetDataConnectorsByDataConnectorIdApiArg = {
@@ -232,13 +248,15 @@ export type GetDataConnectorsByDataConnectorIdPermissionsApiArg = {
 export type GetDataConnectorsByDataConnectorIdProjectLinksApiResponse =
   /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
 export type GetDataConnectorsByDataConnectorIdProjectLinksApiArg = {
-  /** the ID of the data connector */
+  /** the ID of the data connector that can be ULID or DOI */
   dataConnectorId: Ulid;
+  /** query parameters */
+  params?: PaginationRequest;
 };
 export type PostDataConnectorsByDataConnectorIdProjectLinksApiResponse =
   /** status 201 The data connector was connected to a project */ DataConnectorToProjectLink;
 export type PostDataConnectorsByDataConnectorIdProjectLinksApiArg = {
-  /** the ID of the data connector */
+  /** the ID of the data connector that can be ULID or DOI */
   dataConnectorId: Ulid;
   dataConnectorToProjectLinkPost: DataConnectorToProjectLinkPost;
 };
@@ -502,10 +520,12 @@ export type DataConnectorPermissions = {
   /** The user can manage data connector members */
   change_membership?: boolean;
 };
+export type ProjectPath = string;
 export type DataConnectorToProjectLink = {
   id: Ulid;
   data_connector_id: Ulid;
   project_id: Ulid;
+  project_path: ProjectPath;
   creation_date: CreationDate;
   created_by: UserId;
 };
@@ -533,6 +553,7 @@ export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
   usePostDataConnectorsGlobalMutation,
+  useGetDataConnectorsSearchQuery,
   useGetDataConnectorsByDataConnectorIdQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdMutation,

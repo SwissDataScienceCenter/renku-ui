@@ -1415,42 +1415,6 @@
         "description": "Entity Tag",
         "example": "9EE498F9D565D0C41E511377425F32F3"
       },
-      "DataConnectorToProjectLinksList": {
-        "description": "A list of links from a data connector to a project",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/DataConnectorToProjectLink"
-        }
-      },
-      "DataConnectorToProjectLink": {
-        "description": "A link from a data connector to a project in Renku 2.0",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Ulid"
-          },
-          "data_connector_id": {
-            "$ref": "#/components/schemas/Ulid"
-          },
-          "project_id": {
-            "$ref": "#/components/schemas/Ulid"
-          },
-          "creation_date": {
-            "$ref": "#/components/schemas/CreationDate"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/UserId"
-          }
-        },
-        "required": [
-          "id",
-          "data_connector_id",
-          "project_id",
-          "creation_date",
-          "created_by"
-        ]
-      },
       "ProjectGetQuery": {
         "description": "Query params for project get request",
         "allOf": [
