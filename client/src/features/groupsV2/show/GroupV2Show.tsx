@@ -19,7 +19,7 @@
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
+import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";

@@ -19,14 +19,14 @@
 import cx from "classnames";
 import { useSearchParams } from "react-router";
 
-import { useGroupSearch } from "./groupSearch.hook";
-import { getQueryHumanReadable } from "./groupSearch.utils";
-import { FILTER_QUERY } from "./groupsSearch.constants";
+import { FILTER_QUERY } from "../contextSearch.constants";
+import { getQueryHumanReadable } from "../contextSearch.utils";
+import { useContextSearch } from "../hooks/useContextSearch.hook";
 
-export default function GroupSearchResultRecap() {
+export default function SearchResultRecap() {
   // Get the query and results data
   const [searchParams] = useSearchParams();
-  const { data, isFetching } = useGroupSearch();
+  const { data, isFetching } = useContextSearch();
   const total = data?.pagingInfo.totalResult;
   const filters = getQueryHumanReadable(searchParams);
   const query = searchParams.get(FILTER_QUERY.name) ?? "";

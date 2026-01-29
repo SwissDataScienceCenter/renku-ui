@@ -19,12 +19,12 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
 import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api";
-import { generateQueryParams } from "./groupSearch.utils";
-import { SEARCH_DEBOUNCE_SECONDS } from "./groupsSearch.constants";
+import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
+import { SEARCH_DEBOUNCE_SECONDS } from "../contextSearch.constants";
+import { generateQueryParams } from "../contextSearch.utils";
 
-export function useGroupSearch(ignoredParams?: string[]) {
+export function useContextSearch(ignoredParams?: string[]) {
   const [searchParams] = useSearchParams();
   const { namespace } = useNamespaceContext();
 

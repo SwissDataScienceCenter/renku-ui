@@ -33,7 +33,7 @@ import {
   Filter,
   NumberFilter,
   StringFilter,
-} from "./groupSearch.types";
+} from "./contextSearch.types";
 
 export const VALUE_SEPARATOR_AND = "+";
 

@@ -20,11 +20,11 @@ import cx from "classnames";
 import { Navigate, useSearchParams } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { getSearchQueryMissingFilters } from "~/features/groupsV2/search/groupSearch.utils";
-import GroupSearchBar from "~/features/groupsV2/search/GroupSearchBar";
-import GroupSearchFilters from "~/features/groupsV2/search/GroupSearchFilters";
-import GroupSearchResultRecap from "~/features/groupsV2/search/GroupSearchResultRecap";
-import GroupSearchResults from "~/features/groupsV2/search/GroupSearchResults";
+import SearchBar from "~/features/searchV2/components/SearchBar";
+import SearchFilters from "~/features/searchV2/components/SearchFilters";
+import SearchResultRecap from "~/features/searchV2/components/SearchResultRecap";
+import SearchResults from "~/features/searchV2/components/SearchResults";
+import { getSearchQueryMissingFilters } from "~/features/searchV2/contextSearch.utils";
 
 export default function UserV2Search() {
   const [searchParams] = useSearchParams();
@@ -45,18 +45,18 @@ export default function UserV2Search() {
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Row>
         <Col xs={12}>
-          <GroupSearchBar />
+          <SearchBar />
         </Col>
         <Col xs={12}>
-          <GroupSearchResultRecap />
+          <SearchResultRecap />
         </Col>
       </Row>
       <Row>
         <Col xs={12} sm={3} lg={2}>
-          <GroupSearchFilters />
+          <SearchFilters />
         </Col>
         <Col xs={12} sm={9} lg={10}>
-          <GroupSearchResults />
+          <SearchResults />
         </Col>
       </Row>
     </div>

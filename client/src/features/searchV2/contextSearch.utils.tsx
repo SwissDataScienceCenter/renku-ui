@@ -20,15 +20,6 @@ import { ReactNode } from "react";
 
 import type { SearchQuery } from "~/features/searchV2/api/searchV2Api.api";
 import {
-  KEY_VALUE_SEPARATOR,
-  TERM_SEPARATOR,
-} from "../../searchV2/searchV2.constants";
-import type {
-  Filter,
-  FilterWithValue,
-  SearchQueryFilters,
-} from "./groupSearch.types";
-import {
   ALL_FILTERS,
   COMMON_FILTERS,
   DATACONNECTORS_FILTERS,
@@ -40,7 +31,13 @@ import {
   PROJECT_FILTERS,
   SELECTABLE_FILTERS,
   VALUE_SEPARATOR_AND,
-} from "./groupsSearch.constants";
+} from "./contextSearch.constants";
+import type {
+  Filter,
+  FilterWithValue,
+  SearchQueryFilters,
+} from "./contextSearch.types";
+import { KEY_VALUE_SEPARATOR, TERM_SEPARATOR } from "./searchV2.constants";
 
 export function getSearchQueryFilters(
   searchParams: URLSearchParams,

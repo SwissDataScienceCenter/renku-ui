@@ -34,11 +34,9 @@ import {
 } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
+import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
-import { useGroupSearch } from "./groupSearch.hook";
-import { Filter, GroupSearchEntity } from "./groupSearch.types";
 import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
@@ -47,12 +45,14 @@ import {
   FILTER_PAGE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
-} from "./groupsSearch.constants";
+} from "../contextSearch.constants";
+import { Filter, GroupSearchEntity } from "../contextSearch.types";
+import { useContextSearch } from "../hooks/useContextSearch.hook";
 
-export default function GroupSearchFilters() {
+export default function SearchFilters() {
   const [searchParams] = useSearchParams();
-  const { data: search } = useGroupSearch();
-  const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
+  const { data: search } = useContextSearch();
+  const { data: searchAnyType } = useContextSearch([FILTER_CONTENT.name]);
   const { namespace, kind } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
