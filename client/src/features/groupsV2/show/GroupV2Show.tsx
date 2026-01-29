@@ -28,6 +28,8 @@ import GroupInformation from "./GroupV2Information";
 export default function GroupV2Show() {
   const { namespace } = useNamespaceContext();
 
+  if (!namespace) return null;
+
   return (
     <Row className="g-4">
       <Col xs={12} md={8} xl={9}>

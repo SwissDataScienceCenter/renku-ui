@@ -47,7 +47,9 @@ export default function GroupInformation({
           <TimeCaption datetime={group.creation_date} className={cx("fs-6")} />
         </p>
       </GroupInformationBox>
-      <GroupV2MemberListDisplay group={namespace} />
+      {namespace && (
+        <GroupV2MemberListDisplay group={namespace} />
+      )}
     </div>
   );
   return output === "plain" ? (
