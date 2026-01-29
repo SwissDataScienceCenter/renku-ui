@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   EyeFill,
   Folder,
@@ -46,6 +46,8 @@ import {
   getDataConnectorScope,
   useGetDataConnectorSource,
 } from "./dataConnector.utils";
+import DataConnectorActions from "./DataConnectorActions";
+import DataConnectorModal from "./DataConnectorModal";
 import DataConnectorView from "./DataConnectorView";
 
 interface DataConnectorBoxListDisplayProps {
@@ -68,22 +70,35 @@ export default function DataConnectorBoxListDisplay({
     namespace,
   } = dataConnector;
 
+  // Handle hash
   const [hash, setHash] = useLocationHash();
   const dcHash = useMemo(
     () => `data-connector-${dataConnector.id}`,
     [dataConnector.id]
   );
-  const showDetails = useMemo(() => hash === dcHash, [dcHash, hash]);
-  const toggleDetails = useCallback(() => {
+  const showOffCanvas = useMemo(() => hash === dcHash, [dcHash, hash]);
+  const toggleOffCanvas = useCallback(() => {
     setHash((prev) => {
       const isOpen = prev === dcHash;
       return isOpen ? "" : dcHash;
     });
   }, [dcHash, setHash]);
 
+  // Handle modal
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [initialStep, setInitialStep] = useState(2);
+  const toggleEdit = useCallback((initialStep?: number) => {
+    if (initialStep) setInitialStep(initialStep);
+    setIsEditOpen((open) => !open);
+  }, []);
+
+  // Data
+  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
   const type = `${storage?.configuration?.type?.toString() ?? ""} ${
     storage?.configuration?.provider?.toString() ?? ""
   }`;
+
+  // Components
   const readOnly =
     extendedPreview &&
     (storage?.readonly ? (
@@ -109,17 +124,15 @@ export default function DataConnectorBoxListDisplay({
     return <Journals className="bi" />;
   }, [namespace]);
 
-  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
-
   return (
     <>
       <ListGroupItem
         action
         className={cx("cursor-pointer", "link-primary", "text-body")}
-        onClick={toggleDetails}
+        onClick={toggleOffCanvas}
         data-cy="data-connector-item"
       >
-        <Row className={cx("align-items-center", "g-2")}>
+        <Row className={cx("align-items-center", "g-3")}>
           <Col className={cx("d-flex", "flex-column")}>
             <span className="fw-bold" data-cy="data-connector-name">
               {name}
@@ -182,16 +195,30 @@ export default function DataConnectorBoxListDisplay({
               />
             </div>
           </Col>
+          <Col xs="auto">
+            <DataConnectorActions
+              dataConnector={dataConnector}
+              dataConnectorLink={dataConnectorLink}
+              toggleEdit={toggleEdit}
+            />
+          </Col>
         </Row>
       </ListGroupItem>
       <DataConnectorView
         dataConnector={dataConnector}
         dataConnectorLink={dataConnectorLink}
-        showView={showDetails}
-        toggleView={toggleDetails}
+        showView={showOffCanvas}
+        toggleView={toggleOffCanvas}
         dataConnectorPotentiallyInaccessible={
           dataConnectorPotentiallyInaccessible
         }
+      />
+      <DataConnectorModal
+        dataConnector={dataConnector}
+        isOpen={isEditOpen}
+        namespace={dataConnector.namespace}
+        toggle={toggleEdit}
+        initialStep={initialStep}
       />
     </>
   );
