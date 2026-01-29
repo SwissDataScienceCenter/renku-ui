@@ -37,15 +37,15 @@ import { TimeCaption } from "~/components/TimeCaption";
 import { ShowGlobalDataConnector } from "~/features/searchV2/components/SearchV2Results";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { useGroupSearch } from "./groupSearch.hook";
-import { GroupSearchEntity } from "./groupSearch.types";
-import { useGroupSearchResultMembers } from "./groupSearchResultMembers.hook";
-import { FILTER_PAGE, FILTER_PER_PAGE } from "./groupsSearch.constants";
+import { FILTER_PAGE, FILTER_PER_PAGE } from "../contextSearch.constants";
+import { GroupSearchEntity } from "../contextSearch.types";
+import { useContextSearch } from "../hooks/useContextSearch.hook";
+import { useSearchResultMembers } from "../hooks/useSearchResultMembers.hook";
 
-export default function GroupSearchResults() {
+export default function SearchResults() {
   // Load and visualize the search results
   const [searchParams] = useSearchParams();
-  const { data } = useGroupSearch();
+  const { data } = useContextSearch();
 
   const currentPage = useMemo(() => {
     const defaultValue = FILTER_PAGE.defaultValue;
@@ -231,7 +231,7 @@ interface SearchResultItemMembersProps {
   item: GroupSearchEntity;
 }
 function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
-  const members = useGroupSearchResultMembers(item);
+  const members = useSearchResultMembers(item);
 
   if (item.type === "Project") {
     if (members?.isLoading) {
