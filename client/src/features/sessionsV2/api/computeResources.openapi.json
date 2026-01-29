@@ -2898,24 +2898,6 @@
           }
         }
       }
-    },
-    "securitySchemes": {
-      "bearer": {
-        "scheme": "bearer",
-        "type": "http"
-      },
-      "oidc": {
-        "type": "openIdConnect",
-        "openIdConnectUrl": "/auth/realms/Renku/.well-known/openid-configuration"
-      }
     }
-  },
-  "security": [
-    {
-      "bearer": []
-    },
-    {
-      "oidc": ["openid"]
-    }
-  ]
+  }
 }
