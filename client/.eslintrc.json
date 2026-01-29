@@ -220,6 +220,7 @@
           "pdfjs",
           "pkce",
           "plaintext",
+          "pluggable",
           "poller",
           "polybox",
           "popups",
