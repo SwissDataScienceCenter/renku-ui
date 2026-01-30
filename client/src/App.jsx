@@ -16,14 +16,6 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renku-ui
- *
- *  App.js
- *  Coordinator for the application.
- */
-
-import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Route, Routes, useLocation } from "react-router";
@@ -48,10 +40,12 @@ import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
 import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
-import { useGetUserQueryState } from "./features/usersV2/api/users.api";
+import {
+  useGetUserQuery,
+  useGetUserQueryState,
+} from "./features/usersV2/api/users.api";
 import NotificationsManager from "./notifications/NotificationsManager";
 import AppContext from "./utils/context/appContext";
-import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
 import { setupWebSocket } from "./websocket";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -64,11 +58,8 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
   return <div className={classContainer}>{children}</div>;
 };
 
-function CentralContentContainer({ user }) {
-  const { data: userInfo } = useGetUserQueryState(
-    user.logged ? undefined : skipToken
-  );
-
+function CentralContentContainer() {
+  const { data: user } = useGetUserQueryState();
   return (
     <div className="d-flex flex-grow-1">
       <Helmet>
@@ -78,7 +69,7 @@ function CentralContentContainer({ user }) {
         <Route
           index
           element={
-            user.logged ? (
+            user?.isLoggedIn ? (
               <LazyRootV2 />
             ) : (
               <div className="w-100">
@@ -92,13 +83,10 @@ function CentralContentContainer({ user }) {
           path="/datasets/:identifier/add"
           element={<LegacyDatasetAddToProject />}
         />
-        <Route
-          path="/datasets/:identifier"
-          element={<LegacyShowDataset userInfo={userInfo} />}
-        />
+        <Route path="/datasets/:identifier" element={<LegacyShowDataset />} />
         <Route path="/datasets" element={<LegacyDatasets />} />
         <Route path="/v1/*" element={<LegacyRoot />} />
-        {userInfo?.isLoggedIn && userInfo.is_admin && (
+        {user?.isLoggedIn && user.is_admin && (
           <Route
             path="/admin"
             element={
@@ -114,11 +102,11 @@ function CentralContentContainer({ user }) {
   );
 }
 
-function App(props) {
+export default function App(props) {
   const location = useLocation();
   const locationRef = useRef(location);
 
-  const [webSocket, setWebSocket] = useState(null);
+  const [, setWebSocket] = useState(null);
   const [notifications, setNotifications] = useState(null);
 
   useEffect(() => {
@@ -154,20 +142,20 @@ function App(props) {
     // ! Ignoring the rule of hooks creates issues, we should refactor this hook
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  //? Subscribe to the user endpoint: all children components can use the query state from RTK Query.
+  const { error, isLoading } = useGetUserQuery();
   // Avoid rendering the application while authenticating the user
-  const user = useLegacySelector((state) => state.stateModel.user);
-  if (!user?.fetched && user?.fetching) {
+  if (isLoading) {
     return (
       <section className="py-5">
         <h3 className="text-center">Checking user data</h3>
         <Loader />
       </section>
     );
-  } else if (user.error) {
-    return (
-      <Unavailable model={props.model} statuspageId={props.statuspageId} />
-    );
+  } else if (error) {
+    return <Unavailable params={props.params} />;
   }
+
   const { coreApiVersionedUrlConfig, socket } = props;
   const appContext = {
     client: props.client,
@@ -184,8 +172,8 @@ function App(props) {
       <Favicon />
       <AppContext.Provider value={appContext}>
         <LoggedOutPrompt />
-        <RenkuNavBar user={user} />
-        <CentralContentContainer user={user} socket={webSocket} />
+        <RenkuNavBar />
+        <CentralContentContainer />
         <FooterNavbar />
         <LoginHandler />
         <Cookie />
@@ -194,5 +182,3 @@ function App(props) {
     </Fragment>
   );
 }
-
-export default App;

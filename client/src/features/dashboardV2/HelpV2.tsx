@@ -38,7 +38,6 @@ import HelpRelease from "../../help/HelpRelease";
 import PrivacyPolicy from "../../help/PrivacyPolicy";
 import TermsOfService from "../../help/TermsOfService";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import { isStatusConfigured } from "../../statuspage";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
@@ -61,7 +60,7 @@ function HelpNav({ statuspageId }: HelpNavProps) {
           Getting Help
         </RenkuNavLinkV2>
       </NavItem>
-      {isStatusConfigured(statuspageId) && (
+      {statuspageId && (
         <NavItem>
           <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.status}>
             Status
