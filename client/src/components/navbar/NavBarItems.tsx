@@ -62,7 +62,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   }
 
   const userPageUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-    username: user?.isLoggedIn ? user.username : "",
+    username: user.username,
   });
 
   return (
