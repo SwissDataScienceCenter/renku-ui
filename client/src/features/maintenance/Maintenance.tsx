@@ -23,7 +23,6 @@ import { Button, Col, Row } from "reactstrap";
 
 import AppContext, { type AppContextType } from "~/utils/context/appContext";
 import type { AppParams } from "~/utils/context/appParams.types";
-// import { isStatusConfigured, StatuspageDisplay } from "../../statuspage";
 import { FooterNavbar } from "../landing/components/NavBar/NavBar";
 import StatusSummary from "../platform/components/StatusSummary";
 
