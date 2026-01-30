@@ -36,14 +36,14 @@ export const CLOUD_STORAGE_OVERRIDE = {
       position: 2,
     },
     drive: {
-      hide: true,
+      usesIntegration: true,
     },
     gcs: {
       hide: true,
     },
     // eslint-disable-next-line spellcheck/spell-checker
     dropbox: {
-      hide: true,
+      usesIntegration: true,
     },
     // eslint-disable-next-line spellcheck/spell-checker
     onedrive: {
@@ -177,6 +177,11 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     user: { friendlyName: "Username" },
     vendor: { advanced: true },
   },
+  drive: {
+    alternate_export: { advanced: true },
+    scope: { advanced: true },
+    service_account_file: { advanced: true },
+  },
 } as Record<
   string,
   Record<string, Partial<CloudStorageSchemaOption> | undefined> | undefined
@@ -290,3 +295,10 @@ export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {
   mountPoint: undefined,
   readOnly: true,
 };
+
+export const CLOUD_STORAGE_INTEGRATION_KIND_MAP = {
+  /* eslint-disable spellcheck/spell-checker */
+  drive: "google",
+  dropbox: "dropbox",
+  /* eslint-enable spellcheck/spell-checker */
+} as Record<string, string | undefined>;

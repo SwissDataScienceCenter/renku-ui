@@ -158,12 +158,11 @@ export type GetOauth2ConnectionsByConnectionIdInstallationsApiArg = {
 };
 export type ProviderId = string;
 export type ProviderKind =
-  | "gitlab"
-  | "github"
-  | "drive"
-  | "onedrive"
   | "dropbox"
-  | "generic_oidc";
+  | "generic_oidc"
+  | "github"
+  | "gitlab"
+  | "google";
 export type ApplicationSlug = string;
 export type ClientId = string;
 export type ClientSecret = string;
