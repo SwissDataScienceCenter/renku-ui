@@ -1066,12 +1066,9 @@ export function AddStorageOptions({
     );
   }, [schema, storage.schema, storage.provider]);
 
-  const selectedSchema = getSchema(
-    useMemo(
-      () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
-      [schema, state.showAllSchema, storage.schema]
-    ),
-    storage.schema
+  const selectedSchema = useMemo(
+    () => getSchema(schema, storage.schema),
+    [schema, storage.schema]
   );
 
   return (
@@ -1168,12 +1165,9 @@ export function AddStorageMount({
     (o) => storage.options && storage.options[o.name]
   );
 
-  const selectedSchema = getSchema(
-    useMemo(
-      () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
-      [schema, state.showAllSchema, storage.schema]
-    ),
-    storage.schema
+  const selectedSchema = useMemo(
+    () => getSchema(schema, storage.schema),
+    [schema, storage.schema]
   );
   if (selectedSchema?.forceReadOnly) {
     storage.readOnly = true;
@@ -1330,7 +1324,7 @@ interface IntegrationAlertProps {
   schema: CloudStorageSchema;
 }
 
-function IntegrationAlert({ schema }: IntegrationAlertProps) {
+export function IntegrationAlert({ schema }: IntegrationAlertProps) {
   const { pathname, hash } = useLocation();
 
   const {
