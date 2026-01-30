@@ -100,11 +100,61 @@ export const FILTER_CONTENT: EnumFilter = {
         </>
       ),
     },
+    {
+      value: "User",
+      label: (
+        <>
+          <People className={cx("bi", "me-1")} />
+          User
+        </>
+      ),
+    },
+    {
+      value: "Group",
+      label: (
+        <>
+          <People className={cx("bi", "me-1")} />
+          Group
+        </>
+      ),
+    },
   ],
   allowSelectMany: false,
   defaultValue: "Project",
 };
 
+export const FILTER_CONTENT_NAMESPACE: EnumFilter = {
+  name: "type",
+  label: (
+    <>
+      <Briefcase className={cx("bi", "me-1")} />
+      Content
+    </>
+  ),
+  type: "enum",
+  allowedValues: [
+    {
+      value: "Project",
+      label: (
+        <>
+          <Folder2Open className={cx("bi", "me-1")} />
+          Project
+        </>
+      ),
+    },
+    {
+      value: "DataConnector",
+      label: (
+        <>
+          <Database className={cx("bi", "me-1")} />
+          Data
+        </>
+      ),
+    },
+  ],
+  allowSelectMany: false,
+  defaultValue: "Project",
+};
 export const FILTER_MEMBER: EnumFilter = {
   name: "direct_member",
   label: (
