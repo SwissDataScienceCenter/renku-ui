@@ -155,6 +155,7 @@ function App(props) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Avoid rendering the application while authenticating the user
+  // TODO: use RTK Query here
   const user = useLegacySelector((state) => state.stateModel.user);
   if (!user?.fetched && user?.fetching) {
     return (
