@@ -295,3 +295,8 @@ export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {
   mountPoint: undefined,
   readOnly: true,
 };
+
+export const CLOUD_STORAGE_INTEGRATION_KIND_MAP = {
+  drive: "google",
+  dropbox: "dropbox",
+} as Record<string, string | undefined>;
