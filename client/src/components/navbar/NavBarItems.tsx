@@ -35,6 +35,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import type { AppParams } from "../../utils/context/appParams.types";
 import ExternalLink from "../ExternalLink.tsx";
 import { Loader } from "../Loader";
+import DropdownItemTag from "./DropdownItemTag.tsx";
 
 interface RenkuToolbarItemUserProps {
   params: AppParams;
@@ -80,27 +81,27 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
         end
         key="user-bar"
       >
-        <DropdownItem tag={Link} to={userPageUrl}>
+        <DropdownItemTag tag={Link} to={userPageUrl}>
           Profile
-        </DropdownItem>
+        </DropdownItemTag>
 
-        <DropdownItem tag={ExternalLink} href={userAccountUrl}>
+        <DropdownItemTag tag={ExternalLink} href={userAccountUrl}>
           Account
-        </DropdownItem>
+        </DropdownItemTag>
 
-        <DropdownItem tag={Link} to={ABSOLUTE_ROUTES.v2.secrets}>
+        <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.secrets}>
           User Secrets
-        </DropdownItem>
+        </DropdownItemTag>
 
-        <DropdownItem tag={Link} to={ABSOLUTE_ROUTES.v2.integrations}>
+        <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.integrations}>
           Integrations
-        </DropdownItem>
+        </DropdownItemTag>
 
         <AdminDropdownItem />
 
         <DropdownItem divider />
 
-        <DropdownItem
+        <DropdownItemTag
           data-cy="navbar-logout"
           href={logoutURL}
           icon={null}
@@ -111,7 +112,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           tag={ExternalLink}
         >
           Logout
-        </DropdownItem>
+        </DropdownItemTag>
       </DropdownMenu>
     </UncontrolledDropdown>
   );
