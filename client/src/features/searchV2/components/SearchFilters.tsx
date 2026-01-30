@@ -34,43 +34,49 @@ import {
 } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
+import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
-import { useGroupSearch } from "./groupSearch.hook";
-import { Filter, GroupSearchEntity } from "./groupSearch.types";
 import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
+  FILTER_CONTENT_NAMESPACE,
   FILTER_KEYWORD,
   FILTER_MEMBER,
   FILTER_PAGE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
-} from "./groupsSearch.constants";
+} from "../contextSearch.constants";
+import { Filter, GroupSearchEntity } from "../contextSearch.types";
+import { useContextSearch } from "../hooks/useContextSearch.hook";
 
-export default function GroupSearchFilters() {
+export default function SearchFilters() {
   const [searchParams] = useSearchParams();
-  const { data: search } = useGroupSearch();
-  const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
+  const { data: search } = useContextSearch();
+  const { data: searchAnyType } = useContextSearch([FILTER_CONTENT.name]);
   const { namespace, type } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
-      groupSlug: namespace,
+      groupSlug: namespace ?? "",
     },
-    { skip: type !== "group" }
+    { skip: type !== "group" || !namespace }
   );
+  const isNamespace = type == "group" || type == "user";
 
   // Add numbers to the content types. Mind that this requires an additional request.
+  const filterContentByType =
+    type === "group" || type === "user"
+      ? FILTER_CONTENT_NAMESPACE
+      : FILTER_CONTENT;
   const hydratedFilterContentAllowedValues = useMemo(() => {
-    return FILTER_CONTENT.allowedValues.map((option) => ({
+    return filterContentByType.allowedValues.map((option) => ({
       ...option,
       quantity: searchAnyType?.facets?.entityType?.[option.value] ?? 0,
     }));
   }, [searchAnyType?.facets?.entityType]);
   const filterContentWithQuantities = useMemo<Filter>(() => {
     return {
-      ...FILTER_CONTENT,
+      ...filterContentByType,
       allowedValues: hydratedFilterContentAllowedValues,
     };
   }, [hydratedFilterContentAllowedValues]);
@@ -166,12 +172,14 @@ export default function GroupSearchFilters() {
       {type == "group" && (
         <GroupSearchFilter filter={filterMembersWithValues} />
       )}
-      <GroupSearchFilter
-        defaultElementsToShow={10}
-        filter={filterKeywordWithQuantities}
-        hiddenDecoration
-      />
-      <GroupSearchFilter filter={FILTER_VISIBILITY} />
+      {!isNamespace && (
+        <GroupSearchFilter
+          defaultElementsToShow={10}
+          filter={filterKeywordWithQuantities}
+          hiddenDecoration
+        />
+      )}
+      {!isNamespace && <GroupSearchFilter filter={FILTER_VISIBILITY} />}
     </div>
   );
 }

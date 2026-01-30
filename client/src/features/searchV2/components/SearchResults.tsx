@@ -25,6 +25,8 @@ import {
   Globe2,
   Lock,
   Pencil,
+  People,
+  Person,
   Question,
 } from "react-bootstrap-icons";
 import { generatePath, Link, useSearchParams } from "react-router";
@@ -34,18 +36,19 @@ import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import Pagination from "~/components/Pagination";
 import { TimeCaption } from "~/components/TimeCaption";
+import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api.ts";
 import { ShowGlobalDataConnector } from "~/features/searchV2/components/SearchV2Results";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { useGroupSearch } from "./groupSearch.hook";
-import { GroupSearchEntity } from "./groupSearch.types";
-import { useGroupSearchResultMembers } from "./groupSearchResultMembers.hook";
-import { FILTER_PAGE, FILTER_PER_PAGE } from "./groupsSearch.constants";
+import { FILTER_PAGE, FILTER_PER_PAGE } from "../contextSearch.constants";
+import { GroupSearchEntity } from "../contextSearch.types";
+import { useContextSearch } from "../hooks/useContextSearch.hook";
+import { useSearchResultMembers } from "../hooks/useSearchResultMembers.hook";
 
-export default function GroupSearchResults() {
+export default function SearchResults() {
   // Load and visualize the search results
   const [searchParams] = useSearchParams();
-  const { data } = useGroupSearch();
+  const { data } = useContextSearch();
 
   const currentPage = useMemo(() => {
     const defaultValue = FILTER_PAGE.defaultValue;
@@ -104,15 +107,10 @@ export default function GroupSearchResults() {
 }
 
 interface SearchResultListItemProps {
-  item: GroupSearchEntity;
+  item: SearchEntity;
 }
 function SearchResultListItem({ item }: SearchResultListItemProps) {
-  const sortedKeywords = useMemo(() => {
-    if (!item.keywords) return [];
-    return item.keywords
-      .map((keyword) => keyword.trim())
-      .sort((a, b) => a.localeCompare(b));
-  }, [item.keywords]);
+  const isNamespaceType = item.type == "User" || item.type == "Group";
 
   const url =
     item.type === "Project"
@@ -122,6 +120,14 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
         })
       : item.type === "DataConnector"
       ? `${location.search}#data-connector-${item.id}`
+      : item.type === "User"
+      ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+          username: item.slug ?? "",
+        })
+      : item.type === "Group"
+      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: item.slug,
+        })
       : "";
 
   return (
@@ -142,16 +148,12 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
           </h5>
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-2")}>
-          <h5 className="mb-0">{item.name}</h5>
-          <SearchResultItemMembers item={item} />
-          {item.description && <p className="mb-0">{item.description}</p>}
-          {sortedKeywords.length > 0 && (
-            <KeywordContainer>
-              {sortedKeywords.map((keyword, index) => (
-                <KeywordBadge key={index}>{keyword}</KeywordBadge>
-              ))}
-            </KeywordContainer>
+          <SearchResultTitle item={item} />
+          {!isNamespaceType && <SearchResultItemMembers item={item} />}
+          {!isNamespaceType && item.description && (
+            <p className="mb-0">{item.description}</p>
           )}
+          {!isNamespaceType && <SearchResultKeywords item={item} />}
           {item.type === "DataConnector" && (
             <p
               className={cx(
@@ -193,23 +195,15 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
               "justify-content-between"
             )}
           >
-            {item.visibility.toLowerCase() === "private" ? (
-              <div>
-                <Lock className={cx("bi", "me-1")} />
-                Private
-              </div>
-            ) : (
-              <div>
-                <Globe2 className={cx("bi", "me-1")} />
-                Public
-              </div>
+            {!isNamespaceType && <SearchResultVisibility item={item} />}
+            {!isNamespaceType && (
+              <TimeCaption
+                className="fs-6"
+                datetime={item.creationDate}
+                prefix="Created"
+                enableTooltip
+              />
             )}
-            <TimeCaption
-              className="fs-6"
-              datetime={item.creationDate}
-              prefix="Created"
-              enableTooltip
-            />
           </div>
         </Col>
       </Row>
@@ -217,11 +211,15 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
   );
 }
 
-function SearchResultListItemIcon({ item }: { item: GroupSearchEntity }) {
+function SearchResultListItemIcon({ item }: { item: SearchEntity }) {
   return item.type === "Project" ? (
     <Folder2Open />
   ) : item.type === "DataConnector" ? (
     <Database />
+  ) : item.type === "User" ? (
+    <Person />
+  ) : item.type === "Group" ? (
+    <People />
   ) : (
     <Question />
   );
@@ -231,7 +229,7 @@ interface SearchResultItemMembersProps {
   item: GroupSearchEntity;
 }
 function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
-  const members = useGroupSearchResultMembers(item);
+  const members = useSearchResultMembers(item);
 
   if (item.type === "Project") {
     if (members?.isLoading) {
@@ -281,4 +279,50 @@ function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
   }
 
   return null;
+}
+
+function SearchResultKeywords({ item }: { item: GroupSearchEntity }) {
+  const sortedKeywords = useMemo(() => {
+    if (!item.keywords) return [];
+    return item.keywords
+      .map((keyword) => keyword.trim())
+      .sort((a, b) => a.localeCompare(b));
+  }, [item.keywords]);
+
+  return (
+    sortedKeywords.length > 0 && (
+      <KeywordContainer>
+        {sortedKeywords.map((keyword, index) => (
+          <KeywordBadge key={index}>{keyword}</KeywordBadge>
+        ))}
+      </KeywordContainer>
+    )
+  );
+}
+
+function SearchResultVisibility({ item }: { item: GroupSearchEntity }) {
+  return item.visibility.toLowerCase() === "private" ? (
+    <div>
+      <Lock className={cx("bi", "me-1")} />
+      Private
+    </div>
+  ) : (
+    <div>
+      <Globe2 className={cx("bi", "me-1")} />
+      Public
+    </div>
+  );
+}
+
+function SearchResultTitle({ item }: { item: SearchEntity }) {
+  if (
+    item.type === "Project" ||
+    item.type === "DataConnector" ||
+    item.type === "Group"
+  )
+    return <h5 className="mb-0">{item.name}</h5>;
+  if (item.type === "User") {
+    const name = `${item.firstName}${item.lastName}`;
+    return <h5 className="mb-0">{name}</h5>;
+  }
 }
