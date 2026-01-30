@@ -153,10 +153,7 @@ export default function App(props) {
       </section>
     );
   } else if (error) {
-    return (
-      // TODO: use RTK Query here
-      <Unavailable model={props.model} statuspageId={props.statuspageId} />
-    );
+    return <Unavailable params={props.params} />;
   }
 
   const { coreApiVersionedUrlConfig, socket } = props;
