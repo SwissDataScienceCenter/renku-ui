@@ -48,10 +48,6 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   const logoutURL = `${gatewayURL}/auth/logout?redirect_url=${encodeURIComponent(
     params.BASE_URL
   )}`;
-  const userPageUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
-    username: user?.isLoggedIn ? user.username : "",
-  });
-
   const loginUrl = useLoginUrl({ params });
 
   if (isLoadingUser) {
@@ -63,6 +59,10 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
       </NavLink>
     );
   }
+
+  const userPageUrl = generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+    username: user?.isLoggedIn ? user.username : "",
+  });
 
   return (
     <UncontrolledDropdown className={cx("nav-item", "dropdown")}>
