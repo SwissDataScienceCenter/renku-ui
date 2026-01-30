@@ -120,6 +120,14 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
         })
       : item.type === "DataConnector"
       ? `${location.search}#data-connector-${item.id}`
+      : item.type === "User"
+      ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+          username: item.slug ?? "",
+        })
+      : item.type === "Group"
+      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+          slug: item.slug,
+        })
       : "";
 
   return (

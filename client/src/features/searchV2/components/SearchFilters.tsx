@@ -40,6 +40,7 @@ import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
+  FILTER_CONTENT_NAMESPACE,
   FILTER_KEYWORD,
   FILTER_MEMBER,
   FILTER_PAGE,
@@ -60,17 +61,22 @@ export default function SearchFilters() {
     },
     { skip: type !== "group" || !namespace }
   );
+  const isNamespace = type == "group" || type == "user";
 
   // Add numbers to the content types. Mind that this requires an additional request.
+  const filterContentByType =
+    type === "group" || type === "user"
+      ? FILTER_CONTENT_NAMESPACE
+      : FILTER_CONTENT;
   const hydratedFilterContentAllowedValues = useMemo(() => {
-    return FILTER_CONTENT.allowedValues.map((option) => ({
+    return filterContentByType.allowedValues.map((option) => ({
       ...option,
       quantity: searchAnyType?.facets?.entityType?.[option.value] ?? 0,
     }));
   }, [searchAnyType?.facets?.entityType]);
   const filterContentWithQuantities = useMemo<Filter>(() => {
     return {
-      ...FILTER_CONTENT,
+      ...filterContentByType,
       allowedValues: hydratedFilterContentAllowedValues,
     };
   }, [hydratedFilterContentAllowedValues]);
@@ -166,12 +172,14 @@ export default function SearchFilters() {
       {type == "group" && (
         <GroupSearchFilter filter={filterMembersWithValues} />
       )}
-      <GroupSearchFilter
-        defaultElementsToShow={10}
-        filter={filterKeywordWithQuantities}
-        hiddenDecoration
-      />
-      <GroupSearchFilter filter={FILTER_VISIBILITY} />
+      {!isNamespace && (
+        <GroupSearchFilter
+          defaultElementsToShow={10}
+          filter={filterKeywordWithQuantities}
+          hiddenDecoration
+        />
+      )}
+      {!isNamespace && <GroupSearchFilter filter={FILTER_VISIBILITY} />}
     </div>
   );
 }
