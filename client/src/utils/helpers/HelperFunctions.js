@@ -112,16 +112,6 @@ function slugFromTitle(
   return slug;
 }
 
-function getActiveProjectPathWithNamespace(currentPath) {
-  try {
-    if (currentPath.includes("/projects/") && currentPath.split("/").length > 3)
-      return currentPath.split("/")[2] + "/" + currentPath.split("/")[3];
-    return null;
-  } catch (TypeError) {
-    return null;
-  }
-}
-
 function splitAutosavedBranches(branches) {
   const autosaved = branches
     .filter((branch) => branch.name.startsWith(AUTOSAVED_PREFIX))
@@ -369,7 +359,6 @@ export {
   generateZip,
   computeVisibilities,
   slugFromTitle,
-  getActiveProjectPathWithNamespace,
   splitAutosavedBranches,
   simpleHash,
   parseINIString,

@@ -20,18 +20,13 @@ import cx from "classnames";
 import { Route, Routes } from "react-router";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
-import AnonymousNavBar from "../../components/navbar/AnonymousNavBar";
-import LoggedInNavBar from "../../components/navbar/LoggedInNavBar";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import LazyNotificationsPage from "../../notifications/LazyNotificationsPage";
 import { RELATIVE_ROUTES } from "../../routing/routes.constants";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 
 export default function RootV1() {
-  const user = useLegacySelector((state) => state.stateModel.user);
   return (
     <div className="w-100">
-      {!user.logged ? <AnonymousNavBar /> : <LoggedInNavBar />}
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
           <Route

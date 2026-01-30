@@ -29,8 +29,6 @@ import { Link, Route, Routes, useLocation } from "react-router";
 
 import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { ExternalDocsLink } from "../../../../components/LegacyExternalLinks";
-import AnonymousNavBar from "../../../../components/navbar/AnonymousNavBar";
-import LoggedInNavBar from "../../../../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../../../../components/navbar/navbar.constants";
 import RenkuNavLinkV2 from "../../../../components/RenkuNavLinkV2";
 import { parseChartVersion } from "../../../../help/release.utils";
@@ -50,14 +48,13 @@ function RenkuNavBar({ user }) {
     return null;
   }
 
-  return <RenkuNavBarInner user={user} />;
+  return <RenkuNavBarInner />;
 }
 
-function RenkuNavBarInner({ user }) {
+function RenkuNavBarInner() {
   const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
-  const forceV2 = true;
   const sessionShowUrl =
     projectMetadata == null
       ? null
@@ -70,38 +67,6 @@ function RenkuNavBarInner({ user }) {
   return (
     <Routes key="mainNav">
       <Route path={sessionShowUrl} element={null} />
-      <Route
-        path={ABSOLUTE_ROUTES.v1.root}
-        element={forceV2 ? <NavbarV2 /> : null}
-      />
-      <Route
-        path={ABSOLUTE_ROUTES.v1.splat}
-        element={forceV2 ? <NavbarV2 /> : null}
-      />
-      <Route
-        path={ABSOLUTE_ROUTES.projects.splat}
-        element={
-          forceV2 ? (
-            <NavbarV2 />
-          ) : !user?.logged ? (
-            <AnonymousNavBar />
-          ) : (
-            <LoggedInNavBar />
-          )
-        }
-      />
-      <Route
-        path={ABSOLUTE_ROUTES.datasets.splat}
-        element={
-          forceV2 ? (
-            <NavbarV2 />
-          ) : !user?.logged ? (
-            <AnonymousNavBar />
-          ) : (
-            <LoggedInNavBar />
-          )
-        }
-      />
       <Route path="*" element={<NavbarV2 />} />
     </Routes>
   );
