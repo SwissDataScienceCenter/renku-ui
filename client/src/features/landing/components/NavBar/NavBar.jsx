@@ -42,10 +42,6 @@ import NavbarV2 from "../../../rootV2/NavbarV2";
 
 import "./NavBar.css";
 
-// TODO: check if we can remove these components
-// import AnonymousNavBar from "../../../../components/navbar/AnonymousNavBar";
-// import LoggedInNavBar from "../../../../components/navbar/LoggedInNavBar";
-
 function RenkuNavBar() {
   const { pathname } = useLocation();
   const { data: user } = useGetUserQueryState();
