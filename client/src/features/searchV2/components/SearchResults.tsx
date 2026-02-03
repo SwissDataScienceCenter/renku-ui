@@ -196,6 +196,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
             )}
           >
             {!isNamespaceType && <SearchResultVisibility item={item} />}
+            {isNamespaceType && <SearchResultCounts item={item} />}
             {!isNamespaceType && (
               <TimeCaption
                 className="fs-6"
@@ -325,4 +326,34 @@ function SearchResultTitle({ item }: { item: SearchEntity }) {
     const name = `${item.firstName}${item.lastName}`;
     return <h5 className="mb-0">{name}</h5>;
   }
+}
+
+function SearchResultCounts({ item }: { item: SearchEntity }) {
+  if (item.type === "Group") {
+    return (
+      <div className={cx("d-flex", "gap-3")}>
+        <div>
+          <strong>{item.project_count}</strong> Projects
+        </div>
+        <div>
+          <strong>{item.data_connector_count}</strong> Data Connectors
+        </div>
+        <div>
+          <strong>{item.members_count}</strong> Members
+        </div>
+      </div>
+    );
+  } else if (item.type === "User") {
+    return (
+      <div className={cx("d-flex", "gap-3")}>
+        <div>
+          <strong>{item.project_count}</strong> Projects
+        </div>
+        <div>
+          <strong>{item.data_connector_count}</strong> Data Connectors
+        </div>
+      </div>
+    );
+  }
+  return null;
 }

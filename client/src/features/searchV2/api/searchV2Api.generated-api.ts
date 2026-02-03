@@ -48,6 +48,21 @@ export type GetSearchReprovisionApiArg = void;
 export type DeleteSearchReprovisionApiResponse =
   /** status 204 The reprovisioning was stopped or there was no one in progress */ void;
 export type DeleteSearchReprovisionApiArg = void;
+export type SearchGroup = {
+  id: string;
+  path: string;
+  slug: string;
+  name: string;
+  description?: string;
+  score?: number;
+  type: "Group";
+  /** Number of projects with this group namespace. */
+  project_count?: number;
+  /** Number of data connectors with this group namespace. */
+  data_connector_count?: number;
+  /** Number of members in this group. */
+  members_count?: number;
+};
 export type Group = {
   id: string;
   name: string;
@@ -68,7 +83,7 @@ export type User = {
 };
 export type UserOrGroup = Group | User;
 export type Visibility = "private" | "public";
-export type Project = {
+export type SearchProject = {
   id: string;
   name: string;
   slug: string;
@@ -83,8 +98,21 @@ export type Project = {
   score?: number;
   type: "Project";
 };
-export type UserOrGroupOrProject = Group | User | Project;
-export type DataConnector = {
+export type SearchUser = {
+  id: string;
+  path: string;
+  slug: string;
+  firstName?: string;
+  lastName?: string;
+  score?: number;
+  /** Number of projects with this user namespace. */
+  project_count?: number;
+  /** Number of data connectors with this user namespace. */
+  data_connector_count?: number;
+  type: "User";
+};
+export type UserOrGroupOrProject = Group | User | SearchProject;
+export type SearchDataConnector = {
   id: string;
   storageType: string;
   readonly: boolean;
@@ -100,7 +128,11 @@ export type DataConnector = {
   score?: number;
   type: "DataConnector";
 };
-export type SearchEntity = Group | Project | User | DataConnector;
+export type SearchEntity =
+  | SearchGroup
+  | SearchProject
+  | SearchUser
+  | SearchDataConnector;
 export type MapEntityTypeInt = {
   [key: string]: number;
 };
@@ -133,6 +165,8 @@ export type PaginationRequest = {
 export type SearchQuery = PaginationRequest & {
   /** The search query. */
   q?: string;
+  /** Include counts (project_count, data_connector_count, members_count) in the results. */
+  include_counts?: boolean;
 };
 export type Ulid = string;
 export type Reprovisioning = {

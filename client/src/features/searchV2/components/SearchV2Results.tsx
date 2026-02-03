@@ -52,9 +52,9 @@ import { useGetDataConnectorsByDataConnectorIdQuery } from "../../dataConnectors
 import DataConnectorView from "../../dataConnectorsV2/components/DataConnectorView";
 import {
   searchV2Api,
-  type DataConnector,
+  type SearchDataConnector as DataConnector,
   type Group,
-  type Project,
+  type SearchProject as Project,
   type SearchEntity,
   type User,
 } from "../api/searchV2Api.api";

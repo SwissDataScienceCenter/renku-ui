@@ -73,13 +73,13 @@ export default function SearchFilters() {
       ...option,
       quantity: searchAnyType?.facets?.entityType?.[option.value] ?? 0,
     }));
-  }, [searchAnyType?.facets?.entityType]);
+  }, [searchAnyType?.facets?.entityType, filterContentByType.allowedValues]);
   const filterContentWithQuantities = useMemo<Filter>(() => {
     return {
       ...filterContentByType,
       allowedValues: hydratedFilterContentAllowedValues,
     };
-  }, [hydratedFilterContentAllowedValues]);
+  }, [hydratedFilterContentAllowedValues, filterContentByType]);
 
   // Create the enum filter for keywords with quantities.
   const selectedKeywords = useMemo(() => {
