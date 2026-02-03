@@ -164,7 +164,7 @@
                 "default": ""
               },
               "include_counts": {
-                "description": "Include counts (project_count, data_connector_count, members_count) in the results.",
+                "description": "Include counts (project_count, data_connector_count) in the results.",
                 "type": "boolean",
                 "default": false
               }
@@ -647,11 +647,6 @@
           },
           "data_connector_count": {
             "description": "Number of data connectors with this group namespace.",
-            "type": "integer",
-            "format": "int32"
-          },
-          "members_count": {
-            "description": "Number of members in this group.",
             "type": "integer",
             "format": "int32"
           }

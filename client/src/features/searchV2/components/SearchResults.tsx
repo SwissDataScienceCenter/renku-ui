@@ -30,7 +30,7 @@ import {
   Question,
 } from "react-bootstrap-icons";
 import { generatePath, Link, useSearchParams } from "react-router";
-import { Col, ListGroup, Row } from "reactstrap";
+import { Badge, Col, ListGroup, Row } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
@@ -149,7 +149,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
         </Col>
         <Col className={cx("d-flex", "flex-column", "gap-2")}>
           <SearchResultTitle item={item} />
-          {!isNamespaceType && <SearchResultItemMembers item={item} />}
+          <SearchResultItemMembers item={item} />
           {!isNamespaceType && item.description && (
             <p className="mb-0">{item.description}</p>
           )}
@@ -227,12 +227,12 @@ function SearchResultListItemIcon({ item }: { item: SearchEntity }) {
 }
 
 interface SearchResultItemMembersProps {
-  item: GroupSearchEntity;
+  item: SearchEntity;
 }
 function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
   const members = useSearchResultMembers(item);
 
-  if (item.type === "Project") {
+  if (item.type === "Project" || item.type === "Group") {
     if (members?.isLoading) {
       return (
         <div className={cx("mb-0", "placeholder-glow")}>
@@ -267,13 +267,23 @@ function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
     );
   }
 
-  if (item.createdBy) {
+  if (item.type === "DataConnector" && item.createdBy) {
     return (
       <div className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
         <span className="fst-italic">Created by</span>{" "}
         <span className={cx("align-items-center", "d-flex", "gap-1")}>
           <UserAvatar namespace={item.createdBy.slug} />{" "}
           {item.createdBy.firstName} {item.createdBy.lastName}
+        </span>
+      </div>
+    );
+  }
+
+  if (item.type === "User") {
+    return (
+      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
+        <span className={cx("align-items-center", "d-flex", "gap-1")}>
+          <UserAvatar namespace={item.slug} /> @{item.slug}
         </span>
       </div>
     );
@@ -323,37 +333,25 @@ function SearchResultTitle({ item }: { item: SearchEntity }) {
   )
     return <h5 className="mb-0">{item.name}</h5>;
   if (item.type === "User") {
-    const name = `${item.firstName}${item.lastName}`;
+    const name = `${item.firstName} ${item.lastName}`;
     return <h5 className="mb-0">{name}</h5>;
   }
 }
 
 function SearchResultCounts({ item }: { item: SearchEntity }) {
-  if (item.type === "Group") {
-    return (
-      <div className={cx("d-flex", "gap-3")}>
-        <div>
-          <strong>{item.project_count}</strong> Projects
-        </div>
-        <div>
-          <strong>{item.data_connector_count}</strong> Data Connectors
-        </div>
-        <div>
-          <strong>{item.members_count}</strong> Members
-        </div>
+  if (item.type !== "Group" && item.type !== "User") return null;
+
+  return (
+    <div className={cx("d-flex", "gap-4")}>
+      <div>
+        <Folder2Open className={cx("bi", "me-1")} />
+        Projects <Badge className="ms-1">{item.project_count}</Badge>
       </div>
-    );
-  } else if (item.type === "User") {
-    return (
-      <div className={cx("d-flex", "gap-3")}>
-        <div>
-          <strong>{item.project_count}</strong> Projects
-        </div>
-        <div>
-          <strong>{item.data_connector_count}</strong> Data Connectors
-        </div>
+      <div>
+        <Database className={cx("bi", "me-1")} />
+        Data Connectors{" "}
+        <Badge className="ms-1">{item.data_connector_count}</Badge>
       </div>
-    );
-  }
-  return null;
+    </div>
+  );
 }

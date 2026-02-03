@@ -72,6 +72,8 @@ export const NAMESPACE_FILTER: StringFilter = {
   defaultValue: "",
 };
 
+export const DEFAULT_INCLUDE_COUNTS = true;
+
 export const FILTER_CONTENT: EnumFilter = {
   name: "type",
   label: (
@@ -184,6 +186,7 @@ export const FILTER_KEYWORD: EnumFilter = {
   allowSelectMany: true,
   doNotPassEmpty: true,
   mustQuote: true,
+  validFor: ["Project", "DataConnector"],
 };
 
 export const FILTER_VISIBILITY: EnumFilter = {
@@ -218,6 +221,7 @@ export const FILTER_VISIBILITY: EnumFilter = {
   ],
   allowSelectMany: false,
   doNotPassEmpty: true,
+  validFor: ["Project", "DataConnector"],
 };
 
 export const COMMON_FILTERS: Filter[] = [

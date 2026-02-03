@@ -60,8 +60,6 @@ export type SearchGroup = {
   project_count?: number;
   /** Number of data connectors with this group namespace. */
   data_connector_count?: number;
-  /** Number of members in this group. */
-  members_count?: number;
 };
 export type Group = {
   id: string;
@@ -165,7 +163,7 @@ export type PaginationRequest = {
 export type SearchQuery = PaginationRequest & {
   /** The search query. */
   q?: string;
-  /** Include counts (project_count, data_connector_count, members_count) in the results. */
+  /** Include counts (project_count, data_connector_count) in the results. */
   include_counts?: boolean;
 };
 export type Ulid = string;

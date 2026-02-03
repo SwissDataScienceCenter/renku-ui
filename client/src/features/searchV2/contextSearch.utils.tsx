@@ -23,6 +23,7 @@ import {
   ALL_FILTERS,
   COMMON_FILTERS,
   DATACONNECTORS_FILTERS,
+  DEFAULT_INCLUDE_COUNTS,
   FILTER_CONTENT,
   FILTER_PAGE,
   FILTER_PER_PAGE,
@@ -137,6 +138,7 @@ export function generateQueryParams(
     per_page:
       (commonFilters[FILTER_PER_PAGE.name] as FilterWithValue<"number">)
         ?.value ?? FILTER_PER_PAGE.defaultValue,
+    include_counts: DEFAULT_INCLUDE_COUNTS,
   };
 }
 
