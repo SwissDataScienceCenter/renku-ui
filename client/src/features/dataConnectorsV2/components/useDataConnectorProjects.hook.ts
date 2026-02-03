@@ -33,10 +33,11 @@ interface UseDataSourceConfigurationArgs {
   dataConnector: DataConnectorRead | undefined;
 }
 
+// TODO: handle pagination in this hook!
 export default function useDataConnectorProjects({
   dataConnector,
 }: UseDataSourceConfigurationArgs) {
-  const { data: projectLinks, isLoading: isLoadingLinks } =
+  const { data: projectLinksPaginated, isLoading: isLoadingLinks } =
     useGetDataConnectorsByDataConnectorIdProjectLinksQuery(
       dataConnector
         ? {
@@ -46,15 +47,15 @@ export default function useDataConnectorProjects({
     );
   const { data: projectsMap, isLoading: isLoadingProjects } =
     useGetProjectsByProjectIdsQuery({
-      projectIds: projectLinks?.map((pl) => pl.project_id) ?? [],
+      projectIds: projectLinksPaginated?.data.map((pl) => pl.project_id) ?? [],
     });
   const projects = useMemo(() => {
     return (
-      projectLinks
-        ?.map((pl) => projectsMap?.[pl.project_id])
+      projectLinksPaginated?.data
+        .map((pl) => projectsMap?.[pl.project_id])
         .filter((p) => p != null) ?? []
     );
-  }, [projectLinks, projectsMap]);
+  }, [projectLinksPaginated, projectsMap]);
 
   const projectMapLength = Object.keys(projectsMap ?? {}).length;
 
@@ -63,6 +64,6 @@ export default function useDataConnectorProjects({
     isLoading:
       isLoadingLinks ||
       isLoadingProjects ||
-      projectMapLength < (projectLinks?.length ?? 0),
+      projectMapLength < (projectLinksPaginated?.data.length ?? 0),
   };
 }

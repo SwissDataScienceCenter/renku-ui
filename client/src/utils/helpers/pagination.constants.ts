@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,27 +16,8 @@
  * limitations under the License.
  */
 
-import type {
-  ApiPagination,
-  PaginatedResponse,
-} from "~/utils/types/pagination.types";
-import type {
-  DataConnector,
-  DataConnectorToProjectLink,
-} from "./api/data-connectors.api";
+/** Default current page used in pagination (page 1). */
+export const DEFAULT_PAGE = 1;
 
-export type DataConnectorScope = "global" | "namespace" | "project";
-
-export type DataConnectorWithScope = DataConnector & {
-  scope: DataConnectorScope;
-};
-
-export type DataConnectorsPaginated = PaginatedResponse<
-  DataConnector,
-  ApiPagination
->;
-
-export type DataConnectorToProjectLinksPaginated = PaginatedResponse<
-  DataConnectorToProjectLink,
-  ApiPagination
->;
+/** Default amount of items per page (this is taken from the default value used in renku-data-services). */
+export const DEFAULT_PER_PAGE = 20;
