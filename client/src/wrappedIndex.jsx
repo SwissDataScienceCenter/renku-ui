@@ -23,99 +23,90 @@ import "~/styles/renku_bootstrap.scss";
 
 let hasRendered = false;
 
-export default function appIndex() {
+export default function appIndex(config) {
   if (!hasRendered) {
-    appIndexInner();
+    appIndexInner(config);
   }
   hasRendered = true;
 }
 
-function appIndexInner() {
-  const configFetch = fetch("/config.json");
+function appIndexInner(params_) {
+  const container = document.getElementById("root");
+  const root = createRoot(container);
 
-  configFetch.then((valuesRead) => {
-    const configResp = valuesRead;
-    const configRead = configResp.json();
+  const params = validatedAppParams(params_);
 
-    configRead.then((params_) => {
-      const container = document.getElementById("root");
-      const root = createRoot(container);
+  // configure core api versioned url helper (only used if legacy support is enabled)
+  const coreApiVersionedUrlConfig = null;
 
-      const params = validatedAppParams(params_);
+  // configure base url
+  Url.setBaseUrl(params.BASE_URL);
 
-      // configure core api versioned url helper (only used if legacy support is enabled)
-      const coreApiVersionedUrlConfig = null;
+  // create client to be passed to coordinators (only if legacy support is enabled)
+  const client = new ApiClientV2Compat(
+    `${params.BASE_URL}/api`,
+    params.UISERVER_URL
+  );
 
-      // configure base url
-      Url.setBaseUrl(params.BASE_URL);
+  // Create the global model containing the formal schema definition and the redux store
+  const model = new StateModel(globalSchema);
 
-      // create client to be passed to coordinators (only if legacy support is enabled)
-      const client = new ApiClientV2Compat(
-        `${params.BASE_URL}/api`,
-        params.UISERVER_URL
-      );
+  // show maintenance page when necessary
+  const maintenance = params.MAINTENANCE;
+  if (maintenance) {
+    root.render(
+      <Provider store={model.reduxStore}>
+        <Maintenance info={maintenance} />
+      </Provider>
+    );
+    return;
+  }
 
-      // Create the global model containing the formal schema definition and the redux store
-      const model = new StateModel(globalSchema);
+  // Query user data
+  const userCoordinator = client
+    ? new UserCoordinator(client, model.subModel("user"))
+    : null;
+  const userPromise = userCoordinator?.fetchUser();
 
-      // show maintenance page when necessary
-      const maintenance = params.MAINTENANCE;
-      if (maintenance) {
-        root.render(
-          <Provider store={model.reduxStore}>
-            <Maintenance info={maintenance} />
-          </Provider>
-        );
-        return;
-      }
+  // configure Sentry
+  let uiApplication = App;
+  if (params.SENTRY_URL) {
+    Sentry.init(
+      params.SENTRY_URL,
+      params.SENTRY_NAMESPACE,
+      userPromise,
+      params.UI_VERSION,
+      params.TELEPRESENCE,
+      params.SENTRY_SAMPLE_RATE,
+      [params.UISERVER_URL]
+    );
+    const profiler = !!params.SENTRY_SAMPLE_RATE;
+    if (profiler) uiApplication = Sentry.withProfiler(App);
+  }
 
-      // Query user data
-      const userCoordinator = client
-        ? new UserCoordinator(client, model.subModel("user"))
-        : null;
-      const userPromise = userCoordinator?.fetchUser();
+  // Map redux user data to the initial react application
+  function mapStateToProps(state, ownProps) {
+    return { user: state.stateModel.user, ...ownProps };
+  }
 
-      // configure Sentry
-      let uiApplication = App;
-      if (params.SENTRY_URL) {
-        Sentry.init(
-          params.SENTRY_URL,
-          params.SENTRY_NAMESPACE,
-          userPromise,
-          params.UI_VERSION,
-          params.TELEPRESENCE,
-          params.SENTRY_SAMPLE_RATE,
-          [params.UISERVER_URL]
-        );
-        const profiler = !!params.SENTRY_SAMPLE_RATE;
-        if (profiler) uiApplication = Sentry.withProfiler(App);
-      }
-
-      // Map redux user data to the initial react application
-      function mapStateToProps(state, ownProps) {
-        return { user: state.stateModel.user, ...ownProps };
-      }
-
-      // Render UI application
-      const VisibleApp = connect(mapStateToProps)(uiApplication);
-      root.render(
-        <Provider store={model.reduxStore}>
-          <BrowserRouter>
-            <AppErrorBoundary>
-              <LoginHandler />
-              <FeatureFlagHandler />
-              <VisibleApp
-                client={client}
-                coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
-                params={params}
-                model={model}
-              />
-            </AppErrorBoundary>
-          </BrowserRouter>
-        </Provider>
-      );
-    });
-  });
+  // Render UI application
+  const VisibleApp = connect(mapStateToProps)(uiApplication);
+  root.render(
+    <Provider store={model.reduxStore}>
+      <BrowserRouter>
+        <AppErrorBoundary>
+          <LoginHandler />
+          <FeatureFlagHandler />
+          <VisibleApp
+            client={client}
+            coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
+            params={params}
+            model={model}
+          />
+        </AppErrorBoundary>
+      </BrowserRouter>
+    </Provider>
+  );
 }
 
 function LoginHandler() {

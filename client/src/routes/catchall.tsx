@@ -1,7 +1,9 @@
-import { data, type LoaderFunctionArgs } from "react-router";
+import { data } from "react-router";
 
 import AppRoot from "~/index";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import { CONFIG_JSON } from "~server/constants";
+import type { Route } from "./+types/catchall";
 
 type RouteGroup = Record<string, string> | Record<string, unknown>;
 type Route = string | RouteGroup;
@@ -34,7 +36,7 @@ const KNOWN_ROUTES_SET = new Set(
 );
 const KNOWN_ROUTES = [...Array.from(KNOWN_ROUTES_SET), "/v2", "/admin"];
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const path = url.pathname;
   const isKnownRoute =
@@ -42,9 +44,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!isKnownRoute) {
     throw data("Not Found", { status: 404 });
   }
-  return data({});
+
+  //? Load the config.json contents from localhost in development
+  const development = process.env.NODE_ENV === "development";
+  if (development) {
+    const port = Number.parseInt(process.env.PORT || "3000", 10);
+    const configResponse = await fetch(`http://localhost:${port}/config.json`);
+    const configData = await configResponse.json();
+    return data({ config: configData as typeof CONFIG_JSON });
+  }
+
+  //? In production, directly load what we would return for /config.json
+  return data({ config: CONFIG_JSON });
 }
 
-export default function Component() {
-  return <AppRoot />;
+export default function Component({ loaderData }: Route.ComponentProps) {
+  const { config } = loaderData;
+  return <AppRoot config={config} />;
 }
