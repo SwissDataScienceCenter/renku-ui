@@ -10,22 +10,22 @@ describe("CLOUD_STORAGE_INTEGRATION_KIND_MAP", () => {
       (storageType) =>
         CLOUD_STORAGE_OVERRIDE["storage"][storageType]?.usesIntegration
     );
-    storagesWithIntegration.forEach((storageType) => {
+    for (const storageType of storagesWithIntegration) {
       it(`${storageType} should have a value`, () => {
         const mappedIntegrationKind =
           CLOUD_STORAGE_INTEGRATION_KIND_MAP[storageType];
         expect(mappedIntegrationKind).toBeDefined();
       });
-    });
+    }
   });
   describe("should not map storage types not needing a Renku integration", () => {
     const storageTypes = Object.keys(CLOUD_STORAGE_INTEGRATION_KIND_MAP);
-    storageTypes.forEach((storageType) => {
+    for (const storageType of storageTypes) {
       it(`${storageType} should have the "usesIntegration" override set to "true"`, () => {
         const usesIntegration =
           CLOUD_STORAGE_OVERRIDE["storage"][storageType]?.usesIntegration;
         expect(usesIntegration).toBe(true);
       });
-    });
+    }
   });
 });
