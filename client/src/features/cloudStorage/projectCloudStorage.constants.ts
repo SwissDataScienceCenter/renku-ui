@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import type { ProviderKind } from "../connectedServices/api/connectedServices.api";
 import type {
   AddCloudStorageState,
   CloudStorageDetails,
@@ -301,4 +302,4 @@ export const CLOUD_STORAGE_INTEGRATION_KIND_MAP = {
   drive: "google",
   dropbox: "dropbox",
   /* eslint-enable spellcheck/spell-checker */
-} as Record<string, string | undefined>;
+} as Record<string, ProviderKind | undefined>;
