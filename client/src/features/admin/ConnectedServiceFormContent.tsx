@@ -52,6 +52,7 @@ export default function ConnectedServiceFormContent({
                 type="select"
                 {...field}
               >
+                {/* eslint-disable-next-line spellcheck/spell-checker */}
                 <option value="dropbox">Dropbox</option>
                 <option value="generic_oidc">Generic OIDC</option>
                 <option value="github">GitHub</option>
