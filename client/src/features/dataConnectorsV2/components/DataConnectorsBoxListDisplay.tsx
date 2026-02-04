@@ -34,7 +34,6 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { TimeCaption } from "../../../components/TimeCaption";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import type {
@@ -62,13 +61,7 @@ export default function DataConnectorBoxListDisplay({
   extendedPreview,
   dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorBoxListDisplayProps) {
-  const {
-    name,
-    visibility,
-    creation_date: creationDate,
-    storage,
-    namespace,
-  } = dataConnector;
+  const { name, visibility, storage, namespace } = dataConnector;
 
   // Handle hash
   const [hash, setHash] = useLocationHash();
@@ -126,83 +119,103 @@ export default function DataConnectorBoxListDisplay({
 
   return (
     <>
-      <ListGroupItem
-        action
-        className={cx("cursor-pointer", "link-primary", "text-body")}
-        onClick={toggleOffCanvas}
-        data-cy="data-connector-item"
-      >
-        <Row className={cx("align-items-center", "g-3")}>
-          <Col className={cx("d-flex", "flex-column")}>
-            <span className="fw-bold" data-cy="data-connector-name">
-              {name}
-            </span>
-            <div
-              className={cx(
-                "d-flex",
-                "flex-row",
-                "gap-1",
-                "text-truncate",
-                "align-items-center"
-              )}
-            >
-              {scopeIcon}
-              <p className={cx("mb-0", "text-truncate")}>
-                {dataConnectorSource}
-              </p>
-            </div>
-            {extendedPreview && <div>{type}</div>}
-            <div
-              className={cx(
-                "align-items-center",
-                "d-flex",
-                "flex-wrap",
-                "gap-1",
-                "justify-content-between"
-              )}
-            >
+      <ListGroupItem action data-cy="data-connector-item">
+        <div
+          className={cx(
+            "cursor-pointer",
+            "d-flex",
+            "flex-column",
+            "gap-3",
+            "link-primary",
+            "text-body",
+            "text-decoration-none"
+          )}
+          onClick={toggleOffCanvas}
+        >
+          <Row className={cx("align-items-center", "g-3")}>
+            <Col className={cx("d-flex", "flex-column")}>
+              <span className="fw-bold" data-cy="data-connector-name">
+                {name}
+              </span>
+              <div
+                className={cx(
+                  "d-flex",
+                  "flex-row",
+                  "gap-1",
+                  "text-truncate",
+                  "align-items-center"
+                )}
+              >
+                {scopeIcon}
+                <p className={cx("mb-0", "text-truncate", "text-wrap")}>
+                  {dataConnectorSource}
+                </p>
+              </div>
+              {extendedPreview && <div>{type}</div>}
               <div
                 className={cx(
                   "align-items-center",
                   "d-flex",
                   "flex-wrap",
-                  "gap-2",
-                  "mt-auto"
+                  "gap-1",
+                  "justify-content-between"
                 )}
               >
-                <div>
-                  {visibility.toLowerCase() === "private" ? (
-                    <>
-                      <Lock className={cx("bi", "me-1")} />
-                      Private
-                    </>
-                  ) : (
-                    <>
-                      <Globe2 className={cx("bi", "me-1")} />
-                      Public
-                    </>
+                <div
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "flex-wrap",
+                    "gap-2",
+                    "mt-auto"
+                  )}
+                >
+                  <div>
+                    {visibility.toLowerCase() === "private" ? (
+                      <>
+                        <Lock className={cx("bi", "me-1")} />
+                        Private
+                      </>
+                    ) : (
+                      <>
+                        <Globe2 className={cx("bi", "me-1")} />
+                        Public
+                      </>
+                    )}
+                  </div>
+                  {extendedPreview && readOnly}
+                  {dataConnectorPotentiallyInaccessible && (
+                    <DataConnectorNotVisibleToAllUsersBadge />
                   )}
                 </div>
-                {extendedPreview && readOnly}
-                {dataConnectorPotentiallyInaccessible && (
-                  <DataConnectorNotVisibleToAllUsersBadge />
-                )}
               </div>
-              <TimeCaption
-                datetime={creationDate}
-                prefix="Created"
-                enableTooltip
-              />
-            </div>
-          </Col>
-          <Col xs="auto">
-            <DataConnectorActions
-              dataConnector={dataConnector}
-              dataConnectorLink={dataConnectorLink}
-              toggleEdit={toggleEdit}
-            />
-          </Col>
-        </Row>
+            </Col>
+            {/* This column is a placeholder to reserve the space for the action button */}
+            <Col xs="auto">
+              <div
+                aria-hidden="true"
+                className={cx("btn", "btn-sm", "opacity-0", "text-nowrap")}
+              >
+                FakeBttn
+              </div>
+            </Col>
+          </Row>
+        </div>
+        {/* The action button is visually positioned over the previous placeholder column */}
+        <div
+          className={cx(
+            "position-absolute",
+            "top-50",
+            "end-0",
+            "translate-middle-y"
+          )}
+        >
+          <DataConnectorActions
+            dataConnector={dataConnector}
+            dataConnectorLink={dataConnectorLink}
+            toggleEdit={toggleEdit}
+          />
+        </div>
       </ListGroupItem>
       <DataConnectorView
         dataConnector={dataConnector}
