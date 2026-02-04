@@ -12,7 +12,6 @@ import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
-import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
@@ -92,10 +91,6 @@ function appIndexInner() {
         if (profiler) uiApplication = Sentry.withProfiler(App);
       }
 
-      // Set up polling
-      const statuspageId = params.STATUSPAGE_ID;
-      pollStatuspage(statuspageId, model);
-
       // Map redux user data to the initial react application
       function mapStateToProps(state, ownProps) {
         return { user: state.stateModel.user, ...ownProps };
@@ -114,7 +109,6 @@ function appIndexInner() {
                 coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
                 params={params}
                 model={model}
-                statuspageId={statuspageId}
               />
             </AppErrorBoundary>
           </BrowserRouter>

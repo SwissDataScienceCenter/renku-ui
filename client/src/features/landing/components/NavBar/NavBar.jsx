@@ -27,6 +27,7 @@ import cx from "classnames";
 import { useContext } from "react";
 import { Link, Route, Routes, useLocation } from "react-router";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { ExternalDocsLink } from "../../../../components/LegacyExternalLinks";
 import { RENKU_LOGO } from "../../../../components/navbar/navbar.constants";
@@ -41,10 +42,11 @@ import NavbarV2 from "../../../rootV2/NavbarV2";
 
 import "./NavBar.css";
 
-function RenkuNavBar({ user }) {
-  const location = useLocation();
+function RenkuNavBar() {
+  const { pathname } = useLocation();
+  const { data: user } = useGetUserQueryState();
 
-  if (!user?.logged && location.pathname === Url.get(Url.pages.landing)) {
+  if (!user?.isLoggedIn && pathname === ABSOLUTE_ROUTES.root) {
     return null;
   }
 
@@ -65,7 +67,7 @@ function RenkuNavBarInner() {
         });
 
   return (
-    <Routes key="mainNav">
+    <Routes>
       <Route path={sessionShowUrl} element={null} />
       <Route path="*" element={<NavbarV2 />} />
     </Routes>
