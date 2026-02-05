@@ -26,7 +26,7 @@ import {
   Lock,
   Pencil,
 } from "react-bootstrap-icons";
-import { Link, useLocation } from "react-router";
+import { Link, To, useLocation } from "react-router";
 import {
   Badge,
   Col,
@@ -80,7 +80,7 @@ export default function DataConnectorBoxListDisplay({
 
   // Handle url with Hash
   const location = useLocation();
-  const targetOffcanvasLocation = {
+  const targetOffcanvasLocation: To = {
     pathname: location.pathname,
     search: location.search,
     hash: `#${dcHash}`,
