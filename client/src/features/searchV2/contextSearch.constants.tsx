@@ -20,14 +20,18 @@ import cx from "classnames";
 import {
   Binoculars,
   Briefcase,
+  Calendar,
   Database,
   Folder2Open,
   Globe,
   Lock,
   People,
+  Person,
+  PersonFillGear,
   Tag,
 } from "react-bootstrap-icons";
 
+import { DateFilterTypes } from "~/components/dateFilter/DateFilter";
 import {
   EnumFilter,
   Filter,
@@ -36,6 +40,7 @@ import {
 } from "./contextSearch.types";
 
 export const VALUE_SEPARATOR_AND = "+";
+export const VALUE_SEPARATOR_OR = ",";
 
 export const DEFAULT_ELEMENTS_LIMIT_IN_FILTERS = 5;
 
@@ -106,7 +111,7 @@ export const FILTER_CONTENT: EnumFilter = {
       value: "User",
       label: (
         <>
-          <People className={cx("bi", "me-1")} />
+          <Person className={cx("bi", "me-1")} />
           User
         </>
       ),
@@ -224,6 +229,72 @@ export const FILTER_VISIBILITY: EnumFilter = {
   validFor: ["Project", "DataConnector"],
 };
 
+export const FILTER_MY_ROLE: EnumFilter = {
+  name: "role",
+  label: (
+    <>
+      <PersonFillGear className={cx("bi", "me-1")} />
+      My Role
+    </>
+  ),
+  type: "enum",
+  allowedValues: [
+    {
+      value: "owner",
+      label: <>Owner</>,
+    },
+    {
+      value: "editor",
+      label: <>Editor</>,
+    },
+    {
+      value: "viewer",
+      label: <>Viewer</>,
+    },
+  ],
+  allowSelectMany: true,
+  doNotPassEmpty: false,
+  validFor: ["Project", "Group"],
+  valueSeparator: VALUE_SEPARATOR_OR,
+};
+
+export const FILTER_DATE: EnumFilter = {
+  name: "created",
+  label: (
+    <>
+      <Calendar className={cx("bi", "me-1")} />
+      Creation date
+    </>
+  ),
+  type: "enum",
+  allowedValues: [
+    {
+      value: "",
+      label: <>All</>,
+    },
+    {
+      value: DateFilterTypes.lastWeek,
+      label: <>Last week</>,
+    },
+    {
+      value: DateFilterTypes.lastMonth,
+      label: <>Last month</>,
+    },
+    {
+      value: DateFilterTypes.last90days,
+      label: <>Last 90 days</>,
+    },
+    {
+      value: DateFilterTypes.older,
+      label: <>Older than 90 days</>,
+    },
+  ],
+  allowSelectMany: false,
+  doNotPassEmpty: true,
+  validFor: ["Project", "DataConnector"],
+  valueSeparator: VALUE_SEPARATOR_AND,
+};
+
 export const COMMON_FILTERS: Filter[] = [
   FILTER_CONTENT,
   FILTER_PAGE,
@@ -235,11 +306,14 @@ export const PROJECT_FILTERS: Filter[] = [
   FILTER_MEMBER,
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
+  FILTER_MY_ROLE,
+  FILTER_DATE,
 ];
 
 export const DATACONNECTORS_FILTERS: Filter[] = [
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
+  FILTER_DATE,
 ];
 
 export const SELECTABLE_FILTERS: Filter[] = [
@@ -247,6 +321,8 @@ export const SELECTABLE_FILTERS: Filter[] = [
   FILTER_MEMBER,
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
+  FILTER_MY_ROLE,
+  FILTER_DATE,
 ];
 
 export const ALL_FILTERS: Filter[] = [
@@ -257,6 +333,8 @@ export const ALL_FILTERS: Filter[] = [
   FILTER_MEMBER,
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
+  FILTER_MY_ROLE,
+  FILTER_DATE,
 ];
 
 export const SEARCH_DEBOUNCE_SECONDS = 1;

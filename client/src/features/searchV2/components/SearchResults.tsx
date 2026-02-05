@@ -349,8 +349,7 @@ function SearchResultCounts({ item }: { item: SearchEntity }) {
       </div>
       <div>
         <Database className={cx("bi", "me-1")} />
-        Data Connectors{" "}
-        <Badge className="ms-1">{item.data_connector_count}</Badge>
+        Data <Badge className="ms-1">{item.data_connector_count}</Badge>
       </div>
     </div>
   );

@@ -41,8 +41,10 @@ import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
   FILTER_CONTENT_NAMESPACE,
+  FILTER_DATE,
   FILTER_KEYWORD,
   FILTER_MEMBER,
+  FILTER_MY_ROLE,
   FILTER_PAGE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
@@ -172,14 +174,16 @@ export default function SearchFilters() {
       {kind == "group" && (
         <GroupSearchFilter filter={filterMembersWithValues} />
       )}
-      {!isNamespace && (
-        <GroupSearchFilter
-          defaultElementsToShow={10}
-          filter={filterKeywordWithQuantities}
-          hiddenDecoration
-        />
-      )}
-      {!isNamespace && <GroupSearchFilter filter={FILTER_VISIBILITY} />}
+
+      <GroupSearchFilter
+        defaultElementsToShow={10}
+        filter={filterKeywordWithQuantities}
+        hiddenDecoration
+      />
+
+      <GroupSearchFilter filter={FILTER_VISIBILITY} />
+      <GroupSearchFilter filter={FILTER_DATE} />
+      {!isNamespace && <GroupSearchFilter filter={FILTER_MY_ROLE} />}
     </div>
   );
 }
@@ -347,17 +351,25 @@ function GroupSearchFilterContent({
       } else if (allowSelectMany) {
         // Move logic to handle multiple values to a utility function?
         const currentValues =
-          params.get(filter.name)?.split(VALUE_SEPARATOR_AND) ?? [];
+          params
+            .get(filter.name)
+            ?.split(filter.valueSeparator ?? VALUE_SEPARATOR_AND) ?? [];
         if (currentValues.includes(value)) {
           const newValues = currentValues.filter((v) => v !== value);
           if (newValues.length > 0) {
-            params.set(filter.name, newValues.join(VALUE_SEPARATOR_AND));
+            params.set(
+              filter.name,
+              newValues.join(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
+            );
           } else {
             params.delete(filter.name);
           }
         } else {
           currentValues.push(value);
-          params.set(filter.name, currentValues.join(VALUE_SEPARATOR_AND));
+          params.set(
+            filter.name,
+            currentValues.join(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
+          );
         }
       } else {
         params.set(filter.name, value);
@@ -387,7 +399,7 @@ function GroupSearchFilterContent({
                   isChecked={
                     allowSelectMany
                       ? current
-                          .split(VALUE_SEPARATOR_AND)
+                          .split(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
                           .includes(element.value)
                       : current === element.value
                   }

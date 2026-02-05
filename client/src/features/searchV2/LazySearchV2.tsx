@@ -25,6 +25,7 @@ const Search = lazy(() => import("./Search"));
 export default function LazySearchV2() {
   return (
     <Suspense fallback={<PageLoader />}>
+      <h1>Renku Search</h1>
       <Search />
     </Suspense>
   );
