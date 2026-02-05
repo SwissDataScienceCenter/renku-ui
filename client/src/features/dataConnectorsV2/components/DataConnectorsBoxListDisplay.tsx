@@ -26,6 +26,7 @@ import {
   Lock,
   Pencil,
 } from "react-bootstrap-icons";
+import { Link, useLocation } from "react-router";
 import {
   Badge,
   Col,
@@ -77,6 +78,14 @@ export default function DataConnectorBoxListDisplay({
     });
   }, [dcHash, setHash]);
 
+  // Handle url with Hash
+  const location = useLocation();
+  const targetOffcanvasLocation = {
+    pathname: location.pathname,
+    search: location.search,
+    hash: `#${dcHash}`,
+  };
+
   // Handle modal
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [initialStep, setInitialStep] = useState(2);
@@ -120,9 +129,8 @@ export default function DataConnectorBoxListDisplay({
   return (
     <>
       <ListGroupItem action data-cy="data-connector-item">
-        <div
+        <Link
           className={cx(
-            "cursor-pointer",
             "d-flex",
             "flex-column",
             "gap-3",
@@ -130,7 +138,7 @@ export default function DataConnectorBoxListDisplay({
             "text-body",
             "text-decoration-none"
           )}
-          onClick={toggleOffCanvas}
+          to={targetOffcanvasLocation}
         >
           <Row className={cx("align-items-center", "g-3")}>
             <Col className={cx("d-flex", "flex-column")}>
@@ -200,14 +208,15 @@ export default function DataConnectorBoxListDisplay({
               </div>
             </Col>
           </Row>
-        </div>
+        </Link>
         {/* The action button is visually positioned over the previous placeholder column */}
         <div
           className={cx(
             "position-absolute",
             "top-50",
             "end-0",
-            "translate-middle-y"
+            "translate-middle-y",
+            "z-2"
           )}
         >
           <DataConnectorActions
