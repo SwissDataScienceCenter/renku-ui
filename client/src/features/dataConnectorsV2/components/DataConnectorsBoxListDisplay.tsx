@@ -147,11 +147,11 @@ export default function DataConnectorBoxListDisplay({
               </span>
               <div
                 className={cx(
+                  "align-items-center",
                   "d-flex",
                   "flex-row",
                   "gap-1",
-                  "text-truncate",
-                  "align-items-center"
+                  "text-truncate"
                 )}
               >
                 {scopeIcon}
@@ -211,13 +211,7 @@ export default function DataConnectorBoxListDisplay({
         </Link>
         {/* The action button is visually positioned over the previous placeholder column */}
         <div
-          className={cx(
-            "position-absolute",
-            "top-50",
-            "end-0",
-            "translate-middle-y",
-            "z-2"
-          )}
+          className={cx("end-0", "mt-3", "position-absolute", "top-0", "z-5")}
         >
           <DataConnectorActions
             dataConnector={dataConnector}
