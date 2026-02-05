@@ -138,6 +138,7 @@
           "dismissible",
           "dockerfile",
           "dockerignore",
+          "dropbox",
           "dropdown",
           "dropzone",
           "enum",
