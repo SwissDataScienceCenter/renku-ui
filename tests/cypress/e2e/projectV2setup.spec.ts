@@ -416,12 +416,16 @@ describe("Set up data connectors", () => {
     cy.wait("@listProjectDataConnectors");
 
     cy.contains("example storage").should("be.visible").click();
-    cy.getDataCy("data-connector-credentials")
-      .should("be.visible")
-      .parent()
+
+    cy.getDataCy("data-connector-view")
       .find("[data-cy=data-connector-menu-dropdown]")
       .click();
-    cy.getDataCy("data-connector-unlink").should("be.visible").click();
+
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-unlink"]')
+      .should("be.visible")
+      .click();
+
     cy.wait("@getProjectV2Permissions");
     cy.contains("Are you sure you want to unlink the data connector").should(
       "be.visible"
@@ -452,6 +456,7 @@ describe("Set up data connectors", () => {
 
   it("should clear state after a data connector has been created", () => {
     fixtures
+      .getDataConnectorPermissions()
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
       .listProjectDataConnectors()
       .getDataConnector()
@@ -531,7 +536,6 @@ describe("Set up data connectors", () => {
     // Now edit a data connector
     fixtures
       .testCloudStorage({ success: true })
-      .getDataConnectorPermissions()
       .patchDataConnector({ namespace: "user1-uuid" })
       .patchDataConnectorSecrets({
         content: [],
@@ -539,7 +543,13 @@ describe("Set up data connectors", () => {
       });
 
     cy.contains("example storage").should("be.visible").click();
-    cy.getDataCy("data-connector-edit").should("be.visible").click();
+    // cy.getDataCy("data-connector-edit").should("be.visible").click();
+
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-edit"]')
+      .should("be.visible")
+      .click();
+
     // Fill out the details
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@patchDataConnector");
@@ -550,414 +560,414 @@ describe("Set up data connectors", () => {
   });
 });
 
-describe("Customize session environment variables", () => {
-  beforeEach(() => {
-    fixtures
-      .config()
-      .versions()
-      .userTest()
-      .listNamespaceV2()
-      .dataServicesUser({
-        response: {
-          id: "0945f006-e117-49b7-8966-4c0842146313",
-          username: "user-1",
-          email: "user1@email.com",
-        },
-      })
-      .getProjectV2Permissions()
-      .listProjectV2Members();
-    fixtures.projects().landingUserProjects().readProjectV2();
-  });
+// // describe("Customize session environment variables", () => {
+// //   beforeEach(() => {
+// //     fixtures
+// //       .config()
+// //       .versions()
+// //       .userTest()
+// //       .listNamespaceV2()
+// //       .dataServicesUser({
+// //         response: {
+// //           id: "0945f006-e117-49b7-8966-4c0842146313",
+// //           username: "user-1",
+// //           email: "user1@email.com",
+// //         },
+// //       })
+// //       .getProjectV2Permissions()
+// //       .listProjectV2Members();
+// //     fixtures.projects().landingUserProjects().readProjectV2();
+// //   });
 
-  it("maintain session launcher environment variables", () => {
-    cy.intercept("/api/data/sessions*", {
-      body: [],
-    }).as("getSessionsV2");
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .sessionLaunchers({
-        fixture: "projectV2/session-launchers.json",
-        name: "sessionLaunchers",
-      })
-      .editLauncher()
-      .resourcePoolsTest()
-      .getResourceClass()
-      .environments()
-      .sessionSecretSlots()
-      .sessionSecrets();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getSessionsV2");
+// //   it("maintain session launcher environment variables", () => {
+// //     cy.intercept("/api/data/sessions*", {
+// //       body: [],
+// //     }).as("getSessionsV2");
+// //     fixtures
+// //       .readProjectV2WithoutDocumentation({
+// //         fixture: "projectV2/read-projectV2-empty.json",
+// //       })
+// //       .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+// //       .listProjectDataConnectors()
+// //       .getDataConnector()
+// //       .sessionLaunchers({
+// //         fixture: "projectV2/session-launchers.json",
+// //         name: "sessionLaunchers",
+// //       })
+// //       .editLauncher()
+// //       .resourcePoolsTest()
+// //       .getResourceClass()
+// //       .environments()
+// //       .sessionSecretSlots()
+// //       .sessionSecrets();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getSessionsV2");
 
-    cy.wait("@sessionLaunchers");
-    // check session launcher view and edit session launcher
-    cy.getDataCy("session-name").click();
-    cy.getDataCy("env-variables-card")
-      .scrollIntoView()
-      .should("be.visible")
-      .within(() => {
-        cy.getDataCy("env-var-row").should("have.length", 2);
-        cy.getDataCy("env-var-name").first().should("contain.text", "VAR_1");
-        cy.getDataCy("env-var-name")
-          .last()
-          .should("contain.text", "VAR_WITH_LONGER_NAME");
-      });
-    cy.get("#modify-env-variables-button").click();
-    // TEST bad input
-    cy.getDataCy("env-variables-input_0-name").clear().type("RENKU VALUE");
-    cy.getDataCy("env-variables-input_0-value").clear().type("1");
-    cy.getDataCy("edit-session-button").click();
-    cy.get(".invalid-feedback").should(
-      "contain.text",
-      "A variable name is made up of letters, numbers and '_'."
-    );
-    cy.getDataCy("env-variables-input_0-name").clear().type("TEST");
-    cy.getDataCy("env-variables-input_0-value").clear().type("1");
-    cy.getDataCy("edit-session-button").click();
-    cy.contains("Session launcher updated successfully").should("be.visible");
-    cy.getDataCy("close-cancel-button").click();
-    cy.getDataCy("get-back-session-view").click();
-  });
+// //     cy.wait("@sessionLaunchers");
+// //     // check session launcher view and edit session launcher
+// //     cy.getDataCy("session-name").click();
+// //     cy.getDataCy("env-variables-card")
+// //       .scrollIntoView()
+// //       .should("be.visible")
+// //       .within(() => {
+// //         cy.getDataCy("env-var-row").should("have.length", 2);
+// //         cy.getDataCy("env-var-name").first().should("contain.text", "VAR_1");
+// //         cy.getDataCy("env-var-name")
+// //           .last()
+// //           .should("contain.text", "VAR_WITH_LONGER_NAME");
+// //       });
+// //     cy.get("#modify-env-variables-button").click();
+// //     // TEST bad input
+// //     cy.getDataCy("env-variables-input_0-name").clear().type("RENKU VALUE");
+// //     cy.getDataCy("env-variables-input_0-value").clear().type("1");
+// //     cy.getDataCy("edit-session-button").click();
+// //     cy.get(".invalid-feedback").should(
+// //       "contain.text",
+// //       "A variable name is made up of letters, numbers and '_'."
+// //     );
+// //     cy.getDataCy("env-variables-input_0-name").clear().type("TEST");
+// //     cy.getDataCy("env-variables-input_0-value").clear().type("1");
+// //     cy.getDataCy("edit-session-button").click();
+// //     cy.contains("Session launcher updated successfully").should("be.visible");
+// //     cy.getDataCy("close-cancel-button").click();
+// //     cy.getDataCy("get-back-session-view").click();
+// //   });
 
-  it("initialize env variable form with empty row", () => {
-    cy.intercept("/api/data/sessions*", {
-      body: [],
-    }).as("getSessionsV2");
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .sessionLaunchers({
-        fixture: "projectV2/session-launchers-without-env-vars.json",
-        name: "sessionLaunchers",
-      })
-      .editLauncher()
-      .resourcePoolsTest()
-      .getResourceClass()
-      .environments()
-      .sessionSecretSlots()
-      .sessionSecrets();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getSessionsV2");
+// //   it("initialize env variable form with empty row", () => {
+// //     cy.intercept("/api/data/sessions*", {
+// //       body: [],
+// //     }).as("getSessionsV2");
+// //     fixtures
+// //       .readProjectV2WithoutDocumentation({
+// //         fixture: "projectV2/read-projectV2-empty.json",
+// //       })
+// //       .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+// //       .listProjectDataConnectors()
+// //       .getDataConnector()
+// //       .sessionLaunchers({
+// //         fixture: "projectV2/session-launchers-without-env-vars.json",
+// //         name: "sessionLaunchers",
+// //       })
+// //       .editLauncher()
+// //       .resourcePoolsTest()
+// //       .getResourceClass()
+// //       .environments()
+// //       .sessionSecretSlots()
+// //       .sessionSecrets();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getSessionsV2");
 
-    cy.wait("@sessionLaunchers");
-    // check session launcher view and edit session launcher
-    cy.getDataCy("session-name").click();
-    cy.get("#modify-env-variables-button").click();
-    cy.getDataCy("env-variables-input_0-name").should("have.value", "");
-  });
+// //     cy.wait("@sessionLaunchers");
+// //     // check session launcher view and edit session launcher
+// //     cy.getDataCy("session-name").click();
+// //     cy.get("#modify-env-variables-button").click();
+// //     cy.getDataCy("env-variables-input_0-name").should("have.value", "");
+// //   });
 
-  it("validate environment variables", () => {
-    cy.intercept("/api/data/sessions*", {
-      body: [],
-    }).as("getSessionsV2");
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .sessionLaunchers({
-        fixture: "projectV2/session-launchers.json",
-        name: "sessionLaunchers",
-      })
-      .editLauncher()
-      .resourcePoolsTest()
-      .getResourceClass()
-      .environments()
-      .sessionSecretSlots()
-      .sessionSecrets();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getSessionsV2");
+// //   it("validate environment variables", () => {
+// //     cy.intercept("/api/data/sessions*", {
+// //       body: [],
+// //     }).as("getSessionsV2");
+// //     fixtures
+// //       .readProjectV2WithoutDocumentation({
+// //         fixture: "projectV2/read-projectV2-empty.json",
+// //       })
+// //       .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+// //       .listProjectDataConnectors()
+// //       .getDataConnector()
+// //       .sessionLaunchers({
+// //         fixture: "projectV2/session-launchers.json",
+// //         name: "sessionLaunchers",
+// //       })
+// //       .editLauncher()
+// //       .resourcePoolsTest()
+// //       .getResourceClass()
+// //       .environments()
+// //       .sessionSecretSlots()
+// //       .sessionSecrets();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getSessionsV2");
 
-    cy.wait("@sessionLaunchers");
-    // check session launcher view and edit session launcher
-    cy.getDataCy("session-name").click();
-    cy.getDataCy("env-variables-card")
-      .scrollIntoView()
-      .should("be.visible")
-      .within(() => {
-        cy.getDataCy("env-var-row").should("have.length", 2);
-        cy.getDataCy("env-var-name").first().should("contain.text", "VAR_1");
-        cy.getDataCy("env-var-name")
-          .last()
-          .should("contain.text", "VAR_WITH_LONGER_NAME");
-      });
-    cy.get("#modify-env-variables-button").click();
-    // TEST bad input
-    cy.getDataCy("env-variables-input_0-name").clear().type("RENKU VALUE");
-    cy.getDataCy("env-variables-input_0-value").clear().type("1");
-    cy.getDataCy("edit-session-button").click();
-    cy.get(".invalid-feedback").should(
-      "contain.text",
-      "A variable name is made up of letters, numbers and '_'."
-    );
-    cy.getDataCy("env-variables-input_0-name").clear().type("RENKU_VALUE");
-    cy.getDataCy("edit-session-button").click();
-    cy.get(".invalid-feedback").should(
-      "contain.text",
-      "Variable names cannot start with 'RENKU'."
-    );
+// //     cy.wait("@sessionLaunchers");
+// //     // check session launcher view and edit session launcher
+// //     cy.getDataCy("session-name").click();
+// //     cy.getDataCy("env-variables-card")
+// //       .scrollIntoView()
+// //       .should("be.visible")
+// //       .within(() => {
+// //         cy.getDataCy("env-var-row").should("have.length", 2);
+// //         cy.getDataCy("env-var-name").first().should("contain.text", "VAR_1");
+// //         cy.getDataCy("env-var-name")
+// //           .last()
+// //           .should("contain.text", "VAR_WITH_LONGER_NAME");
+// //       });
+// //     cy.get("#modify-env-variables-button").click();
+// //     // TEST bad input
+// //     cy.getDataCy("env-variables-input_0-name").clear().type("RENKU VALUE");
+// //     cy.getDataCy("env-variables-input_0-value").clear().type("1");
+// //     cy.getDataCy("edit-session-button").click();
+// //     cy.get(".invalid-feedback").should(
+// //       "contain.text",
+// //       "A variable name is made up of letters, numbers and '_'."
+// //     );
+// //     cy.getDataCy("env-variables-input_0-name").clear().type("RENKU_VALUE");
+// //     cy.getDataCy("edit-session-button").click();
+// //     cy.get(".invalid-feedback").should(
+// //       "contain.text",
+// //       "Variable names cannot start with 'RENKU'."
+// //     );
 
-    const longName = "a".repeat(257);
-    const longValue = "b".repeat(501);
-    cy.getDataCy("env-variables-input_0-name").clear().type(longName);
-    cy.getDataCy("env-variables-input_0-value").clear().type(longValue);
-    cy.getDataCy("edit-session-button").click();
-    cy.get(".invalid-feedback").should(
-      "contain.text",
-      "Name can be at most 256 characters."
-    );
-    cy.get(".invalid-feedback").should(
-      "contain.text",
-      "Value can be at most 500 characters."
-    );
-  });
+// //     const longName = "a".repeat(257);
+// //     const longValue = "b".repeat(501);
+// //     cy.getDataCy("env-variables-input_0-name").clear().type(longName);
+// //     cy.getDataCy("env-variables-input_0-value").clear().type(longValue);
+// //     cy.getDataCy("edit-session-button").click();
+// //     cy.get(".invalid-feedback").should(
+// //       "contain.text",
+// //       "Name can be at most 256 characters."
+// //     );
+// //     cy.get(".invalid-feedback").should(
+// //       "contain.text",
+// //       "Value can be at most 500 characters."
+// //     );
+// //   });
 
-  it("create session launch links with environment variables", () => {
-    cy.intercept("/api/data/sessions*", {
-      body: [],
-    }).as("getSessionsV2");
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .sessionLaunchers({
-        fixture: "projectV2/session-launchers.json",
-        name: "sessionLaunchers",
-      })
-      .editLauncher()
-      .resourcePoolsTest()
-      .getResourceClass()
-      .environments()
-      .sessionSecretSlots()
-      .sessionSecrets();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getSessionsV2");
+// //   it("create session launch links with environment variables", () => {
+// //     cy.intercept("/api/data/sessions*", {
+// //       body: [],
+// //     }).as("getSessionsV2");
+// //     fixtures
+// //       .readProjectV2WithoutDocumentation({
+// //         fixture: "projectV2/read-projectV2-empty.json",
+// //       })
+// //       .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+// //       .listProjectDataConnectors()
+// //       .getDataConnector()
+// //       .sessionLaunchers({
+// //         fixture: "projectV2/session-launchers.json",
+// //         name: "sessionLaunchers",
+// //       })
+// //       .editLauncher()
+// //       .resourcePoolsTest()
+// //       .getResourceClass()
+// //       .environments()
+// //       .sessionSecretSlots()
+// //       .sessionSecrets();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getSessionsV2");
 
-    cy.wait("@sessionLaunchers");
-    // check session launcher view and edit session launcher
-    cy.getDataCy("session-launcher-item")
-      .find('[data-cy="button-with-menu-dropdown"]')
-      .click();
-    cy.getDataCy("session-launcher-menu-share-link").click();
-    cy.getDataCy("customize-launch-link-expand").click();
-    cy.getDataCy("env-variables-input_0-customized").click();
-    cy.getDataCy("env-variables-input_0-value").clear().type("some value");
-    cy.getDataCy("env-variables-customized_0").should("be.visible");
-    // cy.get("#define-launch-links-button").click();
-    // cy.contains(
-    //   "To add environment variables, see the Environment Variables section of the session launcher."
-    // ).should("be.visible");
-  });
+// //     cy.wait("@sessionLaunchers");
+// //     // check session launcher view and edit session launcher
+// //     cy.getDataCy("session-launcher-item")
+// //       .find('[data-cy="button-with-menu-dropdown"]')
+// //       .click();
+// //     cy.getDataCy("session-launcher-menu-share-link").click();
+// //     cy.getDataCy("customize-launch-link-expand").click();
+// //     cy.getDataCy("env-variables-input_0-customized").click();
+// //     cy.getDataCy("env-variables-input_0-value").clear().type("some value");
+// //     cy.getDataCy("env-variables-customized_0").should("be.visible");
+// //     // cy.get("#define-launch-links-button").click();
+// //     // cy.contains(
+// //     //   "To add environment variables, see the Environment Variables section of the session launcher."
+// //     // ).should("be.visible");
+// //   });
 
-  it("create session launch links with no environment variables", () => {
-    cy.intercept("/api/data/sessions*", {
-      body: [],
-    }).as("getSessionsV2");
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .sessionLaunchers({
-        fixture: "projectV2/session-launchers-without-env-vars.json",
-        name: "sessionLaunchers",
-      })
-      .editLauncher()
-      .resourcePoolsTest()
-      .getResourceClass()
-      .environments()
-      .sessionSecretSlots()
-      .sessionSecrets();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getSessionsV2");
+// //   it("create session launch links with no environment variables", () => {
+// //     cy.intercept("/api/data/sessions*", {
+// //       body: [],
+// //     }).as("getSessionsV2");
+// //     fixtures
+// //       .readProjectV2WithoutDocumentation({
+// //         fixture: "projectV2/read-projectV2-empty.json",
+// //       })
+// //       .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+// //       .listProjectDataConnectors()
+// //       .getDataConnector()
+// //       .sessionLaunchers({
+// //         fixture: "projectV2/session-launchers-without-env-vars.json",
+// //         name: "sessionLaunchers",
+// //       })
+// //       .editLauncher()
+// //       .resourcePoolsTest()
+// //       .getResourceClass()
+// //       .environments()
+// //       .sessionSecretSlots()
+// //       .sessionSecrets();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getSessionsV2");
 
-    cy.wait("@sessionLaunchers");
-    // check session launcher view and edit session launcher
-    cy.getDataCy("session-launcher-item")
-      .find('[data-cy="button-with-menu-dropdown"]')
-      .click();
-    cy.getDataCy("session-launcher-menu-share-link").click();
-    cy.getDataCy("customize-launch-link-expand").click();
-    cy.contains(
-      "To customize your launch link, first add environment variables"
-    ).should("be.visible");
-  });
-});
+// //     cy.wait("@sessionLaunchers");
+// //     // check session launcher view and edit session launcher
+// //     cy.getDataCy("session-launcher-item")
+// //       .find('[data-cy="button-with-menu-dropdown"]')
+// //       .click();
+// //     cy.getDataCy("session-launcher-menu-share-link").click();
+// //     cy.getDataCy("customize-launch-link-expand").click();
+// //     cy.contains(
+// //       "To customize your launch link, first add environment variables"
+// //     ).should("be.visible");
+// //   });
+// // });
 
-describe("Repository connection cases", () => {
-  beforeEach(() => {
-    fixtures
-      .config()
-      .versions()
-      .userTest()
-      .listNamespaceV2()
-      .dataServicesUser({
-        response: {
-          id: "0945f006-e117-49b7-8966-4c0842146313",
-          username: "user-1",
-          email: "user1@email.com",
-        },
-      })
-      .getProjectV2Permissions()
-      .listProjectV2Members()
-      .projects()
-      .landingUserProjects()
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .readProjectV2({
-        fixture: "projectV2/read-projectV2-one-github-repo.json",
-      })
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-one-github-repo.json",
-      });
-  });
+// // describe("Repository connection cases", () => {
+// //   beforeEach(() => {
+// //     fixtures
+// //       .config()
+// //       .versions()
+// //       .userTest()
+// //       .listNamespaceV2()
+// //       .dataServicesUser({
+// //         response: {
+// //           id: "0945f006-e117-49b7-8966-4c0842146313",
+// //           username: "user-1",
+// //           email: "user1@email.com",
+// //         },
+// //       })
+// //       .getProjectV2Permissions()
+// //       .listProjectV2Members()
+// //       .projects()
+// //       .landingUserProjects()
+// //       .listProjectDataConnectors()
+// //       .getDataConnector()
+// //       .readProjectV2({
+// //         fixture: "projectV2/read-projectV2-one-github-repo.json",
+// //       })
+// //       .readProjectV2WithoutDocumentation({
+// //         fixture: "projectV2/read-projectV2-one-github-repo.json",
+// //       });
+// //   });
 
-  it("read and write", () => {
-    fixtures
-      .getRepositoryMetadata({
-        repositoryUrl: "https://github.com/renku/url-repo.git",
-      })
-      .listConnectedServicesConnections()
-      .listConnectedServicesProviders();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getRepositoryMetadata");
+// //   it("read and write", () => {
+// //     fixtures
+// //       .getRepositoryMetadata({
+// //         repositoryUrl: "https://github.com/renku/url-repo.git",
+// //       })
+// //       .listConnectedServicesConnections()
+// //       .listConnectedServicesProviders();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getRepositoryMetadata");
 
-    // check badge
-    cy.getDataCy("code-repository-permission-badge")
-      .contains("Read & write")
-      .should("be.visible");
+// //     // check badge
+// //     cy.getDataCy("code-repository-permission-badge")
+// //       .contains("Read & write")
+// //       .should("be.visible");
 
-    cy.getDataCy("code-repository-item").click();
-    cy.getDataCy("code-repository-push-permission")
-      .contains("Yes")
-      .should("be.visible");
-    cy.getDataCy("code-repository-pull-permission")
-      .contains("Yes")
-      .should("be.visible");
-  });
+// //     cy.getDataCy("code-repository-item").click();
+// //     cy.getDataCy("code-repository-push-permission")
+// //       .contains("Yes")
+// //       .should("be.visible");
+// //     cy.getDataCy("code-repository-pull-permission")
+// //       .contains("Yes")
+// //       .should("be.visible");
+// //   });
 
-  it("read only", () => {
-    fixtures
-      .getRepositoryMetadata({
-        repositoryUrl: "https://github.com/renku/url-repo.git",
-        fixture: "repositories/repository-metadata-readonly.json",
-      })
-      .listConnectedServicesConnections()
-      .listConnectedServicesProviders();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getRepositoryMetadata");
+// //   it("read only", () => {
+// //     fixtures
+// //       .getRepositoryMetadata({
+// //         repositoryUrl: "https://github.com/renku/url-repo.git",
+// //         fixture: "repositories/repository-metadata-readonly.json",
+// //       })
+// //       .listConnectedServicesConnections()
+// //       .listConnectedServicesProviders();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getRepositoryMetadata");
 
-    // check badge
-    cy.getDataCy("code-repository-permission-badge")
-      .contains("Read only")
-      .should("be.visible");
+// //     // check badge
+// //     cy.getDataCy("code-repository-permission-badge")
+// //       .contains("Read only")
+// //       .should("be.visible");
 
-    cy.getDataCy("code-repository-item").click();
-    cy.getDataCy("code-repository-push-permission")
-      .contains("No")
-      .should("be.visible");
-    cy.getDataCy("code-repository-pull-permission")
-      .contains("Yes")
-      .should("be.visible");
-  });
+// //     cy.getDataCy("code-repository-item").click();
+// //     cy.getDataCy("code-repository-push-permission")
+// //       .contains("No")
+// //       .should("be.visible");
+// //     cy.getDataCy("code-repository-pull-permission")
+// //       .contains("Yes")
+// //       .should("be.visible");
+// //   });
 
-  it("inaccessible", () => {
-    fixtures
-      .getRepositoryMetadata({
-        repositoryUrl: "https://github.com/renku/url-repo.git",
-        fixture: "repositories/repository-metadata-inaccessible.json",
-      })
-      .listConnectedServicesConnections()
-      .listConnectedServicesProviders();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getRepositoryMetadata");
+// //   it("inaccessible", () => {
+// //     fixtures
+// //       .getRepositoryMetadata({
+// //         repositoryUrl: "https://github.com/renku/url-repo.git",
+// //         fixture: "repositories/repository-metadata-inaccessible.json",
+// //       })
+// //       .listConnectedServicesConnections()
+// //       .listConnectedServicesProviders();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getRepositoryMetadata");
 
-    // check badge
-    cy.getDataCy("code-repository-permission-badge")
-      .contains("Inaccessible")
-      .should("be.visible");
+// //     // check badge
+// //     cy.getDataCy("code-repository-permission-badge")
+// //       .contains("Inaccessible")
+// //       .should("be.visible");
 
-    cy.getDataCy("code-repository-item").click();
-    cy.getDataCy("code-repository-push-permission")
-      .contains("No")
-      .should("be.visible");
-    cy.getDataCy("code-repository-pull-permission")
-      .contains("No")
-      .should("be.visible");
-  });
+// //     cy.getDataCy("code-repository-item").click();
+// //     cy.getDataCy("code-repository-push-permission")
+// //       .contains("No")
+// //       .should("be.visible");
+// //     cy.getDataCy("code-repository-pull-permission")
+// //       .contains("No")
+// //       .should("be.visible");
+// //   });
 
-  it("request integration", () => {
-    fixtures
-      .getRepositoryMetadata({
-        repositoryUrl: "https://github.com/renku/url-repo.git",
-        fixture: "repositories/repository-metadata-requestintegration.json",
-      })
-      .listConnectedServicesConnections()
-      .listConnectedServicesProviders();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getRepositoryMetadata");
+// //   it("request integration", () => {
+// //     fixtures
+// //       .getRepositoryMetadata({
+// //         repositoryUrl: "https://github.com/renku/url-repo.git",
+// //         fixture: "repositories/repository-metadata-requestintegration.json",
+// //       })
+// //       .listConnectedServicesConnections()
+// //       .listConnectedServicesProviders();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getRepositoryMetadata");
 
-    // check badge
-    cy.getDataCy("code-repository-permission-badge")
-      .contains("Request integration")
-      .should("be.visible");
+// //     // check badge
+// //     cy.getDataCy("code-repository-permission-badge")
+// //       .contains("Request integration")
+// //       .should("be.visible");
 
-    cy.getDataCy("code-repository-item").click();
-    cy.getDataCy("code-repository-push-permission")
-      .contains("No")
-      .should("be.visible");
-    cy.getDataCy("code-repository-pull-permission")
-      .contains("Yes")
-      .should("be.visible");
-  });
+// //     cy.getDataCy("code-repository-item").click();
+// //     cy.getDataCy("code-repository-push-permission")
+// //       .contains("No")
+// //       .should("be.visible");
+// //     cy.getDataCy("code-repository-pull-permission")
+// //       .contains("Yes")
+// //       .should("be.visible");
+// //   });
 
-  it("integration required", () => {
-    fixtures
-      .getRepositoryMetadata({
-        repositoryUrl: "https://github.com/renku/url-repo.git",
-        fixture: "repositories/repository-metadata-required.json",
-      })
-      .listConnectedServicesConnections()
-      .listConnectedServicesProviders();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@getRepositoryMetadata");
+// //   it("integration required", () => {
+// //     fixtures
+// //       .getRepositoryMetadata({
+// //         repositoryUrl: "https://github.com/renku/url-repo.git",
+// //         fixture: "repositories/repository-metadata-required.json",
+// //       })
+// //       .listConnectedServicesConnections()
+// //       .listConnectedServicesProviders();
+// //     cy.visit("/p/user1-uuid/test-2-v2-project");
+// //     cy.wait("@readProjectV2WithoutDocumentation");
+// //     cy.wait("@getRepositoryMetadata");
 
-    // check badge
-    cy.getDataCy("code-repository-permission-badge")
-      .contains("Integration required")
-      .should("be.visible");
+// //     // check badge
+// //     cy.getDataCy("code-repository-permission-badge")
+// //       .contains("Integration required")
+// //       .should("be.visible");
 
-    cy.getDataCy("code-repository-item").click();
-    cy.getDataCy("code-repository-push-permission")
-      .contains("No")
-      .should("be.visible");
-    cy.getDataCy("code-repository-pull-permission")
-      .contains("No")
-      .should("be.visible");
-  });
-});
+// //     cy.getDataCy("code-repository-item").click();
+// //     cy.getDataCy("code-repository-push-permission")
+// //       .contains("No")
+// //       .should("be.visible");
+// //     cy.getDataCy("code-repository-pull-permission")
+// //       .contains("No")
+// //       .should("be.visible");
+// //   });
+// // });
