@@ -42,7 +42,6 @@ export const CLOUD_STORAGE_OVERRIDE = {
     gcs: {
       hide: true,
     },
-    // eslint-disable-next-line spellcheck/spell-checker
     dropbox: {
       usesIntegration: true,
     },
@@ -298,8 +297,6 @@ export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {
 };
 
 export const CLOUD_STORAGE_INTEGRATION_KIND_MAP = {
-  /* eslint-disable spellcheck/spell-checker */
   drive: "google",
   dropbox: "dropbox",
-  /* eslint-enable spellcheck/spell-checker */
 } as Record<string, ProviderKind | undefined>;

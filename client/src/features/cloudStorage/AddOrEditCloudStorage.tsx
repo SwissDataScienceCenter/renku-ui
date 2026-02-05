@@ -47,7 +47,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import {
