@@ -1370,7 +1370,7 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
   }
 
   if (error) {
-    return <RtkErrorAlert dismissible={false} error={error} />;
+    return <RtkOrNotebooksError dismissible={false} error={error} />;
   }
 
   // This should not happen: if "usesIntegration" is set to true,
