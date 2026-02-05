@@ -505,7 +505,6 @@ function DataConnectorActionsInner({
             {actions[0].content}
           </Button>
         }
-        preventPropagation
         size="sm"
       >
         {actions.slice(1).map(({ key, onClick, content }) => (
