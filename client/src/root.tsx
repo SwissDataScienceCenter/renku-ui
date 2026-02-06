@@ -17,7 +17,10 @@
  */
 
 import * as Sentry from "@sentry/react-router";
+import bootstrap from "bootstrap?url";
 import cx from "classnames";
+import { useEffect, useState, type ReactNode } from "react";
+import { Helmet } from "react-helmet";
 import {
   data,
   isRouteErrorResponse,
@@ -33,6 +36,7 @@ import {
 import v2Styles from "~/styles/renku_bootstrap.scss?url";
 import { CONFIG_JSON } from "~server/constants";
 import type { Route } from "./+types/root";
+import PageLoader from "./components/PageLoader";
 import NotFound from "./not-found/NotFound";
 import type { AppParams } from "./utils/context/appParams.types";
 import { validatedAppParams } from "./utils/context/appParams.utils";
@@ -86,110 +90,9 @@ export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
 }
 clientLoader.hydrate = true as const;
 
-export function ErrorBoundary({ error, loaderData }: Route.ErrorBoundaryProps) {
-  console.log({ error, loaderData });
-  if (isRouteErrorResponse(error)) {
-    return (
-      <html lang="en">
-        <head>
-          <link rel="stylesheet" type="text/css" href={v2Styles} />
-          <title>Page Not Found | Renku</title>
-          <Links />
-        </head>
-        <body>
-          <NotFound forceV2={true} />
-        </body>
-      </html>
-    );
-  } else if (error instanceof Error) {
-    console.error(error);
-    console.log({ SentryIsInitialized: Sentry.isInitialized() });
-    Sentry.captureException(error);
-    return (
-      <html lang="en">
-        <head>
-          <link rel="stylesheet" type="text/css" href={v2Styles} />
-          <title>Error | Renku</title>
-          <Links />
-        </head>
-        <body>
-          <div>
-            <h1>Error</h1>
-            <p>{error.message}</p>
-          </div>
-        </body>
-      </html>
-    );
-  }
-  return <h1>Unknown Error</h1>;
-}
-
-export function HydrateFallback() {
-  return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
-        <meta name="theme-color" content="#000000" />
-        {/*
-        manifest.json provides metadata used when your web app is added to the
-        homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
-        */}
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon-180x180.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <div
-          id="root"
-          className={cx("d-flex", "flex-column", "min-vh-100")}
-        ></div>
-        <ScrollRestoration />
-        <Scripts />
-      </body>
-    </html>
-  );
-}
-
-export const meta: MetaFunction = () => {
-  return DEFAULT_META;
-};
-
-export default function Root({ loaderData }: Route.ComponentProps) {
-  const params = validatedAppParams(loaderData.config);
-
-  const isClientSide = typeof window === "object";
-  if (isClientSide) {
-    console.log({ params });
-    if (params.SENTRY_URL && !Sentry.isInitialized()) {
-      console.log("Init sentry here");
-      initClientSideSentry(params);
-    }
-  }
-
+// Layout for the root route
+// Reference: https://reactrouter.com/api/framework-conventions/root.tsx#layout-export
+export function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -229,13 +132,80 @@ export default function Root({ loaderData }: Route.ComponentProps) {
       </head>
       <body>
         <div id="root" className={cx("d-flex", "flex-column", "min-vh-100")}>
-          <Outlet context={{ params } satisfies RootOutletContext} />
+          {children}
         </div>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
   );
+}
+
+// Fallback content shown if a server-side error occurs
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  if (isRouteErrorResponse(error)) {
+    return (
+      <>
+        <Helmet>
+          <link rel="stylesheet" type="text/css" href={bootstrap} />
+          <link rel="stylesheet" type="text/css" href={v2Styles} />
+          <title>Page Not Found | Renku</title>
+        </Helmet>
+        <NotFound forceV2={true} />
+      </>
+    );
+  } else if (error instanceof Error) {
+    Sentry.captureException(error);
+    return (
+      <>
+        <Helmet>
+          <link rel="stylesheet" type="text/css" href={bootstrap} />
+          <link rel="stylesheet" type="text/css" href={v2Styles} />
+          <title>Error | Renku</title>
+        </Helmet>
+        <div>
+          <h1>Error</h1>
+          <p>{error.message}</p>
+        </div>
+      </>
+    );
+  }
+  return <h1>Unknown Error</h1>;
+}
+
+// Fallback content while client-side data is awaited
+export function HydrateFallback() {
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  return (
+    <>
+      <Helmet>
+        <link rel="stylesheet" type="text/css" href={bootstrap} />
+        <link rel="stylesheet" type="text/css" href={v2Styles} />
+        <title>Loading Renku page...</title>
+      </Helmet>
+      {isHydrated && <PageLoader />}
+    </>
+  );
+}
+
+export const meta: MetaFunction = () => {
+  return DEFAULT_META;
+};
+
+export default function Root({ loaderData }: Route.ComponentProps) {
+  const params = validatedAppParams(loaderData.config);
+  const isClientSide = typeof window === "object";
+  if (isClientSide) {
+    if (params.SENTRY_URL && !Sentry.isInitialized()) {
+      initClientSideSentry(params);
+    }
+  }
+  return <Outlet context={{ params } satisfies RootOutletContext} />;
 }
 
 export type RootOutletContext = {

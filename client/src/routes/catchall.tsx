@@ -46,36 +46,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw data("Not Found", { status: 404, statusText: "Not Found" });
   }
   return data(null);
-  // const clientSideFetch =
-  //   process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
-  // if (clientSideFetch) {
-  //   return data({ config: undefined, clientSideFetch } as const);
-  // }
-
-  // //? In production, directly load what we would return for /config.json
-  // return data({ config: CONFIG_JSON, clientSideFetch } as const);
 }
-
-// export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
-//   const { config, clientSideFetch } = await serverLoader();
-//   //? Load the config.json contents from localhost in development
-//   if (clientSideFetch) {
-//     const configResponse = await fetch("/config.json");
-//     const configData = await configResponse.json();
-//     return { config: configData as typeof CONFIG_JSON, clientSideFetch };
-//   }
-//   return { config, clientSideFetch };
-// }
-// clientLoader.hydrate = true as const;
 
 export default function Component() {
   const { params } = useOutletContext<RootOutletContext>();
-
-  // const { config } = loaderData;
-  // if (config == null) {
-  //   return null;
-  // }
-  // return <AppRoot config={config} />;
 
   return <AppRoot params={params} />;
 }

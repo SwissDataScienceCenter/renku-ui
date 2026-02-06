@@ -15,9 +15,9 @@ import { globalSchema, StateModel } from "./model";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
-// import { Sentry } from "./utils/helpers/sentry";
 import { Url } from "./utils/helpers/url";
 
+// TODO: move "bootstrap" handling to root.tsx
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
 
@@ -33,8 +33,6 @@ export default function appIndex(config) {
 function appIndexInner(params) {
   const container = document.getElementById("root");
   const root = createRoot(container);
-
-  // const params = validatedAppParams(params_);
 
   // configure core api versioned url helper (only used if legacy support is enabled)
   const coreApiVersionedUrlConfig = null;
