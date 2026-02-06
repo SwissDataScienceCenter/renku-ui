@@ -12,12 +12,11 @@ import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
-import { UserCoordinator } from "./user";
-import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
-import { Sentry } from "./utils/helpers/sentry";
+import SentryUserHandler from "./utils/helpers/sentryv2/SentryUserHandler";
 import { Url } from "./utils/helpers/url";
 
+// TODO: move "bootstrap" handling to root.tsx
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
 
@@ -30,11 +29,11 @@ export default function appIndex(config) {
   hasRendered = true;
 }
 
-function appIndexInner(params_) {
+function appIndexInner(params) {
+  // NOTE: This creates a React app inside a React app
+  // TODO: Remove legacy side effects and render a single app
   const container = document.getElementById("root");
   const root = createRoot(container);
-
-  const params = validatedAppParams(params_);
 
   // configure core api versioned url helper (only used if legacy support is enabled)
   const coreApiVersionedUrlConfig = null;
@@ -62,39 +61,18 @@ function appIndexInner(params_) {
     return;
   }
 
-  // Query user data
-  const userCoordinator = client
-    ? new UserCoordinator(client, model.subModel("user"))
-    : null;
-  const userPromise = userCoordinator?.fetchUser();
-
-  // configure Sentry
-  let uiApplication = App;
-  if (params.SENTRY_URL) {
-    Sentry.init(
-      params.SENTRY_URL,
-      params.SENTRY_NAMESPACE,
-      userPromise,
-      params.UI_VERSION,
-      params.TELEPRESENCE,
-      params.SENTRY_SAMPLE_RATE,
-      [params.UISERVER_URL]
-    );
-    const profiler = !!params.SENTRY_SAMPLE_RATE;
-    if (profiler) uiApplication = Sentry.withProfiler(App);
-  }
-
   // Map redux user data to the initial react application
   function mapStateToProps(state, ownProps) {
     return { user: state.stateModel.user, ...ownProps };
   }
 
   // Render UI application
-  const VisibleApp = connect(mapStateToProps)(uiApplication);
+  const VisibleApp = connect(mapStateToProps)(App);
   root.render(
     <Provider store={model.reduxStore}>
       <BrowserRouter>
         <AppErrorBoundary>
+          <SentryUserHandler />
           <LoginHandler />
           <FeatureFlagHandler />
           <VisibleApp
