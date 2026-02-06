@@ -12,14 +12,14 @@ import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
-import { UserCoordinator } from "./user";
-import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import { Url } from "./utils/helpers/url";
 
 // TODO: move "bootstrap" handling to root.tsx
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
+
+import SentryUserHandler from "./utils/helpers/sentryv2/SentryUserHandler";
 
 let hasRendered = false;
 
@@ -31,6 +31,8 @@ export default function appIndex(config) {
 }
 
 function appIndexInner(params) {
+  // NOTE: This creates a React app inside a React app
+  // TODO: Remove legacy side effects and render a single app
   const container = document.getElementById("root");
   const root = createRoot(container);
 
@@ -93,6 +95,7 @@ function appIndexInner(params) {
     <Provider store={model.reduxStore}>
       <BrowserRouter>
         <AppErrorBoundary>
+          <SentryUserHandler />
           <LoginHandler />
           <FeatureFlagHandler />
           <VisibleApp

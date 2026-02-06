@@ -201,6 +201,7 @@ export default function Root({ loaderData }: Route.ComponentProps) {
   const params = validatedAppParams(loaderData.config);
   const isClientSide = typeof window === "object";
   if (isClientSide) {
+    console.log(params.SENTRY_URL);
     if (params.SENTRY_URL && !Sentry.isInitialized()) {
       initClientSideSentry(params);
     }

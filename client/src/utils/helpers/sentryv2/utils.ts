@@ -53,22 +53,6 @@ export function initClientSideSentry(params: AppParams) {
   };
   console.log({ config });
   Sentry.init(config);
-
-  //   Sentry.init({
-  //     dsn: params.SENTRY_URL,
-  // environment: sentryNamespace,
-  //     release: getRelease(uiVersion),
-  //     beforeSend: (event) => hookBeforeSend(event),
-  //     denyUrls: sentryDenyUrls,
-  //     integrations: [
-  //       new SentryLib.BrowserTracing({
-  //         shouldCreateSpanForRequest: (url) =>
-  //           tracingOrigins.includes(new URL(url).origin),
-  //       }),
-  //     ],
-  //     tracesSampleRate: sentrySampleRate, // number between 0 and 1. (e.g. to send 20% of transactions use 0.2)
-  //   })
-
   Sentry.setTags({
     component: UI_COMPONENT,
   });

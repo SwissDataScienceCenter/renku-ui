@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import * as Sentry from "@sentry/react";
+import * as Sentry from "@sentry/react-router";
 import cx from "classnames";
 import { ReactNode, useCallback } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
@@ -31,6 +31,8 @@ interface AppErrorBoundaryProps {
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
   // Handle chunk load errors by reloading the page
   const beforeCapture = useCallback((scope: Sentry.Scope, error: unknown) => {
+    console.log(Sentry.isInitialized());
+
     if (
       error instanceof Error &&
       ((error instanceof TypeError &&
