@@ -31,7 +31,6 @@ import {
   Tag,
 } from "react-bootstrap-icons";
 
-import { DateFilterTypes } from "~/components/dateFilter/DateFilter";
 import {
   EnumFilter,
   Filter,
@@ -273,19 +272,19 @@ export const FILTER_DATE: EnumFilter = {
       label: <>All</>,
     },
     {
-      value: DateFilterTypes.lastWeek,
+      value: "created>today-7d",
       label: <>Last week</>,
     },
     {
-      value: DateFilterTypes.lastMonth,
+      value: "created>today-31d",
       label: <>Last month</>,
     },
     {
-      value: DateFilterTypes.last90days,
+      value: "created>today-90d",
       label: <>Last 90 days</>,
     },
     {
-      value: DateFilterTypes.older,
+      value: "created<today-90d",
       label: <>Older than 90 days</>,
     },
   ],

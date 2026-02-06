@@ -61,13 +61,13 @@ export default function SearchFilters() {
     {
       groupSlug: namespace ?? "",
     },
-    { skip: kind !== "group" || !namespace}
+    { skip: kind !== "group" || !namespace }
   );
-  const isNamespace = type == "group" || type == "user";
+  const isNamespace = kind == "group" || kind == "user";
 
   // Add numbers to the content types. Mind that this requires an additional request.
   const filterContentByType =
-    type === "group" || type === "user"
+    kind === "group" || kind === "user"
       ? FILTER_CONTENT_NAMESPACE
       : FILTER_CONTENT;
   const hydratedFilterContentAllowedValues = useMemo(() => {

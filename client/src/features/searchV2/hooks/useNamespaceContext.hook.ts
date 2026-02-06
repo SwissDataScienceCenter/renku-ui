@@ -33,7 +33,7 @@ export type NamespaceContextType =
       user: UserWithId;
     }
   | {
-      type: "global";
+      kind: "global";
       namespace: undefined;
     };
 
@@ -41,7 +41,7 @@ export function useNamespaceContext() {
   const ctx = useOutletContext<NamespaceContextType | undefined>();
   if (!ctx) {
     return {
-      type: "global",
+      kind: "global",
       namespace: undefined,
       group: undefined,
       user: undefined,
