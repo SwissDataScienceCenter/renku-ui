@@ -15,7 +15,7 @@ import { globalSchema, StateModel } from "./model";
 import { UserCoordinator } from "./user";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
-import { Sentry } from "./utils/helpers/sentry";
+// import { Sentry } from "./utils/helpers/sentry";
 import { Url } from "./utils/helpers/url";
 
 import "bootstrap";
@@ -30,11 +30,11 @@ export default function appIndex(config) {
   hasRendered = true;
 }
 
-function appIndexInner(params_) {
+function appIndexInner(params) {
   const container = document.getElementById("root");
   const root = createRoot(container);
 
-  const params = validatedAppParams(params_);
+  // const params = validatedAppParams(params_);
 
   // configure core api versioned url helper (only used if legacy support is enabled)
   const coreApiVersionedUrlConfig = null;
@@ -62,27 +62,27 @@ function appIndexInner(params_) {
     return;
   }
 
-  // Query user data
-  const userCoordinator = client
-    ? new UserCoordinator(client, model.subModel("user"))
-    : null;
-  const userPromise = userCoordinator?.fetchUser();
+  // // Query user data
+  // const userCoordinator = client
+  //   ? new UserCoordinator(client, model.subModel("user"))
+  //   : null;
+  // const userPromise = userCoordinator?.fetchUser();
 
   // configure Sentry
   let uiApplication = App;
-  if (params.SENTRY_URL) {
-    Sentry.init(
-      params.SENTRY_URL,
-      params.SENTRY_NAMESPACE,
-      userPromise,
-      params.UI_VERSION,
-      params.TELEPRESENCE,
-      params.SENTRY_SAMPLE_RATE,
-      [params.UISERVER_URL]
-    );
-    const profiler = !!params.SENTRY_SAMPLE_RATE;
-    if (profiler) uiApplication = Sentry.withProfiler(App);
-  }
+  // if (params.SENTRY_URL) {
+  //   Sentry.init(
+  //     params.SENTRY_URL,
+  //     params.SENTRY_NAMESPACE,
+  //     userPromise,
+  //     params.UI_VERSION,
+  //     params.TELEPRESENCE,
+  //     params.SENTRY_SAMPLE_RATE,
+  //     [params.UISERVER_URL]
+  //   );
+  //   const profiler = !!params.SENTRY_SAMPLE_RATE;
+  //   if (profiler) uiApplication = Sentry.withProfiler(App);
+  // }
 
   // Map redux user data to the initial react application
   function mapStateToProps(state, ownProps) {

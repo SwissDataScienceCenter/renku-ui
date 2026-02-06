@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
+import * as Sentry from "@sentry/react-router";
 import cx from "classnames";
 import {
+  data,
   isRouteErrorResponse,
   Links,
   Meta,
@@ -29,8 +31,12 @@ import {
 } from "react-router";
 
 import v2Styles from "~/styles/renku_bootstrap.scss?url";
+import { CONFIG_JSON } from "~server/constants";
 import type { Route } from "./+types/root";
 import NotFound from "./not-found/NotFound";
+import type { AppParams } from "./utils/context/appParams.types";
+import { validatedAppParams } from "./utils/context/appParams.utils";
+import { initClientSideSentry } from "./utils/helpers/sentryv2/utils";
 
 export const DEFAULT_META_TITLE: string =
   "Reproducible Data Science | Open Research | Renku";
@@ -57,7 +63,31 @@ export const DEFAULT_META: MetaDescriptor[] = [
   },
 ];
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export async function loader() {
+  const clientSideFetch =
+    process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
+  if (clientSideFetch) {
+    return data({ config: undefined, clientSideFetch } as const);
+  }
+
+  //? In production, directly load what we would return for /config.json
+  return data({ config: CONFIG_JSON, clientSideFetch } as const);
+}
+
+export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
+  const { config, clientSideFetch } = await serverLoader();
+  //? Load the config.json contents from localhost in development
+  if (clientSideFetch) {
+    const configResponse = await fetch("/config.json");
+    const configData = await configResponse.json();
+    return { config: configData as typeof CONFIG_JSON, clientSideFetch };
+  }
+  return { config, clientSideFetch };
+}
+clientLoader.hydrate = true as const;
+
+export function ErrorBoundary({ error, loaderData }: Route.ErrorBoundaryProps) {
+  console.log({ error, loaderData });
   if (isRouteErrorResponse(error)) {
     return (
       <html lang="en">
@@ -72,6 +102,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       </html>
     );
   } else if (error instanceof Error) {
+    console.error(error);
+    console.log({ SentryIsInitialized: Sentry.isInitialized() });
+    Sentry.captureException(error);
     return (
       <html lang="en">
         <head>
@@ -91,11 +124,72 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return <h1>Unknown Error</h1>;
 }
 
+export function HydrateFallback() {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <meta name="theme-color" content="#000000" />
+        {/*
+        manifest.json provides metadata used when your web app is added to the
+        homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+        */}
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon-180x180.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <div
+          id="root"
+          className={cx("d-flex", "flex-column", "min-vh-100")}
+        ></div>
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
 export const meta: MetaFunction = () => {
   return DEFAULT_META;
 };
 
-export default function Root() {
+export default function Root({ loaderData }: Route.ComponentProps) {
+  const params = validatedAppParams(loaderData.config);
+
+  const isClientSide = typeof window === "object";
+  if (isClientSide) {
+    console.log({ params });
+    if (params.SENTRY_URL && !Sentry.isInitialized()) {
+      console.log("Init sentry here");
+      initClientSideSentry(params);
+    }
+  }
+
   return (
     <html lang="en">
       <head>
@@ -135,7 +229,7 @@ export default function Root() {
       </head>
       <body>
         <div id="root" className={cx("d-flex", "flex-column", "min-vh-100")}>
-          <Outlet />
+          <Outlet context={{ params } satisfies RootOutletContext} />
         </div>
         <ScrollRestoration />
         <Scripts />
@@ -143,3 +237,7 @@ export default function Root() {
     </html>
   );
 }
+
+export type RootOutletContext = {
+  params: AppParams;
+};
