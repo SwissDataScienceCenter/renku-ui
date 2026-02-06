@@ -67,7 +67,7 @@ function appIndexInner(params) {
   }
 
   // Render UI application
-  const VisibleApp = connect(mapStateToProps)(uiApplication);
+  const VisibleApp = connect(mapStateToProps)(App);
   root.render(
     <Provider store={model.reduxStore}>
       <BrowserRouter>

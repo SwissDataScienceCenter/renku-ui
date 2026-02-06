@@ -10,8 +10,6 @@ const EXCLUDED_URLS = [
   /^chrome:\/\//i, // Chrome extensions 2
 ];
 
-console.log("Running instrument.server.mjs");
-
 function getRelease(version) {
   // Check input validity
   if (!version || typeof version !== "string") return RELEASE_UNKNOWN;
@@ -34,7 +32,6 @@ function getRelease(version) {
 
 if (process.env.NODE_ENV !== "development") {
   // Initialize Sentry based on env vars
-  console.log("Prod serverside");
   const dsn = process.env.SENTRY_URL;
   if (dsn) {
     const environment = process.env.SENTRY_NAMESPACE || NAMESPACE_DEFAULT;
@@ -56,11 +53,9 @@ if (process.env.NODE_ENV !== "development") {
       denyUrls: [...EXCLUDED_URLS],
       tracesSampleRate,
     };
-    console.log({ config });
     Sentry.init(config);
     Sentry.setTags({
       component: UI_COMPONENT,
     });
   }
-  console.log(Sentry.isInitialized());
 }

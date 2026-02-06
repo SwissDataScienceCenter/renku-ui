@@ -34,7 +34,6 @@ export default function SentryUserHandler() {
           email: user.email,
         });
         Sentry.setTag("user.username", user.username);
-        console.log("set user for sentry", user);
       } else {
         Sentry.setUser({
           logged: false,

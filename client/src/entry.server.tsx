@@ -14,6 +14,7 @@ function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _loadContext: AppLoadContext
   // If you have middleware enabled:
   // loadContext: RouterContextProvider
@@ -82,6 +83,7 @@ function handleRequest(
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
+            // eslint-disable-next-line no-console
             console.error(error);
           }
         },
@@ -130,7 +132,6 @@ function getRelease(version: string): string {
 if (process.env.NODE_ENV === "development") {
   // Fetch /config.json and initialize Sentry
   // NOTE: Some startup instrumentation may be missing
-  console.log("Dev serverside");
   const port = Number.parseInt(process.env.PORT || "3000", 10);
   fetch(`http://localhost:${port}/config.json`).then((res) => {
     res.json().then((params) => {
@@ -154,12 +155,10 @@ if (process.env.NODE_ENV === "development") {
         denyUrls: [...EXCLUDED_URLS],
         tracesSampleRate,
       };
-      console.log({ config });
       Sentry.init(config);
       Sentry.setTags({
         component: UI_COMPONENT,
       });
-      console.log(Sentry.isInitialized());
     });
   });
 }

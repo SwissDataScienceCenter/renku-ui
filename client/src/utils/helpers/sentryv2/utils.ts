@@ -51,7 +51,6 @@ export function initClientSideSentry(params: AppParams) {
     integrations: [Sentry.reactRouterTracingIntegration()],
     tracesSampleRate,
   };
-  console.log({ config });
   Sentry.init(config);
   Sentry.setTags({
     component: UI_COMPONENT,

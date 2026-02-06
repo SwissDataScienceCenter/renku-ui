@@ -31,8 +31,6 @@ interface AppErrorBoundaryProps {
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
   // Handle chunk load errors by reloading the page
   const beforeCapture = useCallback((scope: Sentry.Scope, error: unknown) => {
-    console.log(Sentry.isInitialized());
-
     if (
       error instanceof Error &&
       ((error instanceof TypeError &&
