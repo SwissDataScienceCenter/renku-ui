@@ -91,7 +91,6 @@ export const ABSOLUTE_ROUTES = {
       show: {
         root: "/u/:username",
         search: "/u/:username/search",
-        splat: "/u/:username/*",
       },
     },
   },

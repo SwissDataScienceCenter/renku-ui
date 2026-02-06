@@ -53,12 +53,12 @@ export default function GroupSearchFilters() {
   const [searchParams] = useSearchParams();
   const { data: search } = useGroupSearch();
   const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
-  const { namespace, type } = useNamespaceContext();
+  const { namespace, kind } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
       groupSlug: namespace,
     },
-    { skip: type !== "group" }
+    { skip: kind !== "group" }
   );
 
   // Add numbers to the content types. Mind that this requires an additional request.
@@ -163,7 +163,7 @@ export default function GroupSearchFilters() {
       <h4 className={cx("d-sm-none", "mb-0")}>Filters</h4>
 
       <GroupSearchFilter filter={filterContentWithQuantities} />
-      {type == "group" && (
+      {kind == "group" && (
         <GroupSearchFilter filter={filterMembersWithValues} />
       )}
       <GroupSearchFilter

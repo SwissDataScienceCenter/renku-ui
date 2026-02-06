@@ -27,8 +27,10 @@ import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsB
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
 
 export default function UserShow() {
-  const context = useNamespaceContext();
-  const username = context.type === "user" ? context.user?.username : null;
+  const ctx = useNamespaceContext();
+  if (!ctx || ctx.kind !== "user") return null;
+  const { kind, user } = ctx;
+  const username = kind === "user" ? user?.username : null;
 
   const information = (
     <div className={cx("d-flex", "flex-column")}>
@@ -40,7 +42,7 @@ export default function UserShow() {
     </div>
   );
 
-  if (context.type !== "user" || !username) {
+  if (!username) {
     return null;
   }
   return (

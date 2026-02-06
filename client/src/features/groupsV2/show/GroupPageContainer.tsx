@@ -120,7 +120,7 @@ export default function GroupPageContainer() {
             <Outlet
               context={
                 {
-                  type: "group",
+                  kind: "group",
                   namespace: group.slug,
                   group: group,
                 } satisfies NamespaceContextType

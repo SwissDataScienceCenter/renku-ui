@@ -30,25 +30,24 @@ interface GroupInformationProps {
 export default function GroupInformation({
   output = "plain",
 }: GroupInformationProps) {
-  const context = useNamespaceContext();
+  const ctx = useNamespaceContext();
+  if (!ctx || ctx.kind !== "group") return null;
+  const { namespace, kind, group } = ctx;
 
-  const information = context.type === "group" && (
+  const information = kind === "group" && (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <GroupInformationBox
         icon={<JournalAlbum className="bi" />}
         title="Identifier:"
       >
-        <p className="mb-0">@{context.namespace}</p>
+        <p className="mb-0">@{namespace}</p>
       </GroupInformationBox>
       <GroupInformationBox icon={<Clock className="bi" />} title="Created:">
         <p className="mb-0">
-          <TimeCaption
-            datetime={context.group?.creation_date}
-            className={cx("fs-6")}
-          />
+          <TimeCaption datetime={group.creation_date} className={cx("fs-6")} />
         </p>
       </GroupInformationBox>
-      <GroupV2MemberListDisplay group={context.namespace} />
+      <GroupV2MemberListDisplay group={namespace} />
     </div>
   );
   return output === "plain" ? (

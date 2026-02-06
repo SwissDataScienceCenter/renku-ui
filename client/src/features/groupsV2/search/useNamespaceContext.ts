@@ -18,17 +18,17 @@
 
 import { useOutletContext } from "react-router";
 
-import { GroupResponse } from "~/features/projectsV2/api/namespace.api";
-import { UserWithId } from "~/features/usersV2/api/users.api";
+import type { GroupResponse } from "~/features/projectsV2/api/namespace.api";
+import type { UserWithId } from "~/features/usersV2/api/users.api";
 
 export type NamespaceContextType =
   | {
-      type: "group";
+      kind: "group";
       namespace: string;
       group: GroupResponse;
     }
   | {
-      type: "user";
+      kind: "user";
       namespace: string;
       user: UserWithId;
     };
