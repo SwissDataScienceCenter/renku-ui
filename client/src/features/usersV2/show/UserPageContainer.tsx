@@ -120,7 +120,7 @@ export default function UserPageContainer() {
             <Outlet
               context={
                 {
-                  type: "user",
+                  kind: "user",
                   namespace: username,
                   user: user,
                 } satisfies NamespaceContextType
