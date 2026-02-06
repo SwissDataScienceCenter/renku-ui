@@ -13,13 +13,12 @@ import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
+import SentryUserHandler from "./utils/helpers/sentryv2/SentryUserHandler";
 import { Url } from "./utils/helpers/url";
 
 // TODO: move "bootstrap" handling to root.tsx
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
-
-import SentryUserHandler from "./utils/helpers/sentryv2/SentryUserHandler";
 
 let hasRendered = false;
 
@@ -61,28 +60,6 @@ function appIndexInner(params) {
     );
     return;
   }
-
-  // // Query user data
-  // const userCoordinator = client
-  //   ? new UserCoordinator(client, model.subModel("user"))
-  //   : null;
-  // const userPromise = userCoordinator?.fetchUser();
-
-  // configure Sentry
-  let uiApplication = App;
-  // if (params.SENTRY_URL) {
-  //   Sentry.init(
-  //     params.SENTRY_URL,
-  //     params.SENTRY_NAMESPACE,
-  //     userPromise,
-  //     params.UI_VERSION,
-  //     params.TELEPRESENCE,
-  //     params.SENTRY_SAMPLE_RATE,
-  //     [params.UISERVER_URL]
-  //   );
-  //   const profiler = !!params.SENTRY_SAMPLE_RATE;
-  //   if (profiler) uiApplication = Sentry.withProfiler(App);
-  // }
 
   // Map redux user data to the initial react application
   function mapStateToProps(state, ownProps) {
