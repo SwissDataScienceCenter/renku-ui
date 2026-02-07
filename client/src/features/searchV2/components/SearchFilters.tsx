@@ -34,46 +34,54 @@ import {
 } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
+import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
-import { useGroupSearch } from "./groupSearch.hook";
-import { Filter, GroupSearchEntity } from "./groupSearch.types";
 import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
+  FILTER_CONTENT_NAMESPACE,
+  FILTER_DATE,
   FILTER_KEYWORD,
   FILTER_MEMBER,
+  FILTER_MY_ROLE,
   FILTER_PAGE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
-} from "./groupsSearch.constants";
+} from "../contextSearch.constants";
+import { Filter, GroupSearchEntity } from "../contextSearch.types";
+import { useContextSearch } from "../hooks/useContextSearch.hook";
 
-export default function GroupSearchFilters() {
+export default function SearchFilters() {
   const [searchParams] = useSearchParams();
-  const { data: search } = useGroupSearch();
-  const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
+  const { data: search } = useContextSearch();
+  const { data: searchAnyType } = useContextSearch([FILTER_CONTENT.name]);
   const { namespace, kind } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
-      groupSlug: namespace,
+      groupSlug: namespace ?? "",
     },
-    { skip: kind !== "group" }
+    { skip: kind !== "group" || !namespace }
   );
+  const isNamespace = kind == "group" || kind == "user";
 
   // Add numbers to the content types. Mind that this requires an additional request.
+  const filterContentByType =
+    kind === "group" || kind === "user"
+      ? FILTER_CONTENT_NAMESPACE
+      : FILTER_CONTENT;
   const hydratedFilterContentAllowedValues = useMemo(() => {
-    return FILTER_CONTENT.allowedValues.map((option) => ({
+    return filterContentByType.allowedValues.map((option) => ({
       ...option,
       quantity: searchAnyType?.facets?.entityType?.[option.value] ?? 0,
     }));
-  }, [searchAnyType?.facets?.entityType]);
+  }, [searchAnyType?.facets?.entityType, filterContentByType.allowedValues]);
   const filterContentWithQuantities = useMemo<Filter>(() => {
     return {
-      ...FILTER_CONTENT,
+      ...filterContentByType,
       allowedValues: hydratedFilterContentAllowedValues,
     };
-  }, [hydratedFilterContentAllowedValues]);
+  }, [hydratedFilterContentAllowedValues, filterContentByType]);
 
   // Create the enum filter for keywords with quantities.
   const selectedKeywords = useMemo(() => {
@@ -166,12 +174,16 @@ export default function GroupSearchFilters() {
       {kind == "group" && (
         <GroupSearchFilter filter={filterMembersWithValues} />
       )}
+
       <GroupSearchFilter
         defaultElementsToShow={10}
         filter={filterKeywordWithQuantities}
         hiddenDecoration
       />
+
       <GroupSearchFilter filter={FILTER_VISIBILITY} />
+      <GroupSearchFilter filter={FILTER_DATE} />
+      {!isNamespace && <GroupSearchFilter filter={FILTER_MY_ROLE} />}
     </div>
   );
 }
@@ -339,17 +351,25 @@ function GroupSearchFilterContent({
       } else if (allowSelectMany) {
         // Move logic to handle multiple values to a utility function?
         const currentValues =
-          params.get(filter.name)?.split(VALUE_SEPARATOR_AND) ?? [];
+          params
+            .get(filter.name)
+            ?.split(filter.valueSeparator ?? VALUE_SEPARATOR_AND) ?? [];
         if (currentValues.includes(value)) {
           const newValues = currentValues.filter((v) => v !== value);
           if (newValues.length > 0) {
-            params.set(filter.name, newValues.join(VALUE_SEPARATOR_AND));
+            params.set(
+              filter.name,
+              newValues.join(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
+            );
           } else {
             params.delete(filter.name);
           }
         } else {
           currentValues.push(value);
-          params.set(filter.name, currentValues.join(VALUE_SEPARATOR_AND));
+          params.set(
+            filter.name,
+            currentValues.join(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
+          );
         }
       } else {
         params.set(filter.name, value);
@@ -379,7 +399,7 @@ function GroupSearchFilterContent({
                   isChecked={
                     allowSelectMany
                       ? current
-                          .split(VALUE_SEPARATOR_AND)
+                          .split(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
                           .includes(element.value)
                       : current === element.value
                   }

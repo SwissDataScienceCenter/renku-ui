@@ -20,18 +20,10 @@ import { ReactNode } from "react";
 
 import type { SearchQuery } from "~/features/searchV2/api/searchV2Api.api";
 import {
-  KEY_VALUE_SEPARATOR,
-  TERM_SEPARATOR,
-} from "../../searchV2/searchV2.constants";
-import type {
-  Filter,
-  FilterWithValue,
-  SearchQueryFilters,
-} from "./groupSearch.types";
-import {
   ALL_FILTERS,
   COMMON_FILTERS,
   DATACONNECTORS_FILTERS,
+  DEFAULT_INCLUDE_COUNTS,
   FILTER_CONTENT,
   FILTER_PAGE,
   FILTER_PER_PAGE,
@@ -40,7 +32,13 @@ import {
   PROJECT_FILTERS,
   SELECTABLE_FILTERS,
   VALUE_SEPARATOR_AND,
-} from "./groupsSearch.constants";
+} from "./contextSearch.constants";
+import type {
+  Filter,
+  FilterWithValue,
+  SearchQueryFilters,
+} from "./contextSearch.types";
+import { KEY_VALUE_SEPARATOR, TERM_SEPARATOR } from "./searchV2.constants";
 
 export function getSearchQueryFilters(
   searchParams: URLSearchParams,
@@ -140,6 +138,7 @@ export function generateQueryParams(
     per_page:
       (commonFilters[FILTER_PER_PAGE.name] as FilterWithValue<"number">)
         ?.value ?? FILTER_PER_PAGE.defaultValue,
+    include_counts: DEFAULT_INCLUDE_COUNTS,
   };
 }
 
