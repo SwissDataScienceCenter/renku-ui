@@ -552,7 +552,11 @@ function DataConnectorActionsInner({
         onDelete={onDelete}
         toggleModal={toggleDelete}
       />
-      <DepositCreationModal isOpen={isDepositOpen} setOpen={toggleDeposit} />
+      <DepositCreationModal
+        dataConnector={dataConnector}
+        isOpen={isDepositOpen}
+        setOpen={toggleDeposit}
+      />
       {dataConnectorLink && (
         <DataConnectorRemoveUnlinkModal
           dataConnector={dataConnector}
