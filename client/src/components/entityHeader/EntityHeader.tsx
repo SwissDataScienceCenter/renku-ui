@@ -26,7 +26,6 @@
 import cx from "classnames";
 
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import Creators, { EntityCreator } from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import { EntityType } from "../entities/entities.types";
@@ -36,7 +35,6 @@ import LinkedEntitiesByItemType, {
 } from "../entities/LinkedEntitiesByItemType";
 import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
-import VisibilityIcon from "../entities/VisibilityIcon";
 import PinnedBadge from "../list/PinnedBadge";
 import { EnvironmentLogs } from "../Logs";
 import { TimeCaption } from "../TimeCaption";
@@ -86,7 +84,6 @@ function EntityHeader({
   timeCaption,
   title,
   url,
-  visibility,
 }: EntityHeaderProps) {
   // Set the main button based on running sessions
   const mainButton = null;
@@ -100,7 +97,6 @@ function EntityHeader({
       <EnvironmentLogs name={displayModal.targetServer} annotations={{}} />
     ) : null;
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
-  const colorByType = stylesByItemType(itemType);
 
   return (
     <>
@@ -147,12 +143,6 @@ function EntityHeader({
         ) : null}
         <div className="entity-type-visibility align-items-baseline">
           <EntityLabel type={itemType} workflowType={null} />
-          {visibility ? (
-            <VisibilityIcon
-              visibility={visibility}
-              className={colorByType.colorText}
-            />
-          ) : null}
         </div>
         <div className="entity-title" data-cy={`${itemType}-title`}>
           <div

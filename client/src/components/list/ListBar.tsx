@@ -19,11 +19,9 @@
 import cx from "classnames";
 import { Link } from "react-router";
 
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
-import VisibilityIcon from "../entities/VisibilityIcon";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
 import PinnedBadge from "./PinnedBadge";
@@ -40,10 +38,8 @@ function ListBar({
   timeCaption,
   title,
   url,
-  visibility,
 }: ListElementProps) {
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
-  const colorByType = stylesByItemType(itemType);
   const mainButton = null;
 
   return (
@@ -95,12 +91,6 @@ function ListBar({
       </div>
       <div className="entity-type-visibility align-items-baseline">
         <EntityLabel type={itemType} workflowType={null} />
-        {visibility ? (
-          <VisibilityIcon
-            visibility={visibility}
-            className={colorByType.colorText}
-          />
-        ) : null}
       </div>
       <div className="entity-creators align-items-baseline text-truncate">
         <EntityCreators

@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { connect, Provider } from "react-redux";
+import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router";
 
 // Disable service workers for the moment -- see below where registerServiceWorker is called
@@ -7,19 +7,19 @@ import { BrowserRouter } from "react-router";
 
 import App from "./App";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
-import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
+import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Maintenance } from "./features/maintenance/Maintenance";
-import { globalSchema, StateModel } from "./model";
+import { store } from "./store/store";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import SentryUserHandler from "./utils/helpers/sentry/SentryUserHandler";
 import { Url } from "./utils/helpers/url";
 
+// import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
+// import { UserCoordinator } from "./user";
+
 // TODO: move "bootstrap" handling to root.tsx
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
-
-import LoginHandler from "./features/loginHandler/LoginHandler";
-import { UserCoordinator } from "./user";
 
 let hasRendered = false;
 
@@ -57,7 +57,7 @@ function appIndexInner(params) {
   const maintenance = params.MAINTENANCE;
   if (maintenance) {
     root.render(
-      <Provider store={model.reduxStore}>
+      <Provider store={store}>
         <Maintenance info={maintenance} />
       </Provider>
     );
@@ -72,7 +72,8 @@ function appIndexInner(params) {
   // // Render UI application
   // const VisibleApp = connect(mapStateToProps)(App);
   root.render(
-    <Provider store={model.reduxStore}>
+    // <Provider store={model.reduxStore}>
+    <Provider store={store}>
       <BrowserRouter>
         <AppErrorBoundary>
           <LoginHandler />

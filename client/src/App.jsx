@@ -16,19 +16,16 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Route, Routes, useLocation } from "react-router";
+import { Route, Routes } from "react-router";
 import { ToastContainer } from "react-toastify";
 
 import { Loader } from "./components/Loader";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import Cookie from "./features/cookie/Cookie";
 import { Favicon } from "./features/favicon/Favicon";
-import {
-  FooterNavbar,
-  RenkuNavBar,
-} from "./features/landing/components/NavBar/NavBar";
+// import { FooterNavbar } from "./features/landing/components/NavBar/NavBar";
 import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
 import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
 import LegacyDatasets from "./features/legacy/LegacyDatasets";
@@ -37,16 +34,14 @@ import LegacyRoot from "./features/legacy/LegacyRoot";
 import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
 import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import FooterNavbarV2 from "./features/rootV2/FooterNavbarV2";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
+import NavbarV2 from "./features/rootV2/NavbarV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
-import NotificationsManager from "./notifications/NotificationsManager";
 import AppContext from "./utils/context/appContext";
-import { setupWebSocket } from "./websocket";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-
-import { useTriggerNotifications } from "./authentication/useTriggerNotifications.hook";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -104,7 +99,7 @@ export default function App(props) {
   // const locationRef = useRef(location);
 
   // const [, setWebSocket] = useState(null);
-  // const [notifications, setNotifications] = useState(null);
+  const [notifications, setNotifications] = useState(undefined);
 
   // const triggerNotifications = useTriggerNotifications();
 
@@ -149,9 +144,9 @@ export default function App(props) {
         <Loader />
       </section>
     );
-  } else if (error) {
+  } /*else if (error) {
     return <Unavailable params={props.params} />;
-  }
+  }*/
 
   // const { coreApiVersionedUrlConfig, socket } = props;
   const appContext = {
@@ -169,9 +164,9 @@ export default function App(props) {
       <Favicon />
       <AppContext.Provider value={appContext}>
         <LoggedOutPrompt />
-        <RenkuNavBar />
+        <NavbarV2 />
         <CentralContentContainer />
-        <FooterNavbar />
+        <FooterNavbarV2 />
         <Cookie />
       </AppContext.Provider>
       <ToastContainer />

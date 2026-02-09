@@ -24,7 +24,7 @@ import {
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
-import { Link, useMatch } from "react-router";
+import { Link, useLocation, useMatch } from "react-router";
 import {
   Collapse,
   Dropdown,
@@ -46,6 +46,7 @@ import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import StatusBanner from "../platform/components/StatusBanner";
 import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 
 const RENKU_LOGO = "/static/public/img/logo.svg";
 
@@ -127,8 +128,12 @@ function NavbarItemHelp() {
 }
 
 export default function NavbarV2() {
-  const [isOpen, setIsOpen] = useState(false);
   const { params } = useContext(AppContext);
+
+  const { pathname } = useLocation();
+  const { data: user } = useGetUserQueryState();
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const onToggle = useCallback(() => {
     setIsOpen((isOpen) => !isOpen);
@@ -137,6 +142,10 @@ export default function NavbarV2() {
   const matchesShowSessionPage = useMatch(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.show
   );
+
+  if (!user?.isLoggedIn && pathname === ABSOLUTE_ROUTES.root) {
+    return null;
+  }
 
   if (matchesShowSessionPage) {
     return null;

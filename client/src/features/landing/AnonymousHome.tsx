@@ -23,7 +23,7 @@
  *  Presentational components.
  */
 
-import { Fragment, useContext } from "react";
+import { useContext } from "react";
 import { Col, Row } from "reactstrap";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
@@ -38,11 +38,12 @@ import DividerLandingPage from "./components/Dividier/Divider";
 import { GetStarted } from "./components/GetStarted/GetStarted";
 import HeroLanding from "./components/HeroLanding/HeroLanding";
 import { Introduction } from "./components/Introduction/Introduction";
-import { NavBarWarnings } from "./components/NavBar/NavBarWarnings";
 import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport";
 import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./components/WhoWeAre/WhoWeAre";
+
+// import { NavBarWarnings } from "./components/NavBar/NavBarWarnings";
 
 export default function AnonymousHome() {
   const { /*client, model,*/ params } = useContext(AppContext);
@@ -60,26 +61,28 @@ export default function AnonymousHome() {
   );
 }
 
-export function HomeHeader(props: AnonymousHomeConfig) {
-  return (
-    <Fragment>
-      <Row key="statuspage">
-        <Col>
-          <NavBarWarnings
-            // model={props.model}
-            uiShortSha={props.params["UI_SHORT_SHA"]}
-          />
-        </Col>
-      </Row>
-      <TopNav />
-    </Fragment>
-  );
+// export function HomeHeader(props: AnonymousHomeConfig) {
+export function HomeHeader() {
+  return <TopNav />;
+  // return (
+  //   <Fragment>
+  //     <Row key="statuspage">
+  //       <Col>
+  //         <NavBarWarnings
+  //           model={props.model}
+  //           uiShortSha={props.params["UI_SHORT_SHA"]}
+  //         />
+  //       </Col>
+  //     </Row>
+  //     <TopNav />
+  //   </Fragment>
+  // );
 }
 
-function StandardHome(props: AnonymousHomeConfig) {
+function StandardHome() {
   return (
     <>
-      <HeroLanding {...props} />
+      <HeroLanding />
       <Introduction />
       <WhatIsRenku />
       <GetStarted />
@@ -112,7 +115,7 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <HomeHeader {...props} />
+      <HomeHeader />
       <div className="rk-anon-home-section-content">
         <Row>
           <Col className="rk-pt-l rk-w-s">
@@ -134,7 +137,7 @@ function AnonymousHomeInner(props: Omit<AnonymousHomeConfig, "urlMap">) {
     <div id="rk-anon-home-frame">
       {props.homeCustomized.custom.enabled
         ? CustomizedAnonymousHome(p)
-        : StandardHome(p)}
+        : StandardHome()}
     </div>
   );
 }

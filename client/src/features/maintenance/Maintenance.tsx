@@ -23,8 +23,10 @@ import { Button, Col, Row } from "reactstrap";
 
 import AppContext, { type AppContextType } from "~/utils/context/appContext";
 import type { AppParams } from "~/utils/context/appParams.types";
-import { FooterNavbar } from "../landing/components/NavBar/NavBar";
 import StatusSummary from "../platform/components/StatusSummary";
+import FooterNavbarV2 from "../rootV2/FooterNavbarV2";
+
+// import { FooterNavbar } from "../landing/components/NavBar/NavBar";
 
 interface MaintenanceProps {
   info: string;
@@ -50,7 +52,7 @@ function Maintenance({ info }: MaintenanceProps) {
             </section>
           </main>
         </div>
-        <FooterNavbar />
+        <FooterNavbarV2 />
       </div>
     </BrowserRouter>
   );
@@ -62,16 +64,19 @@ interface UnavailableProps {
 function Unavailable({ params }: UnavailableProps) {
   const statusLink = params.STATUSPAGE_ID;
   const appContext: AppContextType = {
-    client: undefined,
-    coreApiVersionedUrlConfig: {
-      coreApiVersion: "",
-      overrides: {},
-    },
-    location: undefined,
-    model: undefined,
+    // client: undefined,
+    // coreApiVersionedUrlConfig: {
+    //   coreApiVersion: "",
+    //   overrides: {},
+    // },
+    // location: undefined,
+    // model: undefined,
+    // notifications: undefined,
+    // params,
+    // webSocket: undefined,
+
     notifications: undefined,
     params,
-    webSocket: undefined,
   };
 
   return (

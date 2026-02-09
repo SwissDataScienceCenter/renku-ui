@@ -20,13 +20,11 @@ import cx from "classnames";
 import type { CSSProperties } from "react";
 import { Link } from "react-router";
 
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
-import VisibilityIcon from "../entities/VisibilityIcon";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
 import PinnedBadge from "./PinnedBadge";
@@ -45,12 +43,10 @@ function ListCard({
   timeCaption,
   title,
   url,
-  visibility,
 }: ListElementProps) {
   const imageStyles: CSSProperties = imageUrl
     ? { backgroundImage: `url("${imageUrl}")` }
     : {};
-  const colorByType = stylesByItemType(itemType);
 
   return (
     <div
@@ -110,10 +106,6 @@ function ListCard({
             />
             <div className="d-flex align-items-center gap-3 card-small-text">
               <EntityLabel type={itemType} workflowType={null} />
-              <VisibilityIcon
-                visibility={visibility}
-                className={colorByType.colorText}
-              />
             </div>
             <p className="card-text my-1">
               <TimeCaption
