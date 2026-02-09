@@ -20,13 +20,9 @@ import * as Sentry from "@sentry/react";
 import cx from "classnames";
 import { ReactNode, useCallback } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { useLocation } from "react-router";
 
-import StyleHandler from "~/features/rootV2/StyleHandler";
-import rkOopsImg from "../styles/assets/oops.svg";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
-import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -68,50 +64,29 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 }
 
 function ErrorPage() {
-  const location = useLocation();
-  const forceV2Style = true;
-  const isLegacy = isRenkuLegacy(location.pathname, forceV2Style);
   const logged = useLegacySelector((state) => state.stateModel.user.logged);
   return (
     <>
-      <StyleHandler forceV2Style={forceV2Style} />
       <div
         className={cx("d-flex", "flex-column", "align-items-center", "mt-5")}
       >
         <div className={cx("p-4")}>
-          <img src={isLegacy ? rkOopsImg : rkOopsV2Img} />
-          <h3
-            className={cx(
-              isLegacy ? "text-rk-green" : "text-primary",
-              "fw-bold",
-              "mt-3"
-            )}
-          >
+          <img src={rkOopsV2Img} />
+          <h3 className={cx("text-primary", "fw-bold", "mt-3")}>
             It looks like we are having some issues.
           </h3>
 
           <p className="mb-0">
             You can try to{" "}
             <a
-              className={cx(
-                "btn",
-                isLegacy ? "btn-outline-rk-green" : "btn-outline-primary",
-                "m-2"
-              )}
+              className={cx("btn", "btn-outline-primary", "m-2")}
               href={window.location.href}
               onClick={() => window.location.reload()}
             >
               Reload the page
             </a>{" "}
             or{" "}
-            <a
-              className={cx(
-                "btn",
-                isLegacy ? "btn-rk-green" : "btn-primary",
-                "m-2"
-              )}
-              href="/"
-            >
+            <a className={cx("btn", "btn-primary", "m-2")} href="/">
               <ArrowLeft className={cx("me-2", "text-icon")} />
               {logged ? "Return to the dashboard" : "Return to home page"}
             </a>

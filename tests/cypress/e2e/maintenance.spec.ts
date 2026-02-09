@@ -51,8 +51,8 @@ describe("display the maintenance page when there is no user response", () => {
     fixtures.renkuDown().statuspageDown();
     cy.visit("/");
     cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get(".alert-warning")
-      .contains("Could not retrieve status information")
+    cy.getDataCy("statuspage-error")
+      .contains("could not retrieve RenkuLab's status from statuspage.io.")
       .should("be.visible");
   });
 
@@ -64,14 +64,14 @@ describe("display the maintenance page when there is no user response", () => {
     cy.wait("@getStatuspageInfo");
     cy.get("h1").should("have.length", 1);
     cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get("h3").contains("RenkuLab Status").should("be.visible");
-    cy.get("h4").contains("Scheduled Maintenance Details").should("be.visible");
+    cy.get("h2").contains("RenkuLab Status").should("be.visible");
+    cy.get("h2").contains("Scheduled Maintenance").should("be.visible");
   });
 });
 
 describe("display the status page", () => {
   it("Shows no banner if there is no incident or maintenance", () => {
-    fixtures.config().versions().userNone().getStatuspageInfo();
+    fixtures.config().versions().userTest().getStatuspageInfo();
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
     cy.get(".alert").should("not.exist");

@@ -23,11 +23,8 @@
  *  test fo utilities
  */
 
-import { DateTime } from "luxon";
 import { describe, expect, it } from "vitest";
 
-import { CommitsUtils } from "../components/commits/Commits";
-import { fixRelativePath } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 import {
   convertUnicodeToAscii,
   formatBytes,
@@ -38,65 +35,6 @@ import {
   splitAutosavedBranches,
 } from "./helpers/HelperFunctions";
 import { verifyTitleCharacters } from "./helpers/verifyTitleCharacters.utils";
-
-describe("Commits functions", () => {
-  const { ElementType, createDateObject, createCommitsObjects } = CommitsUtils;
-  const COMMITS = [
-    {
-      id: "cfed40406aee875a98203279745bbc35fe0a92b0",
-      short_id: "cfed4040",
-      created_at: "2021-04-21T17:04:37.000+02:00",
-      title: "new renku version",
-      message: "new renku version\n",
-      author_name: "Fake author",
-      author_email: "no@email.abc",
-      committed_date: "2019-08-26T17:04:37.000+02:00",
-    },
-    {
-      id: "2f28167c3a2a012e8e69d309747c121c55f1a3cb",
-      short_id: "2f28167c",
-      created_at: "2021-04-20T09:28:44.000+00:00",
-      title: "new history!",
-      message: "new history!\n",
-      author_name: "Fake author",
-      author_email: "no@email.abc",
-      committed_date: "2019-08-05T09:28:44.000+00:00",
-    },
-  ];
-
-  it("function createDateElement", () => {
-    const dateObject = createDateObject(COMMITS[0]);
-
-    expect(dateObject).toMatchObject({
-      type: "date",
-      date: new Date("2019-08-26T15:04:37Z"),
-      readableDate: "August 26, 2019",
-    });
-  });
-
-  it("function createCommitsObjects", () => {
-    const dateObject = createCommitsObjects(COMMITS);
-    expect(dateObject.length).toBeGreaterThan(COMMITS.length);
-
-    let dates = 0;
-    let last;
-    for (const commit of COMMITS) {
-      if (
-        !last ||
-        !DateTime.fromISO(commit.committed_date).hasSame(
-          DateTime.fromISO(last.committed_date),
-          "day"
-        )
-      ) {
-        dates++;
-      }
-      last = commit;
-    }
-    expect(dateObject.length).toBe(COMMITS.length + dates);
-    expect(dateObject[0].type).toBe(ElementType.DATE);
-    expect(dateObject[1].type).toBe(ElementType.COMMIT);
-  });
-});
 
 describe("Ini file parser", () => {
   it("valid code", () => {
@@ -252,46 +190,6 @@ describe("title related functions", () => {
     expect(verifyTitleCharacters("Test:-)")).toBeFalsy();
     expect(verifyTitleCharacters("test!_pro-ject~")).toBeFalsy(); // eslint-disable-line
     expect(verifyTitleCharacters("yeah 🚀")).toBeFalsy();
-  });
-});
-
-describe("Translate path for markdown", () => {
-  // This is the folder structure that will be used for testing
-  //
-  // /fileStructure
-  // ├── folder1
-  // │   ├── folder2
-  // │   │   ├── fileWithReferencesToFix.md
-  // │   │   └── testImage2.md
-  // │   └── folder3
-  // │       └── testImage3.md
-  // └── images
-  //     └── testImage1.png
-
-  const testCases = [
-    {
-      relativePath: "../../images/testImage1.png",
-      localFilePath: ["folder2", "folder1"],
-      expectedResult: "images/testImage1.png",
-    },
-    {
-      relativePath: "./testImage2.png",
-      localFilePath: ["folder2", "folder1"],
-      expectedResult: "folder1/folder2/testImage2.png",
-    },
-    {
-      relativePath: "../folder3/testImage3.png",
-      localFilePath: ["folder2", "folder1"],
-      expectedResult: "folder1/folder3/testImage3.png",
-    },
-  ];
-
-  it("function fixRelativePath", () => {
-    testCases.forEach((test) => {
-      expect(fixRelativePath(test.relativePath, test.localFilePath)).toEqual(
-        test.expectedResult
-      );
-    });
   });
 });
 

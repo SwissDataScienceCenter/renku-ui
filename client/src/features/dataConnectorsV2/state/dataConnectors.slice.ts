@@ -19,15 +19,15 @@
 import { createSlice, PayloadAction, SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
-import { EMPTY_CLOUD_STORAGE_STATE } from "../../project/components/cloudStorage/projectCloudStorage.constants";
-import {
-  AddCloudStorageState,
-  CloudStorageSchema,
-} from "../../project/components/cloudStorage/projectCloudStorage.types";
 import {
   getSchemaProviders,
   hasProviderShortlist,
-} from "../../project/utils/projectCloudStorage.utils";
+} from "~/features/cloudStorage/projectCloudStorage.utils";
+import { EMPTY_CLOUD_STORAGE_STATE } from "../../cloudStorage/projectCloudStorage.constants";
+import {
+  AddCloudStorageState,
+  CloudStorageSchema,
+} from "../../cloudStorage/projectCloudStorage.types";
 import {
   EMPTY_DATA_CONNECTOR_FLAT,
   type DataConnectorFlat,

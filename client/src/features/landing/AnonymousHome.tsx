@@ -23,38 +23,26 @@
  *  Presentational components.
  */
 
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useContext } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import LazyRenkuMarkdown from "../../components/markdown/LazyRenkuMarkdown";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { Url } from "../../utils/helpers/url";
-import { stateToSearchString } from "../kgSearch";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import VisualHead from "./assets/Visual_Head.svg";
 import { BottomNav, TopNav } from "./components/anonymousHomeNav";
 import { RenkuBenefits } from "./components/Benefits/Benefits";
 import DividerLandingPage from "./components/Dividier/Divider";
+import { GetStarted } from "./components/GetStarted/GetStarted";
 import HeroLanding from "./components/HeroLanding/HeroLanding";
 import { Introduction } from "./components/Introduction/Introduction";
 import { NavBarWarnings } from "./components/NavBar/NavBarWarnings";
+import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 import { ResourcesAndSupport } from "./components/ResourcesSupport/ResourcesAndSupport";
 import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./components/WhoWeAre/WhoWeAre";
-
-// ? react-autosuggest styles are defined there q_q
-// ? also, the order of import matters here q_q
-import "../../project/Project.style.css";
-// ? the "quick-nav" class is used in this file
-import "../../components/quicknav/QuickNav.style.css";
-
-import { GetStarted } from "./components/GetStarted/GetStarted";
-import { RenkuUsers } from "./components/RenkuUsers/RenkuUsers";
 
 export default function AnonymousHome() {
   const { client, model, params } = useContext(AppContext);
@@ -88,47 +76,6 @@ export function HomeHeader(props: AnonymousHomeConfig) {
   );
 }
 
-type SearchInputFormFields = {
-  phrase: string;
-};
-
-export function SearchInput() {
-  const navigate = useNavigate();
-  const { handleSubmit, register } = useForm<SearchInputFormFields>({
-    defaultValues: { phrase: "" },
-  });
-  const onSubmit = (inputs: SearchInputFormFields) => {
-    const searchState = { phrase: inputs.phrase };
-    const searchString = stateToSearchString(searchState);
-    const searchUrl = `${Url.get(Url.pages.search)}/?${searchString}`;
-    navigate(searchUrl);
-  };
-  return (
-    <div className="d-flex flex-nowrap w-100 mx-0">
-      <div className="search-box flex-nowrap justify-content-center m-auto">
-        <form
-          className="quick-nav input-group flex-nowrap input-group-sm justify-content-center"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <input
-            type="text"
-            autoComplete="off"
-            className="form-control form-control-sm rk-landing-search"
-            placeholder="Explore public projects and datasets"
-            aria-label="Search input"
-            {...register("phrase")}
-          />
-          <span
-            className="quick-nav-icon d-flex justify-content-center align-items-center mx-4 cursor-pointer"
-            onClick={handleSubmit(onSubmit)}
-          >
-            <FontAwesomeIcon icon={faSearch} />
-          </span>
-        </form>
-      </div>
-    </div>
-  );
-}
 function StandardHome(props: AnonymousHomeConfig) {
   return (
     <>
@@ -169,7 +116,7 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
       <div className="rk-anon-home-section-content">
         <Row>
           <Col className="rk-pt-l rk-w-s">
-            <LazyRenkuMarkdown key="home" markdownText={content} />
+            <LazyMarkdown>{content}</LazyMarkdown>
           </Col>
         </Row>
       </div>

@@ -23,7 +23,6 @@ import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
-import { EntityType } from "../../features/kgSearch";
 import {
   useDeletePinnedProjectsMutation,
   useGetUserPreferencesQuery,
@@ -34,7 +33,10 @@ import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
-import { EntityType as AnotherEntityType } from "../entities/entities.types";
+import {
+  EntityType as AnotherEntityType,
+  EntityType,
+} from "../entities/entities.types";
 import { extractRkErrorMessage } from "../errors/RtkErrorAlert";
 import { Loader } from "../Loader";
 

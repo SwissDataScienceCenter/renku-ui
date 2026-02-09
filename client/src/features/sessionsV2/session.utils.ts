@@ -17,7 +17,6 @@
  */
 
 import { FaviconStatus } from "../display/display.types";
-import { SessionStatusState } from "../session/sessions.types";
 import type { ResourcePoolWithId } from "./api/computeResources.api";
 import type {
   EnvironmentList as SessionEnvironmentList,
@@ -31,7 +30,10 @@ import {
   DEFAULT_URL,
   ENV_VARIABLES_RESERVED_PREFIX,
 } from "./session.constants";
-import type { SessionLauncherForm } from "./sessionsV2.types";
+import type {
+  SessionLauncherForm,
+  SessionStatusState,
+} from "./sessionsV2.types";
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,

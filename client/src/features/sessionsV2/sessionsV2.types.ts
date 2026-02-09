@@ -18,7 +18,7 @@
 
 import type { ReactNode } from "react";
 
-import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
+import type { CloudStorageDetailsOptions } from "../cloudStorage/projectCloudStorage.types";
 import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
   BuildParametersPost,
@@ -194,4 +194,19 @@ export interface BuilderSelectorOption<T extends string = string> {
 export enum LauncherStep {
   Environment = "environment",
   LauncherDetails = "launcherDetails",
+}
+
+export type SessionStatusState = keyof typeof SessionStatusStateEnum;
+
+export enum SessionStatusStateEnum {
+  failed = "failed",
+  running = "running",
+  starting = "starting",
+  stopping = "stopping",
+  hibernated = "hibernated",
+}
+
+export interface SessionEnvironmentVariable {
+  name: string;
+  value: string;
 }

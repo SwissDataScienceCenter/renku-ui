@@ -1,7 +1,9 @@
-import { data, type LoaderFunctionArgs } from "react-router";
+import { data } from "react-router";
 
 import AppRoot from "~/index";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import { CONFIG_JSON } from "~server/constants";
+import type { Route } from "./+types/catchall";
 
 type RouteGroup = Record<string, string> | Record<string, unknown>;
 type Route = string | RouteGroup;
@@ -34,7 +36,7 @@ const KNOWN_ROUTES_SET = new Set(
 );
 const KNOWN_ROUTES = [...Array.from(KNOWN_ROUTES_SET), "/v2", "/admin"];
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const path = url.pathname;
   const isKnownRoute =
@@ -42,9 +44,33 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!isKnownRoute) {
     throw data("Not Found", { status: 404 });
   }
-  return data({});
+
+  const clientSideFetch =
+    process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
+  if (clientSideFetch) {
+    return data({ config: undefined, clientSideFetch } as const);
+  }
+
+  //? In production, directly load what we would return for /config.json
+  return data({ config: CONFIG_JSON, clientSideFetch } as const);
 }
 
-export default function Component() {
-  return <AppRoot />;
+export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
+  const { config, clientSideFetch } = await serverLoader();
+  //? Load the config.json contents from localhost in development
+  if (clientSideFetch) {
+    const configResponse = await fetch("/config.json");
+    const configData = await configResponse.json();
+    return { config: configData as typeof CONFIG_JSON, clientSideFetch };
+  }
+  return { config, clientSideFetch };
+}
+clientLoader.hydrate = true as const;
+
+export default function Component({ loaderData }: Route.ComponentProps) {
+  const { config } = loaderData;
+  if (config == null) {
+    return null;
+  }
+  return <AppRoot config={config} />;
 }

@@ -119,13 +119,18 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
   if (error || !summary) {
     return (
       <>
-        <p>
+        <p data-cy="statuspage-error">
           Error: could not retrieve RenkuLab&apos;s status from statuspage.io.
         </p>
-        {userInfo?.isLoggedIn && userInfo.is_admin && (
+        {userInfo?.isLoggedIn && userInfo.is_admin ? (
           <p>
             As a Renku administrator, you can see the current configuration in
             the <Link to="/admin">admin panel</Link>.
+          </p>
+        ) : (
+          <p>
+            Please ask an administrator to check the statuspage.io
+            configuration.
           </p>
         )}
         <RtkOrNotebooksError error={error} dismissible={false} />

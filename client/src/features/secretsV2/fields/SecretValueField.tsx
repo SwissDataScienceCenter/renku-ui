@@ -20,7 +20,7 @@ import cx from "classnames";
 import { Controller, type FieldValues } from "react-hook-form";
 import { FormText, Label } from "reactstrap";
 
-import { SECRETS_VALUE_LENGTH_LIMIT } from "../../secrets/secrets.constants";
+import { SECRETS_VALUE_LENGTH_LIMIT } from "../secrets.constants";
 import type { UserSecretFormFieldProps } from "./fields.types";
 
 type SecretValueFieldProps<T extends FieldValues> = UserSecretFormFieldProps<T>;

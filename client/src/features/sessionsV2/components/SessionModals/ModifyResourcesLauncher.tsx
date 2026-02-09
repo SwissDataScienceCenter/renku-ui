@@ -35,16 +35,16 @@ import {
 
 import { SuccessAlert } from "~/components/Alert";
 import { Loader } from "~/components/Loader";
-import { SessionClassSelectorV2 } from "~/features/session/components/options/SessionClassOption";
-import {
-  MIN_SESSION_STORAGE_GB,
-  STEP_SESSION_STORAGE_GB,
-} from "~/features/session/startSessionOptions.constants";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
 } from "../../api/computeResources.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../../api/sessionLaunchersV2.api";
+import {
+  MIN_SESSION_STORAGE_GB,
+  STEP_SESSION_STORAGE_GB,
+} from "../../session.constants";
+import SessionClassSelector from "../SessionClassSelector";
 import {
   ErrorOrNotAvailableResourcePools,
   FetchingResourcePools,
@@ -143,7 +143,7 @@ export function ModifyResourcesLauncherModal({
       name="resourceClass"
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <>
-          <SessionClassSelectorV2
+          <SessionClassSelector
             id="addSessionResourceClass"
             currentSessionClass={value}
             resourcePools={resourcePools}

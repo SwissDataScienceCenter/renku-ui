@@ -40,19 +40,19 @@ import {
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { getCredentialFieldDefinitions } from "~/features/cloudStorage/projectCloudStorage.utils";
 import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
-import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
-import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
-import { CredentialMoreInfo } from "../../project/components/cloudStorage/CloudStorageItem";
+import { CredentialMoreInfo } from "../../cloudStorage/CloudStorageItem";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   STORAGES_WITH_ACCESS_MODE,
-} from "../../project/components/cloudStorage/projectCloudStorage.constants";
-import { getCredentialFieldDefinitions } from "../../project/utils/projectCloudStorage.utils";
+} from "../../cloudStorage/projectCloudStorage.constants";
+import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import { EntityPill } from "../../searchV2/components/SearchV2Results";
 import { storageSecretNameToFieldName } from "../../secretsV2/secrets.utils";
@@ -524,7 +524,7 @@ function DataConnectorViewMetadata({
 
       {dataConnector.description && (
         <DataConnectorPropertyValue title="Description">
-          <LazyRenkuMarkdown markdownText={dataConnector.description} />
+          <LazyMarkdown>{dataConnector.description}</LazyMarkdown>
         </DataConnectorPropertyValue>
       )}
 

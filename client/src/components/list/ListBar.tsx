@@ -19,8 +19,6 @@
 import cx from "classnames";
 import { Link } from "react-router";
 
-import { EntityType } from "../../features/kgSearch";
-import SessionButton from "../../features/session/components/SessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
@@ -32,29 +30,9 @@ import PinnedBadge from "./PinnedBadge";
 
 import "./ListBar.scss";
 
-export function getMainActionByEntity(
-  entityType: EntityType,
-  slug: string,
-  gitUrl?: string,
-  branch?: string
-) {
-  switch (entityType) {
-    case EntityType.Project:
-      return slug && gitUrl && branch ? (
-        <SessionButton fullPath={slug} gitUrl={gitUrl} branch={branch} />
-      ) : null;
-    case EntityType.Dataset:
-      return null;
-    default:
-      return null;
-  }
-}
-
 function ListBar({
   creators,
-  defaultBranch,
   description,
-  gitUrl = "",
   imageUrl,
   itemType,
   labelCaption,
@@ -66,12 +44,7 @@ function ListBar({
 }: ListElementProps) {
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
-  const mainButton = getMainActionByEntity(
-    itemType,
-    slug,
-    gitUrl,
-    defaultBranch
-  );
+  const mainButton = null;
 
   return (
     <div className="container-entity-listBar">

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { carveProject } from "./project";
 import * as samples from "./test-samples";
 
 const methods = {
@@ -27,16 +26,6 @@ const methods = {
         currentPage: 1,
         totalItems: 1,
       },
-    },
-  },
-  getProject: {
-    response: {
-      data: carveProject(samples.projects[0]),
-    },
-  },
-  getProjectById: {
-    response: {
-      data: carveProject(samples.projects[0]),
     },
   },
   getProjectReadme: {

@@ -585,9 +585,10 @@ export type ClusterWithId = {
   session_path: string;
   session_ingress_class_name?: IngressClassName;
   session_ingress_annotations: IngressAnnotations;
-  session_tls_secret_name: TlsSecretName;
+  session_tls_secret_name?: TlsSecretName;
   session_storage_class?: StorageClassName;
   service_account_name?: string;
+  session_ingress_use_default_cluster_tls_cert: boolean;
 };
 export type ClustersWithId = ClusterWithId[];
 export type K8SResourceName = string;
@@ -600,9 +601,10 @@ export type Cluster = {
   session_path: string;
   session_ingress_class_name?: IngressClassName;
   session_ingress_annotations: IngressAnnotations;
-  session_tls_secret_name: TlsSecretName;
+  session_tls_secret_name?: TlsSecretName;
   session_storage_class?: StorageClassName;
   service_account_name?: K8SResourceName;
+  session_ingress_use_default_cluster_tls_cert?: boolean;
 };
 export type K8SResourceNamePatch = string;
 export type ClusterPatch = {
@@ -614,9 +616,10 @@ export type ClusterPatch = {
   session_path?: string;
   session_ingress_class_name?: IngressClassName;
   session_ingress_annotations?: IngressAnnotations;
-  session_tls_secret_name?: TlsSecretName;
+  session_tls_secret_name?: TlsSecretName & any;
   session_storage_class?: StorageClassName;
   service_account_name?: K8SResourceNamePatch;
+  session_ingress_use_default_cluster_tls_cert?: boolean;
 };
 export type QuotaWithId = {
   cpu: Cpu;

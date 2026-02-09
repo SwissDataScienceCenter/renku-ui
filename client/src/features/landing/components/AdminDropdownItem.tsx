@@ -19,7 +19,9 @@
 import { Link } from "react-router";
 import { DropdownItem } from "reactstrap";
 
+import DropdownItemTag from "~/components/navbar/DropdownItemTag";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
 export default function AdminDropdownItem() {
@@ -36,9 +38,9 @@ export default function AdminDropdownItem() {
   return (
     <>
       <DropdownItem divider />
-      <Link to="/admin" className="dropdown-item">
+      <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.admin}>
         Admin Panel
-      </Link>
+      </DropdownItemTag>
     </>
   );
 }
