@@ -21,7 +21,6 @@ import { Helmet } from "react-helmet";
 import { Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 
-// import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import Cookie from "./features/cookie/Cookie";
