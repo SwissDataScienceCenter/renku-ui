@@ -7,6 +7,14 @@ import { renderToPipeableStream } from "react-dom/server";
 import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 
+import {
+  EXCLUDED_URLS,
+  getRelease,
+  NAMESPACE_DEFAULT,
+  UI_COMPONENT,
+  VERSION_DEFAULT,
+} from "./utils/helpers/sentry/utils";
+
 export const streamTimeout = 5_000;
 
 function handleRequest(
@@ -98,36 +106,6 @@ export default wrappedHandleRequest;
 export const handleError = Sentry.createSentryHandleError({
   logErrors: false,
 });
-
-const NAMESPACE_DEFAULT = "unknown";
-const VERSION_DEFAULT = "unknown";
-const RELEASE_UNKNOWN = "unknown";
-const RELEASE_DEV = "-dev";
-const UI_COMPONENT = "renku-ui";
-const EXCLUDED_URLS = [
-  /extensions\//i, // Chrome extensions 1
-  /^chrome:\/\//i, // Chrome extensions 2
-];
-
-function getRelease(version: string): string {
-  // Check input validity
-  if (!version || typeof version !== "string") return RELEASE_UNKNOWN;
-
-  // Check format validity
-  const regValid = new RegExp(/^\d*(\.\d*){0,2}(-[a-z0-9.]{7,32})?$/);
-  const resValid = version.match(regValid);
-  if (!resValid || !resValid[0]) return RELEASE_UNKNOWN;
-
-  // Extract information
-  const regRelease = new RegExp(/^\d*(\.\d*){0,2}/);
-  const resRelease = version.match(regRelease);
-  const release =
-    !resRelease || !resRelease[0] ? RELEASE_UNKNOWN : resRelease[0];
-  const regPatch = new RegExp(/-[a-z0-9.]{6,32}$/);
-  const resPatch = version.match(regPatch);
-  const patch = !resPatch || !resPatch[0] ? "" : RELEASE_DEV;
-  return release + patch;
-}
 
 if (process.env.NODE_ENV === "development") {
   // Fetch /config.json and initialize Sentry

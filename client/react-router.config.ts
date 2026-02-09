@@ -6,7 +6,8 @@ export default {
   appDirectory: "src",
   ssr: true,
 
-  // TODO: configure this maybe?
+  // TODO: configure Sentry integration for source maps
+  // TODO: Reference: https://docs.sentry.io/platforms/javascript/guides/react-router/manual-setup/#step-3-add-readable-stack-traces-with-source-maps-optional
   // Sentry release hook
   // buildEnd: async (
   //   {

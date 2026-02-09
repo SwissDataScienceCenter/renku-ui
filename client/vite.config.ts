@@ -18,7 +18,8 @@ export default defineConfig(({ isSsrBuild }) => ({
   },
   plugins: [reactRouter(), eslintPlugin(), tsconfigPaths()],
 
-  // TODO: configure this maybe?
+  // TODO: configure Sentry integration for source maps
+  // TODO: Reference: https://docs.sentry.io/platforms/javascript/guides/react-router/manual-setup/#step-3-add-readable-stack-traces-with-source-maps-optional
   // With Sentry release plugin
   // plugins: [
   //   reactRouter(),

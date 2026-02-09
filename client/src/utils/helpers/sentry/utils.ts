@@ -22,12 +22,12 @@ import { clamp } from "lodash-es";
 import { API_ERRORS } from "~/api-client";
 import type { AppParams } from "~/utils/context/appParams.types";
 
-const NAMESPACE_DEFAULT = "unknown";
-const VERSION_DEFAULT = "unknown";
-const RELEASE_UNKNOWN = "unknown";
-const RELEASE_DEV = "-dev";
-const UI_COMPONENT = "renku-ui";
-const EXCLUDED_URLS = [
+export const NAMESPACE_DEFAULT = "unknown";
+export const VERSION_DEFAULT = "unknown";
+export const RELEASE_UNKNOWN = "unknown";
+export const RELEASE_DEV = "-dev";
+export const UI_COMPONENT = "renku-ui";
+export const EXCLUDED_URLS = [
   /extensions\//i, // Chrome extensions 1
   /^chrome:\/\//i, // Chrome extensions 2
 ];
