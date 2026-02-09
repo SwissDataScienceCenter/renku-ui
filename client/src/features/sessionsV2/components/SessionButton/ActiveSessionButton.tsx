@@ -47,12 +47,11 @@ import {
 import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import { Loader } from "~/components/Loader";
-import { User } from "~/model/renkuModels.types";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
 import { NotificationsManager } from "~/notifications/notifications.types";
 import AppContext from "~/utils/context/appContext";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import {
   useGetResourcePoolsQuery,
@@ -93,9 +92,8 @@ export default function ActiveSessionButton({
 
   const navigate = useNavigate();
 
-  const logged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
   const dispatch = useAppDispatch();
   const onToggleLogs = useCallback(() => {
@@ -285,17 +283,19 @@ export default function ActiveSessionButton({
         <Button
           color="outline-primary"
           className={buttonClassName}
-          data-cy={logged ? "pause-session-button" : "delete-session-button"}
-          onClick={logged ? onHibernateSession : onStopSession}
+          data-cy={
+            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
+          }
+          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
         >
-          {logged ? (
+          {isUserLoggedIn ? (
             <span className="align-self-start">
               <PauseCircle className={cx("bi", "me-1")} />
             </span>
           ) : (
             <Trash className={cx("bi", "me-1")} />
           )}
-          {logged ? "Pause" : "Delete"}
+          {isUserLoggedIn ? "Pause" : "Delete"}
         </Button>
         <Link
           className={cx("btn", "btn-primary")}
@@ -357,17 +357,19 @@ export default function ActiveSessionButton({
         </Button>
         <Button
           color="primary"
-          data-cy={logged ? "pause-session-button" : "delete-session-button"}
-          onClick={logged ? onHibernateSession : onStopSession}
+          data-cy={
+            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
+          }
+          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
         >
-          {logged ? (
+          {isUserLoggedIn ? (
             <span className="align-self-start">
               <PauseCircle className={cx("bi", "me-1")} />
             </span>
           ) : (
             <Trash className={cx("bi", "me-1")} />
           )}
-          {logged ? "Pause" : "Delete"}
+          {isUserLoggedIn ? "Pause" : "Delete"}
         </Button>
       </>
     );
@@ -377,7 +379,7 @@ export default function ActiveSessionButton({
     status !== "hibernated" &&
     !isStopping &&
     !isHibernating &&
-    logged && (
+    isUserLoggedIn && (
       <DropdownItem
         disabled={status === "starting"}
         onClick={onHibernateSession}
@@ -390,7 +392,7 @@ export default function ActiveSessionButton({
   const deleteAction = status !== "stopping" && !isStopping && (
     <DropdownItem
       data-cy="delete-session-button"
-      onClick={logged ? toggleStopSession : onStopSession}
+      onClick={isUserLoggedIn ? toggleStopSession : onStopSession}
     >
       <Trash className={cx("bi", "me-1")} />
       Shut down session

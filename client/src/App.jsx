@@ -21,7 +21,7 @@ import { Helmet } from "react-helmet";
 import { Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 
-import { LoginHelper } from "./authentication";
+// import { LoginHelper } from "./authentication";
 import { Loader } from "./components/Loader";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import Cookie from "./features/cookie/Cookie";
@@ -40,10 +40,7 @@ import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
 import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
-import {
-  useGetUserQuery,
-  useGetUserQueryState,
-} from "./features/usersV2/api/users.api";
+import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 import NotificationsManager from "./notifications/NotificationsManager";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
@@ -121,9 +118,9 @@ export default function App(props) {
     );
     setNotifications(notificationManager);
 
-    // Setup authentication listeners and notifications
-    LoginHelper.setupListener();
-    LoginHelper.triggerNotifications(notificationManager);
+    // // Setup authentication listeners and notifications
+    // LoginHelper.setupListener();
+    // LoginHelper.triggerNotifications(notificationManager);
 
     // Setup WebSocket channel
     let webSocketUrl = props.client.uiserverUrl + "/ws";
@@ -142,9 +139,8 @@ export default function App(props) {
     // ! Ignoring the rule of hooks creates issues, we should refactor this hook
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  //? Subscribe to the user endpoint: all children components can use the query state from RTK Query.
-  const { error, isLoading } = useGetUserQuery();
   // Avoid rendering the application while authenticating the user
+  const { error, isLoading } = useGetUserQueryState();
   if (isLoading) {
     return (
       <section className="py-5">
@@ -175,7 +171,7 @@ export default function App(props) {
         <RenkuNavBar />
         <CentralContentContainer />
         <FooterNavbar />
-        <LoginHandler />
+        {/* <LoginHandler /> */}
         <Cookie />
       </AppContext.Provider>
       <ToastContainer />

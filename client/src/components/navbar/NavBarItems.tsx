@@ -27,8 +27,9 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 
+// import { LoginHelper } from "../../authentication";
+import { useNotifyLogout } from "~/authentication/useNotifyLogout.hook.ts";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { LoginHelper } from "../../authentication";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem.tsx";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -50,6 +51,8 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
     params.BASE_URL
   )}`;
   const loginUrl = useLoginUrl({ params });
+
+  const notifyLogout = useNotifyLogout();
 
   if (isLoadingUser) {
     return <Loader inline size={16} />;
@@ -106,9 +109,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           href={logoutURL}
           icon={null}
           id="logout-link"
-          onClick={() => {
-            LoginHelper.notifyLogout();
-          }}
+          onClick={notifyLogout}
           tag={ExternalLink}
         >
           Logout

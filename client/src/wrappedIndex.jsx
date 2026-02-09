@@ -20,6 +20,7 @@ import { Url } from "./utils/helpers/url";
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
 
+import LoginHandler from "./features/loginHandler/LoginHandler";
 import { UserCoordinator } from "./user";
 
 let hasRendered = false;
@@ -76,8 +77,8 @@ function appIndexInner(params) {
     <Provider store={model.reduxStore}>
       <BrowserRouter>
         <AppErrorBoundary>
-          <SentryUserHandler />
           <LoginHandler />
+          <SentryUserHandler />
           <FeatureFlagHandler />
           <VisibleApp
             client={client}
@@ -91,16 +92,16 @@ function appIndexInner(params) {
   );
 }
 
-function LoginHandler() {
-  const location = useLocation();
-  const navigate = useNavigate();
+// function LoginHandler() {
+//   const location = useLocation();
+//   const navigate = useNavigate();
 
-  useEffect(() => {
-    LoginHelper.handleLoginParams(location, navigate);
-  }, [location, navigate]);
+//   useEffect(() => {
+//     LoginHelper.handleLoginParams(location, navigate);
+//   }, [location, navigate]);
 
-  return null;
-}
+//   return null;
+// }
 
 function FeatureFlagHandler() {
   useFeatureFlagSync();

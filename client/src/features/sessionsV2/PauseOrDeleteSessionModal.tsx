@@ -27,12 +27,11 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { InfoAlert } from "~/components/Alert";
 import { TimeCaption } from "~/components/TimeCaption";
 import { Loader } from "../../components/Loader";
-import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import AppContext from "../../utils/context/appContext";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
@@ -60,11 +59,9 @@ export default function PauseOrDeleteSessionModal({
   toggleAction,
   toggleModal,
 }: PauseOrDeleteSessionModalProps) {
-  const logged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
-  if (!logged) {
+  if (!user?.isLoggedIn) {
     return (
       <AnonymousDeleteSessionModal
         isOpen={isOpen}

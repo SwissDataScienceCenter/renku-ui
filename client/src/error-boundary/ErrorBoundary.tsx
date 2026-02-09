@@ -21,8 +21,8 @@ import cx from "classnames";
 import { ReactNode, useCallback } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
-import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -62,7 +62,7 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 }
 
 function ErrorPage() {
-  const logged = useLegacySelector((state) => state.stateModel.user.logged);
+  const { data: user } = useGetUserQueryState();
   return (
     <>
       <div
@@ -86,7 +86,9 @@ function ErrorPage() {
             or{" "}
             <a className={cx("btn", "btn-primary", "m-2")} href="/">
               <ArrowLeft className={cx("me-2", "text-icon")} />
-              {logged ? "Return to the dashboard" : "Return to home page"}
+              {user?.isLoggedIn
+                ? "Return to the dashboard"
+                : "Return to home page"}
             </a>
           </p>
         </div>

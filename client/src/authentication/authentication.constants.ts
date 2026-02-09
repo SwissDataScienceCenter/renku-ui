@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
-import { LoginHelper } from "./Authentication.container.js";
+export const RENKU_QUERY_PARAMS = {
+  login: "renku_login",
+  logout: "renku_logout",
+  loginValue: "1",
+} as const;
 
-export { LoginHelper };
+export const RENKU_USER_SIGNED_IN_COOKIE = "renku_user_signed_in";
