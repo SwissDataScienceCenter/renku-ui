@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   EyeFill,
   Folder,
@@ -26,6 +26,7 @@ import {
   Lock,
   Pencil,
 } from "react-bootstrap-icons";
+import { Link, To, useLocation } from "react-router";
 import {
   Badge,
   Col,
@@ -34,7 +35,6 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { TimeCaption } from "../../../components/TimeCaption";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import type {
@@ -46,6 +46,8 @@ import {
   getDataConnectorScope,
   useGetDataConnectorSource,
 } from "./dataConnector.utils";
+import DataConnectorActions from "./DataConnectorActions";
+import DataConnectorModal from "./DataConnectorModal";
 import DataConnectorView from "./DataConnectorView";
 
 interface DataConnectorBoxListDisplayProps {
@@ -60,30 +62,45 @@ export default function DataConnectorBoxListDisplay({
   extendedPreview,
   dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorBoxListDisplayProps) {
-  const {
-    name,
-    visibility,
-    creation_date: creationDate,
-    storage,
-    namespace,
-  } = dataConnector;
+  const { name, visibility, storage, namespace } = dataConnector;
 
+  // Handle hash
   const [hash, setHash] = useLocationHash();
   const dcHash = useMemo(
     () => `data-connector-${dataConnector.id}`,
     [dataConnector.id]
   );
-  const showDetails = useMemo(() => hash === dcHash, [dcHash, hash]);
-  const toggleDetails = useCallback(() => {
+  const showOffCanvas = useMemo(() => hash === dcHash, [dcHash, hash]);
+  const toggleOffCanvas = useCallback(() => {
     setHash((prev) => {
       const isOpen = prev === dcHash;
       return isOpen ? "" : dcHash;
     });
   }, [dcHash, setHash]);
 
+  // Handle url with Hash
+  const location = useLocation();
+  const targetOffcanvasLocation: To = {
+    pathname: location.pathname,
+    search: location.search,
+    hash: `#${dcHash}`,
+  };
+
+  // Handle modal
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [initialStep, setInitialStep] = useState(2);
+  const toggleEdit = useCallback((initialStep?: number) => {
+    if (initialStep) setInitialStep(initialStep);
+    setIsEditOpen((open) => !open);
+  }, []);
+
+  // Data
+  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
   const type = `${storage?.configuration?.type?.toString() ?? ""} ${
     storage?.configuration?.provider?.toString() ?? ""
   }`;
+
+  // Components
   const readOnly =
     extendedPreview &&
     (storage?.readonly ? (
@@ -109,89 +126,115 @@ export default function DataConnectorBoxListDisplay({
     return <Journals className="bi" />;
   }, [namespace]);
 
-  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
-
   return (
     <>
-      <ListGroupItem
-        action
-        className={cx("cursor-pointer", "link-primary", "text-body")}
-        onClick={toggleDetails}
-        data-cy="data-connector-item"
-      >
-        <Row className={cx("align-items-center", "g-2")}>
-          <Col className={cx("d-flex", "flex-column")}>
-            <span className="fw-bold" data-cy="data-connector-name">
-              {name}
-            </span>
-            <div
-              className={cx(
-                "d-flex",
-                "flex-row",
-                "gap-1",
-                "text-truncate",
-                "align-items-center"
-              )}
-            >
-              {scopeIcon}
-              <p className={cx("mb-0", "text-truncate")}>
-                {dataConnectorSource}
-              </p>
-            </div>
-            {extendedPreview && <div>{type}</div>}
-            <div
-              className={cx(
-                "align-items-center",
-                "d-flex",
-                "flex-wrap",
-                "gap-1",
-                "justify-content-between"
-              )}
-            >
+      <ListGroupItem action data-cy="data-connector-item">
+        <Link
+          className={cx(
+            "d-flex",
+            "flex-column",
+            "gap-3",
+            "link-primary",
+            "text-body",
+            "text-decoration-none"
+          )}
+          to={targetOffcanvasLocation}
+        >
+          <Row className={cx("align-items-center", "g-3")}>
+            <Col className={cx("d-flex", "flex-column")}>
+              <span className="fw-bold" data-cy="data-connector-name">
+                {name}
+              </span>
+              <div
+                className={cx(
+                  "align-items-center",
+                  "d-flex",
+                  "flex-row",
+                  "gap-1",
+                  "text-truncate"
+                )}
+              >
+                {scopeIcon}
+                <p className={cx("mb-0", "text-truncate", "text-wrap")}>
+                  {dataConnectorSource}
+                </p>
+              </div>
+              {extendedPreview && <div>{type}</div>}
               <div
                 className={cx(
                   "align-items-center",
                   "d-flex",
                   "flex-wrap",
-                  "gap-2",
-                  "mt-auto"
+                  "gap-1",
+                  "justify-content-between"
                 )}
               >
-                <div>
-                  {visibility.toLowerCase() === "private" ? (
-                    <>
-                      <Lock className={cx("bi", "me-1")} />
-                      Private
-                    </>
-                  ) : (
-                    <>
-                      <Globe2 className={cx("bi", "me-1")} />
-                      Public
-                    </>
+                <div
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "flex-wrap",
+                    "gap-2",
+                    "mt-auto"
+                  )}
+                >
+                  <div>
+                    {visibility.toLowerCase() === "private" ? (
+                      <>
+                        <Lock className={cx("bi", "me-1")} />
+                        Private
+                      </>
+                    ) : (
+                      <>
+                        <Globe2 className={cx("bi", "me-1")} />
+                        Public
+                      </>
+                    )}
+                  </div>
+                  {extendedPreview && readOnly}
+                  {dataConnectorPotentiallyInaccessible && (
+                    <DataConnectorNotVisibleToAllUsersBadge />
                   )}
                 </div>
-                {extendedPreview && readOnly}
-                {dataConnectorPotentiallyInaccessible && (
-                  <DataConnectorNotVisibleToAllUsersBadge />
-                )}
               </div>
-              <TimeCaption
-                datetime={creationDate}
-                prefix="Created"
-                enableTooltip
-              />
-            </div>
-          </Col>
-        </Row>
+            </Col>
+            {/* This column is a placeholder to reserve the space for the action button */}
+            <Col xs="auto">
+              <div
+                aria-hidden="true"
+                className={cx("btn", "btn-sm", "opacity-0", "text-nowrap")}
+              >
+                FakeButton123
+              </div>
+            </Col>
+          </Row>
+        </Link>
+        {/* The action button is visually positioned over the previous placeholder column */}
+        <div
+          className={cx("end-0", "mt-3", "position-absolute", "top-0", "z-5")}
+        >
+          <DataConnectorActions
+            dataConnector={dataConnector}
+            dataConnectorLink={dataConnectorLink}
+            toggleEdit={toggleEdit}
+          />
+        </div>
       </ListGroupItem>
       <DataConnectorView
         dataConnector={dataConnector}
         dataConnectorLink={dataConnectorLink}
-        showView={showDetails}
-        toggleView={toggleDetails}
+        showView={showOffCanvas}
+        toggleView={toggleOffCanvas}
         dataConnectorPotentiallyInaccessible={
           dataConnectorPotentiallyInaccessible
         }
+      />
+      <DataConnectorModal
+        dataConnector={dataConnector}
+        isOpen={isEditOpen}
+        namespace={dataConnector.namespace}
+        toggle={toggleEdit}
+        initialStep={initialStep}
       />
     </>
   );
