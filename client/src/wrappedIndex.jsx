@@ -20,6 +20,8 @@ import { Url } from "./utils/helpers/url";
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
 
+import { UserCoordinator } from "./user";
+
 let hasRendered = false;
 
 export default function appIndex(config) {
@@ -41,14 +43,16 @@ function appIndexInner(params) {
   // configure base url
   Url.setBaseUrl(params.BASE_URL);
 
+  // Create the global model containing the formal schema definition and the redux store
+  const model = new StateModel(globalSchema);
+
   // create client to be passed to coordinators (only if legacy support is enabled)
   const client = new ApiClientV2Compat(
     `${params.BASE_URL}/api`,
     params.UISERVER_URL
   );
-
-  // Create the global model containing the formal schema definition and the redux store
-  const model = new StateModel(globalSchema);
+  const userCoordinator = new UserCoordinator(client, model.subModel("user"));
+  userCoordinator.fetchUser();
 
   // show maintenance page when necessary
   const maintenance = params.MAINTENANCE;
