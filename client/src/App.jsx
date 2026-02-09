@@ -172,7 +172,6 @@ export default function App(props) {
         <RenkuNavBar />
         <CentralContentContainer />
         <FooterNavbar />
-        {/* <LoginHandler /> */}
         <Cookie />
       </AppContext.Provider>
       <ToastContainer />
