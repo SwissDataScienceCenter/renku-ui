@@ -1,13 +1,11 @@
-import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { connect, Provider } from "react-redux";
-import { BrowserRouter, useLocation, useNavigate } from "react-router";
+import { BrowserRouter } from "react-router";
 
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 
 import App from "./App";
-import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
 import { Maintenance } from "./features/maintenance/Maintenance";
@@ -91,17 +89,6 @@ function appIndexInner(params) {
     </Provider>
   );
 }
-
-// function LoginHandler() {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     LoginHelper.handleLoginParams(location, navigate);
-//   }, [location, navigate]);
-
-//   return null;
-// }
 
 function FeatureFlagHandler() {
   useFeatureFlagSync();

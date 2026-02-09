@@ -37,7 +37,6 @@ import LegacyProjectView from "./features/legacy/LegacyProjectView";
 import LegacyRoot from "./features/legacy/LegacyRoot";
 import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
 import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
-import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
@@ -47,6 +46,8 @@ import { setupWebSocket } from "./websocket";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+
+import { useTriggerNotifications } from "./authentication/useTriggerNotifications.hook";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -106,6 +107,8 @@ export default function App(props) {
   const [, setWebSocket] = useState(null);
   const [notifications, setNotifications] = useState(null);
 
+  const triggerNotifications = useTriggerNotifications();
+
   useEffect(() => {
     locationRef.current = location;
   }, [location]);
@@ -118,9 +121,8 @@ export default function App(props) {
     );
     setNotifications(notificationManager);
 
-    // // Setup authentication listeners and notifications
-    // LoginHelper.setupListener();
-    // LoginHelper.triggerNotifications(notificationManager);
+    // Setup authentication listeners and notifications
+    triggerNotifications(notificationManager);
 
     // Setup WebSocket channel
     let webSocketUrl = props.client.uiserverUrl + "/ws";
