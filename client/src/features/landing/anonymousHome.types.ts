@@ -17,9 +17,9 @@
  */
 
 export interface AnonymousHomeConfig {
-  client: unknown;
+  // client: unknown;
   homeCustomized: HomepageParams;
-  model: unknown;
+  // model: unknown;
   params: {
     UI_SHORT_SHA: string;
   };

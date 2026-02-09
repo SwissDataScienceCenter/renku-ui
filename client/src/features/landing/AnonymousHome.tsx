@@ -45,13 +45,13 @@ import WhatIsRenku from "./components/WhatIsRenku/WhatIsRenku";
 import WhoWeAre from "./components/WhoWeAre/WhoWeAre";
 
 export default function AnonymousHome() {
-  const { client, model, params } = useContext(AppContext);
+  const { /*client, model,*/ params } = useContext(AppContext);
 
   return (
     <AnonymousHomeInner
-      client={client}
+      // client={client}
       homeCustomized={params?.["HOMEPAGE"] ?? DEFAULT_APP_PARAMS.HOMEPAGE}
-      model={model}
+      // model={model}
       params={{
         ...params,
         UI_SHORT_SHA: params?.UI_SHORT_SHA ?? DEFAULT_APP_PARAMS.UI_SHORT_SHA,
@@ -66,7 +66,7 @@ export function HomeHeader(props: AnonymousHomeConfig) {
       <Row key="statuspage">
         <Col>
           <NavBarWarnings
-            model={props.model}
+            // model={props.model}
             uiShortSha={props.params["UI_SHORT_SHA"]}
           />
         </Col>

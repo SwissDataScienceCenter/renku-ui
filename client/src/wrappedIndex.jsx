@@ -36,22 +36,22 @@ function appIndexInner(params) {
   const container = document.getElementById("root");
   const root = createRoot(container);
 
-  // configure core api versioned url helper (only used if legacy support is enabled)
-  const coreApiVersionedUrlConfig = null;
+  // // configure core api versioned url helper (only used if legacy support is enabled)
+  // const coreApiVersionedUrlConfig = null;
 
   // configure base url
   Url.setBaseUrl(params.BASE_URL);
 
-  // Create the global model containing the formal schema definition and the redux store
-  const model = new StateModel(globalSchema);
+  // // Create the global model containing the formal schema definition and the redux store
+  // const model = new StateModel(globalSchema);
 
-  // create client to be passed to coordinators (only if legacy support is enabled)
-  const client = new ApiClientV2Compat(
-    `${params.BASE_URL}/api`,
-    params.UISERVER_URL
-  );
-  const userCoordinator = new UserCoordinator(client, model.subModel("user"));
-  userCoordinator.fetchUser();
+  // // create client to be passed to coordinators (only if legacy support is enabled)
+  // const client = new ApiClientV2Compat(
+  //   `${params.BASE_URL}/api`,
+  //   params.UISERVER_URL
+  // );
+  // const userCoordinator = new UserCoordinator(client, model.subModel("user"));
+  // userCoordinator.fetchUser();
 
   // show maintenance page when necessary
   const maintenance = params.MAINTENANCE;
@@ -64,13 +64,13 @@ function appIndexInner(params) {
     return;
   }
 
-  // Map redux user data to the initial react application
-  function mapStateToProps(state, ownProps) {
-    return { user: state.stateModel.user, ...ownProps };
-  }
+  // // Map redux user data to the initial react application
+  // function mapStateToProps(state, ownProps) {
+  //   return { user: state.stateModel.user, ...ownProps };
+  // }
 
-  // Render UI application
-  const VisibleApp = connect(mapStateToProps)(App);
+  // // Render UI application
+  // const VisibleApp = connect(mapStateToProps)(App);
   root.render(
     <Provider store={model.reduxStore}>
       <BrowserRouter>
@@ -78,11 +78,11 @@ function appIndexInner(params) {
           <LoginHandler />
           <SentryUserHandler />
           <FeatureFlagHandler />
-          <VisibleApp
-            client={client}
-            coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
+          <App
+            // client={client}
+            // coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
             params={params}
-            model={model}
+            // model={model}
           />
         </AppErrorBoundary>
       </BrowserRouter>

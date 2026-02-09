@@ -100,45 +100,45 @@ function CentralContentContainer() {
 }
 
 export default function App(props) {
-  const location = useLocation();
-  const locationRef = useRef(location);
+  // const location = useLocation();
+  // const locationRef = useRef(location);
 
-  const [, setWebSocket] = useState(null);
-  const [notifications, setNotifications] = useState(null);
+  // const [, setWebSocket] = useState(null);
+  // const [notifications, setNotifications] = useState(null);
 
-  const triggerNotifications = useTriggerNotifications();
+  // const triggerNotifications = useTriggerNotifications();
 
-  useEffect(() => {
-    locationRef.current = location;
-  }, [location]);
+  // useEffect(() => {
+  //   locationRef.current = location;
+  // }, [location]);
 
-  useEffect(() => {
-    const getLocation = () => locationRef.current;
-    const notificationManager = new NotificationsManager(
-      props.model,
-      props.client
-    );
-    setNotifications(notificationManager);
+  // useEffect(() => {
+  //   const getLocation = () => locationRef.current;
+  //   const notificationManager = new NotificationsManager(
+  //     props.model,
+  //     props.client
+  //   );
+  //   setNotifications(notificationManager);
 
-    // Setup authentication listeners and notifications
-    triggerNotifications(notificationManager);
+  //   // Setup authentication listeners and notifications
+  //   triggerNotifications(notificationManager);
 
-    // Setup WebSocket channel
-    let webSocketUrl = props.client.uiserverUrl + "/ws";
-    if (webSocketUrl.startsWith("http"))
-      webSocketUrl = "ws" + webSocketUrl.substring(4);
-    // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
-    setWebSocket(
-      setupWebSocket(
-        webSocketUrl,
-        props.model,
-        getLocation,
-        props.client,
-        notificationManager
-      )
-    );
-    // ! Ignoring the rule of hooks creates issues, we should refactor this hook
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  //   // Setup WebSocket channel
+  //   let webSocketUrl = props.client.uiserverUrl + "/ws";
+  //   if (webSocketUrl.startsWith("http"))
+  //     webSocketUrl = "ws" + webSocketUrl.substring(4);
+  //   // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
+  //   setWebSocket(
+  //     setupWebSocket(
+  //       webSocketUrl,
+  //       props.model,
+  //       getLocation,
+  //       props.client,
+  //       notificationManager
+  //     )
+  //   );
+  //   // ! Ignoring the rule of hooks creates issues, we should refactor this hook
+  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Avoid rendering the application while authenticating the user
   const { error, isLoading } = useGetUserQueryState();
@@ -153,15 +153,15 @@ export default function App(props) {
     return <Unavailable params={props.params} />;
   }
 
-  const { coreApiVersionedUrlConfig, socket } = props;
+  // const { coreApiVersionedUrlConfig, socket } = props;
   const appContext = {
-    client: props.client,
-    coreApiVersionedUrlConfig,
-    location: props.location,
-    model: props.model,
+    // client: props.client,
+    // coreApiVersionedUrlConfig,
+    // location: props.location,
+    // model: props.model,
     notifications,
     params: props.params,
-    webSocket: socket,
+    // webSocket: socket,
   };
 
   return (
