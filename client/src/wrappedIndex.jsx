@@ -13,7 +13,7 @@ import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
-import SentryUserHandler from "./utils/helpers/sentryv2/SentryUserHandler";
+import SentryUserHandler from "./utils/helpers/sentry/SentryUserHandler";
 import { Url } from "./utils/helpers/url";
 
 // TODO: move "bootstrap" handling to root.tsx

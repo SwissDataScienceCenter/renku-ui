@@ -40,7 +40,7 @@ import PageLoader from "./components/PageLoader";
 import NotFound from "./not-found/NotFound";
 import type { AppParams } from "./utils/context/appParams.types";
 import { validatedAppParams } from "./utils/context/appParams.utils";
-import { initClientSideSentry } from "./utils/helpers/sentryv2/utils";
+import { initClientSideSentry } from "./utils/helpers/sentry/utils";
 
 export const DEFAULT_META_TITLE: string =
   "Reproducible Data Science | Open Research | Renku";

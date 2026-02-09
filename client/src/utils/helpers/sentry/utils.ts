@@ -57,7 +57,7 @@ export function initClientSideSentry(params: AppParams) {
   });
 }
 
-function getRelease(version: string): string {
+export function getRelease(version: string): string {
   // Check input validity
   if (!version || typeof version !== "string") return RELEASE_UNKNOWN;
 
