@@ -3,7 +3,6 @@ import { data, useOutletContext } from "react-router";
 import AppRoot from "~/index";
 import type { RootOutletContext } from "~/root";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-// import { CONFIG_JSON } from "~server/constants";
 import type { Route } from "./+types/catchall";
 
 type RouteGroup = Record<string, string> | Record<string, unknown>;
