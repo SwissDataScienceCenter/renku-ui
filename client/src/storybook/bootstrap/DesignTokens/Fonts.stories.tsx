@@ -11,7 +11,7 @@ const fontTokens = {
     "body-font-weight": "Default font weight",
     "body-line-height": "Default line height for readability",
   },
-  fontSizes: ["fs-1", "fs-2", "fs-3", "fs-4", "fs-5", "fs-6"],
+  fontSizes: ["fs-1", "fs-2", "fs-3", "fs-4"],
   lineHeight: ["lh-1", "lh-sm", "lh-base", "lh-lg"],
 };
 

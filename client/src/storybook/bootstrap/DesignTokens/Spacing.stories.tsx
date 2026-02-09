@@ -31,7 +31,6 @@ function SpacingBox({ token, spacingClass, type, value }: SpacingBoxProps) {
         <div
           className={cx(
             "flex-fill",
-            "d-flex",
             "flex-column",
             "justify-content-center",
             "align-items-center"
@@ -39,12 +38,11 @@ function SpacingBox({ token, spacingClass, type, value }: SpacingBoxProps) {
           style={{
             backgroundColor: "rgba(0, 123, 255, 0.1)",
             border: "1px dashed rgba(0, 123, 255, 0.5)",
-            padding: value,
           }}
         >
           <div
             className={cx(spacingClass, "flex-fill", "d-flex")}
-            style={{ border: "2px solid #006e58", width: "calc(100% - 2px)" }}
+            style={{ border: "2px solid #006e58" }}
           >
             <div
               className={cx(

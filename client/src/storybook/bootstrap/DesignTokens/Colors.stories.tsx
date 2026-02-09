@@ -26,25 +26,9 @@ const allColorTokens: Record<string, ColorToken> = {
   },
 
   grayscale: {
-    title: " Grayscale",
+    title: "Main Colors",
     type: "color",
-    tokens: [
-      "white",
-      "light",
-      "dark",
-      "gray",
-      "gray-dark",
-      "gray-100",
-      "gray-200",
-      "gray-300",
-      "gray-400",
-      "gray-500",
-      "gray-600",
-      "gray-700",
-      "gray-800",
-      "gray-900",
-      "black",
-    ],
+    tokens: ["white", "black", "light", "dark"],
   },
 
   text: {
@@ -265,7 +249,7 @@ function TextColorCard({ token }: { token: string }) {
             prefix="Class:"
             copied={copied}
             setCopied={setCopied}
-            className="fs-6 text-muted cursor-pointer d-flex align-items-center"
+            className="fs-6 mb-1 cursor-pointer d-flex align-items-center"
           />
 
           {hex && (
