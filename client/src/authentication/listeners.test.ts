@@ -26,7 +26,6 @@ import {
   setupListener,
 } from "./listeners.client";
 
-// import { LoginHelper, RenkuQueryParams } from "./Authentication.container";
 
 // Mock relevant react objects
 const location: Location<void> = {
