@@ -466,7 +466,7 @@ function DataConnectorViewMetadata({
             slug: dataConnector.namespace.split("/")[1],
           })
         : namespace.namespace_kind === "user"
-        ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+        ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
             username: dataConnector.namespace,
           })
         : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
