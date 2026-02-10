@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
@@ -121,7 +121,8 @@ export default function App(props) {
     setNotifications(notificationManager);
 
     // Setup authentication listeners and notifications
-    triggerNotifications(notificationManager);
+    // triggerNotifications(notificationManager);
+    triggerNotifications();
 
     // Setup WebSocket channel
     let webSocketUrl = props.client.uiserverUrl + "/ws";
@@ -167,7 +168,7 @@ export default function App(props) {
   };
 
   return (
-    <Fragment>
+    <>
       <Favicon />
       <AppContext.Provider value={appContext}>
         <LoggedOutPrompt />
@@ -177,6 +178,6 @@ export default function App(props) {
         <Cookie />
       </AppContext.Provider>
       <ToastContainer />
-    </Fragment>
+    </>
   );
 }

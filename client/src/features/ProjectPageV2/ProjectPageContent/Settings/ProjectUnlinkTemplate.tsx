@@ -17,28 +17,15 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Diagram3Fill, NodeMinus } from "react-bootstrap-icons";
 import { Button, Card, CardBody, CardHeader, Input } from "reactstrap";
 
+import useRenkuToast from "~/components/toast/useRenkuToast";
 import { Loader } from "../../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../../../notifications/notifications.types";
-import AppContext from "../../../../utils/context/appContext";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-
-export function notificationProjectDeleted(
-  notifications: NotificationsManager,
-  projectName: string
-) {
-  notifications.addSuccess(
-    NOTIFICATION_TOPICS.PROJECT_UPDATED,
-    <>
-      Project <code>{projectName}</code> successfully unlinked.
-    </>
-  );
-}
 
 interface ProjectUnlinkTemplateProps {
   project: Project;
@@ -47,7 +34,7 @@ export default function ProjectUnlinkTemplate({
   project,
 }: ProjectUnlinkTemplateProps) {
   const [patchProject, result] = usePatchProjectsByProjectIdMutation();
-  const { notifications } = useContext(AppContext);
+  const { renkuToastSuccess } = useRenkuToast();
   const onUnlink = useCallback(() => {
     patchProject({
       projectId: project.id,
@@ -60,11 +47,18 @@ export default function ProjectUnlinkTemplate({
 
   useEffect(() => {
     if (result.isSuccess) {
-      if (notifications)
-        notificationProjectDeleted(notifications, project.name);
+      renkuToastSuccess({
+        textHeader: NOTIFICATION_TOPICS.PROJECT_UPDATED,
+        textBody: (
+          <>
+            {" "}
+            Project <code>{project.name}</code> successfully unlinked.
+          </>
+        ),
+      });
       result.reset();
     }
-  }, [notifications, project.name, result]);
+  }, [project.name, renkuToastSuccess, result]);
 
   const [typedName, setTypedName] = useState("");
   const onChange = useCallback(
