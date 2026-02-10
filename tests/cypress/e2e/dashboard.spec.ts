@@ -45,7 +45,6 @@ describe.skip("dashboard", () => {
 
     cy.visit("/v1");
     cy.wait("@getUser");
-    cy.wait("@getUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -90,7 +89,6 @@ describe.skip("dashboard", () => {
 
     cy.visit("/v1");
     let projects;
-    cy.wait("@getUser");
     cy.wait("@getUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
@@ -140,7 +138,6 @@ describe.skip("dashboard", () => {
 
     cy.visit("/v1");
     let projects;
-    cy.wait("@getUser");
     cy.wait("@getUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
@@ -202,7 +199,6 @@ describe.skip("dashboard", () => {
     cy.wait("@getFirstProject");
 
     cy.wait("@getUser");
-    cy.wait("@getUser");
     cy.wait("@getSessions");
     cy.getDataCy("session-container").should("be.visible");
     cy.visit("/v1");
@@ -249,7 +245,6 @@ describe.skip("dashboard message", () => {
 
   const visitDashboardPage = () => {
     cy.visit("/v1");
-    cy.wait("@getUser");
     cy.wait("@getUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
@@ -564,7 +559,6 @@ describe.skip("announce v2 banner", () => {
 
     cy.visit("/v1");
     cy.wait("@getUser");
-    cy.wait("@getUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -585,7 +579,6 @@ describe.skip("announce v2 banner", () => {
       .sessionServersEmpty();
 
     cy.visit("/v1/search");
-    cy.wait("@getUser");
     cy.wait("@getUser");
     cy.wait("@getEntities");
 

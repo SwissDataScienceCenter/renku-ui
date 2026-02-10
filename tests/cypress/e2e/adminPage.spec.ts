@@ -36,7 +36,6 @@ describe("admin page", () => {
     fixtures.userTest();
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getUser");
 
     cy.visit("/admin");
     cy.contains("Page not found").should("be.visible");
@@ -45,7 +44,6 @@ describe("admin page", () => {
   it("should not show the link to the admin page to a regular user", () => {
     fixtures.userTest();
     cy.visit("/");
-    cy.wait("@getUser");
     cy.wait("@getUser");
 
     cy.get("#profile-dropdown").should("be.visible").click();
@@ -65,7 +63,6 @@ describe("admin page", () => {
     fixtures.userAdmin();
     cy.visit("/");
     cy.wait("@getUser");
-    cy.wait("@getUser");
 
     cy.visit("/admin");
 
@@ -75,7 +72,6 @@ describe("admin page", () => {
   it("should show the link to the admin page", () => {
     fixtures.userAdmin();
     cy.visit("/");
-    cy.wait("@getUser");
     cy.wait("@getUser");
 
     cy.get("#profile-dropdown").should("be.visible").click();
@@ -100,7 +96,6 @@ describe("admin page", () => {
       .adminResourcePoolUsers()
       .adminKeycloakUser();
     cy.visit("/");
-    cy.wait("@getUser");
     cy.wait("@getUser");
 
     cy.visit("/admin");
