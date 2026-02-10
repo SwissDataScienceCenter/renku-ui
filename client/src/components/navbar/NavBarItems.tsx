@@ -106,10 +106,9 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
         <DropdownItemTag
           data-cy="navbar-logout"
           href={logoutURL}
-          icon={null}
           id="logout-link"
           onClick={notifyLogout}
-          tag={ExternalLink}
+          tag="a"
         >
           Logout
         </DropdownItemTag>
