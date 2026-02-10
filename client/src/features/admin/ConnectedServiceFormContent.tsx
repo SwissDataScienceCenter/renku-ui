@@ -52,9 +52,11 @@ export default function ConnectedServiceFormContent({
                 type="select"
                 {...field}
               >
-                <option value="gitlab">GitLab</option>
-                <option value="github">GitHub</option>
+                <option value="dropbox">Dropbox</option>
                 <option value="generic_oidc">Generic OIDC</option>
+                <option value="github">GitHub</option>
+                <option value="gitlab">GitLab</option>
+                <option value="google">Google</option>
               </Input>
             </>
           )}

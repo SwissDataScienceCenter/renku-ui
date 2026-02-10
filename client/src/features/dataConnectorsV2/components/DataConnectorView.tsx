@@ -20,6 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
+  Cloud,
   Folder,
   Gear,
   Globe2,
@@ -41,7 +42,12 @@ import {
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
-import { getCredentialFieldDefinitions } from "~/features/cloudStorage/projectCloudStorage.utils";
+import { IntegrationAlert } from "~/features/cloudStorage/AddOrEditCloudStorage";
+import { useGetStorageSchemaQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import {
+  getCredentialFieldDefinitions,
+  getSchema,
+} from "~/features/cloudStorage/projectCloudStorage.utils";
 import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
@@ -73,12 +79,7 @@ import DataConnectorActions from "./DataConnectorActions";
 import DataConnectorModal from "./DataConnectorModal";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 
-const SECTION_CLASSES = [
-  "border-top",
-  "border-dark",
-  "border-opacity-50",
-  "pt-3",
-];
+const SECTION_CLASSES = ["pt-3"];
 
 interface DataConnectorPropertyProps {
   title: string | React.ReactNode;
@@ -146,6 +147,7 @@ export default function DataConnectorView({
             dataConnectorPotentiallyInaccessible
           }
         />
+        <DataConnectorViewIntegration dataConnector={dataConnector} />
         <DataConnectorViewConfiguration
           dataConnector={dataConnector}
           toggleEdit={toggleEdit}
@@ -271,6 +273,37 @@ function DataConnectorViewAccess({
             </div>
           )}
       </div>
+    </section>
+  );
+}
+
+interface DataConnectorViewIntegrationProps {
+  dataConnector: DataConnectorRead;
+}
+
+function DataConnectorViewIntegration({
+  dataConnector,
+}: DataConnectorViewIntegrationProps) {
+  const { data: schemata } = useGetStorageSchemaQuery();
+  const schema = useMemo(
+    () => schemata && getSchema(schemata, dataConnector.storage.storage_type),
+    [dataConnector.storage.storage_type, schemata]
+  );
+
+  if (!schema || !schema.usesIntegration) {
+    return null;
+  }
+
+  return (
+    <section
+      className={cx(SECTION_CLASSES)}
+      data-cy="data-connector-configuration-section"
+    >
+      <h3>
+        <Cloud className={cx("bi", "me-1")} />
+        Integration
+      </h3>
+      <IntegrationAlert schema={schema} />
     </section>
   );
 }

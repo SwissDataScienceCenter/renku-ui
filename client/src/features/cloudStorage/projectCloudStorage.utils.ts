@@ -248,6 +248,8 @@ export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
       description: override.description ?? currentSchema.description,
       position: override.position ?? currentSchema.position,
       forceReadOnly: override.forceReadOnly ?? currentSchema.forceReadOnly,
+      usesIntegration:
+        override.usesIntegration ?? currentSchema.usesIntegration,
     };
   }
   return currentSchema;
@@ -260,9 +262,13 @@ export function getSchemaOptions(
   targetProvider?: string,
   flags = { override: true, convertType: true, filterHidden: true }
 ): CloudStorageSchemaOption[] | undefined {
-  if (!targetSchema) return;
+  if (!targetSchema) {
+    return undefined;
+  }
   const storage = getSchema(schema, targetSchema);
-  if (!storage) return;
+  if (!storage) {
+    return undefined;
+  }
 
   const optionsOverridden = flags.override
     ? overrideOptions(storage.options, targetSchema, targetProvider)
@@ -272,7 +278,9 @@ export function getSchemaOptions(
     filterOption(option, shortList, targetProvider, flags.filterHidden)
   );
 
-  if (!optionsFiltered.length) return;
+  if (!optionsFiltered.length) {
+    return shortList ? [] : undefined;
+  }
 
   const sortedOptions = sortOptionsByPosition(optionsFiltered);
 
