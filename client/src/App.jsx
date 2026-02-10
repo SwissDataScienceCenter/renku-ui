@@ -150,7 +150,9 @@ export default function App(props) {
       </section>
     );
   } else if (error) {
-    return <Unavailable params={props.params} />;
+    return (
+      <Unavailable params={props.params} legacyNotifications={notifications} />
+    );
   }
 
   const { coreApiVersionedUrlConfig, socket } = props;

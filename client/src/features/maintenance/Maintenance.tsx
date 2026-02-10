@@ -18,9 +18,14 @@
 
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useCallback } from "react";
 import { BrowserRouter } from "react-router";
+import { ToastContainer } from "react-toastify";
 import { Button, Col, Row } from "reactstrap";
 
+import useRenkuToast from "~/components/toast/useRenkuToast.tsx";
+import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
+import type { NotificationsManager } from "~/notifications/notifications.types";
 import AppContext, { type AppContextType } from "~/utils/context/appContext";
 import type { AppParams } from "~/utils/context/appParams.types";
 import { FooterNavbar } from "../landing/components/NavBar/NavBar";
@@ -58,8 +63,9 @@ function Maintenance({ info }: MaintenanceProps) {
 
 interface UnavailableProps {
   params: AppParams;
+  legacyNotifications: NotificationsManager | null | undefined;
 }
-function Unavailable({ params }: UnavailableProps) {
+function Unavailable({ params, legacyNotifications }: UnavailableProps) {
   const statusLink = params.STATUSPAGE_ID;
   const appContext: AppContextType = {
     client: undefined,
@@ -89,6 +95,13 @@ function Unavailable({ params }: UnavailableProps) {
           </section>
         </Col>
       </Row>
+
+      <Row className="my-3">
+        <Col md={{ size: 6, offset: 3 }}>
+          <TestComponent legacyNotifications={legacyNotifications} />
+        </Col>
+      </Row>
+
       {statusLink ? (
         <Row>
           <Col
@@ -125,6 +138,42 @@ function UnavailableDetailsUnknown() {
         </p>
       </Col>
     </Row>
+  );
+}
+
+function TestComponent({
+  legacyNotifications,
+}: {
+  legacyNotifications: NotificationsManager | null | undefined;
+}) {
+  const testLegacyNotify = useCallback(() => {
+    if (legacyNotifications) {
+      legacyNotifications.addSuccess(
+        NOTIFICATION_TOPICS.PROJECT_UPDATED,
+        <>Test: successful</>
+      );
+    }
+  }, [legacyNotifications]);
+
+  const { renkuToastSuccess } = useRenkuToast();
+  const testNewNotify = useCallback(() => {
+    const textHeader = "Some Notification";
+    const textBody = (
+      <>
+        The <em>content</em>...
+      </>
+    );
+    renkuToastSuccess({ textHeader, textBody });
+  }, [renkuToastSuccess]);
+
+  return (
+    <>
+      <div className="d-flex flex-row gap-2">
+        <Button onClick={testLegacyNotify}>Legacy notification</Button>
+        <Button onClick={testNewNotify}>New notification</Button>
+      </div>
+      <ToastContainer />
+    </>
   );
 }
 
