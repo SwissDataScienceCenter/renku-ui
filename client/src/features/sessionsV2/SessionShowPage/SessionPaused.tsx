@@ -16,19 +16,16 @@
  * limitations under the License.
  */
 
-import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { QuestionCircle } from "react-bootstrap-icons";
 import { generatePath, Link, useParams } from "react-router";
 import { Alert, Button } from "reactstrap";
 
+import useRenkuToast from "~/components/toast/useRenkuToast";
 import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import type { NotificationsManager } from "../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import AppContext from "../../../utils/context/appContext";
 import { usePatchSessionsBySessionIdMutation as usePatchSessionMutation } from "../api/sessionsV2.api";
 import type { SessionV2 } from "../sessionsV2.types";
 
@@ -53,16 +50,16 @@ export default function SessionPaused({ session }: SessionPausedProps) {
     setIsResuming(true);
   }, [patchSession, sessionName]);
 
-  const { notifications } = useContext(AppContext);
+  const { renkuToastDanger } = useRenkuToast();
 
   useEffect(() => {
     if (error != null) {
-      addErrorNotification({
-        error,
-        notifications: notifications as NotificationsManager,
+      renkuToastDanger({
+        textHeader: NOTIFICATION_TOPICS.SESSION_START,
+        textBody: "Unable to resume the current session",
       });
     }
-  }, [error, notifications]);
+  }, [error, renkuToastDanger]);
 
   const backUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: namespace ?? "",
@@ -99,28 +96,5 @@ export default function SessionPaused({ session }: SessionPausedProps) {
         </p>
       </Alert>
     </div>
-  );
-}
-
-function addErrorNotification({
-  error,
-  notifications,
-}: {
-  error: FetchBaseQueryError | SerializedError;
-  notifications: NotificationsManager;
-}) {
-  const message =
-    "message" in error && error.message != null
-      ? error.message
-      : "error" in error && error.error != null
-      ? error.error
-      : "Unknown error";
-  notifications.addError(
-    NOTIFICATION_TOPICS.SESSION_START,
-    "Unable to delete the current session",
-    undefined,
-    undefined,
-    undefined,
-    `Error message: "${message}"`
   );
 }

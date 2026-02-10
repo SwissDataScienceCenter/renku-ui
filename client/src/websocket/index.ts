@@ -104,8 +104,8 @@ function setupWebSocket(
   webSocketUrl: string,
   fullModel: StateModel,
   getLocation: Function,
-  client: APIClient,
-  notifications: any
+  client: APIClient
+  // notifications: any
 ) {
   const model = fullModel.subModel("webSocket");
   const webSocket = new WebSocket(webSocketUrl);
@@ -179,8 +179,8 @@ function setupWebSocket(
         webSocketUrl,
         fullModel,
         getLocation,
-        client,
-        notifications
+        client
+        // notifications
       );
   };
 
@@ -228,8 +228,8 @@ function setupWebSocket(
           webSocket,
           fullModel,
           getLocation,
-          client,
-          notifications
+          client
+          // notifications
         );
         if (outcome && model.get("error")) model.set("error", false);
         else if (!outcome && !model.get("error")) model.set("error", true);
@@ -318,8 +318,8 @@ function retryConnection(
   webSocketUrl: string,
   fullModel: StateModel,
   getLocation: Function,
-  client: APIClient,
-  notifications: any
+  client: APIClient
+  // notifications: any
 ) {
   const reconnectModel = fullModel.subModel("webSocket.reconnect");
   const reconnectData = reconnectModel.get("");
@@ -339,8 +339,8 @@ function retryConnection(
         webSocketUrl,
         fullModel,
         getLocation,
-        client,
-        notifications
+        client
+        // notifications
       ),
     delay
   );

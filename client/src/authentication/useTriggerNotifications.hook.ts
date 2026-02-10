@@ -32,13 +32,13 @@ export function useTriggerNotifications(): () => void {
     (props, options) => {
       window.setTimeout(() => renkuToastSuccess_(props, options), 1);
     },
-    []
+    [renkuToastSuccess_]
   );
   const renkuToastWarning: typeof renkuToastWarning_ = useCallback(
     (props, options) => {
       window.setTimeout(() => renkuToastWarning_(props, options), 1);
     },
-    []
+    [renkuToastWarning_]
   );
 
   return useCallback(() => {
