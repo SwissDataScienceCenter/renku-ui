@@ -23,3 +23,7 @@ export const RENKU_QUERY_PARAMS = {
 } as const;
 
 export const RENKU_USER_SIGNED_IN_COOKIE = "renku_user_signed_in";
+
+export const LOGOUT_EVENT_TIMEOUT = 5_000; // 5 seconds
+
+export const RENKU_USER_SIGNED_IN_COOKIE_TTL = 365 * 24 * 60 * 60 * 1000; // 1 year

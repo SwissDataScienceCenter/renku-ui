@@ -21,12 +21,11 @@ import type { Location, NavigateFunction } from "react-router";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
 import type { NotificationsManager } from "~/notifications/notifications.types";
 import {
+  LOGOUT_EVENT_TIMEOUT,
   RENKU_QUERY_PARAMS,
   RENKU_USER_SIGNED_IN_COOKIE,
+  RENKU_USER_SIGNED_IN_COOKIE_TTL,
 } from "./authentication.constants";
-
-const LOGOUT_EVENT_TIMEOUT = 5000;
-const YEAR_IN_MILLIS = 365 * 24 * 60 * 60 * 1000;
 
 interface HandleLoginParamsArgs {
   location: Location<unknown>;
@@ -58,9 +57,9 @@ export function handleLoginParams({
     // save the login state in a client-side cookie
     if (window.cookieStore) {
       window.cookieStore.set({
-        name: "renku_user_signed_in",
+        name: RENKU_USER_SIGNED_IN_COOKIE,
         value: "1",
-        expires: Date.now() + YEAR_IN_MILLIS,
+        expires: Date.now() + RENKU_USER_SIGNED_IN_COOKIE_TTL,
         sameSite: "strict",
       });
     }

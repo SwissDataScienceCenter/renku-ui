@@ -26,7 +26,6 @@ import {
   setupListener,
 } from "./listeners.client";
 
-
 // Mock relevant react objects
 const location: Location<void> = {
   pathname: "",
