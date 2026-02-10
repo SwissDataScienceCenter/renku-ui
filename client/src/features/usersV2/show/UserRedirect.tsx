@@ -38,7 +38,7 @@ export default function UserRedirect() {
   useEffect(() => {
     if (user?.isLoggedIn && user.username) {
       navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+        generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
           username: user.username,
         }),
         { replace: true }
