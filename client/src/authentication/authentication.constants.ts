@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,26 +16,14 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router";
-import { DropdownItem } from "reactstrap";
+export const RENKU_QUERY_PARAMS = {
+  login: "renku_login",
+  logout: "renku_logout",
+  loginValue: "1",
+} as const;
 
-import DropdownItemTag from "~/components/navbar/DropdownItemTag";
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+export const RENKU_USER_SIGNED_IN_COOKIE = "renku_user_signed_in";
 
-export default function AdminDropdownItem() {
-  const { data: user } = useGetUserQueryState();
+export const LOGOUT_EVENT_TIMEOUT = 5_000; // 5 seconds
 
-  if (!user?.isLoggedIn || !user.is_admin) {
-    return null;
-  }
-
-  return (
-    <>
-      <DropdownItem divider />
-      <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.admin}>
-        Admin Panel
-      </DropdownItemTag>
-    </>
-  );
-}
+export const RENKU_USER_SIGNED_IN_COOKIE_TTL = 365 * 24 * 60 * 60 * 1000; // 1 year

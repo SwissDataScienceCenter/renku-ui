@@ -19,10 +19,10 @@
 import * as Sentry from "@sentry/react-router";
 import { useEffect } from "react";
 
-import { useGetUserQuery } from "~/features/usersV2/api/users.api";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 
 export default function SentryUserHandler() {
-  const { data: user } = useGetUserQuery();
+  const { data: user } = useGetUserQueryState();
 
   useEffect(() => {
     if (user) {
