@@ -27,7 +27,6 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 
-// import { LoginHelper } from "../../authentication";
 import { useNotifyLogout } from "~/authentication/useNotifyLogout.hook.ts";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
