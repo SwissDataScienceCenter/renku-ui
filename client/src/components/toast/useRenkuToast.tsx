@@ -125,22 +125,22 @@ const RENKU_TOAST_OPTIONS = {
   closeButton: CloseButton,
 } as const satisfies ToastOptions;
 
-const RENKU_TOAST_SUCCESS_OPTIONS: Readonly<ToastOptions> = {
+const RENKU_TOAST_SUCCESS_OPTIONS = {
   ...RENKU_TOAST_OPTIONS,
   className: cx(RENKU_TOAST_OPTIONS.className, styles.toastSuccess),
-};
+} as const satisfies ToastOptions;
 
-const RENKU_TOAST_DANGER_OPTIONS: Readonly<ToastOptions> = {
+const RENKU_TOAST_DANGER_OPTIONS = {
   ...RENKU_TOAST_OPTIONS,
   className: cx(RENKU_TOAST_OPTIONS.className, styles.toastDanger),
-};
+} as const satisfies ToastOptions;
 
-const RENKU_TOAST_WARNING_OPTIONS: Readonly<ToastOptions> = {
+const RENKU_TOAST_WARNING_OPTIONS = {
   ...RENKU_TOAST_OPTIONS,
   className: cx(RENKU_TOAST_OPTIONS.className, styles.toastWarning),
-};
+} as const satisfies ToastOptions;
 
-const RENKU_TOAST_INFO_OPTIONS: Readonly<ToastOptions> = {
+const RENKU_TOAST_INFO_OPTIONS = {
   ...RENKU_TOAST_OPTIONS,
   className: cx(RENKU_TOAST_OPTIONS.className, styles.toastInfo),
-};
+} as const satisfies ToastOptions;
