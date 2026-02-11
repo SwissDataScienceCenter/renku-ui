@@ -26,6 +26,8 @@ import {
 } from "./handlers/userHandlers";
 import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
 
+// TODO: modernise
+
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
 const reconnectIntervalMs = 10 * 1000;
 const reconnectPenaltyFactor = 1.5;
