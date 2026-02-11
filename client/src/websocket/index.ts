@@ -105,7 +105,6 @@ function setupWebSocket(
   fullModel: StateModel,
   getLocation: Function,
   client: APIClient
-  // notifications: any
 ) {
   const model = fullModel.subModel("webSocket");
   const webSocket = new WebSocket(webSocketUrl);

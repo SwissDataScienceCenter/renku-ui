@@ -123,13 +123,7 @@ export default function App(props) {
       webSocketUrl = "ws" + webSocketUrl.substring(4);
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
     setWebSocket(
-      setupWebSocket(
-        webSocketUrl,
-        props.model,
-        getLocation,
-        props.client,
-        notificationManager
-      )
+      setupWebSocket(webSocketUrl, props.model, getLocation, props.client)
     );
     // ! Ignoring the rule of hooks creates issues, we should refactor this hook
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -153,7 +147,6 @@ export default function App(props) {
     coreApiVersionedUrlConfig,
     location: props.location,
     model: props.model,
-    notifications,
     params: props.params,
     webSocket: socket,
   };
