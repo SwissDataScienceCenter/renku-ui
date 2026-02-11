@@ -47,7 +47,6 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
         textHeader: NOTIFICATION_TOPICS.PROJECT_DELETED,
         textBody: (
           <>
-            {" "}
             Project <code>{project.name}</code> successfully deleted.
           </>
         ),
