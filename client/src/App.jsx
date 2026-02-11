@@ -39,7 +39,6 @@ import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
-import NotificationsManager from "./notifications/NotificationsManager";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
 
@@ -104,7 +103,6 @@ export default function App(props) {
   const locationRef = useRef(location);
 
   const [, setWebSocket] = useState(null);
-  const [notifications, setNotifications] = useState(null);
 
   const triggerNotifications = useTriggerNotifications();
 
@@ -114,11 +112,6 @@ export default function App(props) {
 
   useEffect(() => {
     const getLocation = () => locationRef.current;
-    const notificationManager = new NotificationsManager(
-      props.model,
-      props.client
-    );
-    setNotifications(notificationManager);
 
     // Setup authentication listeners and notifications
     // triggerNotifications(notificationManager);

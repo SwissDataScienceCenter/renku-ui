@@ -18,7 +18,6 @@
 
 import React from "react";
 
-// import type { NotificationsManager } from "../../notifications/notifications.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 import { createCoreApiVersionedUrlConfig } from "../helpers/url";
 import type { AppParams } from "./appParams.types";
@@ -28,7 +27,6 @@ export interface AppContextType {
   coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
   location: unknown;
   model: unknown;
-  // notifications: NotificationsManager | undefined;
   params: AppParams | undefined;
   webSocket: WebSocket | undefined;
 }

@@ -21,8 +21,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BrowserRouter } from "react-router";
 import { Button, Col, Row } from "reactstrap";
 
-// import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
-// import type { NotificationsManager } from "~/notifications/notifications.types";
 import AppContext, { type AppContextType } from "~/utils/context/appContext";
 import type { AppParams } from "~/utils/context/appParams.types";
 import { FooterNavbar } from "../landing/components/NavBar/NavBar";
