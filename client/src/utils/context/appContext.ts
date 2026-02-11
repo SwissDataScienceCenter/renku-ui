@@ -38,7 +38,6 @@ const AppContext = React.createContext<AppContextType>({
   }),
   location: undefined,
   model: undefined,
-  // notifications: undefined,
   params: undefined,
   webSocket: undefined,
 });
