@@ -112,7 +112,6 @@ export default function App(props) {
     const getLocation = () => locationRef.current;
 
     // Setup authentication listeners and notifications
-    // triggerNotifications(notificationManager);
     triggerNotifications();
 
     // Setup WebSocket channel
