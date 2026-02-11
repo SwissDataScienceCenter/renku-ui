@@ -174,13 +174,7 @@ function setupWebSocket(
     model.setObject(wsData);
 
     if (data.code === 1006 || data.code === 4000)
-      retryConnection(
-        webSocketUrl,
-        fullModel,
-        getLocation,
-        client
-        // notifications
-      );
+      retryConnection(webSocketUrl, fullModel, getLocation, client);
   };
 
   webSocket.onmessage = (message) => {
@@ -228,7 +222,6 @@ function setupWebSocket(
           fullModel,
           getLocation,
           client
-          // notifications
         );
         if (outcome && model.get("error")) model.set("error", false);
         else if (!outcome && !model.get("error")) model.set("error", true);
@@ -318,7 +311,6 @@ function retryConnection(
   fullModel: StateModel,
   getLocation: Function,
   client: APIClient
-  // notifications: any
 ) {
   const reconnectModel = fullModel.subModel("webSocket.reconnect");
   const reconnectData = reconnectModel.get("");
@@ -333,14 +325,7 @@ function retryConnection(
     reconnectPenaltyFactor ** reconnectData.attempts * reconnectIntervalMs;
   reconnectModel.setObject(reconnectData);
   setTimeout(
-    () =>
-      setupWebSocket(
-        webSocketUrl,
-        fullModel,
-        getLocation,
-        client
-        // notifications
-      ),
+    () => setupWebSocket(webSocketUrl, fullModel, getLocation, client),
     delay
   );
 }
