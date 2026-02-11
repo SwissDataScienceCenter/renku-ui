@@ -42,7 +42,6 @@ import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
 
-import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 import { useTriggerNotifications } from "./authentication/useTriggerNotifications.hook";

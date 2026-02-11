@@ -31,6 +31,8 @@ import {
   type RenkuTypedToastProps,
 } from "./RenkuToast";
 
+import styles from "./RenkuToast.module.scss";
+
 type UseRenkuToastReturn = {
   /** The `toast` function from `react-toastify`. Use for full customization. */
   toast: typeof toast;
@@ -108,31 +110,37 @@ export default function useRenkuToast(): UseRenkuToastReturn {
   };
 }
 
-const RENKU_TOAST_OPTIONS: Readonly<ToastOptions> = {
+const RENKU_TOAST_OPTIONS = {
   closeOnClick: false,
-  className: cx("card", "rounded", "flex-row"),
+  className: cx(
+    "card",
+    "rounded",
+    "flex-row",
+    "p-0",
+    "align-items-start",
+    styles.toast
+  ),
   position: "top-right",
   autoClose: 7_500,
   closeButton: CloseButton,
-  progressClassName: "bg-secondary",
-};
+} as const satisfies ToastOptions;
 
 const RENKU_TOAST_SUCCESS_OPTIONS: Readonly<ToastOptions> = {
   ...RENKU_TOAST_OPTIONS,
-  progressClassName: "bg-success",
+  className: cx(RENKU_TOAST_OPTIONS.className, styles.toastSuccess),
 };
 
 const RENKU_TOAST_DANGER_OPTIONS: Readonly<ToastOptions> = {
   ...RENKU_TOAST_OPTIONS,
-  progressClassName: "bg-danger",
+  className: cx(RENKU_TOAST_OPTIONS.className, styles.toastDanger),
 };
 
 const RENKU_TOAST_WARNING_OPTIONS: Readonly<ToastOptions> = {
   ...RENKU_TOAST_OPTIONS,
-  progressClassName: "bg-warning",
+  className: cx(RENKU_TOAST_OPTIONS.className, styles.toastWarning),
 };
 
 const RENKU_TOAST_INFO_OPTIONS: Readonly<ToastOptions> = {
   ...RENKU_TOAST_OPTIONS,
-  progressClassName: "bg-info",
+  className: cx(RENKU_TOAST_OPTIONS.className, styles.toastInfo),
 };
