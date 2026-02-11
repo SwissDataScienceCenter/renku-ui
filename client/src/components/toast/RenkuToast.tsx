@@ -73,8 +73,10 @@ function RenkuToastWithIcon({
 }: RenkuTypedToastProps & { icon: ReactNode }) {
   const header = (
     <>
-      {icon}
-      {textHeader && <strong>{textHeader}</strong>}
+      <div>
+        {icon}
+        {textHeader && <strong>{textHeader}</strong>}
+      </div>
     </>
   );
   return <RenkuToast {...props} header={header} />;
