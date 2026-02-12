@@ -17,14 +17,16 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Search, XCircleFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
 
-import { FILTER_PAGE, FILTER_QUERY } from "../contextSearch.constants";
+import { FILTER_QUERY } from "../contextSearch.constants";
+import { mapParsedQueryToSearchParams } from "../contextSearch.utils";
 import { useContextSearch } from "../hooks/useContextSearch.hook";
+import { parseSearchQuery } from "../searchV2.utils";
 
 interface SearchBarForm {
   query: string;
@@ -39,8 +41,18 @@ export default function SearchBar() {
     defaultValues: { query },
   });
 
-  // Reset the input to match the URL query
+  // Track whether the URL change was triggered by the user's own submit,
+  // so we can keep the raw input as-is in that case.
+  const isSubmittingRef = useRef(false);
+
+  // Reset the input to match the URL query, but only for external changes
+  // (e.g., sidebar filter click, browser back). After user submit, the
+  // search bar keeps the raw input including filter syntax.
   useEffect(() => {
+    if (isSubmittingRef.current) {
+      isSubmittingRef.current = false;
+      return;
+    }
     reset({ query });
   }, [query, reset]);
 
@@ -57,12 +69,11 @@ export default function SearchBar() {
 
   const onSubmit = useCallback(
     (data: SearchBarForm, forceRefresh = false) => {
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set(FILTER_QUERY.name, data.query);
-      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
-      if (newParams.get(FILTER_PAGE.name) !== pageDefaultValue) {
-        newParams.set(FILTER_PAGE.name, pageDefaultValue);
-      }
+      // Parse filter syntax from the raw input (e.g., "role:owner type:Group my text")
+      const parsed = parseSearchQuery(data.query);
+      const newParams = mapParsedQueryToSearchParams(parsed, searchParams);
+
+      isSubmittingRef.current = true;
 
       // force a refetch even for the same query if explicitly asked for
       if (forceRefresh && searchParams.toString() === newParams.toString()) {

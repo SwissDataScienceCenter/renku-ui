@@ -23,15 +23,20 @@ import {
   ALL_FILTERS,
   COMMON_FILTERS,
   DATACONNECTORS_FILTERS,
+  DATE_FILTER_CUSTOM_SEPARATOR,
   DEFAULT_INCLUDE_COUNTS,
   FILTER_CONTENT,
+  FILTER_DATE,
+  FILTER_MY_ROLE,
   FILTER_PAGE,
   FILTER_PER_PAGE,
   FILTER_QUERY,
+  FILTER_VISIBILITY,
   NAMESPACE_FILTER,
   PROJECT_FILTERS,
   SELECTABLE_FILTERS,
   VALUE_SEPARATOR_AND,
+  VALUE_SEPARATOR_OR,
 } from "./contextSearch.constants";
 import type {
   Filter,
@@ -39,6 +44,10 @@ import type {
   SearchQueryFilters,
 } from "./contextSearch.types";
 import { KEY_VALUE_SEPARATOR, TERM_SEPARATOR } from "./searchV2.constants";
+import type {
+  CreationDateFilter,
+  ParseSearchQueryResult,
+} from "./searchV2.types";
 
 export function getSearchQueryFilters(
   searchParams: URLSearchParams,
@@ -173,4 +182,77 @@ export function getQueryHumanReadable(
   ));
 
   return <>{queryParts}</>;
+}
+
+export function mapParsedQueryToSearchParams(
+  result: ParseSearchQueryResult,
+  currentParams?: URLSearchParams
+): URLSearchParams {
+  const params = new URLSearchParams(currentParams);
+
+  // Map type filter (lowercase → capitalized to match context-search values)
+  if (result.filters.type.values.length > 0) {
+    const typeValue = capitalizeEntityType(result.filters.type.values[0]);
+    params.set(FILTER_CONTENT.name, typeValue);
+  }
+
+  // Map role filter
+  if (result.filters.role.values.length > 0) {
+    params.set(
+      FILTER_MY_ROLE.name,
+      result.filters.role.values.join(VALUE_SEPARATOR_OR)
+    );
+  }
+
+  // Map visibility filter
+  if (result.filters.visibility.values.length > 0) {
+    params.set(FILTER_VISIBILITY.name, result.filters.visibility.values[0]);
+  }
+
+  // Map date filter
+  const dateValue = mapDateFilterToParam(result.dateFilters.created);
+  if (dateValue) {
+    params.set(FILTER_DATE.name, dateValue);
+  }
+
+  // Set free text query (without filter terms)
+  params.set(FILTER_QUERY.name, result.searchBarQuery);
+
+  // Reset page to first
+  params.set(FILTER_PAGE.name, FILTER_PAGE.defaultValue.toString());
+
+  return params;
+}
+
+function capitalizeEntityType(type: string): string {
+  const matched = FILTER_CONTENT.allowedValues.find(
+    (v) => v.value.toLowerCase() === type.toLowerCase()
+  );
+  return matched?.value ?? type;
+}
+
+function mapDateFilterToParam(filter: CreationDateFilter): string | null {
+  const parts: string[] = [];
+
+  if (filter.value.after != null) {
+    const afterStr =
+      typeof filter.value.after === "string"
+        ? filter.value.after
+        : filter.value.after.date.toISODate();
+    if (afterStr) {
+      parts.push(`>${afterStr}`);
+    }
+  }
+
+  if (filter.value.before != null) {
+    const beforeStr =
+      typeof filter.value.before === "string"
+        ? filter.value.before
+        : filter.value.before.date.toISODate();
+    if (beforeStr) {
+      parts.push(`<${beforeStr}`);
+    }
+  }
+
+  return parts.length > 0 ? parts.join(DATE_FILTER_CUSTOM_SEPARATOR) : null;
 }

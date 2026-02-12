@@ -27,7 +27,6 @@ import {
   DATE_FILTER_AFTER_KNOWN_VALUES,
   DATE_FILTER_BEFORE_KNOWN_VALUES,
   DEFAULT_ROLE_FILTER,
-  DEFAULT_SORT_BY,
   DEFAULT_TYPE_FILTER,
   DEFAULT_VISIBILITY_FILTER,
   KEY_GREATER_THAN_VALUE,
@@ -35,8 +34,6 @@ import {
   KEY_VALUE_SEPARATOR,
   ROLE_FILTER_ALLOWED_VALUES,
   ROLE_FILTER_KEY,
-  SORT_BY_ALLOWED_VALUES,
-  SORT_BY_KEY,
   TERM_SEPARATOR,
   TYPE_FILTER_ALLOWED_VALUES,
   TYPE_FILTER_KEY,
@@ -57,7 +54,6 @@ import type {
   SearchFilters,
   SearchOption,
   SearchV2State,
-  SortBy,
   TypeFilter,
   VisibilityFilter,
 } from "./searchV2.types";
@@ -111,17 +107,11 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     created: creationDateFilter,
   };
 
-  // Retain the last sorting option only
-  const sortByOption = reversedTerms.find(
-    isSortByInterpretation
-  )?.interpretation;
-
   const optionsAsTerms = [
     roleFilter,
     typeFilter,
     visibilityFilter,
     creationDateFilter,
-    sortByOption,
   ]
     .map(asQueryTerm)
     .filter((term) => term !== "");
@@ -139,7 +129,6 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     dateFilters,
     filters,
     searchBarQuery,
-    sortBy: sortByOption ?? DEFAULT_SORT_BY,
   };
 }
 
@@ -180,7 +169,6 @@ function parseTerm(term: string): InterpretedTerm {
       values,
       TYPE_FILTER_ALLOWED_VALUES
     );
-    console.log({ filterValues, allowedValues, hasDisallowedValue, values });
     const matchedValues = makeValuesSetAsArray(allowedValues);
     if (!hasDisallowedValue) {
       return {
@@ -287,22 +275,6 @@ function parseTerm(term: string): InterpretedTerm {
     }
   }
 
-  if (termLower.startsWith(`${SORT_BY_KEY}${KEY_VALUE_SEPARATOR}`)) {
-    const sortValue = termLower.slice(
-      SORT_BY_KEY.length + KEY_VALUE_SEPARATOR.length
-    );
-    const matched = SORT_BY_ALLOWED_VALUES.find((value) => value === sortValue);
-    if (matched) {
-      return {
-        term,
-        interpretation: {
-          key: "sort",
-          value: matched,
-        },
-      };
-    }
-  }
-
   return {
     term,
     interpretation: null,
@@ -355,12 +327,6 @@ function isCreationDateFilterInterpretation(
   term: InterpretedTerm
 ): term is InterpretedTerm & { interpretation: CreationDateFilter } {
   return term.interpretation?.key === "created";
-}
-
-function isSortByInterpretation(
-  term: InterpretedTerm
-): term is InterpretedTerm & { interpretation: SortBy } {
-  return term.interpretation?.key === "sort";
 }
 
 function asQueryTerm(option: SearchOption | null | undefined): string {
@@ -423,13 +389,6 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
       .join(TERM_SEPARATOR);
   }
 
-  if (option.key === "sort" && option.value === DEFAULT_SORT_BY.value) {
-    return "";
-  }
-  if (option.key === "sort") {
-    return `${SORT_BY_KEY}${KEY_VALUE_SEPARATOR}${option.value}`;
-  }
-
   return "";
 }
 
@@ -469,19 +428,15 @@ function mergeDateFilterValues(
 }
 
 export function buildSearchQuery(
-  state: Pick<
-    SearchV2State,
-    "searchBarQuery" | "sortBy" | "filters" | "dateFilters"
-  >
+  state: Pick<SearchV2State, "searchBarQuery" | "filters" | "dateFilters">
 ): string {
-  const { dateFilters, filters, searchBarQuery, sortBy } = state;
+  const { dateFilters, filters, searchBarQuery } = state;
 
   const optionsAsTerms = [
     filters.role,
     filters.type,
     filters.visibility,
     dateFilters.created,
-    sortBy,
   ]
     .map(asQueryTerm)
     .filter((term) => term !== "");

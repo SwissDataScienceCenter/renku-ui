@@ -32,7 +32,7 @@ export interface SearchV2State {
   sortBy: SortBy;
 }
 
-export type SearchOption = SearchFilter | SearchDateFilter | SortBy;
+export type SearchOption = SearchFilter | SearchDateFilter;
 
 export interface SearchDateFilters {
   created: CreationDateFilter;
@@ -103,7 +103,6 @@ export interface ParseSearchQueryResult {
   dateFilters: SearchDateFilters;
   filters: SearchFilters;
   searchBarQuery: string;
-  sortBy: SortBy;
 }
 
 export interface InterpretedTerm {
@@ -116,5 +115,4 @@ export interface SetInitialQueryParams {
   filters: SearchFilters;
   query: string;
   searchBarQuery: string;
-  sortBy: SortBy;
 }
