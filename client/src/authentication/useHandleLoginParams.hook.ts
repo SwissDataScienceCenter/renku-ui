@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-import { LoginHelper } from "./Authentication.container.js";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router";
 
-export { LoginHelper };
+import { handleLoginParams } from "./listeners.client";
+
+export function useHandleLoginParams(): void {
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    handleLoginParams({ location, navigate });
+  }, [location, navigate]);
+}

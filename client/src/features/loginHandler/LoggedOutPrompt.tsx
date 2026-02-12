@@ -21,6 +21,7 @@ import { useCallback, useEffect } from "react";
 import { ArrowRight, XLg } from "react-bootstrap-icons";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
+import { RENKU_USER_SIGNED_IN_COOKIE } from "~/authentication/authentication.constants";
 import { useLoginUrl } from "~/authentication/useLoginUrl.hook";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
@@ -88,7 +89,7 @@ function useLoggedOutPromptState() {
       return;
     }
     let ignore: boolean = false;
-    window.cookieStore.get("renku_user_signed_in").then((cookie) => {
+    window.cookieStore.get(RENKU_USER_SIGNED_IN_COOKIE).then((cookie) => {
       if (!ignore && cookie?.value === "1") {
         dispatch(setShouldBeLoggedIn(true));
       }
@@ -104,7 +105,7 @@ function useLoggedOutPromptState() {
     }
     let ignore: boolean = false;
     function cookieListener() {
-      window.cookieStore.get("renku_user_signed_in").then((cookie) => {
+      window.cookieStore.get(RENKU_USER_SIGNED_IN_COOKIE).then((cookie) => {
         if (!ignore) {
           dispatch(setShouldBeLoggedIn(cookie?.value === "1"));
         }
@@ -121,7 +122,7 @@ function useLoggedOutPromptState() {
     if (window.cookieStore == null) {
       return;
     }
-    window.cookieStore.delete("renku_user_signed_in");
+    window.cookieStore.delete(RENKU_USER_SIGNED_IN_COOKIE);
   }, []);
 
   return {

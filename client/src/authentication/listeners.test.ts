@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,68 +16,80 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  Authentication.test.js
- *  Tests for authentication.
- */
-
+import type { Location } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-import { LoginHelper, RenkuQueryParams } from "./Authentication.container";
+import { RENKU_QUERY_PARAMS } from "./authentication.constants";
+import {
+  handleLoginParams,
+  notifyLogout,
+  setupListener,
+} from "./listeners.client";
 
 // Mock relevant react objects
-const location = { pathname: "", state: "", previous: "", search: "" };
+const location: Location<void> = {
+  pathname: "",
+  search: "",
+  hash: "",
+  key: "default",
+  state: undefined,
+};
 // eslint-disable-line @typescript-eslint/no-empty-function
-const navigate = () => {};
+const navigate = vi.fn();
 const url = "https://fakedev.renku.ch/";
+// @ts-expect-error mocking window.location
 delete window.location;
+// @ts-expect-error mocking window.location
 window.location = { reload: vi.fn(), replace: vi.fn() };
 
-async function dispatchStorageEvent(key, newValue) {
+async function dispatchStorageEvent(
+  key: string,
+  newValue: string
+): Promise<void> {
   // ? Dispatch Storage Event by creating it in an iframe
   return new Promise((resolve) => {
-    const listener = (event) => {
-      if (event.key === key && event.newValue === `${newValue}`) {
+    function listener(event: StorageEvent) {
+      if (event.key === key && event.newValue === newValue) {
         window.removeEventListener("storage", listener);
         resolve();
       }
-    };
+    }
     window.addEventListener("storage", listener);
 
     const iframe = window.document.createElement("iframe");
     iframe.style.display = "none";
-    window.document.body.appendChild(iframe);
+    window.document.body.replaceChildren(iframe);
 
-    iframe.contentWindow?.localStorage.setItem(key, newValue);
-    iframe.remove();
+    window.setTimeout(() => {
+      iframe.contentWindow?.localStorage.setItem(key, newValue);
+      iframe.remove();
+    }, 1);
   });
 }
 
-describe("LoginHelper functions", () => {
-  const { queryParams } = LoginHelper;
-
+describe("Authentication listeners functions", () => {
   it("handleLoginParams", async () => {
     localStorage.clear();
 
-    LoginHelper.handleLoginParams(location, navigate);
+    handleLoginParams({ location, navigate });
     expect(localStorage.length).toBe(0);
     const loginUrl = new URL(url);
     loginUrl.searchParams.set(
-      RenkuQueryParams.login,
-      RenkuQueryParams.loginValue
+      RENKU_QUERY_PARAMS.login,
+      RENKU_QUERY_PARAMS.loginValue
     );
-    const loginLocation = {
+    const loginLocation: Location<void> = {
       ...location,
       search: loginUrl.href.replace(url, ""),
     };
     const datePre = new Date().getTime();
 
-    LoginHelper.handleLoginParams(loginLocation, navigate);
+    handleLoginParams({ location: loginLocation, navigate });
     expect(localStorage.length).toBe(1);
     // ? Alternative to avoid using the localStorage function: localStorage.__STORE__[queryParams.login]
-    const loginDate = parseInt(localStorage.getItem(queryParams.login));
+    const loginDateStr = localStorage.getItem(RENKU_QUERY_PARAMS.login);
+    expect(loginDateStr).toBeTruthy();
+    const loginDate = parseInt(loginDateStr!);
     expect(loginDate).toBeGreaterThanOrEqual(datePre);
     const datePost = new Date().getTime();
     expect(loginDate).toBeLessThanOrEqual(datePost);
@@ -86,24 +98,33 @@ describe("LoginHelper functions", () => {
   it("setupListener", async () => {
     localStorage.clear();
     sessionStorage.clear();
+    // @ts-expect-error mocking window.location
     delete window.location;
+    // @ts-expect-error mocking window.location
     window.location = { reload: vi.fn() };
 
-    LoginHelper.setupListener();
+    const cleanup = setupListener();
     expect(localStorage.length).toBe(0);
     const datePre = new Date().getTime();
 
-    await dispatchStorageEvent(queryParams.login, new Date());
+    await dispatchStorageEvent(RENKU_QUERY_PARAMS.login, Date.now().toString());
     expect(sessionStorage.length).toBe(1);
-    const sessionStorageDate = parseInt(
-      sessionStorage.getItem(queryParams.login)
+    const sessionStorageDateStr = sessionStorage.getItem(
+      RENKU_QUERY_PARAMS.login
     );
+    expect(sessionStorageDateStr).toBeTruthy();
+    const sessionStorageDate = parseInt(sessionStorageDateStr!);
     expect(sessionStorageDate).toBeGreaterThanOrEqual(datePre);
     const datePost = new Date().getTime();
     expect(sessionStorageDate).toBeLessThanOrEqual(datePost);
 
-    await dispatchStorageEvent(queryParams.logout, new Date());
+    await dispatchStorageEvent(
+      RENKU_QUERY_PARAMS.logout,
+      Date.now().toString()
+    );
     expect(sessionStorage.length).toBe(1); // that takes longer due to the timeout
+
+    cleanup();
   });
 
   it("notifyLogout", async () => {
@@ -112,14 +133,22 @@ describe("LoginHelper functions", () => {
     expect(localStorage.length).toBe(0);
     const datePre = new Date().getTime();
 
-    LoginHelper.notifyLogout();
+    notifyLogout();
     expect(localStorage.length).toBe(1);
-    const localStorageDate = parseInt(localStorage.getItem(queryParams.logout));
+    const localStorageDateStr = localStorage.getItem(RENKU_QUERY_PARAMS.logout);
+    expect(localStorageDateStr).toBeTruthy();
+    const localStorageDate = parseInt(localStorageDateStr!);
     expect(localStorageDate).toBeGreaterThanOrEqual(datePre);
     const datePost = new Date().getTime();
     expect(localStorageDate).toBeLessThanOrEqual(datePost);
 
-    await dispatchStorageEvent(queryParams.logout, new Date());
+    // Flush event loop before using dispatchStorageEvent()
+    await new Promise<void>((resolve) => window.setTimeout(() => resolve(), 1));
+
+    await dispatchStorageEvent(
+      RENKU_QUERY_PARAMS.logout,
+      Date.now().toString()
+    );
     expect(localStorage.length).toBe(1); // that takes longer due to the timeout
   });
 });

@@ -28,10 +28,10 @@ import { Link, useLocation } from "react-router";
 import { Alert, Container } from "reactstrap";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import { AppParams } from "../../../utils/context/appParams.types";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import useNow from "../../../utils/customHooks/useNow.hook";
 import { ensureDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { useGetPlatformConfigQuery } from "../api/platform.api";
@@ -294,13 +294,12 @@ function StatusPageMaintenance({
     ? "Ongoing maintenance started"
     : "Maintenance scheduled in";
 
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
   const location = useLocation();
   const isDashboard =
-    (userLogged && location.pathname === "/") ||
+    (isUserLoggedIn && location.pathname === "/") ||
     location.pathname === "/v1" ||
     location.pathname === "/v1/";
 

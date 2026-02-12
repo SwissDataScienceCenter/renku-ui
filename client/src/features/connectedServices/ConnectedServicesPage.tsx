@@ -47,8 +47,8 @@ import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
+import { usersApi } from "../usersV2/api/users.api";
 import {
   connectedServicesApi,
   useDeleteOauth2ConnectionsByConnectionIdMutation,
@@ -75,9 +75,8 @@ import ContactUsCard from "./ContactUsCard";
 const CHECK_STATUS_QUERY_PARAM = "check-status";
 
 export default function ConnectedServicesPage() {
-  const isUserLoggedIn = useLegacySelector(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = usersApi.endpoints.getUser.useQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
   const [searchParams] = useSearchParams();
   const targetProviderId = searchParams.get(SEARCH_PARAM_PROVIDER);
   const source = searchParams.get(SEARCH_PARAM_SOURCE);

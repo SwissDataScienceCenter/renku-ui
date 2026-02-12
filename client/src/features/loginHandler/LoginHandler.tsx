@@ -18,6 +18,8 @@
 
 import { useEffect, useState } from "react";
 
+import { useHandleLoginParams } from "~/authentication/useHandleLoginParams.hook";
+import { useSetupListener } from "~/authentication/useSetupListener.hook";
 import { usersApi } from "../usersV2/api/users.api";
 
 const ONE_MINUTE = 60 * 1_000; // milliseconds
@@ -36,6 +38,10 @@ export default function LoginHandler() {
   const [{ isLoggedIn }, setState] = useState<LoginState>({
     isLoggedIn: false,
   });
+
+  // Setup authentication listeners and notifications
+  useHandleLoginParams();
+  useSetupListener();
 
   useEffect(() => {
     if (error != null) {
