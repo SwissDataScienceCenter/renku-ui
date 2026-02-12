@@ -20,7 +20,6 @@ import cx from "classnames";
 import { Navigate, useSearchParams } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import useSearch from "~/features/searchV2/hooks/useSearch.hook";
 import SearchBar from "./components/SearchBar";
 import SearchFilters from "./components/SearchFilters";
 import SearchResultRecap from "./components/SearchResultRecap";
@@ -31,7 +30,6 @@ import { getSearchQueryMissingFilters } from "./contextSearch.utils";
 // ? replace the global search components. Mind to rename them at that point.
 export default function Search() {
   const [searchParams] = useSearchParams();
-  useSearch();
 
   // Replace the location whenever parameters are missing
   const missingParams = getSearchQueryMissingFilters(searchParams);

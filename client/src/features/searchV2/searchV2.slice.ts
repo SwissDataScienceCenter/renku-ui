@@ -61,14 +61,12 @@ export const searchV2Slice = createSlice({
   initialState,
   reducers: {
     setInitialQuery: (state, action: PayloadAction<SetInitialQueryParams>) => {
-      const { dateFilters, filters, query, searchBarQuery, sortBy } =
-        action.payload;
+      const { dateFilters, filters, query, searchBarQuery } = action.payload;
       state.initialQuery = query;
       state.query = query;
       state.searchBarQuery = searchBarQuery;
       state.filters = filters;
       state.dateFilters = dateFilters;
-      state.sortBy = sortBy;
     },
     setPage: (state, action: PayloadAction<number>) => {
       state.page = action.payload;
