@@ -28,38 +28,39 @@ function SpacingBox({ token, spacingClass, type, value }: SpacingBoxProps) {
       style={{ width: 180, minHeight: 220 }}
     >
       {type === "margin" && (
-        <div
-          className={cx(
-            "flex-fill",
-            "flex-column",
-            "justify-content-center",
-            "align-items-center"
-          )}
-          style={{
-            backgroundColor: "rgba(0, 123, 255, 0.1)",
-            border: "1px dashed rgba(0, 123, 255, 0.5)",
-          }}
-        >
+        <div>
           <div
-            className={cx(spacingClass, "flex-fill", "d-flex")}
-            style={{ border: "2px solid #006e58" }}
+            className={cx(
+              "flex-fill",
+              "flex-column",
+              "justify-content-center",
+              "align-items-center"
+            )}
+            style={{
+              backgroundColor: "rgba(0, 123, 255, 0.1)",
+              border: "1px dashed rgba(0, 123, 255, 0.5)",
+            }}
           >
             <div
-              className={cx(
-                "bg-secondary",
-                "text-white",
-                "flex-fill",
-                "d-flex",
-                "align-items-center",
-                "justify-content-center",
-                "fw-bold"
-              )}
-              style={{
-                fontSize: "1rem",
-                minHeight: "50px",
-              }}
+              className={cx(spacingClass, "flex-fill", "d-flex")}
+              style={{ border: "2px solid #006e58" }}
             >
-              {token.split("(")[0].trim()}
+              <div
+                className={cx(
+                  "bg-secondary",
+                  "text-white",
+                  "flex-fill",
+                  "d-flex",
+                  "align-items-center",
+                  "justify-content-center",
+                  "fw-bold"
+                )}
+                style={{
+                  fontSize: "1rem",
+                }}
+              >
+                {token.split("(")[0].trim()}
+              </div>
             </div>
           </div>
         </div>
