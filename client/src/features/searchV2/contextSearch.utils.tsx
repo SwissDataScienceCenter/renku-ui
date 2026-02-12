@@ -23,6 +23,7 @@ import {
   ALL_FILTERS,
   COMMON_FILTERS,
   DATACONNECTORS_FILTERS,
+  DEFAULT_INCLUDE_COUNTS,
   FILTER_CONTENT,
   FILTER_PAGE,
   FILTER_PER_PAGE,
@@ -112,6 +113,14 @@ export function generateQueryParams(
     string[]
   >((acc, [key, filterWithValue]) => {
     if (!ignoredParams.includes(key) && filterWithValue?.value != null) {
+      // Use custom query term builder if available (e.g., date filters)
+      if (filterWithValue.filter.buildQueryTerms) {
+        return [
+          ...acc,
+          ...filterWithValue.filter.buildQueryTerms(key, filterWithValue.value),
+        ];
+      }
+
       const { value } = filterWithValue;
       const quote = mustQuoteFilters.includes(key) ? '"' : "";
       const values =
@@ -137,6 +146,7 @@ export function generateQueryParams(
     per_page:
       (commonFilters[FILTER_PER_PAGE.name] as FilterWithValue<"number">)
         ?.value ?? FILTER_PER_PAGE.defaultValue,
+    include_counts: DEFAULT_INCLUDE_COUNTS,
   };
 }
 

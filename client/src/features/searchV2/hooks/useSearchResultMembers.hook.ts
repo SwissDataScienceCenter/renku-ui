@@ -18,15 +18,24 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 
+import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api.ts";
 import { useGetProjectsByProjectIdMembersQuery } from "~/features/projectsV2/api/projectV2.api";
-import { GroupSearchEntity } from "../contextSearch.types";
+import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api.ts";
 
-export function useSearchResultMembers(item: GroupSearchEntity) {
+export function useSearchResultMembers(item: SearchEntity) {
   const projectMembers = useGetProjectsByProjectIdMembersQuery(
     item.type === "Project" ? { projectId: item.id } : skipToken
   );
+
+  const groupMembers = useGetGroupsByGroupSlugMembersQuery(
+    item.type === "Group" ? { groupSlug: item.slug } : skipToken
+  );
+
   if (item.type === "Project") {
     return projectMembers;
+  }
+  if (item.type === "Group") {
+    return groupMembers;
   }
   return null;
 }

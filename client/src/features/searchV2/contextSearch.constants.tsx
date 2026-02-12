@@ -20,11 +20,14 @@ import cx from "classnames";
 import {
   Binoculars,
   Briefcase,
+  Calendar,
   Database,
   Folder2Open,
   Globe,
   Lock,
   People,
+  Person,
+  PersonFillGear,
   Tag,
 } from "react-bootstrap-icons";
 
@@ -34,8 +37,10 @@ import {
   NumberFilter,
   StringFilter,
 } from "./contextSearch.types";
+import { DATE_AFTER_LEEWAY, DATE_BEFORE_LEEWAY } from "./searchV2.constants";
 
 export const VALUE_SEPARATOR_AND = "+";
+export const VALUE_SEPARATOR_OR = ",";
 
 export const DEFAULT_ELEMENTS_LIMIT_IN_FILTERS = 5;
 
@@ -72,7 +77,60 @@ export const NAMESPACE_FILTER: StringFilter = {
   defaultValue: "",
 };
 
+export const DEFAULT_INCLUDE_COUNTS = true;
+
 export const FILTER_CONTENT: EnumFilter = {
+  name: "type",
+  label: (
+    <>
+      <Briefcase className={cx("bi", "me-1")} />
+      Content
+    </>
+  ),
+  type: "enum",
+  allowedValues: [
+    {
+      value: "Project",
+      label: (
+        <>
+          <Folder2Open className={cx("bi", "me-1")} />
+          Project
+        </>
+      ),
+    },
+    {
+      value: "DataConnector",
+      label: (
+        <>
+          <Database className={cx("bi", "me-1")} />
+          Data
+        </>
+      ),
+    },
+    {
+      value: "User",
+      label: (
+        <>
+          <Person className={cx("bi", "me-1")} />
+          User
+        </>
+      ),
+    },
+    {
+      value: "Group",
+      label: (
+        <>
+          <People className={cx("bi", "me-1")} />
+          Group
+        </>
+      ),
+    },
+  ],
+  allowSelectMany: false,
+  defaultValue: "Project",
+};
+
+export const FILTER_CONTENT_NAMESPACE: EnumFilter = {
   name: "type",
   label: (
     <>
@@ -104,7 +162,6 @@ export const FILTER_CONTENT: EnumFilter = {
   allowSelectMany: false,
   defaultValue: "Project",
 };
-
 export const FILTER_MEMBER: EnumFilter = {
   name: "direct_member",
   label: (
@@ -134,6 +191,7 @@ export const FILTER_KEYWORD: EnumFilter = {
   allowSelectMany: true,
   doNotPassEmpty: true,
   mustQuote: true,
+  validFor: ["Project", "DataConnector"],
 };
 
 export const FILTER_VISIBILITY: EnumFilter = {
@@ -168,6 +226,92 @@ export const FILTER_VISIBILITY: EnumFilter = {
   ],
   allowSelectMany: false,
   doNotPassEmpty: true,
+  validFor: ["Project", "DataConnector"],
+};
+
+export const FILTER_MY_ROLE: EnumFilter = {
+  name: "role",
+  label: (
+    <>
+      <PersonFillGear className={cx("bi", "me-1")} />
+      My Role
+    </>
+  ),
+  type: "enum",
+  allowedValues: [
+    {
+      value: "owner",
+      label: <>Owner</>,
+    },
+    {
+      value: "editor",
+      label: <>Editor</>,
+    },
+    {
+      value: "viewer",
+      label: <>Viewer</>,
+    },
+  ],
+  allowSelectMany: true,
+  doNotPassEmpty: false,
+  validFor: ["Project", "Group"],
+  valueSeparator: VALUE_SEPARATOR_OR,
+};
+
+export const DATE_FILTER_CUSTOM_SEPARATOR = ",";
+
+function isKnownDateToken(value: string): boolean {
+  return value.startsWith("today-");
+}
+
+export const FILTER_DATE: EnumFilter = {
+  name: "created",
+  label: (
+    <>
+      <Calendar className={cx("bi", "me-1")} />
+      Creation date
+    </>
+  ),
+  type: "enum",
+  allowedValues: [
+    {
+      value: "",
+      label: <>All</>,
+    },
+    {
+      value: ">today-7d",
+      label: <>Last week</>,
+    },
+    {
+      value: ">today-31d",
+      label: <>Last month</>,
+    },
+    {
+      value: ">today-90d",
+      label: <>Last 90 days</>,
+    },
+    {
+      value: "<today-90d",
+      label: <>Older than 90 days</>,
+    },
+  ],
+  allowSelectMany: false,
+  doNotPassEmpty: true,
+  validFor: ["Project", "DataConnector"],
+  buildQueryTerms: (key: string, value: string | number): string[] => {
+    if (typeof value !== "string" || !value) return [];
+    const parts = value.split(DATE_FILTER_CUSTOM_SEPARATOR).filter(Boolean);
+    return parts.map((part) => {
+      const operator = part.charAt(0); // '>' or '<'
+      const dateValue = part.slice(1);
+      if (isKnownDateToken(dateValue)) {
+        return `${key}${part}`;
+      }
+      // Custom date — add leeway for inclusive range
+      const leeway = operator === ">" ? DATE_AFTER_LEEWAY : DATE_BEFORE_LEEWAY;
+      return `${key}${operator}${dateValue}${leeway}`;
+    });
+  },
 };
 
 export const COMMON_FILTERS: Filter[] = [
@@ -181,11 +325,14 @@ export const PROJECT_FILTERS: Filter[] = [
   FILTER_MEMBER,
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
+  FILTER_MY_ROLE,
+  FILTER_DATE,
 ];
 
 export const DATACONNECTORS_FILTERS: Filter[] = [
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
+  FILTER_DATE,
 ];
 
 export const SELECTABLE_FILTERS: Filter[] = [
@@ -193,6 +340,8 @@ export const SELECTABLE_FILTERS: Filter[] = [
   FILTER_MEMBER,
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
+  FILTER_MY_ROLE,
+  FILTER_DATE,
 ];
 
 export const ALL_FILTERS: Filter[] = [
@@ -203,6 +352,8 @@ export const ALL_FILTERS: Filter[] = [
   FILTER_MEMBER,
   FILTER_KEYWORD,
   FILTER_VISIBILITY,
+  FILTER_MY_ROLE,
+  FILTER_DATE,
 ];
 
 export const SEARCH_DEBOUNCE_SECONDS = 1;

@@ -44,10 +44,10 @@ export default function GroupInformation({
       </GroupInformationBox>
       <GroupInformationBox icon={<Clock className="bi" />} title="Created:">
         <p className="mb-0">
-          <TimeCaption datetime={group.creation_date} className={cx("fs-6")} />
+          <TimeCaption datetime={group?.creation_date} className={cx("fs-6")} />
         </p>
       </GroupInformationBox>
-      <GroupV2MemberListDisplay group={namespace} />
+      {namespace && <GroupV2MemberListDisplay group={namespace} />}
     </div>
   );
   return output === "plain" ? (

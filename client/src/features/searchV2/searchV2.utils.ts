@@ -180,6 +180,7 @@ function parseTerm(term: string): InterpretedTerm {
       values,
       TYPE_FILTER_ALLOWED_VALUES
     );
+    console.log({ filterValues, allowedValues, hasDisallowedValue, values });
     const matchedValues = makeValuesSetAsArray(allowedValues);
     if (!hasDisallowedValue) {
       return {
