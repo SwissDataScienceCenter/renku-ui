@@ -18,13 +18,30 @@
 
 import { useCallback } from "react";
 
-import type { NotificationsManager } from "~/notifications/notifications.types";
+import useRenkuToast from "~/components/toast/useRenkuToast";
 import { triggerNotifications } from "./listeners.client";
 
-export function useTriggerNotifications(): (
-  notifications: NotificationsManager
-) => void {
-  return useCallback((notifications: NotificationsManager) => {
-    triggerNotifications(notifications);
-  }, []);
+export function useTriggerNotifications(): () => void {
+  const {
+    renkuToastSuccess: renkuToastSuccess_,
+    renkuToastWarning: renkuToastWarning_,
+  } = useRenkuToast();
+
+  //? We need to delay the toast because the toast container component is mounted at the same time
+  const renkuToastSuccess: typeof renkuToastSuccess_ = useCallback(
+    (props, options) => {
+      window.setTimeout(() => renkuToastSuccess_(props, options), 1);
+    },
+    [renkuToastSuccess_]
+  );
+  const renkuToastWarning: typeof renkuToastWarning_ = useCallback(
+    (props, options) => {
+      window.setTimeout(() => renkuToastWarning_(props, options), 1);
+    },
+    [renkuToastWarning_]
+  );
+
+  return useCallback(() => {
+    triggerNotifications({ renkuToastSuccess, renkuToastWarning });
+  }, [renkuToastSuccess, renkuToastWarning]);
 }

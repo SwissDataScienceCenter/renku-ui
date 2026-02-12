@@ -29,7 +29,6 @@ import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
-import PinnedBadge from "./PinnedBadge";
 
 import "./ListCard.css";
 
@@ -39,7 +38,6 @@ function ListCard({
   imageUrl,
   itemType,
   labelCaption,
-  path,
   slug,
   tagList,
   timeCaption,
@@ -59,12 +57,6 @@ function ListCard({
     >
       <div className="col text-decoration-none">
         <div className={cx("card", "card-entity", "position-relative")}>
-          <PinnedBadge
-            entityType={itemType}
-            //! This really should be `slug` but we do not get the real slug
-            //! in search cards.
-            slug={path ?? ""}
-          />
           <Link
             className={cx(
               "card-header-entity",

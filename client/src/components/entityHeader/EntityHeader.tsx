@@ -37,7 +37,6 @@ import LinkedEntitiesByItemType, {
 import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import PinnedBadge from "../list/PinnedBadge";
 import { EnvironmentLogs } from "../Logs";
 import { TimeCaption } from "../TimeCaption";
 
@@ -72,7 +71,6 @@ function EntityHeader({
   creators,
   description,
   devAccess,
-  fullPath,
   hideEmptyTags = false,
   imageUrl,
   itemType,
@@ -112,7 +110,6 @@ function EntityHeader({
         data-cy={`header-${itemType}`}
       >
         <div className={cx("entity-image", "position-relative")}>
-          {fullPath && <PinnedBadge entityType={itemType} slug={fullPath} />}
           <div
             style={imageStyles}
             className={`header-entity-image ${

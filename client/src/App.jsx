@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Route, Routes, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 
+import { useTriggerNotifications } from "./authentication/useTriggerNotifications.hook";
 import { Loader } from "./components/Loader";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import Cookie from "./features/cookie/Cookie";
@@ -39,14 +40,10 @@ import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
-import NotificationsManager from "./notifications/NotificationsManager";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
 
-import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-
-import { useTriggerNotifications } from "./authentication/useTriggerNotifications.hook";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -104,7 +101,6 @@ export default function App(props) {
   const locationRef = useRef(location);
 
   const [, setWebSocket] = useState(null);
-  const [notifications, setNotifications] = useState(null);
 
   const triggerNotifications = useTriggerNotifications();
 
@@ -114,14 +110,9 @@ export default function App(props) {
 
   useEffect(() => {
     const getLocation = () => locationRef.current;
-    const notificationManager = new NotificationsManager(
-      props.model,
-      props.client
-    );
-    setNotifications(notificationManager);
 
     // Setup authentication listeners and notifications
-    triggerNotifications(notificationManager);
+    triggerNotifications();
 
     // Setup WebSocket channel
     let webSocketUrl = props.client.uiserverUrl + "/ws";
@@ -129,13 +120,7 @@ export default function App(props) {
       webSocketUrl = "ws" + webSocketUrl.substring(4);
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
     setWebSocket(
-      setupWebSocket(
-        webSocketUrl,
-        props.model,
-        getLocation,
-        props.client,
-        notificationManager
-      )
+      setupWebSocket(webSocketUrl, props.model, getLocation, props.client)
     );
     // ! Ignoring the rule of hooks creates issues, we should refactor this hook
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -159,13 +144,12 @@ export default function App(props) {
     coreApiVersionedUrlConfig,
     location: props.location,
     model: props.model,
-    notifications,
     params: props.params,
     webSocket: socket,
   };
 
   return (
-    <Fragment>
+    <>
       <Favicon />
       <AppContext.Provider value={appContext}>
         <LoggedOutPrompt />
@@ -175,6 +159,6 @@ export default function App(props) {
         <Cookie />
       </AppContext.Provider>
       <ToastContainer />
-    </Fragment>
+    </>
   );
 }

@@ -69,7 +69,6 @@ function Unavailable({ params }: UnavailableProps) {
     },
     location: undefined,
     model: undefined,
-    notifications: undefined,
     params,
     webSocket: undefined,
   };

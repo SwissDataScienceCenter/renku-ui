@@ -1,6 +1,6 @@
 import { Meta } from "@storybook/react";
 
-import { CommandCopy } from "../../components/commandCopy/CommandCopy.tsx";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 
 import styles from "./ColorPalette.module.scss";
 
