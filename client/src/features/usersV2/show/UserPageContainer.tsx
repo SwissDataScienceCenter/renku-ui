@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
-import { generatePath, Outlet, useNavigate, useOutletContext, useParams } from "react-router";
+import { generatePath, Outlet, useNavigate, useParams } from "react-router";
 import { Badge, Col, Row } from "reactstrap";
 
 import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
