@@ -18,12 +18,14 @@
 
 import { DateTime } from "luxon";
 
+import { makeDispatcher } from "./messageDispatch";
 import { WEBSOCKET_PING_INTERVAL_MILLIS } from "./webSocket.constants";
 import {
   setError,
   setLastPing,
   setLastReceived,
   setOpen,
+  unsetError,
 } from "./webSocket.slice";
 import type { StoreType } from "./webSocket.types";
 import { parseWsServerMessage } from "./websocket.utils";
@@ -33,6 +35,7 @@ import type { WsServerMessage } from "./WsServerMessage";
 interface InitializeWebSocketArgs {
   url: string;
   store: StoreType;
+  onRetryConnection: () => void;
 }
 
 type InitializeWebSocketReturn = {
@@ -45,6 +48,7 @@ type InitializeWebSocketReturn = {
 export function initializeWebSocket({
   url,
   store,
+  onRetryConnection,
 }: InitializeWebSocketArgs): InitializeWebSocketReturn {
   const ws = new WebSocket(url);
 
@@ -56,7 +60,7 @@ export function initializeWebSocket({
 
   // Setup listeners
   ws.addEventListener("open", onOpen(ws, store, getIsActive));
-  ws.addEventListener("close", onClose(ws, store, getIsActive));
+  ws.addEventListener("close", onClose(store, getIsActive, onRetryConnection));
   ws.addEventListener("error", onError(store, getIsActive));
   ws.addEventListener("message", onMessage(ws, store, getIsActive));
 
@@ -77,7 +81,14 @@ function onOpen(
   store: StoreType,
   getIsActive: () => boolean
 ): (event: Event) => void {
-  return function onOpenInner(_event: Event) {
+  const pingFn = pingServer(ws, store, getIsActive);
+  const startPullingSessionStatusV2Fn = startPullingSessionStatusV2(
+    ws,
+    store,
+    getIsActive
+  );
+
+  return function onOpenInner() {
     if (!getIsActive()) {
       return;
     }
@@ -86,18 +97,15 @@ function onOpen(
     if (isReady) {
       store.dispatch(setOpen(true));
       // request session status V2
-      // TODO: startPullingSessionStatusV2(webSocket);
+      startPullingSessionStatusV2Fn();
     }
     // Start a ping loop -- this should keep the connection alive
     if (WEBSOCKET_PING_INTERVAL_MILLIS) {
-      const pingFn = pingServer(ws, store, getIsActive);
       const timeout = window.setInterval(
         pingFn,
         WEBSOCKET_PING_INTERVAL_MILLIS
       );
-      console.log(`added interval ${timeout}`);
       ws.addEventListener("close", () => {
-        console.log(`removing interval ${timeout}`);
         window.clearInterval(timeout);
       });
     }
@@ -105,9 +113,9 @@ function onOpen(
 }
 
 function onClose(
-  ws: WebSocket,
   store: StoreType,
-  getIsActive: () => boolean
+  getIsActive: () => boolean,
+  onRetryConnection: () => void
 ): (event: CloseEvent) => void {
   return function onCloseInner(event: CloseEvent) {
     if (!getIsActive()) {
@@ -121,6 +129,7 @@ function onClose(
       store.dispatch(
         setError({ message: `WebSocket channel error ${event.code}` })
       );
+      onRetryConnection();
 
       // TODO: retry connection
     }
@@ -150,6 +159,8 @@ function onMessage(
   store: StoreType,
   getIsActive: () => boolean
 ): (event: MessageEvent) => void {
+  const dispatcher = makeDispatcher();
+
   return function onMessageInner(event: MessageEvent) {
     if (!getIsActive()) {
       return;
@@ -161,12 +172,13 @@ function onMessage(
       try {
         message = parseWsServerMessage(event.data);
       } catch (error) {
+        const error_ =
+          error instanceof Error ? error : new Error("Unexpected error");
         store.dispatch(
           setError({
             message:
-              "Incoming message is not correctly formed: " +
-              (error instanceof Error ? error.message : "Unexpected error"),
-            error: error as any,
+              "Incoming message is not correctly formed: " + error_.message,
+            error: error_,
           })
         );
       }
@@ -174,17 +186,43 @@ function onMessage(
         return;
       }
 
-      console.log({ message });
+      const dispatcherResult = dispatcher(message);
+      if (!dispatcherResult.ok) {
+        store.dispatch(
+          setError({
+            message: dispatcherResult.error.message,
+            error: dispatcherResult.error,
+          })
+        );
+        return;
+      }
+      const { handler } = dispatcherResult;
 
-      //   const validatedMessage = validateServerMessage(message);
-      //   if ("error" in validatedMessage) {
-      //     store.dispatch(
-      //       setError({
-      //         message: validatedMessage.error,
-      //         error: new Error(validatedMessage.error),
-      //       })
-      //     );
-      //   }
+      // Execute the command
+      try {
+        const handlerResult = handler({ message, store, ws });
+        if (handlerResult.ok) {
+          store.dispatch(unsetError());
+        } else {
+          store.dispatch(
+            setError({
+              message: handlerResult.error.message,
+              error: handlerResult.error,
+            })
+          );
+        }
+      } catch (error) {
+        const error_ =
+          error instanceof Error ? error : new Error("unknown error");
+        store.dispatch(
+          setError({
+            message: `Error while executing the ${
+              message.type
+            } command: ${error_.toString()}`,
+            error: error_,
+          })
+        );
+      }
 
       return;
     }
@@ -197,74 +235,6 @@ function onMessage(
     );
   };
 }
-
-// webSocket.onmessage = (message) => {
-//     model.set("lastReceived", new Date());
-//     // handle the message
-//     if (message.type === "message" && message.data) {
-//       // Try to parse the message to a WsServerMessage
-//       let serverMessage: WsServerMessage;
-//       try {
-//         serverMessage = JSON.parse(message.data as string);
-//         const res = checkWsServerMessage(serverMessage);
-//         if (!res)
-//           throw new Error(
-//             "WebSocket message is a valid JSON object but not a WsServerMessage"
-//           );
-//       } catch (error) {
-//         model.setObject({
-//           error: true,
-//           errorObject: {
-//             ...(error as Error),
-//             message:
-//               "Incoming message bad formed: " + (error as Error).toString(),
-//           },
-//         });
-//         return false;
-//       }
-
-//       // Validate the message and find the instructions
-//       const handler = getWsServerMessageHandler(messageHandlers, serverMessage);
-
-//       if (typeof handler === "string") {
-//         model.setObject({
-//           error: true,
-//           errorObject: { message: `${handler}\nmessage: ${message}` },
-//         });
-//         return false;
-//       }
-
-//       // execute the command
-//       try {
-//         // ? Mind we are passing the full model, not just model
-//         const outcome = handler(
-//           serverMessage.data,
-//           webSocket,
-//           fullModel,
-//           getLocation,
-//           client
-//         );
-//         if (outcome && model.get("error")) model.set("error", false);
-//         else if (!outcome && !model.get("error")) model.set("error", true);
-//       } catch (error) {
-//         const info = `Error while executing the '${
-//           serverMessage.type
-//         }' command: ${(error as Error).toString()}`;
-//         model.setObject({
-//           error: true,
-//           errorObject: {
-//             ...(error as Error),
-//             message: `${info}\nmessage: ${message}`,
-//           },
-//         });
-//       }
-//     } else {
-//       model.setObject({
-//         error: true,
-//         errorObject: { message: `Unexpected message: ${message}` },
-//       });
-//     }
-//   };
 
 function pingServer(
   ws: WebSocket,
@@ -280,6 +250,23 @@ function pingServer(
       const pingMessage = new WsMessage("ping", {});
       ws.send(pingMessage.toString());
       store.dispatch(setLastPing(pingMessage.timestamp));
+    }
+  };
+}
+
+function startPullingSessionStatusV2(
+  ws: WebSocket,
+  store: StoreType,
+  getIsActive: () => boolean
+): () => void {
+  return function inner() {
+    if (!getIsActive()) {
+      return;
+    }
+    const { open } = select(store, ({ webSocket }) => webSocket);
+    if (open && ws.readyState === WebSocket.OPEN) {
+      const startPullingMessage = new WsMessage("pullSessionStatusV2", {});
+      ws.send(startPullingMessage.toString());
     }
   };
 }

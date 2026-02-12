@@ -27,6 +27,9 @@ const initialState: WebSocketState = {
     retrying: false,
     attempts: 0,
   },
+  uiVersion: {
+    webSocket: false,
+  },
 };
 
 const webSocketSlice = createSlice({
@@ -44,13 +47,43 @@ const webSocketSlice = createSlice({
     setError: (state, action: PayloadAction<WebSocketError>) => {
       state.error = action.payload;
     },
+    unsetError: (state) => {
+      state.error = undefined;
+    },
     setLastReceived: (state, action: PayloadAction<DateTime<true>>) => {
       state.lastReceived = action.payload;
+    },
+    setUiVersion: (
+      state,
+      action: PayloadAction<{ version: string; lastReceived: DateTime<true> }>
+    ) => {
+      state.uiVersion.lastValue = action.payload.version;
+      state.uiVersion.lastReceived = action.payload.lastReceived;
+    },
+    setUiVersionWebSocket: (state, action: PayloadAction<boolean>) => {
+      state.uiVersion.webSocket = action.payload;
+    },
+    setReconnect: (
+      state,
+      action: PayloadAction<WebSocketState["reconnect"]>
+    ) => {
+      state.reconnect.attempts = action.payload.attempts;
+      state.reconnect.retrying = action.payload.retrying;
+      state.reconnect.lastTime = action.payload.lastTime;
     },
     reset: () => initialState,
   },
 });
 
-export const { setOpen, setLastPing, setError, setLastReceived, reset } =
-  webSocketSlice.actions;
+export const {
+  setOpen,
+  setLastPing,
+  setError,
+  unsetError,
+  setLastReceived,
+  setUiVersion,
+  setUiVersionWebSocket,
+  setReconnect,
+  reset,
+} = webSocketSlice.actions;
 export default webSocketSlice;

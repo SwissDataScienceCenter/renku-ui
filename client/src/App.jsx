@@ -41,13 +41,10 @@ import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 import AppContext from "./utils/context/appContext";
-
-// import { setupWebSocket } from "./websocket";
-
-import "./App.css";
-
 import useAppSelector from "./utils/customHooks/useAppSelector.hook";
 import useWebSocket from "./websocketv2/useWebSocket";
+
+import "./App.css";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -101,39 +98,14 @@ function CentralContentContainer() {
 }
 
 export default function App(props) {
-  // const location = useLocation();
-  // const locationRef = useRef(location);
-
-  // const [, setWebSocket] = useState(null);
-
   const triggerNotifications = useTriggerNotifications();
-
-  // useEffect(() => {
-  //   locationRef.current = location;
-  // }, [location]);
-
-  // useEffect(() => {
-  //   const getLocation = () => locationRef.current;
-
-  //   // Setup authentication listeners and notifications
-  //   triggerNotifications();
-
-  //   // Setup WebSocket channel
-  //   let webSocketUrl = props.client.uiserverUrl + "/ws";
-  //   if (webSocketUrl.startsWith("http"))
-  //     webSocketUrl = "ws" + webSocketUrl.substring(4);
-  //   // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
-  //   setWebSocket(
-  //     setupWebSocket(webSocketUrl, props.model, getLocation, props.client)
-  //   );
-  //   // ! Ignoring the rule of hooks creates issues, we should refactor this hook
-  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // Setup authentication listeners and notifications
     triggerNotifications();
   }, [triggerNotifications]);
 
+  // Setup the web socket
   useWebSocket({ params: props.params, store: props.model.reduxStore });
 
   // Avoid rendering the application while authenticating the user
@@ -150,7 +122,6 @@ export default function App(props) {
   }
 
   const { coreApiVersionedUrlConfig, socket } = props;
-  console.log({ props });
   const appContext = {
     client: props.client,
     coreApiVersionedUrlConfig,
@@ -169,19 +140,8 @@ export default function App(props) {
         <CentralContentContainer />
         <FooterNavbar />
         <Cookie />
-        <StoreState />
       </AppContext.Provider>
       <ToastContainer />
     </>
-  );
-}
-
-function StoreState() {
-  const state = useAppSelector(({ webSocket }) => webSocket);
-
-  return (
-    <div>
-      <pre>{JSON.stringify(state, null, 2)}</pre>
-    </div>
   );
 }

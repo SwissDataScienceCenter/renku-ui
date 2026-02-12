@@ -25,11 +25,3 @@ export interface WsServerMessage {
   timestamp: DateTime;
   type: string;
 }
-
-export type ValidatedServerMessage = WsServerMessage & {
-  data: {
-    message?: string | undefined;
-  };
-  scope: "user";
-  type: "init";
-};

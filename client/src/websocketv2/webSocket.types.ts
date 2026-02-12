@@ -19,6 +19,7 @@
 import { DateTime } from "luxon";
 
 import type { createStore } from "~/utils/helpers/EnhancedState";
+import type WsMessage from "./WsMessage";
 
 export interface WebSocketState {
   open: boolean;
@@ -30,6 +31,11 @@ export interface WebSocketState {
     attempts: number;
     lastTime?: DateTime | undefined;
   };
+  uiVersion: {
+    webSocket: boolean;
+    lastValue?: string | undefined;
+    lastReceived?: DateTime | undefined;
+  };
 }
 
 export interface WebSocketError {
@@ -39,17 +45,12 @@ export interface WebSocketError {
 
 export type StoreType = ReturnType<typeof createStore>;
 
-// const webSocketSchema = new Schema({
-//   open: { [Prop.INITIAL]: false },
-//   error: { [Prop.INITIAL]: false },
-//   errorObject: { [Prop.INITIAL]: {} },
-//   lastPing: { [Prop.INITIAL]: null },
-//   lastReceived: { [Prop.INITIAL]: null },
-//   reconnect: {
-//     [Prop.SCHEMA]: new Schema({
-//       retrying: { [Prop.INITIAL]: false },
-//       attempts: { [Prop.INITIAL]: 0 },
-//       lastTime: { [Prop.INITIAL]: null },
-//     }),
-//   },
-// });
+export type MessageHandlerArgs = {
+  message: WsMessage;
+  store: StoreType;
+  ws: WebSocket;
+};
+
+export type MessageHandlerReturn = { ok: true } | { ok: false; error: Error };
+
+export type MessageHandler = (args: MessageHandlerArgs) => MessageHandlerReturn;

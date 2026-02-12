@@ -1,10 +1,25 @@
+/*!
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { DateTime } from "luxon";
 
 import type { AppParams } from "~/utils/context/appParams.types";
-import type {
-  ValidatedServerMessage,
-  WsServerMessage,
-} from "./WsServerMessage";
+import type { WsServerMessage } from "./WsServerMessage";
 
 interface GetWebSocketUrlArgs {
   params: AppParams;
@@ -28,6 +43,7 @@ export function getWebSocketUrl({ params }: GetWebSocketUrlArgs) {
 }
 
 export function parseWsServerMessage(message: unknown): WsServerMessage {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsed = JSON.parse(message as any);
   if (typeof parsed !== "object") {
     throw new Error(`Incoming message is not a JSON object: ${parsed}`);
@@ -59,58 +75,4 @@ export function parseWsServerMessage(message: unknown): WsServerMessage {
     type: type_,
   };
   return result;
-}
-
-export function validateServerMessage(
-  message: WsServerMessage
-): ValidatedServerMessage | { error: string } {
-  const { data, scope, type: type_ } = message;
-
-  // Only the "user" scope is valid
-  if (scope !== "user") {
-    return { error: `Invalid message scope: ${scope}` };
-  }
-
-  if (type_ === "init") {
-    const dataMessage = data["message"];
-    if (dataMessage != null && typeof dataMessage !== "string") {
-      return { error: `Invalid message data.message: ${dataMessage}` };
-    }
-    const extraProperties = checkExtraProperties(data, ["message"]);
-    if (extraProperties.length > 0) {
-      return {
-        error: `Invalid message data, found extra properties: ${extraProperties}`,
-      };
-    }
-    const result: ValidatedServerMessage = {
-      ...message,
-      scope,
-      type: type_,
-      data: { message: dataMessage || undefined },
-    };
-    return result;
-
-    //   init: [
-    //   {
-    //     required: null,
-    //     optional: ["message"],
-    //     handler: handleUserInit,
-    //   },
-    // ],
-  }
-
-  return { error: `Could not validate message: ${JSON.stringify(message)}` };
-}
-
-function checkExtraProperties(
-  data: Record<string, unknown>,
-  properties: string[]
-) {
-  const extraProperties: string[] = [];
-  for (const prop of Object.keys(data)) {
-    if (!properties.includes(prop)) {
-      extraProperties.push(prop);
-    }
-  }
-  return extraProperties;
 }

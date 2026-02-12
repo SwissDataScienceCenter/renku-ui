@@ -16,6 +16,17 @@
  * limitations under the License.
  */
 
-export const WEBSOCKET_PING_INTERVAL_MILLIS = 45_000; //? 45 seconds, set to 0 to disable
-export const RECONNECT_INTERVAL_MILLIS = 10_000; // 10 seconds
-export const RECONNECT_PENALTY_FACTOR = 1.5;
+import { sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.api";
+import type { MessageHandler } from "../webSocket.types";
+
+// Handles the "sessionStatusV2" message
+export const handleSessionsStatusV2: MessageHandler = ({ message, store }) => {
+  const invalidate =
+    typeof message.data["message"] === "string"
+      ? message.data["message"]
+      : false;
+  if (invalidate) {
+    store.dispatch(sessionsV2Api.endpoints.invalidateSessions.initiate());
+  }
+  return { ok: true };
+};
