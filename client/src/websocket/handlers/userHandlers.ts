@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,59 +16,56 @@
  * limitations under the License.
  */
 
-import { WsMessage } from "../WsMessages";
+import { DateTime } from "luxon";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { setUiVersion, setUiVersionWebSocket } from "../webSocket.slice";
+import type { MessageHandler } from "../webSocket.types";
+import WsMessage from "../WsMessage";
 
-function handleUserInit(
-  data: Record<string, unknown>,
-  webSocket: WebSocket
-): boolean {
+// Handles the "init" message
+export const handleUserInit: MessageHandler = ({ message, ws }) => {
   if (
-    data?.message &&
-    (data.message as string).toLowerCase().includes("connection established")
+    typeof message.data["message"] === "string" &&
+    message.data["message"].toLowerCase().includes("connection established")
   ) {
-    // send request for getting the UI version
-    webSocket.send(
-      JSON.stringify(new WsMessage({ requestServerVersion: true }, "init"))
-    );
+    const reply = new WsMessage("init", { requestServerVersion: true });
+    ws.send(reply.toString());
   }
-  return true;
-}
+  return { ok: true };
+};
 
-function handleUserUiVersion(
-  data: Record<string, unknown>,
-  _webSocket: WebSocket,
-  model: any
-): boolean {
-  const localModel = model.subModel("environment.uiVersion");
-  const envValues: Record<string, any> = {};
-
-  if (data.start != null) {
-    if (data.start) envValues.webSocket = true;
-    else envValues.webSocket = false;
+// Handles the "version" message
+export const handleUserUiVersion: MessageHandler = ({ message, store }) => {
+  const start =
+    typeof message.data["start"] === "boolean"
+      ? message.data["start"]
+      : undefined;
+  const version =
+    typeof message.data["version"] === "string" ? message.data["version"] : "";
+  if (start) {
+    store.dispatch(setUiVersionWebSocket(true));
+  } else if (start === false) {
+    store.dispatch(setUiVersionWebSocket(false));
   }
-  if (data.version != null) {
-    envValues.lastReceived = new Date();
-    if (localModel.get("lastValue") !== data.version)
-      envValues.lastValue = data.version;
+  if (version) {
+    store.dispatch(setUiVersion({ version, lastReceived: DateTime.utc() }));
   }
-  localModel.setObject(envValues);
-  return true;
-}
+  return { ok: true };
+};
 
-function handleUserError(
-  data: Record<string, unknown>,
-  _webSocket: WebSocket,
-  model: any
-): boolean {
-  const message = data.message
-    ? "Error on WebSocket server: " + data.message
-    : "Unknown error on WebSocket server.";
-  model
-    .subModel("webSocket")
-    .setObject({ error: true, errorObject: { message } });
-  return false;
-}
+// Handles the "ack" message
+export const handleAck: MessageHandler = () => {
+  return { ok: true };
+};
 
-export { handleUserInit, handleUserUiVersion, handleUserError };
+// Handles the "error" message
+export const handleUserError: MessageHandler = ({ message }) => {
+  const errorMessage =
+    typeof message.data["message"] === "string"
+      ? message.data["message"]
+      : "Unknown error from the WebSocket server";
+  return {
+    ok: false,
+    error: new Error(errorMessage),
+  };
+};

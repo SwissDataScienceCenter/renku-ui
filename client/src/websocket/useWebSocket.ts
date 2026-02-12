@@ -1,0 +1,104 @@
+/*!
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { DateTime } from "luxon";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import type { AppParams } from "~/utils/context/appParams.types";
+import { initializeWebSocket } from "./webSocket";
+import {
+  RECONNECT_INTERVAL_MILLIS,
+  RECONNECT_PENALTY_FACTOR,
+} from "./webSocket.constants";
+import { setReconnect } from "./webSocket.slice";
+import { StoreType } from "./webSocket.types";
+import { getWebSocketUrl } from "./websocket.utils";
+
+interface UseWebSocketArgs {
+  params: AppParams;
+  store: StoreType;
+}
+
+/** Sets up the web socket connection
+ *
+ * Note that the state handling of this hook means that we
+ * maintain one active connection per browser tab,
+ * even in development mode (e.g. with telepresence).
+ */
+export default function useWebSocket({ params, store }: UseWebSocketArgs) {
+  const { reconnect: reconnectState } = store.getState().webSocket;
+  const dispatch = store.dispatch;
+
+  const [wsId, setWsId] = useState<string>(`ws-${Date.now().toString()}`);
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
+  const setWsIdRef = useRef<typeof setWsId | null>(setWsId);
+
+  const onRetryConnection = useCallback(() => {
+    let { attempts } = reconnectState;
+    // reset timer after 1 hour
+    const oneHourAgo = DateTime.utc().minus({ hours: 1 });
+    if (
+      reconnectState.lastTime != null &&
+      reconnectState.lastTime < oneHourAgo
+    ) {
+      attempts = 0;
+    }
+    attempts++;
+    dispatch(
+      setReconnect({ attempts, retrying: true, lastTime: DateTime.utc() })
+    );
+    const delay =
+      RECONNECT_PENALTY_FACTOR ** attempts * RECONNECT_INTERVAL_MILLIS;
+    window.setTimeout(() => {
+      if (setWsIdRef.current) {
+        const setWsId = setWsIdRef.current;
+        setWsId(`ws-${Date.now().toString()}`);
+      }
+    }, delay);
+  }, [dispatch, reconnectState]);
+
+  // Initialize the web socket
+  useEffect(() => {
+    const webSocketUrl = getWebSocketUrl({ params });
+    if (webSocketUrl == null) {
+      return;
+    }
+
+    const { cleanup, ws } = initializeWebSocket({
+      url: webSocketUrl,
+      store,
+      onRetryConnection,
+    });
+
+    setWs(ws);
+
+    return () => {
+      cleanup();
+    };
+  }, [onRetryConnection, params, store, wsId]);
+
+  // Ref cleanup
+  useEffect(() => {
+    return () => {
+      setWsIdRef.current = null;
+    };
+  }, []);
+
+  return ws;
+}
