@@ -19,6 +19,7 @@
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import type { StoreType } from "~/store/store";
 import type { AppParams } from "~/utils/context/appParams.types";
 import { initializeWebSocket } from "./webSocket";
 import {
@@ -26,7 +27,6 @@ import {
   RECONNECT_PENALTY_FACTOR,
 } from "./webSocket.constants";
 import { setReconnect } from "./webSocket.slice";
-import { StoreType } from "./webSocket.types";
 import { getWebSocketUrl } from "./websocket.utils";
 
 interface UseWebSocketArgs {

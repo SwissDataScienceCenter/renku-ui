@@ -105,7 +105,8 @@ export default function App(props) {
   }, [triggerNotifications]);
 
   // Setup the web socket
-  useWebSocket({ params: props.params, store: props.model.reduxStore });
+  // useWebSocket({ params: props.params, store: props.model.reduxStore });
+  useWebSocket({ params: props.params, store: props.store });
 
   // Avoid rendering the application while authenticating the user
   const { error, isLoading } = useGetUserQueryState();

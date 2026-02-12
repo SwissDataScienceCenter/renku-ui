@@ -19,7 +19,7 @@
 import type { TypedUseSelectorHook } from "react-redux";
 import { useSelector } from "react-redux";
 
-import type { StrictRootState } from "../helpers/EnhancedState";
+import type { RootState } from "~/store/store";
 
-const useAppSelector: TypedUseSelectorHook<StrictRootState> = useSelector;
+const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export default useAppSelector;

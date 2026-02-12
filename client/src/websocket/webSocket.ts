@@ -18,6 +18,7 @@
 
 import { DateTime } from "luxon";
 
+import type { StoreType } from "~/store/store";
 import { makeDispatcher } from "./messageDispatch";
 import { WEBSOCKET_PING_INTERVAL_MILLIS } from "./webSocket.constants";
 import {
@@ -27,7 +28,6 @@ import {
   setOpen,
   unsetError,
 } from "./webSocket.slice";
-import type { StoreType } from "./webSocket.types";
 import { parseWsServerMessage } from "./websocket.utils";
 import WsMessage from "./WsMessage";
 import type { WsServerMessage } from "./WsServerMessage";
