@@ -30,12 +30,12 @@ import {
 import { useNotifyLogout } from "~/authentication/useNotifyLogout.hook.ts";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
-import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem.tsx";
+import AdminDropdownItem from "../../features/landing/components/AdminDropdownItem";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import type { AppParams } from "../../utils/context/appParams.types";
-import ExternalLink from "../ExternalLink.tsx";
+import ExternalLink from "../ExternalLink";
 import { Loader } from "../Loader";
-import DropdownItemTag from "./DropdownItemTag.tsx";
+import DropdownItemTag from "./DropdownItemTag";
 
 interface RenkuToolbarItemUserProps {
   params: AppParams;

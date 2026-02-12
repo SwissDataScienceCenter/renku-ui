@@ -21,7 +21,6 @@ import { describe, expect, it } from "vitest";
 
 import APIClient, { testClient as client } from "../api-client";
 import { globalSchema, StateModel } from "../model";
-import NotificationsManager from "../notifications/NotificationsManager";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import {
   getWsServerMessageHandler,
@@ -133,17 +132,10 @@ describe("Test WebSocket functions", () => {
 
   it("Test retryConnection function", async () => {
     const model = new StateModel(globalSchema);
-    const notifications = new NotificationsManager(model, client);
     const reconnectModel = model.subModel("webSocket.reconnect");
     expect(reconnectModel.get("attempts")).toBe(0);
     expect(reconnectModel.get("retrying")).toBe(false);
-    retryConnection(
-      "fakeUrl",
-      model,
-      fakeLocation,
-      client as APIClient,
-      notifications
-    );
+    retryConnection("fakeUrl", model, fakeLocation, client as APIClient);
     expect(reconnectModel.get("attempts")).toBe(1);
     expect(reconnectModel.get("retrying")).toBe(true);
   });
@@ -166,7 +158,6 @@ describe("Test WebSocket server", () => {
 
   it("Test setupWebSocket", async () => {
     const fullModel = new StateModel(globalSchema);
-    const notifications = new NotificationsManager(fullModel, client);
 
     // the mocked WebSocket server is up and running
     const localModel = fullModel.subModel("webSocket");
@@ -177,20 +168,13 @@ describe("Test WebSocket server", () => {
       webSocketURL.replace("localhost", "fake_host"),
       fullModel,
       fakeLocation,
-      client as APIClient,
-      notifications
+      client as APIClient
     );
     await sleep(0.01); // ? It's ugly, but it's needed when using the fake WebSocket server...
     expect(localModel.get("open")).toBe(false);
 
     // using the correct URL opens the connection
-    setupWebSocket(
-      webSocketURL,
-      fullModel,
-      fakeLocation,
-      client as APIClient,
-      notifications
-    );
+    setupWebSocket(webSocketURL, fullModel, fakeLocation, client as APIClient);
     await sleep(0.01);
     expect(localModel.get("open")).toBe(true);
 

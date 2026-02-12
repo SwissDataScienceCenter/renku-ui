@@ -21,7 +21,7 @@ import { useCallback, useState } from "react";
 import { PlusLg } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 
-import NewSessionLauncherModal from "./components/SessionModals/NewSessionLauncherModal.tsx";
+import NewSessionLauncherModal from "./components/SessionModals/NewSessionLauncherModal";
 
 export default function AddSessionLauncherButton({
   "data-cy": dataCy,

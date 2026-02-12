@@ -18,8 +18,8 @@
 
 import cx from "classnames";
 
-import { ErrorAlert } from "../../../../components/Alert.jsx";
-import { Loader } from "../../../../components/Loader.tsx";
+import { ErrorAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
 
 export function FetchingResourcePools() {
   return (

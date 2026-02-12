@@ -18,8 +18,8 @@
 
 import type { Location, NavigateFunction } from "react-router";
 
+import type useRenkuToast from "~/components/toast/useRenkuToast";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
-import type { NotificationsManager } from "~/notifications/notifications.types";
 import {
   LOGOUT_EVENT_TIMEOUT,
   RENKU_QUERY_PARAMS,
@@ -93,6 +93,12 @@ export function setupListener(): () => void {
   };
 }
 
+type RenkuToastReturn = ReturnType<typeof useRenkuToast>;
+type TriggerNotificationsArgs = Pick<
+  RenkuToastReturn,
+  "renkuToastSuccess" | "renkuToastWarning"
+>;
+
 /**
  * Set up event listener fol localStorage authentication events. This should be called once per browser tab.
  *
@@ -100,27 +106,33 @@ export function setupListener(): () => void {
  *
  * Returns a cleanup function.
  */
-export function triggerNotifications(notifications: NotificationsManager) {
+export function triggerNotifications({
+  renkuToastSuccess,
+  renkuToastWarning,
+}: TriggerNotificationsArgs) {
   // Check login
   const login = sessionStorage.getItem(RENKU_QUERY_PARAMS.login);
   if (login) {
     sessionStorage.removeItem(RENKU_QUERY_PARAMS.login);
-    notifications.addSuccess(
-      NOTIFICATION_TOPICS.AUTHENTICATION,
-      "The page was refreshed because you recently logged in on a different tab."
-    );
+    renkuToastSuccess({
+      textHeader: NOTIFICATION_TOPICS.AUTHENTICATION,
+      textBody:
+        "The page was refreshed because you recently logged in on a different tab.",
+    });
   }
 
   // Check logout
   const logout = sessionStorage.getItem(RENKU_QUERY_PARAMS.logout);
   if (logout) {
     sessionStorage.removeItem(RENKU_QUERY_PARAMS.logout);
-    notifications.addWarning(
-      NOTIFICATION_TOPICS.AUTHENTICATION,
-      "The page was refreshed because you recently logged out on a different tab."
-    );
+    renkuToastWarning({
+      textHeader: NOTIFICATION_TOPICS.AUTHENTICATION,
+      textBody:
+        "The page was refreshed because you recently logged out on a different tab.",
+    });
   }
 }
+
 /**
  * Invoke whenever then logout process has been triggered.
  */
