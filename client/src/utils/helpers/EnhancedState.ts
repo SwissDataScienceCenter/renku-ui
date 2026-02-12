@@ -31,7 +31,7 @@ import {
 import { loginStateSlice } from "~/features/loginHandler/loginState.slice";
 import { notificationsEmptyApi as notificationsApi } from "~/features/notifications/api/notifications.empty-api";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
-import webSocketSlice from "~/websocketv2/webSocket.slice";
+import webSocketSlice from "~/websocket/webSocket.slice";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import { projectCloudStorageEmptyApi as projectCloudStorageApi } from "../../features/cloudStorage/api/projectCloudStorage.empty-api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";

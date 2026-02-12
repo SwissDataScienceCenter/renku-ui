@@ -41,8 +41,7 @@ import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 import AppContext from "./utils/context/appContext";
-import useAppSelector from "./utils/customHooks/useAppSelector.hook";
-import useWebSocket from "./websocketv2/useWebSocket";
+import useWebSocket from "./websocket/useWebSocket";
 
 import "./App.css";
 
