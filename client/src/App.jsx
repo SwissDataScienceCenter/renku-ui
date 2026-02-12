@@ -120,14 +120,8 @@ export default function App(props) {
     return <Unavailable params={props.params} />;
   }
 
-  const { coreApiVersionedUrlConfig, socket } = props;
   const appContext = {
-    client: props.client,
-    coreApiVersionedUrlConfig,
-    location: props.location,
-    model: props.model,
     params: props.params,
-    webSocket: socket,
   };
 
   return (

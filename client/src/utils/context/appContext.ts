@@ -18,28 +18,29 @@
 
 import React from "react";
 
-import type { CoreApiVersionedUrlConfig } from "../helpers/url";
-import { createCoreApiVersionedUrlConfig } from "../helpers/url";
 import type { AppParams } from "./appParams.types";
 
+// import type { CoreApiVersionedUrlConfig } from "../helpers/url";
+// import { createCoreApiVersionedUrlConfig } from "../helpers/url";
+
 export interface AppContextType {
-  client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
-  location: unknown;
-  model: unknown;
+  // client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  // coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
+  // location: unknown;
+  // model: unknown;
   params: AppParams | undefined;
-  webSocket: WebSocket | undefined;
+  // webSocket: WebSocket | undefined;
 }
 
 const AppContext = React.createContext<AppContextType>({
-  client: undefined,
-  coreApiVersionedUrlConfig: createCoreApiVersionedUrlConfig({
-    coreApiVersion: "/",
-  }),
-  location: undefined,
-  model: undefined,
+  // client: undefined,
+  // coreApiVersionedUrlConfig: createCoreApiVersionedUrlConfig({
+  //   coreApiVersion: "/",
+  // }),
+  // location: undefined,
+  // model: undefined,
   params: undefined,
-  webSocket: undefined,
+  // webSocket: undefined,
 });
 
 export default AppContext;
