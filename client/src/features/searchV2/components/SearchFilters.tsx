@@ -17,7 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { DateTime } from "luxon";
+import React, { useCallback, useMemo, useState } from "react";
 import { XCircleFill } from "react-bootstrap-icons";
 import { useSearchParams } from "react-router";
 import {
@@ -38,10 +39,14 @@ import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/n
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import {
+  DATE_FILTER_CUSTOM_SEPARATOR,
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
+  FILTER_CONTENT_NAMESPACE,
+  FILTER_DATE,
   FILTER_KEYWORD,
   FILTER_MEMBER,
+  FILTER_MY_ROLE,
   FILTER_PAGE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
@@ -56,24 +61,29 @@ export default function SearchFilters() {
   const { namespace, kind } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
-      groupSlug: namespace,
+      groupSlug: namespace ?? "",
     },
-    { skip: kind !== "group" }
+    { skip: kind !== "group" || !namespace }
   );
+  const isNamespace = kind == "group" || kind == "user";
 
   // Add numbers to the content types. Mind that this requires an additional request.
+  const filterContentByType =
+    kind === "group" || kind === "user"
+      ? FILTER_CONTENT_NAMESPACE
+      : FILTER_CONTENT;
   const hydratedFilterContentAllowedValues = useMemo(() => {
-    return FILTER_CONTENT.allowedValues.map((option) => ({
+    return filterContentByType.allowedValues.map((option) => ({
       ...option,
       quantity: searchAnyType?.facets?.entityType?.[option.value] ?? 0,
     }));
-  }, [searchAnyType?.facets?.entityType]);
+  }, [searchAnyType?.facets?.entityType, filterContentByType.allowedValues]);
   const filterContentWithQuantities = useMemo<Filter>(() => {
     return {
-      ...FILTER_CONTENT,
+      ...filterContentByType,
       allowedValues: hydratedFilterContentAllowedValues,
     };
-  }, [hydratedFilterContentAllowedValues]);
+  }, [hydratedFilterContentAllowedValues, filterContentByType]);
 
   // Create the enum filter for keywords with quantities.
   const selectedKeywords = useMemo(() => {
@@ -166,12 +176,24 @@ export default function SearchFilters() {
       {kind == "group" && (
         <GroupSearchFilter filter={filterMembersWithValues} />
       )}
+
       <GroupSearchFilter
         defaultElementsToShow={10}
         filter={filterKeywordWithQuantities}
         hiddenDecoration
       />
+
       <GroupSearchFilter filter={FILTER_VISIBILITY} />
+      <GroupSearchFilter
+        filter={FILTER_DATE}
+        renderAfterOptions={(visualization) => (
+          <DateFilterCustomOption
+            filter={FILTER_DATE}
+            visualization={visualization}
+          />
+        )}
+      />
+      {!isNamespace && <GroupSearchFilter filter={FILTER_MY_ROLE} />}
     </div>
   );
 }
@@ -211,11 +233,13 @@ interface GroupSearchFilterProps {
   defaultElementsToShow?: number;
   filter: Filter;
   hiddenDecoration?: boolean;
+  renderAfterOptions?: (visualization: "accordion" | "list") => React.ReactNode;
 }
 function GroupSearchFilter({
   defaultElementsToShow = DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   filter,
   hiddenDecoration = false,
+  renderAfterOptions,
 }: GroupSearchFilterProps) {
   // Do not show invalid filter, but give the opportunity to reset it.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -272,6 +296,7 @@ function GroupSearchFilter({
                   defaultElementsToShow={defaultElementsToShow}
                   filter={filter}
                   hiddenDecoration={hiddenDecoration}
+                  renderAfterOptions={renderAfterOptions}
                   visualization="accordion"
                 />
               )}
@@ -305,6 +330,7 @@ function GroupSearchFilter({
               defaultElementsToShow={defaultElementsToShow}
               filter={filter}
               hiddenDecoration={hiddenDecoration}
+              renderAfterOptions={renderAfterOptions}
               visualization="list"
             />
           )}
@@ -318,12 +344,14 @@ interface GroupSearchFilterContentProps {
   defaultElementsToShow?: number;
   filter: Filter;
   hiddenDecoration?: boolean;
+  renderAfterOptions?: (visualization: "accordion" | "list") => React.ReactNode;
   visualization?: "accordion" | "list";
 }
 function GroupSearchFilterContent({
   defaultElementsToShow,
   filter,
   hiddenDecoration,
+  renderAfterOptions,
   visualization = "list",
 }: GroupSearchFilterContentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -339,17 +367,25 @@ function GroupSearchFilterContent({
       } else if (allowSelectMany) {
         // Move logic to handle multiple values to a utility function?
         const currentValues =
-          params.get(filter.name)?.split(VALUE_SEPARATOR_AND) ?? [];
+          params
+            .get(filter.name)
+            ?.split(filter.valueSeparator ?? VALUE_SEPARATOR_AND) ?? [];
         if (currentValues.includes(value)) {
           const newValues = currentValues.filter((v) => v !== value);
           if (newValues.length > 0) {
-            params.set(filter.name, newValues.join(VALUE_SEPARATOR_AND));
+            params.set(
+              filter.name,
+              newValues.join(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
+            );
           } else {
             params.delete(filter.name);
           }
         } else {
           currentValues.push(value);
-          params.set(filter.name, currentValues.join(VALUE_SEPARATOR_AND));
+          params.set(
+            filter.name,
+            currentValues.join(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
+          );
         }
       } else {
         params.set(filter.name, value);
@@ -379,7 +415,7 @@ function GroupSearchFilterContent({
                   isChecked={
                     allowSelectMany
                       ? current
-                          .split(VALUE_SEPARATOR_AND)
+                          .split(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
                           .includes(element.value)
                       : current === element.value
                   }
@@ -410,6 +446,7 @@ function GroupSearchFilterContent({
         ) : (
           <p className={cx("fst-italic", "mb-0", "text-muted")}>None</p>
         )}
+        {renderAfterOptions?.(visualization)}
       </>
     );
   }
@@ -471,5 +508,141 @@ function GroupSearchFilterRadioOrCheckboxElement({
         {children}
       </label>
     </div>
+  );
+}
+
+interface DateFilterCustomOptionProps {
+  filter: Filter;
+  visualization: "accordion" | "list";
+}
+function DateFilterCustomOption({
+  filter,
+  visualization,
+}: DateFilterCustomOptionProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const current = searchParams.get(filter.name) ?? "";
+
+  const predefinedValues = useMemo(
+    () =>
+      filter.type === "enum" ? filter.allowedValues.map((v) => v.value) : [],
+    [filter]
+  );
+
+  const isCustom = current !== "" && !predefinedValues.includes(current);
+
+  const { afterDate, beforeDate } = useMemo(() => {
+    if (!isCustom) return { afterDate: "", beforeDate: "" };
+    const parts = current.split(DATE_FILTER_CUSTOM_SEPARATOR);
+    let after = "";
+    let before = "";
+    for (const part of parts) {
+      if (part.startsWith(">")) after = part.slice(1);
+      else if (part.startsWith("<")) before = part.slice(1);
+    }
+    return { afterDate: after, beforeDate: before };
+  }, [current, isCustom]);
+
+  const today = useMemo(() => DateTime.utc().toISODate() ?? "", []);
+
+  const updateDateParam = useCallback(
+    (newValue: string) => {
+      const params = new URLSearchParams(searchParams);
+      if (newValue) {
+        params.set(filter.name, newValue);
+      } else {
+        params.delete(filter.name);
+      }
+      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
+      if (params.get(FILTER_PAGE.name) !== pageDefaultValue) {
+        params.set(FILTER_PAGE.name, pageDefaultValue);
+      }
+      setSearchParams(params);
+    },
+    [filter.name, searchParams, setSearchParams]
+  );
+
+  const onSelectCustom = useCallback(() => {
+    if (!isCustom) {
+      updateDateParam(`<${today}`);
+    }
+  }, [isCustom, today, updateDateParam]);
+
+  const onChangeAfter = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newAfter = e.target.value ? `>${e.target.value}` : "";
+      const currentBefore = beforeDate ? `<${beforeDate}` : "";
+      const newValue = [newAfter, currentBefore]
+        .filter(Boolean)
+        .join(DATE_FILTER_CUSTOM_SEPARATOR);
+      updateDateParam(newValue);
+    },
+    [beforeDate, updateDateParam]
+  );
+
+  const onChangeBefore = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const currentAfter = afterDate ? `>${afterDate}` : "";
+      const newBefore = e.target.value ? `<${e.target.value}` : "";
+      const newValue = [currentAfter, newBefore]
+        .filter(Boolean)
+        .join(DATE_FILTER_CUSTOM_SEPARATOR);
+      updateDateParam(newValue);
+    },
+    [afterDate, updateDateParam]
+  );
+
+  const id = `group-search-filter-${filter.name}-custom`;
+
+  return (
+    <>
+      <GroupSearchFilterRadioOrCheckboxElement
+        identifier={id}
+        isChecked={isCustom}
+        onChange={onSelectCustom}
+        type="radio"
+        visualization={visualization}
+      >
+        Custom
+      </GroupSearchFilterRadioOrCheckboxElement>
+      {isCustom && (
+        <div className={cx("d-flex", "flex-column", "gap-2", "mt-2", "ps-4")}>
+          <div>
+            <label
+              className={cx("form-label", "small", "mb-1")}
+              htmlFor={`${id}-after`}
+            >
+              From:
+            </label>
+            <input
+              className={cx("form-control", "form-control-sm")}
+              data-cy={`${id}-after`}
+              id={`${id}-after`}
+              max={beforeDate || today}
+              onChange={onChangeAfter}
+              type="date"
+              value={afterDate}
+            />
+          </div>
+          <div>
+            <label
+              className={cx("form-label", "small", "mb-1")}
+              htmlFor={`${id}-before`}
+            >
+              To:
+            </label>
+            <input
+              className={cx("form-control", "form-control-sm")}
+              data-cy={`${id}-before`}
+              id={`${id}-before`}
+              max={today}
+              min={afterDate || undefined}
+              onChange={onChangeBefore}
+              type="date"
+              value={beforeDate}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

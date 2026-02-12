@@ -162,6 +162,11 @@
                 "description": "The search query.",
                 "type": "string",
                 "default": ""
+              },
+              "include_counts": {
+                "description": "Include counts (project_count, data_connector_count) in the results.",
+                "type": "boolean",
+                "default": false
               }
             }
           }
@@ -299,7 +304,7 @@
         }
       },
       "SearchProject": {
-        "title": "Project",
+        "title": "SearchProject",
         "examples": [
           {
             "type": "Project",
@@ -395,7 +400,7 @@
         }
       },
       "SearchDataConnector": {
-        "title": "DataConnector",
+        "title": "SearchDataConnector",
         "examples": [
           {
             "type": "DataConnector",
@@ -494,13 +499,13 @@
         "title": "SearchEntity",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/Group"
+            "$ref": "#/components/schemas/SearchGroup"
           },
           {
             "$ref": "#/components/schemas/SearchProject"
           },
           {
-            "$ref": "#/components/schemas/User"
+            "$ref": "#/components/schemas/SearchUser"
           },
           {
             "$ref": "#/components/schemas/SearchDataConnector"
@@ -564,6 +569,86 @@
           "type": {
             "type": "string",
             "const": "User"
+          }
+        }
+      },
+      "SearchUser": {
+        "title": "SearchUser",
+        "type": "object",
+        "required": ["id", "type", "path", "slug"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number",
+            "format": "double"
+          },
+          "project_count": {
+            "description": "Number of projects with this user namespace.",
+            "type": "integer",
+            "format": "int32"
+          },
+          "data_connector_count": {
+            "description": "Number of data connectors with this user namespace.",
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string",
+            "const": "User"
+          }
+        }
+      },
+      "SearchGroup": {
+        "title": "SearchGroup",
+        "type": "object",
+        "required": ["id", "name", "path", "slug", "type"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number",
+            "format": "double"
+          },
+          "type": {
+            "type": "string",
+            "const": "Group"
+          },
+          "project_count": {
+            "description": "Number of projects with this group namespace.",
+            "type": "integer",
+            "format": "int32"
+          },
+          "data_connector_count": {
+            "description": "Number of data connectors with this group namespace.",
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
