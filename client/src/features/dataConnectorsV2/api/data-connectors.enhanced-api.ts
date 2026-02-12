@@ -7,6 +7,7 @@ import type {
   GetDataConnectorsByDataConnectorIdApiResponse,
   GetDataConnectorsByDataConnectorIdSecretsApiArg,
   GetDataConnectorsByDataConnectorIdSecretsApiResponse,
+  GetDepositApiResponse,
 } from "./data-connectors.api";
 import { dataConnectorsApi as api } from "./data-connectors.api";
 
@@ -114,6 +115,7 @@ const injectedApi = api.injectEndpoints({
 
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: [
+    "Deposits",
     "DataConnectors",
     "DataConnectorsProjectLinks",
     "DataConnectorSecrets",
@@ -146,6 +148,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     getDataConnectorsByDataConnectorIdSecrets: {
       providesTags: ["DataConnectorSecrets"],
     },
+    getDeposit: {
+      providesTags: ["Deposits"],
+    },
     getNamespacesByNamespaceDataConnectorsAndSlug: {
       providesTags: ["DataConnectors"],
     },
@@ -170,6 +175,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postDataConnectorsGlobal: {
       invalidatesTags: ["DataConnectors"],
     },
+    postDeposit: {
+      invalidatesTags: ["Deposits"],
+    },
   },
 });
 
@@ -179,20 +187,22 @@ export const {
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
-  useGetDataConnectorsPagedQuery: useGetDataConnectorsQuery,
-  useGetDataConnectorsByDataConnectorIdQuery,
+  useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
+  useGetDataConnectorsByDataConnectorIdQuery,
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   useGetDataConnectorsListByDataConnectorIdsQuery,
   useGetDataConnectorsListSecretsQuery,
+  useGetDataConnectorsPagedQuery: useGetDataConnectorsQuery,
+  useGetDepositQuery,
   useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
   useGetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugQuery,
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
-  usePostDataConnectorsMutation,
   usePostDataConnectorsGlobalMutation,
-  useGetDataConnectorsByDataConnectorIdPermissionsQuery,
-  useGetProjectsByProjectIdDataConnectorLinksQuery,
-  useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
+  usePostDataConnectorsMutation,
+  usePostDepositMutation,
 } = enhancedApi;
