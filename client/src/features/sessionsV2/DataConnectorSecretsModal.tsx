@@ -43,14 +43,13 @@ import {
 } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
-import { User } from "../../model/renkuModels.types";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { usePostStorageSchemaTestConnectionMutation } from "../cloudStorage/api/projectCloudStorage.api";
+import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../cloudStorage/projectCloudStorage.constants";
+import type { CloudStorageDetailsOptions } from "../cloudStorage/projectCloudStorage.types";
 import { validationParametersFromDataConnectorConfiguration } from "../dataConnectorsV2/components/dataConnector.utils";
 import { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
-import { usePostStorageSchemaTestConnectionMutation } from "../project/components/cloudStorage/api/projectCloudStorage.api";
-import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../project/components/cloudStorage/projectCloudStorage.constants";
-import type { CloudStorageDetailsOptions } from "../project/components/cloudStorage/projectCloudStorage.types";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 
 const CONTEXT_STRINGS = {
   session: {
@@ -104,9 +103,7 @@ function DataConnectorSecrets({
   context,
   control,
 }: DataConnectorConfigurationSecretsProps) {
-  const userLogged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
   const dataConnector = dataConnectorConfig.dataConnector;
   const storage = dataConnector.storage;
@@ -147,7 +144,7 @@ function DataConnectorSecrets({
           );
         })}
       </div>
-      {context === "session" && userLogged && (
+      {context === "session" && user?.isLoggedIn && (
         <SaveCredentialsInput control={control} />
       )}
       {context === "storage" && hasIncompleteSavedCredentials && (

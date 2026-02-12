@@ -26,7 +26,6 @@ import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./list.types";
-import PinnedBadge from "./PinnedBadge";
 
 import "./ListBar.scss";
 
@@ -49,7 +48,6 @@ function ListBar({
   return (
     <div className="container-entity-listBar">
       <div className={cx("entity-image", "position-relative")}>
-        <PinnedBadge entityType={itemType} slug={slug} />
         <Link to={url} className="text-decoration-none">
           <div
             style={imageStyles}

@@ -27,13 +27,13 @@ import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
-import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
-import { useGetStorageSchemaQuery } from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
+import { useGetStorageSchemaQuery } from "../../../cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_TOTAL_STEPS,
   EMPTY_CLOUD_STORAGE_STATE,
-} from "../../../project/components/cloudStorage/projectCloudStorage.constants";
-import { AddCloudStorageState } from "../../../project/components/cloudStorage/projectCloudStorage.types";
+} from "../../../cloudStorage/projectCloudStorage.constants";
+import { AddCloudStorageState } from "../../../cloudStorage/projectCloudStorage.types";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../../api/data-connectors.enhanced-api";

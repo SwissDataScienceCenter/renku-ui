@@ -20,12 +20,12 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
 
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { getSessionSecretSlotsWithSecrets } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.utils";
 import {
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
   useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
 interface UseSessionSecretsArgs {
@@ -35,9 +35,8 @@ interface UseSessionSecretsArgs {
 export default function useSessionSecrets({
   projectId,
 }: UseSessionSecretsArgs) {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
   const {
     currentData: sessionSecretSlots,
@@ -49,21 +48,21 @@ export default function useSessionSecrets({
     isFetching: isFetchingSessionSecrets,
     error: sessionSecretsError,
   } = useGetProjectsByProjectIdSessionSecretsQuery(
-    userLogged ? { projectId } : skipToken
+    isUserLoggedIn ? { projectId } : skipToken
   );
 
   const isFetching = isFetchingSessionSecretSlots || isFetchingSessionSecrets;
   const error = sessionSecretSlotsError ?? sessionSecretsError;
 
   const sessionSecretSlotsWithSecrets = useMemo(() => {
-    if (error || !sessionSecretSlots || (userLogged && !sessionSecrets)) {
+    if (error || !sessionSecretSlots || (isUserLoggedIn && !sessionSecrets)) {
       return null;
     }
     return getSessionSecretSlotsWithSecrets({
       sessionSecretSlots,
       sessionSecrets: sessionSecrets ?? [],
     });
-  }, [error, sessionSecretSlots, sessionSecrets, userLogged]);
+  }, [error, sessionSecretSlots, sessionSecrets, isUserLoggedIn]);
 
   const dispatch = useAppDispatch();
 
@@ -71,7 +70,7 @@ export default function useSessionSecrets({
     if (sessionSecretSlotsWithSecrets?.every(({ secretId }) => secretId)) {
       dispatch(startSessionOptionsV2Slice.actions.setUserSecretsReady(true));
     }
-  }, [dispatch, sessionSecretSlotsWithSecrets, userLogged]);
+  }, [dispatch, sessionSecretSlotsWithSecrets, isUserLoggedIn]);
 
   return {
     sessionSecretSlotsWithSecrets,

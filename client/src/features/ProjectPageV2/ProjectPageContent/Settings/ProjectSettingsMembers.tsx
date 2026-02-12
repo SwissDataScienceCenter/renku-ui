@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { PencilSquare, PersonGear, PlusLg, Trash } from "react-bootstrap-icons";
@@ -37,7 +36,6 @@ import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   Project,
@@ -104,14 +102,12 @@ function ProjectMemberAction({
   onRemove,
   onEdit,
 }: ProjectPageSettingsMembersListItemProps) {
-  const logged = useLegacySelector((state) => state.stateModel.user.logged);
-
   const permissions = useProjectPermissions({ projectId });
   const {
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useGetUserQueryState(logged ? undefined : skipToken);
+  } = useGetUserQueryState();
   const userMember = useMemo(() => {
     if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;

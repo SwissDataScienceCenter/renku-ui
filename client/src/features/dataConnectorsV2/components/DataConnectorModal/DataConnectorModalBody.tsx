@@ -32,6 +32,10 @@ import {
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import {
+  getSchema,
+  getSchemaOptions,
+} from "~/features/cloudStorage/projectCloudStorage.utils";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
@@ -44,16 +48,12 @@ import {
   AddStorageOptions,
   AddStorageType,
   type AddStorageStepProps,
-} from "../../../project/components/cloudStorage/AddOrEditCloudStorage";
-import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
+} from "../../../cloudStorage/AddOrEditCloudStorage";
+import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../cloudStorage/projectCloudStorage.constants";
 import type {
   AddCloudStorageState,
   CloudStorageDetails,
-} from "../../../project/components/cloudStorage/projectCloudStorage.types";
-import {
-  getSchema,
-  getSchemaOptions,
-} from "../../../project/utils/projectCloudStorage.utils";
+} from "../../../cloudStorage/projectCloudStorage.types";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { ProjectNamespaceControl } from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import SlugPreviewFormField from "../../../projectsV2/fields/SlugPreviewFormField";

@@ -32,9 +32,8 @@ import {
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
-import type { User } from "../../model/renkuModels.types";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
+  useGetUserQueryState,
   useGetUserSecretsQuery,
   usersApi,
   type SecretWithId,
@@ -43,9 +42,11 @@ import DataConnectorSecretItem from "./DataConnectorSecretItem";
 import GeneralSecretItem from "./GeneralSecretItem";
 
 export default function SecretsV2() {
-  const user = useLegacySelector<User>((state) => state.stateModel.user);
+  const { data: user, isLoading } = useGetUserQueryState();
 
-  if (!user.fetched) return <Loader />;
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -55,7 +56,7 @@ export default function SecretsV2() {
           <SecretsPageInfo />
         </Col>
       </Row>
-      {user.logged && (
+      {user?.isLoggedIn && (
         <Row className={cx("g-4", "row-cols-1", "row-cols-lg-2")}>
           <Col>
             <SessionSecrets />
@@ -73,11 +74,9 @@ export default function SecretsV2() {
 }
 
 function SecretsPageInfo() {
-  const userLogged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
-  if (!userLogged) {
+  if (!user?.isLoggedIn) {
     return (
       <LoginAlert
         logged={false}

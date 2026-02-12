@@ -36,9 +36,9 @@ import {
 } from "../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
 import { Loader } from "../../components/Loader";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
   useDeleteUserSecretMutation,
+  useGetUserQueryState,
   usePatchUserSecretMutation,
   type SecretWithId,
 } from "../usersV2/api/users.api";
@@ -55,9 +55,7 @@ export default function SecretItemActions({
   isV2,
   secret,
 }: SecretItemActionsProps) {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
   const toggleReplace = useCallback(
@@ -74,7 +72,7 @@ export default function SecretItemActions({
     []
   );
 
-  if (!userLogged) {
+  if (!user?.isLoggedIn) {
     return null;
   }
 

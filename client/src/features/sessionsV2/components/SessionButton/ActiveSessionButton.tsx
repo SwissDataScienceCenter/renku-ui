@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 
-import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ArrowRightCircle,
   BoxArrowUpRight,
@@ -47,12 +45,10 @@ import {
 import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import { Loader } from "~/components/Loader";
-import { User } from "~/model/renkuModels.types";
+import useRenkuToast from "~/components/toast/useRenkuToast";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
-import { NotificationsManager } from "~/notifications/notifications.types";
-import AppContext from "~/utils/context/appContext";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import {
   useGetResourcePoolsQuery,
@@ -89,13 +85,12 @@ export default function ActiveSessionButton({
   showSessionUrl,
   className,
 }: ActiveSessionButtonProps) {
-  const { notifications } = useContext(AppContext);
+  const { renkuToastDanger } = useRenkuToast();
 
   const navigate = useNavigate();
 
-  const logged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
   const dispatch = useAppDispatch();
   const onToggleLogs = useCallback(() => {
@@ -135,14 +130,13 @@ export default function ActiveSessionButton({
   ]);
   useEffect(() => {
     if (errorResumeSession) {
-      addErrorNotification({
-        error: errorResumeSession,
-        notifications: notifications as NotificationsManager,
-        title: "Unable to resume the session",
+      renkuToastDanger({
+        textHeader: NOTIFICATION_TOPICS.SESSION_START,
+        textBody: "Unable to resume the session",
       });
       setIsResuming(false);
     }
-  }, [errorResumeSession, notifications]);
+  }, [errorResumeSession, renkuToastDanger]);
 
   // Handle hibernating session
   const [isHibernating, setIsHibernating] = useState(false);
@@ -170,14 +164,13 @@ export default function ActiveSessionButton({
   }, [isSuccessHibernateSession, isWaitingForHibernatedSession]);
   useEffect(() => {
     if (errorHibernateSession) {
-      addErrorNotification({
-        error: errorHibernateSession,
-        notifications: notifications as NotificationsManager,
-        title: "Unable to pause the session",
+      renkuToastDanger({
+        textHeader: NOTIFICATION_TOPICS.SESSION_START,
+        textBody: "Unable to pause the session",
       });
       setIsHibernating(false);
     }
-  }, [errorHibernateSession, notifications]);
+  }, [errorHibernateSession, renkuToastDanger]);
 
   // Handle deleting session
   const [stopSession, { error: errorStopSession }] = useStopSessionMutation();
@@ -189,14 +182,13 @@ export default function ActiveSessionButton({
   }, [session.name, stopSession]);
   useEffect(() => {
     if (errorStopSession) {
-      addErrorNotification({
-        error: errorStopSession,
-        notifications: notifications as NotificationsManager,
-        title: "Unable to delete the session",
+      renkuToastDanger({
+        textHeader: NOTIFICATION_TOPICS.SESSION_START,
+        textBody: "Unable to delete the session",
       });
       setIsStopping(false);
     }
-  }, [errorStopSession, notifications]);
+  }, [errorStopSession, renkuToastDanger]);
   // Modal for confirming session deletion
   const [showModalStopSession, setShowModalStopSession] = useState(false);
   const toggleStopSession = useCallback(
@@ -224,13 +216,12 @@ export default function ActiveSessionButton({
   );
   useEffect(() => {
     if (errorModifySession) {
-      addErrorNotification({
-        error: errorModifySession,
-        notifications: notifications as NotificationsManager,
-        title: "Unable to modify the session",
+      renkuToastDanger({
+        textHeader: NOTIFICATION_TOPICS.SESSION_START,
+        textBody: "Unable to modify the session",
       });
     }
-  }, [errorModifySession, notifications]);
+  }, [errorModifySession, renkuToastDanger]);
   // Modal for modifying a session (change the session class)
   const [showModalModifySession, setShowModalModifySession] = useState(false);
   const toggleModifySession = useCallback(
@@ -285,17 +276,19 @@ export default function ActiveSessionButton({
         <Button
           color="outline-primary"
           className={buttonClassName}
-          data-cy={logged ? "pause-session-button" : "delete-session-button"}
-          onClick={logged ? onHibernateSession : onStopSession}
+          data-cy={
+            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
+          }
+          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
         >
-          {logged ? (
+          {isUserLoggedIn ? (
             <span className="align-self-start">
               <PauseCircle className={cx("bi", "me-1")} />
             </span>
           ) : (
             <Trash className={cx("bi", "me-1")} />
           )}
-          {logged ? "Pause" : "Delete"}
+          {isUserLoggedIn ? "Pause" : "Delete"}
         </Button>
         <Link
           className={cx("btn", "btn-primary")}
@@ -357,17 +350,19 @@ export default function ActiveSessionButton({
         </Button>
         <Button
           color="primary"
-          data-cy={logged ? "pause-session-button" : "delete-session-button"}
-          onClick={logged ? onHibernateSession : onStopSession}
+          data-cy={
+            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
+          }
+          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
         >
-          {logged ? (
+          {isUserLoggedIn ? (
             <span className="align-self-start">
               <PauseCircle className={cx("bi", "me-1")} />
             </span>
           ) : (
             <Trash className={cx("bi", "me-1")} />
           )}
-          {logged ? "Pause" : "Delete"}
+          {isUserLoggedIn ? "Pause" : "Delete"}
         </Button>
       </>
     );
@@ -377,7 +372,7 @@ export default function ActiveSessionButton({
     status !== "hibernated" &&
     !isStopping &&
     !isHibernating &&
-    logged && (
+    isUserLoggedIn && (
       <DropdownItem
         disabled={status === "starting"}
         onClick={onHibernateSession}
@@ -390,7 +385,7 @@ export default function ActiveSessionButton({
   const deleteAction = status !== "stopping" && !isStopping && (
     <DropdownItem
       data-cy="delete-session-button"
-      onClick={logged ? toggleStopSession : onStopSession}
+      onClick={isUserLoggedIn ? toggleStopSession : onStopSession}
     >
       <Trash className={cx("bi", "me-1")} />
       Shut down session
@@ -698,30 +693,5 @@ function ModifySessionModalContent({
         </Button>
       </ModalFooter>
     </>
-  );
-}
-
-function addErrorNotification({
-  error,
-  notifications,
-  title,
-}: {
-  error: FetchBaseQueryError | SerializedError;
-  notifications: NotificationsManager;
-  title: string;
-}) {
-  const message =
-    "message" in error && error.message != null
-      ? error.message
-      : "error" in error && error.error != null
-      ? error.error
-      : "Unknown error";
-  notifications.addError(
-    NOTIFICATION_TOPICS.SESSION_START,
-    title,
-    undefined,
-    undefined,
-    undefined,
-    `Error message: "${message}"`
   );
 }

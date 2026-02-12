@@ -23,7 +23,6 @@ import { DropdownItem } from "reactstrap";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { SingleButtonWithMenu } from "../../../../components/buttons/Button";
 import BootstrapCopyIcon from "../../../../components/icons/BootstrapCopyIcon";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import ProjectCopyModal from "../../ProjectPageHeader/ProjectCopyModal";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
@@ -39,10 +38,8 @@ export default function ProjectInformationButton({
   const toggleCopyModal = useCallback(() => {
     setCopyModalOpen((open) => !open);
   }, []);
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
-  if (!userLogged) return null;
+  const isUserLoggedIn = !!currentUser?.isLoggedIn;
+  if (!isUserLoggedIn) return null;
   return (
     <>
       <SingleButtonWithMenu color="outline-primary" size="sm">

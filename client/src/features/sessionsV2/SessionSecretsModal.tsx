@@ -50,7 +50,6 @@ import { Loader } from "../../components/Loader";
 import ScrollableModal from "../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import SelectUserSecretField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SelectUserSecretField";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import SessionSecretSlotItem from "../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionSecretSlotItem";
@@ -59,6 +58,7 @@ import {
   type Project,
   type SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
 interface SessionSecretsModalProps {
@@ -72,9 +72,7 @@ export default function SessionSecretsModal({
   project,
   sessionSecretSlotsWithSecrets,
 }: SessionSecretsModalProps) {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
   const navigate = useNavigate();
   const onCancel = useCallback(() => {
@@ -92,7 +90,7 @@ export default function SessionSecretsModal({
   }, [dispatch]);
 
   const loginUrl = useLoginUrl();
-  const content = userLogged ? (
+  const content = user?.isLoggedIn ? (
     <>
       <ReadySessionSecrets
         sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}

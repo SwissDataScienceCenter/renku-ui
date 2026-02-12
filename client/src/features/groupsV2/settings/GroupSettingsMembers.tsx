@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { ReactNode, useCallback, useMemo, useRef, useState } from "react";
@@ -34,7 +33,6 @@ import {
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { Loader } from "../../../components/Loader";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type {
@@ -268,13 +266,12 @@ function GroupMemberAction({
   onEdit,
   onRemove,
 }: GroupMemberActionProps) {
-  const logged = useLegacySelector((state) => state.stateModel.user.logged);
   const { permissions } = useGroupPermissions({ groupSlug: group.slug });
   const {
     data: user,
     isLoading: isUserLoading,
     error: userError,
-  } = useGetUserQueryState(logged ? undefined : skipToken);
+  } = useGetUserQueryState();
   const userMember = useMemo(() => {
     if (isUserLoading || userError || !user || !user.isLoggedIn || !member) {
       return undefined;

@@ -53,6 +53,7 @@ export const ABSOLUTE_ROUTES = {
   },
   v2: {
     root: "/",
+    admin: "/admin",
     integrations: "/integrations",
     groups: {
       show: {
@@ -118,6 +119,7 @@ export const RELATIVE_ROUTES = {
   },
   v2: {
     root: "/*",
+    admin: "admin",
     betaRoot: "/v2/*",
     integrations: "integrations",
     groups: {

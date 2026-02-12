@@ -32,6 +32,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import useRenkuToast from "~/components/toast/useRenkuToast";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -65,7 +66,7 @@ function GroupDeleteConfirmation({
 }: GroupDeleteConfirmationProps) {
   const navigate = useNavigate();
   const [deleteGroup, result] = useDeleteGroupsByGroupSlugMutation();
-  const { notifications } = useContext(AppContext);
+  const { renkuToastDanger, renkuToastSuccess } = useRenkuToast();
   const onDelete = useCallback(() => {
     deleteGroup({ groupSlug: group.slug });
   }, [deleteGroup, group.slug]);
@@ -78,15 +79,25 @@ function GroupDeleteConfirmation({
   );
 
   useEffect(() => {
-    if (result.isError)
-      notifications?.addError(`Error deleting the group ${group.name}`);
+    if (result.isError) {
+      renkuToastDanger({
+        textHeader: `Error deleting the group ${group.name}`,
+      });
+    }
     if (result.isSuccess) {
-      notifications?.addSuccess(
-        `Group ${group.name} has been successfully deleted.`
-      );
+      renkuToastSuccess({
+        textHeader: `Group ${group.name} has been successfully deleted.`,
+      });
       navigate(generatePath(ABSOLUTE_ROUTES.v2.root));
     }
-  }, [result.isError, result.isSuccess, notifications, group.name, navigate]);
+  }, [
+    group.name,
+    navigate,
+    renkuToastDanger,
+    renkuToastSuccess,
+    result.isError,
+    result.isSuccess,
+  ]);
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>

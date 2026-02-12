@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
 import { ArrowLeft, BoxArrowInRight } from "react-bootstrap-icons";
@@ -27,22 +26,14 @@ import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import UserNotFound from "../../projectsV2/notFound/UserNotFound";
 import { useGetUserQueryState } from "../api/users.api";
 
 export default function UserRedirect() {
   const navigate = useNavigate();
 
-  const isUserLoggedIn = useLegacySelector(
-    (state) => state.stateModel.user.logged
-  );
-
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useGetUserQueryState(isUserLoggedIn ? undefined : skipToken);
+  const { data: user, isLoading, error } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
   useEffect(() => {
     if (user?.isLoggedIn && user.username) {

@@ -28,22 +28,18 @@ import {
   StoreEnhancer,
 } from "@reduxjs/toolkit";
 
+import { loginStateSlice } from "~/features/loginHandler/loginState.slice";
 import { notificationsEmptyApi as notificationsApi } from "~/features/notifications/api/notifications.empty-api";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
+import { projectCloudStorageEmptyApi as projectCloudStorageApi } from "../../features/cloudStorage/api/projectCloudStorage.empty-api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "../../features/connectedServices/api/connectedServices.empty-api";
 import { dataConnectorsApi } from "../../features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { doiResolverEmptyApi as doiResolverApi } from "../../features/dataConnectorsV2/api/doiResolver.empty-api";
 import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataConnectors.slice";
-import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
 import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
-import { projectCloudStorageEmptyApi as projectCloudStorageApi } from "../../features/project/components/cloudStorage/api/projectCloudStorage.empty-api";
-import { datasetFormSlice } from "../../features/project/dataset";
-import { projectCoreApi } from "../../features/project/projectCoreApi";
-import projectGitLabApi from "../../features/project/projectGitLab.api";
-import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
@@ -69,9 +65,9 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     ...renkuStateModelReducer,
     // Slices
     [dataConnectorFormSlice.name]: dataConnectorFormSlice.reducer,
-    [datasetFormSlice.name]: datasetFormSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
+    [loginStateSlice.name]: loginStateSlice.reducer,
     [searchV2Slice.name]: searchV2Slice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
@@ -80,14 +76,10 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
-    [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [doiResolverApi.reducerPath]: doiResolverApi.reducer,
     [notificationsApi.reducerPath]: notificationsApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
-    [projectCoreApi.reducerPath]: projectCoreApi.reducer,
-    [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
-    [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
@@ -114,14 +106,10 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(computeResourcesApi.middleware)
         .concat(connectedServicesApi.middleware)
         .concat(dataConnectorsApi.middleware)
-        .concat(datasetsCoreApi.middleware)
         .concat(doiResolverApi.middleware)
         .concat(notificationsApi.middleware)
         .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
-        .concat(projectCoreApi.middleware)
-        .concat(projectGitLabApi.middleware)
-        .concat(projectKgApi.middleware)
         .concat(projectsApi.middleware)
         .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)

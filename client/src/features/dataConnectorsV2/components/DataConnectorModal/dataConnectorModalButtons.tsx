@@ -36,12 +36,12 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import {
   usePostStorageSchemaTestConnectionMutation,
   type PostStorageSchemaTestConnectionApiArg,
-} from "../../../project/components/cloudStorage/api/projectCloudStorage.api";
-import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
+} from "../../../cloudStorage/api/projectCloudStorage.api";
+import { CLOUD_STORAGE_TOTAL_STEPS } from "../../../cloudStorage/projectCloudStorage.constants";
 import {
   AddCloudStorageState,
   CloudStorageDetailsOptions,
-} from "../../../project/components/cloudStorage/projectCloudStorage.types";
+} from "../../../cloudStorage/projectCloudStorage.types";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
 interface DataConnectorModalForwardBackButtonProps {}
