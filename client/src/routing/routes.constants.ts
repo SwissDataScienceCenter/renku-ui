@@ -89,7 +89,10 @@ export const ABSOLUTE_ROUTES = {
     secrets: "/secrets",
     user: "/user",
     users: {
-      show: "/u/:username",
+      show: {
+        root: "/u/:username",
+        search: "/u/:username/search",
+      },
     },
   },
 } as const;
@@ -154,7 +157,11 @@ export const RELATIVE_ROUTES = {
     secrets: "secrets",
     user: "user",
     users: {
-      show: "u/:username",
+      root: "u/*",
+      show: {
+        root: ":username/*",
+        search: "search",
+      },
     },
   },
 } as const;
