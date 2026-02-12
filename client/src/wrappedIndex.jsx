@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { connect, Provider } from "react-redux";
+import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router";
 
 // Disable service workers for the moment -- see below where registerServiceWorker is called
@@ -9,7 +9,7 @@ import App from "./App";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Maintenance } from "./features/maintenance/Maintenance";
-import { globalSchema, StateModel } from "./model";
+import { store } from "./store/store";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import SentryUserHandler from "./utils/helpers/sentry/SentryUserHandler";
 import { Url } from "./utils/helpers/url";
@@ -36,35 +36,34 @@ function appIndexInner(params) {
   // configure base url
   Url.setBaseUrl(params.BASE_URL);
 
-  // Create the global model containing the formal schema definition and the redux store
-  const model = new StateModel(globalSchema);
-
   // show maintenance page when necessary
   const maintenance = params.MAINTENANCE;
   if (maintenance) {
     root.render(
-      <Provider store={model.reduxStore}>
+      // <Provider store={model.reduxStore}>
+      <Provider store={store}>
         <Maintenance info={maintenance} />
       </Provider>
     );
     return;
   }
 
-  // Map redux user data to the initial react application
-  function mapStateToProps(state, ownProps) {
-    return { user: state.stateModel.user, ...ownProps };
-  }
+  // // Map redux user data to the initial react application
+  // function mapStateToProps(state, ownProps) {
+  //   return { user: state.stateModel.user, ...ownProps };
+  // }
 
   // Render UI application
-  const VisibleApp = connect(mapStateToProps)(App);
+  // const VisibleApp = connect(mapStateToProps)(App);
   root.render(
-    <Provider store={model.reduxStore}>
+    // <Provider store={model.reduxStore}>
+    <Provider store={store}>
       <BrowserRouter>
         <AppErrorBoundary>
           <LoginHandler />
           <SentryUserHandler />
           <FeatureFlagHandler />
-          <VisibleApp params={params} model={model} />
+          <App params={params} store={store} />
         </AppErrorBoundary>
       </BrowserRouter>
     </Provider>
