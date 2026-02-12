@@ -20,7 +20,7 @@ import { DateTime } from "luxon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { AppParams } from "~/utils/context/appParams.types";
-import { initializeWebSocket } from "./websocket";
+import { initializeWebSocket } from "./webSocket";
 import {
   RECONNECT_INTERVAL_MILLIS,
   RECONNECT_PENALTY_FACTOR,
