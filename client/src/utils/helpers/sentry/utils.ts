@@ -19,7 +19,7 @@
 import * as Sentry from "@sentry/react-router";
 import { clamp } from "lodash-es";
 
-import { API_ERRORS } from "~/api-client";
+import { API_ERRORS } from "~/api-client/errors";
 import type { AppParams } from "~/utils/context/appParams.types";
 
 export const NAMESPACE_DEFAULT = "unknown";
