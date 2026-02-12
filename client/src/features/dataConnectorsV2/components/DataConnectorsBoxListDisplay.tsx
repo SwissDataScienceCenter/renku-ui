@@ -144,7 +144,7 @@ export default function DataConnectorBoxListDisplay({
           to={targetOffcanvasLocation}
         >
           <Row className={cx("align-items-center", "g-3", "mx-0")}>
-            <Col className={cx("d-flex", "flex-column", "min-w-0")}>
+            <Col className={cx("d-flex", "flex-column", "min-w-0", "px-0")}>
               <span className="fw-bold" data-cy="data-connector-name">
                 {name}
               </span>
