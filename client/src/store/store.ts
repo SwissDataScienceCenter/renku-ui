@@ -41,8 +41,6 @@ import startSessionOptionsV2Slice from "~/features/sessionsV2/startSessionOption
 import termsApi from "~/features/terms/terms.api";
 import { usersEmptyApi as usersApi } from "~/features/usersV2/api/users.empty-api";
 import { versionsApi } from "~/features/versions/versions.api";
-import { workflowsApi } from "~/features/workflows/WorkflowsApi";
-import { workflowsSlice } from "~/features/workflows/WorkflowsSlice";
 import featureFlagsSlice from "~/utils/feature-flags/featureFlags.slice";
 import webSocketSlice from "~/websocket/webSocket.slice";
 
@@ -56,7 +54,6 @@ export const store = configureStore({
     [searchV2Slice.name]: searchV2Slice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
     [webSocketSlice.name]: webSocketSlice.reducer,
-    [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
@@ -76,7 +73,6 @@ export const store = configureStore({
     [termsApi.reducerPath]: termsApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
-    [workflowsApi.reducerPath]: workflowsApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -101,8 +97,7 @@ export const store = configureStore({
       .concat(statuspageApi.middleware)
       .concat(termsApi.middleware)
       .concat(usersApi.middleware)
-      .concat(versionsApi.middleware)
-      .concat(workflowsApi.middleware),
+      .concat(versionsApi.middleware),
 });
 
 export type StoreType = typeof store;
