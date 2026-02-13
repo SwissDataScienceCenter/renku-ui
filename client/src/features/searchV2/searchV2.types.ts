@@ -109,10 +109,3 @@ export interface InterpretedTerm {
   term: string;
   interpretation: SearchOption | null;
 }
-
-export interface SetInitialQueryParams {
-  dateFilters: SearchDateFilters;
-  filters: SearchFilters;
-  query: string;
-  searchBarQuery: string;
-}

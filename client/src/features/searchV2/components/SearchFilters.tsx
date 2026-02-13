@@ -285,7 +285,7 @@ function GroupSearchFilter({
                     className="w-100"
                     color="outline-danger"
                     onClick={resetFilter}
-                    data-cy={`group-search-filter-${filter.name}-reset`}
+                    data-cy={`search-filter-${filter.name}-reset`}
                   >
                     <XCircleFill className={cx("bi", "me-1")} />
                     Reset filter
@@ -318,7 +318,7 @@ function GroupSearchFilter({
               <Button
                 color="outline-danger"
                 onClick={resetFilter}
-                data-cy={`group-search-filter-${filter.name}-reset`}
+                data-cy={`search-filter-${filter.name}-reset`}
                 size="sm"
               >
                 <XCircleFill className={cx("bi", "me-1")} />
@@ -411,7 +411,7 @@ function GroupSearchFilterContent({
             {elementsToShow.map((element) => {
               return (
                 <GroupSearchFilterRadioOrCheckboxElement
-                  identifier={`group-search-filter-${filter.name}-${element.value}`}
+                  identifier={`search-filter-${filter.name}-${element.value}`}
                   isChecked={
                     allowSelectMany
                       ? current
@@ -591,7 +591,7 @@ function DateFilterCustomOption({
     [afterDate, updateDateParam]
   );
 
-  const id = `group-search-filter-${filter.name}-custom`;
+  const id = `search-filter-${filter.name}-custom`;
 
   return (
     <>

@@ -42,7 +42,7 @@ describe("Renku 2.0 search utilities", () => {
 
     it("parses a query with filters", () => {
       const query =
-        "role:editor type:group,user visibility:private created>today-31d sort:name-asc test";
+        "role:editor type:group,user visibility:private created>today-31d test";
       const { canonicalQuery, dateFilters, filters, searchBarQuery } =
         parseSearchQuery(query);
 
@@ -93,7 +93,7 @@ describe("Renku 2.0 search utilities", () => {
       });
 
       expect(result).toBe(
-        "role:editor type:group,user visibility:private created<today-90d sort:name-desc test"
+        "role:editor type:group,user visibility:private created<today-90d test"
       );
     });
   });
