@@ -109,7 +109,7 @@ function DataConnectorRemoveDeleteModal({
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
-      <ModalHeader className="text-danger" toggle={toggleModal}>
+      <ModalHeader className="text-danger" tag="h2" toggle={toggleModal}>
         Delete data connector
       </ModalHeader>
       <ModalBody>

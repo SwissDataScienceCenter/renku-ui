@@ -51,7 +51,7 @@ export default function Deposit({ deposit, isOpen, toggle }: DepositProps) {
             </span>
             <div>
               <div className={cx("float-end", "mt-1", "ms-1")}>
-                <DepositActions deposit={deposit} />
+                <DepositActions deposit={deposit} toggleDepositView={toggle} />
               </div>
               <h2
                 className={cx("m-0", "text-break")}
