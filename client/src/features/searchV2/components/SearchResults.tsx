@@ -38,6 +38,7 @@ import Pagination from "~/components/Pagination";
 import { TimeCaption } from "~/components/TimeCaption";
 import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api";
 import ShowGlobalDataConnector from "~/features/searchV2/components/ShowGlobalDataConnector";
+import MemberListRow from "~/features/searchV2/components/MemberListRow";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
@@ -231,21 +232,7 @@ function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
         </div>
       );
     }
-    return (
-      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
-        {members?.data?.map((member) => (
-          <div
-            key={member.id}
-            className={cx("align-items-center", "d-flex", "gap-1")}
-          >
-            <UserAvatar namespace={member.namespace ?? ""} />
-            <span className="text-truncate">
-              {member.first_name} {member.last_name}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
+    return <MemberListRow members={members.data} />;
   }
 
   if (item.type === "DataConnector" && item.createdBy) {
