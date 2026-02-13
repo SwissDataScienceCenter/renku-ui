@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { UncontrolledTooltip } from "reactstrap";
 
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 
@@ -145,30 +146,52 @@ export default function MemberListRow({ members }: MemberListRowProps) {
           </div>
         );
       })}
-      {hiddenCount > 0 && <OverflowBadge count={hiddenCount} />}
+      {hiddenCount > 0 && (
+        <OverflowBadge
+          count={hiddenCount}
+          hiddenMembers={members.slice(visibleCount)}
+        />
+      )}
     </div>
   );
 }
 
-function OverflowBadge({ count }: { count: number }) {
+interface OverflowBadgeProps {
+  count: number;
+  hiddenMembers: {
+    first_name?: string;
+    last_name?: string;
+  }[];
+}
+
+function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
   return (
-    <div
-      className={cx(
-        "align-content-center",
-        "border",
-        "flex-shrink-0",
-        "rounded-circle",
-        "text-center",
-        "text-black"
-      )}
-      style={{
-        backgroundColor: "#dee2e6",
-        width: 28,
-        height: 28,
-        fontSize: 12,
-      }}
-    >
-      +{count}
-    </div>
+    <>
+      <div
+        ref={ref}
+        className={cx(
+          "align-content-center",
+          "border",
+          "flex-shrink-0",
+          "rounded-circle",
+          "text-center",
+          "text-black"
+        )}
+        style={{
+          width: 28,
+          height: 28,
+          fontSize: 12,
+        }}
+      >
+        +{count}
+      </div>
+      <UncontrolledTooltip target={ref}>
+        {hiddenMembers
+          .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
+          .join(", ")}
+      </UncontrolledTooltip>
+    </>
   );
 }
