@@ -54,7 +54,6 @@ export function CloseButton({ closeToast }: { closeToast: () => void }) {
     <button
       aria-label="Close"
       className={cx("btn", "btn-close", "me-2", "mt-2")}
-      data-bs-dismiss="toast"
       onClick={closeToast}
     />
   );

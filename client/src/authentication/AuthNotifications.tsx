@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,20 +16,21 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  utils/url
- *  Components for the Url helper class
- */
+import { useEffect } from "react";
 
-export { appendCustomUrlPath } from "./NotebookUrl";
-export { Url, getSearchParams } from "./Url";
-export {
-  CoreApiVersionedUrlHelper,
-  apiVersionForMetadataVersion,
-  coreVersionedUrl,
-  createCoreApiVersionedUrlConfig,
-  sanitizedVersionedPathParams,
-} from "./versionedUrls";
-export type { CoreApiVersionedUrlConfig } from "./versionedUrls";
+import useRenkuToast from "~/components/toast/useRenkuToast";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import { triggerNotifications } from "./listeners.client";
+
+export default function AuthNotifications() {
+  const { ready } = useAppSelector(({ toast }) => toast);
+  const { renkuToastSuccess, renkuToastWarning } = useRenkuToast();
+
+  useEffect(() => {
+    if (ready) {
+      triggerNotifications({ renkuToastSuccess, renkuToastWarning });
+    }
+  }, [ready, renkuToastSuccess, renkuToastWarning]);
+
+  return null;
+}

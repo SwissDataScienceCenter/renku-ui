@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,34 +16,6 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  model/index.js
- *  Model and schema for storing Renku data.
- */
-
-import { globalSchema } from "./GlobalSchema";
-import {
-  PropertyName,
-  Schema,
-  SpecialPropVal,
-  StateKind,
-  StateModel,
-  StatusHelper,
-  SubModel,
-} from "./Model";
-import { formGeneratorSchema, projectSchema } from "./RenkuModels";
-
-export {
-  formGeneratorSchema,
-  globalSchema,
-  projectSchema,
-  PropertyName,
-  Schema,
-  SpecialPropVal,
-  StateKind,
-  StateModel,
-  StatusHelper,
-  SubModel,
-};
+export interface ToastState {
+  ready: boolean;
+}

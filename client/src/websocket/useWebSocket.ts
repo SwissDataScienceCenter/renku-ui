@@ -17,16 +17,18 @@
  */
 
 import { DateTime } from "luxon";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import type { StoreType } from "~/store/store";
 import type { AppParams } from "~/utils/context/appParams.types";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { initializeWebSocket } from "./webSocket";
 import {
   RECONNECT_INTERVAL_MILLIS,
   RECONNECT_PENALTY_FACTOR,
 } from "./webSocket.constants";
 import { setReconnect } from "./webSocket.slice";
-import { StoreType } from "./webSocket.types";
 import { getWebSocketUrl } from "./websocket.utils";
 
 interface UseWebSocketArgs {
@@ -41,8 +43,11 @@ interface UseWebSocketArgs {
  * even in development mode (e.g. with telepresence).
  */
 export default function useWebSocket({ params, store }: UseWebSocketArgs) {
-  const { reconnect: reconnectState } = store.getState().webSocket;
-  const dispatch = store.dispatch;
+  // TODO: refactor to use store hooks
+  const { reconnect: reconnectState } = useAppSelector(
+    ({ webSocket }) => webSocket
+  );
+  const dispatch = useAppDispatch();
 
   const [wsId, setWsId] = useState<string>(`ws-${Date.now().toString()}`);
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -73,9 +78,10 @@ export default function useWebSocket({ params, store }: UseWebSocketArgs) {
     }, delay);
   }, [dispatch, reconnectState]);
 
+  const webSocketUrl = useMemo(() => getWebSocketUrl({ params }), [params]);
+
   // Initialize the web socket
   useEffect(() => {
-    const webSocketUrl = getWebSocketUrl({ params });
     if (webSocketUrl == null) {
       return;
     }
@@ -91,7 +97,7 @@ export default function useWebSocket({ params, store }: UseWebSocketArgs) {
     return () => {
       cleanup();
     };
-  }, [onRetryConnection, params, store, wsId]);
+  }, [onRetryConnection, store, webSocketUrl, wsId]);
 
   // Ref cleanup
   useEffect(() => {

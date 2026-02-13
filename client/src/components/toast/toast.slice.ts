@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,10 +16,24 @@
  * limitations under the License.
  */
 
-import type { TypedUseSelectorHook } from "react-redux";
-import { useSelector } from "react-redux";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import type { LegacyRootState } from "../helpers/EnhancedState";
+import { ToastState } from "./toast.types";
 
-const useLegacySelector: TypedUseSelectorHook<LegacyRootState> = useSelector;
-export default useLegacySelector;
+const initialState: ToastState = {
+  ready: false,
+};
+
+export const toastSlice = createSlice({
+  name: "toast",
+  initialState,
+  reducers: {
+    setReady: (state, action: PayloadAction<boolean>) => {
+      state.ready = action.payload;
+    },
+    reset: () => initialState,
+  },
+});
+
+export const { setReady, reset } = toastSlice.actions;
+export default toastSlice;

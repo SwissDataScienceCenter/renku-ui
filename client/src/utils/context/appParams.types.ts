@@ -16,13 +16,11 @@
  * limitations under the License.
  */
 
-import type { HomepageParams } from "../../features/landing/anonymousHome.types";
-import type { CoreApiVersionedUrlConfig } from "../helpers/url";
+import { HomepageParams } from "~/features/landing/anonymousHome.types";
 
 export interface AppParams {
   ANONYMOUS_SESSIONS: boolean;
   BASE_URL: string;
-  CORE_API_VERSION_CONFIG: Partial<CoreApiVersionedUrlConfig>;
   GATEWAY_URL: string;
   HOMEPAGE: HomepageParams;
   IMAGE_BUILDERS_ENABLED: boolean;
