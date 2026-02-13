@@ -45,7 +45,6 @@ import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-a
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { repositoriesApi } from "../../features/repositories/api/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "../../features/searchV2/api/searchV2-empty.api";
-import { searchV2Slice } from "../../features/searchV2/searchV2.slice";
 import { sessionLaunchersV2EmptyApi as sessionLaunchersV2Api } from "../../features/sessionsV2/api/sessionLaunchersV2.empty-api";
 import { sessionsV2EmptyApi as sessionsV2Api } from "../../features/sessionsV2/api/sessionsV2.empty-api";
 import startSessionOptionsV2Slice from "../../features/sessionsV2/startSessionOptionsV2.slice";
@@ -68,7 +67,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [displaySlice.name]: displaySlice.reducer,
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [loginStateSlice.name]: loginStateSlice.reducer,
-    [searchV2Slice.name]: searchV2Slice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
