@@ -17,10 +17,12 @@
  */
 
 import { DateTime } from "luxon";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { StoreType } from "~/store/store";
 import type { AppParams } from "~/utils/context/appParams.types";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { initializeWebSocket } from "./webSocket";
 import {
   RECONNECT_INTERVAL_MILLIS,
@@ -42,8 +44,10 @@ interface UseWebSocketArgs {
  */
 export default function useWebSocket({ params, store }: UseWebSocketArgs) {
   // TODO: refactor to use store hooks
-  const { reconnect: reconnectState } = store.getState().webSocket;
-  const dispatch = store.dispatch;
+  const { reconnect: reconnectState } = useAppSelector(
+    ({ webSocket }) => webSocket
+  );
+  const dispatch = useAppDispatch();
 
   const [wsId, setWsId] = useState<string>(`ws-${Date.now().toString()}`);
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -74,9 +78,10 @@ export default function useWebSocket({ params, store }: UseWebSocketArgs) {
     }, delay);
   }, [dispatch, reconnectState]);
 
+  const webSocketUrl = useMemo(() => getWebSocketUrl({ params }), [params]);
+
   // Initialize the web socket
   useEffect(() => {
-    const webSocketUrl = getWebSocketUrl({ params });
     if (webSocketUrl == null) {
       return;
     }
@@ -92,7 +97,7 @@ export default function useWebSocket({ params, store }: UseWebSocketArgs) {
     return () => {
       cleanup();
     };
-  }, [onRetryConnection, params, store, wsId]);
+  }, [onRetryConnection, store, webSocketUrl, wsId]);
 
   // Ref cleanup
   useEffect(() => {

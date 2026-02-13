@@ -17,7 +17,6 @@
  */
 
 import { ReactNode, useEffect } from "react";
-import { Helmet } from "react-helmet";
 import { Route, Routes } from "react-router";
 import { ToastContainer } from "react-toastify";
 
@@ -40,13 +39,14 @@ import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
+import { StoreType } from "./store/store";
 import AppContext from "./utils/context/appContext";
+import { AppParams } from "./utils/context/appParams.types";
 import useWebSocket from "./websocket/useWebSocket";
 
 import "./App.css";
 
-import { StoreType } from "./store/store";
-import { AppParams } from "./utils/context/appParams.types";
+import { Helmet } from "react-helmet";
 
 interface ContainerWrapProps {
   children?: ReactNode;

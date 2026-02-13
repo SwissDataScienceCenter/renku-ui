@@ -107,18 +107,6 @@ function FooterNavbar() {
 }
 
 function FooterNavbarInner() {
-  // const location = useLocation();
-  // const projectMetadata = useLegacySelector(
-  //   (state) => state.stateModel.project?.metadata
-  // );
-  // const sessionShowUrl =
-  //   projectMetadata == null
-  //     ? null
-  //     : Url.get(Url.pages.project.session.show, {
-  //         namespace: projectMetadata["namespace"],
-  //         path: projectMetadata["path"],
-  //         server: ":server",
-  //       });
   const { params } = useContext(AppContext);
 
   const privacyLink =
@@ -135,7 +123,6 @@ function FooterNavbarInner() {
       : isDevVersion
       ? `${taggedVersion} (dev)`
       : taggedVersion;
-  // const isRenkuV1 = isRenkuLegacy(location.pathname, true);
   const releaseLocation = ABSOLUTE_ROUTES.v2.help.release;
 
   const footer = (

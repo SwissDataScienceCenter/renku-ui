@@ -45,6 +45,7 @@ type InitializeWebSocketReturn = {
 };
 
 /** Initialize the web socket */
+// TODO: refactor to use store hooks
 export function initializeWebSocket({
   url,
   store,
