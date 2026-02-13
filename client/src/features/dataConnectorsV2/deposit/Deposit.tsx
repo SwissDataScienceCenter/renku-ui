@@ -18,10 +18,11 @@
 
 import cx from "classnames";
 import { Cloud, Folder } from "react-bootstrap-icons";
-import { Button, Offcanvas, OffcanvasBody } from "reactstrap";
+import { Offcanvas, OffcanvasBody } from "reactstrap";
 
 import ExternalLink from "~/components/ExternalLink";
 import type { Deposit } from "../api/data-connectors.api";
+import DepositActions from "./DepositActions";
 import DepositStatusBadge from "./DepositStatusBadge";
 
 interface DepositProps {
@@ -50,10 +51,7 @@ export default function Deposit({ deposit, isOpen, toggle }: DepositProps) {
             </span>
             <div>
               <div className={cx("float-end", "mt-1", "ms-1")}>
-                <Button color="outline-primary" disabled size="sm">
-                  To be defined
-                </Button>
-                {/* // ! TODO: <DepositActions /> */}
+                <DepositActions deposit={deposit} />
               </div>
               <h2
                 className={cx("m-0", "text-break")}
