@@ -1,7 +1,6 @@
-import { data, useOutletContext } from "react-router";
+import { data } from "react-router";
 
-import AppRoot from "~/index";
-import type { RootOutletContext } from "~/root";
+import NewAppRoot from "~/NewAppRoot";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import type { Route } from "./+types/catchall";
 
@@ -48,7 +47,5 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Component() {
-  const { params } = useOutletContext<RootOutletContext>();
-
-  return <AppRoot params={params} />;
+  return <NewAppRoot />;
 }

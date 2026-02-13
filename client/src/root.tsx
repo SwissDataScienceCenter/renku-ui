@@ -19,7 +19,7 @@
 import * as Sentry from "@sentry/react-router";
 import bootstrap from "bootstrap?url";
 import cx from "classnames";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import {
   data,
@@ -78,12 +78,19 @@ export async function loader() {
   return data({ config: CONFIG_JSON, clientSideFetch } as const);
 }
 
+const clientCache = new Map<"config", typeof CONFIG_JSON>();
+
 export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
   const { config, clientSideFetch } = await serverLoader();
   //? Load the config.json contents from localhost in development
   if (clientSideFetch) {
+    const cached = clientCache.get("config");
+    if (cached != null) {
+      return { config: cached, clientSideFetch };
+    }
     const configResponse = await fetch("/config.json");
     const configData = await configResponse.json();
+    clientCache.set("config", configData);
     return { config: configData as typeof CONFIG_JSON, clientSideFetch };
   }
   return { config, clientSideFetch };
@@ -127,6 +134,8 @@ export function Layout({ children }: { children: ReactNode }) {
           href="/favicon-16x16.png"
         />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+
+        <link rel="stylesheet" type="text/css" href={v2Styles} />
         <Meta />
         <Links />
       </head>
@@ -134,8 +143,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <div id="root" className={cx("d-flex", "flex-column", "min-vh-100")}>
           {children}
         </div>
-        <ScrollRestoration />
         <Scripts />
+        <ScrollRestoration />
+        <script type="module" async src={bootstrap} />
       </body>
     </html>
   );
@@ -147,8 +157,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     return (
       <>
         <Helmet>
-          <link rel="stylesheet" type="text/css" href={bootstrap} />
-          <link rel="stylesheet" type="text/css" href={v2Styles} />
           <title>Page Not Found | Renku</title>
         </Helmet>
         <NotFound forceV2={true} />
@@ -159,8 +167,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     return (
       <>
         <Helmet>
-          <link rel="stylesheet" type="text/css" href={bootstrap} />
-          <link rel="stylesheet" type="text/css" href={v2Styles} />
           <title>Error | Renku</title>
         </Helmet>
         <div>
@@ -184,8 +190,6 @@ export function HydrateFallback() {
   return (
     <>
       <Helmet>
-        <link rel="stylesheet" type="text/css" href={bootstrap} />
-        <link rel="stylesheet" type="text/css" href={v2Styles} />
         <title>Loading Renku page...</title>
       </Helmet>
       {isHydrated && <PageLoader />}
@@ -198,7 +202,10 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Root({ loaderData }: Route.ComponentProps) {
-  const params = validatedAppParams(loaderData.config);
+  const params = useMemo(
+    () => validatedAppParams(loaderData.config),
+    [loaderData.config]
+  );
   const isClientSide = typeof window === "object";
   if (isClientSide) {
     if (params.SENTRY_URL && !Sentry.isInitialized()) {
