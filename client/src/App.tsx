@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Route, Routes } from "react-router";
 import { ToastContainer } from "react-toastify";
@@ -45,7 +45,18 @@ import useWebSocket from "./websocket/useWebSocket";
 
 import "./App.css";
 
-export const ContainerWrap = ({ children, fullSize = false }) => {
+import { StoreType } from "./store/store";
+import { AppParams } from "./utils/context/appParams.types";
+
+interface ContainerWrapProps {
+  children?: ReactNode;
+  fullSize?: boolean;
+}
+
+export const ContainerWrap = ({
+  children,
+  fullSize = false,
+}: ContainerWrapProps) => {
   const classContainer = !fullSize
     ? "container-xxl py-4 mt-2 renku-container"
     : "w-100";
@@ -96,7 +107,12 @@ function CentralContentContainer() {
   );
 }
 
-export default function App(props) {
+interface AppProps {
+  params: AppParams;
+  store: StoreType;
+}
+
+export default function App({ params, store }: AppProps) {
   const triggerNotifications = useTriggerNotifications();
 
   useEffect(() => {
@@ -105,8 +121,7 @@ export default function App(props) {
   }, [triggerNotifications]);
 
   // Setup the web socket
-  // useWebSocket({ params: props.params, store: props.model.reduxStore });
-  useWebSocket({ params: props.params, store: props.store });
+  useWebSocket({ params, store });
 
   // Avoid rendering the application while authenticating the user
   const { error, isLoading } = useGetUserQueryState();
@@ -118,11 +133,11 @@ export default function App(props) {
       </section>
     );
   } else if (error) {
-    return <Unavailable params={props.params} />;
+    return <Unavailable params={params} />;
   }
 
   const appContext = {
-    params: props.params,
+    params,
   };
 
   return (

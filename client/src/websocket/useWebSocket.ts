@@ -41,6 +41,7 @@ interface UseWebSocketArgs {
  * even in development mode (e.g. with telepresence).
  */
 export default function useWebSocket({ params, store }: UseWebSocketArgs) {
+  // TODO: refactor to use store hooks
   const { reconnect: reconnectState } = store.getState().webSocket;
   const dispatch = store.dispatch;
 

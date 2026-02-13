@@ -12,7 +12,6 @@ import { Maintenance } from "./features/maintenance/Maintenance";
 import { store } from "./store/store";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import SentryUserHandler from "./utils/helpers/sentry/SentryUserHandler";
-import { Url } from "./utils/helpers/url";
 
 // TODO: move "bootstrap" handling to root.tsx
 import "bootstrap";
@@ -33,9 +32,6 @@ function appIndexInner(params) {
   const container = document.getElementById("root");
   const root = createRoot(container);
 
-  // configure base url
-  Url.setBaseUrl(params.BASE_URL);
-
   // show maintenance page when necessary
   const maintenance = params.MAINTENANCE;
   if (maintenance) {
@@ -48,15 +44,8 @@ function appIndexInner(params) {
     return;
   }
 
-  // // Map redux user data to the initial react application
-  // function mapStateToProps(state, ownProps) {
-  //   return { user: state.stateModel.user, ...ownProps };
-  // }
-
   // Render UI application
-  // const VisibleApp = connect(mapStateToProps)(App);
   root.render(
-    // <Provider store={model.reduxStore}>
     <Provider store={store}>
       <BrowserRouter>
         <AppErrorBoundary>

@@ -19,7 +19,6 @@
 import { clamp } from "lodash-es";
 
 import type { HomepageParams } from "../../features/landing/anonymousHome.types";
-import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 import { DEFAULT_APP_PARAMS } from "./appParams.constants";
 import type {
   AppParams,
@@ -78,7 +77,6 @@ export function validatedAppParams(params: unknown): AppParams {
   );
 
   // Object params
-  const CORE_API_VERSION_CONFIG = validateCoreApiVersionConfig(params_);
   const HOMEPAGE = validateHomepage(params_);
   const PREVIEW_THRESHOLD = validatePreviewThreshold(params_);
   const PRIVACY_BANNER_LAYOUT = validatePrivacyBannerLayout(params_);
@@ -90,7 +88,6 @@ export function validatedAppParams(params: unknown): AppParams {
     ANONYMOUS_SESSIONS,
     BASE_URL,
     CONTACT_EMAIL,
-    CORE_API_VERSION_CONFIG,
     GATEWAY_URL,
     HOMEPAGE,
     IMAGE_BUILDERS_ENABLED,
@@ -180,16 +177,6 @@ function validateInteger(
     return DEFAULT_APP_PARAMS[key];
   }
   return clamp(value, min, max);
-}
-
-function validateCoreApiVersionConfig(
-  params: RawAppParams
-): Partial<CoreApiVersionedUrlConfig> {
-  const value = params["CORE_API_VERSION_CONFIG"];
-  if (typeof value !== "object" || value == null) {
-    return DEFAULT_APP_PARAMS["CORE_API_VERSION_CONFIG"];
-  }
-  return value;
 }
 
 function validateHomepage(params: RawAppParams): HomepageParams {
