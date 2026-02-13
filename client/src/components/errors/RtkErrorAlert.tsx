@@ -57,6 +57,7 @@ interface RtkErrorAlertProps {
   error: FetchBaseQueryError | SerializedError | undefined | null;
   dismissible?: boolean;
   property?: string;
+  className?: string;
 }
 export function RtkErrorAlert({
   error,
@@ -104,6 +105,7 @@ export function RtkOrCoreError({
 }
 
 export function RtkOrNotebooksError({
+  className,
   error,
   dismissible = true,
 }: RtkErrorAlertProps) {
@@ -118,7 +120,12 @@ export function RtkOrNotebooksError({
     (error.data as BackendErrorResponse).error
   ) {
     return (
-      <RenkuAlert color="danger" dismissible={dismissible} timeout={0}>
+      <RenkuAlert
+        className={className}
+        color="danger"
+        dismissible={dismissible}
+        timeout={0}
+      >
         <h3>Error {(error.data as BackendErrorResponse).error.code}</h3>
         <p className="mb-0">
           {(error.data as BackendErrorResponse).error.message}

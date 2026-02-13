@@ -129,6 +129,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     deleteDataConnectorsByDataConnectorIdSecrets: {
       invalidatesTags: ["DataConnectorSecrets"],
     },
+    deleteDepositByDepositId: {
+      invalidatesTags: ["Deposits"],
+    },
     getDataConnectorsPaged: {
       providesTags: ["DataConnectors"],
     },
@@ -186,6 +189,7 @@ export const {
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
+  useDeleteDepositByDepositIdMutation,
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
   useGetDataConnectorsByDataConnectorIdQuery,

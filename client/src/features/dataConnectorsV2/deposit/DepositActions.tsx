@@ -17,15 +17,47 @@
  */
 
 import cx from "classnames";
-import { DatabaseLock, FileEarmarkText, Trash } from "react-bootstrap-icons";
-import { Button, ButtonGroup, DropdownItem, DropdownMenu } from "reactstrap";
+import { useCallback, useEffect, useState } from "react";
+import {
+  DatabaseLock,
+  FileEarmarkText,
+  Trash,
+  XLg,
+} from "react-bootstrap-icons";
+import {
+  Button,
+  ButtonGroup,
+  DropdownItem,
+  DropdownMenu,
+  Input,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 
-import type { Deposit } from "../api/data-connectors.api";
+import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import { Loader } from "~/components/Loader";
+import { Deposit } from "../api/data-connectors.api";
+import { useDeleteDepositByDepositIdMutation } from "../api/data-connectors.enhanced-api";
 
 interface DepositActionsProps {
   deposit: Deposit;
+  toggleDepositView?: () => void;
 }
-export default function DepositActions({ deposit }: DepositActionsProps) {
+export default function DepositActions({
+  deposit,
+  toggleDepositView,
+}: DepositActionsProps) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const toggleDeleteModalOpen = useCallback(() => {
+    setIsDeleteModalOpen((open) => !open);
+  }, []);
+  const onDelete = useCallback(() => {
+    if (toggleDepositView) toggleDepositView();
+    setIsDeleteModalOpen(false);
+  }, [toggleDepositView]);
+
   const actions = [
     ...(deposit.status === "complete"
       ? [
@@ -54,7 +86,7 @@ export default function DepositActions({ deposit }: DepositActionsProps) {
       },
       {
         key: "deposit-delete-button",
-        onClick: () => {},
+        onClick: () => toggleDeleteModalOpen(),
         content: (
           <>
             <Trash className={cx("bi", "me-1")} />
@@ -66,18 +98,27 @@ export default function DepositActions({ deposit }: DepositActionsProps) {
   ];
 
   return (
-    <DropdownButton
-      dataCy="deposit-actions-dropdown"
-      primaryButtonContent={actions[0].content}
-      primaryButtonOnclick={actions[0].onClick}
-      size="sm"
-    >
-      {actions.slice(1).map(({ key, onClick, content }) => (
-        <DropdownItem key={key} data-cy={key} onClick={onClick}>
-          {content}
-        </DropdownItem>
-      ))}
-    </DropdownButton>
+    <>
+      <DropdownButton
+        dataCy="deposit-actions-dropdown"
+        primaryButtonContent={actions[0].content}
+        primaryButtonOnclick={actions[0].onClick}
+        size="sm"
+      >
+        {actions.slice(1).map(({ key, onClick, content }) => (
+          <DropdownItem key={key} data-cy={key} onClick={onClick}>
+            {content}
+          </DropdownItem>
+        ))}
+      </DropdownButton>
+
+      <DepositRemovalModal
+        deposit={deposit}
+        isOpen={isDeleteModalOpen}
+        onDelete={onDelete}
+        toggleModal={toggleDeleteModalOpen}
+      />
+    </>
   );
 }
 
@@ -123,5 +164,103 @@ function DropdownButton({
         {children}
       </DropdownMenu>
     </ButtonGroup>
+  );
+}
+
+interface DepositRemovalModalProps {
+  deposit: Deposit;
+  isOpen: boolean;
+  onDelete: () => void;
+  toggleModal: () => void;
+}
+
+function DepositRemovalModal({
+  deposit,
+  onDelete,
+  toggleModal,
+  isOpen,
+}: DepositRemovalModalProps) {
+  const [deleteDeposit, { error, isLoading, isSuccess }] =
+    useDeleteDepositByDepositIdMutation();
+
+  const [typedName, setTypedName] = useState("");
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTypedName(e.target.value.trim());
+    },
+    [setTypedName]
+  );
+
+  useEffect(() => {
+    if (isSuccess && isOpen) {
+      onDelete();
+    }
+  }, [isOpen, isSuccess, onDelete]);
+
+  const onDeleteDeposit = useCallback(() => {
+    deleteDeposit({
+      depositId: deposit.id ?? "",
+    });
+  }, [deleteDeposit, deposit.id]);
+
+  return (
+    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+      <ModalHeader className="text-danger" tag="h2" toggle={toggleModal}>
+        Delete deposit
+      </ModalHeader>
+      <ModalBody>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            <p>
+              Are you sure you want to delete this deposit? This action cannot
+              be undone.
+            </p>
+            <p>
+              Please type the deposit name <strong>{deposit.name}</strong> to
+              confirm.
+            </p>
+            <Input
+              data-cy="delete-confirmation-input"
+              value={typedName}
+              onChange={onChange}
+            />
+            {error && (
+              <RtkOrNotebooksError
+                className={cx("mb-0", "mt-3")}
+                error={error}
+              />
+            )}
+          </>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button color="outline-danger" onClick={toggleModal}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+
+        <Button
+          color="danger"
+          disabled={isLoading || typedName !== deposit.name.trim()}
+          data-cy="delete-deposit-modal-button"
+          type="submit"
+          onClick={onDeleteDeposit}
+        >
+          {isLoading ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Delete deposit
+            </>
+          ) : (
+            <>
+              <Trash className={cx("bi", "me-1")} />
+              Delete deposit
+            </>
+          )}
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 }
