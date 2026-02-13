@@ -1,6 +1,6 @@
 import { data } from "react-router";
 
-import NewAppRoot from "~/NewAppRoot";
+import CatchallApp from "~/CatchallApp";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import type { Route } from "./+types/catchall";
 
@@ -47,5 +47,5 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Component() {
-  return <NewAppRoot />;
+  return <CatchallApp />;
 }
