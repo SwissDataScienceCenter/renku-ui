@@ -48,9 +48,7 @@ import type {
   InterpretedTerm,
   ParseSearchQueryResult,
   RoleFilter,
-  SearchDateFilter,
   SearchDateFilters,
-  SearchFilter,
   SearchFilters,
   SearchOption,
   SearchV2State,
@@ -446,16 +444,6 @@ export function buildSearchQuery(
   const { canonicalQuery } = parseSearchQuery(draftQuery);
 
   return canonicalQuery;
-}
-
-export function filtersAsArray(filters: SearchFilters): SearchFilter[] {
-  return [filters.role, filters.type, filters.visibility];
-}
-
-export function dateFiltersAsArray(
-  dateFilters: SearchDateFilters
-): SearchDateFilter[] {
-  return [dateFilters.created];
 }
 
 export function toDisplayName(entityType: SearchEntity["type"]): string {
