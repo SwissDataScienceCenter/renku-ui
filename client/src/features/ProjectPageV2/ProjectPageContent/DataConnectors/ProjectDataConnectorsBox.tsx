@@ -143,16 +143,28 @@ function ProjectDataConnectorBoxContent({
 
   // ! TEMP
   const deposits2 = [
-    {
-      name: "Mock deposit",
-      provider: "zenodo",
-      data_connector_id: "mock-data-connector-id",
-      path: "/some/path",
-      id: "mock-deposit-id",
-      status: "complete",
-      external_url: "https://zenodo.org/deposit/1234567",
-    },
-  ] as DepositList;
+    ...([
+      {
+        name: "Mock deposit 1",
+        provider: "zenodo",
+        data_connector_id: "mock-data-connector-id1",
+        path: "/some/path",
+        id: "mock-deposit-id1",
+        status: "complete",
+        external_url: "https://zenodo.org/deposit/1234567",
+      },
+      {
+        name: "Mock deposit 2",
+        provider: "zenodo",
+        data_connector_id: "mock-data-connector-id2",
+        path: "/another/path",
+        id: "mock-deposit-id2",
+        status: "in_progress",
+        external_url: "https://zenodo.org/deposit/1234568",
+      },
+    ] as DepositList),
+    ...(deposits ?? []),
+  ];
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>

@@ -7,7 +7,6 @@ import type {
   GetDataConnectorsByDataConnectorIdApiResponse,
   GetDataConnectorsByDataConnectorIdSecretsApiArg,
   GetDataConnectorsByDataConnectorIdSecretsApiResponse,
-  GetDepositApiResponse,
 } from "./data-connectors.api";
 import { dataConnectorsApi as api } from "./data-connectors.api";
 

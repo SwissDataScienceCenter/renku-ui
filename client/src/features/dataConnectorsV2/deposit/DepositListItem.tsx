@@ -20,11 +20,12 @@ import cx from "classnames";
 import { useCallback, useMemo } from "react";
 import { Cloud, Folder } from "react-bootstrap-icons";
 import { Link, To, useLocation } from "react-router";
-import { Button, Col, ListGroupItem, Row } from "reactstrap";
+import { Col, ListGroupItem, Row } from "reactstrap";
 
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import type { Deposit } from "../api/data-connectors.api";
 import DepositView from "./Deposit";
+import DepositActions from "./DepositActions";
 import DepositStatusBadge from "./DepositStatusBadge";
 
 interface DepositListItemProps {
@@ -105,12 +106,12 @@ export default function DepositListItem({ deposit }: DepositListItemProps) {
               </Row>
             </Col>
             {/* This column is a placeholder to reserve the space for the action button */}
-            <Col xs="auto">
+            <Col className="px-0" xs="auto">
               <div
                 aria-hidden="true"
                 className={cx("btn", "btn-sm", "opacity-0", "text-nowrap")}
               >
-                ActionText
+                Show logs btn+
               </div>
             </Col>
           </Row>
@@ -119,10 +120,7 @@ export default function DepositListItem({ deposit }: DepositListItemProps) {
         <div
           className={cx("end-0", "mt-3", "position-absolute", "top-0", "z-5")}
         >
-          <Button color="outline-primary" disabled size="sm">
-            To be defined
-          </Button>
-          {/* // ! TODO: <DepositActions /> */}
+          <DepositActions deposit={deposit} />
         </div>
       </ListGroupItem>
       <DepositView
