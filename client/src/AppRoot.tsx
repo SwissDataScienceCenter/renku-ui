@@ -7,13 +7,11 @@ import LazyToastContainer from "./components/toast/LazyToastContainer";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 import Cookie from "./features/cookie/Cookie";
 import { Favicon } from "./features/favicon/Favicon";
-import {
-  FooterNavbar,
-  RenkuNavBar,
-} from "./features/landing/components/NavBar/NavBar";
+import RenkuFooterNavBar from "./features/landing/components/NavBar/RenkuFooterNavBar";
 import LoggedOutPrompt from "./features/loginHandler/LoggedOutPrompt";
 import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Maintenance, Unavailable } from "./features/maintenance/Maintenance";
+import NavbarV2 from "./features/rootV2/NavbarV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 import { store, type StoreType } from "./store/store";
 import AppContext from "./utils/context/appContext";
@@ -121,9 +119,9 @@ function InnerApp({
   return (
     <>
       <LoggedOutPrompt />
-      <RenkuNavBar />
+      <NavbarV2 />
       {children}
-      <FooterNavbar />
+      <RenkuFooterNavBar />
       <Cookie />
     </>
   );

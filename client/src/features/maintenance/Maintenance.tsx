@@ -22,10 +22,8 @@ import { Button, Col, Row } from "reactstrap";
 
 import AppContext, { type AppContextType } from "~/utils/context/appContext";
 import type { AppParams } from "~/utils/context/appParams.types";
-import { FooterNavbar } from "../landing/components/NavBar/NavBar";
+import RenkuFooterNavBar from "../landing/components/NavBar/RenkuFooterNavBar";
 import StatusSummary from "../platform/components/StatusSummary";
-
-// import { BrowserRouter } from "react-router";
 
 interface MaintenanceProps {
   info: string;
@@ -50,7 +48,7 @@ function Maintenance({ info }: MaintenanceProps) {
           </section>
         </main>
       </div>
-      <FooterNavbar />
+      <RenkuFooterNavBar />
     </div>
   );
 }

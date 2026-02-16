@@ -38,7 +38,6 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
-import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
 import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
 import LazyGroupV2Search from "../groupsV2/LazyGroupV2Search";
