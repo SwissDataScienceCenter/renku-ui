@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import popperCore from "@popperjs/core?url";
 import * as Sentry from "@sentry/react-router";
 import bootstrap from "bootstrap?url";
 import cx from "classnames";
@@ -186,6 +187,7 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
         <Scripts />
         <ScrollRestoration />
+        <script type="module" async src={popperCore} />
         <script type="module" async src={bootstrap} />
       </body>
     </html>
