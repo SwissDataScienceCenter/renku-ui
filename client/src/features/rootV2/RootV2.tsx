@@ -145,14 +145,6 @@ export default function RootV2() {
             path={RELATIVE_ROUTES.v2.projects.root}
             element={<ProjectsV2Routes />}
           />
-          {/* <Route
-            path={RELATIVE_ROUTES.v2.help.root}
-            element={
-              <ContainerWrap>
-                <LazyHelpV2 />
-              </ContainerWrap>
-            }
-          /> */}
           <Route
             path={RELATIVE_ROUTES.v2.search}
             element={
@@ -230,7 +222,7 @@ function RedirectToSearch({ entityType }: { entityType: string }) {
       },
       { replace: true }
     );
-  });
+  }, [entityType, navigate]);
 
   return null;
 }
