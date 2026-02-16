@@ -16,17 +16,12 @@
  * limitations under the License.
  */
 
-import { sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.api";
-import type { MessageHandler } from "../webSocket.types";
+import type { DateTime } from "luxon";
 
-// Handles the "sessionStatusV2" message
-export const handleSessionsStatusV2: MessageHandler = ({ message, store }) => {
-  const invalidate =
-    typeof message.data["message"] === "string"
-      ? message.data["message"]
-      : false;
-  if (invalidate) {
-    store.dispatch(sessionsV2Api.endpoints.invalidateSessions.initiate());
-  }
-  return { ok: true };
-};
+/** Represents a WebSocket message from the server */
+export interface WsServerMessage {
+  data: Record<string, unknown>;
+  scope: string;
+  timestamp: DateTime;
+  type: string;
+}
