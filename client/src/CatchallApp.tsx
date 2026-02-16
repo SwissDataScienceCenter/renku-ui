@@ -29,8 +29,6 @@ import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 
-import "./App.css";
-
 interface ContainerWrapProps {
   children?: ReactNode;
   fullSize?: boolean;

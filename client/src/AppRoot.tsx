@@ -20,6 +20,8 @@ import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import SentryUserHandler from "./utils/helpers/sentry/SentryUserHandler";
 import useWebSocket from "./websocket/useWebSocket";
 
+import "./AppRoot.css";
+
 interface AppRootProps {
   params: AppParams;
   children?: ReactNode;

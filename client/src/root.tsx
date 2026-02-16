@@ -24,10 +24,7 @@
  * - https://reactrouter.com/start/framework/routing#root-route
  */
 
-// import popperCore from "@popperjs/core?url";
-
 import * as Sentry from "@sentry/react-router";
-// import bootstrap from "bootstrap?url";
 import cx from "classnames";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Helmet } from "react-helmet";
@@ -43,7 +40,6 @@ import {
   type MetaFunction,
 } from "react-router";
 
-// import v2Styles from "~/styles/renku_bootstrap.scss?url";
 import { CONFIG_JSON } from "~server/constants";
 import type { Route } from "./+types/root";
 import AppRoot from "./AppRoot";
@@ -53,12 +49,8 @@ import type { AppParams } from "./utils/context/appParams.types";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import { initClientSideSentry } from "./utils/helpers/sentry/utils";
 
-import "~/styles/renku_bootstrap.scss";
+import "./styles/renku_bootstrap.scss";
 import "./utils/bootstrap/bootstrap.client";
-
-// import LazyBootstrap from "./utils/bootstrap/LazyBootstrap";
-
-// import "bootstrap";
 
 export const DEFAULT_META_TITLE: string =
   "Reproducible Data Science | Open Research | Renku";
