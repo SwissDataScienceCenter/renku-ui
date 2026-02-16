@@ -15,7 +15,6 @@ import type { AppParams } from "./utils/context/appParams.types";
 let isHydrating = true;
 
 interface AppRootProps {
-  // config: Route.ComponentProps["loaderData"]["config"];
   params: AppParams;
 }
 
