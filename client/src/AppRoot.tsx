@@ -22,12 +22,32 @@ import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
 import SentryUserHandler from "./utils/helpers/sentry/SentryUserHandler";
 import useWebSocket from "./websocket/useWebSocket";
 
-interface NewAppRoot2Props {
+interface AppRootProps {
   params: AppParams;
   children?: ReactNode;
 }
 
-export default function NewAppRoot2({ params, children }: NewAppRoot2Props) {
+/**
+ * Application root component
+ *
+ * Sets up the infrastructure for the Renku UI.
+ *
+ * Details:
+ * - Set up the AppContext (React context)
+ * - Set up the Redux store
+ * - Set up the client-side error boundary
+ * - Set up the favicon component
+ * - Set up the login state handler
+ * - Set up toasts
+ * - Set up the logged out prompt
+ * - Set up the header and footer navigation bars
+ * - Set up the cookie banner
+ *
+ * @param {AppParams} [props.params] Application parameters
+ * @param {ReactNode} [props.children] Page to render
+ */
+// TODO: consider if we should consolidate the error boundaries
+export default function AppRoot({ params, children }: AppRootProps) {
   // show maintenance page when necessary
   const maintenance = params.MAINTENANCE;
   if (maintenance) {

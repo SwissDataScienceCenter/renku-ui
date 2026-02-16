@@ -4,4 +4,6 @@ import "bootstrap";
 
 console.log("importing bootstrap");
 
+(window as any).__bootstrap = "hello";
+
 export {};

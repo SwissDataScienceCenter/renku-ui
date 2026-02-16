@@ -23,7 +23,7 @@ function ReadyToToast() {
 
   useEffect(() => {
     dispatch(setReady(true));
-  }, []);
+  }, [dispatch]);
 
   return null;
 }

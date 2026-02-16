@@ -16,9 +16,18 @@
  * limitations under the License.
  */
 
-import popperCore from "@popperjs/core?url";
+/**
+ * Root route module
+ *
+ * Docs:
+ * - https://reactrouter.com/api/framework-conventions/root.tsx
+ * - https://reactrouter.com/start/framework/routing#root-route
+ */
+
+// import popperCore from "@popperjs/core?url";
+
 import * as Sentry from "@sentry/react-router";
-import bootstrap from "bootstrap?url";
+// import bootstrap from "bootstrap?url";
 import cx from "classnames";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Helmet } from "react-helmet";
@@ -34,15 +43,22 @@ import {
   type MetaFunction,
 } from "react-router";
 
-import v2Styles from "~/styles/renku_bootstrap.scss?url";
+// import v2Styles from "~/styles/renku_bootstrap.scss?url";
 import { CONFIG_JSON } from "~server/constants";
 import type { Route } from "./+types/root";
+import AppRoot from "./AppRoot";
 import PageLoader from "./components/PageLoader";
-import NewAppRoot2 from "./NewAppRoot2";
 import NotFound from "./not-found/NotFound";
 import type { AppParams } from "./utils/context/appParams.types";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import { initClientSideSentry } from "./utils/helpers/sentry/utils";
+
+import "~/styles/renku_bootstrap.scss";
+import "./utils/bootstrap/bootstrap.client";
+
+// import LazyBootstrap from "./utils/bootstrap/LazyBootstrap";
+
+// import "bootstrap";
 
 export const DEFAULT_META_TITLE: string =
   "Reproducible Data Science | Open Research | Renku";
@@ -177,7 +193,8 @@ export function Layout({ children }: { children: ReactNode }) {
         />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
 
-        <link rel="stylesheet" type="text/css" href={v2Styles} />
+        {/* <link rel="stylesheet" type="text/css" href={v2Styles} /> */}
+
         <Meta />
         <Links />
       </head>
@@ -187,8 +204,9 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
         <Scripts />
         <ScrollRestoration />
-        <script type="module" async src={popperCore} />
-        <script type="module" async src={bootstrap} />
+        {/* <LazyBootstrap /> */}
+        {/* <script type="module" async src={popperCore} />
+        <script type="module" async src={bootstrap} /> */}
       </body>
     </html>
   );
@@ -260,9 +278,9 @@ export default function Root({ loaderData }: Route.ComponentProps) {
       <Helmet>
         <title>{DEFAULT_META_TITLE}</title>
       </Helmet>
-      <NewAppRoot2 params={params}>
+      <AppRoot params={params}>
         <Outlet context={{ params } satisfies RootOutletContext} />
-      </NewAppRoot2>
+      </AppRoot>
     </>
   );
 }
