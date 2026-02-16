@@ -237,12 +237,13 @@ function HelpGetting() {
 function HelpContent() {
   return (
     <Routes>
-      <Route path="/" element={<HelpGetting />} />
+      {/* <Route path="/" element={<HelpGetting />} />
       <Route path="contact" element={<HelpGetting />} />
       <Route path="status" element={<StatusSummary />} />
       <Route path="release" element={<HelpRelease />} />
       <Route path="tos" element={<TermsOfService />} />
-      <Route path="privacy" element={<PrivacyPolicy />} />
+      <Route path="privacy" element={<PrivacyPolicy />} /> */}
+      Removed
     </Routes>
   );
 }

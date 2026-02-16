@@ -1,10 +1,10 @@
 import { Helmet } from "react-helmet";
 import { type MetaDescriptor } from "react-router";
 
-import GettingHelp from "~/features/help/GettingHelp";
+import TermsOfService from "~/help/TermsOfService";
 import { DEFAULT_META } from "~/root";
 
-const TITLE = "Getting Help | Renku";
+const TITLE = "Terms of Service | Help | Renku";
 
 export function meta(): MetaDescriptor[] {
   const result = [{ title: TITLE }, ...DEFAULT_META.slice(1)];
@@ -17,7 +17,7 @@ export default function GettingHelpPage() {
       <Helmet>
         <title>{TITLE}</title>
       </Helmet>
-      <GettingHelp />
+      <TermsOfService />
     </>
   );
 }

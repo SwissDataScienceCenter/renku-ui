@@ -141,7 +141,7 @@ function FooterNavbarInner() {
   );
 
   return (
-    <Routes key="footerNav">
+    <Routes>
       <Route
         path={ABSOLUTE_ROUTES.v2.projects.show.sessions.show}
         element={null}
