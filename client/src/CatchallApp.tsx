@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { ReactNode } from "react";
 import { Route, Routes } from "react-router";
 
@@ -29,21 +30,11 @@ import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
 
-interface ContainerWrapProps {
-  children?: ReactNode;
-  fullSize?: boolean;
-}
-
-export const ContainerWrap = ({
-  children,
-  fullSize = false,
-}: ContainerWrapProps) => {
-  const classContainer = !fullSize
-    ? "container-xxl py-4 mt-2 renku-container"
-    : "w-100";
-  return <div className={classContainer}>{children}</div>;
-};
-
+/**
+ * "Catch all" component
+ *
+ * Renders pages with client-side routing.
+ */
 export default function CatchallApp() {
   const { data: user } = useGetUserQueryState();
   return (
@@ -81,4 +72,15 @@ export default function CatchallApp() {
       <Route path="*" element={<LazyRootV2 />} />
     </Routes>
   );
+}
+
+interface ContainerWrapProps {
+  children?: ReactNode;
+  fullSize?: boolean;
+}
+function ContainerWrap({ children, fullSize = false }: ContainerWrapProps) {
+  const classContainer = fullSize
+    ? "w-100"
+    : cx("container-xxl", "py-4", "mt-2", "renku-container");
+  return <div className={classContainer}>{children}</div>;
 }
