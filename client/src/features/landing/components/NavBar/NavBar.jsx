@@ -38,8 +38,6 @@ import AppContext from "../../../../utils/context/appContext";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
 import NavbarV2 from "../../../rootV2/NavbarV2";
 
-// import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
-
 import "./NavBar.css";
 
 function RenkuNavBar() {
@@ -54,18 +52,6 @@ function RenkuNavBar() {
 }
 
 function RenkuNavBarInner() {
-  // const projectMetadata = useLegacySelector(
-  //   (state) => state.stateModel.project?.metadata
-  // );
-  // const sessionShowUrl =
-  //   projectMetadata == null
-  //     ? null
-  //     : Url.get(Url.pages.project.session.show, {
-  //         namespace: projectMetadata["namespace"],
-  //         path: projectMetadata["path"],
-  //         server: ":server",
-  //       });
-
   return (
     <Routes>
       <Route path="*" element={<NavbarV2 />} />
@@ -107,18 +93,6 @@ function FooterNavbar() {
 }
 
 function FooterNavbarInner() {
-  // const location = useLocation();
-  // const projectMetadata = useLegacySelector(
-  //   (state) => state.stateModel.project?.metadata
-  // );
-  // const sessionShowUrl =
-  //   projectMetadata == null
-  //     ? null
-  //     : Url.get(Url.pages.project.session.show, {
-  //         namespace: projectMetadata["namespace"],
-  //         path: projectMetadata["path"],
-  //         server: ":server",
-  //       });
   const { params } = useContext(AppContext);
 
   const privacyLink =
@@ -135,7 +109,6 @@ function FooterNavbarInner() {
       : isDevVersion
       ? `${taggedVersion} (dev)`
       : taggedVersion;
-  // const isRenkuV1 = isRenkuLegacy(location.pathname, true);
   const releaseLocation = ABSOLUTE_ROUTES.v2.help.release;
 
   const footer = (

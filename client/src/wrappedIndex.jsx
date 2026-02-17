@@ -36,7 +36,6 @@ function appIndexInner(params) {
   const maintenance = params.MAINTENANCE;
   if (maintenance) {
     root.render(
-      // <Provider store={model.reduxStore}>
       <Provider store={store}>
         <Maintenance info={maintenance} />
       </Provider>

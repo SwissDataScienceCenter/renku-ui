@@ -29,7 +29,6 @@ import { Col, Row } from "reactstrap";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
-// import { Url } from "../../utils/helpers/url";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import VisualHead from "./assets/Visual_Head.svg";
 import { BottomNav, TopNav } from "./components/anonymousHomeNav";
