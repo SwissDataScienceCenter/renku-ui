@@ -137,15 +137,18 @@ export default function DataConnectorBoxListDisplay({
 
   return (
     <>
-      <ListGroupItem action data-cy="data-connector-item">
+      <ListGroupItem
+        action
+        className={cx("position-relative", "p-0")}
+        data-cy="data-connector-item"
+      >
         <Link
           className={cx(
-            "d-flex",
-            "flex-column",
-            "gap-3",
-            "link-primary",
+            "d-block",
             "text-body",
-            "text-decoration-none"
+            "text-decoration-none",
+            "link-primary",
+            "py-3"
           )}
           to={targetOffcanvasLocation}
         >
@@ -218,10 +221,16 @@ export default function DataConnectorBoxListDisplay({
               </div>
             </Col>
             {/* This column is a placeholder to reserve the space for the action button */}
-            <Col xs="auto">
+            <Col xs="auto" className="flex-shrink-0">
               <div
                 aria-hidden="true"
-                className={cx("btn", "btn-sm", "opacity-0", "text-nowrap")}
+                className={cx(
+                  "btn",
+                  "btn-sm",
+                  "opacity-0",
+                  "pe-none",
+                  "text-nowrap"
+                )}
               >
                 FakeButton123
               </div>
