@@ -63,7 +63,6 @@ function Unavailable({ params }: UnavailableProps) {
   const statusLink = params.STATUSPAGE_ID;
   const appContext: AppContextType = {
     params,
-    // webSocket: undefined,
   };
 
   return (
