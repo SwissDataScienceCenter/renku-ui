@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router";
 
 import App from "./App";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
-import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
+import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Maintenance } from "./features/maintenance/Maintenance";
 import { globalSchema, StateModel } from "./model";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
@@ -17,9 +17,6 @@ import { Url } from "./utils/helpers/url";
 // TODO: move "bootstrap" handling to root.tsx
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
-
-import LoginHandler from "./features/loginHandler/LoginHandler";
-import { UserCoordinator } from "./user";
 
 let hasRendered = false;
 
@@ -36,22 +33,11 @@ function appIndexInner(params) {
   const container = document.getElementById("root");
   const root = createRoot(container);
 
-  // configure core api versioned url helper (only used if legacy support is enabled)
-  const coreApiVersionedUrlConfig = null;
-
   // configure base url
   Url.setBaseUrl(params.BASE_URL);
 
   // Create the global model containing the formal schema definition and the redux store
   const model = new StateModel(globalSchema);
-
-  // create client to be passed to coordinators (only if legacy support is enabled)
-  const client = new ApiClientV2Compat(
-    `${params.BASE_URL}/api`,
-    params.UISERVER_URL
-  );
-  const userCoordinator = new UserCoordinator(client, model.subModel("user"));
-  userCoordinator.fetchUser();
 
   // show maintenance page when necessary
   const maintenance = params.MAINTENANCE;
@@ -78,12 +64,7 @@ function appIndexInner(params) {
           <LoginHandler />
           <SentryUserHandler />
           <FeatureFlagHandler />
-          <VisibleApp
-            client={client}
-            coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
-            params={params}
-            model={model}
-          />
+          <VisibleApp params={params} model={model} />
         </AppErrorBoundary>
       </BrowserRouter>
     </Provider>

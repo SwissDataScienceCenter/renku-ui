@@ -19,11 +19,11 @@
 import cx from "classnames";
 import { generatePath, Link } from "react-router";
 
-import VisibilityIcon from "../../../components/entities/VisibilityIcon";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import { Project } from "../api/projectV2.api";
+import VisibilityIconV2 from "./VisibilityIconV2";
 
 interface ProjectShortHandDisplayProps {
   className?: string | string[];
@@ -65,7 +65,7 @@ export default function ProjectShortHandDisplay({
       )}
 
       <div className={cx("d-flex", "flex-column", "flex-md-row")}>
-        <VisibilityIcon visibility={project.visibility} />
+        <VisibilityIconV2 visibility={project.visibility} />
         {project.updated_at ? (
           <TimeCaption
             className={cx("ms-0", "ms-md-auto", "my-auto", "text-truncate")}
