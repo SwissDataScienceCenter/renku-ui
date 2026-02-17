@@ -18,7 +18,7 @@
 
 import { DateTime } from "luxon";
 
-import type { createStore } from "~/utils/helpers/EnhancedState";
+import type { StoreType } from "~/store/store";
 import type WsMessage from "./WsMessage";
 
 export interface WebSocketState {
@@ -42,8 +42,6 @@ export interface WebSocketError {
   error?: Error | undefined;
   message: string;
 }
-
-export type StoreType = ReturnType<typeof createStore>;
 
 export type MessageHandlerArgs = {
   message: WsMessage;
