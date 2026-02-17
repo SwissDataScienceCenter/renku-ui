@@ -55,8 +55,11 @@ export default function CodeRepositorySelector<T extends FieldValues>({
     () =>
       controllerProps.defaultValue
         ? controllerProps.defaultValue
-        : repositoriesDetails.find((repo) => repo.data?.status === "valid")
-            ?.url,
+        : repositoriesDetails.find(
+            (repo) =>
+              repo.data?.status === "valid" &&
+              repo.data.metadata?.visibility === "public"
+          )?.url,
     [controllerProps.defaultValue, repositoriesDetails]
   );
 
@@ -159,7 +162,10 @@ function CodeRepositorySelect({
       getOptionLabel={(option) => option.url}
       getOptionValue={(option) => option.url}
       unstyled
-      isOptionDisabled={(option) => option.data?.status !== "valid"}
+      isOptionDisabled={(option) =>
+        option.data?.status !== "valid" ||
+        option.data.metadata?.visibility !== "public"
+      }
       onChange={onChange}
       onBlur={onBlur}
       value={value}
@@ -203,7 +209,8 @@ function OptionOrSingleValueContent({
   return (
     <>
       <span>{option.url}</span>
-      {option.data?.status !== "valid" && (
+      {(option.data?.status !== "valid" ||
+        option.data.metadata?.visibility !== "public") && (
         <span>
           <XLg className={cx("bi", "me-1")} />
           No public access
