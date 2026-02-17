@@ -26,8 +26,6 @@ import SearchResultRecap from "./components/SearchResultRecap";
 import SearchResults from "./components/SearchResults";
 import { getSearchQueryMissingFilters } from "./contextSearch.utils";
 
-// ? The GroupV2Search components should be re-used in the User namespace and later
-// ? replace the global search components. Mind to rename them at that point.
 export default function Search() {
   const [searchParams] = useSearchParams();
 

@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useMemo, useRef } from "react";
+import { useRef } from "react";
 import {
   Database,
   Folder2Open,
@@ -29,9 +28,6 @@ import {
 } from "react-bootstrap-icons";
 import { Badge, UncontrolledTooltip } from "reactstrap";
 
-import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
-import { useGetDataConnectorsByDataConnectorIdQuery } from "../../dataConnectorsV2/api/data-connectors.api";
-import DataConnectorView from "../../dataConnectorsV2/components/DataConnectorView";
 import { type SearchEntity } from "../api/searchV2Api.api";
 import { toDisplayName } from "../searchV2.utils";
 
@@ -41,7 +37,7 @@ interface EntityPillProps {
   tooltip?: boolean;
   tooltipPlacement?: "top" | "bottom" | "left" | "right";
 }
-export function EntityPill({
+export default function EntityPill({
   entityType,
   size = "auto",
   tooltip = true,
@@ -93,41 +89,5 @@ export function EntityPill({
         </UncontrolledTooltip>
       )}
     </>
-  );
-}
-
-export function ShowGlobalDataConnector() {
-  const [hash, setHash] = useLocationHash();
-
-  const dataConnectorId = useMemo(
-    () =>
-      hash.startsWith("data-connector-")
-        ? hash.slice("data-connector-".length)
-        : undefined,
-    [hash]
-  );
-
-  const { currentData: dataConnector } =
-    useGetDataConnectorsByDataConnectorIdQuery(
-      dataConnectorId != null ? { dataConnectorId } : skipToken
-    );
-
-  const toggleView = useCallback(() => {
-    setHash((prev) => {
-      const isOpen = !!prev;
-      return isOpen ? "" : `data-connector-${dataConnectorId}`;
-    });
-  }, [dataConnectorId, setHash]);
-
-  if (dataConnector == null) {
-    return null;
-  }
-
-  return (
-    <DataConnectorView
-      dataConnector={dataConnector}
-      showView
-      toggleView={toggleView}
-    />
   );
 }

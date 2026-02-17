@@ -256,3 +256,27 @@ function mapDateFilterToParam(filter: CreationDateFilter): string | null {
 
   return parts.length > 0 ? parts.join(DATE_FILTER_CUSTOM_SEPARATOR) : null;
 }
+
+export function parseCustomDateFilter(value: string): {
+  afterDate: string;
+  beforeDate: string;
+} {
+  const parts = value.split(DATE_FILTER_CUSTOM_SEPARATOR);
+  let afterDate = "";
+  let beforeDate = "";
+  for (const part of parts) {
+    if (part.startsWith(">")) afterDate = part.slice(1);
+    else if (part.startsWith("<")) beforeDate = part.slice(1);
+  }
+  return { afterDate, beforeDate };
+}
+
+export function buildCustomDateFilterValue(
+  afterDate: string,
+  beforeDate: string
+): string {
+  const parts: string[] = [];
+  if (afterDate) parts.push(`>${afterDate}`);
+  if (beforeDate) parts.push(`<${beforeDate}`);
+  return parts.join(DATE_FILTER_CUSTOM_SEPARATOR);
+}

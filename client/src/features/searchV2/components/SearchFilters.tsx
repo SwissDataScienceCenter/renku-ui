@@ -39,7 +39,6 @@ import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/n
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import {
-  DATE_FILTER_CUSTOM_SEPARATOR,
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
   FILTER_CONTENT_NAMESPACE,
@@ -47,12 +46,16 @@ import {
   FILTER_KEYWORD,
   FILTER_MEMBER,
   FILTER_MY_ROLE,
-  FILTER_PAGE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
 } from "../contextSearch.constants";
 import { Filter, GroupSearchEntity } from "../contextSearch.types";
+import {
+  buildCustomDateFilterValue,
+  parseCustomDateFilter,
+} from "../contextSearch.utils";
 import { useContextSearch } from "../hooks/useContextSearch.hook";
+import { useSearchFilterParam } from "../hooks/useSearchFilterParam.hook";
 
 export default function SearchFilters() {
   const [searchParams] = useSearchParams();
@@ -96,7 +99,7 @@ export default function SearchFilters() {
       .map(([value, quantity]) => ({
         value,
         label: (
-          <GroupFilterKeywordRendering
+          <FilterKeywordRendering
             label={value}
             quantity={quantity}
             selected={selectedKeywords.includes(value)}
@@ -125,7 +128,7 @@ export default function SearchFilters() {
         hydratedFilterKeywordAllowedValues.unshift({
           value: keyword.trim(),
           label: (
-            <GroupFilterKeywordRendering
+            <FilterKeywordRendering
               label={keyword.trim()}
               quantity={0}
               selected={selectedKeywords.includes(keyword.trim())}
@@ -172,42 +175,40 @@ export default function SearchFilters() {
     <div className={cx("d-flex", "flex-column", "gap-3", "mb-3")}>
       <h4 className={cx("d-sm-none", "mb-0")}>Filters</h4>
 
-      <GroupSearchFilter filter={filterContentWithQuantities} />
-      {kind == "group" && (
-        <GroupSearchFilter filter={filterMembersWithValues} />
-      )}
+      <SearchFilter filter={filterContentWithQuantities} />
+      {kind == "group" && <SearchFilter filter={filterMembersWithValues} />}
 
-      <GroupSearchFilter
+      <SearchFilter
         defaultElementsToShow={10}
         filter={filterKeywordWithQuantities}
         hiddenDecoration
       />
 
-      <GroupSearchFilter filter={FILTER_VISIBILITY} />
-      <GroupSearchFilter
+      <SearchFilter filter={FILTER_VISIBILITY} />
+      <SearchFilter
         filter={FILTER_DATE}
         renderAfterOptions={(visualization) => (
-          <DateFilterCustomOption
+          <SearchDateFilterCustomOption
             filter={FILTER_DATE}
             visualization={visualization}
           />
         )}
       />
-      {!isNamespace && <GroupSearchFilter filter={FILTER_MY_ROLE} />}
+      {!isNamespace && <SearchFilter filter={FILTER_MY_ROLE} />}
     </div>
   );
 }
 
-interface GroupFilterKeywordRenderingProps {
+interface FilterKeywordRenderingProps {
   label: string;
   quantity: number;
   selected?: boolean;
 }
-function GroupFilterKeywordRendering({
+function FilterKeywordRendering({
   label,
   quantity,
   selected = false,
-}: GroupFilterKeywordRenderingProps) {
+}: FilterKeywordRenderingProps) {
   return (
     <div className={cx("align-items-center", "d-flex")}>
       <div className="fs-3">
@@ -229,18 +230,18 @@ function GroupFilterKeywordRendering({
   );
 }
 
-interface GroupSearchFilterProps {
+interface SearchFilterProps {
   defaultElementsToShow?: number;
   filter: Filter;
   hiddenDecoration?: boolean;
   renderAfterOptions?: (visualization: "accordion" | "list") => React.ReactNode;
 }
-function GroupSearchFilter({
+function SearchFilter({
   defaultElementsToShow = DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   filter,
   hiddenDecoration = false,
   renderAfterOptions,
-}: GroupSearchFilterProps) {
+}: SearchFilterProps) {
   // Do not show invalid filter, but give the opportunity to reset it.
   const [searchParams, setSearchParams] = useSearchParams();
   const searchedType = searchParams.get(FILTER_CONTENT.name);
@@ -292,7 +293,7 @@ function GroupSearchFilter({
                   </Button>
                 </Col>
               ) : (
-                <GroupSearchFilterContent
+                <SearchFilterContent
                   defaultElementsToShow={defaultElementsToShow}
                   filter={filter}
                   hiddenDecoration={hiddenDecoration}
@@ -326,7 +327,7 @@ function GroupSearchFilter({
               </Button>
             </>
           ) : (
-            <GroupSearchFilterContent
+            <SearchFilterContent
               defaultElementsToShow={defaultElementsToShow}
               filter={filter}
               hiddenDecoration={hiddenDecoration}
@@ -340,63 +341,44 @@ function GroupSearchFilter({
   );
 }
 
-interface GroupSearchFilterContentProps {
+interface SearchFilterContentProps {
   defaultElementsToShow?: number;
   filter: Filter;
   hiddenDecoration?: boolean;
   renderAfterOptions?: (visualization: "accordion" | "list") => React.ReactNode;
   visualization?: "accordion" | "list";
 }
-function GroupSearchFilterContent({
+function SearchFilterContent({
   defaultElementsToShow,
   filter,
   hiddenDecoration,
   renderAfterOptions,
   visualization = "list",
-}: GroupSearchFilterContentProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
+}: SearchFilterContentProps) {
   const [showAll, setShowAll] = useState(false);
-  const current = searchParams.get(filter.name) ?? "";
+  const { currentValue: current, updateParam } = useSearchFilterParam(
+    filter.name
+  );
   const allowSelectMany = filter.type === "enum" && filter.allowSelectMany;
 
   const onChange = useCallback(
     (value: string) => {
-      const params = new URLSearchParams(searchParams);
       if (filter.doNotPassEmpty && !value) {
-        params.delete(filter.name);
+        updateParam("");
       } else if (allowSelectMany) {
-        // Move logic to handle multiple values to a utility function?
-        const currentValues =
-          params
-            .get(filter.name)
-            ?.split(filter.valueSeparator ?? VALUE_SEPARATOR_AND) ?? [];
+        const separator = filter.valueSeparator ?? VALUE_SEPARATOR_AND;
+        const currentValues = current ? current.split(separator) : [];
         if (currentValues.includes(value)) {
           const newValues = currentValues.filter((v) => v !== value);
-          if (newValues.length > 0) {
-            params.set(
-              filter.name,
-              newValues.join(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
-            );
-          } else {
-            params.delete(filter.name);
-          }
+          updateParam(newValues.join(separator));
         } else {
-          currentValues.push(value);
-          params.set(
-            filter.name,
-            currentValues.join(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
-          );
+          updateParam([...currentValues, value].join(separator));
         }
       } else {
-        params.set(filter.name, value);
+        updateParam(value);
       }
-      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
-      if (params.get(FILTER_PAGE.name) !== pageDefaultValue) {
-        params.set(FILTER_PAGE.name, pageDefaultValue);
-      }
-      setSearchParams(params);
     },
-    [allowSelectMany, filter, searchParams, setSearchParams]
+    [allowSelectMany, current, filter, updateParam]
   );
 
   if (filter.type === "enum") {
@@ -410,7 +392,7 @@ function GroupSearchFilterContent({
           <>
             {elementsToShow.map((element) => {
               return (
-                <GroupSearchFilterRadioOrCheckboxElement
+                <SearchFilterRadioOrCheckboxElement
                   identifier={`search-filter-${filter.name}-${element.value}`}
                   isChecked={
                     allowSelectMany
@@ -429,7 +411,7 @@ function GroupSearchFilterContent({
                   {element.quantity !== undefined ? (
                     <Badge className="ms-1">{element.quantity}</Badge>
                   ) : null}
-                </GroupSearchFilterRadioOrCheckboxElement>
+                </SearchFilterRadioOrCheckboxElement>
               );
             })}
             {defaultElementsToShow &&
@@ -454,7 +436,7 @@ function GroupSearchFilterContent({
   return null;
 }
 
-interface GroupSearchFilterRadioOrCheckboxElementProps {
+interface SearchFilterRadioOrCheckboxElementProps {
   children: React.ReactNode;
   hiddenDecoration?: boolean;
   identifier: string;
@@ -463,7 +445,7 @@ interface GroupSearchFilterRadioOrCheckboxElementProps {
   type: "radio" | "checkbox";
   visualization: "accordion" | "list";
 }
-function GroupSearchFilterRadioOrCheckboxElement({
+function SearchFilterRadioOrCheckboxElement({
   children,
   hiddenDecoration,
   identifier,
@@ -471,7 +453,7 @@ function GroupSearchFilterRadioOrCheckboxElement({
   onChange,
   type,
   visualization,
-}: GroupSearchFilterRadioOrCheckboxElementProps) {
+}: SearchFilterRadioOrCheckboxElementProps) {
   return (
     <div
       className={cx(
@@ -511,16 +493,52 @@ function GroupSearchFilterRadioOrCheckboxElement({
   );
 }
 
-interface DateFilterCustomOptionProps {
+interface SearchDateInputProps {
+  id: string;
+  label: string;
+  max?: string;
+  min?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string;
+}
+
+function SearchDateInput({
+  id,
+  label,
+  max,
+  min,
+  onChange,
+  value,
+}: SearchDateInputProps) {
+  return (
+    <div>
+      <label className={cx("form-label", "small", "mb-1")} htmlFor={id}>
+        {label}
+      </label>
+      <input
+        className={cx("form-control", "form-control-sm")}
+        data-cy={id}
+        id={id}
+        max={max}
+        min={min}
+        onChange={onChange}
+        type="date"
+        value={value}
+      />
+    </div>
+  );
+}
+
+interface SearchDateFilterCustomOptionProps {
   filter: Filter;
   visualization: "accordion" | "list";
 }
-function DateFilterCustomOption({
+
+function SearchDateFilterCustomOption({
   filter,
   visualization,
-}: DateFilterCustomOptionProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const current = searchParams.get(filter.name) ?? "";
+}: SearchDateFilterCustomOptionProps) {
+  const { currentValue, updateParam } = useSearchFilterParam(filter.name);
 
   const predefinedValues = useMemo(
     () =>
@@ -528,74 +546,44 @@ function DateFilterCustomOption({
     [filter]
   );
 
-  const isCustom = current !== "" && !predefinedValues.includes(current);
+  const isCustom =
+    currentValue !== "" && !predefinedValues.includes(currentValue);
 
-  const { afterDate, beforeDate } = useMemo(() => {
-    if (!isCustom) return { afterDate: "", beforeDate: "" };
-    const parts = current.split(DATE_FILTER_CUSTOM_SEPARATOR);
-    let after = "";
-    let before = "";
-    for (const part of parts) {
-      if (part.startsWith(">")) after = part.slice(1);
-      else if (part.startsWith("<")) before = part.slice(1);
-    }
-    return { afterDate: after, beforeDate: before };
-  }, [current, isCustom]);
+  const { afterDate, beforeDate } = useMemo(
+    () =>
+      isCustom
+        ? parseCustomDateFilter(currentValue)
+        : { afterDate: "", beforeDate: "" },
+    [currentValue, isCustom]
+  );
 
   const today = useMemo(() => DateTime.utc().toISODate() ?? "", []);
 
-  const updateDateParam = useCallback(
-    (newValue: string) => {
-      const params = new URLSearchParams(searchParams);
-      if (newValue) {
-        params.set(filter.name, newValue);
-      } else {
-        params.delete(filter.name);
-      }
-      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
-      if (params.get(FILTER_PAGE.name) !== pageDefaultValue) {
-        params.set(FILTER_PAGE.name, pageDefaultValue);
-      }
-      setSearchParams(params);
-    },
-    [filter.name, searchParams, setSearchParams]
-  );
-
   const onSelectCustom = useCallback(() => {
     if (!isCustom) {
-      updateDateParam(`<${today}`);
+      updateParam(`<${today}`);
     }
-  }, [isCustom, today, updateDateParam]);
+  }, [isCustom, today, updateParam]);
 
   const onChangeAfter = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newAfter = e.target.value ? `>${e.target.value}` : "";
-      const currentBefore = beforeDate ? `<${beforeDate}` : "";
-      const newValue = [newAfter, currentBefore]
-        .filter(Boolean)
-        .join(DATE_FILTER_CUSTOM_SEPARATOR);
-      updateDateParam(newValue);
+      updateParam(buildCustomDateFilterValue(e.target.value, beforeDate));
     },
-    [beforeDate, updateDateParam]
+    [beforeDate, updateParam]
   );
 
   const onChangeBefore = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const currentAfter = afterDate ? `>${afterDate}` : "";
-      const newBefore = e.target.value ? `<${e.target.value}` : "";
-      const newValue = [currentAfter, newBefore]
-        .filter(Boolean)
-        .join(DATE_FILTER_CUSTOM_SEPARATOR);
-      updateDateParam(newValue);
+      updateParam(buildCustomDateFilterValue(afterDate, e.target.value));
     },
-    [afterDate, updateDateParam]
+    [afterDate, updateParam]
   );
 
   const id = `search-filter-${filter.name}-custom`;
 
   return (
     <>
-      <GroupSearchFilterRadioOrCheckboxElement
+      <SearchFilterRadioOrCheckboxElement
         identifier={id}
         isChecked={isCustom}
         onChange={onSelectCustom}
@@ -603,44 +591,24 @@ function DateFilterCustomOption({
         visualization={visualization}
       >
         Custom
-      </GroupSearchFilterRadioOrCheckboxElement>
+      </SearchFilterRadioOrCheckboxElement>
       {isCustom && (
         <div className={cx("d-flex", "flex-column", "gap-2", "mt-2", "ps-4")}>
-          <div>
-            <label
-              className={cx("form-label", "small", "mb-1")}
-              htmlFor={`${id}-after`}
-            >
-              From:
-            </label>
-            <input
-              className={cx("form-control", "form-control-sm")}
-              data-cy={`${id}-after`}
-              id={`${id}-after`}
-              max={beforeDate || today}
-              onChange={onChangeAfter}
-              type="date"
-              value={afterDate}
-            />
-          </div>
-          <div>
-            <label
-              className={cx("form-label", "small", "mb-1")}
-              htmlFor={`${id}-before`}
-            >
-              To:
-            </label>
-            <input
-              className={cx("form-control", "form-control-sm")}
-              data-cy={`${id}-before`}
-              id={`${id}-before`}
-              max={today}
-              min={afterDate || undefined}
-              onChange={onChangeBefore}
-              type="date"
-              value={beforeDate}
-            />
-          </div>
+          <SearchDateInput
+            id={`${id}-after`}
+            label="From:"
+            max={beforeDate || today}
+            onChange={onChangeAfter}
+            value={afterDate}
+          />
+          <SearchDateInput
+            id={`${id}-before`}
+            label="To:"
+            max={today}
+            min={afterDate || undefined}
+            onChange={onChangeBefore}
+            value={beforeDate}
+          />
         </div>
       )}
     </>

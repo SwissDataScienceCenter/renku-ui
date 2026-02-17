@@ -1,0 +1,46 @@
+/*!
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useCallback } from "react";
+import { useSearchParams } from "react-router";
+
+import { FILTER_PAGE } from "../contextSearch.constants";
+
+export function useSearchFilterParam(filterName: string) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentValue = searchParams.get(filterName) ?? "";
+
+  const updateParam = useCallback(
+    (newValue: string) => {
+      const params = new URLSearchParams(searchParams);
+      if (newValue) {
+        params.set(filterName, newValue);
+      } else {
+        params.delete(filterName);
+      }
+      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
+      if (params.get(FILTER_PAGE.name) !== pageDefaultValue) {
+        params.set(FILTER_PAGE.name, pageDefaultValue);
+      }
+      setSearchParams(params);
+    },
+    [filterName, searchParams, setSearchParams]
+  );
+
+  return { currentValue, updateParam };
+}
