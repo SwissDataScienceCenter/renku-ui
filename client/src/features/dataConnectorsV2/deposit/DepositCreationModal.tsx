@@ -101,8 +101,8 @@ export default function DepositCreationModal({
     <Modal centered data-cy="deposit-creation-modal" isOpen={isOpen} size="lg">
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader tag="h2">
-          <Database className={cx("bi", "me-1")} /> Export files as a new
-          dataset
+          <Database className={cx("bi", "me-1")} />
+          Export files as a new dataset
         </ModalHeader>
         <ModalBody>
           {result.error && <RtkOrNotebooksError error={result.error} />}

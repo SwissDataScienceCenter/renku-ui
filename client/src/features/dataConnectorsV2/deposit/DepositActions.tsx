@@ -67,12 +67,17 @@ export default function DepositActions({
     setIsLogsModalOpen((open) => !open);
   }, []);
 
+  const [isFinalizationModalOpen, setIsFinalizationModalOpen] = useState(false);
+  const toggleFinalizationModalOpen = useCallback(() => {
+    setIsFinalizationModalOpen((open) => !open);
+  }, []);
+
   const actions = [
     ...(deposit.status === "complete"
       ? [
           {
             key: "deposit-finalize-button",
-            onClick: () => {},
+            onClick: () => toggleFinalizationModalOpen(),
             content: (
               <>
                 <DatabaseLock className={cx("me-1", "bi")} />
@@ -132,6 +137,12 @@ export default function DepositActions({
         deposit={deposit}
         isOpen={isLogsModalOpen}
         toggleModal={toggleLogsModalOpen}
+      />
+
+      <DepositFinalizationModal
+        deposit={deposit}
+        isOpen={isFinalizationModalOpen}
+        toggleModal={toggleFinalizationModalOpen}
       />
     </>
   );
@@ -298,6 +309,38 @@ function DepositLogsModal({
           Refresh logs
         </Button>
 
+        <Button color="outline-primary" onClick={toggleModal}>
+          <XLg className={cx("bi", "me-1")} />
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+interface DepositFinalizationModalProps {
+  deposit: Deposit;
+  isOpen: boolean;
+  toggleModal: () => void;
+}
+function DepositFinalizationModal({
+  deposit,
+  toggleModal,
+  isOpen,
+}: DepositFinalizationModalProps) {
+  return (
+    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+      <ModalHeader tag="h2" toggle={toggleModal}>
+        <DatabaseLock className={cx("bi", "me-1")} />
+        Finalize deposit
+      </ModalHeader>
+      <ModalBody>
+        <p>
+          Finalize deposit <strong>{deposit.name}</strong>
+        </p>
+        <p>Deposit finalization is not implemented yet.</p>
+      </ModalBody>
+      <ModalFooter>
         <Button color="outline-primary" onClick={toggleModal}>
           <XLg className={cx("bi", "me-1")} />
           Close
