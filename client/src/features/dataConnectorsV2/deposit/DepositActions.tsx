@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import {
+  ArrowRepeat,
   DatabaseLock,
   FileEarmarkText,
   Trash,
@@ -26,9 +28,7 @@ import {
 } from "react-bootstrap-icons";
 import {
   Button,
-  ButtonGroup,
   DropdownItem,
-  DropdownMenu,
   Input,
   Modal,
   ModalBody,
@@ -36,9 +36,13 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import DropdownButton from "~/components/buttons/DropdownButton";
 import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
 import { Loader } from "~/components/Loader";
-import { Deposit } from "../api/data-connectors.api";
+import {
+  Deposit,
+  useGetDepositByDepositIdQuery,
+} from "../api/data-connectors.api";
 import { useDeleteDepositByDepositIdMutation } from "../api/data-connectors.enhanced-api";
 
 interface DepositActionsProps {
@@ -58,6 +62,11 @@ export default function DepositActions({
     setIsDeleteModalOpen(false);
   }, [toggleDepositView]);
 
+  const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
+  const toggleLogsModalOpen = useCallback(() => {
+    setIsLogsModalOpen((open) => !open);
+  }, []);
+
   const actions = [
     ...(deposit.status === "complete"
       ? [
@@ -76,7 +85,7 @@ export default function DepositActions({
     ...[
       {
         key: "deposit-show-logs-button",
-        onClick: () => {},
+        onClick: () => toggleLogsModalOpen(),
         content: (
           <>
             <FileEarmarkText className={cx("bi", "me-1")} />
@@ -118,52 +127,13 @@ export default function DepositActions({
         onDelete={onDelete}
         toggleModal={toggleDeleteModalOpen}
       />
+
+      <DepositLogsModal
+        deposit={deposit}
+        isOpen={isLogsModalOpen}
+        toggleModal={toggleLogsModalOpen}
+      />
     </>
-  );
-}
-
-interface DropdownButtonProps {
-  children?: React.ReactNode;
-  color?: string;
-  dataCy?: string;
-  primaryButtonContent: React.ReactNode;
-  primaryButtonOnclick: () => void;
-  size?: "sm" | "lg";
-}
-function DropdownButton({
-  children,
-  color = "outline-primary",
-  dataCy = "dropdown-button",
-  primaryButtonContent,
-  primaryButtonOnclick,
-  size,
-}: DropdownButtonProps) {
-  return (
-    <ButtonGroup data-cy={dataCy}>
-      <Button
-        color={color}
-        data-cy={`${dataCy}-main`}
-        size={size}
-        onClick={primaryButtonOnclick}
-      >
-        {primaryButtonContent}
-      </Button>
-
-      <Button
-        aria-expanded="false"
-        className={cx("dropdown-toggle", "dropdown-toggle-split")}
-        color={color}
-        data-bs-toggle="dropdown"
-        data-cy={`${dataCy}-toggle`}
-        size={size}
-      >
-        <span className="visually-hidden">Toggle Dropdown</span>
-      </Button>
-
-      <DropdownMenu tag="ul" data-cy={`${dataCy}-menu`}>
-        {children}
-      </DropdownMenu>
-    </ButtonGroup>
   );
 }
 
@@ -173,7 +143,6 @@ interface DepositRemovalModalProps {
   onDelete: () => void;
   toggleModal: () => void;
 }
-
 function DepositRemovalModal({
   deposit,
   onDelete,
@@ -186,7 +155,7 @@ function DepositRemovalModal({
   const [typedName, setTypedName] = useState("");
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTypedName(e.target.value.trim());
+      setTypedName(e.target.value);
     },
     [setTypedName]
   );
@@ -206,6 +175,7 @@ function DepositRemovalModal({
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
       <ModalHeader className="text-danger" tag="h2" toggle={toggleModal}>
+        <Trash className={cx("bi", "me-1")} />
         Delete deposit
       </ModalHeader>
       <ModalBody>
@@ -214,8 +184,8 @@ function DepositRemovalModal({
         ) : (
           <>
             <p>
-              Are you sure you want to delete this deposit? This action cannot
-              be undone.
+              Are you sure you want to delete this deposit?{" "}
+              <strong>This action cannot be undone.</strong>
             </p>
             <p>
               Please type the deposit name <strong>{deposit.name}</strong> to
@@ -243,7 +213,7 @@ function DepositRemovalModal({
 
         <Button
           color="danger"
-          disabled={isLoading || typedName !== deposit.name.trim()}
+          disabled={isLoading || typedName.trim() !== deposit.name.trim()}
           data-cy="delete-deposit-modal-button"
           type="submit"
           onClick={onDeleteDeposit}
@@ -259,6 +229,78 @@ function DepositRemovalModal({
               Delete deposit
             </>
           )}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+interface RefreshLogsParagraphProps {
+  refetch: () => void;
+}
+function RefreshLogsParagraph({ refetch }: RefreshLogsParagraphProps) {
+  return (
+    <>
+      <p>
+        You can try to{" "}
+        <Button color="primary" onClick={refetch} size="sm">
+          Refresh logs
+        </Button>{" "}
+        .
+      </p>
+    </>
+  );
+}
+
+interface DepositLogsModalProps {
+  deposit: Deposit;
+  isOpen: boolean;
+  toggleModal: () => void;
+}
+function DepositLogsModal({
+  deposit,
+  toggleModal,
+  isOpen,
+}: DepositLogsModalProps) {
+  const { data, error, refetch, isLoading } = useGetDepositByDepositIdQuery(
+    deposit.id ? { depositId: deposit.id } : skipToken
+  );
+
+  return (
+    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+      <ModalHeader tag="h2" toggle={toggleModal}>
+        <FileEarmarkText className={cx("bi", "me-1")} /> Deposit logs
+      </ModalHeader>
+      <ModalBody>
+        {isLoading ? (
+          <Loader />
+        ) : error ? (
+          <>
+            <p>There was an error fetching the deposit logs.</p>
+            <RefreshLogsParagraph refetch={refetch} />
+            <RtkOrNotebooksError error={error} />
+          </>
+        ) : !data ? (
+          <>
+            <p>No logs available for this deposit yet.</p>
+            <RefreshLogsParagraph refetch={refetch} />
+          </>
+        ) : (
+          <>
+            <p>Deposit logs</p>
+            <pre className="overflow-auto">{"LOGS HERE"}</pre>
+          </>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button disabled={isLoading} color="outline-primary" onClick={refetch}>
+          <ArrowRepeat className={cx("bi", "me-1")} />
+          Refresh logs
+        </Button>
+
+        <Button color="outline-primary" onClick={toggleModal}>
+          <XLg className={cx("bi", "me-1")} />
+          Close
         </Button>
       </ModalFooter>
     </Modal>
