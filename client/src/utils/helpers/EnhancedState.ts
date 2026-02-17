@@ -41,7 +41,6 @@ import dataConnectorFormSlice from "../../features/dataConnectorsV2/state/dataCo
 import { displaySlice } from "../../features/display/displaySlice";
 import { platformEmptyApi as platformApi } from "../../features/platform/api/platform-empty.api";
 import { statuspageEmptyApi as statuspageApi } from "../../features/platform/statuspage-api/statuspage-empty.api";
-import { projectsApi } from "../../features/projects/projects.api";
 import { projectV2Api } from "../../features/projectsV2/api/projectV2.enhanced-api";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { repositoriesApi } from "../../features/repositories/api/repositories.api";
@@ -82,7 +81,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [notificationsApi.reducerPath]: notificationsApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
-    [projectsApi.reducerPath]: projectsApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
@@ -112,7 +110,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(notificationsApi.middleware)
         .concat(platformApi.middleware)
         .concat(projectCloudStorageApi.middleware)
-        .concat(projectsApi.middleware)
         .concat(projectV2Api.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(repositoriesApi.middleware)
