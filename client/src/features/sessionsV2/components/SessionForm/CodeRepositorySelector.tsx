@@ -199,19 +199,49 @@ const selectClassNames: ClassNamesConfig<GetRepositoriesApiResponse, false> = {
   singleValue: () => cx("px-3"),
 };
 
-interface OptionOrSingleValueContentProps {
+interface OptionValueContentProps {
   option: GetRepositoriesApiResponse;
+  isDisabled?: boolean;
 }
 
-function OptionOrSingleValueContent({
-  option,
-}: OptionOrSingleValueContentProps) {
+function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
+  const title = getRepositoryName(option.url);
   return (
     <>
-      <span>{option.url}</span>
-      {(option.data?.status !== "valid" ||
-        option.data.metadata?.visibility !== "public") && (
-        <span>
+      <div>
+        <span
+          className={cx(
+            "fw-bold",
+            isDisabled && "text-decoration-line-through"
+          )}
+        >
+          {title}
+        </span>
+        {isDisabled && (
+          <span className="ms-1">
+            <XLg className={cx("bi", "me-1")} />
+            No public access
+          </span>
+        )}
+      </div>
+      <div>{option.url}</div>
+    </>
+  );
+}
+
+interface SingleValueContentProps {
+  option: GetRepositoriesApiResponse;
+  isDisabled?: boolean;
+}
+
+function SingleValueContent({ option, isDisabled }: SingleValueContentProps) {
+  return (
+    <>
+      <span className={cx(isDisabled && "text-decoration-line-through")}>
+        {option.url}
+      </span>
+      {isDisabled && (
+        <span className="ms-1">
           <XLg className={cx("bi", "me-1")} />
           No public access
         </span>
@@ -239,12 +269,10 @@ const selectComponents: SelectComponentsConfig<
       GroupBase<GetRepositoriesApiResponse>
     >
   ) => {
-    const { data } = props;
-    const title = getRepositoryName(data.url);
+    const { data, isDisabled } = props;
     return (
       <components.Option {...props}>
-        <div className="fw-bold">{title}</div>
-        <div>{data.url}</div>
+        <OptionValueContent option={data} isDisabled={isDisabled} />
       </components.Option>
     );
   },
@@ -255,10 +283,10 @@ const selectComponents: SelectComponentsConfig<
       GroupBase<GetRepositoriesApiResponse>
     >
   ) => {
-    const { data } = props;
+    const { data, isDisabled } = props;
     return (
       <components.SingleValue {...props}>
-        <OptionOrSingleValueContent option={data} />
+        <SingleValueContent option={data} isDisabled={isDisabled} />
       </components.SingleValue>
     );
   },
