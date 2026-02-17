@@ -16,9 +16,11 @@
  * limitations under the License
  */
 
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useRef, useState } from "react";
-import { Database, PlusLg } from "react-bootstrap-icons";
+import { Database, Gear, PlusLg } from "react-bootstrap-icons";
 import {
   Badge,
   Button,
@@ -30,14 +32,17 @@ import {
 } from "reactstrap";
 
 import {
-  type DataConnectorToProjectLink,
-  type GetProjectsByProjectIdDataConnectorLinksApiResponse,
+  DataConnectorToProjectLink,
+  DepositList,
+  GetProjectsByProjectIdDataConnectorLinksApiResponse,
 } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
   useGetDataConnectorsByDataConnectorIdQuery,
+  useGetDepositQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import DepositListItem from "~/features/dataConnectorsV2/deposit/DepositListItem";
 import { ErrorAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -56,26 +61,45 @@ interface DataConnectorListDisplayProps {
 export default function ProjectDataConnectorsBox({
   project,
 }: DataConnectorListDisplayProps) {
-  const { data, error, isLoading } =
-    useGetProjectsByProjectIdDataConnectorLinksQuery({
-      projectId: project.id,
-    });
+  const {
+    data: projectDataConnectors,
+    error: errorProjectDataConnectors,
+    isLoading: isLoadingProjectDataConnectors,
+  } = useGetProjectsByProjectIdDataConnectorLinksQuery({
+    projectId: project.id,
+  });
 
   const {
-    data: inaccessibleDataConnectorsData,
-    isLoading: inaccessibleDataConnectorsIsLoading,
+    data: deposits,
+    error: errorDeposits,
+    isLoading: isLoadingDeposits,
+    refetch: refetchDeposits,
+  } = useGetDepositQuery();
+
+  const {
+    data: inaccessibleDataConnectors,
+    isLoading: isLoadingInaccessibleDataConnectors,
   } = useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery({
     projectId: project.id,
   });
 
-  if (isLoading || inaccessibleDataConnectorsIsLoading)
+  if (
+    isLoadingProjectDataConnectors ||
+    isLoadingDeposits ||
+    isLoadingInaccessibleDataConnectors
+  )
     return <DataConnectorLoadingBoxContent />;
 
-  if (error) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+  if (errorProjectDataConnectors) {
+    return (
+      <RtkOrNotebooksError
+        error={errorProjectDataConnectors}
+        dismissible={false}
+      />
+    );
   }
 
-  if (data == null) {
+  if (projectDataConnectors == null) {
     return (
       <ErrorAlert>
         Data connectors could not be loaded from the API, please contact a Renku
@@ -86,22 +110,29 @@ export default function ProjectDataConnectorsBox({
 
   return (
     <ProjectDataConnectorBoxContent
-      data={data}
+      dataConnectors={projectDataConnectors}
+      deposits={deposits}
+      depositsError={errorDeposits}
+      depositsRefetch={refetchDeposits}
       project={project}
-      inaccessibleDataConnectorsCount={
-        inaccessibleDataConnectorsData?.count || 0
-      }
+      inaccessibleDataConnectorsCount={inaccessibleDataConnectors?.count || 0}
     />
   );
 }
 
 interface ProjectDataConnectorBoxContentProps
   extends DataConnectorListDisplayProps {
-  data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
+  dataConnectors: GetProjectsByProjectIdDataConnectorLinksApiResponse;
+  deposits?: DepositList;
+  depositsError?: FetchBaseQueryError | SerializedError;
+  depositsRefetch: () => void;
   inaccessibleDataConnectorsCount: number;
 }
 function ProjectDataConnectorBoxContent({
-  data,
+  dataConnectors,
+  deposits,
+  // ! TODO: depositsError,
+  // ! TODO: depositsRefetch,
   project,
   inaccessibleDataConnectorsCount,
 }: ProjectDataConnectorBoxContentProps) {
@@ -109,25 +140,51 @@ function ProjectDataConnectorBoxContent({
   const toggleOpen = useCallback(() => {
     setModalOpen((open) => !open);
   }, []);
+
+  // ! TEMP
+  const deposits2 = [
+    ...([
+      {
+        name: "Mock deposit 1",
+        provider: "zenodo",
+        data_connector_id: "mock-data-connector-id1",
+        path: "/some/path",
+        id: "mock-deposit-id1",
+        status: "complete",
+        external_url: "https://zenodo.org/deposit/1234567",
+      },
+      {
+        name: "Mock deposit 2",
+        provider: "zenodo",
+        data_connector_id: "mock-data-connector-id2",
+        path: "/another/path",
+        id: "mock-deposit-id2",
+        status: "in_progress",
+        external_url: "https://zenodo.org/deposit/1234568",
+      },
+    ] as DepositList),
+    ...(deposits ?? []),
+  ];
+
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Card className="h-100" data-cy="data-connector-box">
         <ProjectDataConnectorBoxHeader
           projectId={project.id}
           toggleOpen={toggleOpen}
-          accessibleDataConnectorsCount={data.length}
+          accessibleDataConnectorsCount={dataConnectors.length}
           inaccessibleDataConnectorsCount={inaccessibleDataConnectorsCount}
         />
         <CardBody>
-          {data.length === 0 && (
+          {dataConnectors.length === 0 && (
             <p className={cx("m-0", "text-body-secondary")}>
               Add published datasets from data repositories, and connect to
               cloud storage to read and write custom data.
             </p>
           )}
-          {data != null && data.length > 0 && (
+          {dataConnectors != null && dataConnectors.length > 0 && (
             <ListGroup flush>
-              {data.map((dc) => (
+              {dataConnectors.map((dc) => (
                 <DataConnectorLinkDisplay
                   key={dc.id}
                   dataConnectorLink={dc}
@@ -135,6 +192,27 @@ function ProjectDataConnectorBoxContent({
                 />
               ))}
             </ListGroup>
+          )}
+        </CardBody>
+        <CardBody className="border-top">
+          {(deposits ?? deposits2) && (deposits ?? deposits2).length > 0 && (
+            <div>
+              <h3 className="fw-semibold">
+                <Gear className={cx("bi", "me-1")} />
+                Dataset export jobs
+              </h3>
+              <p className="text-body-secondary">
+                Dataset creation can be kickstarted from data connectors. They
+                need to be finalized manually on the target platform.
+              </p>
+              <ListGroup data-cy="deposit-list" flush>
+                {(deposits ?? deposits2).map((deposit) => (
+                  <DepositListItem deposit={deposit} key={deposit.id} />
+                ))}
+              </ListGroup>
+
+              {/* <p>Here</p> */}
+            </div>
           )}
         </CardBody>
       </Card>
