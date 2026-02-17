@@ -17,7 +17,6 @@
  */
 
 export interface AnonymousHomeConfig {
-  // client: unknown;
   homeCustomized: HomepageParams;
   // model: unknown;
   params: {
