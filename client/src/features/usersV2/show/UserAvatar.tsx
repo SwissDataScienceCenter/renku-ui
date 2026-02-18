@@ -109,11 +109,11 @@ export default function UserAvatar({
         ? `${first.slice(0, 1)}${second.slice(0, 1)}`
         : (name || slug).slice(0, 2) || "??";
     }
-    return namespaceSlug.slice(0, 2) || "??";
+    return namespaceSlug?.slice(0, 2) || "??";
   }, [group, namespaceSlug, user]);
   const initialsUpper = useMemo(() => initials.toUpperCase(), [initials]);
 
-  const randomPastelColor = generatePastelColor(namespaceSlug);
+  const randomPastelColor = generatePastelColor(namespaceSlug ?? "");
 
   return (
     <div

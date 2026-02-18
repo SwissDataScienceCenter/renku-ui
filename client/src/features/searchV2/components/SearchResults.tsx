@@ -36,7 +36,7 @@ import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import Pagination from "~/components/Pagination";
 import { TimeCaption } from "~/components/TimeCaption";
-import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api.ts";
+import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api";
 import ShowGlobalDataConnector from "~/features/searchV2/components/ShowGlobalDataConnector";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
@@ -140,6 +140,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
         "list-group-item-action"
       )}
       to={url}
+      data-cy="search-list-item"
     >
       <Row className="g-2">
         <Col xs="auto">

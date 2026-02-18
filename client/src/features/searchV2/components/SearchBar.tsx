@@ -41,8 +41,6 @@ export default function SearchBar() {
     defaultValues: { query },
   });
 
-  // Track whether the URL change was triggered by the user's own submit,
-  // so we can keep the raw input as-is in that case.
   const isSubmittingRef = useRef(false);
 
   // Reset the input to match the URL query, but only for external changes
@@ -99,8 +97,8 @@ export default function SearchBar() {
             render={({ field }) => (
               <input
                 className="form-control"
-                data-cy="group-search-query-input"
-                id="group-search-query-input"
+                data-cy="search-query-input"
+                id="search-query-input"
                 type="text"
                 placeholder="Search..."
                 {...field}
@@ -116,17 +114,17 @@ export default function SearchBar() {
               "border-bottom",
               "shadow-none"
             )}
-            data-cy="group-search-button"
+            data-cy="search-clear-button"
             onClick={onClear}
-            id="group-search-button"
+            id="search-button"
             type="button"
           >
             <XCircleFill className={cx("bi")} />
           </Button>
           <Button
             color="primary"
-            data-cy="group-search-button"
-            id="group-search-button"
+            data-cy="search-query-button"
+            id="search-button"
             type="submit"
           >
             <Search className={cx("bi", "me-1")} /> Search

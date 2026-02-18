@@ -85,9 +85,9 @@ export function SearchV2<T extends FixturesConstructor>(Parent: T) {
         let body = null;
         const queryString = req.query["q"].toString();
         if (queryString.includes("type:")) {
-          if (queryString.includes("type:project,user")) {
+          if (queryString.includes("type:Project,User")) {
             body = getBody([...bodyProjects, ...bodyUsers]);
-          } else if (queryString.includes("type:user")) {
+          } else if (queryString.includes("type:User")) {
             body = getBody(bodyUsers);
           } else {
             body = getBody(bodyProjects);
