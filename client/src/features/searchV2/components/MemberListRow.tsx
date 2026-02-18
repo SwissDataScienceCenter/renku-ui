@@ -18,9 +18,8 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { UncontrolledTooltip } from "reactstrap";
 
-import UserAvatar from "~/features/usersV2/show/UserAvatar";
+import UserAvatar, { OverflowBadge } from "~/features/usersV2/show/UserAvatar";
 
 // Size of the "+n" overflow badge
 const OVERFLOW_BADGE_WIDTH = 44;
@@ -153,44 +152,5 @@ export default function MemberListRow({ members }: MemberListRowProps) {
         />
       )}
     </div>
-  );
-}
-
-interface OverflowBadgeProps {
-  count: number;
-  hiddenMembers: {
-    first_name?: string;
-    last_name?: string;
-  }[];
-}
-
-function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  return (
-    <>
-      <div
-        ref={ref}
-        className={cx(
-          "align-content-center",
-          "border",
-          "flex-shrink-0",
-          "rounded-circle",
-          "text-center",
-          "text-black"
-        )}
-        style={{
-          width: 28,
-          height: 28,
-        }}
-      >
-        +{count}
-      </div>
-      <UncontrolledTooltip target={ref}>
-        {hiddenMembers
-          .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
-          .join(", ")}
-      </UncontrolledTooltip>
-    </>
   );
 }
