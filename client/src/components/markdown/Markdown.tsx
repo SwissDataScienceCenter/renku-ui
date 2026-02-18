@@ -30,6 +30,8 @@ import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-light.min.css";
 
+// TODO: Update thy images
+
 type MarkdownProps = Options & {
   children?: string;
   sanitize?: boolean;
