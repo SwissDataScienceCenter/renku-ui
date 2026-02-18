@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 import { type MetaDescriptor } from "react-router";
 
-import PrivacyPolicy from "~/help/PrivacyPolicy";
+import PrivacyPolicy from "~/features/help/PrivacyPolicy";
 import { DEFAULT_META } from "~/root";
 
 const TITLE = "Privacy Policy | Help | Renku";

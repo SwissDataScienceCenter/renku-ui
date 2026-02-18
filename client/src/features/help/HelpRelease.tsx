@@ -22,7 +22,7 @@ import { Col, Row } from "reactstrap";
 
 import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
-import { parseChartVersion } from "~/help/release.utils";
+import { parseChartVersion } from "~/features/help/release.utils";
 import { Links } from "~/utils/constants/Docs";
 import { RenkuRepositories } from "~/utils/constants/Repositories";
 import AppContext from "~/utils/context/appContext";

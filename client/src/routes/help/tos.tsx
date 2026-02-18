@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 import { type MetaDescriptor } from "react-router";
 
-import TermsOfService from "~/help/TermsOfService";
+import TermsOfService from "~/features/help/TermsOfService";
 import { DEFAULT_META } from "~/root";
 
 const TITLE = "Terms of Service | Help | Renku";

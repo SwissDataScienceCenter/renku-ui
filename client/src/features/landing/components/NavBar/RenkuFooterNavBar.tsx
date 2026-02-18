@@ -23,7 +23,7 @@ import { Link, useLocation, useMatch } from "react-router";
 import { ExternalDocsLink } from "~/components/LegacyExternalLinks";
 import { RENKU_LOGO } from "~/components/navbar/navbar.constants";
 import RenkuNavLinkV2 from "~/components/RenkuNavLinkV2";
-import { parseChartVersion } from "~/help/release.utils";
+import { parseChartVersion } from "~/features/help/release.utils";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { Links } from "~/utils/constants/Docs";
 import AppContext from "~/utils/context/appContext";

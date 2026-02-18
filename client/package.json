@@ -6,7 +6,7 @@
     "start": "NODE_OPTIONS='--import ./instrument.server.mjs' react-router dev --port 3000",
     "start:strict-port": "NODE_OPTIONS='--import ./instrument.server.mjs' react-router dev --port 3000 --strictPort",
     "build": "react-router typegen && tsc && NODE_OPTIONS=--max-old-space-size=4096 react-router build",
-    "build:analyze": "react-router typegen && NODE_OPTIONS=--max-old-space-size=4096 vite-bundle-visualizer",
+    "build:analyze": "react-router typegen && tsc && NODE_OPTIONS=--max-old-space-size=4096 vite-bundle-visualizer",
     "preview": "NODE_OPTIONS='--import ./instrument.server.mjs' node ./server.js",
     "test": "vitest",
     "lint": "eslint --max-warnings=0 src/",
