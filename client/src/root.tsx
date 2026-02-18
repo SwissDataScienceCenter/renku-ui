@@ -83,28 +83,6 @@ type ServerLoaderReturn_ =
 type ServerLoaderReturn = ReturnType<typeof data<ServerLoaderReturn_>>;
 
 export async function loader(): Promise<ServerLoaderReturn> {
-  //? How to server-side load data for GET /api/data/user
-  // let user: UserInfo | null = null;
-  // const cookie = request.headers.get("cookie");
-  // if (cookie != null && cookie.includes("_renku_session")) {
-  //   const userUrl = new URL(CONFIG_JSON.GATEWAY_URL + "/data/user");
-  //   const response = await fetch(userUrl.toString(), {
-  //     headers: { cookie },
-  //   });
-  //   if (response.status >= 200 && response.status < 300) {
-  //     const userData = await response.json();
-  //     user = {
-  //       ...userData,
-  //       isLoggedIn: true,
-  //     } satisfies LoggedInUserInfo;
-  //   } else {
-  //     user = {
-  //       isLoggedIn: false,
-  //     } satisfies AnonymousUserInfo;
-  //   }
-  // }
-  // console.log({ user });
-
   const clientSideFetch =
     process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
   if (clientSideFetch) {
@@ -185,8 +163,6 @@ export function Layout({ children }: { children: ReactNode }) {
         />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
 
-        {/* <link rel="stylesheet" type="text/css" href={v2Styles} /> */}
-
         <Meta />
         <Links />
       </head>
@@ -196,9 +172,6 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
         <Scripts />
         <ScrollRestoration />
-        {/* <LazyBootstrap /> */}
-        {/* <script type="module" async src={popperCore} />
-        <script type="module" async src={bootstrap} /> */}
       </body>
     </html>
   );
