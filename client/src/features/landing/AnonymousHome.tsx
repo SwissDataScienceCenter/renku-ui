@@ -29,7 +29,6 @@ import { Col, Row } from "reactstrap";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
-import { Url } from "../../utils/helpers/url";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import VisualHead from "./assets/Visual_Head.svg";
 import { BottomNav, TopNav } from "./components/anonymousHomeNav";
@@ -109,16 +108,11 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
   );
 }
 
-function AnonymousHomeInner(props: Omit<AnonymousHomeConfig, "urlMap">) {
-  const urlMap = {
-    siteStatusUrl: Url.get(Url.pages.help.status),
-  };
-  const p = { ...props, urlMap };
-
+function AnonymousHomeInner(props: AnonymousHomeConfig) {
   return (
     <div id="rk-anon-home-frame">
       {props.homeCustomized.custom.enabled ? (
-        <CustomizedAnonymousHome {...p} />
+        <CustomizedAnonymousHome {...props} />
       ) : (
         <StandardHome />
       )}

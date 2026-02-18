@@ -21,9 +21,6 @@ export interface AnonymousHomeConfig {
   params: {
     UI_SHORT_SHA: string;
   };
-  urlMap: {
-    siteStatusUrl: string;
-  };
 }
 
 export interface HomepageParams {
