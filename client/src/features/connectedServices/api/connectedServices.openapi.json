@@ -313,6 +313,37 @@
         "tags": ["oauth2"]
       }
     },
+    "/oauth2/connections/{connection_id}/token": {
+      "get": {
+        "summary": "Get the access token for a specific OAuth2 connection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The access token and its metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuth2Token"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    },
     "/oauth2/connections/{connection_id}/installations": {
       "get": {
         "summary": "Get the installations for this OAuth2 connection for the currently authenticated user if their account is connected",
@@ -374,6 +405,47 @@
                 "required": true,
                 "schema": {
                   "type": "integer"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["oauth2"]
+      }
+    },
+    "/oauth2/connections/{connection_id}/token_endpoint": {
+      "post": {
+        "summary": "OAuth 2.0 token endpoint to support applications running in sessions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connection_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The access token and its metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostTokenResponse"
                 }
               }
             }
@@ -552,7 +624,29 @@
             "$ref": "#/components/schemas/WebUrl"
           }
         },
-        "required": ["username", "web_url"]
+        "required": ["username"]
+      },
+      "OAuth2Token": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "An access token for OAuth 2.0"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "id_token": {
+            "type": "string"
+          },
+          "expires_at_iso": {
+            "type": "string"
+          }
+        }
       },
       "AppInstallationList": {
         "type": "array",
@@ -587,6 +681,49 @@
           "account_login",
           "account_web_url",
           "repository_selection"
+        ]
+      },
+      "PostTokenRequest": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "grant_type": {
+            "$ref": "#/components/schemas/PostTokenGrantType"
+          },
+          "refresh_token": {
+            "type": "string"
+          }
+        },
+        "required": ["grant_type", "refresh_token"]
+      },
+      "PostTokenResponse": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "expires_in": {
+            "type": "integer"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "refresh_expires_in": {
+            "type": "integer"
+          },
+          "scope": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in",
+          "refresh_token"
         ]
       },
       "Ulid": {
@@ -681,6 +818,11 @@
         "type": "string",
         "description": "The URL for OpenID Connect client discovery. Used for providers of kind 'generic_oidc'.\n",
         "example": "https://renkulab.io/auth/realms/Renku"
+      },
+      "PostTokenGrantType": {
+        "type": "string",
+        "description": "A grant type for OAuth 2.0 (see RFC 6749)",
+        "enum": ["refresh_token"]
       },
       "ErrorResponse": {
         "type": "object",
