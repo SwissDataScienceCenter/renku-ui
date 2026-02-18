@@ -15,7 +15,7 @@ import {
 } from "~/utils/constants/NewDocs";
 import { Links } from "../../utils/constants/Docs";
 
-import helpV2Styles from "~/features/dashboardV2/HelpV2.module.scss";
+import helpV2Styles from "./HelpV2.module.scss";
 
 export default function GettingHelp() {
   const cardClasses = cx("h-100", helpV2Styles.linkBgAction);
