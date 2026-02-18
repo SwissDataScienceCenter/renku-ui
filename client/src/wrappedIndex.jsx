@@ -1,138 +1,61 @@
-import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { connect, Provider } from "react-redux";
-import { BrowserRouter, useLocation, useNavigate } from "react-router";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router";
 
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 
 import App from "./App";
-import { LoginHelper } from "./authentication";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
-import ApiClientV2Compat from "./features/api-client-v2-compat/ApiClientV2Compat";
+import LoginHandler from "./features/loginHandler/LoginHandler";
 import { Maintenance } from "./features/maintenance/Maintenance";
-import { globalSchema, StateModel } from "./model";
-import { pollStatuspage } from "./statuspage";
-import { UserCoordinator } from "./user";
-import { validatedAppParams } from "./utils/context/appParams.utils";
+import { store } from "./store/store";
 import useFeatureFlagSync from "./utils/feature-flags/useFeatureFlagSync.hook";
-import { Sentry } from "./utils/helpers/sentry";
-import { Url } from "./utils/helpers/url";
+import SentryUserHandler from "./utils/helpers/sentry/SentryUserHandler";
 
+// TODO: move "bootstrap" handling to root.tsx
 import "bootstrap";
 import "~/styles/renku_bootstrap.scss";
 
 let hasRendered = false;
 
-export default function appIndex() {
+export default function appIndex(config) {
   if (!hasRendered) {
-    appIndexInner();
+    appIndexInner(config);
   }
   hasRendered = true;
 }
 
-function appIndexInner() {
-  const configFetch = fetch("/config.json");
+function appIndexInner(params) {
+  // NOTE: This creates a React app inside a React app
+  // TODO: Remove legacy side effects and render a single app
+  const container = document.getElementById("root");
+  const root = createRoot(container);
 
-  configFetch.then((valuesRead) => {
-    const configResp = valuesRead;
-    const configRead = configResp.json();
+  // show maintenance page when necessary
+  const maintenance = params.MAINTENANCE;
+  if (maintenance) {
+    root.render(
+      <Provider store={store}>
+        <Maintenance info={maintenance} />
+      </Provider>
+    );
+    return;
+  }
 
-    configRead.then((params_) => {
-      const container = document.getElementById("root");
-      const root = createRoot(container);
-
-      const params = validatedAppParams(params_);
-
-      // configure core api versioned url helper (only used if legacy support is enabled)
-      const coreApiVersionedUrlConfig = null;
-
-      // configure base url
-      Url.setBaseUrl(params.BASE_URL);
-
-      // create client to be passed to coordinators (only if legacy support is enabled)
-      const client = new ApiClientV2Compat(
-        `${params.BASE_URL}/api`,
-        params.UISERVER_URL
-      );
-
-      // Create the global model containing the formal schema definition and the redux store
-      const model = new StateModel(globalSchema);
-
-      // show maintenance page when necessary
-      const maintenance = params.MAINTENANCE;
-      if (maintenance) {
-        root.render(
-          <Provider store={model.reduxStore}>
-            <Maintenance info={maintenance} />
-          </Provider>
-        );
-        return;
-      }
-
-      // Query user data
-      const userCoordinator = client
-        ? new UserCoordinator(client, model.subModel("user"))
-        : null;
-      const userPromise = userCoordinator?.fetchUser();
-
-      // configure Sentry
-      let uiApplication = App;
-      if (params.SENTRY_URL) {
-        Sentry.init(
-          params.SENTRY_URL,
-          params.SENTRY_NAMESPACE,
-          userPromise,
-          params.UI_VERSION,
-          params.TELEPRESENCE,
-          params.SENTRY_SAMPLE_RATE,
-          [params.UISERVER_URL]
-        );
-        const profiler = !!params.SENTRY_SAMPLE_RATE;
-        if (profiler) uiApplication = Sentry.withProfiler(App);
-      }
-
-      // Set up polling
-      const statuspageId = params.STATUSPAGE_ID;
-      pollStatuspage(statuspageId, model);
-
-      // Map redux user data to the initial react application
-      function mapStateToProps(state, ownProps) {
-        return { user: state.stateModel.user, ...ownProps };
-      }
-
-      // Render UI application
-      const VisibleApp = connect(mapStateToProps)(uiApplication);
-      root.render(
-        <Provider store={model.reduxStore}>
-          <BrowserRouter>
-            <AppErrorBoundary>
-              <LoginHandler />
-              <FeatureFlagHandler />
-              <VisibleApp
-                client={client}
-                coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
-                params={params}
-                model={model}
-                statuspageId={statuspageId}
-              />
-            </AppErrorBoundary>
-          </BrowserRouter>
-        </Provider>
-      );
-    });
-  });
-}
-
-function LoginHandler() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    LoginHelper.handleLoginParams(location, navigate);
-  }, [location, navigate]);
-
-  return null;
+  // Render UI application
+  root.render(
+    <Provider store={store}>
+      <BrowserRouter>
+        <AppErrorBoundary>
+          <LoginHandler />
+          <SentryUserHandler />
+          <FeatureFlagHandler />
+          <App params={params} store={store} />
+        </AppErrorBoundary>
+      </BrowserRouter>
+    </Provider>
+  );
 }
 
 function FeatureFlagHandler() {

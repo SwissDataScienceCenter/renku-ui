@@ -19,26 +19,23 @@
 import { Link } from "react-router";
 import { DropdownItem } from "reactstrap";
 
+import DropdownItemTag from "~/components/navbar/DropdownItemTag";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 
 export default function AdminDropdownItem() {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
-  const { data: userInfo } = useGetUserQueryState();
-
-  if (!userLogged || !userInfo?.isLoggedIn || !userInfo.is_admin) {
+  if (!user?.isLoggedIn || !user.is_admin) {
     return null;
   }
 
   return (
     <>
       <DropdownItem divider />
-      <Link to="/admin" className="dropdown-item">
+      <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.admin}>
         Admin Panel
-      </Link>
+      </DropdownItemTag>
     </>
   );
 }

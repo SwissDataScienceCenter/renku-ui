@@ -2,16 +2,16 @@ import cx from "classnames";
 import { ArrowRight, BoxArrowUpRight } from "react-bootstrap-icons";
 import { Link } from "react-router";
 
-import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { WarnAlert } from "../../../components/Alert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import SunsetV1Button from "./SunsetV1Button";
 
 export default function SunsetBanner() {
-  const user = useLegacySelector((state) => state.stateModel.user);
-  const userLoggedIn = !!user?.data?.name;
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
-  const migrateProjectsMessage = userLoggedIn && (
+  const migrateProjectsMessage = isUserLoggedIn && (
     <p className="mb-2">
       Migrate your projects to Renku 2.0 to continue creating and managing your
       work.

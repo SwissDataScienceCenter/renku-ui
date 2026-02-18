@@ -21,8 +21,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BrowserRouter } from "react-router";
 import { Button, Col, Row } from "reactstrap";
 
-import { isStatusConfigured, StatuspageDisplay } from "../../statuspage";
+import AppContext, { type AppContextType } from "~/utils/context/appContext";
+import type { AppParams } from "~/utils/context/appParams.types";
 import { FooterNavbar } from "../landing/components/NavBar/NavBar";
+import StatusSummary from "../platform/components/StatusSummary";
 
 interface MaintenanceProps {
   info: string;
@@ -55,11 +57,13 @@ function Maintenance({ info }: MaintenanceProps) {
 }
 
 interface UnavailableProps {
-  model: unknown;
-  statuspageId: string;
+  params: AppParams;
 }
-function Unavailable(props: UnavailableProps) {
-  const statusLink = isStatusConfigured(props.statuspageId);
+function Unavailable({ params }: UnavailableProps) {
+  const statusLink = params.STATUSPAGE_ID;
+  const appContext: AppContextType = {
+    params,
+  };
 
   return (
     <main role="main" className="container-fluid">
@@ -77,7 +81,17 @@ function Unavailable(props: UnavailableProps) {
         </Col>
       </Row>
       {statusLink ? (
-        <UnavailableDetailsStatuspage model={props.model} />
+        <Row>
+          <Col
+            md={{ size: 10, offset: 1 }}
+            lg={{ size: 8, offset: 2 }}
+            xl={{ size: 8, offset: 3 }}
+          >
+            <AppContext.Provider value={appContext}>
+              <StatusSummary />
+            </AppContext.Provider>
+          </Col>
+        </Row>
       ) : (
         <UnavailableDetailsUnknown />
       )}
@@ -86,38 +100,20 @@ function Unavailable(props: UnavailableProps) {
 }
 
 function UnavailableDetailsUnknown() {
-  const reload = () => {
-    window.location.reload();
-  };
   return (
     <Row>
       <Col md={{ size: 6, offset: 3 }}>
         <p className="text-center">
           Please try to{" "}
-          <Button color="primary" size="sm" onClick={() => reload()}>
+          <Button
+            color="primary"
+            size="sm"
+            onClick={() => window.location.reload()}
+          >
             reload
           </Button>{" "}
           the application in a few minutes.
         </p>
-      </Col>
-    </Row>
-  );
-}
-
-interface UnavailableDetailsStatuspageProps {
-  model: unknown;
-}
-function UnavailableDetailsStatuspage({
-  model,
-}: UnavailableDetailsStatuspageProps) {
-  return (
-    <Row>
-      <Col
-        md={{ size: 10, offset: 1 }}
-        lg={{ size: 8, offset: 2 }}
-        xl={{ size: 8, offset: 3 }}
-      >
-        <StatuspageDisplay model={model} />
       </Col>
     </Row>
   );

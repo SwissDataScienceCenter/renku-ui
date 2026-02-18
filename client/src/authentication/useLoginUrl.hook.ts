@@ -21,7 +21,7 @@ import { useLocation } from "react-router";
 
 import AppContext from "../utils/context/appContext";
 import type { AppParams } from "../utils/context/appParams.types";
-import { RenkuQueryParams } from "./Authentication.container";
+import { RENKU_QUERY_PARAMS } from "./authentication.constants";
 
 interface UseLoginUrlArgs {
   params?: AppParams;
@@ -50,10 +50,10 @@ export function useLoginUrl(args?: UseLoginUrlArgs): URL {
     redirectUrl_ ?? windowLocationRef.current
       ? new URL(windowLocationRef.current)
       : null;
-  if (redirectUrl && !redirectUrl.search.includes(RenkuQueryParams.login)) {
+  if (redirectUrl && !redirectUrl.search.includes(RENKU_QUERY_PARAMS.login)) {
     redirectUrl.searchParams.append(
-      RenkuQueryParams.login,
-      RenkuQueryParams.loginValue
+      RENKU_QUERY_PARAMS.login,
+      RENKU_QUERY_PARAMS.loginValue
     );
   }
 

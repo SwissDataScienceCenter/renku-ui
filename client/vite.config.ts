@@ -4,6 +4,8 @@ import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+// import { sentryReactRouter } from "@sentry/react-router";
+
 // https://vitejs.dev/config/
 export default defineConfig(({ isSsrBuild }) => ({
   build: {
@@ -15,6 +17,23 @@ export default defineConfig(({ isSsrBuild }) => ({
     allowedHosts: [".dev.renku.ch"],
   },
   plugins: [reactRouter(), eslintPlugin(), tsconfigPaths()],
+
+  // TODO: configure Sentry integration for source maps
+  // TODO: Reference: https://docs.sentry.io/platforms/javascript/guides/react-router/manual-setup/#step-3-add-readable-stack-traces-with-source-maps-optional
+  // With Sentry release plugin
+  // plugins: [
+  //   reactRouter(),
+  //   eslintPlugin(),
+  //   tsconfigPaths(),
+  //   sentryReactRouter(
+  //     {
+  //       org: "renku",
+  //       project: "renku-ui",
+  //       authToken: process.env.SENTRY_AUTH_TOKEN,
+  //     },
+  //     config
+  //   ),
+  // ],
   resolve: {
     alias: {
       "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),

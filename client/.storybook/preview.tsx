@@ -3,39 +3,25 @@ import React from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 
+import { store } from "../src/store/store";
 import type { AppContextType } from "../src/utils/context/appContext";
 import AppContext from "../src/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../src/utils/context/appParams.constants";
-import { createStore } from "../src/utils/helpers/EnhancedState";
-import { createCoreApiVersionedUrlConfig } from "../src/utils/helpers/url";
 
 import "../src/styles/renku_bootstrap.scss";
-
-// This how the documentation recommends introducing the store into storybook
-// https://storybook.js.org/addons/@dreamworld/addon-redux/
-export const store = createStore({});
 
 export const decorators = [
   (Story) => {
     const appContext: AppContextType = {
-      client: {
-        baseUrl: "http://localhost",
-        uploadFileURL: () => "http://localhost",
-      },
-      coreApiVersionedUrlConfig: createCoreApiVersionedUrlConfig({
-        coreApiVersion: "/",
-      }),
-      location: "location",
-      model: undefined,
-      notifications: undefined,
       params: { ...DEFAULT_APP_PARAMS },
-      webSocket: undefined,
     };
     return (
       <MemoryRouter initialEntries={["/"]}>
         <AppContext.Provider value={appContext}>
           <Provider store={store}>
-            <Story />
+            <div style={{ fontFamily: "Inter" }}>
+              <Story />
+            </div>
           </Provider>
         </AppContext.Provider>
       </MemoryRouter>
@@ -56,6 +42,7 @@ const preview: Preview = {
     viewMode: "docs",
     docs: {
       toc: true,
+      inlineStories: true,
     },
     options: {
       storySort: {

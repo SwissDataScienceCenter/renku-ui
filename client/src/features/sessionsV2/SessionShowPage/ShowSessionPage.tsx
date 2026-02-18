@@ -43,15 +43,14 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
 import { Loader } from "../../../components/Loader";
 import EnvironmentLogsV2 from "../../../components/LogsV2";
 import { TimeCaption } from "../../../components/TimeCaption";
-import { User } from "../../../model/renkuModels.types";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { displaySlice, resetFavicon, setFavicon } from "../../display";
 import type { Project } from "../../projectsV2/api/projectV2.api";
@@ -423,13 +422,11 @@ interface PauseSessionBtnProps {
   openPauseSession: () => void;
 }
 function PauseSessionBtn({ openPauseSession }: PauseSessionBtnProps) {
-  const logged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
   const ref = useRef<HTMLButtonElement>(null);
 
-  if (!logged) {
+  if (!user?.isLoggedIn) {
     return null;
   }
   const buttonId = "pause-session-button";

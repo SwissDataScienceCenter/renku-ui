@@ -8,10 +8,17 @@
 
 import { useEffect, useState } from "react";
 
+// import type { Route } from "./routes/+types/catchall";
+import type { AppParams } from "./utils/context/appParams.types";
+
 // See: https://remix.run/docs/en/main/guides/migrating-react-router-app#client-only-components
 let isHydrating = true;
 
-export default function AppRoot() {
+interface AppRootProps {
+  params: AppParams;
+}
+
+export default function AppRoot({ params }: AppRootProps) {
   const [isHydrated, setIsHydrated] = useState(!isHydrating);
 
   useEffect(() => {
@@ -20,14 +27,14 @@ export default function AppRoot() {
   }, []);
 
   if (isHydrated) {
-    return <AppRootInner />;
+    return <AppRootInner params={params} />;
   }
   return null;
 }
 
-function AppRootInner() {
+function AppRootInner({ params }: AppRootProps) {
   useEffect(() => {
-    import("./wrappedIndex").then(({ default: render }) => render());
-  }, []);
+    import("./wrappedIndex").then(({ default: render }) => render(params));
+  }, [params]);
   return null;
 }
