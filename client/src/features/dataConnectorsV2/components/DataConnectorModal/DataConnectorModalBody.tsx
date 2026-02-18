@@ -305,6 +305,7 @@ export function DataConnectorMount({
     flatDataConnector.schema,
     flatDataConnector.provider
   );
+  const usesIntegration = !!schema?.usesIntegration;
   const secretFields =
     schemaOptions == null
       ? []
@@ -561,6 +562,7 @@ export function DataConnectorMount({
               </p>
             </InfoAlert>
           ) : !flatDataConnector.readOnly &&
+            !usesIntegration &&
             !hasPasswordFieldWithInput &&
             flatDataConnector.visibility === "public" ? (
             <ErrorAlert className="mt-1" dismissible={false}>
