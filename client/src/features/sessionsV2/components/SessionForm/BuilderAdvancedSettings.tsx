@@ -42,9 +42,9 @@ export default function BuilderAdvancedSettings({
   const {
     formState: { defaultValues },
   } = useController({ control, name: "platform" });
-  defaultValues?.platform;
   const isDefaultPlatform =
     defaultValues?.platform == null ||
+    defaultValues.platform === "" ||
     defaultValues.platform === BUILDER_PLATFORMS[0].value;
   const [isOpen, setIsOpen] = useState(!isDefaultPlatform);
   const toggleIsOpen = useCallback(

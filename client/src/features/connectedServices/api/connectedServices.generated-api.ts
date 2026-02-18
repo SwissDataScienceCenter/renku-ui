@@ -85,6 +85,14 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/oauth2/connections/${queryArg.connectionId}/account`,
       }),
     }),
+    getOauth2ConnectionsByConnectionIdToken: build.query<
+      GetOauth2ConnectionsByConnectionIdTokenApiResponse,
+      GetOauth2ConnectionsByConnectionIdTokenApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/oauth2/connections/${queryArg.connectionId}/token`,
+      }),
+    }),
     getOauth2ConnectionsByConnectionIdInstallations: build.query<
       GetOauth2ConnectionsByConnectionIdInstallationsApiResponse,
       GetOauth2ConnectionsByConnectionIdInstallationsApiArg
@@ -92,6 +100,16 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/oauth2/connections/${queryArg.connectionId}/installations`,
         params: { params: queryArg.params },
+      }),
+    }),
+    postOauth2ConnectionsByConnectionIdTokenEndpoint: build.mutation<
+      PostOauth2ConnectionsByConnectionIdTokenEndpointApiResponse,
+      PostOauth2ConnectionsByConnectionIdTokenEndpointApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/oauth2/connections/${queryArg.connectionId}/token_endpoint`,
+        method: "POST",
+        body: queryArg.postTokenRequest,
       }),
     }),
   }),
@@ -149,12 +167,23 @@ export type GetOauth2ConnectionsByConnectionIdAccountApiResponse =
 export type GetOauth2ConnectionsByConnectionIdAccountApiArg = {
   connectionId: string;
 };
+export type GetOauth2ConnectionsByConnectionIdTokenApiResponse =
+  /** status 200 The access token and its metadata. */ OAuth2Token;
+export type GetOauth2ConnectionsByConnectionIdTokenApiArg = {
+  connectionId: string;
+};
 export type GetOauth2ConnectionsByConnectionIdInstallationsApiResponse =
   /** status 200 The list of available GitHub installations. */ AppInstallationList;
 export type GetOauth2ConnectionsByConnectionIdInstallationsApiArg = {
   connectionId: string;
   /** Query parameters */
   params?: PaginationRequest;
+};
+export type PostOauth2ConnectionsByConnectionIdTokenEndpointApiResponse =
+  /** status 200 The access token and its metadata. */ PostTokenResponse;
+export type PostOauth2ConnectionsByConnectionIdTokenEndpointApiArg = {
+  connectionId: string;
+  postTokenRequest: PostTokenRequest;
 };
 export type ProviderId = string;
 export type ProviderKind =
@@ -230,7 +259,16 @@ export type ExternalUsername = string;
 export type WebUrl = string;
 export type ConnectedAccount = {
   username: ExternalUsername;
-  web_url: WebUrl;
+  web_url?: WebUrl;
+};
+export type OAuth2Token = {
+  /** An access token for OAuth 2.0 */
+  access_token?: string;
+  scope?: string;
+  token_type?: string;
+  id_token?: string;
+  expires_at_iso?: string;
+  [key: string]: any;
 };
 export type AppInstallation = {
   id: number;
@@ -245,4 +283,19 @@ export type PaginationRequest = {
   page?: number;
   /** The number of results per page */
   per_page?: number;
+};
+export type PostTokenResponse = {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+  refresh_expires_in?: number;
+  scope?: string;
+  [key: string]: any;
+};
+export type PostTokenGrantType = "refresh_token";
+export type PostTokenRequest = {
+  grant_type: PostTokenGrantType;
+  refresh_token: string;
+  [key: string]: any;
 };
