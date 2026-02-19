@@ -18,6 +18,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 
+import toastSlice from "~/components/toast/toast.slice";
 import adminKeycloakApi from "~/features/admin/adminKeycloak.api";
 import { projectCloudStorageEmptyApi as projectCloudStorageApi } from "~/features/cloudStorage/api/projectCloudStorage.empty-api";
 import { connectedServicesEmptyApi as connectedServicesApi } from "~/features/connectedServices/api/connectedServices.empty-api";
@@ -54,6 +55,7 @@ export const store = configureStore({
     [searchV2Slice.name]: searchV2Slice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
     [webSocketSlice.name]: webSocketSlice.reducer,
+    [toastSlice.name]: toastSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,

@@ -21,18 +21,18 @@ import { useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import ExternalLink from "~/components/ExternalLink";
+import { Loader } from "~/components/Loader";
+import { parseChartVersion } from "~/features/help/release.utils";
 import { Links } from "~/utils/constants/Docs";
+import { RenkuRepositories } from "~/utils/constants/Repositories";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
-import { Loader } from "../components/Loader";
 import {
   useGetCoreVersionsQuery,
   useGetDataServicesVersionQuery,
   useGetKgVersionQuery,
-} from "../features/versions/versions.api";
-import { RenkuRepositories } from "../utils/constants/Repositories";
-import AppContext from "../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../utils/context/appParams.constants";
-import { parseChartVersion } from "./release.utils";
+} from "../versions/versions.api";
 
 function componentDocsUrl(
   componentUrl: string,

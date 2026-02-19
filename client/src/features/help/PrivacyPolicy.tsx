@@ -23,11 +23,11 @@
 import { useContext } from "react";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
-import { WarnAlert } from "../components/Alert";
-import { Loader } from "../components/Loader";
-import { isValidMarkdownResponse } from "../components/markdown/utils";
-import { useGetPrivacyPolicyQuery } from "../features/terms/terms.api";
-import AppContext from "../utils/context/appContext";
+import { WarnAlert } from "../../components/Alert";
+import { Loader } from "../../components/Loader";
+import { isValidMarkdownResponse } from "../../components/markdown/utils";
+import AppContext from "../../utils/context/appContext";
+import { useGetPrivacyPolicyQuery } from "../terms/terms.api";
 
 export default function PrivacyPolicy() {
   const { params } = useContext(AppContext);

@@ -19,11 +19,11 @@
 import { useContext } from "react";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
-import { WarnAlert } from "../components/Alert";
-import { Loader } from "../components/Loader";
-import { isValidMarkdownResponse } from "../components/markdown/utils";
-import { useGetTermsOfUseQuery } from "../features/terms/terms.api";
-import AppContext from "../utils/context/appContext";
+import { WarnAlert } from "../../components/Alert";
+import { Loader } from "../../components/Loader";
+import { isValidMarkdownResponse } from "../../components/markdown/utils";
+import AppContext from "../../utils/context/appContext";
+import { useGetTermsOfUseQuery } from "../terms/terms.api";
 
 export default function TermsOfService() {
   const { params } = useContext(AppContext);
