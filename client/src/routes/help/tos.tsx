@@ -11,7 +11,7 @@ export function meta(): MetaDescriptor[] {
   return result;
 }
 
-export default function GettingHelpPage() {
+export default function TermsOfServicePage() {
   return (
     <>
       <Helmet>
