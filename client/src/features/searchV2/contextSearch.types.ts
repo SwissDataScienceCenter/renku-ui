@@ -29,6 +29,7 @@ interface FilterValue {
   label: ReactNode;
   quantity?: number;
   value: string;
+  id?: string;
 }
 
 type FilterType = "enum" | "number" | "string";

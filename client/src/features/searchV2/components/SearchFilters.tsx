@@ -393,7 +393,9 @@ function SearchFilterContent({
             {elementsToShow.map((element) => {
               return (
                 <SearchFilterRadioOrCheckboxElement
-                  identifier={`search-filter-${filter.name}-${element.value}`}
+                  identifier={`search-filter-${filter.name}-${
+                    element.id ?? element.value
+                  }`}
                   isChecked={
                     allowSelectMany
                       ? current

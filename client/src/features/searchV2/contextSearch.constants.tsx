@@ -277,22 +277,27 @@ export const FILTER_DATE: EnumFilter = {
     {
       value: "",
       label: <>All</>,
+      id: "any",
     },
     {
       value: ">today-7d",
       label: <>Last week</>,
+      id: "last-week",
     },
     {
       value: ">today-31d",
       label: <>Last month</>,
+      id: "last-month",
     },
     {
       value: ">today-90d",
       label: <>Last 90 days</>,
+      id: "last-90-days",
     },
     {
       value: "<today-90d",
       label: <>Older than 90 days</>,
+      id: "older-than-90-days",
     },
   ],
   allowSelectMany: false,
