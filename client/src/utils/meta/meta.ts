@@ -16,15 +16,10 @@
  * limitations under the License.
  */
 
-// import {
-//   DEFAULT_META_DESCRIPTION,
-//   DEFAULT_META_IMAGE,
-//   DEFAULT_META_LOCALE,
-//   DEFAULT_META_TITLE,
-//   DEFAULT_META_TITLE_SEPARATOR,
-// } from "./meta.constants";
+import { serverOnly$ } from "vite-env-only/macros";
 
 import renkuSocialCard from "~/styles/assets/renkuSocialCard.png";
+import { CONFIG_JSON } from "./config.constants.server";
 import type { MetaDescriptor } from "./meta.types";
 
 const DEFAULT_META_TITLE_SEPARATOR: string = " · ";
@@ -56,9 +51,7 @@ const DEFAULT_META_TITLE: string = makeMetaTitle([
 const _BASE_URL: string | undefined =
   typeof window === "object"
     ? window.location.origin
-    : await import("~server/constants").then(
-        ({ CONFIG_JSON }) => CONFIG_JSON.BASE_URL
-      );
+    : serverOnly$(CONFIG_JSON.BASE_URL);
 
 export function makeMeta({
   title = DEFAULT_META_TITLE,
