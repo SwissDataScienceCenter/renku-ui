@@ -30,6 +30,8 @@ import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-light.min.css";
 
+import styles from "./Markdown.module.scss";
+
 type MarkdownProps = Options & {
   children?: string;
   sanitize?: boolean;
@@ -99,7 +101,11 @@ export default function Markdown({
   ];
 
   return (
-    <div ref={containerRef}>
+    <div
+      ref={containerRef}
+      data-cy="renku-markdown"
+      className={styles.renkuMarkdown}
+    >
       <ReactMarkdown
         rehypePlugins={[...baseRehypePlugins, ...(rehypePlugins ?? [])]}
         remarkPlugins={[...baseRemarkPlugins]}

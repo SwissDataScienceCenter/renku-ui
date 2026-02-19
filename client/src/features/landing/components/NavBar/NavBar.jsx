@@ -28,7 +28,6 @@ import { useContext } from "react";
 import { Link, Route, Routes, useLocation } from "react-router";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import useLegacySelector from "~/utils/customHooks/useLegacySelector.hook";
 import { ExternalDocsLink } from "../../../../components/LegacyExternalLinks";
 import { RENKU_LOGO } from "../../../../components/navbar/navbar.constants";
 import RenkuNavLinkV2 from "../../../../components/RenkuNavLinkV2";
@@ -37,7 +36,6 @@ import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import { Links } from "../../../../utils/constants/Docs";
 import AppContext from "../../../../utils/context/appContext";
 import { isRenkuLegacy } from "../../../../utils/helpers/HelperFunctionsV2";
-import { Url } from "../../../../utils/helpers/url";
 import NavbarV2 from "../../../rootV2/NavbarV2";
 
 import "./NavBar.css";
@@ -54,21 +52,8 @@ function RenkuNavBar() {
 }
 
 function RenkuNavBarInner() {
-  const projectMetadata = useLegacySelector(
-    (state) => state.stateModel.project?.metadata
-  );
-  const sessionShowUrl =
-    projectMetadata == null
-      ? null
-      : Url.get(Url.pages.project.session.show, {
-          namespace: projectMetadata["namespace"],
-          path: projectMetadata["path"],
-          server: ":server",
-        });
-
   return (
     <Routes>
-      <Route path={sessionShowUrl} element={null} />
       <Route path="*" element={<NavbarV2 />} />
     </Routes>
   );
@@ -108,18 +93,6 @@ function FooterNavbar() {
 }
 
 function FooterNavbarInner() {
-  const location = useLocation();
-  const projectMetadata = useLegacySelector(
-    (state) => state.stateModel.project?.metadata
-  );
-  const sessionShowUrl =
-    projectMetadata == null
-      ? null
-      : Url.get(Url.pages.project.session.show, {
-          namespace: projectMetadata["namespace"],
-          path: projectMetadata["path"],
-          server: ":server",
-        });
   const { params } = useContext(AppContext);
 
   const privacyLink =
@@ -136,23 +109,11 @@ function FooterNavbarInner() {
       : isDevVersion
       ? `${taggedVersion} (dev)`
       : taggedVersion;
-  const isRenkuV1 = isRenkuLegacy(location.pathname, true);
-  const releaseLocation = isRenkuV1
-    ? ABSOLUTE_ROUTES.v1.help.release
-    : ABSOLUTE_ROUTES.v2.help.release;
+  const releaseLocation = ABSOLUTE_ROUTES.v2.help.release;
 
   const footer = (
     <footer className={cx("text-body", "bg-body")} data-bs-theme="navy">
-      <div
-        className={cx(
-          "flex-nowrap",
-          "navbar",
-          "px-2",
-          "px-sm-3",
-          "py-2",
-          isRenkuV1 && "bg-primary"
-        )}
-      >
+      <div className={cx("flex-nowrap", "navbar", "px-2", "px-sm-3", "py-2")}>
         <div className="navbar-nav">
           <span className="text-white">
             &copy; SDSC {new Date().getFullYear()}
@@ -181,7 +142,6 @@ function FooterNavbarInner() {
 
   return (
     <Routes key="footerNav">
-      <Route path={sessionShowUrl} element={null} />
       <Route
         path={ABSOLUTE_ROUTES.v2.projects.show.sessions.show}
         element={null}

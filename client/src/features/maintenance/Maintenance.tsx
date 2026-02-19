@@ -62,15 +62,7 @@ interface UnavailableProps {
 function Unavailable({ params }: UnavailableProps) {
   const statusLink = params.STATUSPAGE_ID;
   const appContext: AppContextType = {
-    client: undefined,
-    coreApiVersionedUrlConfig: {
-      coreApiVersion: "",
-      overrides: {},
-    },
-    location: undefined,
-    model: undefined,
     params,
-    webSocket: undefined,
   };
 
   return (

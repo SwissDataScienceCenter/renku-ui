@@ -21,7 +21,6 @@ import { lazy, Suspense } from "react";
 import PageLoader from "../../components/PageLoader";
 
 const HelpV2 = lazy(() => import("./HelpV2"));
-
 export default function LazyHelpV2() {
   return (
     <Suspense fallback={<PageLoader />}>

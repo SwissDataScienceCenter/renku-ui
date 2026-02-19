@@ -400,9 +400,13 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
   return (
     <CardText>
       Account:{" "}
-      <ExternalLink role="text" url={account.web_url}>
-        {text}
-      </ExternalLink>
+      {account.web_url ? (
+        <ExternalLink role="text" url={account.web_url}>
+          {text}
+        </ExternalLink>
+      ) : (
+        text
+      )}
     </CardText>
   );
 }
