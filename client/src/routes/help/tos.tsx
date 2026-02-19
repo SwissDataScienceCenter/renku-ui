@@ -1,23 +1,15 @@
-import { Helmet } from "react-helmet";
 import { type MetaDescriptor } from "react-router";
 
 import TermsOfService from "~/features/help/TermsOfService";
-import { DEFAULT_META } from "~/root";
+import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 
-const TITLE = "Terms of Service | Help | Renku";
+const title = makeMetaTitle(["Terms of Service", "Renku"]);
+const meta_ = makeMeta({ title });
 
 export function meta(): MetaDescriptor[] {
-  const result = [{ title: TITLE }, ...DEFAULT_META.slice(1)];
-  return result;
+  return meta_;
 }
 
 export default function TermsOfServicePage() {
-  return (
-    <>
-      <Helmet>
-        <title>{TITLE}</title>
-      </Helmet>
-      <TermsOfService />
-    </>
-  );
+  return <TermsOfService />;
 }

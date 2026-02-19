@@ -1,23 +1,18 @@
-import { Helmet } from "react-helmet";
-import { type MetaDescriptor } from "react-router";
+import { data, type MetaDescriptor } from "react-router";
 
 import PrivacyPolicy from "~/features/help/PrivacyPolicy";
-import { DEFAULT_META } from "~/root";
+import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 
-const TITLE = "Privacy Policy | Help | Renku";
+const title = makeMetaTitle(["Page Not Found", "Renku"]);
+const meta_ = makeMeta({ title });
 
 export function meta(): MetaDescriptor[] {
-  const result = [{ title: TITLE }, ...DEFAULT_META.slice(1)];
-  return result;
+  return meta_;
+}
+export async function loader() {
+  return data(undefined, { status: 404 });
 }
 
 export default function PrivacyPolicyPage() {
-  return (
-    <>
-      <Helmet>
-        <title>{TITLE}</title>
-      </Helmet>
-      <PrivacyPolicy />
-    </>
-  );
+  return <PrivacyPolicy />;
 }

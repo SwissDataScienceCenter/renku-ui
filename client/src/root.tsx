@@ -27,7 +27,6 @@
 import * as Sentry from "@sentry/react-router";
 import cx from "classnames";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Helmet } from "react-helmet";
 import {
   data,
   isRouteErrorResponse,
@@ -37,7 +36,6 @@ import {
   Scripts,
   ScrollRestoration,
   type MetaDescriptor,
-  type MetaFunction,
 } from "react-router";
 
 import { CONFIG_JSON } from "~server/constants";
@@ -48,34 +46,10 @@ import NotFound from "./not-found/NotFound";
 import type { AppParams } from "./utils/context/appParams.types";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import { initClientSideSentry } from "./utils/helpers/sentry/utils";
+import { makeMeta } from "./utils/meta/meta";
 
 import "./styles/renku_bootstrap.scss";
 import "./utils/bootstrap/bootstrap.client";
-
-export const DEFAULT_META_TITLE: string =
-  "Reproducible Data Science | Open Research | Renku";
-
-export const DEFAULT_META_DESCRIPTION: string =
-  "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources."; // eslint-disable-line spellcheck/spell-checker
-
-export const DEFAULT_META: MetaDescriptor[] = [
-  {
-    title: DEFAULT_META_TITLE,
-  },
-  {
-    name: "description",
-    content:
-      "An open-source platform for reproducible and collaborative data science. Share code, data and computational environments whilst tracking provenance and lineage of research objects.",
-  },
-  {
-    property: "og:title",
-    content: DEFAULT_META_TITLE,
-  },
-  {
-    property: "og:description",
-    content: DEFAULT_META_DESCRIPTION,
-  },
-];
 
 type ServerLoaderReturn_ =
   | { clientSideFetch: true; config: undefined }
@@ -92,7 +66,7 @@ export async function loader(): Promise<ServerLoaderReturn> {
     });
   }
 
-  //? In production, directly load what we would return for /config.json
+  // //? In production, directly load what we would return for /config.json
   return data({
     clientSideFetch,
     config: CONFIG_JSON,
@@ -182,9 +156,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   if (isRouteErrorResponse(error)) {
     return (
       <>
-        <Helmet>
+        {/* <Helmet>
           <title>Page Not Found | Renku</title>
-        </Helmet>
+        </Helmet> */}
         <NotFound forceV2={true} />
       </>
     );
@@ -192,12 +166,13 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     Sentry.captureException(error);
     return (
       <>
-        <Helmet>
+        {/* <Helmet>
           <title>Error | Renku</title>
-        </Helmet>
+        </Helmet> */}
         <div>
           <h1>Error</h1>
           <p>{error.message}</p>
+          <pre>{error.stack}</pre>
         </div>
       </>
     );
@@ -208,24 +183,36 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 // Fallback content while client-side data is awaited
 export function HydrateFallback() {
   const [isHydrated, setIsHydrated] = useState(false);
+  // const ref = useRef<HTMLTitleElement>(null);
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
+  // useEffect(() => {
+  //   if (isHydrated && ref.current != null) {
+  //     const titleTag = ref.current;
+  //     const oldTitle = titleTag.innerText;
+  //     titleTag.innerText = "Loading Renku page... · Renku";
+  //     return () => {
+  //       titleTag.innerText = oldTitle;
+  //     };
+  //   }
+  // }, [isHydrated]);
+
   return (
     <>
-      <Helmet>
-        <title>Loading Renku page...</title>
-      </Helmet>
+      {/* {isHydrated && <title ref={ref}>{TITLE}</title>} */}
       {isHydrated && <PageLoader />}
     </>
   );
 }
 
-export const meta: MetaFunction = () => {
-  return DEFAULT_META;
-};
+const meta_ = makeMeta({});
+
+export function meta(): MetaDescriptor[] {
+  return meta_;
+}
 
 export default function Root({ loaderData }: Route.ComponentProps) {
   const params = useMemo(
@@ -240,9 +227,9 @@ export default function Root({ loaderData }: Route.ComponentProps) {
   }
   return (
     <>
-      <Helmet>
+      {/* <Helmet>
         <title>{DEFAULT_META_TITLE}</title>
-      </Helmet>
+      </Helmet> */}
       <AppRoot params={params}>
         <Outlet context={{ params } satisfies RootOutletContext} />
       </AppRoot>
