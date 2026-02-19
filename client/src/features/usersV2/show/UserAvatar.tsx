@@ -22,7 +22,7 @@ import { ReactNode, useEffect, useMemo } from "react";
 
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 import type { SearchEntity } from "../../searchV2/api/searchV2Api.api";
-import { EntityPill } from "../../searchV2/components/SearchV2Results";
+import EntityPill from "../../searchV2/components/EntityPill";
 import { usersApi } from "../api/users.api";
 
 import styles from "./UserAvatar.module.scss";
@@ -109,11 +109,11 @@ export default function UserAvatar({
         ? `${first.slice(0, 1)}${second.slice(0, 1)}`
         : (name || slug).slice(0, 2) || "??";
     }
-    return namespaceSlug.slice(0, 2) || "??";
+    return namespaceSlug?.slice(0, 2) || "??";
   }, [group, namespaceSlug, user]);
   const initialsUpper = useMemo(() => initials.toUpperCase(), [initials]);
 
-  const randomPastelColor = generatePastelColor(namespaceSlug);
+  const randomPastelColor = generatePastelColor(namespaceSlug ?? "");
 
   return (
     <div

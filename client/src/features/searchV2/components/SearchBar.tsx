@@ -17,30 +17,40 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Search, XCircleFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
 
-import { useGroupSearch } from "./groupSearch.hook";
-import { FILTER_PAGE, FILTER_QUERY } from "./groupsSearch.constants";
+import { FILTER_QUERY } from "../contextSearch.constants";
+import { mapParsedQueryToSearchParams } from "../contextSearch.utils";
+import { useContextSearch } from "../hooks/useContextSearch.hook";
+import { parseSearchQuery } from "../searchV2.utils";
 
 interface SearchBarForm {
   query: string;
 }
-export default function GroupSearchBar() {
+export default function SearchBar() {
   // Set the input properly
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get(FILTER_QUERY.name) ?? "";
-  const { refetch } = useGroupSearch();
+  const { refetch } = useContextSearch();
 
   const { control, handleSubmit, reset, setFocus } = useForm<SearchBarForm>({
     defaultValues: { query },
   });
 
-  // Reset the input to match the URL query
+  const isSubmittingRef = useRef(false);
+
+  // Reset the input to match the URL query, but only for external changes
+  // (e.g., sidebar filter click, browser back). After user submit, the
+  // search bar keeps the raw input including filter syntax.
   useEffect(() => {
+    if (isSubmittingRef.current) {
+      isSubmittingRef.current = false;
+      return;
+    }
     reset({ query });
   }, [query, reset]);
 
@@ -57,12 +67,11 @@ export default function GroupSearchBar() {
 
   const onSubmit = useCallback(
     (data: SearchBarForm, forceRefresh = false) => {
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set(FILTER_QUERY.name, data.query);
-      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
-      if (newParams.get(FILTER_PAGE.name) !== pageDefaultValue) {
-        newParams.set(FILTER_PAGE.name, pageDefaultValue);
-      }
+      // Parse filter syntax from the raw input (e.g., "role:owner type:Group my text")
+      const parsed = parseSearchQuery(data.query);
+      const newParams = mapParsedQueryToSearchParams(parsed, searchParams);
+
+      isSubmittingRef.current = true;
 
       // force a refetch even for the same query if explicitly asked for
       if (forceRefresh && searchParams.toString() === newParams.toString()) {
@@ -88,8 +97,8 @@ export default function GroupSearchBar() {
             render={({ field }) => (
               <input
                 className="form-control"
-                data-cy="group-search-query-input"
-                id="group-search-query-input"
+                data-cy="search-query-input"
+                id="search-query-input"
                 type="text"
                 placeholder="Search..."
                 {...field}
@@ -105,17 +114,17 @@ export default function GroupSearchBar() {
               "border-bottom",
               "shadow-none"
             )}
-            data-cy="group-search-button"
+            data-cy="search-clear-button"
             onClick={onClear}
-            id="group-search-button"
+            id="search-button"
             type="button"
           >
             <XCircleFill className={cx("bi")} />
           </Button>
           <Button
             color="primary"
-            data-cy="group-search-button"
-            id="group-search-button"
+            data-cy="search-query-button"
+            id="search-button"
             type="submit"
           >
             <Search className={cx("bi", "me-1")} /> Search
