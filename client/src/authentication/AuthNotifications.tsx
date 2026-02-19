@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,18 +13,24 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
-import { lazy, Suspense } from "react";
+import { useEffect } from "react";
 
-import PageLoader from "../../components/PageLoader";
+import useRenkuToast from "~/components/toast/useRenkuToast";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import { triggerNotifications } from "./listeners.client";
 
-const HelpV2 = lazy(() => import("./HelpV2"));
-export default function LazyHelpV2() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <HelpV2 />
-    </Suspense>
-  );
+export default function AuthNotifications() {
+  const { ready } = useAppSelector(({ toast }) => toast);
+  const { renkuToastSuccess, renkuToastWarning } = useRenkuToast();
+
+  useEffect(() => {
+    if (ready) {
+      triggerNotifications({ renkuToastSuccess, renkuToastWarning });
+    }
+  }, [ready, renkuToastSuccess, renkuToastWarning]);
+
+  return null;
 }
