@@ -3,7 +3,7 @@ import { data, type MetaDescriptor } from "react-router";
 import PrivacyPolicy from "~/features/help/PrivacyPolicy";
 import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 
-const title = makeMetaTitle(["Page Not Found", "Renku"]);
+const title = makeMetaTitle(["Privacy Policy", "Renku"]);
 const meta_ = makeMeta({ title });
 
 export function meta(): MetaDescriptor[] {

@@ -3,7 +3,7 @@ import { data, type MetaDescriptor } from "react-router";
 import HelpRelease from "~/features/help/HelpRelease";
 import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 
-const title = makeMetaTitle(["Page Not Found", "Renku"]);
+const title = makeMetaTitle(["Release and License", "Renku"]);
 const meta_ = makeMeta({ title });
 
 export function meta(): MetaDescriptor[] {

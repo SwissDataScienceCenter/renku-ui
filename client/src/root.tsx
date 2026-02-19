@@ -66,7 +66,7 @@ export async function loader(): Promise<ServerLoaderReturn> {
     });
   }
 
-  // //? In production, directly load what we would return for /config.json
+  //? In production, directly load what we would return for /config.json
   return data({
     clientSideFetch,
     config: CONFIG_JSON,
