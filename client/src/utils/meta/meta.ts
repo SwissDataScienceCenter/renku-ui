@@ -18,22 +18,27 @@
 
 import { serverOnly$ } from "vite-env-only/macros";
 
-import renkuSocialCard from "~/styles/assets/renkuSocialCard.png";
 import { CONFIG_JSON } from "./config.constants.server";
+import {
+  _DEFAULT_META_DESCRIPTION,
+  _DEFAULT_META_IMAGE,
+  _DEFAULT_META_LOCALE,
+  _DEFAULT_META_TITLE_SEPARATOR,
+} from "./meta._baseConstants";
 import type { MetaDescriptor } from "./meta.types";
-
-const DEFAULT_META_TITLE_SEPARATOR: string = " · ";
-const DEFAULT_META_DESCRIPTION: string =
-  "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources."; // eslint-disable-line spellcheck/spell-checker
-const DEFAULT_META_IMAGE: string = renkuSocialCard;
-const DEFAULT_META_LOCALE: string = "en";
 
 export function makeMetaTitle(
   elems: string[],
-  sep: string = DEFAULT_META_TITLE_SEPARATOR
+  sep: string = _DEFAULT_META_TITLE_SEPARATOR
 ): string {
   return elems.join(sep);
 }
+
+export const _DEFAULT_META_TITLE: string = makeMetaTitle([
+  "Reproducible Data Science",
+  "Open Research",
+  "Renku",
+]);
 
 interface MakeMetaArgs {
   title?: string;
@@ -42,21 +47,15 @@ interface MakeMetaArgs {
   baseUrl?: string;
 }
 
-const DEFAULT_META_TITLE: string = makeMetaTitle([
-  "Reproducible Data Science",
-  "Open Research",
-  "Renku",
-]);
-
 const _BASE_URL: string | undefined =
   typeof window === "object"
     ? window.location.origin
     : serverOnly$(CONFIG_JSON.BASE_URL);
 
 export function makeMeta({
-  title = DEFAULT_META_TITLE,
-  description = DEFAULT_META_DESCRIPTION,
-  image = DEFAULT_META_IMAGE,
+  title = _DEFAULT_META_TITLE,
+  description = _DEFAULT_META_DESCRIPTION,
+  image = _DEFAULT_META_IMAGE,
   baseUrl = _BASE_URL,
 }: MakeMetaArgs): MetaDescriptor[] {
   const imageUrl = baseUrl ? new URL(image, baseUrl).toString() : image;
@@ -93,7 +92,7 @@ export function makeMeta({
     },
     {
       property: "og:locale",
-      content: DEFAULT_META_LOCALE,
+      content: _DEFAULT_META_LOCALE,
     },
 
     // X (ex-Twitter)
