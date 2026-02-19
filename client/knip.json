@@ -1,3 +1,0 @@
-{
-  "ignore": ["**/*.api.ts", "**/*.api-config.ts", "**/*.generated-api.ts"]
-}
