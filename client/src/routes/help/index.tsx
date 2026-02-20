@@ -1,23 +1,15 @@
-import { Helmet } from "react-helmet";
 import { type MetaDescriptor } from "react-router";
 
 import GettingHelp from "~/features/help/GettingHelp";
-import { DEFAULT_META } from "~/root";
+import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 
-const TITLE = "Getting Help | Renku";
+const title = makeMetaTitle(["Getting Help", "Renku"]);
+const meta_ = makeMeta({ title });
 
 export function meta(): MetaDescriptor[] {
-  const result = [{ title: TITLE }, ...DEFAULT_META.slice(1)];
-  return result;
+  return meta_;
 }
 
 export default function GettingHelpPage() {
-  return (
-    <>
-      <Helmet>
-        <title>{TITLE}</title>
-      </Helmet>
-      <GettingHelp />
-    </>
-  );
+  return <GettingHelp />;
 }

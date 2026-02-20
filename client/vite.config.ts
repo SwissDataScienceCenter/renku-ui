@@ -2,6 +2,7 @@ import { resolve } from "path";
 import eslintPlugin from "@nabla/vite-plugin-eslint";
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
+import { envOnlyMacros } from "vite-env-only";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 // import { sentryReactRouter } from "@sentry/react-router";
@@ -16,7 +17,7 @@ export default defineConfig(({ isSsrBuild }) => ({
   server: {
     allowedHosts: [".dev.renku.ch"],
   },
-  plugins: [reactRouter(), eslintPlugin(), tsconfigPaths()],
+  plugins: [reactRouter(), eslintPlugin(), tsconfigPaths(), envOnlyMacros()],
 
   // TODO: configure Sentry integration for source maps
   // TODO: Reference: https://docs.sentry.io/platforms/javascript/guides/react-router/manual-setup/#step-3-add-readable-stack-traces-with-source-maps-optional

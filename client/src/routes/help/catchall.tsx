@@ -1,27 +1,18 @@
-import { Helmet } from "react-helmet";
-import { data, MetaDescriptor } from "react-router";
+import { data, type MetaDescriptor } from "react-router";
 
 import NotFound from "~/not-found/NotFound";
-import { DEFAULT_META } from "~/root";
+import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 
-const TITLE = "Page Not Found | Renku";
+const title = makeMetaTitle(["Page Not Found", "Renku"]);
+const meta_ = makeMeta({ title });
 
 export function meta(): MetaDescriptor[] {
-  const result = [{ title: TITLE }, ...DEFAULT_META.slice(1)];
-  return result;
+  return meta_;
 }
-
 export async function loader() {
   return data(undefined, { status: 404 });
 }
 
 export default function HelpCatchallPage() {
-  return (
-    <>
-      <Helmet>
-        <title>{TITLE}</title>
-      </Helmet>
-      <NotFound />
-    </>
-  );
+  return <NotFound />;
 }
