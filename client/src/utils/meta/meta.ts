@@ -103,7 +103,7 @@ export function makeMeta(args?: MakeMetaArgs): MetaDescriptor[] {
       content: title,
     },
     {
-      property: "twitter",
+      property: "twitter:description",
       content: description,
     },
     {
