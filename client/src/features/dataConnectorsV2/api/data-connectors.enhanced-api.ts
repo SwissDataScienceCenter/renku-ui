@@ -107,11 +107,11 @@ const withPagination = withNewEndpoints.injectEndpoints({
       DataConnectorToProjectLinksPaginated,
       GetDataConnectorsByDataConnectorIdProjectLinksApiArg
     >({
-      query: (queryArg) => ({
-        url: `/data_connectors/${queryArg.dataConnectorId}/project_links`,
+      query: ({ dataConnectorId, params }) => ({
+        url: `/data_connectors/${dataConnectorId}/project_links`,
         params: {
-          page: queryArg.params?.page,
-          per_page: queryArg.params?.per_page,
+          page: params?.page,
+          per_page: params?.per_page,
         },
       }),
       transformResponse: (
