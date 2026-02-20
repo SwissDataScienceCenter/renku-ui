@@ -35,7 +35,7 @@ import {
 } from "reactstrap";
 
 import { WarnAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -111,7 +111,7 @@ export default function AddCodeRepositoryModal({
           Connect an existing code repository
         </ModalHeader>
         <ModalBody>
-          {result.error && <RtkOrNotebooksError error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
           <p>Specify a code repository by its URL.</p>
           <Row>
             <Col>

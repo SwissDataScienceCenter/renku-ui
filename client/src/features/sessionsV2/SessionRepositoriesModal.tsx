@@ -29,7 +29,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
@@ -97,7 +97,7 @@ export default function SessionRepositoriesModal({
           An error occurred while checking the project repositories. You can try
           to reload the page.
         </p>
-        <RtkOrNotebooksError error={error} />
+        <RtkOrDataServicesError error={error} />
       </div>
     ) : (
       <>

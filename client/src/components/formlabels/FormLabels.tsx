@@ -23,34 +23,16 @@
  *  FormLabels components.
  */
 
-import {
-  faCheck,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { FormFeedback, FormText, Label } from "reactstrap";
-
-import { Loader } from "../Loader";
-
-import "./FormLabels.css";
+import { FormFeedback, Label } from "reactstrap";
 
 interface LabelProps {
   className?: string;
   text: string;
   children?: React.ReactNode;
 }
-
-interface RequiredLabelProps {
-  isRequired: boolean;
-}
-const RequiredLabel = ({ isRequired }: RequiredLabelProps) => {
-  return isRequired ? (
-    <span className="required-label">*</span>
-  ) : (
-    <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
-  );
-};
 
 interface InputLabelProps extends LabelProps {
   isRequired?: boolean;
@@ -59,29 +41,14 @@ interface InputLabelProps extends LabelProps {
 const InputLabel = ({ text, isRequired = false }: InputLabelProps) => {
   return text ? (
     <Label>
-      {text} <RequiredLabel isRequired={isRequired} />
+      {text}{" "}
+      {isRequired ? (
+        <span className="required-label">*</span>
+      ) : (
+        <span className={cx("small", "text-muted", "ms-2")}>(Optional)</span>
+      )}
     </Label>
   ) : null;
-};
-
-const LoadingLabel = ({ className, text }: LabelProps) => {
-  return (
-    <FormText className={cx(className, "fst-italic")}>
-      <span className="my-auto">
-        {text}
-        <Loader className="ms-1" inline size={16} />
-      </span>
-    </FormText>
-  );
-};
-
-const HelperLabel = ({ text }: LabelProps) => {
-  return <FormText className="helper-label">{text}</FormText>;
-};
-
-const InputHintLabel = ({ text }: LabelProps) => {
-  // TODO: remove Non-Simplifying Components ref: #2696
-  return <FormText className="input-hint">{text}</FormText>;
 };
 
 const ErrorLabel = ({ text, children }: LabelProps) => {
@@ -92,22 +59,4 @@ const ErrorLabel = ({ text, children }: LabelProps) => {
   );
 };
 
-const SuccessLabel = ({ text, children }: LabelProps) => {
-  if (!text) return null;
-  if (text.length < 1) return null;
-  return (
-    <FormFeedback className="success-feedback">
-      <FontAwesomeIcon icon={faCheck} /> {text} {children}
-    </FormFeedback>
-  );
-};
-
-export {
-  InputLabel,
-  LoadingLabel,
-  HelperLabel,
-  InputHintLabel,
-  ErrorLabel,
-  RequiredLabel,
-  SuccessLabel,
-};
+export { InputLabel, ErrorLabel };

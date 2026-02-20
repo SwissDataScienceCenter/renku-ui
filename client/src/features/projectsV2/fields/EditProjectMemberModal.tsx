@@ -30,7 +30,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import ProjectMemberRoleSelect from "../../ProjectPageV2/ProjectPageContent/Settings/ProjectMemberRoleSelect";
 import type {
@@ -107,7 +107,7 @@ function EditProjectMemberAccessForm({
     <>
       <ModalBody>
         <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
           <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
             <Label>
               <ProjectMemberDisplay member={member} />

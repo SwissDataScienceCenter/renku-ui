@@ -105,3 +105,10 @@ export type CloudStorageDetails = {
 };
 
 export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
+
+export interface AddStorageMountForm {
+  name: string;
+  mountPoint: string;
+  readOnly: boolean;
+  saveCredentials: boolean;
+}

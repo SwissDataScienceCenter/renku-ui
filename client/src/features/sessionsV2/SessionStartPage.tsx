@@ -26,10 +26,7 @@ import {
   useSearchParams,
 } from "react-router";
 
-import {
-  RtkErrorAlert,
-  RtkOrNotebooksError,
-} from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import PageLoader from "../../components/PageLoader";
 import ProgressStepsIndicator, {
   ProgressStyle,
@@ -290,7 +287,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
 
   return (
     <div>
-      {error && <RtkErrorAlert error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
 
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
         <ProgressStepsIndicator
@@ -669,7 +666,7 @@ export default function SessionStartPage() {
     return (
       <div>
         <h3>Error: could not load session</h3>
-        {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+        {error && <RtkOrDataServicesError error={error} dismissible={false} />}
       </div>
     );
   }

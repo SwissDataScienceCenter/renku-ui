@@ -23,7 +23,7 @@ import { Database, NodePlus } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -213,7 +213,7 @@ function DataConnectorSecretUsedForItem({
         <p>
           Error: could not load data connector <code>{dataConnectorId}</code>.
         </p>
-        {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+        {error && <RtkOrDataServicesError error={error} dismissible={false} />}
       </li>
     );
   }

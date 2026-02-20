@@ -33,7 +33,7 @@ import {
 } from "reactstrap";
 
 import useRenkuToast from "~/components/toast/useRenkuToast";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import AppContext from "../../../utils/context/appContext";
@@ -200,7 +200,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
   return (
     <div>
       {updateGroupResult.error && (
-        <RtkOrNotebooksError error={updateGroupResult.error} />
+        <RtkOrDataServicesError error={updateGroupResult.error} />
       )}
       <GroupDeleteConfirmation isOpen={isOpen} group={group} toggle={toggle} />
       <Form

@@ -24,7 +24,7 @@ import { generatePath, useNavigate } from "react-router";
 import { Button, Form, FormGroup, ModalBody, ModalFooter } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import ModalHeader from "../../../components/modal/ModalHeader";
@@ -204,7 +204,7 @@ function GroupV2CreationDetails() {
                 name="description"
               />
 
-              {result.error && <RtkOrNotebooksError error={result.error} />}
+              {result.error && <RtkOrDataServicesError error={result.error} />}
             </div>
           </FormGroup>
         </Form>

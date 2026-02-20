@@ -21,7 +21,7 @@ import { useCallback, useEffect } from "react";
 import { XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
 import type { DataConnectorRead } from "../api/data-connectors.api";
@@ -132,7 +132,7 @@ export default function DataConnectorCredentialsModal({
           Data Connector Credentials Update Error
         </ModalHeader>
         <ModalBody>
-          <RtkErrorAlert error={error} />
+          <RtkOrDataServicesError error={error} />
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={() => setOpen(false)}>

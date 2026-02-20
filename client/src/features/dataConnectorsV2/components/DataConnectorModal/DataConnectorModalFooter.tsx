@@ -27,7 +27,7 @@ import {
   getSchemaOptions,
   hasProviderShortlist,
 } from "~/features/cloudStorage/projectCloudStorage.utils";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import AddStorageBreadcrumbNavbar from "../../../cloudStorage/AddStorageBreadcrumbNavbar";
@@ -360,7 +360,7 @@ function DataConnectorCreateFooter({
       <DataConnectorConnectionTestResult />
       {actionError && (
         <div className="w-100">
-          <RtkOrNotebooksError error={actionError} />
+          <RtkOrDataServicesError error={actionError} />
         </div>
       )}
       <div className={cx("d-flex", "me-auto", "my-auto")}>
@@ -566,7 +566,7 @@ function DataConnectorEditFooter({
       <DataConnectorConnectionTestResult />
       {actionError && (
         <div className="w-100">
-          <RtkOrNotebooksError error={actionError} />
+          <RtkOrDataServicesError error={actionError} />
         </div>
       )}
       {!isResultLoading && (

@@ -31,7 +31,7 @@ import {
 } from "reactstrap";
 
 import { SuccessAlert } from "../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import BootstrapCopyIcon from "../../../components/icons/BootstrapCopyIcon";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
@@ -130,7 +130,7 @@ export default function ProjectCopyModal({
           </div>
           {copyProjectResult.error != null && (
             <div className="w-100">
-              <RtkOrNotebooksError error={copyProjectResult.error} />
+              <RtkOrDataServicesError error={copyProjectResult.error} />
             </div>
           )}
           <ProjectNameFormField

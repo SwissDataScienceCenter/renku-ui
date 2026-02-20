@@ -38,7 +38,7 @@ import {
 } from "reactstrap";
 
 import { SuccessAlert } from "../../../components/Alert";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import type {
@@ -314,7 +314,7 @@ export default function EnvVariablesModal({
         ) : (
           <>
             <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-              {result.error && <RtkErrorAlert error={result.error} />}
+              {result.error && <RtkOrDataServicesError error={result.error} />}
               {fields.map((field, index) => (
                 <EditEnvVariablesFormContent
                   key={field.id} // important to include key with field's id

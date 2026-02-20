@@ -31,7 +31,7 @@ import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { WarnAlert } from "../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
 import AppContext from "../../../utils/context/appContext";
@@ -121,7 +121,7 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
             configuration.
           </p>
         )}
-        <RtkOrNotebooksError error={error} dismissible={false} />
+        <RtkOrDataServicesError error={error} dismissible={false} />
       </>
     );
   }

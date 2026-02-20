@@ -18,11 +18,10 @@
 
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import cx from "classnames";
 
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
-import { CoreErrorResponse } from "../../utils/types/coreService.types";
-import { ErrorAlert, RenkuAlert } from "../Alert";
-import { CoreErrorAlert } from "./CoreErrorAlert";
+import { ErrorAlert } from "../Alert";
 
 export interface BackendErrorResponse {
   error: {
@@ -31,7 +30,7 @@ export interface BackendErrorResponse {
   };
 }
 
-export function extractRkErrorMessage(
+function extractRkErrorMessage(
   error: FetchBaseQueryError | SerializedError,
   property = "message"
 ): string {
@@ -54,13 +53,16 @@ export function extractRkErrorMessage(
 }
 
 interface RtkErrorAlertProps {
-  error: FetchBaseQueryError | SerializedError | undefined | null;
+  className?: string;
   dismissible?: boolean;
+  error: FetchBaseQueryError | SerializedError | undefined | null;
   property?: string;
 }
-export function RtkErrorAlert({
-  error,
+
+function RtkErrorAlert({
+  className,
   dismissible = true,
+  error,
   property = "message",
 }: RtkErrorAlertProps) {
   // ? REF: https://redux-toolkit.js.org/rtk-query/usage-with-typescript#type-safe-error-handling
@@ -78,36 +80,20 @@ export function RtkErrorAlert({
   const errorMessage = extractRkErrorMessage(error, property);
 
   return (
-    <ErrorAlert dismissible={dismissible}>
-      <h5>Error {errorCode}</h5>
+    <ErrorAlert className={cx(className)} dismissible={dismissible} timeout={0}>
+      <h3>Error {errorCode}</h3>
       <p className="mb-0">{errorMessage}</p>
     </ErrorAlert>
   );
 }
 
-export function RtkOrCoreError({
+export default function RtkOrDataServicesError({
+  className,
   error,
   dismissible = true,
 }: RtkErrorAlertProps) {
   if (!error) return null;
-  return "status" in error &&
-    typeof error.status === "number" &&
-    (error.status as number) === 200 &&
-    typeof error.data === "object" &&
-    error.data &&
-    "error" in error.data &&
-    (error.data as CoreErrorResponse).error ? (
-    <CoreErrorAlert error={(error.data as CoreErrorResponse).error} />
-  ) : (
-    <RtkErrorAlert dismissible={dismissible} error={error} />
-  );
-}
 
-export function RtkOrNotebooksError({
-  error,
-  dismissible = true,
-}: RtkErrorAlertProps) {
-  if (!error) return null;
   if (
     "status" in error &&
     typeof error.status === "number" &&
@@ -118,13 +104,23 @@ export function RtkOrNotebooksError({
     (error.data as BackendErrorResponse).error
   ) {
     return (
-      <RenkuAlert color="danger" dismissible={dismissible} timeout={0}>
+      <ErrorAlert
+        className={cx(className)}
+        dismissible={dismissible}
+        timeout={0}
+      >
         <h3>Error {(error.data as BackendErrorResponse).error.code}</h3>
         <p className="mb-0">
           {(error.data as BackendErrorResponse).error.message}
         </p>
-      </RenkuAlert>
+      </ErrorAlert>
     );
   }
-  return <RtkErrorAlert dismissible={dismissible} error={error} />;
+  return (
+    <RtkErrorAlert
+      className={className}
+      dismissible={dismissible}
+      error={error}
+    />
+  );
 }

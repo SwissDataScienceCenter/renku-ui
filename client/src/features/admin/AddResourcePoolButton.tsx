@@ -31,7 +31,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
@@ -226,7 +226,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {result.error && <RtkOrNotebooksError error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div>
             <Label className="form-label" for="addResourcePoolName">

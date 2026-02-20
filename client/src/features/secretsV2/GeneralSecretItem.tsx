@@ -22,7 +22,7 @@ import { Folder, ShieldLock } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import { TimeCaption } from "../../components/TimeCaption";
@@ -57,7 +57,7 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
   ) : error || !projects || !secretSlots ? (
     <div>
       <p>Error: could not load related projects</p>
-      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </div>
   ) : (
     <GeneralSecretUsedIn projects={projects} secretSlots={secretSlots} />

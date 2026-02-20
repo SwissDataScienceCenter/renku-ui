@@ -16,16 +16,6 @@
  * limitations under the License.
  */
 
-export interface CoreVersionUrl {
-  apiVersion?: string;
-  metadataVersion?: number;
-}
-
-export interface CoreRepositoryParams {
-  gitUrl: string; // this usually maps to git_url
-  branch: string;
-}
-
 export interface CoreErrorContent {
   code: number;
   devMessage: string;
@@ -33,10 +23,6 @@ export interface CoreErrorContent {
   sentry?: string;
   userMessage: string;
   userReference?: string;
-}
-
-export interface CoreErrorResponse {
-  error: CoreErrorContent;
 }
 
 export interface CoreResponse<T> {

@@ -29,7 +29,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import type { ProjectMemberResponse } from "../api/projectV2.api";
 import { useDeleteProjectsByProjectIdMembersAndMemberIdMutation } from "../api/projectV2.enhanced-api";
 import { ProjectMemberDisplay } from "../shared/ProjectMemberDisplay";
@@ -79,7 +79,7 @@ function RemoveProjectMemberAccessForm({
           data-cy="remove-member-form"
           onSubmit={handleSubmit(onRemove)}
         >
-          {result.error && <RtkOrNotebooksError error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
           <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
             <p className="mb-0">
               Remove <ProjectMemberDisplay member={member} nameInBold={true} />{" "}

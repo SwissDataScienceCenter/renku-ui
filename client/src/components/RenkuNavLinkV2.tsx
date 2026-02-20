@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { RefAttributes, useMemo } from "react";
+import { RefAttributes } from "react";
 import {
-  matchPath,
   NavLink as RRNavLink,
-  useLocation,
   type NavLinkProps as RRNavLinkProps,
 } from "react-router";
 import { NavLink } from "reactstrap";
@@ -38,40 +35,3 @@ export default function RenkuNavLinkV2(props: RenkuNavLinkV2Props) {
     />
   );
 }
-
-interface RenkuNavLinkV2WithAlternatesProps extends RenkuNavLinkV2Props {
-  alternates?: string[];
-}
-
-export function RenkuNavLinkV2WithAlternates({
-  alternates,
-  className: className_,
-  ...props
-}: RenkuNavLinkV2WithAlternatesProps) {
-  const { pathname } = useLocation();
-  const match = useMemo(
-    () =>
-      (alternates ?? []).some(
-        (alt) => matchPath({ path: alt, end: false }, pathname) != null
-      ),
-    [alternates, pathname]
-  );
-  const className = useMemo(() => {
-    if (typeof className_ === "string") {
-      return match ? cx("active", className_) : className_;
-    }
-    if (typeof className_ === "function") {
-      return match
-        ? (props: NavLinkRenderProps) => cx("active", className_(props))
-        : className_;
-    }
-    return match ? "active" : undefined;
-  }, [className_, match]);
-  return <RenkuNavLinkV2 {...props} className={className} />;
-}
-
-type NavLinkRenderPropsFn = Exclude<
-  RRNavLinkProps["className"],
-  string | undefined
->;
-type NavLinkRenderProps = Parameters<NavLinkRenderPropsFn>[0];

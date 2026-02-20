@@ -31,7 +31,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
   usePatchResourcePoolsByResourcePoolIdMutation,
@@ -163,7 +163,7 @@ function UpdateResourcePoolThresholdsModal({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {result.error && <RtkOrNotebooksError error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className="mb-3">
             <Label className="form-label" for="updateResourcePoolIdleThreshold">

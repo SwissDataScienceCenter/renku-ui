@@ -29,7 +29,7 @@ import {
 import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { SuccessAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -278,7 +278,7 @@ export function DataConnectorConnectionTestResult() {
         className={cx("w-100", "my-0")}
         data-cy="cloud-storage-connection-failure"
       >
-        <RtkOrNotebooksError error={validationResult.error} />
+        <RtkOrDataServicesError error={validationResult.error} />
       </div>
     );
   return (

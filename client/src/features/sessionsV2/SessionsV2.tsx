@@ -30,7 +30,7 @@ import {
 } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -105,7 +105,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     (launchers ? launchers?.length : 0) + orphanSessions.length;
 
   const cardBody = error ? (
-    <RtkOrNotebooksError error={error} />
+    <RtkOrDataServicesError error={error} />
   ) : (
     <>
       <p className="text-body-secondary">

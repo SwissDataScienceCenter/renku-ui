@@ -36,7 +36,7 @@ import {
   NavItem,
 } from "reactstrap";
 
-import { ExternalDocsLink } from "../../components/LegacyExternalLinks";
+import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -107,20 +107,23 @@ function NavbarItemHelp() {
           Help
         </Link>
         <DropdownItem divider />
-        <ExternalDocsLink
-          url={Links.DISCOURSE}
+        <ExternalLink
+          className="dropdown-item"
+          role="link"
           title="Forum"
-          className="dropdown-item"
+          url={Links.DISCOURSE}
         />
-        <ExternalDocsLink
-          url={Links.GITTER}
+        <ExternalLink
+          className="dropdown-item"
+          role="link"
           title="Gitter"
-          className="dropdown-item"
+          url={Links.GITTER}
         />
-        <ExternalDocsLink
-          url={Links.GITHUB}
-          title="GitHub"
+        <ExternalLink
           className="dropdown-item"
+          role="link"
+          title="GitHub"
+          url={Links.GITHUB}
         />
       </DropdownMenu>
     </Dropdown>

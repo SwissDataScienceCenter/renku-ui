@@ -25,15 +25,9 @@ export enum NOTIFICATION_LEVELS {
 
 export enum NOTIFICATION_TOPICS {
   AUTHENTICATION = "Authentication",
-  DATASET_CREATE = "Dataset creation",
-  DATASET_FILES_UPLOADED = "Dataset files upload",
   SESSION_START = "Session",
-  PROJECT_API = "Project data",
   PROJECT_DELETED = "Project deleted",
   PROJECT_UPDATED = "Project updated",
-  PROJECT_FORKED = "Project forked",
-  KG_ACTIVATION = "KG Activation",
-  USER_PREFERENCES = "User Preferences",
 }
 
 export const NotificationTypes = {

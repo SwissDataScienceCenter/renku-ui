@@ -24,7 +24,7 @@ import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { InfoAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import useLocationHash from "../../../../utils/customHooks/useLocationHash.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
@@ -72,7 +72,7 @@ export default function ProjectSessionSecrets() {
   ) : error || !sessionSecretSlots || (isUserLoggedIn && !sessionSecrets) ? (
     <>
       <p>Error: could not load this project&apos;s session secrets.</p>
-      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
   ) : (
     <ProjectSessionSecretsContent

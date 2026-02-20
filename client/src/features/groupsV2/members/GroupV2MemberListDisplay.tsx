@@ -23,7 +23,7 @@ import { People } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Badge } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toSortedMembers } from "../../ProjectPageV2/utils/roleUtils";
@@ -50,7 +50,7 @@ export default function GroupV2MemberListDisplay({
   );
 
   if (error || sortedMembers == null) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+    return <RtkOrDataServicesError error={error} dismissible={false} />;
   }
 
   return (

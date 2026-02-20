@@ -30,7 +30,7 @@ import {
 } from "reactstrap";
 
 import { InfoAlert } from "../../components/Alert";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import {
   usePatchUserSecretMutation,
@@ -152,7 +152,7 @@ export default function ReplaceSecretValueModal({
           {usageAlert}
 
           {result.error && (
-            <RtkOrNotebooksError error={result.error} dismissible={false} />
+            <RtkOrDataServicesError error={result.error} dismissible={false} />
           )}
 
           <SecretValueField control={control} errors={errors} name="value" />

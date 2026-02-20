@@ -39,7 +39,7 @@ import {
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { ErrorAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import DataConnectorBoxListDisplay, {
   DataConnectorBoxListDisplayPlaceholder,
@@ -72,7 +72,7 @@ export default function ProjectDataConnectorsBox({
     return <DataConnectorLoadingBoxContent />;
 
   if (error) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+    return <RtkOrDataServicesError error={error} dismissible={false} />;
   }
 
   if (data == null) {

@@ -27,7 +27,7 @@ import Select, {
 } from "react-select";
 import { Input, Label } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../../components/Loader";
 import {
   useGetUserSecretsQuery,
@@ -62,7 +62,7 @@ export default function SelectUserSecretField<T extends FieldValues>({
   ) : error || userSecrets == null ? (
     <>
       <p>Error: could not load user secrets.</p>
-      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
   ) : userSecrets.length < 1 ? (
     <p className="fst-italic">

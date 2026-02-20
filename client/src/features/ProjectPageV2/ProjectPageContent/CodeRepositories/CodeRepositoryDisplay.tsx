@@ -63,7 +63,7 @@ import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
@@ -157,7 +157,7 @@ function EditCodeRepositoryModal({
           Edit code repository
         </ModalHeader>
         <ModalBody>
-          {result.error && <RtkOrNotebooksError error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
           <p>Specify a code repository by its URL.</p>
           <Row>
             <Col>
@@ -282,7 +282,7 @@ function CodeRepositoryDeleteModal({
       <ModalBody>
         <Row>
           <Col>
-            {result.error && <RtkOrNotebooksError error={result.error} />}
+            {result.error && <RtkOrDataServicesError error={result.error} />}
             <p>
               Are you sure about removing this code repository from the project?
             </p>
@@ -642,7 +642,7 @@ function RepositoryView({
               <div>
                 <h3>Permissions</h3>
                 {error ? (
-                  <RtkOrNotebooksError error={error} dismissible={false} />
+                  <RtkOrDataServicesError error={error} dismissible={false} />
                 ) : (
                   <>
                     <div
@@ -763,7 +763,8 @@ export function RepositoryCallToActionAlert({
 
   if (isLoading) return null;
 
-  if (error) return <RtkOrNotebooksError error={error} dismissible={false} />;
+  if (error)
+    return <RtkOrDataServicesError error={error} dismissible={false} />;
 
   if (!data?.metadata?.pull_permission) {
     return (

@@ -42,10 +42,10 @@ import {
 } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
-import { EnvironmentLogsPresent, ILogs } from "../../../components/Logs";
+import { EnvironmentLogsPresent, ILogs } from "../../../components/LogsV2";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { TimeCaption } from "../../../components/TimeCaption";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -199,7 +199,7 @@ export function BuildActionFailedModal({
         {title}
       </ModalHeader>
       <ModalBody>
-        <RtkOrNotebooksError error={error} dismissible={false} />
+        <RtkOrDataServicesError error={error} dismissible={false} />
       </ModalBody>
       <ModalFooter>
         <Button color="outline-primary" onClick={reset}>

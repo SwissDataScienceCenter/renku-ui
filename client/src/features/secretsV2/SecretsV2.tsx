@@ -29,7 +29,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import {
@@ -112,7 +112,7 @@ function SessionSecrets() {
   ) : error || !secretsUsedInSessions ? (
     <>
       <p>Error: could not load user secrets.</p>
-      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
   ) : (
     <SessionSecretsContent secretsUsedInSessions={secretsUsedInSessions} />
@@ -177,7 +177,7 @@ function DataConnectorSecrets() {
   ) : error || !secrets ? (
     <>
       <p>Error: could not load user secrets.</p>
-      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
   ) : (
     <DataConnectorSecretsContent secrets={secrets} />

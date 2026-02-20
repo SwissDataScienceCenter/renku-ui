@@ -21,7 +21,7 @@ import { useCallback, useEffect } from "react";
 import { Trash, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import type { GroupMemberResponse } from "../../projectsV2/api/namespace.api";
 import { useDeleteGroupsByGroupSlugMembersAndUserIdMutation } from "../../projectsV2/api/projectV2.enhanced-api";
@@ -94,7 +94,7 @@ function RemoveGroupMemberAccessForm({
   return (
     <>
       <ModalBody>
-        {error && <RtkOrNotebooksError error={error} />}
+        {error && <RtkOrDataServicesError error={error} />}
         <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
           <p className="mb-0">
             Remove <ProjectMemberDisplay member={member} nameInBold={true} />{" "}

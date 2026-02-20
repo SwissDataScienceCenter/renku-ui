@@ -22,34 +22,21 @@
  *  Button code and presentation.
  */
 
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Fragment, ReactNode, useRef, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import {
   ArrowRight,
   ChevronDown,
-  Pencil,
-  PlusLg,
   ThreeDotsVertical,
 } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import {
-  Button,
   ButtonDropdown,
-  ButtonGroup,
-  Col,
   DropdownMenu,
   DropdownToggle,
   UncontrolledDropdown,
   UncontrolledTooltip,
 } from "reactstrap";
-
-import { simpleHash } from "../../utils/helpers/HelperFunctions";
-import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
-
-import buttonStyles from "./Buttons.module.scss";
 
 type ButtonWithMenuProps = {
   children?:
@@ -76,7 +63,7 @@ type ButtonWithMenuProps = {
  * @param {string} props.id - Identifier
  * @param {boolean} props.isPrincipal -  Indicate if is principal or secondary button
  */
-function ButtonWithMenu(props: ButtonWithMenuProps) {
+export function ButtonWithMenu(props: ButtonWithMenuProps) {
   const [dropdownOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!dropdownOpen);
   const size = props.size ? props.size : "md";
@@ -134,9 +121,7 @@ interface ButtonWithMenuV2Props {
   size?: string;
   isDisabledDropdownToggle?: boolean;
 }
-export const ButtonWithMenuV2 = SplitButtonWithMenu;
-
-export function SplitButtonWithMenu({
+export function ButtonWithMenuV2({
   children,
   className,
   color,
@@ -210,185 +195,10 @@ export function SingleButtonWithMenu({
   );
 }
 
-type RefreshButtonProps = {
-  action: () => void;
-  updating?: boolean;
-  message?: string;
-  dataCy?: string;
-};
-
-/**
- * Refresh button with spinning icon.
- *
- * @param {function} props.action - function to trigger when clicking on the button
- * @param {boolean} [props.updating] - pilot the spin, should be true when performing the action
- * @param {boolean} [props.message] - tooltip message to trigger on hover
- * @param {boolean} [props.dataCy] - add data-cy property
- */
-function RefreshButton(props: RefreshButtonProps) {
-  const id = "button_" + simpleHash(props.action.toString());
-  const tooltip = props.message ? (
-    <UncontrolledTooltip key="tooltip" placement="top" target={id}>
-      {props.message}
-    </UncontrolledTooltip>
-  ) : null;
-  const extraProps: Record<string, string> = {};
-  if (props.dataCy) extraProps["data-cy"] = props.dataCy;
-
-  return (
-    <Fragment>
-      <Button
-        key="button"
-        className="ms-2 p-0"
-        color="link"
-        size="sm"
-        id={id}
-        onClick={() => props.action()}
-        {...extraProps}
-      >
-        <FontAwesomeIcon icon={faSyncAlt} spin={props.updating} />
-      </Button>
-      {tooltip}
-    </Fragment>
-  );
-}
-
-type GoBackButtonProps = {
-  url: string;
-  label: string;
-  className?: string;
-};
-
-/**
- *
- * @param {string} props.isSubmitting status is submitting
- * @param {string} props.isDone status is done
- * @param {string} props.isReadOnly status is read only
- * @param {string} props.url url to go back to
- * @param {string} props.label text next to the arrow
- * @param {string} props.className personalize class to attach
- */
-function GoBackButton(props: GoBackButtonProps) {
-  const { className = "", label, url } = props;
-  const linkClasses = className
-    ? className + " link-rk-text text-decoration-none"
-    : "link-rk-text text-decoration-none";
-
-  return (
-    <Col md={12} className="pb-4 pl-0">
-      <Link data-cy="go-back-button" className={linkClasses} to={url}>
-        <span className="arrow-left"> </span>
-        {label}
-      </Link>
-    </Col>
-  );
-}
-
-type InlineSubmitButtonProps = {
-  className: string;
-  doneText: string;
-  id: string;
-  isDone: boolean;
-  isMainButton?: boolean;
-  isReadOnly: boolean;
-  isSubmitting: boolean;
-  onSubmit?: () => void;
-  pristine: boolean;
-  submittingText?: string;
-  text: string;
-  tooltipPristine: string;
-};
-/**
- *
- * @param {boolean} props.isSubmitting status is submitting
- * @param {boolean} props.isDone status is done
- * @param {boolean} props.isReadOnly status is read only
- * @param {string} props.doneText text to display when the status is done
- * @param {string} props.submittingText text to display when the status is submitting
- * @param {string} props.text text to display when is active
- * @param {string} props.onSubmit function when click button
- */
-function InlineSubmitButton({
-  className,
-  doneText,
-  id,
-  isDone,
-  isMainButton,
-  isReadOnly,
-  isSubmitting,
-  onSubmit,
-  pristine,
-  submittingText = "",
-  text,
-  tooltipPristine,
-}: InlineSubmitButtonProps) {
-  if (isDone) return <SuccessLabel text={doneText} />;
-  if (isSubmitting)
-    return (
-      <LoadingLabel
-        className="feedback mx-1 my-auto text-nowrap"
-        text={submittingText}
-      />
-    );
-
-  const submit = !isDone ? (
-    <Button
-      data-cy={`${id}-button`}
-      onClick={onSubmit}
-      className={cx(
-        className,
-        isMainButton ? "btn-rk-green" : "btn-outline-rk-green"
-      )}
-      color="inlineSubmit"
-      size="sm"
-      disabled={isReadOnly}
-    >
-      {text}
-    </Button>
-  ) : null;
-
-  const tooltip = pristine && (
-    <UncontrolledTooltip target={id}>{tooltipPristine}</UncontrolledTooltip>
-  );
-
-  return (
-    <div id={id}>
-      {submit}
-      {tooltip}
-    </div>
-  );
-}
-
-/**
- * Round Button for cards
- */
-function CardButton({
-  icon,
-  color,
-  handleClick,
-}: {
-  icon: IconProp;
-  color: string;
-  handleClick: React.MouseEventHandler<HTMLButtonElement>;
-}) {
-  return (
-    <Button className={`btn-round btn-${color}`} onClick={handleClick}>
-      <FontAwesomeIcon icon={icon} color="white" />
-    </Button>
-  );
-}
-
-/**
- * Round Button group
- */
-function RoundButtonGroup({ children }: { children: React.ReactNode[] }) {
-  return <ButtonGroup className="round-button-group">{children}</ButtonGroup>;
-}
-
 /*
  * underline Link with icon
  */
-function UnderlineArrowLink({
+export function UnderlineArrowLink({
   to,
   text,
   tooltip,
@@ -410,82 +220,3 @@ function UnderlineArrowLink({
     </>
   );
 }
-
-/*
- * Edit button
- */
-interface EditButtonLinkProps {
-  "data-cy"?: string;
-  disabled?: boolean;
-  to: string;
-  tooltip: ReactNode;
-}
-function EditButtonLink({
-  "data-cy": dataCy,
-  disabled = false,
-  to,
-  tooltip,
-}: EditButtonLinkProps) {
-  const ref = useRef(null);
-  return (
-    <>
-      <span ref={ref}>
-        {disabled ? (
-          <Button color="outline-primary" disabled size="sm">
-            <Pencil className="bi" />
-          </Button>
-        ) : (
-          <Link
-            className={cx("btn", "btn-sm", "btn-outline-primary")}
-            data-cy={dataCy}
-            to={to}
-          >
-            <Pencil className="bi" />
-          </Link>
-        )}
-      </span>
-      <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
-    </>
-  );
-}
-
-export function PlusRoundButton({
-  "data-cy": dataCy,
-  handler,
-}: {
-  handler: () => void;
-  "data-cy"?: string;
-}) {
-  return (
-    <>
-      <Button
-        data-cy={dataCy}
-        className={cx(
-          "d-flex",
-          "justify-content-center",
-          "align-items-center",
-          "rounded-circle",
-          "border",
-          "border-rk-green",
-          "bg-white",
-          "p-1",
-          buttonStyles.PlusIconButton
-        )}
-        onClick={handler}
-      >
-        <PlusLg size="16" />
-      </Button>
-    </>
-  );
-}
-
-export {
-  ButtonWithMenu,
-  CardButton,
-  EditButtonLink,
-  GoBackButton,
-  InlineSubmitButton,
-  RefreshButton,
-  RoundButtonGroup,
-  UnderlineArrowLink,
-};

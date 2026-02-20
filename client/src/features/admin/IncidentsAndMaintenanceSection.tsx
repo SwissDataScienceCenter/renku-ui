@@ -43,7 +43,7 @@ import {
 } from "reactstrap";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import { Links } from "../../utils/constants/Docs";
@@ -114,7 +114,7 @@ function StatusPageCheck({ statusPageId }: StatusPageCheckProps) {
         <XCircleFill className={cx("bi", "me-1", "text-danger")} />
         Error: could not retrieve RenkuLab&apos;s status from statuspage.io.
       </p>
-      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
   ) : (
     <p>
@@ -209,7 +209,7 @@ function IncidentBannerSection() {
     return (
       <div>
         <p>Error: could not load platform configuration.</p>
-        {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+        {error && <RtkOrDataServicesError error={error} dismissible={false} />}
       </div>
     );
   }
@@ -313,7 +313,7 @@ function IncidentBannerSection() {
                 </Button>
               )}
             </div>
-            {result.error && <RtkOrNotebooksError error={error} />}
+            {result.error && <RtkOrDataServicesError error={error} />}
           </Form>
         </CardBody>
       </Collapse>

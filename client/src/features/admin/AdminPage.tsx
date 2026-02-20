@@ -31,7 +31,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert } from "~/components/Alert";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
 import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
@@ -498,7 +498,7 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
   }
 
   if (error || !resourcePoolUsers) {
-    return <RtkErrorAlert error={error} />;
+    return <RtkOrDataServicesError error={error} />;
   }
 
   return (

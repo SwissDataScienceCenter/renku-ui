@@ -29,7 +29,7 @@ import {
 } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
 import {
@@ -97,7 +97,10 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
           Session launcher compute resources
         </Label>
         {resourcePoolsError && (
-          <RtkErrorAlert dismissible={false} error={resourcePoolsError} />
+          <RtkOrDataServicesError
+            dismissible={false}
+            error={resourcePoolsError}
+          />
         )}
         {isLoadingResourcesPools && (
           <p>

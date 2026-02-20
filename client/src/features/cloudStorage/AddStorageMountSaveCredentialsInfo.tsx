@@ -21,8 +21,10 @@ import { Control, Controller } from "react-hook-form";
 import { Label } from "reactstrap";
 
 import { InfoAlert } from "../../components/Alert";
-import { AddStorageMountForm } from "./AddOrEditCloudStorage";
-import { AddCloudStorageState } from "./projectCloudStorage.types";
+import {
+  AddCloudStorageState,
+  AddStorageMountForm,
+} from "./projectCloudStorage.types";
 
 type AddStorageMountSaveCredentialsInfoProps = {
   control: Control<AddStorageMountForm>;

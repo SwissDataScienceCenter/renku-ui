@@ -21,7 +21,7 @@ import { useCallback, useEffect, useState } from "react";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { useDeleteEnvironmentsByEnvironmentIdMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 
@@ -91,7 +91,7 @@ function DeleteSessionEnvironmentModal({
         Are you sure?
       </ModalHeader>
       <ModalBody>
-        {result.error && <RtkErrorAlert error={result.error} />}
+        {result.error && <RtkOrDataServicesError error={result.error} />}
 
         <p className="mb-0">
           Please confirm that you want to delete the{" "}
