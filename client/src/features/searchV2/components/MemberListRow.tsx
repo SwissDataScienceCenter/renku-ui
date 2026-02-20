@@ -19,6 +19,8 @@
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { GroupMemberResponseList } from "~/features/projectsV2/api/namespace.api";
+import { ProjectMemberListResponse } from "~/features/projectsV2/api/projectV2.api";
 import UserAvatar, { OverflowBadge } from "~/features/usersV2/show/UserAvatar";
 
 // Size of the "+n" overflow badge
@@ -27,12 +29,7 @@ const OVERFLOW_BADGE_WIDTH = 44;
 const MEMBER_GAP = 8;
 
 interface MemberListRowProps {
-  members: {
-    id: string;
-    namespace?: string;
-    first_name?: string;
-    last_name?: string;
-  }[];
+  members: ProjectMemberListResponse | GroupMemberResponseList;
 }
 
 export default function MemberListRow({ members }: MemberListRowProps) {
@@ -45,7 +42,7 @@ export default function MemberListRow({ members }: MemberListRowProps) {
     for (let i = 0; i < members.length; i++) {
       const el = itemRefs.current[i];
       if (el) {
-        measuredWidths.current[i] = el.scrollWidth;
+        measuredWidths.current[i] = el.offsetWidth;
       }
     }
   }, [members.length]);
@@ -125,8 +122,8 @@ export default function MemberListRow({ members }: MemberListRowProps) {
             className={cx(
               "align-items-center",
               "d-flex",
-              "flex-shrink-0",
-              "gap-1"
+              "gap-1",
+              isHidden ? "flex-shrink-0" : "overflow-hidden"
             )}
             style={
               isHidden
@@ -135,7 +132,7 @@ export default function MemberListRow({ members }: MemberListRowProps) {
                     position: "absolute",
                     pointerEvents: "none",
                   }
-                : undefined
+                : { minWidth: 0 }
             }
           >
             <UserAvatar namespace={member.namespace ?? ""} />

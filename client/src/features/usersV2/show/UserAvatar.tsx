@@ -172,6 +172,12 @@ export function AvatarTypeWrap({ type, children }: AvatarTypeWrapProps) {
   );
 }
 
+const TOOLTIP_MAX_LENGTH = 150;
+function truncateTooltipText(text: string) {
+  if (text.length <= TOOLTIP_MAX_LENGTH) return text;
+  return text.slice(0, TOOLTIP_MAX_LENGTH) + "...";
+}
+
 interface OverflowBadgeProps {
   count: number;
   hiddenMembers: {
@@ -200,9 +206,11 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
         +{count}
       </div>
       <UncontrolledTooltip target={ref}>
-        {hiddenMembers
-          .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
-          .join(", ")}
+        {truncateTooltipText(
+          hiddenMembers
+            .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
+            .join(", ")
+        )}
       </UncontrolledTooltip>
     </>
   );
