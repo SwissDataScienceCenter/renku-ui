@@ -31,7 +31,7 @@ import {
   Pencil,
   PersonBadge,
 } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router";
+import { generatePath, Link, useSearchParams } from "react-router";
 import {
   Button,
   Offcanvas,
@@ -42,6 +42,7 @@ import {
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import Pagination from "~/components/Pagination";
 import { IntegrationAlert } from "~/features/cloudStorage/AddOrEditCloudStorage";
 import { useGetStorageSchemaQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
@@ -419,10 +420,33 @@ function DataConnectorViewHeader({
   );
 }
 
+const LINKED_PROJECTS_PER_PAGE = 10;
+const LINKED_PROJECTS_PAGE_PARAM = "linked_projects_page";
+
 function DataConnectorViewProjects({
   dataConnector,
 }: Pick<DataConnectorViewProps, "dataConnector">) {
-  const { projects, isLoading } = useDataConnectorProjects({ dataConnector });
+  const [searchParams] = useSearchParams();
+
+  const page = useMemo(() => {
+    const pageRaw = searchParams.get(LINKED_PROJECTS_PAGE_PARAM);
+    if (!pageRaw) {
+      return 1;
+    }
+    try {
+      const page = parseInt(pageRaw, 10);
+      return page > 0 ? page : 1;
+    } catch {
+      return 1;
+    }
+  }, [searchParams]);
+
+  const { projectsPaginated, isFetching } = useDataConnectorProjects({
+    dataConnector,
+    page,
+    perPage: LINKED_PROJECTS_PER_PAGE,
+  });
+
   return (
     <section
       className={cx(SECTION_CLASSES)}
@@ -433,33 +457,45 @@ function DataConnectorViewProjects({
         Projects
       </h3>
       <div>
-        {isLoading && <p>Retrieving projects...</p>}
-        {!isLoading && projects.length === 0 && <p>None</p>}
-        <table className="table table-sm table-borderless">
-          <tbody>
-            {projects.map((project) => {
-              if (!project) return null;
+        {isFetching ? (
+          <p>Retrieving projects...</p>
+        ) : projectsPaginated.data.length == 0 ? (
+          <p>None</p>
+        ) : (
+          <>
+            <table className="table table-sm table-borderless">
+              <tbody>
+                {projectsPaginated.data.map((project) => {
+                  if (!project) return null;
 
-              const projectUrl = generatePath(
-                ABSOLUTE_ROUTES.v2.projects.show.root,
-                {
-                  namespace: project.namespace,
-                  slug: project.slug,
-                }
-              );
-              return (
-                <tr key={project.id}>
-                  <td scope="row">
-                    <Link to={projectUrl}>
-                      {project.namespace}/{project.slug}
-                    </Link>
-                  </td>
-                  <td>{project.description}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  const projectUrl = generatePath(
+                    ABSOLUTE_ROUTES.v2.projects.show.root,
+                    {
+                      namespace: project.namespace,
+                      slug: project.slug,
+                    }
+                  );
+                  return (
+                    <tr key={project.id}>
+                      <td scope="row">
+                        <Link to={projectUrl}>
+                          {project.namespace}/{project.slug}
+                        </Link>
+                      </td>
+                      <td>{project.description}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <Pagination
+              currentPage={projectsPaginated.pagination.currentPage}
+              pageQueryParam={LINKED_PROJECTS_PAGE_PARAM}
+              perPage={LINKED_PROJECTS_PER_PAGE}
+              totalItems={projectsPaginated.pagination.totalItems}
+            />
+          </>
+        )}
       </div>
     </section>
   );
