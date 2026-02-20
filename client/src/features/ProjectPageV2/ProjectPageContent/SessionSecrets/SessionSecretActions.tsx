@@ -43,7 +43,6 @@ import {
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import {
   useDeleteSessionSecretSlotsBySlotIdMutation,
@@ -51,7 +50,10 @@ import {
   usePatchSessionSecretSlotsBySlotIdMutation,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import ReplaceSecretValueModal from "../../../secretsV2/ReplaceSecretValueModal";
-import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
+import {
+  useGetUserQueryState,
+  useGetUserSecretByIdQuery,
+} from "../../../usersV2/api/users.api";
 import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import DescriptionField from "./fields/DescriptionField";
@@ -67,9 +69,7 @@ interface SessionSecretActionsProps {
 export default function SessionSecretActions({
   secretSlot,
 }: SessionSecretActionsProps) {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
   const projectId = secretSlot.secretSlot.project_id;
   const permissions = useProjectPermissions({ projectId });
@@ -101,7 +101,7 @@ export default function SessionSecretActions({
     []
   );
 
-  if (!userLogged) {
+  if (!user?.isLoggedIn) {
     return null;
   }
 

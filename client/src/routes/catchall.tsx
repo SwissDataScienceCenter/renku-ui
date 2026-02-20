@@ -1,7 +1,8 @@
-import { data, type LoaderFunctionArgs } from "react-router";
+import { data } from "react-router";
 
-import AppRoot from "~/index";
+import CatchallApp from "~/CatchallApp";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import type { Route } from "./+types/catchall";
 
 type RouteGroup = Record<string, string> | Record<string, unknown>;
 type Route = string | RouteGroup;
@@ -34,17 +35,17 @@ const KNOWN_ROUTES_SET = new Set(
 );
 const KNOWN_ROUTES = [...Array.from(KNOWN_ROUTES_SET), "/v2", "/admin"];
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const path = url.pathname;
   const isKnownRoute =
     path == "/" || KNOWN_ROUTES.some((route) => path.startsWith(route));
   if (!isKnownRoute) {
-    throw data("Not Found", { status: 404 });
+    throw data("Not Found", { status: 404, statusText: "Not Found" });
   }
-  return data({});
+  return data(null);
 }
 
 export default function Component() {
-  return <AppRoot />;
+  return <CatchallApp />;
 }

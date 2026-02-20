@@ -31,7 +31,6 @@ import BootstrapCopyIcon from "../../../components/icons/BootstrapCopyIcon";
 import { Loader } from "../../../components/Loader";
 import PrimaryAlert from "../../../components/PrimaryAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetProjectsByProjectIdCopiesQuery } from "../../projectsV2/api/projectV2.enhanced-api";
@@ -74,9 +73,8 @@ function ProjectViewerMakeCopyBanner({
   project,
   toggleModalOpen,
 }: Omit<ProjectCopyBannerComponentProps, "currentUser">) {
-  const isUserLoggedIn = useLegacySelector(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
   const loginUrl = useLoginUrl();
   return (
     <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
@@ -220,9 +218,8 @@ function ProjectViewerCopyBanner({
     projectId: project.id,
     writable: true,
   });
-  const isUserLoggedIn = useLegacySelector(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
   if (currentUser == null) return null;
   if (project.template_id === null) return null;
   if (!isUserLoggedIn)

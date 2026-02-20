@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import * as Sentry from "@sentry/react";
+import * as Sentry from "@sentry/react-router";
 import cx from "classnames";
 import { ReactNode, useCallback } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import rkOopsV2Img from "../styles/assets/oopsV2.svg";
-import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 interface AppErrorBoundaryProps {
   children?: ReactNode;
@@ -30,28 +30,26 @@ interface AppErrorBoundaryProps {
 
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
   // Handle chunk load errors by reloading the page
-  const beforeCapture = useCallback(
-    (scope: Sentry.Scope, error: Error | null) => {
-      if (
-        (error instanceof TypeError &&
-          (error.message.toLowerCase().includes("module") ||
-            error.message.toLowerCase().includes("text/html"))) ||
-        error?.name === "ChunkLoadError"
-      ) {
-        const url = new URL(window.location.href);
-        const hasReloaded = !!+(
-          url.searchParams.get("reloadForChunkError") ?? ""
-        );
-        if (!hasReloaded) {
-          scope.setTag("reloadForChunkError", true);
-          scope.setLevel("info");
-          url.searchParams.set("reloadForChunkError", "1");
-          setTimeout(() => window.location.replace(url), 0);
-        }
+  const beforeCapture = useCallback((scope: Sentry.Scope, error: unknown) => {
+    if (
+      error instanceof Error &&
+      ((error instanceof TypeError &&
+        (error.message.toLowerCase().includes("module") ||
+          error.message.toLowerCase().includes("text/html"))) ||
+        error?.name === "ChunkLoadError")
+    ) {
+      const url = new URL(window.location.href);
+      const hasReloaded = !!+(
+        url.searchParams.get("reloadForChunkError") ?? ""
+      );
+      if (!hasReloaded) {
+        scope.setTag("reloadForChunkError", true);
+        scope.setLevel("info");
+        url.searchParams.set("reloadForChunkError", "1");
+        setTimeout(() => window.location.replace(url), 0);
       }
-    },
-    []
-  );
+    }
+  }, []);
 
   return (
     <Sentry.ErrorBoundary
@@ -64,7 +62,7 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
 }
 
 function ErrorPage() {
-  const logged = useLegacySelector((state) => state.stateModel.user.logged);
+  const { data: user } = useGetUserQueryState();
   return (
     <>
       <div
@@ -88,7 +86,9 @@ function ErrorPage() {
             or{" "}
             <a className={cx("btn", "btn-primary", "m-2")} href="/">
               <ArrowLeft className={cx("me-2", "text-icon")} />
-              {logged ? "Return to the dashboard" : "Return to home page"}
+              {user?.isLoggedIn
+                ? "Return to the dashboard"
+                : "Return to home page"}
             </a>
           </p>
         </div>

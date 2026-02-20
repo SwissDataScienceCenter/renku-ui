@@ -16,7 +16,6 @@
  * limitations under the License
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { startCase } from "lodash-es";
 import { Fragment, useContext, useMemo } from "react";
@@ -37,13 +36,12 @@ import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import {
   ensureDateTime,
   toHumanDateTime,
 } from "../../../utils/helpers/DateTimeUtils";
 import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
-import { useGetUserQueryState, usersApi } from "../../usersV2/api/users.api";
+import { useGetUserQueryState } from "../../usersV2/api/users.api";
 import { useGetSummaryQuery } from "../statuspage-api/statuspage.api";
 import type {
   ScheduledMaintenance,
@@ -67,12 +65,7 @@ export default function StatusSummary() {
 }
 
 function NoStatusPage() {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
-  const { data: userInfo } = useGetUserQueryState(
-    userLogged ? undefined : skipToken
-  );
+  const { data: user } = useGetUserQueryState();
 
   return (
     <WarnAlert dismissible={false}>
@@ -80,7 +73,7 @@ function NoStatusPage() {
       <p className="mb-0">
         This instance of Renku cannot provide its current status.
       </p>
-      {userInfo?.isLoggedIn && userInfo.is_admin && (
+      {user?.isLoggedIn && user.is_admin && (
         <p className={cx("mb-0", "mt-1")}>
           As a Renku administrator, you can see the current configuration in the{" "}
           <Link to="/admin">admin panel</Link>.
@@ -95,12 +88,7 @@ interface StatuspageDisplayProps {
 }
 
 function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
-  const { data: userInfo } = usersApi.endpoints.getUser.useQueryState(
-    userLogged ? undefined : skipToken
-  );
+  const { data: user } = useGetUserQueryState();
 
   const {
     data: summary,
@@ -119,13 +107,18 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
   if (error || !summary) {
     return (
       <>
-        <p>
+        <p data-cy="statuspage-error">
           Error: could not retrieve RenkuLab&apos;s status from statuspage.io.
         </p>
-        {userInfo?.isLoggedIn && userInfo.is_admin && (
+        {user?.isLoggedIn && user.is_admin ? (
           <p>
             As a Renku administrator, you can see the current configuration in
             the <Link to="/admin">admin panel</Link>.
+          </p>
+        ) : (
+          <p>
+            Please ask an administrator to check the statuspage.io
+            configuration.
           </p>
         )}
         <RtkOrNotebooksError error={error} dismissible={false} />

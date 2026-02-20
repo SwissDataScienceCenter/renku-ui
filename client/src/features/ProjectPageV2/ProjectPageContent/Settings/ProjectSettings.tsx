@@ -33,12 +33,12 @@ import {
   Label,
 } from "reactstrap";
 
+import useRenkuToast from "~/components/toast/useRenkuToast";
 import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import AppContext from "../../../../utils/context/appContext";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
@@ -59,18 +59,6 @@ import ProjectPageDelete from "./ProjectDelete";
 import ProjectKeywordsFormField from "./ProjectKeywordsFormField";
 import ProjectPageSettingsMembers from "./ProjectSettingsMembers";
 import ProjectUnlinkTemplate from "./ProjectUnlinkTemplate";
-
-function notificationProjectUpdated(
-  notifications: NotificationsManager,
-  projectName: string
-) {
-  notifications.addSuccess(
-    NOTIFICATION_TOPICS.PROJECT_UPDATED,
-    <>
-      Project <code>{projectName}</code> successfully updated.
-    </>
-  );
-}
 
 function ProjectReadOnlyNameField({ name }: { name: string }) {
   return (
@@ -226,7 +214,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
 
   const navigate = useNavigate();
   const [redirectAfterUpdate, setRedirectAfterUpdate] = useState(false);
-  const { notifications } = useContext(AppContext);
+  const { renkuToastSuccess } = useRenkuToast();
 
   const [
     updateProject,
@@ -281,8 +269,16 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
 
   useEffect(() => {
     if (isSuccess && redirectAfterUpdate) {
-      if (notifications && currentName)
-        notificationProjectUpdated(notifications, currentName);
+      if (currentName) {
+        renkuToastSuccess({
+          textHeader: NOTIFICATION_TOPICS.PROJECT_UPDATED,
+          textBody: (
+            <>
+              Project <code>{currentName}</code> successfully updated.
+            </>
+          ),
+        });
+      }
       const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: currentNamespace,
         slug: project.slug,
@@ -295,9 +291,9 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
     currentNamespace,
     isSuccess,
     navigate,
-    notifications,
     project.slug,
     redirectAfterUpdate,
+    renkuToastSuccess,
     resetPatch,
   ]);
 

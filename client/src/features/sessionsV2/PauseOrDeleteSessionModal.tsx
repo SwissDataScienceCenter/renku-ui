@@ -16,23 +16,19 @@
  * limitations under the License.
  */
 
-import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PauseCircle, Trash, XLg } from "react-bootstrap-icons";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
 import { TimeCaption } from "~/components/TimeCaption";
+import useRenkuToast from "~/components/toast/useRenkuToast";
 import { Loader } from "../../components/Loader";
-import { User } from "../../model/renkuModels.types";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import AppContext from "../../utils/context/appContext";
-import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
@@ -60,11 +56,9 @@ export default function PauseOrDeleteSessionModal({
   toggleAction,
   toggleModal,
 }: PauseOrDeleteSessionModalProps) {
-  const logged = useLegacySelector<User["logged"]>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
 
-  if (!logged) {
+  if (!user?.isLoggedIn) {
     return (
       <AnonymousDeleteSessionModal
         isOpen={isOpen}
@@ -119,16 +113,16 @@ function AnonymousDeleteSessionModal({
     skip: !isStopping,
   });
 
-  const { notifications } = useContext(AppContext);
+  const { renkuToastDanger } = useRenkuToast();
 
   useEffect(() => {
     if (error != null) {
-      addErrorNotification({
-        error,
-        notifications: notifications as NotificationsManager,
+      renkuToastDanger({
+        textHeader: NOTIFICATION_TOPICS.SESSION_START,
+        textBody: "Unable to delete the current session",
       });
     }
-  }, [error, notifications]);
+  }, [error, renkuToastDanger]);
 
   useEffect(() => {
     if (isStopping && isSuccess && !isWaiting) {
@@ -252,16 +246,16 @@ function PauseSessionModalContent({
     skip: !isStopping,
   });
 
-  const { notifications } = useContext(AppContext);
+  const { renkuToastDanger } = useRenkuToast();
 
   useEffect(() => {
     if (error != null) {
-      addErrorNotification({
-        error,
-        notifications: notifications as NotificationsManager,
+      renkuToastDanger({
+        textHeader: NOTIFICATION_TOPICS.SESSION_START,
+        textBody: "Unable to pause the current session",
       });
     }
-  }, [error, notifications]);
+  }, [error, renkuToastDanger]);
 
   useEffect(() => {
     if (isStopping && isSuccess && !isWaiting) {
@@ -366,16 +360,16 @@ function DeleteSessionModalContent({
     skip: !isStopping,
   });
 
-  const { notifications } = useContext(AppContext);
+  const { renkuToastDanger } = useRenkuToast();
 
   useEffect(() => {
     if (error != null) {
-      addErrorNotification({
-        error,
-        notifications: notifications as NotificationsManager,
+      renkuToastDanger({
+        textHeader: NOTIFICATION_TOPICS.SESSION_START,
+        textBody: "Unable to delete the current session",
       });
     }
-  }, [error, notifications]);
+  }, [error, renkuToastDanger]);
 
   useEffect(() => {
     if (isStopping && isSuccess && !isWaiting) {
@@ -432,28 +426,5 @@ function DeleteSessionModalContent({
         </Button>
       </ModalFooter>
     </>
-  );
-}
-
-function addErrorNotification({
-  error,
-  notifications,
-}: {
-  error: FetchBaseQueryError | SerializedError;
-  notifications: NotificationsManager;
-}) {
-  const message =
-    "message" in error && error.message != null
-      ? error.message
-      : "error" in error && error.error != null
-      ? error.error
-      : "Unknown error";
-  notifications.addError(
-    NOTIFICATION_TOPICS.SESSION_START,
-    "Unable to delete the current session",
-    undefined,
-    undefined,
-    undefined,
-    `Error message: "${message}"`
   );
 }

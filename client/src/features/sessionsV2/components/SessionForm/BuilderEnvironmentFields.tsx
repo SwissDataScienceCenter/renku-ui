@@ -56,7 +56,12 @@ export default function BuilderEnvironmentFields({
   );
 
   const firstEligibleRepository = useMemo(
-    () => data?.findIndex((repo) => repo.data?.status === "valid"),
+    () =>
+      data?.findIndex(
+        (repo) =>
+          repo.data?.status === "valid" &&
+          repo.data.metadata?.visibility === "public"
+      ),
     [data]
   );
 

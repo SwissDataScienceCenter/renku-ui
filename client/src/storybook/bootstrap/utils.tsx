@@ -1,0 +1,60 @@
+import React from "react";
+
+export async function Copy(
+  text: string,
+  set: React.Dispatch<React.SetStateAction<string>>
+) {
+  await navigator.clipboard.writeText(text);
+  set(text);
+  setTimeout(() => set(""), 1000);
+}
+
+export function CopyIcon() {
+  return (
+    <span className="ms-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="currentColor"
+        className="bi bi-copy"
+        viewBox="0 0 16 16"
+      >
+        <path
+          //eslint-disable-next-line
+          fillRule="evenodd"
+          //eslint-disable-next-line
+          d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"
+        />
+      </svg>
+    </span>
+  );
+}
+
+export function rgbToHex(rgb: string) {
+  const match = rgb.match(/\d+/g);
+  if (!match) return "";
+  return (
+    "#" +
+    match
+      .slice(0, 3)
+      .map((x) => Number(x).toString(16).padStart(2, "0"))
+      .join("")
+  );
+}
+
+export function resolveCssVar(value: string) {
+  if (!value.startsWith("var(")) return value;
+  const varName = value.replace(/var\(|\)/g, "").trim();
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+}
+
+export function getRootFontSize(): number {
+  return parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
+
+export function pxToRem(px: number): number {
+  return px / getRootFontSize();
+}

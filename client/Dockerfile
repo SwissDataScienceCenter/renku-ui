@@ -43,7 +43,7 @@ USER node
 
 WORKDIR /app
 
-COPY package.json package-lock.json server.js /app/
+COPY instrument.server.mjs package.json package-lock.json server.js /app/
 COPY --from=dependencies /app/node_modules /app/node_modules
 COPY --from=builder /app/build /app/build
 COPY --from=builder /app/storybook-static /app/storybook-static
@@ -57,4 +57,4 @@ ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
 # NOTE: Without tini the node process does not respond to interrupt signals to stop
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["node", "/app/server.js"]
+CMD ["node", "--import", "./instrument.server.mjs", "/app/server.js"]

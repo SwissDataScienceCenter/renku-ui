@@ -22,11 +22,11 @@ import cx from "classnames";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api.ts";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import rkNotFoundImgV2 from "../../../styles/assets/not-foundV2.svg";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook.ts";
 
 interface UserNotFoundProps {
   error?: FetchBaseQueryError | SerializedError | undefined | null;
@@ -34,7 +34,8 @@ interface UserNotFoundProps {
 
 export default function UserNotFound({ error }: UserNotFoundProps) {
   const { username } = useParams<{ username: string }>();
-  const logged = useLegacySelector((state) => state.stateModel.user.logged);
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
   const notFoundText = username ? (
     <>
@@ -71,7 +72,9 @@ export default function UserNotFound({ error }: UserNotFoundProps) {
               className={cx("btn", "btn-primary")}
             >
               <ArrowLeft className={cx("me-2", "text-icon")} />
-              {logged ? "Return to the dashboard" : "Return to home page"}
+              {isUserLoggedIn
+                ? "Return to the dashboard"
+                : "Return to home page"}
             </Link>
           </div>
         </div>

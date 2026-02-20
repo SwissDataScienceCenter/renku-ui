@@ -187,6 +187,7 @@ export const useGetUserQueryState = usersApi.endpoints.getUser.useQueryState;
 
 export const {
   // "users" hooks
+  // useGetUserQuery,
   useGetUsersQuery,
   useGetUsersByUserIdQuery: useGetUserByIdQuery,
   useDeleteUsersByUserIdMutation: useDeleteUserMutation,

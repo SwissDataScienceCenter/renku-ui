@@ -23,11 +23,11 @@ import { ShieldLock } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Badge, ListGroup } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { InfoAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import type {
   SessionSecret,
   SessionSecretSlot,
@@ -42,9 +42,8 @@ import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 import SessionSecretSlotItem from "./SessionSecretSlotItem";
 
 export default function SessionViewSessionSecrets() {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
   const { project } = useProject();
   const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
@@ -59,7 +58,7 @@ export default function SessionViewSessionSecrets() {
     isLoading: isLoadingSessionSecrets,
     error: sessionSecretsError,
   } = useGetProjectsByProjectIdSessionSecretsQuery(
-    userLogged ? { projectId } : skipToken
+    isUserLoggedIn ? { projectId } : skipToken
   );
   const isLoading = isLoadingSessionSecretSlots || isLoadingSessionSecrets;
   const error = sessionSecretSlotsError ?? sessionSecretsError;
@@ -71,7 +70,7 @@ export default function SessionViewSessionSecrets() {
 
   const content = isLoading ? (
     <Loader />
-  ) : error || !sessionSecretSlots || (userLogged && !sessionSecrets) ? (
+  ) : error || !sessionSecretSlots || (isUserLoggedIn && !sessionSecrets) ? (
     <>
       <p>Error: could not load this project&apos;s session secrets.</p>
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
@@ -94,13 +93,15 @@ export default function SessionViewSessionSecrets() {
         {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
       </div>
 
-      {!userLogged && sessionSecretSlots && sessionSecretSlots.length > 0 && (
-        <InfoAlert className="mb-2" dismissible={false} timeout={0}>
-          <p className="mb-0">
-            As an anonymous user, you cannot use session secrets.
-          </p>
-        </InfoAlert>
-      )}
+      {!isUserLoggedIn &&
+        sessionSecretSlots &&
+        sessionSecretSlots.length > 0 && (
+          <InfoAlert className="mb-2" dismissible={false} timeout={0}>
+            <p className="mb-0">
+              As an anonymous user, you cannot use session secrets.
+            </p>
+          </InfoAlert>
+        )}
 
       <p className="mb-2">
         To modify session secrets, go to{" "}

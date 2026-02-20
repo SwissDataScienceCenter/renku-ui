@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,19 +16,17 @@
  * limitations under the License.
  */
 
-import { sessionsV2Api } from "../../features/sessionsV2/api/sessionsV2.api";
-import { StateModel } from "../../model";
+import { sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.api";
+import type { MessageHandler } from "../webSocket.types";
 
-function handleSessionsStatusV2(
-  data: Record<string, unknown>,
-  _webSocket: WebSocket,
-  model: StateModel
-) {
-  if ((data.message as boolean) && model) {
-    model.reduxStore.dispatch(
-      sessionsV2Api.endpoints.invalidateSessions.initiate()
-    );
+// Handles the "sessionStatusV2" message
+export const handleSessionsStatusV2: MessageHandler = ({ message, store }) => {
+  const invalidate =
+    typeof message.data["message"] === "string"
+      ? message.data["message"]
+      : false;
+  if (invalidate) {
+    store.dispatch(sessionsV2Api.endpoints.invalidateSessions.initiate());
   }
-}
-
-export { handleSessionsStatusV2 };
+  return { ok: true };
+};

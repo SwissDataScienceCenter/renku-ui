@@ -22,10 +22,10 @@ import { useEffect, useMemo, useRef } from "react";
 import { ShieldLock } from "react-bootstrap-icons";
 import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { InfoAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
-import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import useLocationHash from "../../../../utils/customHooks/useLocationHash.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
@@ -45,9 +45,8 @@ import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 import SessionSecretSlotItem from "./SessionSecretSlotItem";
 
 export default function ProjectSessionSecrets() {
-  const userLogged = useLegacySelector<boolean>(
-    (state) => state.stateModel.user.logged
-  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
 
   const { project } = useProject();
   const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
@@ -63,14 +62,14 @@ export default function ProjectSessionSecrets() {
     isLoading: isLoadingSessionSecrets,
     error: sessionSecretsError,
   } = useGetProjectsByProjectIdSessionSecretsQuery(
-    userLogged ? { projectId } : skipToken
+    isUserLoggedIn ? { projectId } : skipToken
   );
   const isLoading = isLoadingSessionSecretSlots || isLoadingSessionSecrets;
   const error = sessionSecretSlotsError ?? sessionSecretsError;
 
   const content = isLoading ? (
     <Loader />
-  ) : error || !sessionSecretSlots || (userLogged && !sessionSecrets) ? (
+  ) : error || !sessionSecretSlots || (isUserLoggedIn && !sessionSecrets) ? (
     <>
       <p>Error: could not load this project&apos;s session secrets.</p>
       {error && <RtkOrNotebooksError error={error} dismissible={false} />}
@@ -127,7 +126,7 @@ export default function ProjectSessionSecrets() {
           Use session secrets to connect to resources from inside a session that
           require a password or credential.
         </p>
-        {!userLogged && (
+        {!isUserLoggedIn && (
           <InfoAlert
             className={cx("mt-3", "mb-0")}
             dismissible={false}

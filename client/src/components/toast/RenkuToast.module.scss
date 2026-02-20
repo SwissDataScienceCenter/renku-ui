@@ -1,0 +1,26 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+.toast {
+  --toastify-color-progress-light: var(
+    --toast-bg-color,
+    var(--#{$prefix}secondary)
+  );
+}
+
+.toastSuccess {
+  --toast-bg-color: var(--#{$prefix}success);
+}
+
+.toastDanger {
+  --toast-bg-color: var(--#{$prefix}danger);
+}
+
+.toastWarning {
+  --toast-bg-color: var(--#{$prefix}warning);
+}
+
+.toastInfo {
+  --toast-bg-color: var(--#{$prefix}info);
+}

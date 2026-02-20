@@ -17,30 +17,17 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trash } from "react-bootstrap-icons";
 import { useNavigate } from "react-router";
 import { Button, Card, CardBody, CardHeader, Input } from "reactstrap";
 
+import useRenkuToast from "~/components/toast/useRenkuToast";
 import { Loader } from "../../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
-import { NotificationsManager } from "../../../../notifications/notifications.types";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import AppContext from "../../../../utils/context/appContext";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { useDeleteProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-
-export function notificationProjectDeleted(
-  notifications: NotificationsManager,
-  projectName: string
-) {
-  notifications.addSuccess(
-    NOTIFICATION_TOPICS.PROJECT_DELETED,
-    <>
-      Project <code>{projectName}</code> successfully deleted.
-    </>
-  );
-}
 
 interface ProjectDeleteProps {
   project: Project;
@@ -48,7 +35,7 @@ interface ProjectDeleteProps {
 export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
   const [deleteProject, result] = useDeleteProjectsByProjectIdMutation();
   const navigate = useNavigate();
-  const { notifications } = useContext(AppContext);
+  const { renkuToastSuccess } = useRenkuToast();
   const onDelete = useCallback(() => {
     deleteProject({ projectId: project.id });
   }, [deleteProject, project.id]);
@@ -56,10 +43,16 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
   useEffect(() => {
     if (result.isSuccess) {
       navigate(ABSOLUTE_ROUTES.v2.root);
-      if (notifications)
-        notificationProjectDeleted(notifications, project.name);
+      renkuToastSuccess({
+        textHeader: NOTIFICATION_TOPICS.PROJECT_DELETED,
+        textBody: (
+          <>
+            Project <code>{project.name}</code> successfully deleted.
+          </>
+        ),
+      });
     }
-  }, [result.isSuccess, navigate, notifications, project.name]);
+  }, [navigate, project.name, renkuToastSuccess, result.isSuccess]);
 
   const [typedName, setTypedName] = useState("");
   const onChange = useCallback(
