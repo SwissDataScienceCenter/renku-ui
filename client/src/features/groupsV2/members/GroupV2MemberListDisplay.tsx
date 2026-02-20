@@ -100,7 +100,7 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
     <>
       <Link
         className={cx("mb-0")}
-        to={generatePath(ABSOLUTE_ROUTES.v2.users.show, { username })}
+        to={generatePath(ABSOLUTE_ROUTES.v2.users.show.root, { username })}
       >
         <div className={cx("d-flex", "gap-2")}>
           <div
