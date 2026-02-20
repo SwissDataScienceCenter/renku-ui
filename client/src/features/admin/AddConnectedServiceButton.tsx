@@ -31,7 +31,7 @@ import {
 } from "reactstrap";
 
 import ScrollableModal from "~/components/modal/ScrollableModal";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
@@ -136,7 +136,7 @@ function AddConnectedServiceModal({
           Add integration
         </ModalHeader>
         <ModalBody>
-          {result.error && <RtkOrNotebooksError error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className="mb-3">
             <Label className="form-label" for="addConnectedServiceId">

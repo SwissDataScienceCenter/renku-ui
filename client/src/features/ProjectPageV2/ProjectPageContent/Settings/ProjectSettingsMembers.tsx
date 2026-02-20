@@ -34,7 +34,7 @@ import {
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
@@ -303,7 +303,7 @@ export default function ProjectPageSettingsMembers({
         </CardHeader>
         <CardBody>
           <div className="mb-3">Could not load members</div>
-          {error && <RtkOrNotebooksError error={error} />}
+          {error && <RtkOrDataServicesError error={error} />}
         </CardBody>
       </>
     );

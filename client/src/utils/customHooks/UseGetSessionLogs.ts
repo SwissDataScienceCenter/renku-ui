@@ -18,7 +18,7 @@
 
 import { useEffect, useState } from "react";
 
-import { ILogs } from "../../components/Logs";
+import { ILogs } from "../../components/LogsV2";
 import { useGetSessionsBySessionIdLogsQuery as useGetLogsQueryV2 } from "../../features/sessionsV2/api/sessionsV2.api";
 
 export function useGetSessionLogsV2(

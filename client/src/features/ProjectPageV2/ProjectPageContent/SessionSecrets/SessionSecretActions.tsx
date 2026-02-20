@@ -41,7 +41,7 @@ import {
 } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import {
@@ -351,7 +351,7 @@ function EditSessionSecretModal({
         </ModalHeader>
         <ModalBody>
           {result.error && (
-            <RtkOrNotebooksError error={result.error} dismissible={false} />
+            <RtkOrDataServicesError error={result.error} dismissible={false} />
           )}
 
           <NameField control={control} errors={errors} name="name" />
@@ -430,7 +430,7 @@ function RemoveSessionSecretModal({
       </ModalHeader>
       <ModalBody>
         {result.error && (
-          <RtkOrNotebooksError error={result.error} dismissible={false} />
+          <RtkOrDataServicesError error={result.error} dismissible={false} />
         )}
 
         <p>

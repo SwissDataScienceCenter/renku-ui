@@ -31,7 +31,7 @@ import {
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
@@ -164,7 +164,7 @@ export default function DataConnectorsBox({
   if (isLoading) return <DataConnectorLoadingBoxContent />;
 
   if (error || data == null) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+    return <RtkOrDataServicesError error={error} dismissible={false} />;
   }
 
   return (

@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import ModalHeader from "../../../../components/modal/ModalHeader";
@@ -272,7 +272,7 @@ function DocumentationModal({
               ) : (
                 <MarkdownHelp />
               )}
-              {result.error && <RtkOrNotebooksError error={result.error} />}
+              {result.error && <RtkOrDataServicesError error={result.error} />}
             </div>
             <div className={cx("d-flex", "align-items-center", "gap-2")}>
               <DocumentationWordCount watch={watch} />

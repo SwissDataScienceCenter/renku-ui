@@ -29,7 +29,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import { usePostEnvironmentsMutation } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeParseJSONStringArray } from "../sessionsV2/session.utils";
@@ -136,7 +136,7 @@ function AddSessionEnvironmentModal({
           Add session environment
         </ModalHeader>
         <ModalBody>
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
           <SessionEnvironmentFormContent control={control} errors={errors} />
         </ModalBody>
         <ModalFooter>

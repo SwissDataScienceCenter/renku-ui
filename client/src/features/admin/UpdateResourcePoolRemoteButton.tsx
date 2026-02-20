@@ -29,7 +29,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
   usePatchResourcePoolsByResourcePoolIdMutation,
@@ -152,7 +152,7 @@ function UpdateResourcePoolRemoteModal({
       </ModalHeader>
       <ModalBody>
         <Form noValidate onSubmit={handleSubmit(onSubmit)}></Form>
-        {result.error && <RtkOrNotebooksError error={result.error} />}
+        {result.error && <RtkOrDataServicesError error={result.error} />}
 
         <ResourcePoolRemoteSection
           control={control}
