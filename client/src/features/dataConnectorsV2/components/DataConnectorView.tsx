@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Cloud,
   Folder,
@@ -446,10 +446,6 @@ function DataConnectorViewProjects({
     page,
     perPage: LINKED_PROJECTS_PER_PAGE,
   });
-
-  useEffect(() => {
-    console.log({ projectsPaginated, isFetching });
-  }, [projectsPaginated, isFetching]);
 
   return (
     <section
