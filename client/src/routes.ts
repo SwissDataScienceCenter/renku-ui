@@ -21,6 +21,9 @@ export default [
   ]),
   // Not found page for /help/*
   route(`${RELATIVE_ROUTES.v2.help.root}/*`, "routes/help/catchall.tsx"),
+  // User page
+  // route(RELATIVE_ROUTES.v2.users.show, "routes/users/show.tsx"),
+  // route("_u/:username", "routes/users/show.tsx"),
   // * matches all URLs, the ? makes it optional so it will match / as well
   route("*?", "routes/catchall.tsx"),
 ] satisfies RouteConfig;
