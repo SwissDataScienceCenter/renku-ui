@@ -16,29 +16,29 @@
  * limitations under the License.
  */
 
-import { serverOnly$ } from "vite-env-only/macros";
-
-import { CONFIG_JSON } from "./config.constants.server";
+import { CONFIG_JSON_SERVER_ONLY } from "../constants/config.constants";
 import {
-  _DEFAULT_META_DESCRIPTION,
-  _DEFAULT_META_IMAGE,
-  _DEFAULT_META_LOCALE,
-  _DEFAULT_META_TITLE_SEPARATOR,
-} from "./meta._baseConstants";
+  DEFAULT_META_DESCRIPTION,
+  DEFAULT_META_IMAGE,
+  DEFAULT_META_LOCALE,
+  DEFAULT_META_TITLE_SEPARATOR,
+} from "./meta.constants";
 import type { MetaDescriptor } from "./meta.types";
 
 export function makeMetaTitle(
   elems: string[],
-  sep: string = _DEFAULT_META_TITLE_SEPARATOR
+  sep: string = DEFAULT_META_TITLE_SEPARATOR
 ): string {
   return elems.join(sep);
 }
 
-export const _DEFAULT_META_TITLE: string = makeMetaTitle([
+const DEFAULT_META_TITLE: string = makeMetaTitle([
   "Reproducible Data Science",
   "Open Research",
   "Renku",
 ]);
+
+const BASE_URL = CONFIG_JSON_SERVER_ONLY?.BASE_URL ?? window.location.origin;
 
 interface MakeMetaArgs {
   title?: string;
@@ -47,17 +47,14 @@ interface MakeMetaArgs {
   baseUrl?: string;
 }
 
-const _BASE_URL: string | undefined =
-  typeof window === "object"
-    ? window.location.origin
-    : serverOnly$(CONFIG_JSON.BASE_URL);
+export function makeMeta(args?: MakeMetaArgs): MetaDescriptor[] {
+  const {
+    title = DEFAULT_META_TITLE,
+    description = DEFAULT_META_DESCRIPTION,
+    image = DEFAULT_META_IMAGE,
+    baseUrl = BASE_URL,
+  } = args ?? {};
 
-export function makeMeta({
-  title = _DEFAULT_META_TITLE,
-  description = _DEFAULT_META_DESCRIPTION,
-  image = _DEFAULT_META_IMAGE,
-  baseUrl = _BASE_URL,
-}: MakeMetaArgs): MetaDescriptor[] {
   const imageUrl = baseUrl ? new URL(image, baseUrl).toString() : image;
 
   return [
@@ -92,7 +89,7 @@ export function makeMeta({
     },
     {
       property: "og:locale",
-      content: _DEFAULT_META_LOCALE,
+      content: DEFAULT_META_LOCALE,
     },
 
     // X (ex-Twitter)

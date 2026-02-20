@@ -16,23 +16,13 @@
  * limitations under the License.
  */
 
-import { _DEFAULT_META_TITLE, makeMeta } from "./meta";
-import {
-  _DEFAULT_META_DESCRIPTION,
-  _DEFAULT_META_IMAGE,
-  _DEFAULT_META_LOCALE,
-  _DEFAULT_META_TITLE_SEPARATOR,
-} from "./meta._baseConstants";
-import type { MetaDescriptor } from "./meta.types";
+import renkuSocialCard from "~/styles/assets/renkuSocialCard.png";
 
-export const DEFAULT_META_TITLE_SEPARATOR = _DEFAULT_META_TITLE_SEPARATOR;
+export const DEFAULT_META_TITLE_SEPARATOR: string = " · ";
 
-export const DEFAULT_META_TITLE = _DEFAULT_META_TITLE;
+export const DEFAULT_META_DESCRIPTION: string =
+  "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources."; // eslint-disable-line spellcheck/spell-checker
 
-export const DEFAULT_META_DESCRIPTION = _DEFAULT_META_DESCRIPTION;
+export const DEFAULT_META_IMAGE: string = renkuSocialCard;
 
-export const DEFAULT_META_IMAGE = _DEFAULT_META_IMAGE;
-
-export const DEFAULT_META_LOCALE = _DEFAULT_META_LOCALE;
-
-export const DEFAULT_META: MetaDescriptor[] = makeMeta({});
+export const DEFAULT_META_LOCALE: string = "en";

@@ -37,16 +37,17 @@ import {
   ScrollRestoration,
   type MetaDescriptor,
 } from "react-router";
+import { clientOnly$ } from "vite-env-only/macros";
 
-import { CONFIG_JSON } from "~server/constants";
 import type { Route } from "./+types/root";
 import AppRoot from "./AppRoot";
 import PageLoader from "./components/PageLoader";
 import NotFound from "./not-found/NotFound";
+import { CONFIG_JSON } from "./utils/.server/config.constants";
 import type { AppParams } from "./utils/context/appParams.types";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import { initClientSideSentry } from "./utils/helpers/sentry/utils";
-import { makeMeta } from "./utils/meta/meta";
+import { makeMeta, makeMetaTitle } from "./utils/meta/meta";
 
 import "./styles/renku_bootstrap.scss";
 import "./utils/bootstrap/bootstrap.client";
@@ -78,7 +79,7 @@ type ClientLoaderReturn = {
   config: typeof CONFIG_JSON;
 };
 
-const clientCache = new Map<"config", typeof CONFIG_JSON>();
+const clientCache = clientOnly$(new Map<"config", typeof CONFIG_JSON>());
 
 export async function clientLoader({
   serverLoader,
@@ -86,13 +87,13 @@ export async function clientLoader({
   const { config, clientSideFetch } = await serverLoader();
   //? Load the config.json contents from localhost in development
   if (clientSideFetch) {
-    const cached = clientCache.get("config");
+    const cached = clientCache?.get("config");
     if (cached != null) {
       return { config: cached, clientSideFetch };
     }
     const configResponse = await fetch("/config.json");
     const configData = await configResponse.json();
-    clientCache.set("config", configData);
+    clientCache?.set("config", configData);
     return { config: configData as typeof CONFIG_JSON, clientSideFetch };
   }
   return { config, clientSideFetch };
@@ -154,63 +155,78 @@ export function Layout({ children }: { children: ReactNode }) {
 // Fallback content shown if a server-side error occurs
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   if (isRouteErrorResponse(error)) {
-    return (
-      <>
-        {/* <Helmet>
-          <title>Page Not Found | Renku</title>
-        </Helmet> */}
-        <NotFound forceV2={true} />
-      </>
-    );
-  } else if (error instanceof Error) {
-    Sentry.captureException(error);
-    return (
-      <>
-        {/* <Helmet>
-          <title>Error | Renku</title>
-        </Helmet> */}
-        <div>
-          <h1>Error</h1>
-          <p>{error.message}</p>
-          <pre>{error.stack}</pre>
-        </div>
-      </>
-    );
+    // TODO: Consider rendering the AppRoot here?
+    return <NotFound forceV2={true} />;
   }
-  return <h1>Unknown Error</h1>;
+
+  let message: string = "An unexpected error occurred.";
+  let stack: string | undefined = undefined;
+
+  if (error instanceof Error) {
+    Sentry.captureException(error);
+    //? Populate message and stack in DEV mode
+    if (import.meta.env.DEV) {
+      message = error.message;
+      stack = error.stack;
+    }
+  }
+
+  return (
+    <>
+      <div>
+        <h1>Error</h1>
+        <p>{message}</p>
+        {stack && (
+          <pre>
+            <code>{stack}</code>
+          </pre>
+        )}
+      </div>
+    </>
+  );
 }
 
 // Fallback content while client-side data is awaited
 export function HydrateFallback() {
   const [isHydrated, setIsHydrated] = useState(false);
-  // const ref = useRef<HTMLTitleElement>(null);
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
-  // useEffect(() => {
-  //   if (isHydrated && ref.current != null) {
-  //     const titleTag = ref.current;
-  //     const oldTitle = titleTag.innerText;
-  //     titleTag.innerText = "Loading Renku page... · Renku";
-  //     return () => {
-  //       titleTag.innerText = oldTitle;
-  //     };
-  //   }
-  // }, [isHydrated]);
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+    const title = document.querySelector("head title");
+    if (title == null) {
+      return;
+    }
+    const oldContent = title.textContent;
+    title.textContent = makeMetaTitle(["Loading Renku page...", "Renku"]);
+    return () => {
+      title.textContent = oldContent;
+    };
+  }, [isHydrated]);
 
-  return (
-    <>
-      {/* {isHydrated && <title ref={ref}>{TITLE}</title>} */}
-      {isHydrated && <PageLoader />}
-    </>
-  );
+  return <>{isHydrated && <PageLoader />}</>;
 }
 
-const meta_ = makeMeta({});
+const meta_ = makeMeta();
+const metaNotFound = makeMeta({
+  title: makeMetaTitle(["Page Not Found", "Renku"]),
+});
+const metaError = makeMeta({
+  title: makeMetaTitle(["Error", "Renku"]),
+});
 
-export function meta(): MetaDescriptor[] {
+export function meta({ error }: Route.MetaArgs): MetaDescriptor[] {
+  if (error) {
+    if (isRouteErrorResponse(error)) {
+      return metaNotFound;
+    }
+    return metaError;
+  }
   return meta_;
 }
 
@@ -226,14 +242,9 @@ export default function Root({ loaderData }: Route.ComponentProps) {
     }
   }
   return (
-    <>
-      {/* <Helmet>
-        <title>{DEFAULT_META_TITLE}</title>
-      </Helmet> */}
-      <AppRoot params={params}>
-        <Outlet context={{ params } satisfies RootOutletContext} />
-      </AppRoot>
-    </>
+    <AppRoot params={params}>
+      <Outlet context={{ params } satisfies RootOutletContext} />
+    </AppRoot>
   );
 }
 
