@@ -24,6 +24,7 @@
  * - https://reactrouter.com/start/framework/routing#root-route
  */
 
+import { configureStore } from "@reduxjs/toolkit";
 import * as Sentry from "@sentry/react-router";
 import cx from "classnames";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
@@ -36,13 +37,21 @@ import {
   Scripts,
   ScrollRestoration,
   type MetaDescriptor,
+  type MiddlewareFunction,
 } from "react-router";
 import { clientOnly$ } from "vite-env-only/macros";
 
 import type { Route } from "./+types/root";
 import AppRoot from "./AppRoot";
 import PageLoader from "./components/PageLoader";
+import { usersApi } from "./features/usersV2/api/users.api";
 import NotFound from "./not-found/NotFound";
+import cookieSlice from "./store/cookie.slice.server";
+import {
+  storeContext,
+  storeMiddleware,
+  type ServerRootState,
+} from "./store/store.utils.server";
 import { CONFIG_JSON } from "./utils/.server/config.constants";
 import type { AppParams } from "./utils/context/appParams.types";
 import { validatedAppParams } from "./utils/context/appParams.utils";
@@ -57,7 +66,32 @@ type ServerLoaderReturn_ =
   | { clientSideFetch: false; config: typeof CONFIG_JSON };
 type ServerLoaderReturn = ReturnType<typeof data<ServerLoaderReturn_>>;
 
-export async function loader(): Promise<ServerLoaderReturn> {
+export const middleware = [storeMiddleware] satisfies MiddlewareFunction[];
+
+export async function loader({
+  context,
+}: // request,
+Route.LoaderArgs): Promise<ServerLoaderReturn> {
+  console.log("client/src/root.tsx");
+  const store = context.get(storeContext);
+  const { renkuSessionCookie } = store
+    ? cookieSlice.selectSlice(store.getState())
+    : {};
+  if (store != null && renkuSessionCookie) {
+    const userSelector = usersApi.endpoints.getUser.select();
+    const preState = userSelector(store.getState());
+    console.log("in client/src/root.tsx initial state:", {
+      requestId: preState.requestId,
+    });
+    store.dispatch(usersApi.endpoints.getUser.initiate());
+    await Promise.all(store.dispatch(usersApi.util.getRunningQueriesThunk()));
+    // const userSelector = usersApi.endpoints.getUser.select();
+    const { data, error, requestId } = userSelector(store.getState());
+    console.log("in client/src/root.tsx:", { data, error, requestId });
+    // To populate on the client side: usersApi.util.upsertQueryData('getUser', undefined, <data>)
+  }
+  // console.log({ state: store?.getState() });
+
   const clientSideFetch =
     process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
   if (clientSideFetch) {

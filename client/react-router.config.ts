@@ -5,6 +5,9 @@ import type { Config } from "@react-router/dev/config";
 export default {
   appDirectory: "src",
   ssr: true,
+  future: {
+    v8_middleware: true,
+  },
 
   // TODO: configure Sentry integration for source maps
   // TODO: Reference: https://docs.sentry.io/platforms/javascript/guides/react-router/manual-setup/#step-3-add-readable-stack-traces-with-source-maps-optional

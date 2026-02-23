@@ -17,10 +17,30 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { serverOnly$ } from "vite-env-only/macros";
+
+import type { ServerRootState } from "~/store/store.utils.server";
+import { CONFIG_JSON_SERVER_ONLY } from "~/utils/constants/config.constants";
+
+const baseUrl = CONFIG_JSON_SERVER_ONLY?.GATEWAY_URL
+  ? `${CONFIG_JSON_SERVER_ONLY.GATEWAY_URL}/data`
+  : "/api/data";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const usersEmptyApi = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
+  // baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl,
+    prepareHeaders: serverOnly$(function (headers, { getState }) {
+      const cookieSelector = ({ cookie }: ServerRootState) => cookie;
+      const { renkuSessionCookie } = cookieSelector(
+        getState() as ServerRootState
+      );
+      if (renkuSessionCookie) {
+        headers.set("cookie", renkuSessionCookie);
+      }
+    }),
+  }),
   endpoints: () => ({}),
   reducerPath: "usersApi",
 });
