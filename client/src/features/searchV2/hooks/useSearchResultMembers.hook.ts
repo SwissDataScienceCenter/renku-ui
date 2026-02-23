@@ -18,9 +18,9 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 
-import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api.ts";
+import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
 import { useGetProjectsByProjectIdMembersQuery } from "~/features/projectsV2/api/projectV2.api";
-import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api.ts";
+import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api";
 
 export function useSearchResultMembers(item: SearchEntity) {
   const projectMembers = useGetProjectsByProjectIdMembersQuery(
