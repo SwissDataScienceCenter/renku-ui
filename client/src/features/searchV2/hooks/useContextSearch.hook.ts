@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * @deprecated Use `useGetSearchQueryQuery` with `selectSearchApiQuery` from
+ * the Redux slice instead. This hook is superseded by `useSearchSync.hook.ts`.
+ */
+
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 

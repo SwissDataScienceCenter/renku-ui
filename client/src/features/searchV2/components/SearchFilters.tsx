@@ -20,7 +20,6 @@ import cx from "classnames";
 import { DateTime } from "luxon";
 import React, { useCallback, useMemo, useState } from "react";
 import { XCircleFill } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router";
 import {
   AccordionBody,
   AccordionHeader,
@@ -38,6 +37,8 @@ import KeywordBadge from "~/components/keywords/KeywordBadge";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { useGetSearchQueryQuery } from "../api/searchV2Api.api";
 import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
@@ -54,13 +55,23 @@ import {
   buildCustomDateFilterValue,
   parseCustomDateFilter,
 } from "../contextSearch.utils";
-import { useContextSearch } from "../hooks/useContextSearch.hook";
-import { useSearchFilterParam } from "../hooks/useSearchFilterParam.hook";
+import { useReduxFilterParam } from "../hooks/useReduxFilterParam.hook";
+import { selectSearchApiQuery } from "../searchV2.slice";
+import { buildApiQueryWithoutType } from "../searchV2.utils";
 
 export default function SearchFilters() {
-  const [searchParams] = useSearchParams();
-  const { data: search } = useContextSearch();
-  const { data: searchAnyType } = useContextSearch([FILTER_CONTENT.name]);
+  const state = useAppSelector(({ searchV2 }) => searchV2);
+  const apiQuery = useAppSelector(selectSearchApiQuery);
+  const apiQueryWithoutType = useMemo(
+    () => buildApiQueryWithoutType(state),
+    [state]
+  );
+
+  const { data: search } = useGetSearchQueryQuery({ params: apiQuery });
+  const { data: searchAnyType } = useGetSearchQueryQuery({
+    params: apiQueryWithoutType,
+  });
+
   const { namespace, kind } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
@@ -70,7 +81,6 @@ export default function SearchFilters() {
   );
   const isNamespace = kind == "group" || kind == "user";
 
-  // Add numbers to the content types. Mind that this requires an additional request.
   const filterContentByType =
     kind === "group" || kind === "user"
       ? FILTER_CONTENT_NAMESPACE
@@ -88,12 +98,9 @@ export default function SearchFilters() {
     };
   }, [hydratedFilterContentAllowedValues, filterContentByType]);
 
-  // Create the enum filter for keywords with quantities.
   const selectedKeywords = useMemo(() => {
-    return (
-      searchParams.get(FILTER_KEYWORD.name)?.split(VALUE_SEPARATOR_AND) ?? []
-    );
-  }, [searchParams]);
+    return state.keywords ? state.keywords.split(VALUE_SEPARATOR_AND) : [];
+  }, [state.keywords]);
   const hydratedFilterKeywordAllowedValues = useMemo(() => {
     return Object.entries(search?.facets?.keywords ?? {})
       .map(([value, quantity]) => ({
@@ -109,16 +116,15 @@ export default function SearchFilters() {
         _quantity: quantity,
       }))
       .sort((a, b) => {
-        // sort by quantity first, then by value
         const qtyDiff = b._quantity - a._quantity;
         if (qtyDiff !== 0) return qtyDiff;
         return a.value.localeCompare(b.value);
       });
   }, [search?.facets?.keywords, selectedKeywords]);
-  // Add the current keywords if missing so users can always de-select.
-  if (searchParams.get(FILTER_KEYWORD.name)) {
-    const existingKeywords =
-      searchParams.get(FILTER_KEYWORD.name)?.split(VALUE_SEPARATOR_AND) ?? [];
+
+  // Ensure currently selected keywords appear even if missing from facets
+  if (state.keywords) {
+    const existingKeywords = state.keywords.split(VALUE_SEPARATOR_AND);
     existingKeywords.forEach((keyword) => {
       if (
         !hydratedFilterKeywordAllowedValues.some(
@@ -147,7 +153,6 @@ export default function SearchFilters() {
     };
   }, [hydratedFilterKeywordAllowedValues]);
 
-  // Create the enum filter for members
   const hydratedFilterMembersAllowedValues = useMemo(() => {
     return (
       groupMembers?.map((member) => ({
@@ -242,23 +247,22 @@ function SearchFilter({
   hiddenDecoration = false,
   renderAfterOptions,
 }: SearchFilterProps) {
-  // Do not show invalid filter, but give the opportunity to reset it.
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchedType = searchParams.get(FILTER_CONTENT.name);
+  const { contentType } = useAppSelector(({ searchV2 }) => searchV2);
+  const { currentValue, updateParam } = useReduxFilterParam(filter.name);
 
   const resetFilter = useCallback(() => {
-    const params = new URLSearchParams(searchParams);
-    params.delete(filter.name);
-    setSearchParams(params);
-  }, [filter.name, searchParams, setSearchParams]);
+    updateParam("");
+  }, [updateParam]);
 
   const isInvalid = useMemo(() => {
     return (
       filter.validFor &&
-      !filter.validFor.includes(searchedType as GroupSearchEntity["type"])
+      !filter.validFor.includes(contentType as GroupSearchEntity["type"])
     );
-  }, [filter.validFor, searchedType]);
-  if (isInvalid && searchParams.get(filter.name) === null) return null;
+  }, [filter.validFor, contentType]);
+
+  const hasValue = currentValue !== "";
+  if (isInvalid && !hasValue) return null;
 
   return (
     <>
@@ -356,7 +360,7 @@ function SearchFilterContent({
   visualization = "list",
 }: SearchFilterContentProps) {
   const [showAll, setShowAll] = useState(false);
-  const { currentValue: current, updateParam } = useSearchFilterParam(
+  const { currentValue: current, updateParam } = useReduxFilterParam(
     filter.name
   );
   const allowSelectMany = filter.type === "enum" && filter.allowSelectMany;
@@ -540,7 +544,7 @@ function SearchDateFilterCustomOption({
   filter,
   visualization,
 }: SearchDateFilterCustomOptionProps) {
-  const { currentValue, updateParam } = useSearchFilterParam(filter.name);
+  const { currentValue, updateParam } = useReduxFilterParam(filter.name);
 
   const predefinedValues = useMemo(
     () =>

@@ -33,6 +33,7 @@ import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import { recentUserActivityApi } from "~/features/recentUserActivity/RecentUserActivityApi";
 import { repositoriesApi } from "~/features/repositories/api/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "~/features/searchV2/api/searchV2-empty.api";
+import { searchV2Slice } from "~/features/searchV2/searchV2.slice";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import { sessionLaunchersV2EmptyApi as sessionLaunchersV2Api } from "~/features/sessionsV2/api/sessionLaunchersV2.empty-api";
 import { sessionsV2EmptyApi as sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.empty-api";
@@ -51,6 +52,7 @@ export const store = configureStore({
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [loginStateSlice.name]: loginStateSlice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
+    [searchV2Slice.name]: searchV2Slice.reducer,
     [webSocketSlice.name]: webSocketSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,

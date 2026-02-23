@@ -19,7 +19,7 @@
 import { DateTime } from "luxon";
 
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
-import type { SearchEntity } from "./api/searchV2Api.api";
+import type { SearchEntity, SearchQuery } from "./api/searchV2Api.api";
 import {
   CREATION_DATE_FILTER_KEY,
   DATE_AFTER_LEEWAY,
@@ -43,6 +43,7 @@ import {
 } from "./searchV2.constants";
 import type {
   AfterDateValue,
+  ApplyParsedSearchParams,
   BeforeDateValue,
   CreationDateFilter,
   InterpretedTerm,
@@ -425,9 +426,15 @@ function mergeDateFilterValues(
   return merged;
 }
 
-export function buildSearchQuery(
-  state: Pick<SearchV2State, "searchBarQuery" | "filters" | "dateFilters">
-): string {
+/**
+ * @deprecated This function references the old SearchV2State shape.
+ * Use `buildApiQuery` for the new Redux-based search.
+ */
+export function buildSearchQuery(state: {
+  searchBarQuery: string;
+  filters: SearchFilters;
+  dateFilters: SearchDateFilters;
+}): string {
   const { dateFilters, filters, searchBarQuery } = state;
 
   const optionsAsTerms = [
@@ -451,4 +458,162 @@ export function toDisplayName(entityType: SearchEntity["type"]): string {
     return "Data Connector";
   }
   return entityType;
+}
+
+/**
+ * Build a human-readable display text for the search bar from the Redux state.
+ */
+export function buildSearchBarDisplay(state: SearchV2State): string {
+  const keys = state.searchBarFilterKeys;
+  const filterTerms: string[] = [];
+
+  if (keys.includes("contentType") && state.contentType) {
+    filterTerms.push(
+      `${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.contentType}`
+    );
+  }
+
+  if (keys.includes("visibility") && state.visibility) {
+    filterTerms.push(
+      `${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.visibility}`
+    );
+  }
+
+  if (keys.includes("role") && state.role) {
+    filterTerms.push(`${ROLE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.role}`);
+  }
+
+  if (keys.includes("created") && state.created) {
+    const parts = state.created.split(",").filter(Boolean);
+    for (const part of parts) {
+      filterTerms.push(`${CREATION_DATE_FILTER_KEY}${part}`);
+    }
+  }
+
+  const allParts = [...filterTerms];
+  if (state.query) allParts.push(state.query);
+  return allParts.join(TERM_SEPARATOR).trim();
+}
+
+/**
+ * Convert a ParseSearchQueryResult (from the search bar raw input parsing)
+ * into ApplyParsedSearchParams suitable for the Redux slice.
+ */
+export function parsedResultToSliceParams(
+  result: ParseSearchQueryResult
+): ApplyParsedSearchParams {
+  const params: ApplyParsedSearchParams = {
+    query: result.searchBarQuery,
+  };
+
+  if (result.filters.type.values.length > 0) {
+    const raw = result.filters.type.values[0];
+    params.contentType =
+      raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+    //eslint-disable-next-line spellcheck/spell-checker
+    if (params.contentType === "Dataconnector") {
+      params.contentType = "DataConnector";
+    }
+  }
+
+  if (result.filters.role.values.length > 0) {
+    params.role = result.filters.role.values.join(",");
+  }
+
+  if (result.filters.visibility.values.length > 0) {
+    params.visibility = result.filters.visibility.values[0];
+  }
+
+  const { created } = result.dateFilters;
+  if (created.value.after != null || created.value.before != null) {
+    const parts: string[] = [];
+    if (created.value.after != null) {
+      const afterStr =
+        typeof created.value.after === "string"
+          ? created.value.after
+          : created.value.after.date.toISODate();
+      if (afterStr) parts.push(`>${afterStr}`);
+    }
+    if (created.value.before != null) {
+      const beforeStr =
+        typeof created.value.before === "string"
+          ? created.value.before
+          : created.value.before.date.toISODate();
+      if (beforeStr) parts.push(`<${beforeStr}`);
+    }
+    if (parts.length > 0) {
+      params.created = parts.join(",");
+    }
+  }
+
+  return params;
+}
+
+/**
+ * Build an API query ignoring the content type filter.
+ * Used to fetch facet counts across all entity types.
+ */
+export function buildApiQueryWithoutType(state: SearchV2State): SearchQuery {
+  const stateWithoutType = { ...state, contentType: "" };
+  return buildApiQuery(stateWithoutType);
+}
+
+export function buildApiQuery(state: SearchV2State): SearchQuery {
+  const terms: string[] = [];
+
+  if (state.contentType) {
+    terms.push(`type${KEY_VALUE_SEPARATOR}${state.contentType}`);
+  }
+
+  if (state.namespace) {
+    terms.push(`namespace${KEY_VALUE_SEPARATOR}${state.namespace}`);
+  }
+
+  if (state.visibility) {
+    terms.push(`visibility${KEY_VALUE_SEPARATOR}${state.visibility}`);
+  }
+
+  if (state.role) {
+    terms.push(`role${KEY_VALUE_SEPARATOR}${state.role}`);
+  }
+
+  if (state.directMember) {
+    terms.push(`direct_member${KEY_VALUE_SEPARATOR}${state.directMember}`);
+  }
+
+  if (state.keywords) {
+    const kwSeparator = "+";
+    const kws = state.keywords.split(kwSeparator).filter(Boolean);
+    for (const kw of kws) {
+      terms.push(`keyword${KEY_VALUE_SEPARATOR}"${kw}"`);
+    }
+  }
+
+  if (state.created) {
+    const dateSeparator = ",";
+    const parts = state.created.split(dateSeparator).filter(Boolean);
+    for (const part of parts) {
+      const operator = part.charAt(0); // '>' or '<'
+      const dateValue = part.slice(1);
+      const isKnownToken = dateValue.startsWith("today-");
+      if (isKnownToken) {
+        terms.push(`created${part}`);
+      } else {
+        const leeway =
+          operator === ">" ? DATE_AFTER_LEEWAY : DATE_BEFORE_LEEWAY;
+        terms.push(`created${operator}${dateValue}${leeway}`);
+      }
+    }
+  }
+
+  if (state.query) {
+    terms.push(state.query);
+  }
+
+  return {
+    q: terms.join(TERM_SEPARATOR).trim(),
+    page: state.page,
+    per_page: state.perPage,
+    include_counts: state.includeCounts,
+  };
 }

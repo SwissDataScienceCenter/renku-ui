@@ -17,79 +17,61 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Search, XCircleFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
 
-import { FILTER_QUERY } from "../contextSearch.constants";
-import { mapParsedQueryToSearchParams } from "../contextSearch.utils";
-import { useContextSearch } from "../hooks/useContextSearch.hook";
-import { parseSearchQuery } from "../searchV2.utils";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { applyParsedSearch, reset as resetSearch } from "../searchV2.slice";
+import {
+  buildSearchBarDisplay,
+  parsedResultToSliceParams,
+  parseSearchQuery,
+} from "../searchV2.utils";
 
 interface SearchBarForm {
   query: string;
 }
+
 export default function SearchBar() {
-  // Set the input properly
-  const [searchParams, setSearchParams] = useSearchParams();
-  const query = searchParams.get(FILTER_QUERY.name) ?? "";
-  const { refetch } = useContextSearch();
+  const dispatch = useAppDispatch();
+  const state = useAppSelector(({ searchV2 }) => searchV2);
+
+  const displayQuery = useMemo(() => buildSearchBarDisplay(state), [state]);
 
   const { control, handleSubmit, reset, setFocus } = useForm<SearchBarForm>({
-    defaultValues: { query },
+    defaultValues: { query: displayQuery },
   });
 
-  const isSubmittingRef = useRef(false);
-
-  // Reset the input to match the URL query, but only for external changes
-  // (e.g., sidebar filter click, browser back). After user submit, the
-  // search bar keeps the raw input including filter syntax.
+  // Keep the search bar text in sync with the full Redux state.
+  // When any filter changes (via sidebar OR search bar submit), the
+  // display text updates and the input resets to match.
   useEffect(() => {
-    if (isSubmittingRef.current) {
-      isSubmittingRef.current = false;
-      return;
-    }
-    reset({ query });
-  }, [query, reset]);
+    reset({ query: displayQuery });
+  }, [displayQuery, reset]);
 
-  // focus search input when loading the component
   useEffect(() => {
     setFocus("query");
   }, [setFocus]);
 
   const onClear = useCallback(() => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set(FILTER_QUERY.name, "");
-    setSearchParams(newParams);
-  }, [searchParams, setSearchParams]);
+    dispatch(resetSearch());
+  }, [dispatch]);
 
   const onSubmit = useCallback(
-    (data: SearchBarForm, forceRefresh = false) => {
-      // Parse filter syntax from the raw input (e.g., "role:owner type:Group my text")
+    (data: SearchBarForm) => {
       const parsed = parseSearchQuery(data.query);
-      const newParams = mapParsedQueryToSearchParams(parsed, searchParams);
-
-      isSubmittingRef.current = true;
-
-      // force a refetch even for the same query if explicitly asked for
-      if (forceRefresh && searchParams.toString() === newParams.toString()) {
-        refetch();
-      } else {
-        setSearchParams(newParams);
-      }
+      const params = parsedResultToSliceParams(parsed);
+      dispatch(applyParsedSearch(params));
     },
-    [refetch, searchParams, setSearchParams]
+    [dispatch]
   );
 
   return (
     <>
-      <Form
-        className="mb-3"
-        noValidate
-        onSubmit={handleSubmit((data) => onSubmit(data, true))}
-      >
+      <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
         <InputGroup>
           <Controller
             control={control}

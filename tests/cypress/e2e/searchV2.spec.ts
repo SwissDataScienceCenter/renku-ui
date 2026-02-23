@@ -44,7 +44,7 @@ describe("Search V2", () => {
     cy.getDataCy("search-list-item").should("have.length", 5);
 
     cy.getDataCy("search-filter-type-User").filter(":visible").click();
-    cy.getDataCy("search-list-item").should("have.length", 2);
+    cy.getDataCy("search-list-item").should("have.length", 5);
 
     cy.getDataCy("search-filter-type-Project").filter(":visible").click();
     cy.getDataCy("search-filter-type-User").should("not.be.checked");

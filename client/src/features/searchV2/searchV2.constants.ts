@@ -97,3 +97,13 @@ export const DATE_FILTER_AFTER_KNOWN_VALUES: AfterDateValue[] = [
 ];
 
 export const DATE_FILTER_BEFORE_KNOWN_VALUES: BeforeDateValue[] = ["today-90d"];
+
+// Pagination constants
+
+export const FIRST_PAGE = 1;
+export const DEFAULT_PAGE_SIZE = 10;
+export const MAX_PAGE_SIZE = 100;
+
+// Content type default
+
+export const DEFAULT_CONTENT_TYPE = "Project";

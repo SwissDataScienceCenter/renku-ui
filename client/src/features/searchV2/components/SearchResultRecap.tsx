@@ -17,19 +17,81 @@
  */
 
 import cx from "classnames";
-import { useSearchParams } from "react-router";
+import { ReactNode, useMemo } from "react";
 
-import { FILTER_QUERY } from "../contextSearch.constants";
-import { getQueryHumanReadable } from "../contextSearch.utils";
-import { useContextSearch } from "../hooks/useContextSearch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { useGetSearchQueryQuery } from "../api/searchV2Api.api";
+import {
+  FILTER_CONTENT,
+  FILTER_DATE,
+  FILTER_KEYWORD,
+  FILTER_MEMBER,
+  FILTER_MY_ROLE,
+  FILTER_VISIBILITY,
+} from "../contextSearch.constants";
+import { selectSearchApiQuery } from "../searchV2.slice";
 
 export default function SearchResultRecap() {
-  // Get the query and results data
-  const [searchParams] = useSearchParams();
-  const { data, isFetching } = useContextSearch();
+  const state = useAppSelector(({ searchV2 }) => searchV2);
+  const apiQuery = useAppSelector(selectSearchApiQuery);
+  const { data, isFetching } = useGetSearchQueryQuery({ params: apiQuery });
   const total = data?.pagingInfo.totalResult;
-  const filters = getQueryHumanReadable(searchParams);
-  const query = searchParams.get(FILTER_QUERY.name) ?? "";
+
+  const filters = useMemo(() => {
+    const parts: ReactNode[] = [];
+    if (state.contentType) {
+      parts.push(
+        <span key="type">
+          {FILTER_CONTENT.label}: {state.contentType}
+        </span>
+      );
+    }
+    if (state.visibility) {
+      parts.push(
+        <span key="visibility">
+          {FILTER_VISIBILITY.label}: {state.visibility}
+        </span>
+      );
+    }
+    if (state.role) {
+      parts.push(
+        <span key="role">
+          {FILTER_MY_ROLE.label}: {state.role}
+        </span>
+      );
+    }
+    if (state.keywords) {
+      parts.push(
+        <span key="keywords">
+          {FILTER_KEYWORD.label}: {state.keywords}
+        </span>
+      );
+    }
+    if (state.directMember) {
+      parts.push(
+        <span key="member">
+          {FILTER_MEMBER.label}: {state.directMember}
+        </span>
+      );
+    }
+    if (state.created) {
+      parts.push(
+        <span key="created">
+          {FILTER_DATE.label}: {state.created}
+        </span>
+      );
+    }
+    return parts.length > 0 ? (
+      <>
+        {parts.map((part, idx) => (
+          <span key={idx}>
+            {part}
+            {idx < parts.length - 1 && <> + </>}
+          </span>
+        ))}
+      </>
+    ) : null;
+  }, [state]);
 
   return (
     <p className="mb-0">
@@ -40,10 +102,10 @@ export default function SearchResultRecap() {
           {total ? total : "No"} {total && total > 1 ? "results" : "result"}
         </span>
       )}
-      {query && (
+      {state.query && (
         <>
           {" "}
-          for <span className="fw-semibold">{`"${query}"`}</span>
+          for <span className="fw-semibold">{`"${state.query}"`}</span>
         </>
       )}
       {filters && (

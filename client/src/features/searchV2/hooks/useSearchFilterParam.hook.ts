@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
+/**
+ * @deprecated Use `useReduxFilterParam` instead.
+ */
+
 import { useCallback } from "react";
 import { useSearchParams } from "react-router";
 

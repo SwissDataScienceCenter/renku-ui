@@ -22,14 +22,49 @@ import type { Role } from "../projectsV2/api/projectV2.api";
 import type { SearchEntity, Visibility } from "./api/searchV2Api.api";
 
 export interface SearchV2State {
-  dateFilters: SearchDateFilters;
-  filters: SearchFilters;
-  initialQuery: string;
+  // Free text query (URL param "q")
+  query: string;
+
+  // Filters (flat, matching URL params)
+  contentType: string;
+  visibility: string;
+  role: string;
+  keywords: string;
+  directMember: string;
+  created: string;
+
+  // Pagination
   page: number;
   perPage: number;
+
+  // Context
+  namespace?: string;
+  includeCounts: boolean;
+
+  // Tracks which filter keys were typed in the search bar.
+  // Only these filters are reflected back in the search bar text
+  // when their value changes via the sidebar.
+  searchBarFilterKeys: string[];
+}
+
+export interface InitFromUrlParams {
   query: string;
-  searchBarQuery: string;
-  sortBy: SortBy;
+  contentType: string;
+  visibility: string;
+  role: string;
+  keywords: string;
+  directMember: string;
+  created: string;
+  page: number;
+  perPage: number;
+}
+
+export interface ApplyParsedSearchParams {
+  query: string;
+  contentType?: string;
+  visibility?: string;
+  role?: string;
+  created?: string;
 }
 
 export type SearchOption = SearchFilter | SearchDateFilter;

@@ -17,29 +17,16 @@
  */
 
 import cx from "classnames";
-import { Navigate, useSearchParams } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import SearchBar from "~/features/searchV2/components/SearchBar";
 import SearchFilters from "~/features/searchV2/components/SearchFilters";
 import SearchResultRecap from "~/features/searchV2/components/SearchResultRecap";
 import SearchResults from "~/features/searchV2/components/SearchResults";
-import { getSearchQueryMissingFilters } from "~/features/searchV2/contextSearch.utils";
+import useSearchSync from "~/features/searchV2/hooks/useSearchSync.hook";
 
 export default function UserV2Search() {
-  const [searchParams] = useSearchParams();
-
-  // Replace the location whenever parameters are missing
-  const missingParams = getSearchQueryMissingFilters(searchParams);
-  if (Object.keys(missingParams).length > 0) {
-    const newSearchParams = new URLSearchParams(searchParams);
-    Object.entries(missingParams).forEach(([key, filterWithValue]) => {
-      if (filterWithValue?.value != null) {
-        newSearchParams.set(key, filterWithValue.value.toString());
-      }
-    });
-    return <Navigate to={{ search: newSearchParams.toString() }} replace />;
-  }
+  useSearchSync();
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>

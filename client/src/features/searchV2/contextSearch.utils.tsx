@@ -49,6 +49,7 @@ import type {
   ParseSearchQueryResult,
 } from "./searchV2.types";
 
+/** @deprecated No longer used - the Redux slice handles filter state. */
 export function getSearchQueryFilters(
   searchParams: URLSearchParams,
   filters: Filter[] = COMMON_FILTERS
@@ -77,6 +78,7 @@ export function getSearchQueryFilters(
   }, {});
 }
 
+/** @deprecated No longer used - useSearchSync handles defaults. */
 export function getSearchQueryMissingFilters(
   searchParams: URLSearchParams,
   filters: Filter[] = COMMON_FILTERS
@@ -93,6 +95,7 @@ export function getSearchQueryMissingFilters(
   }, {});
 }
 
+/** @deprecated Use `buildApiQuery` from searchV2.utils.ts instead. */
 export function generateQueryParams(
   searchParams: URLSearchParams,
   groupSlug?: string,
@@ -159,6 +162,7 @@ export function generateQueryParams(
   };
 }
 
+/** @deprecated Filter summary is now built from Redux state in SearchResultRecap. */
 export function getQueryHumanReadable(
   searchParams: URLSearchParams,
   filters: Filter[] = SELECTABLE_FILTERS
@@ -184,6 +188,7 @@ export function getQueryHumanReadable(
   return <>{queryParts}</>;
 }
 
+/** @deprecated Use `parsedResultToSliceParams` from searchV2.utils.ts instead. */
 export function mapParsedQueryToSearchParams(
   result: ParseSearchQueryResult,
   currentParams?: URLSearchParams

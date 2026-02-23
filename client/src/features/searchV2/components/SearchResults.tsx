@@ -29,7 +29,7 @@ import {
   Person,
   Question,
 } from "react-bootstrap-icons";
-import { generatePath, Link, useSearchParams } from "react-router";
+import { generatePath, Link } from "react-router";
 import { Badge, Col, ListGroup, Row } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
@@ -40,39 +40,19 @@ import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api"
 import ShowGlobalDataConnector from "~/features/searchV2/components/ShowGlobalDataConnector";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { FILTER_PAGE, FILTER_PER_PAGE } from "../contextSearch.constants";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { useGetSearchQueryQuery } from "../api/searchV2Api.api";
 import { GroupSearchEntity } from "../contextSearch.types";
-import { useContextSearch } from "../hooks/useContextSearch.hook";
+import useClampSearchPage from "../hooks/useClampSearchPage.hook";
 import { useSearchResultMembers } from "../hooks/useSearchResultMembers.hook";
+import { selectSearchApiQuery } from "../searchV2.slice";
 
 export default function SearchResults() {
-  // Load and visualize the search results
-  const [searchParams] = useSearchParams();
-  const { data } = useContextSearch();
+  const { page, perPage } = useAppSelector(({ searchV2 }) => searchV2);
+  const apiQuery = useAppSelector(selectSearchApiQuery);
+  const { data } = useGetSearchQueryQuery({ params: apiQuery });
 
-  const currentPage = useMemo(() => {
-    const defaultValue = FILTER_PAGE.defaultValue;
-    const pageParam = searchParams.get(FILTER_PAGE.name);
-    if (!pageParam) return defaultValue;
-    try {
-      const page = parseInt(pageParam, 10);
-      return page > 0 ? page : defaultValue;
-    } catch {
-      return defaultValue;
-    }
-  }, [searchParams]);
-
-  const currentPerPage = useMemo(() => {
-    const defaultValue = FILTER_PER_PAGE.defaultValue;
-    const perPageParam = searchParams.get(FILTER_PER_PAGE.name);
-    if (!perPageParam) return defaultValue;
-    try {
-      const perPage = parseInt(perPageParam, 10);
-      return perPage > 0 ? perPage : defaultValue;
-    } catch {
-      return defaultValue;
-    }
-  }, [searchParams]);
+  useClampSearchPage({ totalPages: data?.pagingInfo?.totalPages });
 
   return (
     <div>
@@ -91,8 +71,8 @@ export default function SearchResults() {
             })}
           </ListGroup>
           <Pagination
-            currentPage={currentPage}
-            perPage={currentPerPage}
+            currentPage={page}
+            perPage={perPage}
             totalItems={data?.pagingInfo.totalResult ?? 0}
             pageQueryParam="page"
             showDescription={true}
