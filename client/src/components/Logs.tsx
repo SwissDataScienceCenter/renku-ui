@@ -47,6 +47,18 @@ import { ErrorAlert } from "./Alert";
 import { Loader } from "./Loader";
 import ScrollableModal from "./modal/ScrollableModal";
 
+async function fetchLogsIfPossible(
+  fetchLogs: IFetchableLogs["fetchLogs"],
+  sessionName: string
+) {
+  if (fetchLogs == null) return;
+  try {
+    await fetchLogs(sessionName);
+  } catch (error) {
+    // the error is handled elsewhere
+  }
+}
+
 export interface ILogs {
   data: Record<string, string>;
   fetching: boolean;
@@ -305,8 +317,11 @@ function SessionLogs(props: LogBodyProps) {
   const [downloading, save] = useDownloadLogs(logs, fetchLogs, sessionName);
 
   useEffect(() => {
-    if (fetchLogs) fetchLogs(sessionName);
-  }, []); // eslint-disable-line
+    async function fetchLogsAsync() {
+      await fetchLogsIfPossible(fetchLogs, sessionName);
+    }
+    fetchLogsAsync();
+  }, [fetchLogs, sessionName]);
 
   // ? Having a minHeight prevent losing the vertical scroll position.
   // TODO: Revisit after #1219
@@ -350,8 +365,11 @@ function SessionLogsButtons(props: LogBodyProps) {
   const [downloading, save] = useDownloadLogs(logs, fetchLogs, sessionName);
 
   useEffect(() => {
-    if (fetchLogs) fetchLogs(sessionName);
-  }, []); // eslint-disable-line
+    async function fetchLogsAsync() {
+      await fetchLogsIfPossible(fetchLogs, sessionName);
+    }
+    fetchLogsAsync();
+  }, [fetchLogs, sessionName]);
 
   // ? Having a minHeight prevent losing the vertical scroll position.
   // TODO: Revisit after #1219

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { ILogs } from "../../components/Logs";
 import { useGetSessionsBySessionIdLogsQuery as useGetLogsQueryV2 } from "../../features/sessionsV2/api/sessionsV2.api";
@@ -30,13 +30,13 @@ export function useGetSessionLogsV2(
     { skip: !serverName }
   );
   const [logs, setLogs] = useState<ILogs | undefined>(undefined);
-  const fetchLogs = () => {
+  const fetchLogs = useCallback(() => {
     return refetch().then((result) => {
       if (result.isSuccess)
         return Promise.resolve(result.data as ILogs["data"]);
       return Promise.reject({} as ILogs["data"]);
     }) as Promise<ILogs["data"]>;
-  };
+  }, [refetch]);
 
   useEffect(() => {
     setLogs({
