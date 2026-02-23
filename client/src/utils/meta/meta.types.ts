@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,4 +16,22 @@
  * limitations under the License.
  */
 
-export type SettingEditOption = "metadata" | "members" | "repositories" | null;
+import type { MetaDescriptor as RRMetaDescriptor } from "react-router";
+
+/**
+ * Narrowed meta descriptor type
+ */
+export type MetaDescriptor = Extract<
+  RRMetaDescriptor,
+  | {
+      title: string;
+    }
+  | {
+      name: string;
+      content: string;
+    }
+  | {
+      property: string;
+      content: string;
+    }
+>;

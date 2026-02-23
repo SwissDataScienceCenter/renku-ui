@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { debounce, DebouncedFunc, DebounceSettings } from "lodash";
+import { debounce, DebouncedFunc, DebounceSettings } from "lodash-es";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 export default function useDebouncedState<S>(

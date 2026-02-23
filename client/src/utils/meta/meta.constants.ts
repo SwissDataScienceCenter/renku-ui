@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,19 +16,13 @@
  * limitations under the License.
  */
 
-export interface UserPreferences {
-  user_id: string;
-  pinned_projects: PinnedProjects;
-}
+import renkuSocialCard from "~/styles/assets/renkuSocialCard.png";
 
-export interface PinnedProjects {
-  project_slugs?: string[];
-}
+export const DEFAULT_META_TITLE_SEPARATOR: string = " · ";
 
-export interface AddPinnedProjectParams {
-  project_slug: string;
-}
+export const DEFAULT_META_DESCRIPTION: string =
+  "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources."; // eslint-disable-line spellcheck/spell-checker
 
-export interface RemovePinnedProjectParams {
-  project_slug: string;
-}
+export const DEFAULT_META_IMAGE: string = renkuSocialCard;
+
+export const DEFAULT_META_LOCALE: string = "en";
