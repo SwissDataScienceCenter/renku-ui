@@ -18,11 +18,28 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import queryString from "query-string";
+import { serverOnly$ } from "vite-env-only/macros";
+
+import type { ServerRootState } from "~/store/store.utils.server";
+import { CONFIG_JSON_SERVER_ONLY } from "~/utils/constants/config.constants";
+
+const baseUrl = CONFIG_JSON_SERVER_ONLY?.GATEWAY_URL
+  ? `${CONFIG_JSON_SERVER_ONLY.GATEWAY_URL}/data`
+  : "/api/data";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const projectV2EmptyApi = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api/data",
+    baseUrl,
+    prepareHeaders: serverOnly$(function (headers, { getState }) {
+      const cookieSelector = ({ cookie }: ServerRootState) => cookie;
+      const { renkuSessionCookie } = cookieSelector(
+        getState() as ServerRootState
+      );
+      if (renkuSessionCookie) {
+        headers.set("cookie", renkuSessionCookie);
+      }
+    }),
     paramsSerializer: (params: Record<string, unknown>) =>
       // NOTE: arrayFormat: none will serialize arrays by using duplicate keys
       // like foo: [1, 2, 3] => 'foo=1&foo=2&foo=3' -> this is compatible

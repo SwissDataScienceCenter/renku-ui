@@ -1,4 +1,9 @@
-import { index, route, type RouteConfig } from "@react-router/dev/routes";
+import {
+  index,
+  prefix,
+  route,
+  type RouteConfig,
+} from "@react-router/dev/routes";
 
 import { RELATIVE_ROUTES } from "./routing/routes.constants";
 
@@ -21,6 +26,16 @@ export default [
   ]),
   // Not found page for /help/*
   route(`${RELATIVE_ROUTES.v2.help.root}/*`, "routes/help/catchall.tsx"),
+  // Some project pages
+  ...prefix("p2", [
+    route(":namespace/:slug", "routes/projects/root.tsx", [
+      index("routes/projects/index.tsx"),
+      route(
+        RELATIVE_ROUTES.v2.projects.show.settings,
+        "routes/projects/settings.tsx"
+      ),
+    ]),
+  ]),
   // * matches all URLs, the ? makes it optional so it will match / as well
   route("*?", "routes/catchall.tsx"),
 ] satisfies RouteConfig;

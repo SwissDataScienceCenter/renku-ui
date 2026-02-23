@@ -20,11 +20,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { parseCookie } from "cookie";
 import { createContext, type MiddlewareFunction } from "react-router";
 
+import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import { usersApi } from "~/features/usersV2/api/users.api";
 import cookieSlice from "./cookie.slice.server";
 
 // Server-side redux utilities
 
+/** Cookie name for the browser session used in Renku. */
 const RENKU_SESSION_COOKIE = "_renku_session";
 
 /** Creates a redux store which can be used server-side. */
@@ -34,9 +36,11 @@ function makeStore() {
       // Slices
       [cookieSlice.reducerPath]: cookieSlice.reducer,
       // APIs
+      [projectV2Api.reducerPath]: projectV2Api.reducer,
       [usersApi.reducerPath]: usersApi.reducer,
     },
-    middleware: (gDM) => gDM().concat(usersApi.middleware),
+    middleware: (gDM) =>
+      gDM().concat(projectV2Api.middleware).concat(usersApi.middleware),
   });
 }
 
@@ -46,10 +50,12 @@ export type ServerRootState = ReturnType<ServerStoreType["getState"]>;
 
 export type ServerAppDispatch = ServerStoreType["dispatch"];
 
+/** React-router context for the server-side redux store. */
 export const storeContext = createContext<ServerStoreType | undefined>(
   undefined
 );
 
+/** React-router middleware which sets up the redux store. */
 export const storeMiddleware: MiddlewareFunction = function ({
   context,
   request,
