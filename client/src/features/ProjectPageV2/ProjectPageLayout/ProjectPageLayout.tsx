@@ -19,7 +19,9 @@
 import { ReactNode } from "react";
 import { Col, Row } from "reactstrap";
 
+import GroupNew from "~/features/groupsV2/new/GroupNew";
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
+import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
@@ -35,6 +37,9 @@ export default function ProjectPageLayout({
 }: ProjectPageLayoutProps) {
   return (
     <ContainerWrap>
+      <ProjectV2New />
+      <GroupNew />
+
       <Row>
         <Col xs={12}>
           <ProjectPageHeader project={project} />
