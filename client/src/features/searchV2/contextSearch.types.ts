@@ -29,17 +29,19 @@ interface FilterValue {
   label: ReactNode;
   quantity?: number;
   value: string;
+  id?: string;
 }
 
 type FilterType = "enum" | "number" | "string";
 
 interface BaseFilter {
+  buildQueryTerms?: (key: string, value: string | number) => string[];
   doNotPassEmpty?: boolean;
   label: ReactNode;
   mustQuote?: boolean;
   name: string;
   type: FilterType;
-  validFor?: GroupSearchEntity["type"][];
+  validFor?: SearchEntity["type"][];
 }
 
 export interface StringFilter extends BaseFilter {
@@ -52,6 +54,7 @@ export interface EnumFilter extends BaseFilter {
   allowSelectMany?: boolean;
   defaultValue?: string;
   type: "enum";
+  valueSeparator?: string;
 }
 
 export interface NumberFilter extends BaseFilter {

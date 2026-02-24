@@ -16,117 +16,12 @@
  * limitations under the License
  */
 
-import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router";
-
-import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import {
-  DEFAULT_PAGE_SIZE,
-  FIRST_PAGE,
-  MAX_PAGE_SIZE,
-} from "../searchV2.constants";
-import { setInitialQuery, setPage, setPerPage } from "../searchV2.slice";
-import { parseSearchQuery } from "../searchV2.utils";
-
+/**
+ * @deprecated Use `useSearchSync` instead. This hook is superseded by
+ * `useSearchSync.hook.ts` which handles bidirectional URL-Redux sync
+ * for all search components.
+ */
 export default function useSearch() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const dispatch = useAppDispatch();
-  const { initialQuery, query } = useAppSelector(({ searchV2 }) => searchV2);
-
-  // Used to prevent double history pushes
-  const queryRef = useRef<string>(query);
-
-  useEffect(() => {
-    const query = searchParams.get("q") ?? "";
-
-    const { canonicalQuery, dateFilters, filters, searchBarQuery, sortBy } =
-      parseSearchQuery(query);
-
-    if (query !== canonicalQuery) {
-      setSearchParams(
-        (prev) => {
-          prev.set("q", canonicalQuery);
-          return prev;
-        },
-        { replace: true }
-      );
-      return;
-    }
-
-    dispatch(
-      setInitialQuery({
-        dateFilters,
-        filters,
-        query,
-        searchBarQuery,
-        sortBy,
-      })
-    );
-    queryRef.current = query;
-  }, [dispatch, searchParams, setSearchParams]);
-
-  useEffect(() => {
-    const pageRaw = searchParams.get("page");
-
-    const page = parseInt(pageRaw ?? "", 10);
-    if (isNaN(page) || page < 1) {
-      setSearchParams(
-        (prev) => {
-          prev.set("page", FIRST_PAGE.toString());
-          return prev;
-        },
-        { replace: true }
-      );
-      return;
-    }
-
-    dispatch(setPage(page));
-  }, [dispatch, searchParams, setSearchParams]);
-
-  useEffect(() => {
-    const perPageRaw = searchParams.get("perPage");
-
-    const perPage = parseInt(perPageRaw ?? "", 10);
-    if (isNaN(perPage) || perPage < 1) {
-      setSearchParams(
-        (prev) => {
-          prev.set("perPage", DEFAULT_PAGE_SIZE.toString());
-          return prev;
-        },
-        { replace: true }
-      );
-      return;
-    }
-
-    if (perPage > 100) {
-      setSearchParams(
-        (prev) => {
-          prev.set("perPage", MAX_PAGE_SIZE.toString());
-          return prev;
-        },
-        { replace: true }
-      );
-      return;
-    }
-
-    dispatch(setPerPage(perPage));
-  }, [dispatch, searchParams, setSearchParams]);
-
-  useEffect(() => {
-    if (query != initialQuery) {
-      if (queryRef.current === query) {
-        return;
-      }
-
-      setSearchParams((prev) => {
-        prev.set("q", query);
-        prev.set("page", FIRST_PAGE.toString());
-        prev.set("perPage", DEFAULT_PAGE_SIZE.toString());
-        return prev;
-      });
-      queryRef.current = query;
-    }
-  }, [initialQuery, query, setSearchParams]);
+  // no-op: this hook is deprecated.
+  // Use useSearchSync from ./useSearchSync.hook.ts instead.
 }

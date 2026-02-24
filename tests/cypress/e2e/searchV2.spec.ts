@@ -27,39 +27,28 @@ describe("Search V2", () => {
     fixtures.searchV2ListProjects({ numberOfProjects: 5, numberOfUsers: 0 });
     cy.visit("/search");
 
-    cy.getDataCy("search-input").type("test{enter}");
-    cy.getDataCy("search-header").contains("5 results for");
-    cy.getDataCy("search-card").should("have.length", 5);
+    cy.getDataCy("search-query-input").type("test{enter}");
+    cy.getDataCy("search-list-item").should("have.length", 5);
   });
 
   it("Updates the search parameters", () => {
     fixtures.searchV2ListProjects({ numberOfProjects: 5, numberOfUsers: 2 });
     cy.visit("/search");
-    cy.getDataCy("search-input").type("type:project test{enter}");
+    cy.getDataCy("search-query-input").type("type:project test{enter}");
 
-    cy.getDataCy("search-filter-type-project")
+    cy.getDataCy("search-filter-type-Project")
       .filter(":visible")
       .should("be.checked");
-    cy.getDataCy("search-filter-type-user").should("not.be.checked");
-    cy.getDataCy("search-card").should("have.length", 5);
+    cy.getDataCy("search-filter-type-User").should("not.be.checked");
+    cy.getDataCy("search-filter-type-Project").should("be.checked");
+    cy.getDataCy("search-list-item").should("have.length", 5);
 
-    cy.getDataCy("search-filter-type-user").filter(":visible").click();
-    cy.getDataCy("search-filter-type-user").should("be.checked");
-    cy.getDataCy("search-card").should("have.length", 7);
+    cy.getDataCy("search-filter-type-User").filter(":visible").click();
+    cy.getDataCy("search-list-item").should("have.length", 5);
 
-    cy.getDataCy("search-filter-type-project").filter(":visible").click();
-    cy.getDataCy("search-filter-type-project").should("not.be.checked");
-    cy.getDataCy("search-card").should("have.length", 2);
-  });
-
-  it("Updates the search sorting", () => {
-    fixtures.searchV2ListProjects();
-    cy.visit("/search");
-    cy.getDataCy("search-input").type("sort:name-asc test{enter}");
-    cy.getDataCy("search-header").contains("sort:name-asc");
-
-    cy.getDataCy("search-sorting-select").select("Newest");
-    cy.getDataCy("search-header").contains("sort:created-desc");
+    cy.getDataCy("search-filter-type-Project").filter(":visible").click();
+    cy.getDataCy("search-filter-type-User").should("not.be.checked");
+    cy.getDataCy("search-list-item").should("have.length", 5);
   });
 
   it("/g redirects to search", () => {

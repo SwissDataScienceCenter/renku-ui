@@ -48,7 +48,10 @@ import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
-import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import {
+  ABSOLUTE_ROUTES,
+  RELATIVE_ROUTES,
+} from "../../routing/routes.constants";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import CreateGroupButton from "../groupsV2/new/CreateGroupButton";
 import {
@@ -254,7 +257,7 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
   const projectFooter = hasProjects ? (
     <ViewAllLink
       noItems={!hasProjects}
-      type="project"
+      type="Project"
       total={data?.total ?? 0}
     />
   ) : (
@@ -381,7 +384,7 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
   ) : null;
 
   const groupFooter = hasGroups ? (
-    <ViewAllLink noItems={!hasGroups} type="group" total={data?.total ?? 0} />
+    <ViewAllLink noItems={!hasGroups} type="Group" total={data?.total ?? 0} />
   ) : (
     <div className="d-flex">
       <Link
@@ -449,28 +452,35 @@ function ViewAllLink({
   noItems,
   total,
 }: {
-  type: "project" | "group";
+  type: "Project" | "Group";
   noItems: boolean;
   total: number;
 }) {
-  const searchUrl = ABSOLUTE_ROUTES.v2.search;
   return noItems ? (
     <Link
-      to={{ pathname: searchUrl, search: "q=type:${type}" }}
+      to={{
+        pathname: RELATIVE_ROUTES.v2.search,
+        search: new URLSearchParams({
+          type: type,
+        }).toString(),
+      }}
       data-cy={`view-other-${type}s-btn`}
     >
-      View other {type === "project" ? "projects" : "groups"}
+      View other {type === "Project" ? "projects" : "groups"}
     </Link>
   ) : (
     <Link
       to={{
-        pathname: searchUrl,
-        search: `q=role:owner,editor,viewer+type:${type}+sort:created-desc`,
+        pathname: RELATIVE_ROUTES.v2.search,
+        search: new URLSearchParams({
+          type: type,
+          role: "owner,editor,viewer",
+        }).toString(),
       }}
       data-cy={`view-my-${type}s-btn`}
     >
       View all my {total > 5 ? total : ""}{" "}
-      {type === "project" ? "projects" : "groups"}
+      {type === "Project" ? "projects" : "groups"}
     </Link>
   );
 }
@@ -487,7 +497,7 @@ function EmptyProjectsButtons() {
         Create my first project
       </Link>
       <Link
-        to={{ pathname: searchUrl, search: "q=type:project" }}
+        to={{ pathname: searchUrl, search: "q=type:Project" }}
         className={cx("btn", "btn-outline-primary")}
       >
         <Eye className={cx("bi", "me-1")} />

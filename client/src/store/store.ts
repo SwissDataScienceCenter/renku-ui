@@ -52,8 +52,8 @@ export const store = configureStore({
     [displaySlice.name]: displaySlice.reducer,
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [loginStateSlice.name]: loginStateSlice.reducer,
-    [searchV2Slice.name]: searchV2Slice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
+    [searchV2Slice.name]: searchV2Slice.reducer,
     [webSocketSlice.name]: webSocketSlice.reducer,
     [toastSlice.name]: toastSlice.reducer,
     // APIs
