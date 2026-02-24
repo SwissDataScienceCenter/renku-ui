@@ -29,11 +29,13 @@ export type ProviderData = {
   name: string;
   url: string;
 };
+export type RepositoryVisibility = "public" | "private";
 export type Metadata = {
   git_url: string;
   web_url?: string;
   pull_permission: boolean;
   push_permission?: boolean;
+  visibility: RepositoryVisibility;
 };
 export type RepositoryProviderData = {
   status: "valid" | "invalid" | "unknown";

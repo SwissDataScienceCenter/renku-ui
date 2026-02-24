@@ -32,7 +32,6 @@ import {
   CLOUD_STORAGE_PROVIDERS_SHORTLIST,
   CLOUD_STORAGE_SCHEMA_SHORTLIST,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-  EMPTY_CLOUD_STORAGE_DETAILS,
   STORAGES_WITH_ACCESS_MODE,
 } from "./projectCloudStorage.constants";
 import type {
@@ -123,9 +122,7 @@ export function getCredentialFieldDefinitions<
     : CloudStorageCredential)[];
 }
 
-export function getProvidedSensitiveFields(
-  configuration: RCloneConfig
-): string[] {
+function getProvidedSensitiveFields(configuration: RCloneConfig): string[] {
   return Object.entries(configuration)
     .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
     .map(([key]) => key);
@@ -248,6 +245,8 @@ export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
       description: override.description ?? currentSchema.description,
       position: override.position ?? currentSchema.position,
       forceReadOnly: override.forceReadOnly ?? currentSchema.forceReadOnly,
+      usesIntegration:
+        override.usesIntegration ?? currentSchema.usesIntegration,
     };
   }
   return currentSchema;
@@ -260,9 +259,13 @@ export function getSchemaOptions(
   targetProvider?: string,
   flags = { override: true, convertType: true, filterHidden: true }
 ): CloudStorageSchemaOption[] | undefined {
-  if (!targetSchema) return;
+  if (!targetSchema) {
+    return undefined;
+  }
   const storage = getSchema(schema, targetSchema);
-  if (!storage) return;
+  if (!storage) {
+    return undefined;
+  }
 
   const optionsOverridden = flags.override
     ? overrideOptions(storage.options, targetSchema, targetProvider)
@@ -272,7 +275,9 @@ export function getSchemaOptions(
     filterOption(option, shortList, targetProvider, flags.filterHidden)
   );
 
-  if (!optionsFiltered.length) return;
+  if (!optionsFiltered.length) {
+    return shortList ? [] : undefined;
+  }
 
   const sortedOptions = sortOptionsByPosition(optionsFiltered);
 
@@ -296,32 +301,6 @@ export function getSourcePathHint(
     placeholder: helpData.placeholder,
     label: helpData.label ?? "Source path",
   };
-}
-
-export function getCurrentStorageDetails(
-  existingCloudStorage?: CloudStorage | CloudStorageGet | null
-): CloudStorageDetails {
-  if (!existingCloudStorage) {
-    return EMPTY_CLOUD_STORAGE_DETAILS;
-  }
-  const configurationOptions = existingCloudStorage.storage.configuration
-    ? existingCloudStorage.storage.configuration
-    : {};
-  const { type, provider, ...options } = configurationOptions; // eslint-disable-line @typescript-eslint/no-unused-vars
-  const storageDetails: CloudStorageDetails = {
-    storageId: existingCloudStorage.storage.storage_id,
-    schema: existingCloudStorage.storage.configuration.type as string,
-    name: existingCloudStorage.storage.name,
-    mountPoint: existingCloudStorage.storage.target_path,
-    sourcePath: existingCloudStorage.storage.source_path,
-    readOnly: existingCloudStorage.storage.readonly,
-    provider: existingCloudStorage.storage.configuration.provider
-      ? (existingCloudStorage.storage.configuration.provider as string)
-      : undefined,
-    options,
-  };
-
-  return storageDetails;
 }
 
 export function findSensitive(

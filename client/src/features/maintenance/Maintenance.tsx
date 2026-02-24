@@ -18,12 +18,11 @@
 
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { BrowserRouter } from "react-router";
 import { Button, Col, Row } from "reactstrap";
 
 import AppContext, { type AppContextType } from "~/utils/context/appContext";
 import type { AppParams } from "~/utils/context/appParams.types";
-import { FooterNavbar } from "../landing/components/NavBar/NavBar";
+import RenkuFooterNavBar from "../landing/components/NavBar/RenkuFooterNavBar";
 import StatusSummary from "../platform/components/StatusSummary";
 
 interface MaintenanceProps {
@@ -36,23 +35,21 @@ function Maintenance({ info }: MaintenanceProps) {
       ? info
       : "Renku is undergoing maintenance. It should be available again soon. Please check back in a little while.";
   return (
-    <BrowserRouter>
-      <div className="min-vh-100 d-flex flex-column">
-        <div className="flex-grow-1">
-          <main role="main" className="container-fluid">
-            <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
-              <h1 className="text-center text-primary">
-                <FontAwesomeIcon className="me-3" icon={faWrench} />
-                {headerText}
-                <FontAwesomeIcon className="ms-3" icon={faWrench} />
-              </h1>
-              <p className="text-center mt-4">{body}</p>
-            </section>
-          </main>
-        </div>
-        <FooterNavbar />
+    <div className="min-vh-100 d-flex flex-column">
+      <div className="flex-grow-1">
+        <main role="main" className="container-fluid">
+          <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
+            <h1 className="text-center text-primary">
+              <FontAwesomeIcon className="me-3" icon={faWrench} />
+              {headerText}
+              <FontAwesomeIcon className="ms-3" icon={faWrench} />
+            </h1>
+            <p className="text-center mt-4">{body}</p>
+          </section>
+        </main>
       </div>
-    </BrowserRouter>
+      <RenkuFooterNavBar />
+    </div>
   );
 }
 
@@ -62,15 +59,7 @@ interface UnavailableProps {
 function Unavailable({ params }: UnavailableProps) {
   const statusLink = params.STATUSPAGE_ID;
   const appContext: AppContextType = {
-    client: undefined,
-    coreApiVersionedUrlConfig: {
-      coreApiVersion: "",
-      overrides: {},
-    },
-    location: undefined,
-    model: undefined,
     params,
-    webSocket: undefined,
   };
 
   return (

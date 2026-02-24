@@ -32,7 +32,7 @@ import { Input, Label, ListGroup } from "reactstrap";
 import { NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE } from "~/utils/constants/NewDocs";
 import useDebouncedState from "~/utils/customHooks/useDebouncedState.hook";
 import { InfoAlert } from "../../../../components/Alert";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
@@ -115,7 +115,7 @@ export default function EditLauncherFormContent({
       return (
         <>
           <p>Cannot load environments</p>
-          <RtkErrorAlert dismissible={false} error={error} />
+          <RtkOrDataServicesError dismissible={false} error={error} />
         </>
       );
     }

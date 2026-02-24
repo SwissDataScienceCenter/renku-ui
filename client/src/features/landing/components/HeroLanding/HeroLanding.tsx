@@ -4,17 +4,16 @@ import { Col, Row } from "reactstrap";
 
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
 import { HomeHeader } from "../../AnonymousHome";
-import { AnonymousHomeConfig } from "../../anonymousHome.types";
 import heroGraphic from "../../assets/heroBoxes.svg";
 import { useCustomHomePageProjectUrl } from "../../hooks/useCustomHomePageProjectUrl.hook";
 
-export default function HeroLanding(props: AnonymousHomeConfig) {
+export default function HeroLanding() {
   const loginUrl = useLoginUrl();
   const projectUrl = useCustomHomePageProjectUrl();
 
   return (
     <div id="rk-anon-home-hero" className="bg-navy">
-      <HomeHeader {...props} />
+      <HomeHeader />
       <div className={cx("container", "py-5", "px-3")}>
         <Row>
           <Col xs={12} lg={7}>

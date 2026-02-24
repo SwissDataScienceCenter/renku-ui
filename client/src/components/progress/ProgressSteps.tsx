@@ -35,7 +35,6 @@ import "./Progress.css";
 
 export enum ProgressType {
   Determinate = "Determinate",
-  Indeterminate = "Indeterminate",
 }
 
 export enum ProgressStyle {

@@ -38,7 +38,6 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
-import LazyHelpV2 from "../dashboardV2/LazyHelpV2";
 import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
 import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
 import LazyGroupV2Search from "../groupsV2/LazyGroupV2Search";
@@ -147,14 +146,6 @@ export default function RootV2() {
             element={<ProjectsV2Routes />}
           />
           <Route
-            path={RELATIVE_ROUTES.v2.help.root}
-            element={
-              <ContainerWrap>
-                <LazyHelpV2 />
-              </ContainerWrap>
-            }
-          />
-          <Route
             path={RELATIVE_ROUTES.v2.search}
             element={
               <ContainerWrap>
@@ -231,7 +222,7 @@ function RedirectToSearch({ entityType }: { entityType: string }) {
       },
       { replace: true }
     );
-  });
+  }, [entityType, navigate]);
 
   return null;
 }

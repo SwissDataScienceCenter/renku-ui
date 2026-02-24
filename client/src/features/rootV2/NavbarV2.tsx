@@ -24,7 +24,7 @@ import {
   QuestionCircle,
   Search,
 } from "react-bootstrap-icons";
-import { Link, useMatch } from "react-router";
+import { Link, useLocation, useMatch } from "react-router";
 import {
   Collapse,
   Dropdown,
@@ -36,7 +36,7 @@ import {
   NavItem,
 } from "reactstrap";
 
-import { ExternalDocsLink } from "../../components/LegacyExternalLinks";
+import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -46,6 +46,7 @@ import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import { GROUP_CREATION_HASH } from "../groupsV2/new/createGroup.constants";
 import StatusBanner from "../platform/components/StatusBanner";
 import { PROJECT_CREATION_HASH } from "../projectsV2/new/createProjectV2.constants";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 
 const RENKU_LOGO = "/static/public/img/logo.svg";
 
@@ -106,20 +107,23 @@ function NavbarItemHelp() {
           Help
         </Link>
         <DropdownItem divider />
-        <ExternalDocsLink
-          url={Links.DISCOURSE}
+        <ExternalLink
+          className="dropdown-item"
+          role="link"
           title="Forum"
-          className="dropdown-item"
+          url={Links.DISCOURSE}
         />
-        <ExternalDocsLink
-          url={Links.GITTER}
+        <ExternalLink
+          className="dropdown-item"
+          role="link"
           title="Gitter"
-          className="dropdown-item"
+          url={Links.GITTER}
         />
-        <ExternalDocsLink
-          url={Links.GITHUB}
-          title="GitHub"
+        <ExternalLink
           className="dropdown-item"
+          role="link"
+          title="GitHub"
+          url={Links.GITHUB}
         />
       </DropdownMenu>
     </Dropdown>
@@ -127,6 +131,9 @@ function NavbarItemHelp() {
 }
 
 export default function NavbarV2() {
+  const { pathname } = useLocation();
+  const { data: user } = useGetUserQueryState();
+
   const [isOpen, setIsOpen] = useState(false);
   const { params } = useContext(AppContext);
 
@@ -138,7 +145,10 @@ export default function NavbarV2() {
     ABSOLUTE_ROUTES.v2.projects.show.sessions.show
   );
 
-  if (matchesShowSessionPage) {
+  if (
+    (!user?.isLoggedIn && pathname === ABSOLUTE_ROUTES.root) ||
+    matchesShowSessionPage
+  ) {
     return null;
   }
 

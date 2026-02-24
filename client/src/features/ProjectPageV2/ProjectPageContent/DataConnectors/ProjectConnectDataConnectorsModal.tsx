@@ -40,7 +40,7 @@ import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "~/features/dataConnectorsV2/components/DataConnectorModal";
 import { NEW_DOCS_DATA_CONNECTORS_FROM_REPO } from "~/utils/constants/NewDocs";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import ModalHeader from "../../../../components/modal/ModalHeader";
@@ -386,7 +386,7 @@ function ProjectLinkDataConnectorBodyAndFooter({
             connector&apos;s side panel
           </div>
         </div>
-        {error != null && <RtkOrNotebooksError error={error} />}
+        {error != null && <RtkOrDataServicesError error={error} />}
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
@@ -537,7 +537,7 @@ function ProjectDoiDataConnectorBodyAndFooter({
             Paste a DOI, e.g. <code>10.5281/zenodo.3831980</code>.
           </div>
         </div>
-        {error !== null && <RtkOrNotebooksError error={error} />}
+        {error !== null && <RtkOrDataServicesError error={error} />}
       </ModalBody>
 
       <ModalFooter className="border-top" data-cy="data-connector-edit-footer">

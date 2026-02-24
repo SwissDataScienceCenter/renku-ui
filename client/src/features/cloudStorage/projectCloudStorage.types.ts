@@ -65,6 +65,7 @@ export interface CloudStorageSchema extends RCloneEntry {
   position?: number;
   forceReadOnly?: boolean; // ? Forces read-only access e.g. for storage that do not support write access
   options: CloudStorageSchemaOption[];
+  usesIntegration?: boolean; // ? True when the remote storage should use a Renku integration.
 }
 
 export interface CloudStorageOverride extends CloudStorageSchema {
@@ -104,3 +105,10 @@ export type CloudStorageDetails = {
 };
 
 export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
+
+export interface AddStorageMountForm {
+  name: string;
+  mountPoint: string;
+  readOnly: boolean;
+  saveCredentials: boolean;
+}

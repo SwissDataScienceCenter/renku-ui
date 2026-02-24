@@ -25,7 +25,7 @@ import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";
@@ -502,7 +502,9 @@ function CustomBuildEnvironmentValues({
         ) : error || !builds ? (
           <div>
             <p className="mb-0">Error: could not load build status</p>
-            {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+            {error && (
+              <RtkOrDataServicesError error={error} dismissible={false} />
+            )}
           </div>
         ) : lastBuild == null ? (
           <span className="fst-italic">

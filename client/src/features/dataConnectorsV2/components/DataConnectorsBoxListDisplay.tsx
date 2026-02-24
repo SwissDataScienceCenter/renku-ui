@@ -16,9 +16,11 @@
  * limitations under the License
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
+  CircleFill,
   EyeFill,
   Folder,
   Globe2,
@@ -35,6 +37,13 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { Loader } from "~/components/Loader";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import { CLOUD_STORAGE_INTEGRATION_KIND_MAP } from "~/features/cloudStorage/projectCloudStorage.constants";
+import {
+  useGetOauth2ConnectionsQuery,
+  useGetOauth2ProvidersQuery,
+} from "~/features/connectedServices/api/connectedServices.api";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import type {
@@ -145,9 +154,19 @@ export default function DataConnectorBoxListDisplay({
         >
           <Row className={cx("align-items-center", "g-3", "mx-0")}>
             <Col className={cx("d-flex", "flex-column", "min-w-0", "px-0")}>
-              <span className="fw-bold" data-cy="data-connector-name">
-                {name}
-              </span>
+              <div
+                className={cx(
+                  "d-flex",
+                  "flex-row",
+                  "gap-2",
+                  "align-items-center"
+                )}
+              >
+                <span className="fw-bold" data-cy="data-connector-name">
+                  {name}
+                </span>
+                <IntegrationBadge dataConnector={dataConnector} />
+              </div>
               <div
                 className={cx(
                   "align-items-center",
@@ -301,5 +320,77 @@ export function DataConnectorNotVisibleToAllUsersBadge({
         {DATA_CONNECTORS_VISIBILITY_WARNING}
       </UncontrolledTooltip>
     </>
+  );
+}
+
+interface IntegrationBadgeProps {
+  dataConnector: DataConnector;
+}
+
+export function IntegrationBadge({ dataConnector }: IntegrationBadgeProps) {
+  const providerKind = useMemo(
+    () =>
+      CLOUD_STORAGE_INTEGRATION_KIND_MAP[dataConnector.storage.storage_type],
+    [dataConnector.storage.storage_type]
+  );
+
+  const {
+    data: providers,
+    error: providersError,
+    isLoading: isLoadingProviders,
+  } = useGetOauth2ProvidersQuery(providerKind ? undefined : skipToken);
+  const {
+    data: connections,
+    error: connectionsError,
+    isLoading: isLoadingConnections,
+  } = useGetOauth2ConnectionsQuery(providerKind ? undefined : skipToken);
+  const error = providersError ?? connectionsError;
+  const isLoading = isLoadingProviders || isLoadingConnections;
+
+  const providersForSchema = useMemo(
+    () => providers?.filter(({ kind }) => kind === providerKind),
+    [providerKind, providers]
+  );
+
+  const connectionsForSchema = useMemo(
+    () =>
+      connections?.filter(
+        ({ provider_id, status }) =>
+          status === "connected" &&
+          providersForSchema?.some(({ id }) => id === provider_id)
+      ),
+    [connections, providersForSchema]
+  );
+
+  if (error || !providerKind) {
+    return null;
+  }
+
+  const color = isLoading
+    ? "light"
+    : connectionsForSchema && connectionsForSchema.length > 0
+    ? "success"
+    : providersForSchema && providersForSchema.length > 0
+    ? "warning"
+    : "danger";
+
+  return (
+    <RenkuBadge className="fw-normal" color={color} pill>
+      {isLoading ? (
+        <>
+          <Loader className="me-1" size={12} inline />
+          Checking integration status
+        </>
+      ) : (
+        <>
+          <CircleFill className={cx("bi", "me-1")} />
+          {connectionsForSchema && connectionsForSchema.length > 0
+            ? "Uses integration"
+            : providersForSchema && providersForSchema.length > 0
+            ? "Integration required"
+            : "Request integration"}
+        </>
+      )}
+    </RenkuBadge>
   );
 }

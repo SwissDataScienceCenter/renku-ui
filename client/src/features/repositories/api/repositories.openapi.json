@@ -64,9 +64,12 @@
           },
           "push_permission": {
             "type": "boolean"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/RepositoryVisibility"
           }
         },
-        "required": ["git_url", "pull_permission"]
+        "required": ["git_url", "pull_permission", "visibility"]
       },
       "RepositoryProviderData": {
         "type": "object",
@@ -133,35 +136,6 @@
         },
         "required": ["id", "name", "url"]
       },
-      "RepositoryMetadata": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "git_http_url": {
-            "$ref": "#/components/schemas/WebUrl"
-          },
-          "web_url": {
-            "$ref": "#/components/schemas/WebUrl"
-          },
-          "permissions": {
-            "$ref": "#/components/schemas/RepositoryPermissions"
-          }
-        },
-        "required": ["git_http_url", "web_url", "permissions"]
-      },
-      "RepositoryPermissions": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "pull": {
-            "type": "boolean"
-          },
-          "push": {
-            "type": "boolean"
-          }
-        },
-        "required": ["pull", "push"]
-      },
       "Ulid": {
         "description": "ULID identifier",
         "type": "string",
@@ -174,10 +148,10 @@
         "type": "string",
         "example": "some-id"
       },
-      "WebUrl": {
-        "description": "A URL which can be opened in a browser, i.e. a web page.",
+      "RepositoryVisibility": {
+        "description": "The visibility of a repository:\n- public: the repository can be pulled without credentials\n- private: the repository requires credentials to be pulled\n",
         "type": "string",
-        "example": "https://example.org"
+        "enum": ["public", "private"]
       },
       "ErrorResponse": {
         "type": "object",

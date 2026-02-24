@@ -34,7 +34,7 @@ import {
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -310,7 +310,7 @@ function DataConnectorRemoveUnlinkModal({
             </Row>
           </ModalBody>
           <ModalFooter>
-            {error && <RtkOrNotebooksError error={error} />}
+            {error && <RtkOrDataServicesError error={error} />}
             <div className="d-flex justify-content-end">
               <Button color="outline-danger" onClick={toggleModal}>
                 <XLg className={cx("bi", "me-1")} />

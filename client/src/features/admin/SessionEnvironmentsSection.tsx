@@ -30,7 +30,7 @@ import {
 } from "reactstrap";
 
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { ErrorLabel } from "~/components/formlabels/FormLabels";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
@@ -62,7 +62,7 @@ function SessionEnvironments() {
   }
 
   if (error) {
-    return <RtkErrorAlert error={error} />;
+    return <RtkOrDataServicesError error={error} />;
   }
 
   return (

@@ -17,9 +17,7 @@
  */
 
 import cx from "classnames";
-import { useRef } from "react";
 import { BoxArrowUpRight } from "react-bootstrap-icons";
-import { UncontrolledTooltip } from "reactstrap";
 
 type ExternalLinkButtonProps = Pick<
   ExternalLinkProps,
@@ -154,64 +152,4 @@ export function ExternalLink({
   if (role === "link" || role === "text")
     return <ExternalLinkText {...myProps} />;
   return <ExternalLinkButton {...myProps} />;
-}
-
-interface ExternalDocsLinkProps {
-  children?: React.ReactNode | null;
-  /** [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item' */
-  className?: string;
-  /** Show the icon to indicate an external link if true (default false) */
-  showLinkIcon?: boolean;
-  /** The text to show for the link */
-  title: string;
-  /** The URL to link to */
-  url: string;
-}
-/**
- * Link to external URL, with the role as text.
- */
-export function ExternalDocsLink(props: ExternalDocsLinkProps) {
-  const role = "link";
-  return <ExternalLink role={role} {...props} />;
-}
-
-interface ExternalIconLinkProps {
-  /** [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item' */
-  className?: string;
-  /** An icon to display */
-  icon: React.ReactNode;
-  /** The text to show for the link */
-  text: React.ReactNode;
-  /** The text of the tooltip */
-  tooltip?: React.ReactNode;
-  /** The URL to link to */
-  url: string;
-}
-export function ExternalIconLink({
-  className,
-  icon,
-  text,
-  tooltip,
-  url,
-}: ExternalIconLinkProps) {
-  const ref = useRef<HTMLAnchorElement>(null);
-
-  return (
-    <>
-      <a
-        href={url}
-        role="button"
-        className={cx("btn-icon-text", tooltip && "icon-link", className)}
-        ref={ref}
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        {icon}
-        {text}
-      </a>
-      {tooltip && (
-        <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
-      )}
-    </>
-  );
 }

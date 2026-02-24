@@ -41,7 +41,7 @@ import {
 } from "reactstrap";
 
 import ClampedParagraph from "../../../components/clamped/ClampedParagraph";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import Pagination from "../../../components/Pagination";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -120,7 +120,7 @@ function SearchV2ResultsContent() {
 
   if (searchResults.error) {
     return (
-      <RtkOrNotebooksError error={searchResults.error} dismissible={false} />
+      <RtkOrDataServicesError error={searchResults.error} dismissible={false} />
     );
   }
 

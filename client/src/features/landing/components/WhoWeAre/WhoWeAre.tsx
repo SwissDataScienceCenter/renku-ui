@@ -23,10 +23,7 @@ import { Col, Row } from "reactstrap";
 
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
-import {
-  ExternalDocsLink,
-  ExternalLink,
-} from "../../../../components/LegacyExternalLinks.js";
+import { ExternalLink } from "../../../../components/LegacyExternalLinks.js";
 import { Links } from "../../../../utils/constants/Docs.js";
 import logo_EPFL from "../../assets/EPFL.svg";
 import logo_ETH from "../../assets/ETH.svg";
@@ -79,14 +76,15 @@ export default function WhoWeAre() {
                 <Envelope size={20} /> Email us!
               </ExternalLink>
 
-              <ExternalDocsLink
-                url={Links.GITHUB}
-                title=""
+              <ExternalLink
                 className={cx("d-flex", "align-items-center", "gap-2", "fs-3")}
+                role="link"
+                title=""
+                url={Links.GITHUB}
               >
                 <Github className="text-black" size={24} />
                 Go to the Github repository
-              </ExternalDocsLink>
+              </ExternalLink>
             </div>
           </Col>
 

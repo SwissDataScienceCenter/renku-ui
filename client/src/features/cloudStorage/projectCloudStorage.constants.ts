@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
+import type { ProviderKind } from "../connectedServices/api/connectedServices.api";
 import type {
   AddCloudStorageState,
-  CloudStorageDetails,
   CloudStorageOverride,
   CloudStorageSchemaOption,
 } from "./projectCloudStorage.types";
@@ -36,14 +36,13 @@ export const CLOUD_STORAGE_OVERRIDE = {
       position: 2,
     },
     drive: {
-      hide: true,
+      usesIntegration: true,
     },
     gcs: {
       hide: true,
     },
-    // eslint-disable-next-line spellcheck/spell-checker
     dropbox: {
-      hide: true,
+      usesIntegration: true,
     },
     // eslint-disable-next-line spellcheck/spell-checker
     onedrive: {
@@ -177,6 +176,11 @@ export const CLOUD_OPTIONS_OVERRIDE = {
     user: { friendlyName: "Username" },
     vendor: { advanced: true },
   },
+  drive: {
+    alternate_export: { advanced: true },
+    scope: { advanced: true },
+    service_account_file: { advanced: true },
+  },
 } as Record<
   string,
   Record<string, Partial<CloudStorageSchemaOption> | undefined> | undefined
@@ -281,12 +285,7 @@ export const EMPTY_CLOUD_STORAGE_STATE: AddCloudStorageState = {
   saveCredentials: true,
 };
 
-export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {
-  schema: undefined,
-  provider: undefined,
-  options: undefined,
-  name: undefined,
-  sourcePath: undefined,
-  mountPoint: undefined,
-  readOnly: true,
-};
+export const CLOUD_STORAGE_INTEGRATION_KIND_MAP = {
+  drive: "google",
+  dropbox: "dropbox",
+} as Record<string, ProviderKind | undefined>;
