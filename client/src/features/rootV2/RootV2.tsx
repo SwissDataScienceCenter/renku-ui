@@ -229,13 +229,6 @@ function ProjectsV2Routes() {
     <Routes>
       <Route index element={<RedirectToSearch entityType="project" />} />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
-        {/* <Route element={<LazyProjectPageV2Show />}>
-          <Route index element={<LazyProjectPageOverview />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.projects.show.settings}
-            element={<LazyProjectPageSettings />}
-          />
-        </Route> */}
         <Route
           path={RELATIVE_ROUTES.v2.projects.show.sessions.root}
           element={<ProjectSessionsRoutes />}
