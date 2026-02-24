@@ -30,7 +30,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import type { GroupMemberResponse } from "../../projectsV2/api/namespace.api";
 import { usePatchGroupsByGroupSlugMembersMutation } from "../../projectsV2/api/projectV2.enhanced-api";
@@ -123,7 +123,7 @@ function EditGroupMemberRoleForm({
     <>
       <ModalBody>
         <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-          {error && <RtkOrNotebooksError error={error} />}
+          {error && <RtkOrDataServicesError error={error} />}
           <div className={cx("align-items-baseline", "d-flex", "flex-row")}>
             <Label for="member-role-select-input">
               <ProjectMemberDisplay member={member} />

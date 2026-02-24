@@ -23,7 +23,7 @@ import { Database, XLg } from "react-bootstrap-icons";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { ErrorAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
@@ -114,7 +114,7 @@ export function DataConnectorModalBodyAndFooter({
         {schemaQueryResult.isFetching ? (
           <Loader />
         ) : schemaQueryResult.error ? (
-          <RtkOrNotebooksError error={schemaQueryResult.error} />
+          <RtkOrDataServicesError error={schemaQueryResult.error} />
         ) : (
           <DataConnectorModalBody
             dataConnector={dataConnector}

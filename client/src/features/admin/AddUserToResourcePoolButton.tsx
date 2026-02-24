@@ -38,7 +38,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
   usePostResourcePoolsByResourcePoolIdUsersMutation,
@@ -162,7 +162,7 @@ function AddUserToResourcePoolModal({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className={cx("mb-3", pickedUser == null && "d-none")}>
             <Label

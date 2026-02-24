@@ -22,7 +22,7 @@ import cx from "classnames";
 import { generatePath, Link } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import EnvironmentLogsV2 from "../../components/LogsV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -80,7 +80,7 @@ function ErrorState({
   return (
     <div>
       <p>Cannot show sessions.</p>
-      <RtkOrNotebooksError error={error} />
+      <RtkOrDataServicesError error={error} />
     </div>
   );
 }

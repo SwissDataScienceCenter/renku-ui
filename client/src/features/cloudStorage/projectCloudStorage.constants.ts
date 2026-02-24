@@ -19,7 +19,6 @@
 import type { ProviderKind } from "../connectedServices/api/connectedServices.api";
 import type {
   AddCloudStorageState,
-  CloudStorageDetails,
   CloudStorageOverride,
   CloudStorageSchemaOption,
 } from "./projectCloudStorage.types";
@@ -284,16 +283,6 @@ export const EMPTY_CLOUD_STORAGE_STATE: AddCloudStorageState = {
   showAllProviders: false,
   showAllOptions: false,
   saveCredentials: true,
-};
-
-export const EMPTY_CLOUD_STORAGE_DETAILS: CloudStorageDetails = {
-  schema: undefined,
-  provider: undefined,
-  options: undefined,
-  name: undefined,
-  sourcePath: undefined,
-  mountPoint: undefined,
-  readOnly: true,
 };
 
 export const CLOUD_STORAGE_INTEGRATION_KIND_MAP = {
