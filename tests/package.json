@@ -13,16 +13,16 @@
     "format-check": "prettier -c .",
     "format-changed": "pretty-quick --pattern \"tests/**/*.*\"",
     "format-commit": "pretty-quick --staged --pattern \"tests/**/*.*\"",
-    "start": "CYPRESS=1 npm --prefix ../client run start:strict-port",
+    "start": "CYPRESS=1 BASE_URL=http://localhost:3000/ GATEWAY_URL=http://localhost:3000/api UISERVER_URL=http://localhost:3000/ui-server npm --prefix ../client run start:strict-port",
     "client:install": "npm --prefix ../client clean-install",
     "client:build": "npm --prefix ../client run build",
-    "client:preview": "CYPRESS=1 npm --prefix ../client run preview"
+    "client:preview": "CYPRESS=1 BASE_URL=http://localhost:3000/ GATEWAY_URL=http://localhost:3000/api UISERVER_URL=http://localhost:3000/ui-server npm --prefix ../client run preview"
   },
   "author": "Swiss Data Science Center",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
-    "cypress": "^13.7.1",
+    "cypress": "^15.10.0",
     "cypress-file-upload": "^5.0.8",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.8.0",
