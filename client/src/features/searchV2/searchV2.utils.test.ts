@@ -19,7 +19,6 @@
 import {
   DEFAULT_CREATION_DATE_FILTER,
   DEFAULT_ROLE_FILTER,
-  DEFAULT_SORT_BY,
   DEFAULT_TYPE_FILTER,
   DEFAULT_VISIBILITY_FILTER,
 } from "./searchV2.constants";
@@ -28,7 +27,7 @@ import { buildSearchQuery, parseSearchQuery } from "./searchV2.utils";
 describe("Renku 2.0 search utilities", () => {
   describe("parseSearchQuery()", () => {
     it("parses the empty string", () => {
-      const { canonicalQuery, dateFilters, filters, searchBarQuery, sortBy } =
+      const { canonicalQuery, dateFilters, filters, searchBarQuery } =
         parseSearchQuery("");
 
       expect(canonicalQuery).toBe("");
@@ -39,14 +38,12 @@ describe("Renku 2.0 search utilities", () => {
       expect(filters.role.values).toStrictEqual([]);
       expect(filters.type.values).toStrictEqual([]);
       expect(filters.visibility.values).toStrictEqual([]);
-
-      expect(sortBy.value).toBe(DEFAULT_SORT_BY.value);
     });
 
     it("parses a query with filters", () => {
       const query =
-        "role:editor type:group,user visibility:private created>today-31d sort:name-asc test";
-      const { canonicalQuery, dateFilters, filters, searchBarQuery, sortBy } =
+        "role:editor type:group,user visibility:private created>today-31d test";
+      const { canonicalQuery, dateFilters, filters, searchBarQuery } =
         parseSearchQuery(query);
 
       expect(canonicalQuery).toBe(query);
@@ -57,8 +54,6 @@ describe("Renku 2.0 search utilities", () => {
       expect(filters.role.values).toStrictEqual(["editor"]);
       expect(filters.type.values).toStrictEqual(["group", "user"]);
       expect(filters.visibility.values).toStrictEqual(["private"]);
-
-      expect(sortBy.value).toBe("name-asc");
     });
   });
 
@@ -74,7 +69,6 @@ describe("Renku 2.0 search utilities", () => {
           visibility: DEFAULT_VISIBILITY_FILTER,
         },
         searchBarQuery: "",
-        sortBy: DEFAULT_SORT_BY,
       });
 
       expect(result).toBe("");
@@ -96,11 +90,10 @@ describe("Renku 2.0 search utilities", () => {
           visibility: { key: "visibility", values: ["private"] },
         },
         searchBarQuery: "test",
-        sortBy: { key: "sort", value: "name-desc" },
       });
 
       expect(result).toBe(
-        "role:editor type:group,user visibility:private created<today-90d sort:name-desc test"
+        "role:editor type:group,user visibility:private created<today-90d test"
       );
     });
   });

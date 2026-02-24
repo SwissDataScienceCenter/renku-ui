@@ -22,7 +22,7 @@ import { useEffect } from "react";
 import { generatePath, Outlet, useNavigate, useParams } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { NamespaceContextType } from "~/features/groupsV2/search/useNamespaceContext";
+import { NamespaceContextType } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import { Loader } from "../../../components/Loader";

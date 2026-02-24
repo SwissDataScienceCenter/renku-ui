@@ -17,9 +17,9 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { DateTime } from "luxon";
+import React, { useCallback, useMemo, useState } from "react";
 import { XCircleFill } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router";
 import {
   AccordionBody,
   AccordionHeader,
@@ -34,59 +34,79 @@ import {
 } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
-import { useNamespaceContext } from "~/features/groupsV2/search/useNamespaceContext";
 import { useGetGroupsByGroupSlugMembersQuery } from "~/features/projectsV2/api/namespace.api";
+import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
-import { useGroupSearch } from "./groupSearch.hook";
-import { Filter, GroupSearchEntity } from "./groupSearch.types";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { useGetSearchQueryQuery } from "../api/searchV2Api.api";
 import {
   DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   FILTER_CONTENT,
+  FILTER_CONTENT_NAMESPACE,
+  FILTER_DATE,
   FILTER_KEYWORD,
   FILTER_MEMBER,
-  FILTER_PAGE,
+  FILTER_MY_ROLE,
   FILTER_VISIBILITY,
   VALUE_SEPARATOR_AND,
-} from "./groupsSearch.constants";
+} from "../contextSearch.constants";
+import { Filter, GroupSearchEntity } from "../contextSearch.types";
+import {
+  buildCustomDateFilterValue,
+  parseCustomDateFilter,
+} from "../contextSearch.utils";
+import { useReduxFilterParam } from "../hooks/useReduxFilterParam.hook";
+import { selectSearchApiQuery } from "../searchV2.slice";
+import { buildApiQueryWithoutType } from "../searchV2.utils";
 
-export default function GroupSearchFilters() {
-  const [searchParams] = useSearchParams();
-  const { data: search } = useGroupSearch();
-  const { data: searchAnyType } = useGroupSearch([FILTER_CONTENT.name]);
+export default function SearchFilters() {
+  const state = useAppSelector(({ searchV2 }) => searchV2);
+  const apiQuery = useAppSelector(selectSearchApiQuery);
+  const apiQueryWithoutType = useMemo(
+    () => buildApiQueryWithoutType(state),
+    [state]
+  );
+
+  const { data: search } = useGetSearchQueryQuery({ params: apiQuery });
+  const { data: searchAnyType } = useGetSearchQueryQuery({
+    params: apiQueryWithoutType,
+  });
+
   const { namespace, kind } = useNamespaceContext();
   const { data: groupMembers } = useGetGroupsByGroupSlugMembersQuery(
     {
-      groupSlug: namespace,
+      groupSlug: namespace ?? "",
     },
-    { skip: kind !== "group" }
+    { skip: kind !== "group" || !namespace }
   );
+  const isNamespace = kind == "group" || kind == "user";
 
-  // Add numbers to the content types. Mind that this requires an additional request.
+  const filterContentByType =
+    kind === "group" || kind === "user"
+      ? FILTER_CONTENT_NAMESPACE
+      : FILTER_CONTENT;
   const hydratedFilterContentAllowedValues = useMemo(() => {
-    return FILTER_CONTENT.allowedValues.map((option) => ({
+    return filterContentByType.allowedValues.map((option) => ({
       ...option,
       quantity: searchAnyType?.facets?.entityType?.[option.value] ?? 0,
     }));
-  }, [searchAnyType?.facets?.entityType]);
+  }, [searchAnyType?.facets?.entityType, filterContentByType.allowedValues]);
   const filterContentWithQuantities = useMemo<Filter>(() => {
     return {
-      ...FILTER_CONTENT,
+      ...filterContentByType,
       allowedValues: hydratedFilterContentAllowedValues,
     };
-  }, [hydratedFilterContentAllowedValues]);
+  }, [hydratedFilterContentAllowedValues, filterContentByType]);
 
-  // Create the enum filter for keywords with quantities.
   const selectedKeywords = useMemo(() => {
-    return (
-      searchParams.get(FILTER_KEYWORD.name)?.split(VALUE_SEPARATOR_AND) ?? []
-    );
-  }, [searchParams]);
+    return state.keywords ? state.keywords.split(VALUE_SEPARATOR_AND) : [];
+  }, [state.keywords]);
   const hydratedFilterKeywordAllowedValues = useMemo(() => {
     return Object.entries(search?.facets?.keywords ?? {})
       .map(([value, quantity]) => ({
         value,
         label: (
-          <GroupFilterKeywordRendering
+          <FilterKeywordRendering
             label={value}
             quantity={quantity}
             selected={selectedKeywords.includes(value)}
@@ -96,16 +116,15 @@ export default function GroupSearchFilters() {
         _quantity: quantity,
       }))
       .sort((a, b) => {
-        // sort by quantity first, then by value
         const qtyDiff = b._quantity - a._quantity;
         if (qtyDiff !== 0) return qtyDiff;
         return a.value.localeCompare(b.value);
       });
   }, [search?.facets?.keywords, selectedKeywords]);
-  // Add the current keywords if missing so users can always de-select.
-  if (searchParams.get(FILTER_KEYWORD.name)) {
-    const existingKeywords =
-      searchParams.get(FILTER_KEYWORD.name)?.split(VALUE_SEPARATOR_AND) ?? [];
+
+  // Ensure currently selected keywords appear even if missing from facets
+  if (state.keywords) {
+    const existingKeywords = state.keywords.split(VALUE_SEPARATOR_AND);
     existingKeywords.forEach((keyword) => {
       if (
         !hydratedFilterKeywordAllowedValues.some(
@@ -115,7 +134,7 @@ export default function GroupSearchFilters() {
         hydratedFilterKeywordAllowedValues.unshift({
           value: keyword.trim(),
           label: (
-            <GroupFilterKeywordRendering
+            <FilterKeywordRendering
               label={keyword.trim()}
               quantity={0}
               selected={selectedKeywords.includes(keyword.trim())}
@@ -134,7 +153,6 @@ export default function GroupSearchFilters() {
     };
   }, [hydratedFilterKeywordAllowedValues]);
 
-  // Create the enum filter for members
   const hydratedFilterMembersAllowedValues = useMemo(() => {
     return (
       groupMembers?.map((member) => ({
@@ -162,30 +180,40 @@ export default function GroupSearchFilters() {
     <div className={cx("d-flex", "flex-column", "gap-3", "mb-3")}>
       <h4 className={cx("d-sm-none", "mb-0")}>Filters</h4>
 
-      <GroupSearchFilter filter={filterContentWithQuantities} />
-      {kind == "group" && (
-        <GroupSearchFilter filter={filterMembersWithValues} />
-      )}
-      <GroupSearchFilter
+      <SearchFilter filter={filterContentWithQuantities} />
+      {kind == "group" && <SearchFilter filter={filterMembersWithValues} />}
+
+      <SearchFilter
         defaultElementsToShow={10}
         filter={filterKeywordWithQuantities}
         hiddenDecoration
       />
-      <GroupSearchFilter filter={FILTER_VISIBILITY} />
+
+      <SearchFilter filter={FILTER_VISIBILITY} />
+      <SearchFilter
+        filter={FILTER_DATE}
+        renderAfterOptions={(visualization) => (
+          <SearchDateFilterCustomOption
+            filter={FILTER_DATE}
+            visualization={visualization}
+          />
+        )}
+      />
+      {!isNamespace && <SearchFilter filter={FILTER_MY_ROLE} />}
     </div>
   );
 }
 
-interface GroupFilterKeywordRenderingProps {
+interface FilterKeywordRenderingProps {
   label: string;
   quantity: number;
   selected?: boolean;
 }
-function GroupFilterKeywordRendering({
+function FilterKeywordRendering({
   label,
   quantity,
   selected = false,
-}: GroupFilterKeywordRenderingProps) {
+}: FilterKeywordRenderingProps) {
   return (
     <div className={cx("align-items-center", "d-flex")}>
       <div className="fs-3">
@@ -207,33 +235,34 @@ function GroupFilterKeywordRendering({
   );
 }
 
-interface GroupSearchFilterProps {
+interface SearchFilterProps {
   defaultElementsToShow?: number;
   filter: Filter;
   hiddenDecoration?: boolean;
+  renderAfterOptions?: (visualization: "accordion" | "list") => React.ReactNode;
 }
-function GroupSearchFilter({
+function SearchFilter({
   defaultElementsToShow = DEFAULT_ELEMENTS_LIMIT_IN_FILTERS,
   filter,
   hiddenDecoration = false,
-}: GroupSearchFilterProps) {
-  // Do not show invalid filter, but give the opportunity to reset it.
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchedType = searchParams.get(FILTER_CONTENT.name);
+  renderAfterOptions,
+}: SearchFilterProps) {
+  const { contentType } = useAppSelector(({ searchV2 }) => searchV2);
+  const { currentValue, updateParam } = useReduxFilterParam(filter.name);
 
   const resetFilter = useCallback(() => {
-    const params = new URLSearchParams(searchParams);
-    params.delete(filter.name);
-    setSearchParams(params);
-  }, [filter.name, searchParams, setSearchParams]);
+    updateParam("");
+  }, [updateParam]);
 
   const isInvalid = useMemo(() => {
     return (
       filter.validFor &&
-      !filter.validFor.includes(searchedType as GroupSearchEntity["type"])
+      !filter.validFor.includes(contentType as GroupSearchEntity["type"])
     );
-  }, [filter.validFor, searchedType]);
-  if (isInvalid && searchParams.get(filter.name) === null) return null;
+  }, [filter.validFor, contentType]);
+
+  const hasValue = currentValue !== "";
+  if (isInvalid && !hasValue) return null;
 
   return (
     <>
@@ -261,17 +290,18 @@ function GroupSearchFilter({
                     className="w-100"
                     color="outline-danger"
                     onClick={resetFilter}
-                    data-cy={`group-search-filter-${filter.name}-reset`}
+                    data-cy={`search-filter-${filter.name}-reset`}
                   >
                     <XCircleFill className={cx("bi", "me-1")} />
                     Reset filter
                   </Button>
                 </Col>
               ) : (
-                <GroupSearchFilterContent
+                <SearchFilterContent
                   defaultElementsToShow={defaultElementsToShow}
                   filter={filter}
                   hiddenDecoration={hiddenDecoration}
+                  renderAfterOptions={renderAfterOptions}
                   visualization="accordion"
                 />
               )}
@@ -293,7 +323,7 @@ function GroupSearchFilter({
               <Button
                 color="outline-danger"
                 onClick={resetFilter}
-                data-cy={`group-search-filter-${filter.name}-reset`}
+                data-cy={`search-filter-${filter.name}-reset`}
                 size="sm"
               >
                 <XCircleFill className={cx("bi", "me-1")} />
@@ -301,10 +331,11 @@ function GroupSearchFilter({
               </Button>
             </>
           ) : (
-            <GroupSearchFilterContent
+            <SearchFilterContent
               defaultElementsToShow={defaultElementsToShow}
               filter={filter}
               hiddenDecoration={hiddenDecoration}
+              renderAfterOptions={renderAfterOptions}
               visualization="list"
             />
           )}
@@ -314,53 +345,44 @@ function GroupSearchFilter({
   );
 }
 
-interface GroupSearchFilterContentProps {
+interface SearchFilterContentProps {
   defaultElementsToShow?: number;
   filter: Filter;
   hiddenDecoration?: boolean;
+  renderAfterOptions?: (visualization: "accordion" | "list") => React.ReactNode;
   visualization?: "accordion" | "list";
 }
-function GroupSearchFilterContent({
+function SearchFilterContent({
   defaultElementsToShow,
   filter,
   hiddenDecoration,
+  renderAfterOptions,
   visualization = "list",
-}: GroupSearchFilterContentProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
+}: SearchFilterContentProps) {
   const [showAll, setShowAll] = useState(false);
-  const current = searchParams.get(filter.name) ?? "";
+  const { currentValue: current, updateParam } = useReduxFilterParam(
+    filter.name
+  );
   const allowSelectMany = filter.type === "enum" && filter.allowSelectMany;
 
   const onChange = useCallback(
     (value: string) => {
-      const params = new URLSearchParams(searchParams);
       if (filter.doNotPassEmpty && !value) {
-        params.delete(filter.name);
+        updateParam("");
       } else if (allowSelectMany) {
-        // Move logic to handle multiple values to a utility function?
-        const currentValues =
-          params.get(filter.name)?.split(VALUE_SEPARATOR_AND) ?? [];
+        const separator = filter.valueSeparator ?? VALUE_SEPARATOR_AND;
+        const currentValues = current ? current.split(separator) : [];
         if (currentValues.includes(value)) {
           const newValues = currentValues.filter((v) => v !== value);
-          if (newValues.length > 0) {
-            params.set(filter.name, newValues.join(VALUE_SEPARATOR_AND));
-          } else {
-            params.delete(filter.name);
-          }
+          updateParam(newValues.join(separator));
         } else {
-          currentValues.push(value);
-          params.set(filter.name, currentValues.join(VALUE_SEPARATOR_AND));
+          updateParam([...currentValues, value].join(separator));
         }
       } else {
-        params.set(filter.name, value);
+        updateParam(value);
       }
-      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
-      if (params.get(FILTER_PAGE.name) !== pageDefaultValue) {
-        params.set(FILTER_PAGE.name, pageDefaultValue);
-      }
-      setSearchParams(params);
     },
-    [allowSelectMany, filter, searchParams, setSearchParams]
+    [allowSelectMany, current, filter, updateParam]
   );
 
   if (filter.type === "enum") {
@@ -374,12 +396,14 @@ function GroupSearchFilterContent({
           <>
             {elementsToShow.map((element) => {
               return (
-                <GroupSearchFilterRadioOrCheckboxElement
-                  identifier={`group-search-filter-${filter.name}-${element.value}`}
+                <SearchFilterRadioOrCheckboxElement
+                  identifier={`search-filter-${filter.name}-${
+                    element.id ?? element.value
+                  }`}
                   isChecked={
                     allowSelectMany
                       ? current
-                          .split(VALUE_SEPARATOR_AND)
+                          .split(filter.valueSeparator ?? VALUE_SEPARATOR_AND)
                           .includes(element.value)
                       : current === element.value
                   }
@@ -393,7 +417,7 @@ function GroupSearchFilterContent({
                   {element.quantity !== undefined ? (
                     <Badge className="ms-1">{element.quantity}</Badge>
                   ) : null}
-                </GroupSearchFilterRadioOrCheckboxElement>
+                </SearchFilterRadioOrCheckboxElement>
               );
             })}
             {defaultElementsToShow &&
@@ -410,6 +434,7 @@ function GroupSearchFilterContent({
         ) : (
           <p className={cx("fst-italic", "mb-0", "text-muted")}>None</p>
         )}
+        {renderAfterOptions?.(visualization)}
       </>
     );
   }
@@ -417,7 +442,7 @@ function GroupSearchFilterContent({
   return null;
 }
 
-interface GroupSearchFilterRadioOrCheckboxElementProps {
+interface SearchFilterRadioOrCheckboxElementProps {
   children: React.ReactNode;
   hiddenDecoration?: boolean;
   identifier: string;
@@ -426,7 +451,7 @@ interface GroupSearchFilterRadioOrCheckboxElementProps {
   type: "radio" | "checkbox";
   visualization: "accordion" | "list";
 }
-function GroupSearchFilterRadioOrCheckboxElement({
+function SearchFilterRadioOrCheckboxElement({
   children,
   hiddenDecoration,
   identifier,
@@ -434,7 +459,7 @@ function GroupSearchFilterRadioOrCheckboxElement({
   onChange,
   type,
   visualization,
-}: GroupSearchFilterRadioOrCheckboxElementProps) {
+}: SearchFilterRadioOrCheckboxElementProps) {
   return (
     <div
       className={cx(
@@ -471,5 +496,127 @@ function GroupSearchFilterRadioOrCheckboxElement({
         {children}
       </label>
     </div>
+  );
+}
+
+interface SearchDateInputProps {
+  id: string;
+  label: string;
+  max?: string;
+  min?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string;
+}
+
+function SearchDateInput({
+  id,
+  label,
+  max,
+  min,
+  onChange,
+  value,
+}: SearchDateInputProps) {
+  return (
+    <div>
+      <label className={cx("form-label", "small", "mb-1")} htmlFor={id}>
+        {label}
+      </label>
+      <input
+        className={cx("form-control", "form-control-sm")}
+        data-cy={id}
+        id={id}
+        max={max}
+        min={min}
+        onChange={onChange}
+        type="date"
+        value={value}
+      />
+    </div>
+  );
+}
+
+interface SearchDateFilterCustomOptionProps {
+  filter: Filter;
+  visualization: "accordion" | "list";
+}
+
+function SearchDateFilterCustomOption({
+  filter,
+  visualization,
+}: SearchDateFilterCustomOptionProps) {
+  const { currentValue, updateParam } = useReduxFilterParam(filter.name);
+
+  const predefinedValues = useMemo(
+    () =>
+      filter.type === "enum" ? filter.allowedValues.map((v) => v.value) : [],
+    [filter]
+  );
+
+  const isCustom =
+    currentValue !== "" && !predefinedValues.includes(currentValue);
+
+  const { afterDate, beforeDate } = useMemo(
+    () =>
+      isCustom
+        ? parseCustomDateFilter(currentValue)
+        : { afterDate: "", beforeDate: "" },
+    [currentValue, isCustom]
+  );
+
+  const today = useMemo(() => DateTime.utc().toISODate() ?? "", []);
+
+  const onSelectCustom = useCallback(() => {
+    if (!isCustom) {
+      updateParam(`<${today}`);
+    }
+  }, [isCustom, today, updateParam]);
+
+  const onChangeAfter = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateParam(buildCustomDateFilterValue(e.target.value, beforeDate));
+    },
+    [beforeDate, updateParam]
+  );
+
+  const onChangeBefore = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateParam(buildCustomDateFilterValue(afterDate, e.target.value));
+    },
+    [afterDate, updateParam]
+  );
+
+  const id = `search-filter-${filter.name}-custom`;
+
+  return (
+    <>
+      <SearchFilterRadioOrCheckboxElement
+        identifier={id}
+        isChecked={isCustom}
+        onChange={onSelectCustom}
+        type="radio"
+        visualization={visualization}
+      >
+        Custom
+      </SearchFilterRadioOrCheckboxElement>
+      {isCustom && (
+        <div className={cx("d-flex", "flex-column", "gap-2", "mt-2", "ps-4")}>
+          <SearchDateInput
+            id={`${id}-after`}
+            label="From:"
+            max={beforeDate || today}
+            onChange={onChangeAfter}
+            value={afterDate}
+          />
+          <SearchDateInput
+            id={`${id}-before`}
+            label="To:"
+            max={today}
+            min={afterDate || undefined}
+            onChange={onChangeBefore}
+            value={beforeDate}
+          />
+        </div>
+      )}
+    </>
   );
 }

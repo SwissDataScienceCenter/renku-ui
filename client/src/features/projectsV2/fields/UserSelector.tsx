@@ -223,7 +223,7 @@ export function UserControl(props: UserControlProps) {
       params: {
         page: 1,
         per_page: USER_REQUEST_LIMIT,
-        q: `type:user ${lookupQuery}`,
+        q: `type:User ${lookupQuery}`,
       },
     },
     { skip: !lookupQuery || lookupQuery == null || lookupQuery.length < 2 }

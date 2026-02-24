@@ -60,7 +60,7 @@ import {
 } from "../../cloudStorage/projectCloudStorage.constants";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import { EntityPill } from "../../searchV2/components/SearchV2Results";
+import EntityPill from "../../searchV2/components/EntityPill";
 import { storageSecretNameToFieldName } from "../../secretsV2/secrets.utils";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import type {
