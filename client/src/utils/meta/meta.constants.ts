@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,26 +16,13 @@
  * limitations under the License.
  */
 
-import { debounce, DebouncedFunc, DebounceSettings } from "lodash-es";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import renkuSocialCard from "~/styles/assets/renkuSocialCard.png";
 
-export default function useDebouncedState<S>(
-  initialState: S | (() => S),
-  wait?: number,
-  options?: DebounceSettings
-): [S, DebouncedFunc<Dispatch<SetStateAction<S>>>] {
-  const [state, setState] = useState(initialState);
+export const DEFAULT_META_TITLE_SEPARATOR: string = " · ";
 
-  const debouncedSet = useMemo<DebouncedFunc<Dispatch<SetStateAction<S>>>>(
-    () => debounce(setState, wait, options),
-    [wait, options]
-  );
+export const DEFAULT_META_DESCRIPTION: string =
+  "Work together on data science projects reproducibly. Share code, data and computational environments whilst accessing free computing resources."; // eslint-disable-line spellcheck/spell-checker
 
-  useEffect(() => {
-    return () => {
-      debouncedSet.cancel();
-    };
-  }, [debouncedSet]);
+export const DEFAULT_META_IMAGE: string = renkuSocialCard;
 
-  return [state, debouncedSet];
-}
+export const DEFAULT_META_LOCALE: string = "en";

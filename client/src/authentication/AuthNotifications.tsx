@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,26 +16,21 @@
  * limitations under the License.
  */
 
-import { debounce, DebouncedFunc, DebounceSettings } from "lodash-es";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 
-export default function useDebouncedState<S>(
-  initialState: S | (() => S),
-  wait?: number,
-  options?: DebounceSettings
-): [S, DebouncedFunc<Dispatch<SetStateAction<S>>>] {
-  const [state, setState] = useState(initialState);
+import useRenkuToast from "~/components/toast/useRenkuToast";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
+import { triggerNotifications } from "./listeners.client";
 
-  const debouncedSet = useMemo<DebouncedFunc<Dispatch<SetStateAction<S>>>>(
-    () => debounce(setState, wait, options),
-    [wait, options]
-  );
+export default function AuthNotifications() {
+  const { ready } = useAppSelector(({ toast }) => toast);
+  const { renkuToastSuccess, renkuToastWarning } = useRenkuToast();
 
   useEffect(() => {
-    return () => {
-      debouncedSet.cancel();
-    };
-  }, [debouncedSet]);
+    if (ready) {
+      triggerNotifications({ renkuToastSuccess, renkuToastWarning });
+    }
+  }, [ready, renkuToastSuccess, renkuToastWarning]);
 
-  return [state, debouncedSet];
+  return null;
 }

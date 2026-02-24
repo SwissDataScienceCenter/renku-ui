@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,26 +16,24 @@
  * limitations under the License.
  */
 
-import { debounce, DebouncedFunc, DebounceSettings } from "lodash-es";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export default function useDebouncedState<S>(
-  initialState: S | (() => S),
-  wait?: number,
-  options?: DebounceSettings
-): [S, DebouncedFunc<Dispatch<SetStateAction<S>>>] {
-  const [state, setState] = useState(initialState);
+import { ToastState } from "./toast.types";
 
-  const debouncedSet = useMemo<DebouncedFunc<Dispatch<SetStateAction<S>>>>(
-    () => debounce(setState, wait, options),
-    [wait, options]
-  );
+const initialState: ToastState = {
+  ready: false,
+};
 
-  useEffect(() => {
-    return () => {
-      debouncedSet.cancel();
-    };
-  }, [debouncedSet]);
+export const toastSlice = createSlice({
+  name: "toast",
+  initialState,
+  reducers: {
+    setReady: (state, action: PayloadAction<boolean>) => {
+      state.ready = action.payload;
+    },
+    reset: () => initialState,
+  },
+});
 
-  return [state, debouncedSet];
-}
+export const { setReady, reset } = toastSlice.actions;
+export default toastSlice;
