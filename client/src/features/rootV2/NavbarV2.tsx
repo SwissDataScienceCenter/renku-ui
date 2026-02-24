@@ -226,7 +226,7 @@ export default function NavbarV2() {
                   title="Dashboard"
                   to={ABSOLUTE_ROUTES.v2.root}
                 >
-                  Dashboard
+                  {user?.isLoggedIn ? "Dashboard" : "Home"}
                 </RenkuNavLinkV2>
               </NavItem>
               <NavItem>
