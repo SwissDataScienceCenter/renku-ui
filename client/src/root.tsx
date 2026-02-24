@@ -61,29 +61,10 @@ type ServerLoaderReturn = ReturnType<typeof data<ServerLoaderReturn_>>;
 export const middleware = [storeMiddleware] satisfies MiddlewareFunction[];
 
 export async function loader(): Promise<ServerLoaderReturn> {
-  // console.log("client/src/root.tsx");
-  // const store = context.get(storeContext);
-  // const { renkuSessionCookie } = store
-  //   ? cookieSlice.selectSlice(store.getState())
-  //   : {};
-  // if (store != null && renkuSessionCookie) {
-  //   const userSelector = usersApi.endpoints.getUser.select();
-  //   const preState = userSelector(store.getState());
-  //   console.log("in client/src/root.tsx initial state:", {
-  //     requestId: preState.requestId,
-  //   });
-  //   store.dispatch(usersApi.endpoints.getUser.initiate());
-  //   await Promise.all(store.dispatch(usersApi.util.getRunningQueriesThunk()));
-  //   // const userSelector = usersApi.endpoints.getUser.select();
-  //   const { data, error, requestId } = userSelector(store.getState());
-  //   console.log("in client/src/root.tsx:", { data, error, requestId });
-  //   // To populate on the client side: usersApi.util.upsertQueryData('getUser', undefined, <data>)
-  // }
-  // console.log({ state: store?.getState() });
-
   const clientSideFetch =
     process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
   if (clientSideFetch) {
+    //? In development, we do not load the /config.json data client-side
     return data({
       clientSideFetch,
       config: undefined,

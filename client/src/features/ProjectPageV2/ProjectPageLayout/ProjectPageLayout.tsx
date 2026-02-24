@@ -16,93 +16,32 @@
  * limitations under the License.
  */
 
-import { ReactNode, useEffect } from "react";
-import {
-  generatePath,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router";
+import { ReactNode } from "react";
 import { Col, Row } from "reactstrap";
 
+import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import { Loader } from "../../../components/Loader";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import ProjectNotFound from "../../projectsV2/notFound/ProjectNotFound";
 import ProjectPageHeader from "../ProjectPageHeader/ProjectPageHeader";
 import ProjectPageNav from "../ProjectPageNav/ProjectPageNav";
 
 interface ProjectPageLayoutProps {
+  project: Project;
   children?: ReactNode;
 }
 
 export default function ProjectPageLayout({
+  project,
   children,
 }: ProjectPageLayoutProps) {
-  const { namespace, slug } = useParams<{
-    namespace: string | undefined;
-    slug: string | undefined;
-  }>();
-  const { data, currentData, isLoading, error } =
-    useGetNamespacesByNamespaceProjectsAndSlugQuery({
-      namespace: namespace ?? "",
-      slug: slug ?? "",
-      withDocumentation: true,
-    });
-
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    if (namespace && currentData && currentData.namespace !== namespace) {
-      const previousBasePath = generatePath(
-        ABSOLUTE_ROUTES.v2.projects.show.root,
-        {
-          namespace: namespace,
-          slug: currentData.slug,
-        }
-      );
-      const deltaUrl = pathname.slice(previousBasePath.length);
-      const newUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: currentData.namespace,
-        slug: currentData.slug,
-      });
-      navigate(newUrl + deltaUrl, { replace: true });
-    } else if (slug && currentData && currentData.slug !== slug) {
-      const previousBasePath = generatePath(
-        ABSOLUTE_ROUTES.v2.projects.show.root,
-        {
-          namespace: currentData.namespace,
-          slug: slug,
-        }
-      );
-      const deltaUrl = pathname.slice(previousBasePath.length);
-      const newUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-        namespace: currentData.namespace,
-        slug: currentData.slug,
-      });
-      navigate(newUrl + deltaUrl, { replace: true });
-    }
-  }, [currentData, namespace, navigate, pathname, slug]);
-
-  if (isLoading) {
-    return <Loader className="align-self-center" />;
-  }
-
-  if (error || data == null) {
-    return <ProjectNotFound error={error} />;
-  }
-
   return (
     <ContainerWrap>
       <Row>
         <Col xs={12}>
-          <ProjectPageHeader project={data} />
+          <ProjectPageHeader project={project} />
         </Col>
         <Col xs={12} className="mb-2">
           <div className="mb-3">
-            <ProjectPageNav project={data} />
+            <ProjectPageNav project={project} />
           </div>
         </Col>
         <Col xs={12}>

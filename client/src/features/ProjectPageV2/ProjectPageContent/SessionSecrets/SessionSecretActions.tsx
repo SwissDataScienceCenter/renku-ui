@@ -40,6 +40,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { useProject } from "~/routes/projects/root";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -54,7 +55,6 @@ import {
   useGetUserQueryState,
   useGetUserSecretByIdQuery,
 } from "../../../usersV2/api/users.api";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import DescriptionField from "./fields/DescriptionField";
 import FilenameField from "./fields/FilenameField";

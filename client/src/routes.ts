@@ -27,7 +27,7 @@ export default [
   // Not found page for /help/*
   route(`${RELATIVE_ROUTES.v2.help.root}/*`, "routes/help/catchall.tsx"),
   // Some project pages
-  ...prefix("p2", [
+  ...prefix("p", [
     route(":namespace/:slug", "routes/projects/root.tsx", [
       index("routes/projects/index.tsx"),
       route(

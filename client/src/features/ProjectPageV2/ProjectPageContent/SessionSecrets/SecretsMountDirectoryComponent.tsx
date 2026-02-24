@@ -31,13 +31,13 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useProject } from "~/routes/projects/root";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import SecretsMountDirectoryField from "../../../projectsV2/fields/SecretsMountDirectoryField";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 export default function SecretsMountDirectoryComponent() {

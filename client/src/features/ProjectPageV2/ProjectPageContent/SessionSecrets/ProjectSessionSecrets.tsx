@@ -23,6 +23,7 @@ import { ShieldLock } from "react-bootstrap-icons";
 import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { useProject } from "~/routes/projects/root";
 import { InfoAlert } from "../../../../components/Alert";
 import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import { Loader } from "../../../../components/Loader";
@@ -36,7 +37,6 @@ import {
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
   useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import AddSessionSecretButton from "./AddSessionSecretButton";
 import SecretsMountDirectoryComponent from "./SecretsMountDirectoryComponent";

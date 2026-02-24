@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,21 +13,12 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
-import { lazy, Suspense } from "react";
+import { CONFIG_JSON_SERVER_ONLY } from "../constants/config.constants";
 
-import PageLoader from "../../components/PageLoader";
-
-const ProjectPageV2Show = lazy(
-  () => import("./ProjectPageContainer/ProjectPageContainer")
-);
-
-export default function LazyProjectPageV2Show() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <ProjectPageV2Show />
-    </Suspense>
-  );
-}
+/** The base URL for the Renku API, works both client-side and server-side. */
+export const API_BASE_URL = CONFIG_JSON_SERVER_ONLY?.GATEWAY_URL
+  ? `${CONFIG_JSON_SERVER_ONLY.GATEWAY_URL}/data`
+  : "/api/data";
