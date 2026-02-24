@@ -46,7 +46,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkErrorAlert } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
@@ -207,7 +207,7 @@ function AddManyUsersToResourcePoolModal({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {result.error && <RtkErrorAlert error={result.error} />}
+          {result.error && <RtkOrDataServicesError error={result.error} />}
 
           {step === "input-emails" && (
             <div>

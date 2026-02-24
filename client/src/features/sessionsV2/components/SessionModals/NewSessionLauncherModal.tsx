@@ -31,7 +31,7 @@ import { useParams } from "react-router";
 import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { SuccessAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -220,7 +220,7 @@ export default function NewSessionLauncherModal({
               </>
             )}
             <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-              {result.error && <RtkOrNotebooksError error={result.error} />}
+              {result.error && <RtkOrDataServicesError error={result.error} />}
               {step === "environment" && (
                 <EnvironmentFields
                   control={control}

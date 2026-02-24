@@ -21,7 +21,7 @@ import { Controller } from "react-hook-form";
 import { Input, ListGroup } from "reactstrap";
 
 import { WarnAlert } from "../../../../components/Alert";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
@@ -55,7 +55,7 @@ export function GlobalEnvironmentFields({
       {error && (
         <>
           <p>Cannot load environments</p>
-          <RtkErrorAlert dismissible={false} error={error} />
+          <RtkOrDataServicesError dismissible={false} error={error} />
         </>
       )}
       {environments && environments.length === 0 && (

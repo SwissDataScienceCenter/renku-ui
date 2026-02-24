@@ -32,7 +32,7 @@ import {
 
 import { useProject } from "~/routes/projects/root";
 import { SuccessAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -201,7 +201,7 @@ function AddSessionSecretModalContentStep1({
         <p>Add a new slot for a secret to be mounted in sessions.</p>
 
         {result.error && (
-          <RtkOrNotebooksError error={result.error} dismissible={false} />
+          <RtkOrDataServicesError error={result.error} dismissible={false} />
         )}
 
         <NameField control={control} errors={errors} name="name" />

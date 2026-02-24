@@ -37,7 +37,7 @@ import useRenkuToast from "~/components/toast/useRenkuToast";
 import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 import { useProject } from "~/routes/projects/root";
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../../notifications/Notifications.constants";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
@@ -474,7 +474,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           userPermissions={permissions}
         />
 
-        {error && <RtkErrorAlert error={error} />}
+        {error && <RtkOrDataServicesError error={error} />}
 
         {isSuccess && (
           <SuccessAlert className="mb-0" dismissible={false} timeout={0}>

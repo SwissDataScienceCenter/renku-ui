@@ -47,15 +47,10 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "~/components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import {
-  ErrorAlert,
-  InfoAlert,
-  SuccessAlert,
-  WarnAlert,
-} from "../../components/Alert";
+import { ErrorAlert, SuccessAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/LegacyExternalLinks";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import {
@@ -69,13 +64,10 @@ import {
 } from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
-import AddStorageBreadcrumbNavbar from "./AddStorageBreadcrumbNavbar";
-import AddStorageMountSaveCredentialsInfo from "./AddStorageMountSaveCredentialsInfo";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_INTEGRATION_KIND_MAP,
   CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
-  CLOUD_STORAGE_TOTAL_STEPS,
   STORAGES_WITH_ACCESS_MODE,
 } from "./projectCloudStorage.constants";
 import {
@@ -96,49 +88,6 @@ import {
 } from "./projectCloudStorage.utils";
 
 import styles from "./CloudStorage.module.scss";
-
-interface AddOrEditCloudStorageProps {
-  schema: CloudStorageSchema[];
-  setStorage: (newDetails: Partial<CloudStorageDetails>) => void;
-  setState: (newState: Partial<AddCloudStorageState>) => void;
-  state: AddCloudStorageState;
-  storage: CloudStorageDetails;
-  storageSecrets: DataConnectorSecret[];
-  projectId?: string;
-}
-
-export default function AddOrEditCloudStorage({
-  schema,
-  setStorage,
-  setState,
-  state,
-  storage,
-  projectId,
-}: AddOrEditCloudStorageProps) {
-  const ContentByStep =
-    state.step >= 0 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
-      ? mapStepToElement[state.step]
-      : null;
-
-  if (ContentByStep)
-    return (
-      <>
-        <AddStorageAdvancedToggle state={state} setState={setState} />
-        <AddStorageBreadcrumbNavbar state={state} setState={setState} />
-        <ContentByStep
-          schema={schema}
-          state={state}
-          storage={storage}
-          setState={setState}
-          setStorage={setStorage}
-          storageSecrets={[]}
-          validationSucceeded={false}
-          projectId={projectId}
-        />
-      </>
-    );
-  return <p>Error - not implemented yet</p>;
-}
 
 interface AddStorageAdvancedToggleProps {
   setState: (newState: Partial<AddCloudStorageState>) => void;
@@ -200,15 +149,6 @@ export interface AddStorageStepProps {
   validationSucceeded: boolean;
   projectId?: string;
 }
-
-const mapStepToElement: {
-  [key: number]: React.ComponentType<AddStorageStepProps>;
-} = {
-  0: AddStorageAdvanced,
-  1: AddStorageType,
-  2: AddStorageOptions,
-  3: AddStorageMount,
-};
 
 interface AddStorageAdvancedForm {
   sourcePath: string;
@@ -1089,235 +1029,6 @@ export function AddStorageOptions({
   );
 }
 
-// *** Add storage: page 3 of 3, with name and mount path *** //
-
-export interface AddStorageMountForm {
-  name: string;
-  mountPoint: string;
-  readOnly: boolean;
-  saveCredentials: boolean;
-}
-type AddStorageMountFormFields =
-  | "name"
-  | "mountPoint"
-  | "readOnly"
-  | "saveCredentials";
-export function AddStorageMount({
-  isV2,
-  schema,
-  setStorage,
-  setState,
-  storage,
-  state,
-  validationSucceeded,
-}: AddStorageStepProps) {
-  const {
-    control,
-    formState: { errors, touchedFields },
-    setValue,
-    getValues,
-  } = useForm<AddStorageMountForm>({
-    mode: "onChange",
-    defaultValues: {
-      name: storage.name || "",
-      mountPoint:
-        storage.mountPoint ||
-        `external_storage/${storage.schema?.toLowerCase()}`,
-      readOnly: storage.readOnly ?? false,
-      saveCredentials: state.saveCredentials,
-    },
-  });
-  const onFieldValueChange = useCallback(
-    (field: AddStorageMountFormFields, value: string | boolean) => {
-      setValue(field, value);
-      if (field === "name" && !touchedFields.mountPoint && !storage.storageId)
-        setValue("mountPoint", `external_storage/${value}`);
-      if (field === "saveCredentials") {
-        if (isV2) {
-          setState({ saveCredentials: !!value });
-          return;
-        }
-      }
-      setStorage({ ...getValues() });
-    },
-    [
-      getValues,
-      isV2,
-      setState,
-      setStorage,
-      storage.storageId,
-      setValue,
-      touchedFields.mountPoint,
-    ]
-  );
-
-  const options = getSchemaOptions(
-    schema,
-    true,
-    storage.schema,
-    storage.provider
-  );
-  const secretFields =
-    options == null
-      ? []
-      : Object.values(options).filter((o) => o && o.convertedType === "secret");
-  const hasPasswordFieldWithInput = secretFields.some(
-    (o) => storage.options && storage.options[o.name]
-  );
-
-  const selectedSchema = useMemo(
-    () => getSchema(schema, storage.schema),
-    [schema, storage.schema]
-  );
-  if (selectedSchema?.forceReadOnly) {
-    storage.readOnly = true;
-  }
-
-  return (
-    <form className="form-rk-green" data-cy="cloud-storage-edit-mount">
-      <h3>Final details</h3>
-      <p>We need a few more details to mount your storage properly.</p>
-
-      <div className="mb-3">
-        <Label className="form-label" for="name">
-          Name
-        </Label>
-
-        <Controller
-          name="name"
-          control={control}
-          render={({ field }) => (
-            <input
-              id="name"
-              type="string"
-              {...field}
-              className={cx("form-control", errors.name && "is-invalid")}
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("name", e.target.value);
-              }}
-            />
-          )}
-          rules={{
-            // TODO: check this won't create a duplicate
-            validate: (value) =>
-              !value
-                ? "Please provide a name"
-                : /^[a-zA-Z0-9_-]+$/.test(value) ||
-                  "Name can only contain letters, numbers, underscores (_), and dashes (-)",
-          }}
-        />
-        <div className="invalid-feedback">
-          {errors.name?.message?.toString()}
-        </div>
-        <div className={cx("form-text", "text-muted")}>
-          This name will help you identify the storage. It should be unique for
-          this project and can only contain letters, numbers, _, -.
-        </div>
-      </div>
-
-      <div className="mb-3">
-        <Label className="form-label" for="mountPoint">
-          Mount point
-        </Label>
-
-        <Controller
-          name="mountPoint"
-          control={control}
-          render={({ field }) => (
-            <input
-              id="mountPoint"
-              type="string"
-              {...field}
-              className={cx("form-control", errors.mountPoint && "is-invalid")}
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("mountPoint", e.target.value);
-              }}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a mount point.</div>
-        <div className={cx("form-text", "text-muted")}>
-          This is the name of the folder where you will find your external
-          storage in sessions. You should pick something different from the
-          folders used in the projects repository, and from folders mounted by
-          other storage services.
-        </div>
-      </div>
-
-      <div>
-        <Label className="form-label" for="readOnly">
-          Read-only
-        </Label>
-
-        <Controller
-          name="readOnly"
-          control={control}
-          render={({ field }) => (
-            <input
-              id="readOnly"
-              type="checkbox"
-              {...field}
-              className={cx(
-                "form-check-input",
-                "ms-1",
-                errors.readOnly && "is-invalid"
-              )}
-              onChange={(e) => {
-                field.onChange(e);
-                onFieldValueChange("readOnly", e.target.checked);
-              }}
-              value=""
-              checked={storage.readOnly ?? false}
-              readOnly={selectedSchema?.forceReadOnly ?? false}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        {selectedSchema?.forceReadOnly ? (
-          <div className="mt-1">
-            <InfoAlert dismissible={false} timeout={0}>
-              <p className="mb-0">
-                This cloud storage only supports read-only access.
-              </p>
-            </InfoAlert>
-          </div>
-        ) : (
-          !storage.readOnly && (
-            <div className="mt-1">
-              <WarnAlert dismissible={false}>
-                <p className="mb-0">
-                  You are mounting this storage in read-write mode. If you have
-                  read-only access, please check the box to prevent errors with
-                  some storage types.
-                </p>
-              </WarnAlert>
-            </div>
-          )
-        )}
-        <div className={cx("form-text", "text-muted")}>
-          Check this box to mount the storage in read-only mode. You should
-          always check this if you do not have credentials to write. You can use
-          this in any case to prevent accidental data modifications.
-        </div>
-      </div>
-
-      {storage.storageId == null &&
-        isV2 &&
-        hasPasswordFieldWithInput &&
-        validationSucceeded && (
-          <AddStorageMountSaveCredentialsInfo
-            control={control}
-            onFieldValueChange={onFieldValueChange}
-            state={state}
-          />
-        )}
-    </form>
-  );
-}
-
 /* Alert box for data connectors which use a Renku integration. */
 
 interface IntegrationAlertProps {
@@ -1370,7 +1081,7 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
   }
 
   if (error) {
-    return <RtkOrNotebooksError dismissible={false} error={error} />;
+    return <RtkOrDataServicesError dismissible={false} error={error} />;
   }
 
   // This should not happen: if "usesIntegration" is set to true,

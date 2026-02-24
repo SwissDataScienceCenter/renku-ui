@@ -43,7 +43,7 @@ import {
 } from "reactstrap";
 
 import { InfoAlert, WarnAlert } from "../../components/Alert";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
@@ -105,7 +105,7 @@ export default function ConnectedServicesPage() {
   const content = isLoading ? (
     <PageLoader />
   ) : error ? (
-    <RtkOrNotebooksError error={error} dismissible={false} />
+    <RtkOrDataServicesError error={error} dismissible={false} />
   ) : !isUserLoggedIn ? (
     <InfoAlert dismissible={false}>
       Anonymous users cannot connect to external services.
@@ -388,7 +388,7 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
   }
 
   if (error) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+    return <RtkOrDataServicesError error={error} dismissible={false} />;
   }
 
   if (account == null) {
@@ -467,7 +467,7 @@ function GitHubAppInstallations({
   if (hasImageRegistry) return null;
 
   if (error) {
-    return <RtkOrNotebooksError error={error} dismissible={false} />;
+    return <RtkOrDataServicesError error={error} dismissible={false} />;
   }
 
   if (account == null || installations == null) {

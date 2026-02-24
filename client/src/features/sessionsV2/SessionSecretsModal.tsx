@@ -45,7 +45,7 @@ import {
 
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 import { WarnAlert } from "../../components/Alert";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import ScrollableModal from "../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -356,7 +356,7 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
     <Form noValidate onSubmit={onSubmit}>
       <CardBody className="py-0">
         {result.error && (
-          <RtkOrNotebooksError error={result.error} dismissible={false} />
+          <RtkOrDataServicesError error={result.error} dismissible={false} />
         )}
 
         <div className="mb-3">
@@ -457,7 +457,7 @@ function ProvideExistingContent({ secretSlot }: ProvideExistingContentProps) {
     <Form noValidate onSubmit={onSubmit}>
       <CardBody className="py-0">
         {result.error && (
-          <RtkOrNotebooksError error={result.error} dismissible={false} />
+          <RtkOrDataServicesError error={result.error} dismissible={false} />
         )}
 
         <SelectUserSecretField

@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 
 import { useProject } from "~/routes/projects/root";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
@@ -172,7 +172,7 @@ function UpdateSecretsMountDirectoryModal({
           </p>
 
           {result.error && (
-            <RtkOrNotebooksError error={result.error} dismissible={false} />
+            <RtkOrDataServicesError error={result.error} dismissible={false} />
           )}
 
           <SecretsMountDirectoryField

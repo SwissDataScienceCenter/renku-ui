@@ -23,7 +23,7 @@ import { type Control } from "react-hook-form";
 
 import { useProject } from "~/routes/projects/root";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
@@ -87,7 +87,7 @@ export default function BuilderEnvironmentFields({
   ) : error || !data ? (
     <>
       <p className="mb-0">Error: could not check code repositories.</p>
-      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
   ) : firstEligibleRepository == null || firstEligibleRepository < 0 ? (
     <WarnAlert dismissible={false}>
