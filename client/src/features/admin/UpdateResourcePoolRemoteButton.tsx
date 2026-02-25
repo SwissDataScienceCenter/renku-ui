@@ -35,8 +35,31 @@ import {
   usePatchResourcePoolsByResourcePoolIdMutation,
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
-import type { ResourcePoolForm } from "./adminComputeResources.types";
+import type {
+  RemoteConfiguration,
+  ResourcePoolForm,
+} from "./adminComputeResources.types";
 import ResourcePoolRemoteSection from "./forms/ResourcePoolRemoteSection";
+
+function remoteDefaultValues(
+  remote: ResourcePoolWithId["remote"]
+): RemoteConfiguration {
+  if (remote?.kind === "runai") {
+    return {
+      enabled: true,
+      kind: "runai",
+      baseUrl: remote.base_url ?? "",
+    };
+  }
+  return {
+    enabled: remote != null,
+    kind: "firecrest",
+    providerId: remote?.provider_id ?? "",
+    apiUrl: remote?.api_url ?? "",
+    systemName: remote?.system_name ?? "",
+    partition: remote?.partition ?? "",
+  };
+}
 
 interface UpdateResourcePoolRemoteButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -87,20 +110,19 @@ function UpdateResourcePoolRemoteModal({
     reset,
   } = useForm<UpdateResourcePoolRemoteForm>({
     defaultValues: {
-      remote: {
-        enabled: remote != null,
-        kind: remote?.kind ?? "firecrest",
-        providerId: remote?.provider_id ?? "",
-        apiUrl: remote?.api_url ?? "",
-        systemName: remote?.system_name ?? "",
-        partition: remote?.partition ?? "",
-      },
+      remote: remoteDefaultValues(remote),
     },
   });
   const onSubmit = useCallback(
     (data: UpdateResourcePoolRemoteForm) => {
-      const remote = data.remote.enabled
+      const remote = !data.remote.enabled
+        ? {}
+        : data.remote.kind === "runai"
         ? {
+            kind: data.remote.kind,
+            base_url: data.remote.baseUrl.trim(),
+          }
+        : {
             kind: data.remote.kind,
             provider_id: data.remote.providerId?.trim()
               ? data.remote.providerId.trim()
@@ -110,8 +132,7 @@ function UpdateResourcePoolRemoteModal({
             partition: data.remote.partition?.trim()
               ? data.remote.partition.trim()
               : undefined,
-          }
-        : {};
+          };
       updateResourcePool({ resourcePoolId: id, resourcePoolPatch: { remote } });
     },
     [id, updateResourcePool]
@@ -125,14 +146,7 @@ function UpdateResourcePoolRemoteModal({
 
   useEffect(() => {
     reset({
-      remote: {
-        enabled: remote != null,
-        kind: remote?.kind ?? "firecrest",
-        providerId: remote?.provider_id ?? "",
-        apiUrl: remote?.api_url ?? "",
-        systemName: remote?.system_name ?? "",
-        partition: remote?.partition ?? "",
-      },
+      remote: remoteDefaultValues(remote),
     });
   }, [remote, reset]);
 
