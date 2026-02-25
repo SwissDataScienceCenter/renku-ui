@@ -41,10 +41,14 @@ export default function SessionLogsModal({
     sessionName ? { sessionId: sessionName } : skipToken
   );
 
-  const query = useGetSessionsBySessionIdLogsQuery({
-    sessionId: sessionName,
-    maxLines: SESSION_LOGS_MAX_LINES,
-  });
+  const query = useGetSessionsBySessionIdLogsQuery(
+    isOpen
+      ? {
+          sessionId: sessionName,
+          maxLines: SESSION_LOGS_MAX_LINES,
+        }
+      : skipToken
+  );
 
   return (
     <LogsModal
@@ -59,6 +63,7 @@ export default function SessionLogsModal({
           ? session?.status?.message
           : undefined
       }
+      defaultTab="amalthea-session"
     />
   );
 }

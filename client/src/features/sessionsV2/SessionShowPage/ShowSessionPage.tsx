@@ -200,11 +200,6 @@ export default function ShowSessionPage() {
     };
   }, [thisSession?.status?.state, isLoading, isFetching, dispatch]);
 
-  // const toggleModalLogs = useCallback(() => {
-  //   dispatch(
-  //     displaySlice.actions.toggleSessionLogsModal({ targetServer: sessionName })
-  //   );
-  // }, [dispatch, sessionName]);
   const [showLogsModal, setShowLogsModal] = useState<boolean>(false);
   const toggleLogsModal = useCallback(() => {
     setShowLogsModal((isOpen) => !isOpen);

@@ -68,6 +68,7 @@ interface LogsModalModalProps {
   sessionState?: SessionV2["status"]["state"];
   title: ReactNode;
   toggle: () => void;
+  defaultTab?: string;
 }
 
 export default function LogsModal({
@@ -78,6 +79,7 @@ export default function LogsModal({
   sessionState,
   title,
   toggle,
+  defaultTab,
 }: LogsModalModalProps) {
   const { data, error, isLoading, isFetching, refetch } = query;
 
@@ -109,6 +111,7 @@ export default function LogsModal({
           isFetching={isFetching}
           isLoading={isLoading}
           refetch={refetch}
+          defaultTab={defaultTab}
         />
       </ModalBody>
       <ModalFooter>
@@ -123,7 +126,7 @@ export default function LogsModal({
   );
 }
 
-type LogsModalBodyProps = LogsQuery;
+type LogsModalBodyProps = LogsQuery & Pick<LogsModalModalProps, "defaultTab">;
 
 function LogsModalBody({
   data,
@@ -131,6 +134,7 @@ function LogsModalBody({
   isFetching,
   isLoading,
   refetch,
+  defaultTab,
 }: LogsModalBodyProps) {
   if (isLoading) {
     return <Loader />;
@@ -157,7 +161,7 @@ function LogsModalBody({
     return <NoLogsAvailable refetch={refetch} />;
   }
 
-  return <TabbedLogs data={data} />;
+  return <TabbedLogs data={data} defaultTab={defaultTab} />;
 }
 
 type NoLogsAvailableProps = Pick<LogsQuery, "refetch">;
