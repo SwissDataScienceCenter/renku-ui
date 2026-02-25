@@ -122,6 +122,7 @@
     "@storybook/test-runner": "^0.22.0",
     "@storybook/testing-library": "^0.2.2",
     "@storybook/theming": "8.6.15",
+    "@types/bootstrap": "^5.2.10",
     "@types/compression": "^1.8.1",
     "@types/express": "^5.0.3",
     "@types/lodash-es": "^4.17.12",

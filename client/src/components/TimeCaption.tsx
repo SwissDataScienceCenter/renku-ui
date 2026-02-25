@@ -18,9 +18,9 @@
 
 import cx from "classnames";
 import { DateTime, Duration } from "luxon";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { UncontrolledTooltip } from "reactstrap";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
+import { Tooltip } from "~/utils/bootstrap/bootstrap.client";
 import {
   ensureDateTime,
   toHumanDateTime,
@@ -51,6 +51,10 @@ export function TimeCaption({
     datetime != null && datetime.isValid
       ? toHumanRelativeDuration({ datetime, now })
       : "at unknown time";
+  const humanDatetime = useMemo(
+    () => (datetime?.isValid ? toHumanDateTime({ datetime: now }) : null),
+    [datetime]
+  );
 
   const className = noCaption ? className_ : cx("time-caption", className_);
 
@@ -68,13 +72,14 @@ export function TimeCaption({
 
     const duration = now.diff(datetime);
     /* eslint-disable spellcheck/spell-checker */
-    const refresh = Math.min(
-      Math.max(
-        duration.toMillis() / 10,
-        Duration.fromObject({ seconds: 5 }).toMillis()
-      ),
-      Duration.fromObject({ minutes: 10 }).toMillis()
-    );
+    const refresh = 100;
+    // const refresh = Math.min(
+    //   Math.max(
+    //     duration.toMillis() / 10,
+    //     Duration.fromObject({ seconds: 5 }).toMillis()
+    //   ),
+    //   Duration.fromObject({ minutes: 10 }).toMillis()
+    // );
     /* eslint-enable spellcheck/spell-checker */
 
     timeoutRef.current = window.setTimeout(() => {
@@ -88,20 +93,28 @@ export function TimeCaption({
     };
   }, [datetime, now]);
 
+  useEffect(() => {
+    if (enableTooltip && ref.current && humanDatetime) {
+      const tt = new Tooltip(ref.current, {
+        title: humanDatetime,
+      });
+      return () => {
+        tt.dispose();
+      };
+    }
+  }, [enableTooltip, humanDatetime]);
+
   return (
-    <>
-      <span ref={ref} className={className}>
-        {prefix}
-        {prefix && " "}
-        {durationStr}
-        {suffix && !noSuffixSpace && " "}
-        {suffix}
-      </span>
-      {enableTooltip && datetime?.isValid && (
-        <UncontrolledTooltip target={ref}>
-          {toHumanDateTime({ datetime })}
-        </UncontrolledTooltip>
-      )}
-    </>
+    <span
+      ref={ref}
+      className={className}
+      tabIndex={enableTooltip && humanDatetime ? 0 : undefined}
+    >
+      {prefix}
+      {prefix && " "}
+      {durationStr}
+      {suffix && !noSuffixSpace && " "}
+      {suffix}
+    </span>
   );
 }
