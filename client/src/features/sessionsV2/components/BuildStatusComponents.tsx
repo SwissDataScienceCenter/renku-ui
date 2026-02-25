@@ -45,7 +45,7 @@ import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
-import { EnvironmentLogsPresent, ILogs } from "../../../components/LogsV2";
+// import { EnvironmentLogsPresent, ILogs } from "../../../components/LogsV2";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { TimeCaption } from "../../../components/TimeCaption";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -230,62 +230,61 @@ export function BuildLogsModal({
   );
   const hasInProgressBuild = !!inProgressBuild;
 
-  const [logs, setLogs] = useState<ILogs>({
-    data: {},
-    fetched: false,
-    fetching: false,
-    show: isOpen,
-  });
+  // const [logs, setLogs] = useState<ILogs>({
+  //   data: {},
+  //   fetched: false,
+  //   fetching: false,
+  //   show: isOpen,
+  // });
 
-  const { data, isFetching, refetch } = useGetBuildLogsQuery(
-    isOpen && lastBuild
-      ? {
-          buildId: lastBuild.id,
-        }
-      : skipToken
-  );
-  const fetchLogs = useCallback(
-    () =>
-      refetch().then((result) => {
-        if (result.error) {
-          throw result.error;
-        }
-        if (result.data == null) {
-          throw new Error("Could not retrieve logs");
-        }
-        return result.data;
-      }),
-    [refetch]
-  );
+  // const { data, isFetching, refetch } = useGetBuildLogsQuery(
+  //   isOpen && lastBuild
+  //     ? {
+  //         buildId: lastBuild.id,
+  //       }
+  //     : skipToken
+  // );
+  // const fetchLogs = useCallback(
+  //   () =>
+  //     refetch().then((result) => {
+  //       if (result.error) {
+  //         throw result.error;
+  //       }
+  //       if (result.data == null) {
+  //         throw new Error("Could not retrieve logs");
+  //       }
+  //       return result.data;
+  //     }),
+  //   [refetch]
+  // );
 
-  useEffect(() => {
-    setLogs((prevState) => ({ ...prevState, show: isOpen ? name : false }));
-  }, [isOpen, name]);
-  useEffect(() => {
-    setLogs((prevState) => ({ ...prevState, fetching: isFetching }));
-  }, [isFetching]);
-  useEffect(() => {
-    setLogs((prevState) => ({
-      ...prevState,
-      fetched: !!data,
-      data: data ? data : {},
-    }));
-  }, [data]);
+  // useEffect(() => {
+  //   setLogs((prevState) => ({ ...prevState, show: isOpen ? name : false }));
+  // }, [isOpen, name]);
+  // useEffect(() => {
+  //   setLogs((prevState) => ({ ...prevState, fetching: isFetching }));
+  // }, [isFetching]);
+  // useEffect(() => {
+  //   setLogs((prevState) => ({
+  //     ...prevState,
+  //     fetched: !!data,
+  //     data: data ? data : {},
+  //   }));
+  // }, [data]);
 
   if (lastBuild == null) {
     return null;
   }
 
-  return (
-    <EnvironmentLogsPresent
-      fetchLogs={fetchLogs}
-      toggleLogs={toggle}
-      logs={logs}
-      name={name}
-      title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
-      defaultTab="step-build-and-push"
-    />
-  );
+  return null;
+  // <EnvironmentLogsPresent
+  //   fetchLogs={fetchLogs}
+  //   toggleLogs={toggle}
+  //   logs={logs}
+  //   name={name}
+  //   title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
+  //   defaultTab="step-build-and-push"
+  // />
 }
 
 interface BuildErrorReasonProps {

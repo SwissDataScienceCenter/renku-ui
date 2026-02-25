@@ -18,7 +18,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
-import EnvironmentLogsV2 from "../../../components/LogsV2";
+// import EnvironmentLogsV2 from "../../../components/LogsV2";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
@@ -111,12 +111,13 @@ export function SessionLauncherDisplay({
       />
       {filteredSessions &&
         filteredSessions?.length > 0 &&
-        filteredSessions.map((session) => (
-          <EnvironmentLogsV2
-            name={session.name}
-            key={`session-logs-${session.name}`}
-          />
-        ))}
+        filteredSessions.map(
+          (session) => null
+          // <EnvironmentLogsV2
+          //   name={session.name}
+          //   key={`session-logs-${session.name}`}
+          // />
+        )}
       {launcher && (
         <>
           <UpdateSessionLauncherEnvironmentModal

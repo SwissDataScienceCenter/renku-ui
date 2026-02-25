@@ -16,36 +16,38 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
-import { ILogs } from "../../components/LogsV2";
-import { useGetSessionsBySessionIdLogsQuery as useGetLogsQueryV2 } from "../../features/sessionsV2/api/sessionsV2.api";
+// import { ILogs } from "../../components/LogsV2";
+// import { useGetSessionsBySessionIdLogsQuery as useGetLogsQueryV2 } from "../../features/sessionsV2/api/sessionsV2.api";
 
-export function useGetSessionLogsV2(
-  serverName: string,
-  show: boolean | string
-) {
-  const { data, isFetching, isLoading, error, refetch } = useGetLogsQueryV2(
-    { sessionId: serverName, maxLines: 250 },
-    { skip: !serverName }
-  );
-  const [logs, setLogs] = useState<ILogs | undefined>(undefined);
-  const fetchLogs = () => {
-    return refetch().then((result) => {
-      if (result.isSuccess)
-        return Promise.resolve(result.data as ILogs["data"]);
-      return Promise.reject({} as ILogs["data"]);
-    }) as Promise<ILogs["data"]>;
-  };
+// export function useGetSessionLogsV2(
+//   serverName: string,
+//   show: boolean | string
+// ) {
+//   const { data, isFetching, isLoading, error, refetch } = useGetLogsQueryV2(
+//     { sessionId: serverName, maxLines: 250 },
+//     { skip: !serverName }
+//   );
+//   const [logs, setLogs] = useState<ILogs | undefined>(undefined);
+//   const fetchLogs = () => {
+//     return refetch().then((result) => {
+//       if (result.isSuccess)
+//         return Promise.resolve(result.data as ILogs["data"]);
+//       return Promise.reject({} as ILogs["data"]);
+//     }) as Promise<ILogs["data"]>;
+//   };
 
-  useEffect(() => {
-    setLogs({
-      data: data ?? {},
-      fetched: !isLoading && !error && !!data,
-      fetching: isFetching,
-      show: show ? serverName : false,
-    });
-  }, [data, error, show, isFetching, isLoading, serverName]);
+//   useEffect(() => {
+//     setLogs({
+//       data: data ?? {},
+//       fetched: !isLoading && !error && !!data,
+//       fetching: isFetching,
+//       show: show ? serverName : false,
+//     });
+//   }, [data, error, show, isFetching, isLoading, serverName]);
 
-  return { logs, fetchLogs };
-}
+//   return { logs, fetchLogs };
+// }
+
+export {};

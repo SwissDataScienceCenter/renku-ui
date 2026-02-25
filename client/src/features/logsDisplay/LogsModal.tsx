@@ -19,14 +19,35 @@
 import type { SerializedError } from "@reduxjs/toolkit";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useState } from "react";
+import { startCase } from "lodash-es";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ArrowRepeat, FileEarmarkArrowDown } from "react-bootstrap-icons";
-import { Button, ModalFooter, ModalHeader } from "reactstrap";
+import {
+  Button,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+} from "reactstrap";
 
+import { ErrorAlert } from "~/components/Alert";
 import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import { generateZip } from "~/utils/helpers/HelperFunctions";
+import { getSessionStatusStyles } from "../sessionsV2/components/SessionStatus/SessionStatus";
+import type { SessionV2 } from "../sessionsV2/sessionsV2.types";
 
 interface LogsQuery {
   data?: Record<string, string | undefined> | undefined;
@@ -41,27 +62,30 @@ interface LogsQuery {
 
 interface LogsModalModalProps {
   isOpen: boolean;
-  query: LogsQuery;
-  toggle: () => void;
-
-  title: ReactNode;
   name: string;
+  query: LogsQuery;
+  sessionError?: string;
+  sessionState?: SessionV2["status"]["state"];
+  title: ReactNode;
+  toggle: () => void;
 }
 
 export default function LogsModal({
   isOpen,
-  query,
-  toggle,
-  title,
   name,
+  query,
+  sessionError,
+  sessionState,
+  title,
+  toggle,
 }: LogsModalModalProps) {
   const { data, error, isLoading, isFetching, refetch } = query;
 
   return (
-    <ScrollableModal isOpen={isOpen} className="modal-xl" toggle={toggle}>
+    <ScrollableModal className="modal-xl" isOpen={isOpen} toggle={toggle}>
       <ModalHeader className="header-multiline" toggle={toggle} tag="div">
         <h2>{title}</h2>
-        {/* {sessionState && (
+        {sessionState && (
           <h3
             className={cx(
               "fs-4",
@@ -75,62 +99,207 @@ export default function LogsModal({
           >
             Session status: {sessionState}
           </h3>
-        )} */}
+        )}
       </ModalHeader>
-      <>LogsModal placeholder</>
+      <ModalBody className={cx("d-flex", "flex-column", "h-auto")}>
+        {sessionError && <ErrorAlert>{sessionError}</ErrorAlert>}
+        <LogsModalBody
+          data={data}
+          error={error}
+          isFetching={isFetching}
+          isLoading={isLoading}
+          refetch={refetch}
+        />
+      </ModalBody>
       <ModalFooter>
         <ModalFooterButtons
+          data={data}
           isFetching={isFetching}
-          refetch={refetch}
           name={name}
-
-          /*fetchLogs={fetchLogs} logs={logs} name={name}*/
+          refetch={refetch}
         />
       </ModalFooter>
     </ScrollableModal>
   );
 }
 
-// interface ModalFooterButtonsProps {
-//   data?: Record<string, string | undefined> | undefined;
-//   error?: FetchBaseQueryError | SerializedError | undefined;
-//   isFetching: boolean;
-//   refetch: () => void;
-// }
+type LogsModalBodyProps = LogsQuery;
 
-type ModalFooterButtonsProps = Pick<LogsQuery, "isFetching" | "refetch"> &
+function LogsModalBody({
+  data,
+  error,
+  isFetching,
+  isLoading,
+  refetch,
+}: LogsModalBodyProps) {
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error || data == null) {
+    return (
+      <p data-cy="logs-unavailable-message" className="mb-0">
+        Logs unavailable. Please try to{" "}
+        <Button
+          color="primary"
+          onClick={refetch}
+          size="sm"
+          disabled={isFetching}
+        >
+          refresh
+        </Button>{" "}
+        them again.
+      </p>
+    );
+  }
+
+  if (Object.keys(data).length < 1) {
+    return <NoLogsAvailable refetch={refetch} />;
+  }
+
+  return <TabbedLogs data={data} />;
+}
+
+type NoLogsAvailableProps = Pick<LogsQuery, "refetch">;
+
+function NoLogsAvailable({ refetch }: NoLogsAvailableProps) {
+  return (
+    <>
+      <p data-cy="no-logs-message">No logs available for this pod yet.</p>
+      <p>
+        You can try to{" "}
+        <Button
+          color="primary"
+          data-cy="retry-logs-body"
+          size="sm"
+          onClick={refetch}
+        >
+          refresh
+        </Button>{" "}
+        them after a while.
+      </p>
+    </>
+  );
+}
+
+interface TabbedLogsProps {
+  data: Exclude<LogsQuery["data"], undefined>;
+  defaultTab?: string;
+}
+
+function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
+  const sortedLogs = useMemo(() => {
+    const result: LogTab[] = [];
+    const keys = Object.keys(data);
+    for (const key of keys) {
+      if (key === defaultTab) {
+        result.push({ tab: key, content: data[key] ?? "" });
+        break;
+      }
+    }
+    for (const key of keys) {
+      if (key !== defaultTab) {
+        result.push({ tab: key, content: data[key] ?? "" });
+      }
+    }
+    return result;
+  }, [data, defaultTab]);
+
+  const [activeTab, setActiveTab] = useState<string>(
+    sortedLogs.at(0)?.tab ?? ""
+  );
+
+  const preRef = useRef<HTMLPreElement>(null);
+
+  // Scrolls to the bottom of the logs when we change tabs
+  useEffect(() => {
+    if (preRef.current && activeTab) {
+      const pre = preRef.current;
+      requestAnimationFrame(() => {
+        pre.scrollTop = pre.scrollHeight;
+      });
+    }
+  }, [activeTab]);
+
+  return (
+    <>
+      <Nav
+        className={cx("mb-2", "position-sticky", "top-0", "z-index-100")}
+        tabs
+      >
+        {sortedLogs.map(({ tab }) => (
+          <NavItem key={tab} data-cy="log-tab" role="button">
+            <NavLink
+              className={cx(activeTab === tab && "active")}
+              onClick={() => {
+                setActiveTab(tab);
+              }}
+            >
+              {startCase(tab)}
+            </NavLink>
+          </NavItem>
+        ))}
+      </Nav>
+      <TabContent
+        activeTab={activeTab}
+        className={cx("flex-1", "overflow-y-auto")}
+      >
+        {sortedLogs.map(({ tab, content }) => (
+          <TabPane key={tab} tabId={tab}>
+            <div className={cx("d-flex", "flex-column")}>
+              <pre
+                className="overflow-auto"
+                // eslint-disable-next-line spellcheck/spell-checker
+                style={{ whiteSpace: "pre-line", maxHeight: "60vh" }}
+                ref={activeTab === tab ? preRef : undefined}
+              >
+                {content}
+              </pre>
+            </div>
+          </TabPane>
+        ))}
+      </TabContent>
+    </>
+  );
+}
+
+interface LogTab {
+  tab: string;
+  content: string;
+}
+
+type ModalFooterButtonsProps = Pick<
+  LogsQuery,
+  "data" | "isFetching" | "refetch"
+> &
   Pick<LogsModalModalProps, "name">;
 
 function ModalFooterButtons({
+  data,
   isFetching,
   name,
   refetch,
 }: ModalFooterButtonsProps) {
-  // const { fetchLogs, logs } = props;
-  // const sessionName = props.name;
-  // const [downloading, save] = useDownloadLogs(logs, fetchLogs, sessionName);
-
-  // useEffect(() => {
-  //   if (fetchLogs) fetchLogs(sessionName);
-  // }, []); // eslint-disable-line
-
   const [isDownloading, triggerDownload] = useDownloadLogs(name, refetch);
+  const canDownload =
+    !isFetching &&
+    !isDownloading &&
+    data != null &&
+    Object.keys(data).length >= 1;
 
-  // // ? Having a minHeight prevent losing the vertical scroll position.
-  // // TODO: Revisit after #1219
   return (
     <>
       <Button
         color="outline-primary"
-        // style={{ marginRight: 8 }}
         id="session-refresh-logs"
         onClick={refetch}
-        // onClick={() => {
-        //   fetchLogs(sessionName);
-        // }}
         disabled={isFetching}
       >
-        <ArrowRepeat className={cx("bi", "me-1")} />
+        {isFetching ? (
+          <Loader className="me-1" inline size={16} />
+        ) : (
+          <ArrowRepeat className={cx("bi", "me-1")} />
+        )}
         Refresh logs
       </Button>
 
@@ -138,7 +307,7 @@ function ModalFooterButtons({
         data-cy="session-log-download-button"
         color="outline-primary"
         onClick={triggerDownload}
-        disabled={isDownloading}
+        disabled={!canDownload}
       >
         {isDownloading ? (
           <Loader className="me-1" inline size={16} />
@@ -148,58 +317,6 @@ function ModalFooterButtons({
         {isDownloading ? "Downloading" : "Download"}
       </Button>
     </>
-    // <div className={cx("text-nowrap", "mb-3")}>
-    //  <Button
-    //     key="button"
-    //     color="outline-primary"
-    //     style={{ marginRight: 8 }}
-    //     id="session-refresh-logs"
-    //     onClick={() => {
-    //       fetchLogs(sessionName);
-    //     }}
-    //     disabled={logs.fetching}
-    //   >
-    //     <ArrowRepeat className={cx("bi", "me-1")} /> Refresh logs
-    //   </Button>
-    //   <LogDownloadButton
-    //     logs={logs}
-    //     downloading={downloading}
-    //     save={save}
-    //     color="outline-primary"
-    //   />
-    // </div>
-
-    //     const LogDownloadButton = ({
-    //   logs,
-    //   downloading,
-    //   save,
-    //   size,
-    //   color,
-    // }: LogDownloadButtonProps) => {
-    //   const canDownload = (logs: ILogs) => {
-    //     if (logs.fetching || downloading) return false;
-    //     if (!logs.data || typeof logs.data === "string") return false;
-    //     if (Object.keys(logs.data).length < 1 || logs.data[LOG_ERROR_KEY] != null)
-    //       return false;
-    //     return true;
-    //   };
-
-    //   return (
-    //     <Button
-    //       data-cy="session-log-download-button"
-    //       color={color ?? "primary"}
-    //       size={size ?? "s"}
-    //       disabled={!canDownload(logs)}
-    //       onClick={() => {
-    //         save();
-    //       }}
-    //     >
-    //       <FileEarmarkArrowDown className={cx("bi", "me-1")} />
-    //       {downloading ? " Downloading " : " Download"}
-    //       {downloading && <Loader inline size={16} />}
-    //     </Button>
-    //   );
-    // };
   );
 }
 
@@ -250,33 +367,7 @@ function useDownloadLogs(
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [name, refetch, renkuToastDanger, renkuToastSuccess]);
 
   return [isDownloading, triggerDownload];
-
-  // const save = async () => {
-  //   setIsDownloading(true);
-  //   const fullLogs = await fetchLogs(sessionName, true);
-
-  //   if (!fullLogs) {
-  //     setDownloading(false);
-  //     return;
-  //   }
-  //   const logName = `Logs_${sessionName}`;
-  //   const files = [];
-  //   for (const fullLogsKey in fullLogs) {
-  //     const data = fullLogs[fullLogsKey];
-  //     // create the blob element to download logs as a file
-  //     const file = new Blob([data], { type: "text/plain" });
-  //     files.push({
-  //       name: `${logName}/${fullLogsKey}.txt`,
-  //       content: file,
-  //     });
-  //   }
-
-  //   await generateZip(files, logName);
-  //   setIsDownloading(false);
-  // };
-
-  // return [downloading, save];
 }

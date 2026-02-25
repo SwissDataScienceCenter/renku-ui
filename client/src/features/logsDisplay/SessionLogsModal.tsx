@@ -47,10 +47,18 @@ export default function SessionLogsModal({
   });
 
   return (
-    <>
-      SessionLogsModal placeholder / {sessionName}
-      <pre>{JSON.stringify({ session }, null, 2)}</pre>
-      <LogsModal isOpen={isOpen} query={query} toggle={toggle} title={"Logs"} />
-    </>
+    <LogsModal
+      isOpen={isOpen}
+      name={sessionName}
+      query={query}
+      title={"Logs"}
+      toggle={toggle}
+      sessionState={session?.status?.state}
+      sessionError={
+        session?.status?.state === "failed"
+          ? session?.status?.message
+          : undefined
+      }
+    />
   );
 }

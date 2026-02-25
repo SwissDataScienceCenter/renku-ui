@@ -43,18 +43,16 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import LogsModal from "~/features/logsDisplay/LogsModal";
 import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
 import { Loader } from "../../../components/Loader";
-import EnvironmentLogsV2 from "../../../components/LogsV2";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
-import { displaySlice, resetFavicon, setFavicon } from "../../display";
+import { resetFavicon, setFavicon } from "../../display";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
@@ -75,7 +73,6 @@ import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import PauseWarningModal from "./PauseWarningModal";
-import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
