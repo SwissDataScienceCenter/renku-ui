@@ -32,14 +32,21 @@ export interface ResourcePoolFormQuota {
   gpu: number;
 }
 
-export interface RemoteConfiguration {
+export type RemoteConfiguration = {
   enabled: boolean;
-  /** Kind of remote resource pool */
+} & (RemoteConfigurationDetailsFirecrest | RemoteConfigurationDetailsRunai);
+
+interface RemoteConfigurationDetailsFirecrest {
   kind: "firecrest";
   providerId?: string;
   apiUrl: string;
   systemName: string;
   partition?: string;
+}
+
+interface RemoteConfigurationDetailsRunai {
+  kind: "runai";
+  baseUrl: string;
 }
 
 export interface ResourceClassForm {

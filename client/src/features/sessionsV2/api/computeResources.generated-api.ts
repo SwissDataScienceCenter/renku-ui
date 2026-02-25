@@ -653,7 +653,16 @@ export type RemoteConfigurationFirecrest = {
   system_name: RemoteConfigurationFirecrestSystemName;
   partition?: RemoteConfigurationFirecrestPartition;
 };
-export type RemoteConfiguration = RemoteConfigurationFirecrest;
+export type RemoteConfigurationRunaiApiUrl = string;
+export type RemoteConfigurationRunai = {
+  /** Kind of remote resource pool */
+  kind: "runai";
+  base_url: RemoteConfigurationRunaiApiUrl;
+  provider_id?: RemoteConfigurationFirecrestProviderId;
+};
+export type RemoteConfiguration =
+  | RemoteConfigurationFirecrest
+  | RemoteConfigurationRunai;
 export type IdleThreshold = number;
 export type HibernationThreshold = number;
 export type HibernationWarningPeriod = number;
@@ -766,9 +775,16 @@ export type RemoteConfigurationFirecrestPatch = {
   system_name?: RemoteConfigurationFirecrestSystemName;
   partition?: RemoteConfigurationFirecrestPartition;
 };
+export type RemoteConfigurationRunaiPatch = {
+  /** Kind of remote resource pool */
+  kind?: "runai";
+  base_url?: RemoteConfigurationRunaiApiUrl;
+  provider_id?: RemoteConfigurationFirecrestProviderId;
+};
 export type RemoteConfigurationPatch =
   | RemoteConfigurationPatchReset
-  | RemoteConfigurationFirecrestPatch;
+  | RemoteConfigurationFirecrestPatch
+  | RemoteConfigurationRunaiPatch;
 export type ResourcePoolPatch = {
   quota?: QuotaPatch;
   classes?: ResourceClassesPatchWithId;
