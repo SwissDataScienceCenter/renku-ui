@@ -43,6 +43,8 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import LogsModal from "~/features/logsDisplay/LogsModal";
+import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
@@ -201,11 +203,15 @@ export default function ShowSessionPage() {
     };
   }, [thisSession?.status?.state, isLoading, isFetching, dispatch]);
 
-  const toggleModalLogs = useCallback(() => {
-    dispatch(
-      displaySlice.actions.toggleSessionLogsModal({ targetServer: sessionName })
-    );
-  }, [dispatch, sessionName]);
+  // const toggleModalLogs = useCallback(() => {
+  //   dispatch(
+  //     displaySlice.actions.toggleSessionLogsModal({ targetServer: sessionName })
+  //   );
+  // }, [dispatch, sessionName]);
+  const [showLogsModal, setShowLogsModal] = useState<boolean>(false);
+  const toggleLogsModal = useCallback(() => {
+    setShowLogsModal((isOpen) => !isOpen);
+  }, []);
 
   const [showModalPauseOrDeleteSession, setShowModalPauseOrDeleteSession] =
     useState(false);
@@ -251,7 +257,14 @@ export default function ShowSessionPage() {
       toggleModal={togglePauseOrDeleteSession}
     />
   );
-  const logs = thisSession && <EnvironmentLogsV2 name={sessionName} />;
+  // const logs = thisSession && <EnvironmentLogsV2 name={sessionName} />;
+  const logs = thisSession && (
+    <SessionLogsModal
+      isOpen={showLogsModal}
+      sessionName={sessionName}
+      toggle={toggleLogsModal}
+    />
+  );
   const content =
     !isLoading && !isFetching && !thisSession ? (
       <SessionUnavailable />
@@ -262,13 +275,13 @@ export default function ShowSessionPage() {
         {thisSession.status.state !== "running" && (
           <StartSessionProgressBarV2
             session={thisSession}
-            toggleLogs={toggleModalLogs}
+            toggleLogs={toggleLogsModal}
           />
         )}
         <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
       </>
     ) : (
-      <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />
+      <StartSessionProgressBarV2 toggleLogs={toggleLogsModal} />
     );
 
   const backButton = (
@@ -315,7 +328,7 @@ export default function ShowSessionPage() {
             )}
           >
             {backButton}
-            <LogsBtn toggle={toggleModalLogs} />
+            <LogsBtn toggle={toggleLogsModal} />
             <PauseSessionBtn openPauseSession={openPauseSession} />
             <DeleteSessionBtn openDeleteSession={openDeleteSession} />
             <ShareSessionLinkButton
@@ -323,7 +336,7 @@ export default function ShowSessionPage() {
               namespace={namespace}
               slug={slug}
             />
-            <SessionAlerts sessionName={sessionName} />
+            {/* <SessionAlerts sessionName={sessionName} /> */}
           </div>
           <div
             className={cx(

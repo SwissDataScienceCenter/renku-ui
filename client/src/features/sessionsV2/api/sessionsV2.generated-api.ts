@@ -42,7 +42,7 @@ const injectedRtkApi = api.injectEndpoints({
       GetSessionsBySessionIdLogsApiArg
     >({
       query: (queryArg) => ({
-        url: `/sessions/${queryArg.sessionId}/logs`,
+        url: `/sessions/${queryArg.sessionId}/logsz`,
         params: { max_lines: queryArg.maxLines },
       }),
     }),
