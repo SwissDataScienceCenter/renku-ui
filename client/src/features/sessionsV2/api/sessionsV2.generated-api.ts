@@ -61,7 +61,8 @@ const injectedRtkApi = api.injectEndpoints({
 export { injectedRtkApi as sessionsV2GeneratedApi };
 export type PostSessionsApiResponse =
   /** status 200 The session already exists */
-  SessionResponse | /** status 201 The session was created */ SessionResponse;
+    | SessionResponse
+    | /** status 201 The session was created */ SessionResponse;
 export type PostSessionsApiArg = {
   sessionPostRequest: SessionPostRequest;
 };
