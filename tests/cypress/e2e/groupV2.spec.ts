@@ -397,7 +397,6 @@ describe("Work with group data connectors", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
-    // cy.getDataCy("data-connector-menu-dropdown")
     cy.getDataCy("data-connector-view")
       .find('[data-cy="data-connector-menu-dropdown"]')
       .should("be.visible")
