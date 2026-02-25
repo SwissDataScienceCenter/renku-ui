@@ -1,5 +1,5 @@
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   data,
   generatePath,
@@ -14,7 +14,10 @@ import {
 import { Loader } from "~/components/Loader";
 import ProjectPageLayout from "~/features/ProjectPageV2/ProjectPageLayout/ProjectPageLayout";
 import { type Project } from "~/features/projectsV2/api/projectV2.api";
-import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
+import {
+  projectV2Api,
+  useGetNamespacesByNamespaceProjectsAndSlugQuery,
+} from "~/features/projectsV2/api/projectV2.enhanced-api";
 import ProjectNotFound from "~/features/projectsV2/notFound/ProjectNotFound";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { store } from "~/store/store";
@@ -51,6 +54,7 @@ export async function loader({ context, params }: Route.LoaderArgs) {
   await Promise.all(store.dispatch(projectV2Api.util.getRunningQueriesThunk()));
   const projectSelector = endpoint.select(apiArgs);
   const { data: project, error } = projectSelector(store.getState());
+  store.dispatch(projectV2Api.util.resetApiState());
   if (error && "status" in error && typeof error.status === "number") {
     return data({ clientSideFetch, project, error }, error.status);
   }
@@ -67,10 +71,12 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     slug,
     withDocumentation: true,
   };
-  store.dispatch(endpoint.initiate(apiArgs));
+  const promise = store.dispatch(endpoint.initiate(apiArgs));
   await Promise.all(store.dispatch(projectV2Api.util.getRunningQueriesThunk()));
   const projectSelector = endpoint.select(apiArgs);
   const { data: project, error } = projectSelector(store.getState());
+  //? Unsubscribe to let the cache expire when navigating to other pages
+  promise.unsubscribe();
   return {
     clientSideFetch: true,
     project,
@@ -127,6 +133,8 @@ export default function ProjectPagesRoot({
 
   const dispatch = useAppDispatch();
 
+  const [isCacheReady, setIsCacheReady] = useState<boolean>(false);
+
   //? Inject the server-side data into the RTK Query cache
   useEffect(() => {
     if (loaderData.project != null) {
@@ -135,33 +143,36 @@ export default function ProjectPagesRoot({
         slug,
         withDocumentation: true,
       };
-      dispatch(
+      let ignore: boolean = false;
+      const promise = dispatch(
         projectV2Api.util.upsertQueryData(
           "getNamespacesByNamespaceProjectsAndSlug",
           apiArgs,
           loaderData.project
         )
       );
+      promise.then(() => {
+        if (!ignore) {
+          setIsCacheReady(true);
+        }
+      });
+      return () => {
+        ignore = true;
+      };
     }
   }, [dispatch, loaderData.project, namespace, slug]);
 
-  //? Load the project data client-side if it did not load server-side
-  projectV2Api.endpoints.getNamespacesByNamespaceProjectsAndSlug.useQuerySubscription(
-    loaderData.project == null
-      ? { namespace, slug, withDocumentation: true }
-      : skipToken
-  );
-
+  //? Subscribe this component to the project query:
+  //? * if the data is loaded client-side
+  //? * once the cache is ready (will use cache data)
   const {
     currentData: project,
     isLoading,
     error,
-  } = projectV2Api.endpoints.getNamespacesByNamespaceProjectsAndSlug.useQueryState(
-    {
-      namespace,
-      slug,
-      withDocumentation: true,
-    }
+  } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
+    loaderData.clientSideFetch || isCacheReady
+      ? { namespace, slug, withDocumentation: true }
+      : skipToken
   );
 
   useEffect(() => {
@@ -196,7 +207,10 @@ export default function ProjectPagesRoot({
     }
   }, [namespace, navigate, pathname, project, slug]);
 
-  if (isLoading) {
+  if (
+    isLoading ||
+    (!loaderData.clientSideFetch && loaderData.project != null && !isCacheReady)
+  ) {
     return <Loader className="align-self-center" />;
   }
 
