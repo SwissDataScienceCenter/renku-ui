@@ -214,5 +214,36 @@
         "matching": true
       }
     ]
+  },
+  {
+    "id": 5,
+    "name": "Runai pool",
+    "default": false,
+    "public": false,
+    "idle_threshold": 99999,
+    "hibernation_threshold": 999999,
+    "quota": {
+      "cpu": 200,
+      "memory": 64000,
+      "gpu": 40,
+      "storage": 10000000
+    },
+    "remote": {
+      "kind": "runai",
+      "base_url": "https://runai.example.com"
+    },
+    "classes": [
+      {
+        "id": 11,
+        "name": "runai class 1",
+        "cpu": 2,
+        "memory": 64,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      }
+    ]
   }
 ]

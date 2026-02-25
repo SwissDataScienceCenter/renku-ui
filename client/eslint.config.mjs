@@ -211,6 +211,7 @@ const jsRules = {
         "reusability",
         "rproj",
         "rstudio",
+        "runai",
         "scala",
         "scrollable",
         "selectautosuggest",
