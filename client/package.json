@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "4.17.1",
+  "version": "4.17.2",
   "private": true,
   "scripts": {
     "start": "react-router dev --port 3000",

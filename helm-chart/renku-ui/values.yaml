@@ -2,9 +2,9 @@ ui:
   client:
     image:
       repository: renku/renku-ui
-      tag: "4.17.1"
+      tag: "4.17.2"
 
   server:
     image:
       repository: renku/renku-ui-server
-      tag: "4.17.1"
+      tag: "4.17.2"
