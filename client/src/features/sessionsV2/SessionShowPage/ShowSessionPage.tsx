@@ -73,6 +73,7 @@ import { getSessionFavicon } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import PauseWarningModal from "./PauseWarningModal";
+import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
 import SessionUnavailable from "./SessionUnavailable";
@@ -249,7 +250,6 @@ export default function ShowSessionPage() {
       toggleModal={togglePauseOrDeleteSession}
     />
   );
-  // const logs = thisSession && <EnvironmentLogsV2 name={sessionName} />;
   const logs = thisSession && (
     <SessionLogsModal
       isOpen={showLogsModal}
@@ -328,7 +328,7 @@ export default function ShowSessionPage() {
               namespace={namespace}
               slug={slug}
             />
-            {/* <SessionAlerts sessionName={sessionName} /> */}
+            <SessionAlerts sessionName={sessionName} />
           </div>
           <div
             className={cx(

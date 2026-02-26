@@ -91,10 +91,6 @@ export default function ActiveSessionButton({
   const { data: user } = useGetUserQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
 
-  // const dispatch = useAppDispatch();
-  // const onToggleLogs = useCallback(() => {
-  //   dispatch(toggleSessionLogsModal({ targetServer: session.name }));
-  // }, [dispatch, session.name]);
   const [showLogsModal, setShowLogsModal] = useState<boolean>(false);
   const toggleLogsModal = useCallback(() => {
     setShowLogsModal((isOpen) => !isOpen);

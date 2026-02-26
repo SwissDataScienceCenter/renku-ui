@@ -24,7 +24,6 @@ import { Col, ListGroup, Row } from "reactstrap";
 
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
-// import EnvironmentLogsV2 from "../../components/LogsV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
@@ -223,7 +222,6 @@ function DashboardSession({ session }: DashboardSessionProps) {
           showSessionUrl={showSessionUrl}
         />
       </div>
-      {/* <EnvironmentLogsV2 name={session.name} /> */}
     </div>
   );
 }
