@@ -107,7 +107,7 @@ function RenkuNavBarInner({ user }) {
   );
 }
 
-function FooterNavbarLoggedInLinks({ privacyLink }) {
+function FooterNavbarLoggedInLinks() {
   const location = useLocation();
   const forceV2 = true;
   const helpLocation = isRenkuLegacy(location.pathname, forceV2)
@@ -116,7 +116,6 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
   return (
     <>
       <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
-      {privacyLink}
       <ExternalDocsLink
         url={Links.DISCOURSE}
         title="Forum"
@@ -155,10 +154,6 @@ function FooterNavbarInner() {
         });
   const { params } = useContext(AppContext);
 
-  const privacyLink =
-    params && params["PRIVACY_STATEMENT"] ? (
-      <RenkuNavLinkV2 to="/privacy">Privacy</RenkuNavLinkV2>
-    ) : null;
   const chartVersion = params && params["RENKU_CHART_VERSION"];
   const parsedChartVersion = chartVersion && parseChartVersion(chartVersion);
   const taggedVersion = parsedChartVersion?.taggedVersion;
@@ -202,10 +197,7 @@ function FooterNavbarInner() {
         </div>
         <div className={cx("d-lg-flex", "d-none", "navbar-nav")}>
           <div className={cx("d-flex", "flex-row", "gap-3", "ms-auto")}>
-            <FooterNavbarLoggedInLinks
-              location={location}
-              privacyLink={privacyLink}
-            />
+            <FooterNavbarLoggedInLinks />
           </div>
         </div>
       </div>
