@@ -21,7 +21,7 @@ import cx from "classnames";
 interface RenkuBadgeProps {
   children?: React.ReactNode;
   className?: string;
-  color?: "success" | "danger" | "warning" | "light";
+  color?: "success" | "danger" | "warning" | "light" | "info";
   "data-cy"?: string;
   pill?: boolean;
 }
@@ -40,6 +40,8 @@ export default function RenkuBadge({
       ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
       : color === "warning"
       ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
+      : color === "info"
+      ? ["border-info", "bg-info-subtle", "text-info-emphasis"]
       : ["border-dark-subtle", "bg-light", "text-dark-emphasis"];
 
   const baseClasses = [
