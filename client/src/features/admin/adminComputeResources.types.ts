@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { type RemoteConfiguration as BackendRemoteConfiguration } from "../sessionsV2/api/computeResources.generated-api";
+
 export interface ResourcePoolForm {
   name: string;
   public: boolean;
@@ -32,12 +34,14 @@ export interface ResourcePoolFormQuota {
   gpu: number;
 }
 
-export type RemoteConfiguration = {
+export interface RemoteConfiguration {
   enabled: boolean;
-} & (RemoteConfigurationDetailsFirecrest | RemoteConfigurationDetailsRunai);
+  kind: BackendRemoteConfiguration["kind"] | null;
+  firecrestConfiguration: RemoteConfigurationDetailsFirecrest;
+  runaiConfiguration: RemoteConfigurationDetailsRunai;
+}
 
 interface RemoteConfigurationDetailsFirecrest {
-  kind: "firecrest";
   providerId?: string;
   apiUrl: string;
   systemName: string;
@@ -45,7 +49,6 @@ interface RemoteConfigurationDetailsFirecrest {
 }
 
 interface RemoteConfigurationDetailsRunai {
-  kind: "runai";
   baseUrl: string;
 }
 

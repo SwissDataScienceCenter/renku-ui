@@ -44,20 +44,18 @@ import ResourcePoolRemoteSection from "./forms/ResourcePoolRemoteSection";
 function remoteDefaultValues(
   remote: ResourcePoolWithId["remote"]
 ): RemoteConfiguration {
-  if (remote?.kind === "runai") {
-    return {
-      enabled: true,
-      kind: "runai",
-      baseUrl: remote.base_url ?? "",
-    };
-  }
   return {
-    enabled: remote != null,
-    kind: "firecrest",
-    providerId: remote?.provider_id ?? "",
-    apiUrl: remote?.api_url ?? "",
-    systemName: remote?.system_name ?? "",
-    partition: remote?.partition ?? "",
+    enabled: remote?.kind != null,
+    kind: remote?.kind ?? null,
+    firecrestConfiguration: {
+      providerId: remote?.provider_id ?? "",
+      apiUrl: remote?.kind === "firecrest" ? remote?.api_url ?? "" : "",
+      systemName: remote?.kind === "firecrest" ? remote?.system_name ?? "" : "",
+      partition: remote?.kind === "firecrest" ? remote?.partition ?? "" : "",
+    },
+    runaiConfiguration: {
+      baseUrl: remote?.kind === "runai" ? remote?.base_url ?? "" : "",
+    },
   };
 }
 
@@ -120,17 +118,17 @@ function UpdateResourcePoolRemoteModal({
         : data.remote.kind === "runai"
         ? {
             kind: data.remote.kind,
-            base_url: data.remote.baseUrl.trim(),
+            base_url: data.remote.runaiConfiguration.baseUrl.trim(),
           }
         : {
             kind: data.remote.kind,
-            provider_id: data.remote.providerId?.trim()
-              ? data.remote.providerId.trim()
+            provider_id: data.remote.firecrestConfiguration.providerId?.trim()
+              ? data.remote.firecrestConfiguration.providerId.trim()
               : undefined,
-            api_url: data.remote.apiUrl.trim(),
-            system_name: data.remote.systemName.trim(),
-            partition: data.remote.partition?.trim()
-              ? data.remote.partition.trim()
+            api_url: data.remote.firecrestConfiguration.apiUrl.trim(),
+            system_name: data.remote.firecrestConfiguration.systemName.trim(),
+            partition: data.remote.firecrestConfiguration.partition?.trim()
+              ? data.remote.firecrestConfiguration.partition.trim()
               : undefined,
           };
       updateResourcePool({ resourcePoolId: id, resourcePoolPatch: { remote } });

@@ -203,4 +203,28 @@ describe("admin page", () => {
       .should("be.visible");
     cy.get(".modal").contains("button", "Cancel").should("be.visible").click();
   });
+
+  it("should show support remote resources", () => {
+    fixtures
+      .userAdmin()
+      .resourcePoolsTest()
+      .adminResourcePoolUsers()
+      .adminKeycloakUser();
+    cy.visit("/");
+    cy.wait("@getUser");
+
+    cy.visit("/admin");
+
+    cy.get("h1").contains("Admin Panel").should("be.visible");
+
+    // Check the "Add Resource Pool" button
+    cy.get("button").contains("Add Resource Pool").should("be.visible").click();
+    cy.get(".modal").within(() => {
+      cy.contains(".modal-title", "Add resource pool").should("be.visible");
+      cy.get("#addResourcePoolRemoteEnabled").should("be.visible").click();
+      cy.get("#addResourcePoolKind-firecrest").should("be.visible");
+      cy.get("#addResourcePoolKind-runai").should("be.visible");
+    });
+    cy.get(".modal").contains("button", "Close").should("be.visible").click();
+  });
 });

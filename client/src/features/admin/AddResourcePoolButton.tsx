@@ -109,11 +109,16 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       clusterId: "",
       remote: {
         enabled: false,
-        kind: "firecrest",
-        providerId: "",
-        apiUrl: "",
-        systemName: "",
-        partition: "",
+        kind: null,
+        firecrestConfiguration: {
+          providerId: "",
+          apiUrl: "",
+          systemName: "",
+          partition: "",
+        },
+        runaiConfiguration: {
+          baseUrl: "",
+        },
       },
     },
   });
@@ -136,19 +141,27 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       const clusterId = data.clusterId?.trim()
         ? data.clusterId.trim()
         : undefined;
-      const remote: RemoteConfiguration | undefined = data.remote.enabled
-        ? {
-            kind: data.remote.kind,
-            provider_id: data.remote.providerId?.trim()
-              ? data.remote.providerId.trim()
-              : undefined,
-            api_url: data.remote.apiUrl.trim(),
-            system_name: data.remote.systemName.trim(),
-            partition: data.remote.partition?.trim()
-              ? data.remote.partition.trim()
-              : undefined,
-          }
-        : undefined;
+      const remote: RemoteConfiguration | undefined =
+        data.remote.enabled == null
+          ? undefined
+          : data.remote.kind == "firecrest"
+          ? {
+              kind: "firecrest",
+              provider_id: data.remote.firecrestConfiguration.providerId?.trim()
+                ? data.remote.firecrestConfiguration.providerId.trim()
+                : undefined,
+              api_url: data.remote.firecrestConfiguration.apiUrl.trim(),
+              system_name: data.remote.firecrestConfiguration.systemName.trim(),
+              partition: data.remote.firecrestConfiguration.partition?.trim()
+                ? data.remote.firecrestConfiguration.partition.trim()
+                : undefined,
+            }
+          : data.remote.kind == "runai"
+          ? {
+              kind: "runai",
+              base_url: data.remote.runaiConfiguration.baseUrl.trim(),
+            }
+          : undefined;
       addResourcePool({
         resourcePool: {
           classes: populatedClass ? [populatedClass] : [],
@@ -185,10 +198,15 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       remote: {
         enabled: false,
         kind: "firecrest",
-        providerId: "",
-        apiUrl: "",
-        systemName: "",
-        partition: "",
+        firecrestConfiguration: {
+          providerId: "",
+          apiUrl: "",
+          systemName: "",
+          partition: "",
+        },
+        runaiConfiguration: {
+          baseUrl: "",
+        },
       },
     });
   }, [defaultQuota, reset]);
