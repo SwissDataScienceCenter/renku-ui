@@ -147,7 +147,9 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
         <Scripts />
         <ScrollRestoration />
-        <script data-cy-bootstrap suppressHydrationWarning></script>
+        <script data-cy-bootstrap suppressHydrationWarning>
+          {" "}
+        </script>
       </body>
     </html>
   );
