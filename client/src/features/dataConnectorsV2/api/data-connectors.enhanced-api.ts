@@ -114,6 +114,7 @@ const injectedApi = api.injectEndpoints({
 
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: [
+    "Deposits",
     "DataConnectors",
     "DataConnectorsProjectLinks",
     "DataConnectorSecrets",
@@ -128,11 +129,20 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     deleteDataConnectorsByDataConnectorIdSecrets: {
       invalidatesTags: ["DataConnectorSecrets"],
     },
+    deleteDepositsByDepositId: {
+      invalidatesTags: (_result, _error, { depositId }) =>
+        depositId
+          ? [{ id: depositId, type: "Deposits" }, "Deposits"]
+          : ["Deposits"],
+    },
     getDataConnectorsPaged: {
       providesTags: ["DataConnectors"],
     },
     getDataConnectorsByDataConnectorId: {
       providesTags: ["DataConnectors"],
+    },
+    getDataConnectorsByDataConnectorIdDeposits: {
+      providesTags: ["Deposits"],
     },
     getDataConnectorsListByDataConnectorIds: {
       providesTags: ["DataConnectors"],
@@ -145,6 +155,15 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     getDataConnectorsByDataConnectorIdSecrets: {
       providesTags: ["DataConnectorSecrets"],
+    },
+    getDeposits: {
+      providesTags: ["Deposits"],
+    },
+    getDepositsByDepositId: {
+      providesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "Deposits" }, "Deposits"]
+          : ["Deposits"],
     },
     getNamespacesByNamespaceDataConnectorsAndSlug: {
       providesTags: ["DataConnectors"],
@@ -161,6 +180,12 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     patchDataConnectorsByDataConnectorIdSecrets: {
       invalidatesTags: ["DataConnectorSecrets"],
     },
+    patchDepositsByDepositId: {
+      invalidatesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "Deposits" }, "Deposits"]
+          : ["Deposits"],
+    },
     postDataConnectors: {
       invalidatesTags: ["DataConnectors"],
     },
@@ -169,6 +194,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     postDataConnectorsGlobal: {
       invalidatesTags: ["DataConnectors"],
+    },
+    postDeposits: {
+      invalidatesTags: ["Deposits"],
     },
   },
 });
