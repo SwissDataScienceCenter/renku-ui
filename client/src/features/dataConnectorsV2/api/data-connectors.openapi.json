@@ -610,6 +610,48 @@
         "tags": ["data_connectors"]
       }
     },
+    "/data_connectors/{data_connector_id}/deposits": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "data_connector_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data connector"
+        }
+      ],
+      "get": {
+        "summary": "Get all deposits for a specific data connector",
+        "responses": {
+          "200": {
+            "description": "The list of deposits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector does not exist or you dont have access to it",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
     "/projects/{project_id}/data_connector_links": {
       "parameters": [
         {
@@ -674,7 +716,7 @@
         "tags": ["projects"]
       }
     },
-    "/deposit": {
+    "/deposits": {
       "post": {
         "summary": "Create a new data deposit",
         "requestBody": {
@@ -718,7 +760,7 @@
         "tags": ["deposit"]
       }
     },
-    "/deposit/{deposit_id}": {
+    "/deposits/{deposit_id}": {
       "parameters": [
         {
           "in": "path",
