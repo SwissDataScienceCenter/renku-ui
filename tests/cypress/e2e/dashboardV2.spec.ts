@@ -31,7 +31,7 @@ describe("View v2 landing page", () => {
     cy.visit("/");
   });
 
-  it.only("view dashboard", () => {
+  it("view dashboard", () => {
     cy.contains("My sessions").should("be.visible");
     cy.contains("My projects").should("be.visible");
     cy.contains("My groups").should("be.visible");
