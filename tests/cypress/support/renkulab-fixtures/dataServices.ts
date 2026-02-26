@@ -32,6 +32,10 @@ interface ExactUser {
   last_name?: string;
 }
 
+interface PostResourcePoolWithRunaiRemoteArgs extends SimpleFixture {
+  base_url?: string;
+}
+
 interface UrlRedirectFixture extends NameOnlyFixture {
   sourceUrl: string;
   targetUrl: string | null;
@@ -50,6 +54,30 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("GET", "/api/data/resource_pools*", response).as(name);
+      return this;
+    }
+
+    postResourcePoolWithRunaiRemote(
+      args?: PostResourcePoolWithRunaiRemoteArgs
+    ) {
+      const {
+        fixture = "dataServices/resource-pools.json",
+        name = "postResourcePool",
+        base_url = "https://runai.example.com",
+      } = args ?? {};
+      cy.fixture(fixture).then((resourcePool) => {
+        cy.intercept("POST", "/api/data/resource_pools", (req) => {
+          if (req.body.remote.kind != "runai") {
+            throw new Error("remote.kind must be 'runai'");
+          }
+          if (req.body.remote.base_url != base_url) {
+            throw new Error(
+              `remote.base_url ${req.body.remote.base_url} must equal ${base_url}`
+            );
+          }
+          req.reply({ body: resourcePool, statusCode: 201, delay: 1000 });
+        }).as(name);
+      });
       return this;
     }
 

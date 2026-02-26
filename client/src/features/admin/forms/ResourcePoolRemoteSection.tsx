@@ -105,14 +105,24 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
             <ResourcePoolRemoteSectionFirecrest
               control={control}
               formPrefix={formPrefix}
-              name={name}
+              name={
+                `${name}.firecrestConfiguration` as FieldPathByValue<
+                  T,
+                  RemoteConfiguration
+                >
+              }
             />
           )}
           {remoteKindWatch === "runai" && (
             <ResourcePoolRemoteSectionRunai
               control={control}
               formPrefix={formPrefix}
-              name={name}
+              name={
+                `${name}.runaiConfiguration` as FieldPathByValue<
+                  T,
+                  RemoteConfiguration
+                >
+              }
             />
           )}
         </CollapseBody>
@@ -308,9 +318,8 @@ function ResourcePoolRemoteApiUrl<T extends FieldValues>({
         )}
         rules={{
           validate: {
-            required: (value, formValues) => {
-              const remote = formValues[name] as RemoteConfiguration;
-              if (!remote.enabled || value) {
+            required: (value) => {
+              if (value) {
                 return true;
               }
               return "Please provide a value for the API URL.";
@@ -355,12 +364,10 @@ function ResourcePoolRemoteBaseUrl<T extends FieldValues>({
         )}
         rules={{
           validate: {
-            required: (value, formValues) => {
-              const remote = formValues[name] as RemoteConfiguration;
-              if (!remote.enabled || value) {
-                return true;
-              }
-              return "Please provide a value for the Base URL.";
+            required: (value) => {
+              if (!value || value.trim().length < 1)
+                return "Please provide a value for the Base URL.";
+              return true;
             },
           },
         }}
@@ -404,9 +411,8 @@ function ResourcePoolRemoteSystemName<T extends FieldValues>({
         )}
         rules={{
           validate: {
-            required: (value, formValues) => {
-              const remote = formValues[name] as RemoteConfiguration;
-              if (!remote.enabled || value) {
+            required: (value) => {
+              if (value) {
                 return true;
               }
               return "Please provide a value for the system name.";
