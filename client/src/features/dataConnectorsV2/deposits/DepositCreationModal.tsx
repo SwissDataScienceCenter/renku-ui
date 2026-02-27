@@ -1,5 +1,6 @@
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CloudArrowUp, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -16,6 +17,11 @@ import {
 } from "reactstrap";
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import {
+  useGetOauth2ConnectionsQuery,
+  useGetOauth2ProvidersQuery,
+} from "~/features/connectedServices/api/connectedServices.api";
+import { ProviderKind } from "~/features/connectedServices/api/connectedServices.generated-api";
 import { DataConnectorRead, DepositProvider } from "../api/data-connectors.api";
 import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
 
@@ -39,14 +45,55 @@ export default function DepositCreationModal({
   isOpen,
   setOpen,
 }: DepositCreationModalProps) {
-  const { control, handleSubmit, reset } = useForm<CreateDepositionForm>({
-    defaultValues: {
-      name: "",
-      path: "",
-      provider: providerOptions[0].value,
-    },
-  });
+  // Posting deposition
+  const { control, handleSubmit, reset, watch } = useForm<CreateDepositionForm>(
+    {
+      defaultValues: {
+        name: "",
+        path: "",
+        provider: providerOptions[0].value,
+      },
+    }
+  );
   const [postDeposit, result] = usePostDepositsMutation();
+
+  // Fetch connection information for the selected provider
+  const userSelectedProvider = watch("provider");
+  const [targetProviderString, setTargetProviderString] =
+    useState<ProviderKind | null>(null);
+
+  useEffect(() => {
+    const next: ProviderKind | null = ["zenodo"].includes(userSelectedProvider)
+      ? userSelectedProvider
+      : null;
+    setTargetProviderString((prev) => (prev === next ? prev : next));
+  }, [userSelectedProvider]);
+
+  const {
+    data: providers,
+    error: providersError,
+    isLoading: isLoadingProviders,
+  } = useGetOauth2ProvidersQuery(targetProviderString ? undefined : skipToken);
+
+  const targetProvider = useMemo(() => {
+    return providers?.find(
+      (provider) => provider.kind === targetProviderString
+    );
+  }, [providers, targetProviderString]);
+
+  const {
+    data: connections,
+    error: connectionsError,
+    isLoading: isLoadingConnections,
+  } = useGetOauth2ConnectionsQuery(targetProvider ? undefined : skipToken);
+  const targetConnection = useMemo(() => {
+    return connections?.find(
+      (connection) => connection.provider_id === targetProvider?.id
+    );
+  }, [connections, targetProvider]);
+
+  const isLoading = isLoadingProviders || isLoadingConnections;
+  const error = providersError || connectionsError;
 
   const onSubmit = useCallback(
     (data: CreateDepositionForm) => {
@@ -116,8 +163,8 @@ export default function DepositCreationModal({
                 )}
               />
               <FormText>
-                A name to identify the Export activity. This is used only
-                locally.
+                A name to identify the Export activity. This will be used as the
+                draft deposit name on the target provider.
               </FormText>
             </div>
 
@@ -156,7 +203,6 @@ export default function DepositCreationModal({
                 }}
                 render={({ field, fieldState }) => (
                   <>
-                    {/* // ! TODO: on change, check the selected integration status and suggest to connect */}
                     <Input
                       className="shadow-none"
                       id="provider"
@@ -177,9 +223,18 @@ export default function DepositCreationModal({
                   </>
                 )}
               />
+              {/* // ! TODO: show proper connection status indication (E.G. Requires integration) */}
+              {isLoading ? (
+                "loading"
+              ) : error ? (
+                <RtkOrDataServicesError error={error} />
+              ) : (
+                <p>Connection: {targetConnection?.status ?? "N/A"}</p>
+              )}
               <FormText>
                 The target platform where you want to export the files.
-                {/* Mind that different platforms might have different limitations/requirements. */}
+                Different platforms might have different
+                limitations/requirements.
               </FormText>
             </div>
           </FormGroup>
