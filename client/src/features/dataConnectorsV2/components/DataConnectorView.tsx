@@ -41,6 +41,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
@@ -72,6 +73,7 @@ import type {
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
 import DepositActions from "../deposits/DepositActions";
+import DepositStatusBadge from "../deposits/DepositStatusBadge";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
@@ -225,16 +227,35 @@ function DataConnectorLastDeposit({
         />
       </div>
       <div>
-        {/* // ! TEMP */}
-        {Object.entries(deposit).map(([key, value]) => {
-          const title = toCapitalized(key);
-          const displayValue = value?.toString() ?? "";
-          return (
-            <DataConnectorPropertyValue key={key} title={title}>
-              {displayValue}
-            </DataConnectorPropertyValue>
-          );
-        })}
+        <DataConnectorPropertyValue key="name" title="Name">
+          {deposit.name}
+        </DataConnectorPropertyValue>
+        <DataConnectorPropertyValue key="provider" title="Provider">
+          {deposit.provider}
+        </DataConnectorPropertyValue>
+        {deposit.external_url && (
+          <DataConnectorPropertyValue key="external_url" title="URL">
+            <ExternalLink href={deposit.external_url}>
+              {deposit.external_url}
+            </ExternalLink>
+          </DataConnectorPropertyValue>
+        )}
+        <DataConnectorPropertyValue key="status" title="Status">
+          <DepositStatusBadge status={deposit.status} />
+        </DataConnectorPropertyValue>
+        <DataConnectorPropertyValue key="path" title="Path">
+          {deposit.path ?? <span className="fst-italic">N/A</span>}
+        </DataConnectorPropertyValue>
+        {/* {deposit.creation_date && (
+          <DataConnectorPropertyValue key="creation_date" title="Creation Date">
+            <TimeCaption
+              className={cx("ms-0", "ms-md-auto", "my-auto", "text-truncate")}
+              datetime={deposit.creation_date}
+              enableTooltip
+              prefix=""
+            />
+          </DataConnectorPropertyValue>
+        )} */}
       </div>
     </section>
   );
