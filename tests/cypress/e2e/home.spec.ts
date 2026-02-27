@@ -114,6 +114,13 @@ describe("shows privacy policy", () => {
     cy.visit("/help/privacy");
     cy.wait("@getOverridePrivacyPolicy");
     cy.get("h1").contains("Override privacy policy").should("be.visible");
-    cy.get("a").contains("Privacy Policy").should("exist").should("be.visible");
+    cy.getDataCy("help-dropdown")
+      .find("a.nav-link")
+      .should("be.visible")
+      .click();
+    cy.getDataCy("help-dropdown")
+      .find("a")
+      .contains("Privacy Policy")
+      .should("be.visible");
   });
 });
