@@ -20,7 +20,9 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
+  CardText,
   Cloud,
+  CloudArrowUp,
   Folder,
   Gear,
   Globe2,
@@ -39,9 +41,11 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { TimeCaption } from "~/components/TimeCaption";
 import { IntegrationAlert } from "~/features/cloudStorage/AddOrEditCloudStorage";
 import { useGetStorageSchemaQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
@@ -66,8 +70,11 @@ import UserAvatar from "../../usersV2/show/UserAvatar";
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
+  Deposit,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
+import DepositActions from "../deposits/DepositActions";
+import DepositStatusBadge from "../deposits/DepositStatusBadge";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
@@ -79,7 +86,7 @@ import DataConnectorActions from "./DataConnectorActions";
 import DataConnectorModal from "./DataConnectorModal";
 import useDataConnectorProjects from "./useDataConnectorProjects.hook";
 
-const SECTION_CLASSES = ["pt-3"];
+const SECTION_CLASSES = ["border-top", "mt-4", "pt-4"];
 
 interface DataConnectorPropertyProps {
   title: string | React.ReactNode;
@@ -92,8 +99,8 @@ function DataConnectorPropertyValue({
 }: DataConnectorPropertyProps) {
   return (
     <>
-      <div className="fw-bold">{title}</div>
-      <div className="mb-4">{children}</div>
+      <div className="fw-semibold">{title}</div>
+      <div className="mb-3">{children}</div>
     </>
   );
 }
@@ -101,6 +108,7 @@ function DataConnectorPropertyValue({
 interface DataConnectorViewProps {
   dataConnector: DataConnectorRead;
   dataConnectorLink?: DataConnectorToProjectLink;
+  lastDeposit?: Deposit;
   showView: boolean;
   toggleView: () => void;
   toggleEdit: (initialStep?: number) => void;
@@ -109,6 +117,7 @@ interface DataConnectorViewProps {
 export default function DataConnectorView({
   dataConnector,
   dataConnectorLink,
+  lastDeposit,
   showView,
   toggleView,
   dataConnectorPotentiallyInaccessible = false,
@@ -120,6 +129,11 @@ export default function DataConnectorView({
     if (initialStep) setInitialStep(initialStep);
     setIsEditOpen((open) => !open);
   }, []);
+
+  const scope = useMemo(
+    () => getDataConnectorScope(dataConnector.namespace),
+    [dataConnector.namespace]
+  );
 
   return (
     <Offcanvas
@@ -148,11 +162,22 @@ export default function DataConnectorView({
           }
         />
         <DataConnectorViewIntegration dataConnector={dataConnector} />
-        <DataConnectorViewConfiguration
-          dataConnector={dataConnector}
-          toggleEdit={toggleEdit}
-        />
-        <DataConnectorViewAccess dataConnector={dataConnector} />
+
+        {scope !== "global" && (
+          <>
+            {lastDeposit && (
+              <DataConnectorLastDeposit
+                dataConnector={dataConnector}
+                deposit={lastDeposit}
+              />
+            )}
+            <DataConnectorViewConfiguration
+              dataConnector={dataConnector}
+              toggleEdit={toggleEdit}
+            />
+            <DataConnectorViewAccess dataConnector={dataConnector} />
+          </>
+        )}
         <DataConnectorViewProjects dataConnector={dataConnector} />
       </OffcanvasBody>
       <DataConnectorModal
@@ -163,6 +188,87 @@ export default function DataConnectorView({
         initialStep={initialStep}
       />
     </Offcanvas>
+  );
+}
+
+interface DataConnectorLastDepositProps {
+  dataConnector: DataConnectorRead;
+  deposit: Deposit;
+}
+function DataConnectorLastDeposit({
+  dataConnector,
+  deposit,
+}: DataConnectorLastDepositProps) {
+  const { permissions } = useDataConnectorPermissions({
+    dataConnectorId: dataConnector.id,
+  });
+
+  return (
+    <section
+      className={cx(SECTION_CLASSES)}
+      data-cy="data-connector-access-section"
+    >
+      <div
+        className={cx(
+          "align-items-center",
+          "mb-2",
+          "d-flex",
+          "justify-content-between"
+        )}
+      >
+        <h3 className="mb-0">
+          <CloudArrowUp className={cx("bi", "me-1")} />
+          Data export
+        </h3>
+        <PermissionsGuard
+          disabled={null}
+          enabled={<DepositActions deposit={deposit} />}
+          requestedPermission="write"
+          userPermissions={permissions}
+        />
+      </div>
+      <div>
+        <DataConnectorPropertyValue key="name" title="Name">
+          {deposit.name}
+        </DataConnectorPropertyValue>
+        <DataConnectorPropertyValue key="provider" title="Provider">
+          {deposit.provider}
+        </DataConnectorPropertyValue>
+        {deposit.external_url && (
+          <DataConnectorPropertyValue key="external_url" title="URL">
+            <ExternalLink href={deposit.external_url}>
+              {deposit.external_url}
+            </ExternalLink>
+          </DataConnectorPropertyValue>
+        )}
+        <DataConnectorPropertyValue key="status" title="Status">
+          <DepositStatusBadge status={deposit.status} />
+        </DataConnectorPropertyValue>
+        <DataConnectorPropertyValue key="path" title="Path">
+          {deposit.path ?? <span className="fst-italic">N/A</span>}
+        </DataConnectorPropertyValue>
+        {deposit.creation_date && (
+          <DataConnectorPropertyValue key="creation_date" title="Created">
+            <TimeCaption
+              datetime={deposit.creation_date}
+              enableTooltip
+              noCaption
+              prefix=""
+            />
+          </DataConnectorPropertyValue>
+        )}
+        {deposit.updated_at && deposit.updated_at !== deposit.creation_date && (
+          <DataConnectorPropertyValue key="updated_at" title="Last updated">
+            <TimeCaption
+              datetime={deposit.updated_at}
+              enableTooltip
+              noCaption
+              prefix=""
+            />
+          </DataConnectorPropertyValue>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -203,7 +309,7 @@ function DataConnectorViewAccess({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-access-section"
     >
-      <h3 className="mb-4">
+      <h3>
         <PersonBadge className={cx("bi", "me-1")} />
         Credentials
       </h3>
@@ -216,7 +322,7 @@ function DataConnectorViewAccess({
         {anySensitiveField &&
           requiredCredentials &&
           requiredCredentials.length > 0 && (
-            <div className={cx("mb-4", "mt-3")}>
+            <div>
               <p className={cx("fw-bold", "m-0")}>Required credentials</p>
               <table
                 className={cx(
@@ -332,10 +438,6 @@ function DataConnectorViewConfiguration({
   const nonRequiredCredentialConfigurationKeys = Object.keys(
     storageDefinition.configuration
   ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
-  const scope = useMemo(
-    () => getDataConnectorScope(dataConnector.namespace),
-    [dataConnector.namespace]
-  );
   const hasAccessMode = useMemo(
     () => STORAGES_WITH_ACCESS_MODE.includes(storageDefinition.storage_type),
     [storageDefinition.storage_type]
@@ -346,10 +448,17 @@ function DataConnectorViewConfiguration({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-configuration-section"
     >
-      <div className={cx("d-flex", "justify-content-between", "mb-4")}>
-        <h3>
+      <div
+        className={cx(
+          "align-items-center",
+          "mb-2",
+          "d-flex",
+          "justify-content-between"
+        )}
+      >
+        <h3 className="mb-0">
           <Gear className={cx("bi", "me-1")} />
-          {scope === "global" ? "Configuration" : "Connection Information"}
+          Connection Information
         </h3>
         <PermissionsGuard
           disabled={null}
@@ -373,17 +482,16 @@ function DataConnectorViewConfiguration({
           userPermissions={permissions}
         />
       </div>
-      {scope !== "global" &&
-        nonRequiredCredentialConfigurationKeys.map((key) => {
-          const title =
-            key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
-          const value = storageDefinition.configuration[key]?.toString() ?? "";
-          return (
-            <DataConnectorPropertyValue key={key} title={title}>
-              {value}
-            </DataConnectorPropertyValue>
-          );
-        })}
+      {nonRequiredCredentialConfigurationKeys.map((key) => {
+        const title =
+          key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
+        const value = storageDefinition.configuration[key]?.toString() ?? "";
+        return (
+          <DataConnectorPropertyValue key={key} title={title}>
+            {value}
+          </DataConnectorPropertyValue>
+        );
+      })}
       <div>
         <DataConnectorPropertyValue title="Source path">
           {storageDefinition.source_path}
@@ -400,7 +508,7 @@ function DataConnectorViewHeader({
   toggleEdit,
 }: Omit<DataConnectorViewProps, "showView">) {
   return (
-    <div className="mb-4">
+    <div className="mb-3">
       <span className={cx("small", "text-muted", "me-3")}>Data connector</span>
       <div>
         <div className={cx("float-end", "mt-1", "ms-1")}>
@@ -428,7 +536,7 @@ function DataConnectorViewProjects({
       className={cx(SECTION_CLASSES)}
       data-cy="data-connector-projects-section"
     >
-      <h3 className="mb-4">
+      <h3>
         <Folder className={cx("bi", "me-1")} />
         Projects
       </h3>
@@ -542,7 +650,11 @@ function DataConnectorViewMetadata({
   const dataConnectorSource = useGetDataConnectorSource(dataConnector);
 
   return (
-    <section className={cx("pt-3")} data-cy="data-connector-metadata-section">
+    <section className="mt-4" data-cy="data-connector-metadata-section">
+      <h3>
+        <CardText className={cx("bi", "me-1")} />
+        Metadata
+      </h3>
       <DataConnectorPropertyValue title="Identifier">
         <div className={cx("d-flex", "justify-content-between", "mx-0")}>
           <div>{identifier}</div>

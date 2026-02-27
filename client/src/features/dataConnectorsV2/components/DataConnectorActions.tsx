@@ -18,7 +18,14 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Lock, NodeMinus, Pencil, Trash, XLg } from "react-bootstrap-icons";
+import {
+  CloudArrowUp,
+  Lock,
+  NodeMinus,
+  Pencil,
+  Trash,
+  XLg,
+} from "react-bootstrap-icons";
 import { matchPath, useLocation } from "react-router";
 import {
   Button,
@@ -49,6 +56,7 @@ import {
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
 } from "../api/data-connectors.enhanced-api";
+import DepositCreationModal from "../deposits/DepositCreationModal";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
@@ -101,7 +109,7 @@ function DataConnectorRemoveDeleteModal({
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
-      <ModalHeader className="text-danger" toggle={toggleModal}>
+      <ModalHeader className="text-danger" tag="h2" toggle={toggleModal}>
         Delete data connector
       </ModalHeader>
       <ModalBody>
@@ -360,6 +368,7 @@ function DataConnectorActionsInner({
   // Local states
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDepositOpen, setDepositOpen] = useState(false);
   const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
 
   // Actions
@@ -380,6 +389,9 @@ function DataConnectorActionsInner({
     if (toggleView) toggleView();
     setIsUnlinkOpen(false);
   }, [toggleView]);
+  const toggleDeposit = useCallback(() => {
+    setDepositOpen((open) => !open);
+  }, []);
 
   // Data
   const { id: dataConnectorId } = dataConnector;
@@ -428,6 +440,16 @@ function DataConnectorActionsInner({
               <>
                 <Pencil className={cx("bi", "me-1")} />
                 Edit Connection Information
+              </>
+            ),
+          },
+          {
+            key: "data-connector-deposit",
+            onClick: () => toggleDeposit(),
+            content: (
+              <>
+                <CloudArrowUp className={cx("bi", "me-1")} />
+                Export data
               </>
             ),
           },
@@ -529,6 +551,11 @@ function DataConnectorActionsInner({
         isOpen={isDeleteOpen}
         onDelete={onDelete}
         toggleModal={toggleDelete}
+      />
+      <DepositCreationModal
+        dataConnector={dataConnector}
+        isOpen={isDepositOpen}
+        setOpen={toggleDeposit}
       />
       {dataConnectorLink && (
         <DataConnectorRemoveUnlinkModal

@@ -18,9 +18,10 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CircleFill,
+  CloudArrowUp,
   EyeFill,
   Folder,
   Globe2,
@@ -46,10 +47,16 @@ import {
 } from "~/features/connectedServices/api/connectedServices.api";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
-import type {
-  DataConnector,
-  DataConnectorToProjectLink,
+import {
+  type DataConnector,
+  type DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
+import { useGetDataConnectorsByDataConnectorIdDepositsQuery } from "../api/data-connectors.enhanced-api";
+import {
+  POLL_TIME_ACTIVE_DEPOSITS,
+  POLL_TIME_INACTIVE_DEPOSITS,
+} from "../deposits/deposits.const";
+import DepositStatusBadge from "../deposits/DepositStatusBadge";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
   getDataConnectorScope,
@@ -72,6 +79,9 @@ export default function DataConnectorBoxListDisplay({
   dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorBoxListDisplayProps) {
   const { name, visibility, storage, namespace } = dataConnector;
+  const [depositPollingInterval, setDepositPollingInterval] = useState(
+    POLL_TIME_INACTIVE_DEPOSITS
+  );
 
   // Handle hash
   const [hash, setHash] = useLocationHash();
@@ -108,6 +118,26 @@ export default function DataConnectorBoxListDisplay({
   const type = `${storage?.configuration?.type?.toString() ?? ""} ${
     storage?.configuration?.provider?.toString() ?? ""
   }`;
+  const deposits = useGetDataConnectorsByDataConnectorIdDepositsQuery(
+    {
+      dataConnectorId: dataConnector.id,
+      params: { page: 1, per_page: 1 },
+    },
+    { pollingInterval: depositPollingInterval }
+  );
+
+  // Deposits logic
+  const lastDeposit = useMemo(() => {
+    if (!deposits.data || deposits.data.length === 0) return undefined;
+    return deposits.data[0];
+  }, [deposits.data]);
+  useEffect(() => {
+    if (lastDeposit && lastDeposit.status === "in_progress") {
+      setDepositPollingInterval(POLL_TIME_ACTIVE_DEPOSITS);
+    } else {
+      setDepositPollingInterval(POLL_TIME_INACTIVE_DEPOSITS);
+    }
+  }, [lastDeposit]);
 
   // Components
   const readOnly =
@@ -145,21 +175,23 @@ export default function DataConnectorBoxListDisplay({
         <Link
           className={cx(
             "d-block",
-            "text-body",
-            "text-decoration-none",
             "link-primary",
-            "py-3"
+            "py-3",
+            "text-body",
+            "text-decoration-none"
           )}
           to={targetOffcanvasLocation}
         >
-          <Row className={cx("align-items-center", "g-3", "mx-0")}>
+          <Row
+            className={cx("align-items-center", "flex-nowrap", "g-3", "mx-0")}
+          >
             <Col className={cx("d-flex", "flex-column", "min-w-0", "px-0")}>
               <div
                 className={cx(
+                  "align-items-center",
                   "d-flex",
-                  "flex-row",
-                  "gap-2",
-                  "align-items-center"
+                  "flex-wrap",
+                  "gap-2"
                 )}
               >
                 <span className="fw-bold" data-cy="data-connector-name">
@@ -172,12 +204,11 @@ export default function DataConnectorBoxListDisplay({
                   "align-items-center",
                   "d-flex",
                   "flex-row",
-                  "gap-1",
-                  "text-truncate"
+                  "gap-1"
                 )}
               >
                 {scopeIcon}
-                <p className={cx("mb-0", "text-truncate", "text-wrap")}>
+                <p className={cx("mb-0", "text-break")}>
                   {dataConnectorSource}
                 </p>
               </div>
@@ -219,6 +250,23 @@ export default function DataConnectorBoxListDisplay({
                   )}
                 </div>
               </div>
+
+              {lastDeposit && (
+                <div
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "flex-wrap",
+                    "gap-2"
+                  )}
+                >
+                  <div className={cx("align-items-center", "d-flex", "gap-1")}>
+                    <CloudArrowUp className={cx("bi")} />
+                    Data export
+                  </div>
+                  <DepositStatusBadge status={lastDeposit.status} />
+                </div>
+              )}
             </Col>
             {/* This column is a placeholder to reserve the space for the action button */}
             <Col xs="auto" className="flex-shrink-0">
@@ -251,6 +299,7 @@ export default function DataConnectorBoxListDisplay({
       <DataConnectorView
         dataConnector={dataConnector}
         dataConnectorLink={dataConnectorLink}
+        lastDeposit={lastDeposit}
         showView={showOffCanvas}
         toggleView={toggleOffCanvas}
         dataConnectorPotentiallyInaccessible={
@@ -324,10 +373,13 @@ export function DataConnectorNotVisibleToAllUsersBadge({
 }
 
 interface IntegrationBadgeProps {
+  className?: string;
   dataConnector: DataConnector;
 }
-
-export function IntegrationBadge({ dataConnector }: IntegrationBadgeProps) {
+export function IntegrationBadge({
+  className,
+  dataConnector,
+}: IntegrationBadgeProps) {
   const providerKind = useMemo(
     () =>
       CLOUD_STORAGE_INTEGRATION_KIND_MAP[dataConnector.storage.storage_type],
@@ -375,7 +427,7 @@ export function IntegrationBadge({ dataConnector }: IntegrationBadgeProps) {
     : "danger";
 
   return (
-    <RenkuBadge className="fw-normal" color={color} pill>
+    <RenkuBadge className={cx("fw-normal", className)} color={color} pill>
       {isLoading ? (
         <>
           <Loader className="me-1" size={12} inline />

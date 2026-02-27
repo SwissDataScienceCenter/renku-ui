@@ -151,6 +151,7 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/data_connectors/${queryArg.dataConnectorId}/deposits`,
+        params: { params: queryArg.params },
       }),
     }),
     getProjectsByProjectIdDataConnectorLinks: build.query<
@@ -177,7 +178,10 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getDeposits: build.query<GetDepositsApiResponse, GetDepositsApiArg>({
-      query: () => ({ url: `/deposits` }),
+      query: (queryArg) => ({
+        url: `/deposits`,
+        params: { params: queryArg.params },
+      }),
     }),
     getDepositsByDepositId: build.query<
       GetDepositsByDepositIdApiResponse,
@@ -317,6 +321,8 @@ export type GetDataConnectorsByDataConnectorIdDepositsApiResponse =
 export type GetDataConnectorsByDataConnectorIdDepositsApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
+  /** Query parameters */
+  params?: PaginationRequest;
 };
 export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
   /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
@@ -337,7 +343,10 @@ export type PostDepositsApiArg = {
 };
 export type GetDepositsApiResponse =
   /** status 200 The list of data deposits */ DepositList;
-export type GetDepositsApiArg = void;
+export type GetDepositsApiArg = {
+  /** Query parameters */
+  params?: PaginationRequest;
+};
 export type GetDepositsByDepositIdApiResponse =
   /** status 200 The data deposit */ Deposit;
 export type GetDepositsByDepositIdApiArg = {
@@ -618,6 +627,8 @@ export type Deposit = DepositPost & {
   status?: DepositStatus;
   /** The URL from the provider where the deposit can be accessed */
   external_url?: string;
+  creation_date?: CreationDate;
+  updated_at?: CreationDate;
 };
 export type DepositList = Deposit[];
 export type InaccessibleDataConnectorLinks = {
