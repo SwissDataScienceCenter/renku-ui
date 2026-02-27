@@ -45,6 +45,7 @@ import ExternalLink from "~/components/ExternalLink";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { TimeCaption } from "~/components/TimeCaption";
 import { IntegrationAlert } from "~/features/cloudStorage/AddOrEditCloudStorage";
 import { useGetStorageSchemaQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
@@ -246,16 +247,26 @@ function DataConnectorLastDeposit({
         <DataConnectorPropertyValue key="path" title="Path">
           {deposit.path ?? <span className="fst-italic">N/A</span>}
         </DataConnectorPropertyValue>
-        {/* {deposit.creation_date && (
-          <DataConnectorPropertyValue key="creation_date" title="Creation Date">
+        {deposit.creation_date && (
+          <DataConnectorPropertyValue key="creation_date" title="Created">
             <TimeCaption
-              className={cx("ms-0", "ms-md-auto", "my-auto", "text-truncate")}
               datetime={deposit.creation_date}
               enableTooltip
+              noCaption
               prefix=""
             />
           </DataConnectorPropertyValue>
-        )} */}
+        )}
+        {deposit.updated_at && deposit.updated_at !== deposit.creation_date && (
+          <DataConnectorPropertyValue key="updated_at" title="Last updated">
+            <TimeCaption
+              datetime={deposit.updated_at}
+              enableTooltip
+              noCaption
+              prefix=""
+            />
+          </DataConnectorPropertyValue>
+        )}
       </div>
     </section>
   );

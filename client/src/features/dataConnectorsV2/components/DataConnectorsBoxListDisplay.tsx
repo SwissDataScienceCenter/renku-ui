@@ -48,7 +48,6 @@ import {
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import {
-  DepositList,
   type DataConnector,
   type DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
@@ -114,11 +113,11 @@ export default function DataConnectorBoxListDisplay({
   }`;
   const deposits = useGetDataConnectorsByDataConnectorIdDepositsQuery({
     dataConnectorId: dataConnector.id,
+    params: { page: 1, per_page: 1 },
   });
-
   const lastDeposit = useMemo(() => {
     if (!deposits.data || deposits.data.length === 0) return undefined;
-    return deposits.data.at(-1);
+    return deposits.data[0];
   }, [deposits.data]);
 
   // Components

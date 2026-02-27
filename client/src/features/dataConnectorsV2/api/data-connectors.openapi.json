@@ -624,6 +624,18 @@
       ],
       "get": {
         "summary": "Get all deposits for a specific data connector",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/PaginationRequest"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "The list of deposits",
@@ -745,6 +757,18 @@
       },
       "get": {
         "summary": "List all data deposits",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/PaginationRequest"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "The list of data deposits",
@@ -1350,6 +1374,12 @@
         "format": "date-time",
         "example": "2023-11-01T17:32:28Z"
       },
+      "UpdatedAt": {
+        "description": "The date and time the resource was updated (in UTC and ISO-8601 format)",
+        "type": "string",
+        "format": "date-time",
+        "example": "2023-11-01T17:32:28Z"
+      },
       "UserId": {
         "type": "string",
         "description": "Keycloak user ID",
@@ -1558,6 +1588,12 @@
               "external_url": {
                 "type": "string",
                 "description": "The URL from the provider where the deposit can be accessed"
+              },
+              "creation_date": {
+                "$ref": "#/components/schemas/CreationDate"
+              },
+              "updated_at": {
+                "$ref": "#/components/schemas/CreationDate"
               }
             }
           }
@@ -1569,7 +1605,9 @@
           "data_connector_id",
           "path",
           "status",
-          "external_url"
+          "external_url",
+          "creation_date",
+          "updated_at"
         ]
       },
       "DepositPatch": {
