@@ -31,8 +31,6 @@ import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS } from "~/utils/constants/NewDocs";
 import type { RemoteConfiguration } from "../adminComputeResources.types";
 
-const DEFAULT_REMOTE_KIND_VALUE: RemoteConfiguration["kind"] = "firecrest";
-
 interface ResourcePoolRemoteSectionProps<T extends FieldValues> {
   className?: string;
   control: Control<T>;
@@ -49,6 +47,10 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
   const inputId = `${formPrefix}Remote`;
   const remoteEnabled = `${name}.enabled` as FieldPathByValue<T, boolean>;
   const remoteEnabledWatch = useWatch({ control, name: remoteEnabled });
+  const remoteKindWatch = useWatch({
+    control,
+    name: `${name}.kind` as FieldPathByValue<T, RemoteConfiguration["kind"]>,
+  });
 
   return (
     <div className={className}>
@@ -93,56 +95,146 @@ export default function ResourcePoolRemoteSection<T extends FieldValues>({
 
       <Collapse isOpen={remoteEnabledWatch}>
         <CollapseBody className={cx("d-flex", "flex-column", "gap-1")}>
-          <ResourcePoolRemoteKind formPrefix={formPrefix} />
-
-          <ResourcePoolRemoteProviderId
+          <ResourcePoolRemoteKind
             control={control}
             formPrefix={formPrefix}
             name={name}
           />
 
-          <ResourcePoolRemoteApiUrl
-            control={control}
-            formPrefix={formPrefix}
-            name={name}
-          />
-
-          <ResourcePoolRemoteSystemName
-            control={control}
-            formPrefix={formPrefix}
-            name={name}
-          />
-
-          <ResourcePoolRemotePartition
-            control={control}
-            formPrefix={formPrefix}
-            name={name}
-          />
+          {remoteKindWatch === "firecrest" && (
+            <ResourcePoolRemoteSectionFirecrest
+              control={control}
+              formPrefix={formPrefix}
+              name={
+                `${name}.firecrestConfiguration` as FieldPathByValue<
+                  T,
+                  RemoteConfiguration
+                >
+              }
+            />
+          )}
+          {remoteKindWatch === "runai" && (
+            <ResourcePoolRemoteSectionRunai
+              control={control}
+              formPrefix={formPrefix}
+              name={
+                `${name}.runaiConfiguration` as FieldPathByValue<
+                  T,
+                  RemoteConfiguration
+                >
+              }
+            />
+          )}
         </CollapseBody>
       </Collapse>
     </div>
   );
 }
 
-interface ResourcePoolRemoteKindProps {
+interface ResourcePoolRemoteKindProps<T extends FieldValues> {
+  control: Control<T>;
   formPrefix: string;
+  name: FieldPathByValue<T, RemoteConfiguration>;
 }
 
-function ResourcePoolRemoteKind({ formPrefix }: ResourcePoolRemoteKindProps) {
+function ResourcePoolRemoteKind<T extends FieldValues>({
+  control,
+  formPrefix,
+  name,
+}: ResourcePoolRemoteKindProps<T>) {
   const inputId = `${formPrefix}Kind`;
+  const fieldName = `${name}.kind` as FieldPathByValue<
+    T,
+    RemoteConfiguration["kind"]
+  >;
+
+  const kindOptions: {
+    value: RemoteConfiguration["kind"];
+    label: string;
+  }[] = [
+    { value: null, label: "None" },
+    { value: "firecrest", label: "Firecrest" },
+    { value: "runai", label: "Run:AI" },
+  ];
+
   return (
     <div>
-      <Label className="mb-1" for={inputId}>
-        Kind
-      </Label>
-      <Input
-        id={inputId}
-        type="text"
-        value={DEFAULT_REMOTE_KIND_VALUE}
-        disabled
-        readOnly
+      <Label className="mb-1">Kind</Label>
+      <Controller
+        control={control}
+        name={fieldName}
+        render={({ field }) => (
+          <div className={cx("d-flex", "gap-3")}>
+            {kindOptions.map(({ value, label }) => (
+              <div key={label} className="form-check">
+                <Input
+                  id={`${inputId}-${value ? value : "none"}`}
+                  type="radio"
+                  checked={field.value === value}
+                  onChange={() => field.onChange(value)}
+                />
+                <Label
+                  className={cx("form-check-label", "ms-2")}
+                  for={`${inputId}-${value ? value : "none"}`}
+                >
+                  {label}
+                </Label>
+              </div>
+            ))}
+          </div>
+        )}
       />
     </div>
+  );
+}
+
+function ResourcePoolRemoteSectionFirecrest<T extends FieldValues>({
+  control,
+  formPrefix,
+  name,
+}: ResourcePoolRemoteKindProps<T>) {
+  return (
+    <>
+      <ResourcePoolRemoteProviderId
+        control={control}
+        formPrefix={formPrefix}
+        name={name}
+      />
+
+      <ResourcePoolRemoteApiUrl
+        control={control}
+        formPrefix={formPrefix}
+        name={name}
+      />
+
+      <ResourcePoolRemoteSystemName
+        control={control}
+        formPrefix={formPrefix}
+        name={name}
+      />
+
+      <ResourcePoolRemotePartition
+        control={control}
+        formPrefix={formPrefix}
+        name={name}
+      />
+    </>
+  );
+}
+
+function ResourcePoolRemoteSectionRunai<T extends FieldValues>({
+  control,
+  formPrefix,
+  name,
+}: ResourcePoolRemoteKindProps<T>) {
+  return (
+    <>
+      <ResourcePoolRemoteBaseUrl
+        control={control}
+        formPrefix={formPrefix}
+        name={name}
+      />
+    </>
   );
 }
 
@@ -226,12 +318,56 @@ function ResourcePoolRemoteApiUrl<T extends FieldValues>({
         )}
         rules={{
           validate: {
-            required: (value, formValues) => {
-              const remote = formValues[name] as RemoteConfiguration;
-              if (!remote.enabled || value) {
+            required: (value) => {
+              if (value) {
                 return true;
               }
               return "Please provide a value for the API URL.";
+            },
+          },
+        }}
+      />
+    </div>
+  );
+}
+
+function ResourcePoolRemoteBaseUrl<T extends FieldValues>({
+  control,
+  formPrefix,
+  name,
+}: ResourcePoolRemoteStringInputProps<T>) {
+  const inputId = `${formPrefix}RemoteBaseUrl`;
+  const fieldName = `${name}.baseUrl` as FieldPathByValue<T, string>;
+
+  return (
+    <div>
+      <Label className="mb-1" for={inputId}>
+        Base URL
+      </Label>
+      <Controller
+        control={control}
+        name={fieldName}
+        render={({ field, fieldState: { error } }) => (
+          <>
+            <Input
+              className={cx(error && "is-invalid")}
+              id={inputId}
+              placeholder="Run:AI Base URL" // eslint-disable-line spellcheck/spell-checker
+              type="text"
+              {...field}
+              value={field.value ?? ""}
+            />
+            <div className="invalid-feedback">
+              {error?.message ?? "Please provide a valid value for Base URL."}
+            </div>
+          </>
+        )}
+        rules={{
+          validate: {
+            required: (value) => {
+              if (!value || value.trim().length < 1)
+                return "Please provide a value for the Base URL.";
+              return true;
             },
           },
         }}
@@ -275,9 +411,8 @@ function ResourcePoolRemoteSystemName<T extends FieldValues>({
         )}
         rules={{
           validate: {
-            required: (value, formValues) => {
-              const remote = formValues[name] as RemoteConfiguration;
-              if (!remote.enabled || value) {
+            required: (value) => {
+              if (value) {
                 return true;
               }
               return "Please provide a value for the system name.";
