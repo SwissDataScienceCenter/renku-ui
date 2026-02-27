@@ -740,7 +740,14 @@
       },
       "ProviderKind": {
         "type": "string",
-        "enum": ["dropbox", "generic_oidc", "github", "gitlab", "google"],
+        "enum": [
+          "dropbox",
+          "generic_oidc",
+          "github",
+          "gitlab",
+          "google",
+          "zenodo"
+        ],
         "example": "gitlab"
       },
       "ApplicationSlug": {

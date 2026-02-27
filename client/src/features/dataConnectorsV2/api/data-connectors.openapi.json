@@ -610,6 +610,48 @@
         "tags": ["data_connectors"]
       }
     },
+    "/data_connectors/{data_connector_id}/deposits": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "data_connector_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data connector"
+        }
+      ],
+      "get": {
+        "summary": "Get all deposits for a specific data connector",
+        "responses": {
+          "200": {
+            "description": "The list of deposits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector does not exist or you dont have access to it",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
     "/projects/{project_id}/data_connector_links": {
       "parameters": [
         {
@@ -672,6 +714,114 @@
           }
         },
         "tags": ["projects"]
+      }
+    },
+    "/deposits": {
+      "post": {
+        "summary": "Create a new data deposit",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The newly created deposit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Deposit"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["deposit"]
+      },
+      "get": {
+        "summary": "List all data deposits",
+        "responses": {
+          "200": {
+            "description": "The list of data deposits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositList"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["deposit"]
+      }
+    },
+    "/deposits/{deposit_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "deposit_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data deposit"
+        }
+      ],
+      "get": {
+        "summary": "Get information about a data deposit",
+        "responses": {
+          "200": {
+            "description": "The data deposit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Deposit"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["deposit"]
+      },
+      "patch": {
+        "summary": "Modify an existing data deposit",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The data deposit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Deposit"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["deposit"]
+      },
+      "delete": {
+        "summary": "Delete an existing data deposit",
+        "responses": {
+          "204": {
+            "description": "The data deposit was deleted"
+          }
+        },
+        "tags": ["deposit"]
       }
     }
   },
@@ -1358,6 +1508,86 @@
             "description": "The number of data links the user does not have access to"
           }
         }
+      },
+      "DepositProvider": {
+        "type": "string",
+        "enum": ["zenodo"]
+      },
+      "DepositStatus": {
+        "type": "string",
+        "enum": ["complete", "in_progress", "cancelled", "missing"]
+      },
+      "DepositSourcePath": {
+        "type": "string",
+        "example": "/some/path",
+        "description": "The path from the data connector that should be uploaded in the deposit"
+      },
+      "DepositPost": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/DataConnectorName"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/DepositProvider"
+          },
+          "data_connector_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "path": {
+            "$ref": "#/components/schemas/DepositSourcePath"
+          }
+        },
+        "required": ["name", "provider", "data_connector_id"]
+      },
+      "Deposit": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DepositPost"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/components/schemas/Ulid"
+              },
+              "status": {
+                "$ref": "#/components/schemas/DepositStatus"
+              },
+              "external_url": {
+                "type": "string",
+                "description": "The URL from the provider where the deposit can be accessed"
+              }
+            }
+          }
+        ],
+        "required": [
+          "id",
+          "name",
+          "provider",
+          "data_connector_id",
+          "path",
+          "status",
+          "external_url"
+        ]
+      },
+      "DepositPatch": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/DataConnectorName"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DepositStatus"
+          }
+        }
+      },
+      "DepositList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Deposit"
+        }
       }
     },
     "responses": {
@@ -1382,17 +1612,6 @@
           "$ref": "#/components/schemas/ETag"
         }
       }
-    },
-    "securitySchemes": {
-      "oidc": {
-        "type": "openIdConnect",
-        "openIdConnectUrl": "/auth/realms/Renku/.well-known/openid-configuration"
-      }
     }
-  },
-  "security": [
-    {
-      "oidc": ["openid"]
-    }
-  ]
+  }
 }

@@ -19,7 +19,8 @@
 import fixtures from "../support/renkulab-fixtures";
 
 function openDataConnectorMenu() {
-  cy.getDataCy("data-connector-edit")
+  cy.getDataCy("data-connector-view")
+    .find('[data-cy="data-connector-edit"]')
     .parent()
     .find("[data-cy=data-connector-menu-dropdown]")
     .first()
@@ -294,7 +295,9 @@ describe("Set up data connectors with credentials", () => {
 
     // set credentials
     openDataConnectorMenu();
-    cy.getDataCy("data-connector-credentials").click();
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-credentials"]')
+      .click();
 
     fixtures
       .testCloudStorage({ success: true })
@@ -344,7 +347,10 @@ describe("Set up data connectors with credentials", () => {
       fixture: "cloudStorage/storage-schema-s3.json",
     });
     openDataConnectorMenu();
-    cy.getDataCy("data-connector-edit-connection").click();
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-edit-connection"]')
+      .click();
+
     cy.getDataCy("data-connector-edit-modal")
       .find("#access_key_id")
       .invoke("attr", "value")
@@ -382,7 +388,9 @@ describe("Set up data connectors with credentials", () => {
     );
 
     // clear credentials
-    cy.getDataCy("data-connector-credentials").click();
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-credentials"]')
+      .click();
     cy.getDataCy("data-connector-credentials-modal")
       .contains("The saved credentials for this data connector are incomplete")
       .should("be.visible");

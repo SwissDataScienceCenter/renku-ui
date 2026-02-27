@@ -128,7 +128,7 @@ export default function DataConnectorView({
       direction="end"
       backdrop={true}
     >
-      <OffcanvasBody>
+      <OffcanvasBody data-cy="data-connector-view">
         <div className="mb-3">
           <button
             aria-label="Close"
