@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   BootstrapReboot,
   BoxArrowUpRight,
@@ -41,11 +41,11 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import LogsModal from "~/features/logsDisplay/LogsModal";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
-import { EnvironmentLogsPresent, ILogs } from "../../../components/LogsV2";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { TimeCaption } from "../../../components/TimeCaption";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -230,59 +230,25 @@ export function BuildLogsModal({
   );
   const hasInProgressBuild = !!inProgressBuild;
 
-  const [logs, setLogs] = useState<ILogs>({
-    data: {},
-    fetched: false,
-    fetching: false,
-    show: isOpen,
-  });
-
-  const { data, isFetching, refetch } = useGetBuildLogsQuery(
+  const query = useGetBuildLogsQuery(
     isOpen && lastBuild
       ? {
           buildId: lastBuild.id,
         }
       : skipToken
   );
-  const fetchLogs = useCallback(
-    () =>
-      refetch().then((result) => {
-        if (result.error) {
-          throw result.error;
-        }
-        if (result.data == null) {
-          throw new Error("Could not retrieve logs");
-        }
-        return result.data;
-      }),
-    [refetch]
-  );
-
-  useEffect(() => {
-    setLogs((prevState) => ({ ...prevState, show: isOpen ? name : false }));
-  }, [isOpen, name]);
-  useEffect(() => {
-    setLogs((prevState) => ({ ...prevState, fetching: isFetching }));
-  }, [isFetching]);
-  useEffect(() => {
-    setLogs((prevState) => ({
-      ...prevState,
-      fetched: !!data,
-      data: data ? data : {},
-    }));
-  }, [data]);
 
   if (lastBuild == null) {
     return null;
   }
 
   return (
-    <EnvironmentLogsPresent
-      fetchLogs={fetchLogs}
-      toggleLogs={toggle}
-      logs={logs}
+    <LogsModal
+      isOpen={isOpen}
       name={name}
+      query={query}
       title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
+      toggle={toggle}
       defaultTab="step-build-and-push"
     />
   );

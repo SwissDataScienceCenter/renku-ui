@@ -46,10 +46,9 @@ import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import { Loader } from "~/components/Loader";
 import useRenkuToast from "~/components/toast/useRenkuToast";
+import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
-import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
@@ -92,10 +91,10 @@ export default function ActiveSessionButton({
   const { data: user } = useGetUserQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
 
-  const dispatch = useAppDispatch();
-  const onToggleLogs = useCallback(() => {
-    dispatch(toggleSessionLogsModal({ targetServer: session.name }));
-  }, [dispatch, session.name]);
+  const [showLogsModal, setShowLogsModal] = useState<boolean>(false);
+  const toggleLogsModal = useCallback(() => {
+    setShowLogsModal((isOpen) => !isOpen);
+  }, []);
 
   // Handle resuming session
   const [isResuming, setIsResuming] = useState(false);
@@ -323,7 +322,7 @@ export default function ActiveSessionButton({
         <Button
           color="outline-primary"
           data-cy="show-logs-session-button"
-          onClick={onToggleLogs}
+          onClick={toggleLogsModal}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
           Get logs
@@ -343,7 +342,7 @@ export default function ActiveSessionButton({
         <Button
           color="outline-primary"
           data-cy={"show-logs-session-button"}
-          onClick={onToggleLogs}
+          onClick={toggleLogsModal}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
           Get logs
@@ -414,7 +413,7 @@ export default function ActiveSessionButton({
   );
 
   const logsAction = status !== "hibernated" && (
-    <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
+    <DropdownItem data-cy="session-log-button" onClick={toggleLogsModal}>
       <FileEarmarkText className={cx("bi", "me-1")} />
       Get logs
     </DropdownItem>
@@ -454,6 +453,11 @@ export default function ActiveSessionButton({
         status={session.status}
         toggleModal={toggleModifySession}
         resource_class_id={session.resource_class_id}
+      />
+      <SessionLogsModal
+        isOpen={showLogsModal}
+        sessionName={session.name}
+        toggle={toggleLogsModal}
       />
     </div>
   );

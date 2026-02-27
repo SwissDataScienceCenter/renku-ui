@@ -32,7 +32,6 @@ import {
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
-import EnvironmentLogsV2 from "../../components/LogsV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useLocationHash from "../../utils/customHooks/useLocationHash.hook";
 import PermissionsGuard from "../permissionsV2/PermissionsGuard";
@@ -273,10 +272,6 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
         project={project}
         toggle={toggleSessionView}
         isOpen={isSessionViewOpen}
-      />
-      <EnvironmentLogsV2
-        name={session.name}
-        key={`session-logs-${session.name}`}
       />
     </>
   );
