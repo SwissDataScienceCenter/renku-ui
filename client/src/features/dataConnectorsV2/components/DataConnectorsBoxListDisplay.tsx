@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CircleFill,
   CloudArrowUp,
@@ -52,6 +52,10 @@ import {
   type DataConnectorToProjectLink,
 } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdDepositsQuery } from "../api/data-connectors.enhanced-api";
+import {
+  POLL_TIME_ACTIVE_DEPOSITS,
+  POLL_TIME_INACTIVE_DEPOSITS,
+} from "../deposits/deposits.const";
 import DepositStatusBadge from "../deposits/DepositStatusBadge";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {
@@ -75,6 +79,9 @@ export default function DataConnectorBoxListDisplay({
   dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorBoxListDisplayProps) {
   const { name, visibility, storage, namespace } = dataConnector;
+  const [depositPollingInterval, setDepositPollingInterval] = useState(
+    POLL_TIME_INACTIVE_DEPOSITS
+  );
 
   // Handle hash
   const [hash, setHash] = useLocationHash();
@@ -111,14 +118,26 @@ export default function DataConnectorBoxListDisplay({
   const type = `${storage?.configuration?.type?.toString() ?? ""} ${
     storage?.configuration?.provider?.toString() ?? ""
   }`;
-  const deposits = useGetDataConnectorsByDataConnectorIdDepositsQuery({
-    dataConnectorId: dataConnector.id,
-    params: { page: 1, per_page: 1 },
-  });
+  const deposits = useGetDataConnectorsByDataConnectorIdDepositsQuery(
+    {
+      dataConnectorId: dataConnector.id,
+      params: { page: 1, per_page: 1 },
+    },
+    { pollingInterval: depositPollingInterval }
+  );
+
+  // Deposits logic
   const lastDeposit = useMemo(() => {
     if (!deposits.data || deposits.data.length === 0) return undefined;
     return deposits.data[0];
   }, [deposits.data]);
+  useEffect(() => {
+    if (lastDeposit && lastDeposit.status === "in_progress") {
+      setDepositPollingInterval(POLL_TIME_ACTIVE_DEPOSITS);
+    } else {
+      setDepositPollingInterval(POLL_TIME_INACTIVE_DEPOSITS);
+    }
+  }, [lastDeposit]);
 
   // Components
   const readOnly =
