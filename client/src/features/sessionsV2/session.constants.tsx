@@ -110,6 +110,17 @@ export const BUILDER_TYPES = [
       </>
     ),
   },
+  {
+    value: "r",
+    label: "R",
+    description: (
+      <>
+        Create a R environment from an <code>renv.lock</code> file. This file
+        must be at the root of the repository. See the documentation for
+        examples. Only compatible with RStudio for now
+      </>
+    ),
+  },
 ] as readonly BuilderSelectorOption[];
 
 export const BUILDER_FRONTENDS = [
@@ -132,6 +143,13 @@ export const BUILDER_FRONTENDS = [
     /* eslint-disable spellcheck/spell-checker */
     value: "ttyd",
     label: "ttyd",
+    description: "Web-based terminal, with minimalist interface.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "rstudio",
+    label: "RStudio",
     description: "Web-based terminal, with minimalist interface.",
     /* eslint-enable spellcheck/spell-checker */
   },
