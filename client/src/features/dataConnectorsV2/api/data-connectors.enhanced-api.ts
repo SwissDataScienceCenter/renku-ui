@@ -1,19 +1,19 @@
-import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
-import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
+import { processApiPaginationHeaders } from "~/utils/helpers/pagination.utils";
+import {
+  DataConnectorsPaginated,
+  DataConnectorToProjectLinksPaginated,
+} from "../dataConnectors.types";
 import type {
   GetDataConnectorsApiArg,
-  GetDataConnectorsApiResponse as GetDataConnectorsApiResponseOrig,
+  GetDataConnectorsApiResponse,
   GetDataConnectorsByDataConnectorIdApiArg,
   GetDataConnectorsByDataConnectorIdApiResponse,
+  GetDataConnectorsByDataConnectorIdProjectLinksApiArg,
+  GetDataConnectorsByDataConnectorIdProjectLinksApiResponse,
   GetDataConnectorsByDataConnectorIdSecretsApiArg,
   GetDataConnectorsByDataConnectorIdSecretsApiResponse,
 } from "./data-connectors.api";
 import { dataConnectorsApi as api } from "./data-connectors.api";
-
-export interface GetDataConnectorsApiResponse
-  extends AbstractKgPaginatedResponse {
-  dataConnectors: GetDataConnectorsApiResponseOrig;
-}
 
 interface GetDataConnectorsListByDataConnectorIdsApiArg {
   dataConnectorIds: GetDataConnectorsByDataConnectorIdApiArg["dataConnectorId"][];
@@ -33,40 +33,8 @@ type GetDataConnectorListSecretsApiResponse = Record<
   GetDataConnectorsByDataConnectorIdSecretsApiResponse
 >;
 
-const injectedApi = api.injectEndpoints({
+const withNewEndpoints = api.injectEndpoints({
   endpoints: (builder) => ({
-    getDataConnectorsPaged: builder.query<
-      GetDataConnectorsApiResponse,
-      GetDataConnectorsApiArg
-    >({
-      query: (queryArg) => ({
-        url: "/data_connectors",
-        params: {
-          namespace: queryArg.params?.namespace,
-          page: queryArg.params?.page,
-          per_page: queryArg.params?.per_page,
-        },
-      }),
-      transformResponse: (response, meta, queryArg) => {
-        const dataConnectors = response as GetDataConnectorsApiResponseOrig;
-        const headers = meta?.response?.headers;
-        const headerResponse = processPaginationHeaders(
-          headers,
-          queryArg.params == null
-            ? {}
-            : { page: queryArg.params.page, perPage: queryArg.params.per_page },
-          dataConnectors
-        );
-
-        return {
-          dataConnectors,
-          page: headerResponse.page,
-          perPage: headerResponse.perPage,
-          total: headerResponse.total,
-          totalPages: headerResponse.totalPages,
-        };
-      },
-    }),
     getDataConnectorsListByDataConnectorIds: builder.query<
       GetDataConnectorsListByDataConnectorIdsApiResponse,
       GetDataConnectorsListByDataConnectorIdsApiArg
@@ -112,7 +80,57 @@ const injectedApi = api.injectEndpoints({
   }),
 });
 
-const enhancedApi = injectedApi.enhanceEndpoints({
+const withPagination = withNewEndpoints.injectEndpoints({
+  endpoints: (builder) => ({
+    getDataConnectors: builder.query<
+      DataConnectorsPaginated,
+      GetDataConnectorsApiArg
+    >({
+      query: (queryArg) => ({
+        url: "/data_connectors",
+        params: {
+          namespace: queryArg.params?.namespace,
+          page: queryArg.params?.page,
+          per_page: queryArg.params?.per_page,
+        },
+      }),
+      transformResponse: (data: GetDataConnectorsApiResponse, meta) => {
+        const headers = meta?.response?.headers;
+        const pagination = processApiPaginationHeaders(headers);
+        return {
+          data,
+          pagination,
+        };
+      },
+    }),
+    getDataConnectorsByDataConnectorIdProjectLinks: builder.query<
+      DataConnectorToProjectLinksPaginated,
+      GetDataConnectorsByDataConnectorIdProjectLinksApiArg
+    >({
+      query: ({ dataConnectorId, params }) => ({
+        url: `/data_connectors/${dataConnectorId}/project_links`,
+        params: {
+          page: params?.page,
+          per_page: params?.per_page,
+        },
+      }),
+      transformResponse: (
+        data: GetDataConnectorsByDataConnectorIdProjectLinksApiResponse,
+        meta
+      ) => {
+        const headers = meta?.response?.headers;
+        const pagination = processApiPaginationHeaders(headers);
+        return {
+          data,
+          pagination,
+        };
+      },
+    }),
+  }),
+  overrideExisting: true,
+});
+
+const enhancedApi = withPagination.enhanceEndpoints({
   addTagTypes: [
     "DataConnectors",
     "DataConnectorsProjectLinks",
@@ -128,7 +146,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     deleteDataConnectorsByDataConnectorIdSecrets: {
       invalidatesTags: ["DataConnectorSecrets"],
     },
-    getDataConnectorsPaged: {
+    getDataConnectors: {
       providesTags: ["DataConnectors"],
     },
     getDataConnectorsByDataConnectorId: {
@@ -179,7 +197,7 @@ export const {
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
-  useGetDataConnectorsPagedQuery: useGetDataConnectorsQuery,
+  useGetDataConnectorsQuery,
   useGetDataConnectorsByDataConnectorIdQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
   useGetDataConnectorsByDataConnectorIdSecretsQuery,

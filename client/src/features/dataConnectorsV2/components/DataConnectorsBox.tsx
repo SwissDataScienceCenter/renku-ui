@@ -37,10 +37,8 @@ import Pagination from "../../../components/Pagination";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import type { NamespaceKind } from "../../projectsV2/api/namespace.api";
-import {
-  useGetDataConnectorsQuery,
-  type GetDataConnectorsApiResponse,
-} from "../api/data-connectors.enhanced-api";
+import { useGetDataConnectorsQuery } from "../api/data-connectors.enhanced-api";
+import type { DataConnectorsPaginated } from "../dataConnectors.types";
 import DataConnectorModal from "./DataConnectorModal";
 import DataConnectorBoxListDisplay, {
   DataConnectorBoxListDisplayPlaceholder,
@@ -146,20 +144,20 @@ export default function DataConnectorsBox({
   });
 
   useEffect(() => {
-    if (data?.totalPages && page > data.totalPages) {
+    if (data?.pagination.totalPages && page > data.pagination.totalPages) {
       setSearchParams(
         (prevParams) => {
-          if (data.totalPages == 1) {
+          if (data.pagination.totalPages == 1) {
             prevParams.delete(pageParam);
           } else {
-            prevParams.set(pageParam, `${data.totalPages}`);
+            prevParams.set(pageParam, `${data.pagination.totalPages}`);
           }
           return prevParams;
         },
         { replace: true }
       );
     }
-  }, [data?.totalPages, page, pageParam, setSearchParams]);
+  }, [data?.pagination.totalPages, page, pageParam, setSearchParams]);
 
   if (isLoading) return <DataConnectorLoadingBoxContent />;
 
@@ -184,7 +182,7 @@ export default function DataConnectorsBox({
 
 interface DataConnectorBoxContentProps {
   children?: React.ReactNode;
-  data: GetDataConnectorsApiResponse;
+  data: DataConnectorsPaginated;
   isLoading: boolean;
   limit?: number;
   namespace: string;
@@ -213,18 +211,18 @@ function DataConnectorBoxContent({
           toggleOpen={toggleOpen}
           namespace={namespace}
           namespaceKind={namespaceKind}
-          totalConnectors={data.total}
+          totalConnectors={data.pagination.totalItems}
         />
         <CardBody>
-          {data.total === 0 && namespaceKind === "group" && (
+          {data.pagination.totalItems === 0 && namespaceKind === "group" && (
             <AddEmptyListForGroupNamespace namespace={namespace} />
           )}
-          {data.total === 0 && namespaceKind === "user" && (
+          {data.pagination.totalItems === 0 && namespaceKind === "user" && (
             <AddEmptyListForUserNamespace namespace={namespace} />
           )}
-          {data.total > 0 && (
+          {data.pagination.totalItems > 0 && (
             <ListGroup flush>
-              {data.dataConnectors?.map((dc) =>
+              {data.data?.map((dc) =>
                 isLoading ? (
                   <DataConnectorBoxListDisplayPlaceholder key={dc.id} />
                 ) : (
@@ -235,9 +233,9 @@ function DataConnectorBoxContent({
                   />
                 )
               )}
-              {limit && data.total > limit && (
+              {limit && data.pagination.totalItems > limit && (
                 <ListGroupItem className="fst-italic">
-                  And {data.total - data.dataConnectors.length} more...
+                  And {data.pagination.totalItems - data.data.length} more...
                 </ListGroupItem>
               )}
             </ListGroup>
@@ -245,10 +243,10 @@ function DataConnectorBoxContent({
           {!limit && (
             <Pagination
               className="mt-3"
-              currentPage={data.page}
+              currentPage={data.pagination.currentPage}
               pageQueryParam={pageParam}
               perPage={perPage}
-              totalItems={data.total}
+              totalItems={data.pagination.totalItems}
             />
           )}
           {children}

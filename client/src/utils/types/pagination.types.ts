@@ -44,3 +44,10 @@ export interface PaginatedResponse<T, P extends Pagination = Pagination> {
   data: T[];
   pagination: P;
 }
+
+/** Pagination used by renku-data-services. */
+export type ApiPagination = Pagination &
+  Pick<
+    Required<Pagination>,
+    "currentPage" | "perPage" | "totalItems" | "totalPages"
+  >;
