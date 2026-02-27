@@ -28,7 +28,7 @@ export default function DepositStatusBadge({
       pill
     >
       <CircleFill className={cx("me-1", "bi")} />
-      {startCase(status)}
+      {status ? startCase(status) : "Unknown"}
     </RenkuBadge>
   );
 }

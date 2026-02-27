@@ -81,7 +81,7 @@ export default function DepositCreationModal({
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader tag="h2">
           <CloudArrowUp className={cx("bi", "me-1")} />
-          Data export
+          Export data
         </ModalHeader>
         <ModalBody>
           {result.error && <RtkOrDataServicesError error={result.error} />}
