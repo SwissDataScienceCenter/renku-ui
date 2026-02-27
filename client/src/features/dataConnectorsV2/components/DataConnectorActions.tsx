@@ -449,7 +449,7 @@ function DataConnectorActionsInner({
             content: (
               <>
                 <CloudArrowUp className={cx("bi", "me-1")} />
-                Data export
+                Export data
               </>
             ),
           },

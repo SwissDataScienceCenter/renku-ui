@@ -112,36 +112,9 @@ export default function DataConnectorBoxListDisplay({
   const type = `${storage?.configuration?.type?.toString() ?? ""} ${
     storage?.configuration?.provider?.toString() ?? ""
   }`;
-  const deposits2 = useGetDataConnectorsByDataConnectorIdDepositsQuery({
+  const deposits = useGetDataConnectorsByDataConnectorIdDepositsQuery({
     dataConnectorId: dataConnector.id,
   });
-  const deposits = {
-    data: [
-      ...(dataConnector.storage.storage_type === "s3"
-        ? ([
-            {
-              name: "Mock deposit 1",
-              provider: "zenodo",
-              data_connector_id: "mock-data-connector-id1",
-              path: "/some/path",
-              id: "mock-deposit-id1",
-              status: "complete",
-              external_url: "https://zenodo.org/deposit/1234567",
-            },
-            {
-              name: "Mock deposit 2",
-              provider: "zenodo",
-              data_connector_id: "mock-data-connector-id2",
-              path: "/another/path",
-              id: "mock-deposit-id2",
-              status: "in_progress",
-              external_url: "https://zenodo.org/deposit/1234568",
-            },
-          ] as DepositList)
-        : []),
-      ...(deposits2.data ?? []),
-    ],
-  };
 
   const lastDeposit = useMemo(() => {
     if (!deposits.data || deposits.data.length === 0) return undefined;
