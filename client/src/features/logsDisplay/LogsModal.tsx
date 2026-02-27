@@ -225,6 +225,13 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
     }
   }, [activeTab]);
 
+  // Reset the active tab if the container name has disappeared
+  useEffect(() => {
+    if (sortedLogs.every(({ tab }) => tab !== activeTab)) {
+      setActiveTab(sortedLogs.at(0)?.tab ?? "");
+    }
+  }, [activeTab, sortedLogs]);
+
   return (
     <>
       <Nav
@@ -257,7 +264,7 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
                 style={{ whiteSpace: "pre-line", maxHeight: "60vh" }}
                 ref={activeTab === tab ? preRef : undefined}
               >
-                {content}
+                {content ? content : <i>Empty log file</i>}
               </pre>
             </div>
           </TabPane>
