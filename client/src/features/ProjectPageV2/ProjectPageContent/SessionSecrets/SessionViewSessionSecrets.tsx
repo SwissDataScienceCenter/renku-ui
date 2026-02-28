@@ -24,6 +24,7 @@ import { generatePath, Link } from "react-router";
 import { Badge, ListGroup } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { useProject } from "~/routes/projects/root";
 import { InfoAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
@@ -36,7 +37,6 @@ import {
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
   useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import { SESSION_SECRETS_CARD_ID } from "./sessionSecrets.constants";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 import SessionSecretSlotItem from "./SessionSecretSlotItem";

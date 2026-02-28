@@ -36,6 +36,7 @@ import {
   Scripts,
   ScrollRestoration,
   type MetaDescriptor,
+  type MiddlewareFunction,
 } from "react-router";
 import { clientOnly$ } from "vite-env-only/macros";
 
@@ -43,8 +44,8 @@ import type { Route } from "./+types/root";
 import AppRoot from "./AppRoot";
 import PageLoader from "./components/PageLoader";
 import NotFound from "./not-found/NotFound";
+import { storeMiddleware } from "./store/store.utils.server";
 import { CONFIG_JSON } from "./utils/.server/config.constants";
-import type { AppParams } from "./utils/context/appParams.types";
 import { validatedAppParams } from "./utils/context/appParams.utils";
 import { initClientSideSentry } from "./utils/helpers/sentry/utils";
 import { makeMeta, makeMetaTitle } from "./utils/meta/meta";
@@ -57,10 +58,13 @@ type ServerLoaderReturn_ =
   | { clientSideFetch: false; config: typeof CONFIG_JSON };
 type ServerLoaderReturn = ReturnType<typeof data<ServerLoaderReturn_>>;
 
+export const middleware = [storeMiddleware] satisfies MiddlewareFunction[];
+
 export async function loader(): Promise<ServerLoaderReturn> {
   const clientSideFetch =
     process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
   if (clientSideFetch) {
+    //? In development, we do not load the /config.json data client-side
     return data({
       clientSideFetch,
       config: undefined,
@@ -246,11 +250,7 @@ export default function Root({ loaderData }: Route.ComponentProps) {
   }
   return (
     <AppRoot params={params}>
-      <Outlet context={{ params } satisfies RootOutletContext} />
+      <Outlet />
     </AppRoot>
   );
 }
-
-export type RootOutletContext = {
-  params: AppParams;
-};

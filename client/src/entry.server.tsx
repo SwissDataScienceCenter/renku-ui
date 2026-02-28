@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/react-router";
 import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
-import type { AppLoadContext, EntryContext } from "react-router";
+import type { EntryContext, RouterContextProvider } from "react-router";
 import { ServerRouter } from "react-router";
 
 import {
@@ -23,7 +23,7 @@ function handleRequest(
   responseHeaders: Headers,
   routerContext: EntryContext,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _loadContext: AppLoadContext
+  _loadContext: RouterContextProvider
   // If you have middleware enabled:
   // loadContext: RouterContextProvider
 ): Promise<Response> {

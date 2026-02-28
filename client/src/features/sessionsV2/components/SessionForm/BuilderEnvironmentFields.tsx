@@ -21,12 +21,12 @@ import cx from "classnames";
 import { useContext, useMemo } from "react";
 import { type Control } from "react-hook-form";
 
+import { useProject } from "~/routes/projects/root";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
-import { useProject } from "../../../ProjectPageV2/ProjectPageContainer/ProjectPageContainer";
 import { useGetRepositoriesQuery } from "../../../repositories/api/repositories.api";
 import type { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderAdvancedSettings from "./BuilderAdvancedSettings";

@@ -50,9 +50,9 @@ const withFixedEndpoints = usersGeneratedApi.injectEndpoints({
         }
         return { ...result, isLoggedIn: true };
       },
-      transformErrorResponse: () => {
-        return { isLoggedIn: false };
-      },
+      // transformErrorResponse: () => {
+      //   return { isLoggedIn: false };
+      // },
     }),
     getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
       query: ({ userParams }) => ({
