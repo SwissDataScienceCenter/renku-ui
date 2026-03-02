@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import type { CSSProperties } from "react";
-import React from "react";
+import React, { useContext } from "react";
 import { List } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Button, Col, Collapse, Nav, Navbar, NavItem, Row } from "reactstrap";
@@ -30,6 +30,8 @@ import {
   NEW_DOCS_HOW_RENKU_WORKS,
   NEW_DOCS_QUICK_START_TUTORIAL,
 } from "~/utils/constants/NewDocs";
+import AppContext from "~/utils/context/appContext.js";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants.js";
 import { useLoginUrl } from "../../../authentication/useLoginUrl.hook";
 import { ExternalLink } from "../../../components/LegacyExternalLinks.js";
 import { Links } from "../../../utils/constants/Docs.js";
@@ -89,6 +91,10 @@ function BottomNavSection(props: BottomNavSectionProps) {
 }
 
 function BottomNav() {
+  const { params } = useContext(AppContext);
+  const privacyPolicyConfigured =
+    params?.TERMS_PAGES_ENABLED ?? DEFAULT_APP_PARAMS.TERMS_PAGES_ENABLED;
+
   return (
     <div id="rk-anon-home-bottom-nav" className={cx("bg-navy")}>
       <div className={cx("container", "py-5", "text-white")}>
@@ -125,6 +131,12 @@ function BottomNav() {
           </Col>
           <Col md={3}>
             <BottomNavSection sectionTitle="About">
+              {privacyPolicyConfigured && (
+                <BottomNavLink
+                  title="Privacy Policy"
+                  to={ABSOLUTE_ROUTES.v2.help.privacy}
+                />
+              )}
               <BottomNavLink
                 title="Renku version"
                 to={ABSOLUTE_ROUTES.v2.help.release}
@@ -168,6 +180,10 @@ function TopNavLink({ title, to }: BottomNavLinkProps) {
 }
 
 function TopNav() {
+  const { params } = useContext(AppContext);
+  const privacyPolicyConfigured =
+    params?.TERMS_PAGES_ENABLED ?? DEFAULT_APP_PARAMS.TERMS_PAGES_ENABLED;
+
   const [isOpen, setIsOpen] = React.useState(false);
   const toggleOpen = () => setIsOpen(!isOpen);
 
@@ -246,6 +262,18 @@ function TopNav() {
               >
                 <TopNavLink title="Help" to={ABSOLUTE_ROUTES.v2.help.root} />
               </NavItem>
+
+              {privacyPolicyConfigured && (
+                <>
+                  <NavItem>
+                    <hr className="dropdown-divider my-2 mx-3" />
+                  </NavItem>
+                  <TopNavLink
+                    title="Privacy Policy"
+                    to={ABSOLUTE_ROUTES.v2.help.privacy}
+                  />
+                </>
+              )}
             </Nav>
           </Navbar>
         </Collapse>

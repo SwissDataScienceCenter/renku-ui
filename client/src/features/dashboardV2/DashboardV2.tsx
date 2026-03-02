@@ -46,7 +46,7 @@ import {
 import { NEW_DOCS_DOCUMENTATION } from "~/utils/constants/NewDocs";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import {
   ABSOLUTE_ROUTES,
@@ -245,7 +245,7 @@ function ProjectList({ data, error, isLoading }: ProjectListProps) {
   ) : error ? (
     <div>
       <p>Cannot show projects.</p>
-      <RtkOrNotebooksError error={error} />
+      <RtkOrDataServicesError error={error} />
     </div>
   ) : !hasProjects ? (
     <div className="text-body-secondary">
@@ -375,7 +375,7 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
   ) : error ? (
     <div>
       <p>Cannot show groups.</p>
-      <RtkOrNotebooksError error={error} />
+      <RtkOrDataServicesError error={error} />
     </div>
   ) : !hasGroups ? (
     <div className="text-body-secondary">

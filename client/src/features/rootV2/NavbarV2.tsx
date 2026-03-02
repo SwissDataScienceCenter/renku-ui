@@ -36,7 +36,8 @@ import {
   NavItem,
 } from "reactstrap";
 
-import { ExternalDocsLink } from "../../components/LegacyExternalLinks";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
+import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
 import RenkuNavLinkV2 from "../../components/RenkuNavLinkV2";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -85,6 +86,10 @@ function NavbarItemPlus() {
 }
 
 function NavbarItemHelp() {
+  const { params } = useContext(AppContext);
+  const privacyPolicyConfigured =
+    params?.TERMS_PAGES_ENABLED ?? DEFAULT_APP_PARAMS.TERMS_PAGES_ENABLED;
+
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
@@ -106,21 +111,33 @@ function NavbarItemHelp() {
         >
           Help
         </Link>
+        {privacyPolicyConfigured && (
+          <Link
+            data-cy="privacy-policy-link"
+            className="dropdown-item"
+            to={ABSOLUTE_ROUTES.v2.help.privacy}
+          >
+            Privacy Policy
+          </Link>
+        )}
         <DropdownItem divider />
-        <ExternalDocsLink
-          url={Links.DISCOURSE}
+        <ExternalLink
+          className="dropdown-item"
+          role="link"
           title="Forum"
-          className="dropdown-item"
+          url={Links.DISCOURSE}
         />
-        <ExternalDocsLink
-          url={Links.GITTER}
+        <ExternalLink
+          className="dropdown-item"
+          role="link"
           title="Gitter"
-          className="dropdown-item"
+          url={Links.GITTER}
         />
-        <ExternalDocsLink
-          url={Links.GITHUB}
-          title="GitHub"
+        <ExternalLink
           className="dropdown-item"
+          role="link"
+          title="GitHub"
+          url={Links.GITHUB}
         />
       </DropdownMenu>
     </Dropdown>
@@ -209,7 +226,7 @@ export default function NavbarV2() {
                   title="Dashboard"
                   to={ABSOLUTE_ROUTES.v2.root}
                 >
-                  Dashboard
+                  {user?.isLoggedIn ? "Dashboard" : "Home"}
                 </RenkuNavLinkV2>
               </NavItem>
               <NavItem>

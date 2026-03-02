@@ -21,7 +21,7 @@ import { useCallback, useEffect, useState } from "react";
 import { TrashFill, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { useDeleteOauth2ProvidersByProviderIdMutation } from "../connectedServices/api/connectedServices.api";
 import { Provider } from "../connectedServices/api/connectedServices.generated-api";
 
@@ -89,7 +89,7 @@ function DeleteConnectedServiceModal({
         Are you sure?
       </ModalHeader>
       <ModalBody>
-        {result.error && <RtkOrNotebooksError error={result.error} />}
+        {result.error && <RtkOrDataServicesError error={result.error} />}
 
         <p className="mb-0">
           Please confirm that you want to delete the {provider.display_name}{" "}

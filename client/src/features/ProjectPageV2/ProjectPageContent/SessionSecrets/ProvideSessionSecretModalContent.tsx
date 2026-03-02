@@ -31,7 +31,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdSessionSecretsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
@@ -178,7 +178,7 @@ function ProvideSessionSecretModalNewValueContent({
     <Form noValidate onSubmit={onSubmit}>
       <ModalBody>
         {result.error && (
-          <RtkOrNotebooksError error={result.error} dismissible={false} />
+          <RtkOrDataServicesError error={result.error} dismissible={false} />
         )}
 
         <div className="mb-3">
@@ -300,7 +300,7 @@ function ProvideSessionSecretModalExistingContent({
     <Form noValidate onSubmit={onSubmit}>
       <ModalBody>
         {result.error && (
-          <RtkOrNotebooksError error={result.error} dismissible={false} />
+          <RtkOrDataServicesError error={result.error} dismissible={false} />
         )}
 
         <SelectUserSecretField

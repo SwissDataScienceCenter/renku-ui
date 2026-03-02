@@ -22,7 +22,7 @@ import { Trash, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { WarnAlert } from "../../components/Alert";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useDeleteSessionLaunchersByLauncherIdMutation as useDeleteSessionLauncherMutation } from "./api/sessionLaunchersV2.api";
 
@@ -78,7 +78,7 @@ export default function DeleteSessionLauncherModal({
         Delete session launcher
       </ModalHeader>
       <ModalBody>
-        {result.error && <RtkErrorAlert error={result.error} />}
+        {result.error && <RtkOrDataServicesError error={result.error} />}
         <p className="mb-3">
           Are you sure you want to delete the <b>{launcher.name}</b> session
           launcher?

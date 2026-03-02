@@ -29,7 +29,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { RtkOrNotebooksError } from "../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import {
@@ -58,7 +58,7 @@ function ConnectedServices() {
   }
 
   if (error) {
-    return <RtkOrNotebooksError error={error} />;
+    return <RtkOrDataServicesError error={error} />;
   }
 
   return (

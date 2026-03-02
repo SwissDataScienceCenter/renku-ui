@@ -25,7 +25,7 @@ import { Badge, ListGroup } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { InfoAlert } from "../../../../components/Alert";
-import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
 import type {
@@ -73,7 +73,7 @@ export default function SessionViewSessionSecrets() {
   ) : error || !sessionSecretSlots || (isUserLoggedIn && !sessionSecrets) ? (
     <>
       <p>Error: could not load this project&apos;s session secrets.</p>
-      {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
   ) : (
     <SessionViewSessionSecretsContent

@@ -23,7 +23,7 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useParams } from "react-router";
 
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import rkNotFoundImgV2 from "../../../styles/assets/not-foundV2.svg";
 
@@ -63,7 +63,9 @@ export default function GroupNotFound({ error }: GroupNotFoundProps) {
           <div className={cx("text-start", "mt-3")}>
             <p>{notFoundText}</p>
             <p>It is possible that the group has been deleted by its owner.</p>
-            {error && <RtkOrNotebooksError error={error} dismissible={false} />}
+            {error && (
+              <RtkOrDataServicesError error={error} dismissible={false} />
+            )}
             <Link
               to={ABSOLUTE_ROUTES.v2.root}
               className={cx("btn", "btn-primary")}

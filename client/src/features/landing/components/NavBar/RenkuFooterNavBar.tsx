@@ -17,10 +17,10 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useContext } from "react";
+import { useContext } from "react";
 import { Link, useLocation, useMatch } from "react-router";
 
-import { ExternalDocsLink } from "~/components/LegacyExternalLinks";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { RENKU_LOGO } from "~/components/navbar/navbar.constants";
 import RenkuNavLinkV2 from "~/components/RenkuNavLinkV2";
 import { parseChartVersion } from "~/features/help/release.utils";
@@ -44,12 +44,6 @@ export default function RenkuFooterNavBar() {
 function RenkuFooterNavBarInner() {
   const { params } = useContext(AppContext);
 
-  const privacyLink =
-    params && params["TERMS_PAGES_ENABLED"] ? (
-      <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.privacy}>
-        Privacy
-      </RenkuNavLinkV2>
-    ) : null;
   const chartVersion = params && params["RENKU_CHART_VERSION"];
   const parsedChartVersion = chartVersion
     ? parseChartVersion(chartVersion)
@@ -83,7 +77,7 @@ function RenkuFooterNavBarInner() {
         </div>
         <div className={cx("d-lg-flex", "d-none", "navbar-nav")}>
           <div className={cx("d-flex", "flex-row", "gap-3", "ms-auto")}>
-            <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
+            <FooterNavbarLoggedInLinks />
           </div>
         </div>
       </div>
@@ -91,11 +85,7 @@ function RenkuFooterNavBarInner() {
   );
 }
 
-function FooterNavbarLoggedInLinks({
-  privacyLink,
-}: {
-  privacyLink?: ReactNode;
-}) {
+function FooterNavbarLoggedInLinks() {
   const location = useLocation();
   const forceV2 = true;
   const helpLocation = isRenkuLegacy(location.pathname, forceV2)
@@ -104,21 +94,23 @@ function FooterNavbarLoggedInLinks({
   return (
     <>
       <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
-      {privacyLink}
-      <ExternalDocsLink
-        url={Links.DISCOURSE}
+      <ExternalLink
+        className="nav-link"
+        role="link"
         title="Forum"
-        className="nav-link"
+        url={Links.DISCOURSE}
       />
-      <ExternalDocsLink
-        url={Links.GITTER}
+      <ExternalLink
+        className="nav-link"
+        role="link"
         title="Gitter"
-        className="nav-link"
+        url={Links.GITTER}
       />
-      <ExternalDocsLink
-        url={`${Links.HOMEPAGE}/who-we-are`}
-        title="About"
+      <ExternalLink
         className="nav-link"
+        role="link"
+        title="About"
+        url={`${Links.HOMEPAGE}/who-we-are`}
       />
     </>
   );
