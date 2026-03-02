@@ -19,14 +19,16 @@
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
-import { useGroup } from "./GroupPageContainer";
 import GroupInformation from "./GroupV2Information";
 
 export default function GroupV2Show() {
-  const { group } = useGroup();
+  const { namespace } = useNamespaceContext();
+
+  if (!namespace) return null;
 
   return (
     <Row className="g-4">
@@ -35,7 +37,7 @@ export default function GroupV2Show() {
           <Col xs={12}>
             <ProjectV2ListDisplay
               limit={2}
-              namespace={group.slug}
+              namespace={namespace}
               pageParam="projects_page"
               namespaceKind="group"
             >
@@ -52,7 +54,7 @@ export default function GroupV2Show() {
           <Col className="order-3" xs={12}>
             <DataConnectorsBox
               limit={2}
-              namespace={group.slug}
+              namespace={namespace}
               namespaceKind="group"
               pageParam="data_connectors_page"
             >

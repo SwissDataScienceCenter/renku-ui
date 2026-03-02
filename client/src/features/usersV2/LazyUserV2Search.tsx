@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,15 +13,19 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
-/**
- * @deprecated Use `useSearchSync` instead. This hook is superseded by
- * `useSearchSync.hook.ts` which handles bidirectional URL-Redux sync
- * for all search components.
- */
-export default function useSearch() {
-  // no-op: this hook is deprecated.
-  // Use useSearchSync from ./useSearchSync.hook.ts instead.
+import { lazy, Suspense } from "react";
+
+import PageLoader from "../../components/PageLoader";
+
+const UserV2Search = lazy(() => import("./search/UserV2Search"));
+
+export default function LazyUserV2Search() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <UserV2Search />
+    </Suspense>
+  );
 }

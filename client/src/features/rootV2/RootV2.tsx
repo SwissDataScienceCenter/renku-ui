@@ -27,6 +27,8 @@ import {
   useNavigate,
 } from "react-router";
 
+import LazyUserContainer from "~/features/usersV2/LazyUserContainer";
+import LazyUserV2Search from "~/features/usersV2/LazyUserV2Search";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import {
@@ -134,8 +136,8 @@ export default function RootV2() {
             element={<LazyUserRedirect />}
           />
           <Route
-            path={RELATIVE_ROUTES.v2.users.show}
-            element={<LazyUserShow />}
+            path={RELATIVE_ROUTES.v2.users.root}
+            element={<UserV2Routes />}
           />
           <Route
             path={RELATIVE_ROUTES.v2.groups.root}
@@ -279,6 +281,31 @@ function ProjectSessionsRoutes() {
           </ContainerWrap>
         }
       />
+      <Route
+        path="*"
+        element={
+          <ContainerWrap fullSize>
+            <LazyNotFound />
+          </ContainerWrap>
+        }
+      />
+    </Routes>
+  );
+}
+
+function UserV2Routes() {
+  return (
+    <Routes>
+      <Route index element={<RedirectToSearch entityType="user" />} />
+      <Route path={RELATIVE_ROUTES.v2.users.show.root}>
+        <Route element={<LazyUserContainer />}>
+          <Route index element={<LazyUserShow />} />
+          <Route
+            path={RELATIVE_ROUTES.v2.users.show.search}
+            element={<LazyUserV2Search />}
+          />
+        </Route>
+      </Route>
       <Route
         path="*"
         element={

@@ -19,7 +19,7 @@
 import { DateTime } from "luxon";
 
 import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
-import type { SearchEntity } from "./api/searchV2Api.api";
+import type { SearchEntity, SearchQuery } from "./api/searchV2Api.api";
 import {
   CREATION_DATE_FILTER_KEY,
   DATE_AFTER_LEEWAY,
@@ -27,7 +27,6 @@ import {
   DATE_FILTER_AFTER_KNOWN_VALUES,
   DATE_FILTER_BEFORE_KNOWN_VALUES,
   DEFAULT_ROLE_FILTER,
-  DEFAULT_SORT_BY,
   DEFAULT_TYPE_FILTER,
   DEFAULT_VISIBILITY_FILTER,
   KEY_GREATER_THAN_VALUE,
@@ -35,8 +34,6 @@ import {
   KEY_VALUE_SEPARATOR,
   ROLE_FILTER_ALLOWED_VALUES,
   ROLE_FILTER_KEY,
-  SORT_BY_ALLOWED_VALUES,
-  SORT_BY_KEY,
   TERM_SEPARATOR,
   TYPE_FILTER_ALLOWED_VALUES,
   TYPE_FILTER_KEY,
@@ -46,18 +43,16 @@ import {
 } from "./searchV2.constants";
 import type {
   AfterDateValue,
+  ApplyParsedSearchParams,
   BeforeDateValue,
   CreationDateFilter,
   InterpretedTerm,
   ParseSearchQueryResult,
   RoleFilter,
-  SearchDateFilter,
   SearchDateFilters,
-  SearchFilter,
   SearchFilters,
   SearchOption,
   SearchV2State,
-  SortBy,
   TypeFilter,
   VisibilityFilter,
 } from "./searchV2.types";
@@ -111,17 +106,11 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     created: creationDateFilter,
   };
 
-  // Retain the last sorting option only
-  const sortByOption = reversedTerms.find(
-    isSortByInterpretation
-  )?.interpretation;
-
   const optionsAsTerms = [
     roleFilter,
     typeFilter,
     visibilityFilter,
     creationDateFilter,
-    sortByOption,
   ]
     .map(asQueryTerm)
     .filter((term) => term !== "");
@@ -139,7 +128,6 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     dateFilters,
     filters,
     searchBarQuery,
-    sortBy: sortByOption ?? DEFAULT_SORT_BY,
   };
 }
 
@@ -286,22 +274,6 @@ function parseTerm(term: string): InterpretedTerm {
     }
   }
 
-  if (termLower.startsWith(`${SORT_BY_KEY}${KEY_VALUE_SEPARATOR}`)) {
-    const sortValue = termLower.slice(
-      SORT_BY_KEY.length + KEY_VALUE_SEPARATOR.length
-    );
-    const matched = SORT_BY_ALLOWED_VALUES.find((value) => value === sortValue);
-    if (matched) {
-      return {
-        term,
-        interpretation: {
-          key: "sort",
-          value: matched,
-        },
-      };
-    }
-  }
-
   return {
     term,
     interpretation: null,
@@ -354,12 +326,6 @@ function isCreationDateFilterInterpretation(
   term: InterpretedTerm
 ): term is InterpretedTerm & { interpretation: CreationDateFilter } {
   return term.interpretation?.key === "created";
-}
-
-function isSortByInterpretation(
-  term: InterpretedTerm
-): term is InterpretedTerm & { interpretation: SortBy } {
-  return term.interpretation?.key === "sort";
 }
 
 function asQueryTerm(option: SearchOption | null | undefined): string {
@@ -422,13 +388,6 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
       .join(TERM_SEPARATOR);
   }
 
-  if (option.key === "sort" && option.value === DEFAULT_SORT_BY.value) {
-    return "";
-  }
-  if (option.key === "sort") {
-    return `${SORT_BY_KEY}${KEY_VALUE_SEPARATOR}${option.value}`;
-  }
-
   return "";
 }
 
@@ -467,20 +426,22 @@ function mergeDateFilterValues(
   return merged;
 }
 
-export function buildSearchQuery(
-  state: Pick<
-    SearchV2State,
-    "searchBarQuery" | "sortBy" | "filters" | "dateFilters"
-  >
-): string {
-  const { dateFilters, filters, searchBarQuery, sortBy } = state;
+/**
+ * @deprecated This function references the old SearchV2State shape.
+ * Use `buildApiQuery` for the new Redux-based search.
+ */
+export function buildSearchQuery(state: {
+  searchBarQuery: string;
+  filters: SearchFilters;
+  dateFilters: SearchDateFilters;
+}): string {
+  const { dateFilters, filters, searchBarQuery } = state;
 
   const optionsAsTerms = [
     filters.role,
     filters.type,
     filters.visibility,
     dateFilters.created,
-    sortBy,
   ]
     .map(asQueryTerm)
     .filter((term) => term !== "");
@@ -492,19 +453,167 @@ export function buildSearchQuery(
   return canonicalQuery;
 }
 
-export function filtersAsArray(filters: SearchFilters): SearchFilter[] {
-  return [filters.role, filters.type, filters.visibility];
-}
-
-export function dateFiltersAsArray(
-  dateFilters: SearchDateFilters
-): SearchDateFilter[] {
-  return [dateFilters.created];
-}
-
 export function toDisplayName(entityType: SearchEntity["type"]): string {
   if (entityType === "DataConnector") {
     return "Data Connector";
   }
   return entityType;
+}
+
+/**
+ * Build a human-readable display text for the search bar from the Redux state.
+ */
+export function buildSearchBarDisplay(state: SearchV2State): string {
+  const keys = state.searchBarFilterKeys;
+  const filterTerms: string[] = [];
+
+  if (keys.includes("contentType") && state.contentType) {
+    filterTerms.push(
+      `${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.contentType}`
+    );
+  }
+
+  if (keys.includes("visibility") && state.visibility) {
+    filterTerms.push(
+      `${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.visibility}`
+    );
+  }
+
+  if (keys.includes("role") && state.role) {
+    filterTerms.push(`${ROLE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.role}`);
+  }
+
+  if (keys.includes("created") && state.created) {
+    const parts = state.created.split(",").filter(Boolean);
+    for (const part of parts) {
+      filterTerms.push(`${CREATION_DATE_FILTER_KEY}${part}`);
+    }
+  }
+
+  const allParts = [...filterTerms];
+  if (state.query) allParts.push(state.query);
+  return allParts.join(TERM_SEPARATOR).trim();
+}
+
+/**
+ * Convert a ParseSearchQueryResult (from the search bar raw input parsing)
+ * into ApplyParsedSearchParams suitable for the Redux slice.
+ */
+export function parsedResultToSliceParams(
+  result: ParseSearchQueryResult
+): ApplyParsedSearchParams {
+  const params: ApplyParsedSearchParams = {
+    query: result.searchBarQuery,
+  };
+
+  if (result.filters.type.values.length > 0) {
+    const raw = result.filters.type.values[0];
+    params.contentType =
+      raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+    //eslint-disable-next-line spellcheck/spell-checker
+    if (params.contentType === "Dataconnector") {
+      params.contentType = "DataConnector";
+    }
+  }
+
+  if (result.filters.role.values.length > 0) {
+    params.role = result.filters.role.values.join(",");
+  }
+
+  if (result.filters.visibility.values.length > 0) {
+    params.visibility = result.filters.visibility.values[0];
+  }
+
+  const { created } = result.dateFilters;
+  if (created.value.after != null || created.value.before != null) {
+    const parts: string[] = [];
+    if (created.value.after != null) {
+      const afterStr =
+        typeof created.value.after === "string"
+          ? created.value.after
+          : created.value.after.date.toISODate();
+      if (afterStr) parts.push(`>${afterStr}`);
+    }
+    if (created.value.before != null) {
+      const beforeStr =
+        typeof created.value.before === "string"
+          ? created.value.before
+          : created.value.before.date.toISODate();
+      if (beforeStr) parts.push(`<${beforeStr}`);
+    }
+    if (parts.length > 0) {
+      params.created = parts.join(",");
+    }
+  }
+
+  return params;
+}
+
+/**
+ * Build an API query ignoring the content type filter.
+ * Used to fetch facet counts across all entity types.
+ */
+export function buildApiQueryWithoutType(state: SearchV2State): SearchQuery {
+  const stateWithoutType = { ...state, contentType: "" };
+  return buildApiQuery(stateWithoutType);
+}
+
+export function buildApiQuery(state: SearchV2State): SearchQuery {
+  const terms: string[] = [];
+
+  if (state.contentType) {
+    terms.push(`type${KEY_VALUE_SEPARATOR}${state.contentType}`);
+  }
+
+  if (state.namespace) {
+    terms.push(`namespace${KEY_VALUE_SEPARATOR}${state.namespace}`);
+  }
+
+  if (state.visibility) {
+    terms.push(`visibility${KEY_VALUE_SEPARATOR}${state.visibility}`);
+  }
+
+  if (state.role) {
+    terms.push(`role${KEY_VALUE_SEPARATOR}${state.role}`);
+  }
+
+  if (state.directMember) {
+    terms.push(`direct_member${KEY_VALUE_SEPARATOR}${state.directMember}`);
+  }
+
+  if (state.keywords) {
+    const kwSeparator = "+";
+    const kws = state.keywords.split(kwSeparator).filter(Boolean);
+    for (const kw of kws) {
+      terms.push(`keyword${KEY_VALUE_SEPARATOR}"${kw}"`);
+    }
+  }
+
+  if (state.created) {
+    const dateSeparator = ",";
+    const parts = state.created.split(dateSeparator).filter(Boolean);
+    for (const part of parts) {
+      const operator = part.charAt(0); // '>' or '<'
+      const dateValue = part.slice(1);
+      const isKnownToken = dateValue.startsWith("today-");
+      if (isKnownToken) {
+        terms.push(`created${part}`);
+      } else {
+        const leeway =
+          operator === ">" ? DATE_AFTER_LEEWAY : DATE_BEFORE_LEEWAY;
+        terms.push(`created${operator}${dateValue}${leeway}`);
+      }
+    }
+  }
+
+  if (state.query) {
+    terms.push(state.query);
+  }
+
+  return {
+    q: terms.join(TERM_SEPARATOR).trim(),
+    page: state.page,
+    per_page: state.perPage,
+    include_counts: state.includeCounts,
+  };
 }

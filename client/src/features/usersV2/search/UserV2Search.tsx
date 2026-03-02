@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -13,46 +13,39 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
+import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
-import SearchV2Bar from "./components/SearchV2Bar";
-import SearchV2Filters from "./components/SearchV2Filters";
-import SearchV2Header from "./components/SearchV2Header";
-import SearchV2Results from "./components/SearchV2Results";
-import useSearch from "./hooks/useSearch.hook";
+import SearchBar from "~/features/searchV2/components/SearchBar";
+import SearchFilters from "~/features/searchV2/components/SearchFilters";
+import SearchResultRecap from "~/features/searchV2/components/SearchResultRecap";
+import SearchResults from "~/features/searchV2/components/SearchResults";
+import useSearchSync from "~/features/searchV2/hooks/useSearchSync.hook";
 
-// ? Mind that SearchV2 components should be soon replaced by GroupV2Search components
-export default function SearchV2() {
-  useSearch();
+export default function UserV2Search() {
+  useSearchSync();
 
   return (
-    <>
-      <Row className="mb-3">
-        <Col>
-          <h1>Renku Search</h1>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <Row>
+        <Col xs={12}>
+          <SearchBar />
+        </Col>
+        <Col xs={12}>
+          <SearchResultRecap />
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col>
-          <SearchV2Bar />
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col>
-          <SearchV2Header />
-        </Col>
-      </Row>
-      <Row className="mb-3">
+      <Row>
         <Col xs={12} sm={3} lg={2}>
-          <SearchV2Filters />
+          <SearchFilters />
         </Col>
         <Col xs={12} sm={9} lg={10}>
-          <SearchV2Results />
+          <SearchResults />
         </Col>
       </Row>
-    </>
+    </div>
   );
 }
