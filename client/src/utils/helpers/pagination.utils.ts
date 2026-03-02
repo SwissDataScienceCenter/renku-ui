@@ -17,10 +17,24 @@
  */
 
 import processPaginationHeadersJs from "../../api-client/pagination";
-import { Pagination } from "../types/pagination.types";
+import type { ApiPagination, Pagination } from "../types/pagination.types";
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "./pagination.constants";
 
 const processPaginationHeaders = processPaginationHeadersJs as (
   headers: Headers | undefined | null
 ) => Pagination;
 
 export default processPaginationHeaders;
+
+export function processApiPaginationHeaders(
+  headers: Headers | undefined | null
+): ApiPagination {
+  const pagination_ = processPaginationHeaders(headers);
+  return {
+    ...pagination_,
+    currentPage: pagination_.currentPage ?? DEFAULT_PAGE,
+    perPage: pagination_.perPage ?? DEFAULT_PER_PAGE,
+    totalItems: pagination_.totalItems ?? 0,
+    totalPages: pagination_.totalPages ?? 1,
+  };
+}

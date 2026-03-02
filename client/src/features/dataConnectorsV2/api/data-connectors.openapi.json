@@ -144,6 +144,48 @@
         "tags": ["data_connectors"]
       }
     },
+    "/data_connectors/search": {
+      "get": {
+        "summary": "Get data connector details by DOI",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "doi",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DOI"
+            },
+            "description": "The DOI of the data connector"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data connector",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector with the given DOI does not exist or user does not have access to it",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
     "/data_connectors/{data_connector_id}": {
       "parameters": [
         {
@@ -440,11 +482,23 @@
           "schema": {
             "$ref": "#/components/schemas/Ulid"
           },
-          "description": "the ID of the data connector"
+          "description": "the ID of the data connector that can be ULID or DOI"
         }
       ],
       "get": {
         "summary": "Get all links from a given data connector to projects",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/PaginationRequest"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of data connector to project links",
@@ -452,6 +506,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DataConnectorToProjectLinksList"
+                }
+              }
+            },
+            "headers": {
+              "page": {
+                "description": "The index of the current page (starting at 1).",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "per-page": {
+                "description": "The number of items per page.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total": {
+                "description": "The total number of items.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total-pages": {
+                "description": "The total number of pages.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
                 }
               }
             }
@@ -955,6 +1039,11 @@
           "$ref": "#/components/schemas/DataConnectorToProjectLink"
         }
       },
+      "ProjectPath": {
+        "description": "The path to the project page",
+        "type": "string",
+        "example": "namespace/project-slug"
+      },
       "DataConnectorToProjectLink": {
         "description": "A link from a data connector to a project in Renku 2.0",
         "type": "object",
@@ -969,6 +1058,9 @@
           "project_id": {
             "$ref": "#/components/schemas/Ulid"
           },
+          "project_path": {
+            "$ref": "#/components/schemas/ProjectPath"
+          },
           "creation_date": {
             "$ref": "#/components/schemas/CreationDate"
           },
@@ -980,6 +1072,7 @@
           "id",
           "data_connector_id",
           "project_id",
+          "project_path",
           "creation_date",
           "created_by"
         ]

@@ -19,8 +19,13 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
 
-import { useGetProjectsByProjectIdsQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import type { SessionStartDataConnectorConfiguration } from "../../sessionsV2/startSessionOptionsV2.types";
+import type { Project } from "~/features/projectsV2/api/projectV2.api";
+import { useGetProjectsByProjectIdsQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
+import type { SessionStartDataConnectorConfiguration } from "~/features/sessionsV2/startSessionOptionsV2.types";
+import type {
+  ApiPagination,
+  PaginatedResponse,
+} from "~/utils/types/pagination.types";
 import type { DataConnectorRead } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdProjectLinksQuery } from "../api/data-connectors.enhanced-api";
 
@@ -31,38 +36,52 @@ export interface DataConnectorConfiguration
 
 interface UseDataSourceConfigurationArgs {
   dataConnector: DataConnectorRead | undefined;
+  page: number;
+  perPage: number;
 }
 
 export default function useDataConnectorProjects({
   dataConnector,
+  page,
+  perPage,
 }: UseDataSourceConfigurationArgs) {
-  const { data: projectLinks, isLoading: isLoadingLinks } =
+  const { currentData: projectLinksPaginated, isFetching: isFetchingLinks } =
     useGetDataConnectorsByDataConnectorIdProjectLinksQuery(
       dataConnector
         ? {
             dataConnectorId: dataConnector.id,
+            params: { page, per_page: perPage },
           }
         : skipToken
     );
-  const { data: projectsMap, isLoading: isLoadingProjects } =
-    useGetProjectsByProjectIdsQuery({
-      projectIds: projectLinks?.map((pl) => pl.project_id) ?? [],
-    });
-  const projects = useMemo(() => {
-    return (
-      projectLinks
-        ?.map((pl) => projectsMap?.[pl.project_id])
-        .filter((p) => p != null) ?? []
-    );
-  }, [projectLinks, projectsMap]);
 
-  const projectMapLength = Object.keys(projectsMap ?? {}).length;
+  const { currentData: projectsMap, isFetching: isFetchingProjects } =
+    useGetProjectsByProjectIdsQuery({
+      projectIds: projectLinksPaginated?.data.map((pl) => pl.project_id) ?? [],
+    });
+  const projectsPaginated = useMemo(() => {
+    if (projectLinksPaginated == null || projectsMap == null) {
+      return undefined;
+    }
+    return {
+      data: projectLinksPaginated.data
+        .map(({ project_id }) => projectsMap[project_id])
+        .filter((p) => p != null),
+      pagination: projectLinksPaginated.pagination,
+    } satisfies ProjectsPaginated;
+  }, [projectLinksPaginated, projectsMap]);
+
+  if (isFetchingLinks || isFetchingProjects || projectsPaginated == null) {
+    return {
+      projectsPaginated,
+      isFetching: true as const,
+    };
+  }
 
   return {
-    projects,
-    isLoading:
-      isLoadingLinks ||
-      isLoadingProjects ||
-      projectMapLength < (projectLinks?.length ?? 0),
+    projectsPaginated,
+    isFetching: false as const,
   };
 }
+
+type ProjectsPaginated = PaginatedResponse<Project, ApiPagination>;

@@ -71,7 +71,7 @@ function DataConnectorRemoveDeleteModal({
     useDataConnectorPermissions({ dataConnectorId: dataConnector.id });
 
   const {
-    data: dataConnectorLinks,
+    data: dataConnectorLinksPaginated,
     isLoading: isLoadingLinks,
     isError: isLoadingLinksError,
   } = useGetDataConnectorsByDataConnectorIdProjectLinksQuery({
@@ -120,7 +120,7 @@ function DataConnectorRemoveDeleteModal({
               </Row>
             }
             enabled={
-              dataConnectorLinks == null || isLoadingLinksError ? (
+              dataConnectorLinksPaginated == null || isLoadingLinksError ? (
                 <Row>
                   <Col>
                     <p>
@@ -143,12 +143,13 @@ function DataConnectorRemoveDeleteModal({
                   <Col>
                     <p>
                       Are you sure you want to delete this data connector?{" "}
-                      {dataConnectorLinks.length < 1 ? (
+                      {dataConnectorLinksPaginated.pagination.totalItems < 1 ? (
                         <>
                           It is not used in any projects that are visible to
                           you, but it will affect any projects where it is used.
                         </>
-                      ) : dataConnectorLinks.length === 1 ? (
+                      ) : dataConnectorLinksPaginated.pagination.totalItems ===
+                        1 ? (
                         <>
                           It will affect at least <b>1 project that uses it</b>.
                         </>
@@ -156,7 +157,8 @@ function DataConnectorRemoveDeleteModal({
                         <>
                           It will affect at least{" "}
                           <b>
-                            {dataConnectorLinks.length} projects that use it
+                            {dataConnectorLinksPaginated.pagination.totalItems}{" "}
+                            projects that use it
                           </b>
                           .
                         </>
