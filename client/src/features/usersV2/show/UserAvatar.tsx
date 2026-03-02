@@ -18,7 +18,8 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useEffect, useMemo } from "react";
+import { ReactNode, useEffect, useMemo, useRef } from "react";
+import { UncontrolledTooltip } from "reactstrap";
 
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 import type { SearchEntity } from "../../searchV2/api/searchV2Api.api";
@@ -168,5 +169,49 @@ export function AvatarTypeWrap({ type, children }: AvatarTypeWrapProps) {
         <EntityPill entityType={type} size="sm" />
       </div>
     </div>
+  );
+}
+
+const TOOLTIP_MAX_LENGTH = 150;
+function truncateTooltipText(text: string) {
+  if (text.length <= TOOLTIP_MAX_LENGTH) return text;
+  return text.slice(0, TOOLTIP_MAX_LENGTH) + "...";
+}
+
+interface OverflowBadgeProps {
+  count: number;
+  hiddenMembers: {
+    first_name?: string;
+    last_name?: string;
+  }[];
+}
+
+export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  return (
+    <>
+      <div
+        ref={ref}
+        className={cx(
+          "align-content-center",
+          "border",
+          "flex-shrink-0",
+          "rounded-circle",
+          "text-center",
+          "text-black",
+          styles.avatar
+        )}
+      >
+        +{count}
+      </div>
+      <UncontrolledTooltip target={ref}>
+        {truncateTooltipText(
+          hiddenMembers
+            .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
+            .join(", ")
+        )}
+      </UncontrolledTooltip>
+    </>
   );
 }

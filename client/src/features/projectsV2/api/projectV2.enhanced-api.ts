@@ -1,5 +1,6 @@
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
+import { searchV2Api } from "../../searchV2/api/searchV2Api.api";
 import { usersApi } from "../../usersV2/api/users.api";
 import { projectAndNamespaceApi as api } from "./namespace.api";
 import type {
@@ -190,12 +191,22 @@ const enhancedApi = injectedApi.enhanceEndpoints({
   endpoints: {
     deleteGroupsByGroupSlug: {
       invalidatesTags: ["Group", "Namespace"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     deleteGroupsByGroupSlugMembersAndUserId: {
       invalidatesTags: ["GroupMembers"],
     },
     deleteProjectsByProjectId: {
       invalidatesTags: ["Project"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     deleteProjectsByProjectIdMembersAndMemberId: {
       invalidatesTags: ["ProjectMembers"],
@@ -256,21 +267,41 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     patchGroupsByGroupSlug: {
       invalidatesTags: ["Group", "Namespace"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     patchGroupsByGroupSlugMembers: {
       invalidatesTags: ["GroupMembers"],
     },
     patchProjectsByProjectId: {
       invalidatesTags: ["Project"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     patchProjectsByProjectIdMembers: {
       invalidatesTags: ["ProjectMembers"],
     },
     postGroups: {
       invalidatesTags: ["Group", "Namespace"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     postProjects: {
       invalidatesTags: ["Project"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     getProjectsByProjectIdSessionSecretSlots: {
       providesTags: (result, _, { projectId }) =>
@@ -338,6 +369,11 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     postProjectsByProjectIdCopies: {
       invalidatesTags: ["Project"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     getRenkuV1ProjectsMigrations: {
       providesTags: ["ProjectMigrations", "Project"],

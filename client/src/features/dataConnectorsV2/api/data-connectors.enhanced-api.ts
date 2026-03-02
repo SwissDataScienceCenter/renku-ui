@@ -1,5 +1,6 @@
 import { processPaginationHeaders } from "../../../utils/helpers/kgPagination.utils";
 import { AbstractKgPaginatedResponse } from "../../../utils/types/pagination.types";
+import { searchV2Api } from "../../searchV2/api/searchV2Api.api";
 import type {
   GetDataConnectorsApiArg,
   GetDataConnectorsApiResponse as GetDataConnectorsApiResponseOrig,
@@ -121,6 +122,11 @@ const enhancedApi = injectedApi.enhanceEndpoints({
   endpoints: {
     deleteDataConnectorsByDataConnectorId: {
       invalidatesTags: ["DataConnectors"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     deleteDataConnectorsByDataConnectorIdProjectLinksAndLinkId: {
       invalidatesTags: ["DataConnectorsProjectLinks"],
@@ -157,18 +163,33 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     patchDataConnectorsByDataConnectorId: {
       invalidatesTags: ["DataConnectors"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     patchDataConnectorsByDataConnectorIdSecrets: {
       invalidatesTags: ["DataConnectorSecrets"],
     },
     postDataConnectors: {
       invalidatesTags: ["DataConnectors"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
     postDataConnectorsByDataConnectorIdProjectLinks: {
       invalidatesTags: ["DataConnectorsProjectLinks"],
     },
     postDataConnectorsGlobal: {
       invalidatesTags: ["DataConnectors"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.finally(() => {
+          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        });
+      },
     },
   },
 });
