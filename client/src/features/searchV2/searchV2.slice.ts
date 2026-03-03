@@ -18,132 +18,142 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { toNumericRole } from "../ProjectPageV2/utils/roleUtils";
-import type { Role } from "../projectsV2/api/projectV2.api";
+import type { RootState } from "../../store/store";
+import type { SearchQuery } from "./api/searchV2Api.api";
 import {
-  DEFAULT_CREATION_DATE_FILTER,
+  DEFAULT_CONTENT_TYPE,
   DEFAULT_PAGE_SIZE,
-  DEFAULT_ROLE_FILTER,
-  DEFAULT_SORT_BY,
-  DEFAULT_TYPE_FILTER,
-  DEFAULT_VISIBILITY_FILTER,
   FIRST_PAGE,
 } from "./searchV2.constants";
 import type {
-  CreationDateFilter,
-  SearchEntityType,
-  SearchEntityVisibility,
+  ApplyParsedSearchParams,
+  InitFromUrlParams,
   SearchV2State,
-  SetInitialQueryParams,
-  SortBy,
 } from "./searchV2.types";
-import { buildSearchQuery, valuesAsSet } from "./searchV2.utils";
+import { buildApiQuery } from "./searchV2.utils";
 
 const initialState: SearchV2State = {
-  dateFilters: {
-    created: DEFAULT_CREATION_DATE_FILTER,
-  },
-  filters: {
-    role: DEFAULT_ROLE_FILTER,
-    type: DEFAULT_TYPE_FILTER,
-    visibility: DEFAULT_VISIBILITY_FILTER,
-  },
-  initialQuery: "",
+  query: "",
+  contentType: DEFAULT_CONTENT_TYPE,
+  visibility: "",
+  role: "",
+  keywords: "",
+  directMember: "",
+  created: "",
   page: FIRST_PAGE,
   perPage: DEFAULT_PAGE_SIZE,
-  query: "",
-  searchBarQuery: "",
-  sortBy: DEFAULT_SORT_BY,
+  namespace: undefined,
+  includeCounts: true,
+  searchBarFilterKeys: [],
 };
 
 export const searchV2Slice = createSlice({
   name: "searchV2",
   initialState,
   reducers: {
-    setInitialQuery: (state, action: PayloadAction<SetInitialQueryParams>) => {
-      const { dateFilters, filters, query, searchBarQuery, sortBy } =
-        action.payload;
-      state.initialQuery = query;
-      state.query = query;
-      state.searchBarQuery = searchBarQuery;
-      state.filters = filters;
-      state.dateFilters = dateFilters;
-      state.sortBy = sortBy;
+    initFromUrl: (state, action: PayloadAction<InitFromUrlParams>) => {
+      const p = action.payload;
+      state.query = p.query;
+      state.contentType = p.contentType;
+      state.visibility = p.visibility;
+      state.role = p.role;
+      state.keywords = p.keywords;
+      state.directMember = p.directMember;
+      state.created = p.created;
+      state.page = p.page;
+      state.perPage = p.perPage;
+      state.searchBarFilterKeys = [];
+    },
+    setQuery: (state, action: PayloadAction<string>) => {
+      state.query = action.payload;
+      state.page = FIRST_PAGE;
+    },
+    setContentType: (state, action: PayloadAction<string>) => {
+      state.contentType = action.payload;
+      state.page = FIRST_PAGE;
+    },
+    setVisibility: (state, action: PayloadAction<string>) => {
+      state.visibility = action.payload;
+      state.page = FIRST_PAGE;
+    },
+    setRole: (state, action: PayloadAction<string>) => {
+      state.role = action.payload;
+      state.page = FIRST_PAGE;
+    },
+    setKeywords: (state, action: PayloadAction<string>) => {
+      state.keywords = action.payload;
+      state.page = FIRST_PAGE;
+    },
+    toggleKeyword: (state, action: PayloadAction<string>) => {
+      const separator = "+";
+      const current = state.keywords ? state.keywords.split(separator) : [];
+      const idx = current.indexOf(action.payload);
+      if (idx >= 0) {
+        current.splice(idx, 1);
+      } else {
+        current.push(action.payload);
+      }
+      state.keywords = current.join(separator);
+      state.page = FIRST_PAGE;
+    },
+    setDirectMember: (state, action: PayloadAction<string>) => {
+      state.directMember = action.payload;
+      state.page = FIRST_PAGE;
+    },
+    setCreated: (state, action: PayloadAction<string>) => {
+      state.created = action.payload;
+      state.page = FIRST_PAGE;
     },
     setPage: (state, action: PayloadAction<number>) => {
       state.page = action.payload;
     },
     setPerPage: (state, action: PayloadAction<number>) => {
       state.perPage = action.payload;
+      state.page = FIRST_PAGE;
     },
-    setSortBy: (state, action: PayloadAction<SortBy>) => {
-      state.sortBy = action.payload;
-      state.query = buildSearchQuery(state);
+    setNamespace: (state, action: PayloadAction<string | undefined>) => {
+      state.namespace = action.payload;
     },
-    setSearchBarQuery: (state, action: PayloadAction<string>) => {
-      state.searchBarQuery = action.payload;
-      state.query = buildSearchQuery(state);
-    },
-    toggleRoleFilterValue: (state, action: PayloadAction<Role>) => {
-      const asSet = valuesAsSet(state.filters.role.values);
-      if (asSet.has(action.payload)) {
-        asSet.delete(action.payload);
-      } else {
-        asSet.add(action.payload);
-      }
-      state.filters.role.values = Array.from(asSet).sort(
-        (a, b) => toNumericRole(b) - toNumericRole(a)
-      );
-      state.query = buildSearchQuery(state);
-    },
-    toggleTypeFilterValue: (
+    applyParsedSearch: (
       state,
-      action: PayloadAction<{
-        value: SearchEntityType;
-      }>
+      action: PayloadAction<ApplyParsedSearchParams>
     ) => {
-      const asSet = valuesAsSet(state.filters.type.values);
-      if (asSet.has(action.payload.value)) {
-        asSet.delete(action.payload.value);
-      } else {
-        asSet.add(action.payload.value);
-      }
-      state.filters.type.values = Array.from(asSet).sort();
-      state.query = buildSearchQuery(state);
-    },
-    toggleVisibilityFilterValue: (
-      state,
-      action: PayloadAction<SearchEntityVisibility>
-    ) => {
-      const asSet = valuesAsSet(state.filters.visibility.values);
-      if (asSet.has(action.payload)) {
-        asSet.delete(action.payload);
-      } else {
-        asSet.add(action.payload);
-      }
-      state.filters.visibility.values = Array.from(asSet).sort();
-      state.query = buildSearchQuery(state);
-    },
-    selectCreationDateFilter: (
-      state,
-      action: PayloadAction<CreationDateFilter>
-    ) => {
-      state.dateFilters.created = action.payload;
-      state.query = buildSearchQuery(state);
+      const { query, contentType, visibility, role, created } = action.payload;
+      state.query = query;
+      if (contentType != null) state.contentType = contentType;
+      if (visibility != null) state.visibility = visibility;
+      if (role != null) state.role = role;
+      if (created != null) state.created = created;
+      state.page = FIRST_PAGE;
+
+      const keys: string[] = [];
+      if (contentType != null) keys.push("contentType");
+      if (visibility != null) keys.push("visibility");
+      if (role != null) keys.push("role");
+      if (created != null) keys.push("created");
+      state.searchBarFilterKeys = keys;
     },
     reset: () => initialState,
   },
 });
 
 export const {
-  setInitialQuery,
+  initFromUrl,
+  setQuery,
+  setContentType,
+  setVisibility,
+  setRole,
+  setKeywords,
+  toggleKeyword,
+  setDirectMember,
+  setCreated,
   setPage,
   setPerPage,
-  setSortBy,
-  setSearchBarQuery,
-  toggleRoleFilterValue,
-  toggleTypeFilterValue,
-  toggleVisibilityFilterValue,
-  selectCreationDateFilter,
+  setNamespace,
+  applyParsedSearch,
   reset,
 } = searchV2Slice.actions;
+
+export function selectSearchApiQuery(state: RootState): SearchQuery {
+  return buildApiQuery(state.searchV2);
+}

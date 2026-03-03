@@ -250,6 +250,8 @@ export type ErrorResponse = {
     code: number;
     detail?: string;
     message: string;
+    /** Sentry trace ID for linking to corresponding log entries */
+    trace_id?: string;
   };
 };
 export type CloudStorageUrl = ProjectId & {

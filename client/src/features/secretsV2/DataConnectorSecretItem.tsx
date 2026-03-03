@@ -172,7 +172,7 @@ function DataConnectorSecretUsedForItem({
             slug: namespace.slug,
           })
         : dataConnector && namespace?.namespace_kind === "user"
-        ? generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+        ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
             username: namespace.slug,
           })
         : undefined,
