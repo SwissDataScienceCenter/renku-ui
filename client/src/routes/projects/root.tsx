@@ -28,12 +28,9 @@ import type { Route } from "./+types/root";
 
 export async function loader({ context, params }: Route.LoaderArgs) {
   const store = context.get(storeContext);
-  const clientSideFetch =
-    store == null ||
-    process.env.NODE_ENV === "development" ||
-    process.env.CYPRESS === "1";
+  const clientSideFetch = store == null || process.env.CYPRESS === "1";
   if (clientSideFetch) {
-    //? In development, we do not load the project data client-side
+    //? In testing, we load the project data client-side
     return data({
       clientSideFetch,
       project: undefined,
@@ -41,7 +38,7 @@ export async function loader({ context, params }: Route.LoaderArgs) {
     });
   }
 
-  //? In production, we load the project data to generate meta tags
+  //? Otherwise, we load the project data to generate meta tags
   const { namespace, slug } = params;
   const endpoint =
     projectV2Api.endpoints.getNamespacesByNamespaceProjectsAndSlug;

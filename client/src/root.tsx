@@ -64,7 +64,7 @@ export async function loader(): Promise<ServerLoaderReturn> {
   const clientSideFetch =
     process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
   if (clientSideFetch) {
-    //? In development, we do not load the /config.json data client-side
+    //? In development, we load the /config.json data client-side
     return data({
       clientSideFetch,
       config: undefined,
