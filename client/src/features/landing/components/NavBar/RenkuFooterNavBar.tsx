@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useContext } from "react";
+import { useContext } from "react";
 import { Link, useLocation, useMatch } from "react-router";
 
 import { ExternalLink } from "~/components/LegacyExternalLinks";
@@ -44,12 +44,6 @@ export default function RenkuFooterNavBar() {
 function RenkuFooterNavBarInner() {
   const { params } = useContext(AppContext);
 
-  const privacyLink =
-    params && params["TERMS_PAGES_ENABLED"] ? (
-      <RenkuNavLinkV2 to={ABSOLUTE_ROUTES.v2.help.privacy}>
-        Privacy
-      </RenkuNavLinkV2>
-    ) : null;
   const chartVersion = params && params["RENKU_CHART_VERSION"];
   const parsedChartVersion = chartVersion
     ? parseChartVersion(chartVersion)
@@ -83,7 +77,7 @@ function RenkuFooterNavBarInner() {
         </div>
         <div className={cx("d-lg-flex", "d-none", "navbar-nav")}>
           <div className={cx("d-flex", "flex-row", "gap-3", "ms-auto")}>
-            <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
+            <FooterNavbarLoggedInLinks />
           </div>
         </div>
       </div>
@@ -91,11 +85,7 @@ function RenkuFooterNavBarInner() {
   );
 }
 
-function FooterNavbarLoggedInLinks({
-  privacyLink,
-}: {
-  privacyLink?: ReactNode;
-}) {
+function FooterNavbarLoggedInLinks() {
   const location = useLocation();
   const forceV2 = true;
   const helpLocation = isRenkuLegacy(location.pathname, forceV2)
@@ -104,7 +94,6 @@ function FooterNavbarLoggedInLinks({
   return (
     <>
       <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
-      {privacyLink}
       <ExternalLink
         className="nav-link"
         role="link"
