@@ -21,6 +21,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const searchV2EmptyApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/api/data" }),
+  tagTypes: ["SearchV2"],
   endpoints: () => ({}),
   reducerPath: "searchV2Api",
 });
