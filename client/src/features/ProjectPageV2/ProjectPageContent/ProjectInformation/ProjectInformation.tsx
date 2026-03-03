@@ -33,6 +33,7 @@ import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import { useProject } from "~/routes/projects/root";
 import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
@@ -48,7 +49,6 @@ import {
   useGetProjectsByProjectIdMembersQuery,
   useGetProjectsByProjectIdQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectInformationButton from "./ProjectInformationButton";

@@ -43,9 +43,6 @@ import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
 import LazyGroupV2Search from "../groupsV2/LazyGroupV2Search";
 import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 import GroupNew from "../groupsV2/new/GroupNew";
-import LazyProjectPageV2Show from "../ProjectPageV2/LazyProjectPageV2Show";
-import LazyProjectPageOverview from "../ProjectPageV2/ProjectPageContent/LazyProjectPageOverview";
-import LazyProjectPageSettings from "../ProjectPageV2/ProjectPageContent/LazyProjectPageSettings";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
 import ProjectV2New from "../projectsV2/new/ProjectV2New";
 import LazySearchV2 from "../searchV2/LazySearchV2";
@@ -232,13 +229,6 @@ function ProjectsV2Routes() {
     <Routes>
       <Route index element={<RedirectToSearch entityType="project" />} />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
-        <Route element={<LazyProjectPageV2Show />}>
-          <Route index element={<LazyProjectPageOverview />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.projects.show.settings}
-            element={<LazyProjectPageSettings />}
-          />
-        </Route>
         <Route
           path={RELATIVE_ROUTES.v2.projects.show.sessions.root}
           element={<ProjectSessionsRoutes />}
