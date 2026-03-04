@@ -354,6 +354,8 @@ export function ProjectNamespaceControl({
     if (namespacesFirstPage == null) {
       return;
     }
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState({
       data: namespacesFirstPage.namespaces,
       fetchedPages: namespacesFirstPage.page ?? 0,
@@ -384,6 +386,8 @@ export function ProjectNamespaceControl({
       });
     const namespacesAvailable = [...allNamespaces, ...filteredNewNamespaces];
 
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState({
       data: namespacesAvailable,
       fetchedPages: namespacesPageResult.currentData.page ?? 0,
@@ -407,6 +411,8 @@ export function ProjectNamespaceControl({
     if (hasNamespace) {
       return;
     }
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState((prevState) => {
       const namespaces = [specificNamespace, ...(prevState.data ?? [])];
       return { ...prevState, data: namespaces };

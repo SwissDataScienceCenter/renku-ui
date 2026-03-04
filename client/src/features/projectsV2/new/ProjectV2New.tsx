@@ -136,6 +136,7 @@ function ProjectV2CreationDetails() {
   });
 
   // We watch for changes in the name and derive the slug from it
+  // eslint-disable-next-line react-hooks/incompatible-library
   const currentName = watch("name");
   useEffect(() => {
     setValue("slug", slugFromTitle(currentName, true, true), {

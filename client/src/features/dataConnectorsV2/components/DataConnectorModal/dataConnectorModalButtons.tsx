@@ -44,10 +44,7 @@ import {
 } from "../../../cloudStorage/projectCloudStorage.types";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
-interface DataConnectorModalForwardBackButtonProps {}
-
-interface DataConnectorModalBackButtonProps
-  extends DataConnectorModalForwardBackButtonProps {
+interface DataConnectorModalBackButtonProps {
   success: boolean;
   toggle: () => void;
   initialStep?: number;
