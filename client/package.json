@@ -104,6 +104,21 @@
     "xregexp": "^4.4.0"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "8.6.15",
+    "@storybook/addon-essentials": "8.6.15",
+    "@storybook/addon-interactions": "8.6.15",
+    "@storybook/addon-links": "8.6.15",
+    "@storybook/addon-storysource": "8.6.15",
+    "@storybook/blocks": "8.6.15",
+    "@storybook/components": "8.6.15",
+    "@storybook/jest": "^0.2.3",
+    "@storybook/react": "8.6.15",
+    "@storybook/react-vite": "8.6.15",
+    "@storybook/test": "8.6.15",
+    "@storybook/test-runner": "^0.22.0",
+    "@storybook/testing-library": "^0.2.2",
+    "@storybook/theming": "8.6.15",
+    "storybook": "8.6.15",
     "@eslint/compat": "^2.0.2",
     "@eslint/eslintrc": "^3.3.4",
     "@eslint/js": "~9.39.3",
@@ -135,7 +150,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "eslint-plugin-spellcheck": "^0.0.20",
-    "eslint-plugin-storybook": "^10.2.14",
+    "eslint-plugin-storybook": "^0.11.4",
     "globals": "^17.4.0",
     "http-server": "^14.1.1",
     "jest": "^30.2.0",
@@ -144,7 +159,6 @@
     "prettier": "^2.8.7",
     "pretty-quick": "^3.3.1",
     "react-test-renderer": "^18.3.1",
-    "storybook": "^10.2.14",
     "typescript": "^5.3.2",
     "vite": "^6.4.1",
     "vite-bundle-visualizer": "^1.2.1",
@@ -155,6 +169,12 @@
     "yaml": "^2.7.1"
   },
   "overrides": {
+    "addon-redux": {
+      "react": "$react",
+      "react-dom": "$react-dom",
+      "@storybook/components": "$@storybook/components",
+      "@storybook/theming": "$@storybook/theming"
+    },
     "ansi-to-react": {
       "react": "$react",
       "react-dom": "$react-dom"
