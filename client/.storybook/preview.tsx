@@ -1,5 +1,4 @@
-import { Preview } from "@storybook/react";
-import React from "react";
+import { Preview, type Decorator } from "@storybook/react-vite";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 
@@ -10,7 +9,7 @@ import { DEFAULT_APP_PARAMS } from "../src/utils/context/appParams.constants";
 
 import "../src/styles/renku_bootstrap.scss";
 
-export const decorators = [
+export const decorators: Decorator[] = [
   (Story) => {
     const appContext: AppContextType = {
       params: { ...DEFAULT_APP_PARAMS },
@@ -50,5 +49,7 @@ const preview: Preview = {
       },
     },
   },
+
+  tags: ["autodocs"],
 };
 export default preview;

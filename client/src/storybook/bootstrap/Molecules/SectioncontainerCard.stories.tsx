@@ -1,6 +1,5 @@
-import { Controls } from "@storybook/addon-docs";
-import { Canvas, Unstyled } from "@storybook/blocks";
-import { Meta, StoryObj } from "@storybook/react";
+import { Canvas, Controls, Unstyled } from "@storybook/addon-docs/blocks";
+import { Meta, StoryObj } from "@storybook/react-vite";
 import cx from "classnames";
 import { ReactNode } from "react";
 import {
