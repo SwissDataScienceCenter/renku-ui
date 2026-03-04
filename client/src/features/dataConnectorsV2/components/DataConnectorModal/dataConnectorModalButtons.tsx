@@ -96,8 +96,7 @@ export function DataConnectorModalBackButton({
   );
 }
 
-interface DataConnectorModalContinueButtonProps
-  extends DataConnectorModalForwardBackButtonProps {
+interface DataConnectorModalContinueButtonProps {
   addButtonDisableReason: string;
   addOrEditStorage: () => void;
   disableAddButton: boolean;
@@ -290,8 +289,7 @@ export function DataConnectorConnectionTestResult() {
   );
 }
 
-interface TestConnectionAndContinueButtonsProps
-  extends DataConnectorModalForwardBackButtonProps {
+interface TestConnectionAndContinueButtonsProps {
   continueId: string;
   step: number;
   testId: string;
