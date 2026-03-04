@@ -194,6 +194,8 @@ export function HydrateFallback() {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    // We track hydration, there will be no cascading re-renders
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsHydrated(true);
   }, []);
 

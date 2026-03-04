@@ -50,6 +50,8 @@ export function useWaitForSessionStatusV2({
 
   useEffect(() => {
     if (skip) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsWaiting(false);
     }
   }, [skip]);
@@ -63,6 +65,8 @@ export function useWaitForSessionStatusV2({
     const isWaiting =
       (session != null && !desiredStatuses.includes(session.status.state)) ||
       (session == null && !desiredStatuses.includes("stopping"));
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsWaiting(isWaiting);
   }, [desiredStatus, session, skip]);
 

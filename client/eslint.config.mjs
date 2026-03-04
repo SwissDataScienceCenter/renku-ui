@@ -139,6 +139,7 @@ const jsRules = {
         "matcher",
         "mathbf",
         "mathjax",
+        "memoization",
         "mergerequests",
         "metadata_oauth",
         "mongodb",

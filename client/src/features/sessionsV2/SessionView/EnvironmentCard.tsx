@@ -166,13 +166,13 @@ function GlobalEnvironmentSessionImageBadge({
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
   const resourcePool = useMemo(() => {
-    if (launcher?.resource_class_id == null || resourcePools == null) {
+    if (launcher.resource_class_id == null || resourcePools == null) {
       return undefined;
     }
     return resourcePools.find(({ classes }) =>
       classes.some(({ id }) => id === launcher.resource_class_id)
     );
-  }, [launcher?.resource_class_id, resourcePools]);
+  }, [launcher.resource_class_id, resourcePools]);
 
   return (
     <div className="mb-2">
@@ -220,13 +220,13 @@ function CustomImageEnvironmentValues({
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
   const resourcePool = useMemo(() => {
-    if (launcher?.resource_class_id == null || resourcePools == null) {
+    if (launcher.resource_class_id == null || resourcePools == null) {
       return undefined;
     }
     return resourcePools.find(({ classes }) =>
       classes.some(({ id }) => id === launcher.resource_class_id)
     );
-  }, [launcher?.resource_class_id, resourcePools]);
+  }, [launcher.resource_class_id, resourcePools]);
   const search = useMemo(() => {
     return `?${new URLSearchParams({
       targetProvider: data?.provider?.id ?? "",
@@ -422,13 +422,13 @@ function CustomBuildEnvironmentValues({
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
   const resourcePool = useMemo(() => {
-    if (launcher?.resource_class_id == null || resourcePools == null) {
+    if (launcher.resource_class_id == null || resourcePools == null) {
       return undefined;
     }
     return resourcePools.find(({ classes }) =>
       classes.some(({ id }) => id === launcher.resource_class_id)
     );
-  }, [launcher?.resource_class_id, resourcePools]);
+  }, [launcher.resource_class_id, resourcePools]);
 
   // Invalidate launchers if the container image is not the same as the
   // image from the last successful build

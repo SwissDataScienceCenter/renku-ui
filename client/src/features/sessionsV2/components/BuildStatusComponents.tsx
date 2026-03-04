@@ -259,12 +259,18 @@ export function BuildLogsModal({
   );
 
   useEffect(() => {
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLogs((prevState) => ({ ...prevState, show: isOpen ? name : false }));
   }, [isOpen, name]);
   useEffect(() => {
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLogs((prevState) => ({ ...prevState, fetching: isFetching }));
   }, [isFetching]);
   useEffect(() => {
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLogs((prevState) => ({
       ...prevState,
       fetched: !!data,

@@ -166,6 +166,8 @@ function DataConnectorSecretUsedForItem({
   );
 
   const namespaceUrl = useMemo(
+    // Ref: https://github.com/facebook/react/issues/35577
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     () =>
       dataConnector && namespace?.namespace_kind === "group"
         ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
@@ -225,6 +227,8 @@ function DataConnectorSecretUsedForItem({
       </div>
       <div>
         <div className={cx("d-flex", "flex-row", "gap-4")}>
+          {/* // TODO: fix react-hooks/static-components */}
+          {/* eslint-disable-next-line react-hooks/static-components */}
           <LinkTag className={cx("fw-bold")}>{dataConnector.name}</LinkTag>
           <div
             className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}

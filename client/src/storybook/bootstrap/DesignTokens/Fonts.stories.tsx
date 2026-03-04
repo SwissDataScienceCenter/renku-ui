@@ -30,6 +30,8 @@ function FontPropertyCard({ token, notes }: FontPropertyCardProps) {
     const cssVarName = `--bs-${token}`;
     const resolvedValue = styles.getPropertyValue(cssVarName).trim();
 
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(resolvedValue || "N/A");
   }, [token]);
   return (

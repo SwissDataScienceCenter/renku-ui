@@ -49,6 +49,8 @@ export default function useWebSocket({ params, store }: UseWebSocketArgs) {
   );
   const dispatch = useAppDispatch();
 
+  // TODO: fix react-hooks/purity
+  // eslint-disable-next-line react-hooks/purity
   const [wsId, setWsId] = useState<string>(`ws-${Date.now().toString()}`);
   const [ws, setWs] = useState<WebSocket | null>(null);
 

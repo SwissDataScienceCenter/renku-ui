@@ -39,6 +39,8 @@ export function useGetSessionLogsV2(
   };
 
   useEffect(() => {
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLogs({
       data: data ?? {},
       fetched: !isLoading && !error && !!data,

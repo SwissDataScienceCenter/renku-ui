@@ -35,6 +35,8 @@ function PropertyCard({ token, notes }: PropertyCardProps) {
     const cssVarName = `--bs-${token}`;
     const resolvedValue = styles.getPropertyValue(cssVarName).trim();
 
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(resolvedValue || "N/A");
   }, [token]);
 
@@ -93,7 +95,11 @@ function BorderRadiusExampleCard({ token }: BorderRadiusExampleCardProps) {
     const radiusPx = styles.borderRadius;
 
     if (!radiusPx || radiusPx === "0px") {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setValue("0");
+      // TODO: fix react-hooks/set-state-in-effect
+
       setPx("0px");
       return;
     }
@@ -171,6 +177,8 @@ function ShadowExampleCard({ token }: ShadowExampleCardProps) {
     const styles = getComputedStyle(probeRef.current);
     const boxShadow = styles.boxShadow;
 
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(boxShadow && boxShadow !== "none" ? boxShadow : "none");
   }, [token]);
 

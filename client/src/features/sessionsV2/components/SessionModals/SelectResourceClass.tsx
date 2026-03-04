@@ -104,7 +104,9 @@ export function SelectResourceClassModal({
     [handleSubmit, onSubmitInner]
   );
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchCurrentSessionClass = watch("resourceClass");
+
   const watchCurrentDiskStorage = watch("diskStorage");
 
   const selector = isLoading ? (

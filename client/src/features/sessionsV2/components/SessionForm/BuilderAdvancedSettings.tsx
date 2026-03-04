@@ -78,8 +78,8 @@ export default function BuilderAdvancedSettings({
   );
 }
 
-interface BuilderPlatformSelectorProps<T extends FieldValues>
-  extends UseControllerProps<T> {}
+type BuilderPlatformSelectorProps<T extends FieldValues> =
+  UseControllerProps<T>;
 
 function BuilderPlatformSelector<T extends FieldValues>({
   ...controllerProps

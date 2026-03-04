@@ -108,6 +108,8 @@ export default function ActiveSessionButton({
       sessionId: session.name,
       sessionPatchRequest: { state: "running" },
     });
+    // TODO: fix react-hooks/set-state-in-effect
+
     setIsResuming(true);
   }, [resumeSession, session.name]);
   const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatusV2({
@@ -117,8 +119,12 @@ export default function ActiveSessionButton({
   });
   useEffect(() => {
     if (isResuming && isSuccessResumeSession && !isWaitingForResumedSession) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsResuming(false);
       navigate(showSessionUrl);
+      // TODO: fix react-hooks/set-state-in-effect
+
       setIsResuming(false);
     }
   }, [
@@ -134,6 +140,8 @@ export default function ActiveSessionButton({
         textHeader: NOTIFICATION_TOPICS.SESSION_START,
         textBody: "Unable to resume the session",
       });
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsResuming(false);
     }
   }, [errorResumeSession, renkuToastDanger]);
@@ -159,6 +167,8 @@ export default function ActiveSessionButton({
     });
   useEffect(() => {
     if (isSuccessHibernateSession && !isWaitingForHibernatedSession) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsHibernating(false);
     }
   }, [isSuccessHibernateSession, isWaitingForHibernatedSession]);
@@ -168,6 +178,8 @@ export default function ActiveSessionButton({
         textHeader: NOTIFICATION_TOPICS.SESSION_START,
         textBody: "Unable to pause the session",
       });
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsHibernating(false);
     }
   }, [errorHibernateSession, renkuToastDanger]);
@@ -178,6 +190,8 @@ export default function ActiveSessionButton({
   const [isStopping, setIsStopping] = useState<boolean>(false);
   const onStopSession = useCallback(() => {
     stopSession({ sessionId: session.name });
+    // TODO: fix react-hooks/set-state-in-effect
+
     setIsStopping(true);
   }, [session.name, stopSession]);
   useEffect(() => {
@@ -186,6 +200,8 @@ export default function ActiveSessionButton({
         textHeader: NOTIFICATION_TOPICS.SESSION_START,
         textBody: "Unable to delete the session",
       });
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsStopping(false);
     }
   }, [errorStopSession, renkuToastDanger]);
@@ -604,6 +620,8 @@ function ModifySessionModalContent({
     const currentSessionClass = resourcePools
       ?.flatMap((pool) => pool.classes)
       .find((c) => c.id == resource_class_id);
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentSessionClass(currentSessionClass);
   }, [resource_class_id, resourcePools]);
 
