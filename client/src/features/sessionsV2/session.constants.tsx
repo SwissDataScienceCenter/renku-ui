@@ -150,7 +150,7 @@ export const BUILDER_FRONTENDS = [
     /* eslint-disable spellcheck/spell-checker */
     value: "rstudio",
     label: "RStudio",
-    description: "Web-based terminal, with minimalist interface.",
+    description: "Web-based integrated development environment for R.",
     /* eslint-enable spellcheck/spell-checker */
   },
 ] as readonly BuilderSelectorOption[];
