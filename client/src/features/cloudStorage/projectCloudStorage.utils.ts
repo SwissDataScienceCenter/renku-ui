@@ -309,7 +309,7 @@ export function findSensitive(
   if (!schema) return [];
   return schema.options
     ? schema.options
-        .filter((o) => o.ispassword || o.sensitive) // eslint-disable-line spellcheck/spell-checker
+        .filter((o) => o.ispassword || o.sensitive)
         .map((o) => o.name)
     : [];
 }

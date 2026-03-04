@@ -31,9 +31,9 @@ function useWindowSize() {
     function updateSize() {
       setSize({ width: window.innerWidth, height: window.innerHeight });
     }
-    window.addEventListener("resize", updateSize); // eslint-disable-line
+    window.addEventListener("resize", updateSize);
     updateSize();
-    return () => window.removeEventListener("resize", updateSize); // eslint-disable-line
+    return () => window.removeEventListener("resize", updateSize);
   }, []);
   return size;
 }
