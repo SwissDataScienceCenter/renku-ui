@@ -138,6 +138,8 @@ function AddUserToResourcePoolModal({
 
   useEffect(() => {
     if (!isOpen) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPickedUser(null);
       reset();
       result.reset();
@@ -291,6 +293,8 @@ function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
 
   useEffect(() => {
     if (users) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSuggestions(users);
     }
   }, [users]);

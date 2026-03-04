@@ -54,6 +54,8 @@ export default function ProvideSessionSecretModalContent({
 
   useEffect(() => {
     if (!isOpen) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMode("new-value");
     }
   }, [isOpen]);

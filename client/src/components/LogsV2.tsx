@@ -142,6 +142,8 @@ const LogTabs = ({
         logs && logs["jupyter-server"]
           ? { "jupyter-server": logs["jupyter-server"], ...logs }
           : logs;
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setData(orderedLogs);
       if (activeTab == null) {
         const keys = Object.keys(orderedLogs);

@@ -46,10 +46,13 @@ export function useLoginUrl(args?: UseLoginUrlArgs): URL {
     throw new Error("Cannot create login URL");
   }
 
+  // TODO: fix react-hooks/refs
+  /* eslint-disable react-hooks/refs */
   const redirectUrl =
     redirectUrl_ ?? windowLocationRef.current
       ? new URL(windowLocationRef.current)
       : null;
+  /* eslint-enable react-hooks/refs */
   if (redirectUrl && !redirectUrl.search.includes(RENKU_QUERY_PARAMS.login)) {
     redirectUrl.searchParams.append(
       RENKU_QUERY_PARAMS.login,

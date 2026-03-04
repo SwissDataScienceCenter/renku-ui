@@ -73,6 +73,8 @@ export default function Markdown({
         startOnLoad: false,
         securityLevel: "strict",
       });
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInitDone(true);
     }
 
