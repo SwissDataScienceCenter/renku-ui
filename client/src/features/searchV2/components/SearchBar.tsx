@@ -17,70 +17,61 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Search, XCircleFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { useSearchParams } from "react-router";
 import { Button, Form, InputGroup } from "reactstrap";
 
-import { useGroupSearch } from "./groupSearch.hook";
-import { FILTER_PAGE, FILTER_QUERY } from "./groupsSearch.constants";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { applyParsedSearch, reset as resetSearch } from "../searchV2.slice";
+import {
+  buildSearchBarDisplay,
+  parsedResultToSliceParams,
+  parseSearchQuery,
+} from "../searchV2.utils";
 
 interface SearchBarForm {
   query: string;
 }
-export default function GroupSearchBar() {
-  // Set the input properly
-  const [searchParams, setSearchParams] = useSearchParams();
-  const query = searchParams.get(FILTER_QUERY.name) ?? "";
-  const { refetch } = useGroupSearch();
+
+export default function SearchBar() {
+  const dispatch = useAppDispatch();
+  const state = useAppSelector(({ searchV2 }) => searchV2);
+
+  const displayQuery = useMemo(() => buildSearchBarDisplay(state), [state]);
 
   const { control, handleSubmit, reset, setFocus } = useForm<SearchBarForm>({
-    defaultValues: { query },
+    defaultValues: { query: displayQuery },
   });
 
-  // Reset the input to match the URL query
+  // Keep the search bar text in sync with the full Redux state.
+  // When any filter changes (via sidebar OR search bar submit), the
+  // display text updates and the input resets to match.
   useEffect(() => {
-    reset({ query });
-  }, [query, reset]);
+    reset({ query: displayQuery });
+  }, [displayQuery, reset]);
 
-  // focus search input when loading the component
   useEffect(() => {
     setFocus("query");
   }, [setFocus]);
 
   const onClear = useCallback(() => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set(FILTER_QUERY.name, "");
-    setSearchParams(newParams);
-  }, [searchParams, setSearchParams]);
+    dispatch(resetSearch());
+  }, [dispatch]);
 
   const onSubmit = useCallback(
-    (data: SearchBarForm, forceRefresh = false) => {
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set(FILTER_QUERY.name, data.query);
-      const pageDefaultValue = FILTER_PAGE.defaultValue.toString();
-      if (newParams.get(FILTER_PAGE.name) !== pageDefaultValue) {
-        newParams.set(FILTER_PAGE.name, pageDefaultValue);
-      }
-
-      // force a refetch even for the same query if explicitly asked for
-      if (forceRefresh && searchParams.toString() === newParams.toString()) {
-        refetch();
-      } else {
-        setSearchParams(newParams);
-      }
+    (data: SearchBarForm) => {
+      const parsed = parseSearchQuery(data.query);
+      const params = parsedResultToSliceParams(parsed);
+      dispatch(applyParsedSearch(params));
     },
-    [refetch, searchParams, setSearchParams]
+    [dispatch]
   );
 
   return (
     <>
-      <Form
-        className="mb-3"
-        noValidate
-        onSubmit={handleSubmit((data) => onSubmit(data, true))}
-      >
+      <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
         <InputGroup>
           <Controller
             control={control}
@@ -88,8 +79,8 @@ export default function GroupSearchBar() {
             render={({ field }) => (
               <input
                 className="form-control"
-                data-cy="group-search-query-input"
-                id="group-search-query-input"
+                data-cy="search-query-input"
+                id="search-query-input"
                 type="text"
                 placeholder="Search..."
                 {...field}
@@ -105,17 +96,17 @@ export default function GroupSearchBar() {
               "border-bottom",
               "shadow-none"
             )}
-            data-cy="group-search-button"
+            data-cy="search-clear-button"
             onClick={onClear}
-            id="group-search-button"
+            id="search-button"
             type="button"
           >
             <XCircleFill className={cx("bi")} />
           </Button>
           <Button
             color="primary"
-            data-cy="group-search-button"
-            id="group-search-button"
+            data-cy="search-query-button"
+            id="search-button"
             type="submit"
           >
             <Search className={cx("bi", "me-1")} /> Search

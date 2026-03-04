@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,29 +16,16 @@
  * limitations under the License.
  */
 
-import {
-  GetSearchQueryApiArg,
-  GetSearchQueryApiResponse,
-  searchV2GeneratedApi,
-} from "./searchV2Api.generated-api";
+import { lazy, Suspense } from "react";
 
-// Fixes some API endpoints
-export const searchV2Api = searchV2GeneratedApi.injectEndpoints({
-  overrideExisting: true,
-  endpoints: (build) => ({
-    getSearchQuery: build.query<
-      GetSearchQueryApiResponse,
-      GetSearchQueryApiArg
-    >({
-      query: ({ params }) => ({
-        url: "/search/query",
-        params,
-      }),
-      providesTags: ["SearchV2"],
-    }),
-  }),
-});
+import PageLoader from "../../components/PageLoader";
 
-export const { useGetSearchQueryQuery } = searchV2Api;
+const UserV2Search = lazy(() => import("./search/UserV2Search"));
 
-export type * from "./searchV2Api.generated-api";
+export default function LazyUserV2Search() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <UserV2Search />
+    </Suspense>
+  );
+}
