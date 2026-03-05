@@ -397,7 +397,13 @@ function useDownloadLogs(
     return () => {
       ignore = true;
     };
-  }, [name, refetch, renkuToastDanger, renkuToastSuccess]);
+  }, [
+    downloadQueryTrigger,
+    name,
+    refetch,
+    renkuToastDanger,
+    renkuToastSuccess,
+  ]);
 
   return [isDownloading, triggerDownload];
 }
