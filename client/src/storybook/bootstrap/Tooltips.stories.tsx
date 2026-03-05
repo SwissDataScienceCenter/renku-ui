@@ -1,5 +1,5 @@
 import { Placement } from "@popperjs/core";
-import { Meta, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react-vite";
 import { useRef } from "react";
 import { FileEarmarkText } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
