@@ -1,1 +1,5 @@
 build/
+public/config.json
+# Do not format generated files
+*generated-api.ts
+.react-router/types
