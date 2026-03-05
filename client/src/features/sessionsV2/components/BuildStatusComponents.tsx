@@ -41,7 +41,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import LogsModal from "~/features/logsDisplay/LogsModal";
+import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../components/LegacyExternalLinks";
@@ -51,14 +51,9 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { ResourcePoolWithId } from "../api/computeResources.api";
-import type {
-  Build,
-  BuildList,
-  CreationDate,
-} from "../api/sessionLaunchersV2.api";
+import type { Build, CreationDate } from "../api/sessionLaunchersV2.api";
 import {
   SessionLauncher,
-  useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
@@ -208,49 +203,6 @@ export function BuildActionFailedModal({
         </Button>
       </ModalFooter>
     </ScrollableModal>
-  );
-}
-
-interface BuildLogsModalProps {
-  builds: BuildList | undefined;
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-export function BuildLogsModal({
-  builds,
-  isOpen,
-  toggle,
-}: BuildLogsModalProps) {
-  const lastBuild = builds?.at(0);
-  const name = lastBuild?.id ?? "build_logs";
-  const inProgressBuild = useMemo(
-    () => builds?.find(({ status }) => status === "in_progress"),
-    [builds]
-  );
-  const hasInProgressBuild = !!inProgressBuild;
-
-  const query = useGetBuildLogsQuery(
-    isOpen && lastBuild
-      ? {
-          buildId: lastBuild.id,
-        }
-      : skipToken
-  );
-
-  if (lastBuild == null) {
-    return null;
-  }
-
-  return (
-    <LogsModal
-      isOpen={isOpen}
-      name={name}
-      query={query}
-      title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
-      toggle={toggle}
-      defaultTab="step-build-and-push"
-    />
   );
 }
 

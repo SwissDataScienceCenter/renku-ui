@@ -17,8 +17,10 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useCallback } from "react";
 
 import {
+  sessionsV2Api,
   useGetSessionsBySessionIdLogsQuery,
   useGetSessionsBySessionIdQuery,
 } from "../sessionsV2/api/sessionsV2.api";
@@ -50,11 +52,19 @@ export default function SessionLogsModal({
       : skipToken
   );
 
+  const [trigger] =
+    sessionsV2Api.endpoints.getSessionsBySessionIdLogs.useLazyQuery();
+  const downloadQueryTrigger = useCallback(
+    () => trigger({ sessionId: sessionName }),
+    [sessionName, trigger]
+  );
+
   return (
     <LogsModal
       isOpen={isOpen}
       name={sessionName}
       query={query}
+      downloadQueryTrigger={downloadQueryTrigger}
       title={"Logs"}
       toggle={toggle}
       sessionState={session?.status?.state}

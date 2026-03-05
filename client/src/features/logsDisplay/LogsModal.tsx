@@ -60,10 +60,16 @@ interface LogsQuery {
   }>;
 }
 
+type DownloadLogsLazyQueryTrigger = () => Promise<{
+  data?: Record<string, string | undefined> | undefined;
+  error?: FetchBaseQueryError | SerializedError | undefined;
+}> & { unsubscribe: () => void };
+
 interface LogsModalModalProps {
   isOpen: boolean;
   name: string;
   query: LogsQuery;
+  downloadQueryTrigger?: DownloadLogsLazyQueryTrigger;
   sessionError?: string;
   sessionState?: SessionV2["status"]["state"];
   title: ReactNode;
@@ -75,6 +81,7 @@ export default function LogsModal({
   isOpen,
   name,
   query,
+  downloadQueryTrigger,
   sessionError,
   sessionState,
   title,
@@ -120,6 +127,7 @@ export default function LogsModal({
           isFetching={isFetching}
           name={name}
           refetch={refetch}
+          downloadQueryTrigger={downloadQueryTrigger}
         />
       </ModalFooter>
     </ScrollableModal>
@@ -186,10 +194,9 @@ function NoLogsAvailable({ refetch }: NoLogsAvailableProps) {
   );
 }
 
-interface TabbedLogsProps {
+type TabbedLogsProps = {
   data: Exclude<LogsQuery["data"], undefined>;
-  defaultTab?: string;
-}
+} & Pick<LogsModalModalProps, "defaultTab">;
 
 function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
   const sortedLogs = useMemo(() => {
@@ -280,15 +287,20 @@ type ModalFooterButtonsProps = Pick<
   LogsQuery,
   "data" | "isFetching" | "refetch"
 > &
-  Pick<LogsModalModalProps, "name">;
+  Pick<LogsModalModalProps, "name" | "downloadQueryTrigger">;
 
 function ModalFooterButtons({
   data,
   isFetching,
   name,
   refetch,
+  downloadQueryTrigger,
 }: ModalFooterButtonsProps) {
-  const [isDownloading, triggerDownload] = useDownloadLogs(name, refetch);
+  const [isDownloading, triggerDownload] = useDownloadLogs(
+    name,
+    refetch,
+    downloadQueryTrigger
+  );
   const canDownload =
     !isFetching &&
     !isDownloading &&
@@ -335,7 +347,8 @@ function ModalFooterButtons({
  */
 function useDownloadLogs(
   name: string,
-  refetch: LogsQuery["refetch"]
+  refetch: LogsQuery["refetch"],
+  downloadQueryTrigger: DownloadLogsLazyQueryTrigger | undefined | null
 ): [boolean, () => void] {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
@@ -344,7 +357,13 @@ function useDownloadLogs(
   const triggerDownload = useCallback(() => {
     let ignore: boolean = false;
     setIsDownloading(true);
-    refetch()
+    const trigger: () => Promise<{
+      data?: Record<string, string | undefined> | undefined;
+      error?: FetchBaseQueryError | SerializedError | undefined;
+    }> & { unsubscribe?: () => void } = downloadQueryTrigger ?? refetch;
+    const promise = trigger();
+    const unsubscribe = promise.unsubscribe;
+    promise
       .then(async ({ data, error }) => {
         if (error != null || data == null) {
           renkuToastDanger({ textHeader: "Failed to download logs" });
@@ -368,6 +387,9 @@ function useDownloadLogs(
         renkuToastDanger({ textHeader: "Failed to download logs" });
       })
       .finally(() => {
+        if (unsubscribe != null) {
+          unsubscribe();
+        }
         if (!ignore) {
           setIsDownloading(false);
         }
