@@ -234,10 +234,7 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
 
   return (
     <>
-      <Nav
-        className={cx("mb-2", "position-sticky", "top-0", "z-index-100")}
-        tabs
-      >
+      <Nav className={cx("mb-2", "position-sticky", "top-0")} tabs>
         {sortedLogs.map(({ tab }) => (
           <NavItem key={tab} data-cy="log-tab" role="button">
             <NavLink
@@ -253,13 +250,13 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
       </Nav>
       <TabContent
         activeTab={activeTab}
-        className={cx("flex-1", "overflow-y-auto")}
+        className={cx("flex-1", "overflow-auto")}
       >
         {sortedLogs.map(({ tab, content }) => (
           <TabPane key={tab} tabId={tab}>
             <div className={cx("d-flex", "flex-column")}>
               <pre
-                className="overflow-auto"
+                className="overflow-visible"
                 // eslint-disable-next-line spellcheck/spell-checker
                 style={{ whiteSpace: "pre-line", maxHeight: "60vh" }}
                 ref={activeTab === tab ? preRef : undefined}
