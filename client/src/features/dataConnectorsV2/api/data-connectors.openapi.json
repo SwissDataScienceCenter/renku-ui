@@ -1491,6 +1491,11 @@
               "message": {
                 "type": "string",
                 "example": "Something went wrong - please try again later"
+              },
+              "trace_id": {
+                "type": "string",
+                "example": "ac93950e9e114a55c67fb8e5ef519bbe",
+                "description": "Sentry trace ID for linking to corresponding log entries"
               }
             },
             "required": ["code", "message"]

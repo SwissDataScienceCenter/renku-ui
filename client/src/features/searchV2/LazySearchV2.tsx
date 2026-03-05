@@ -20,12 +20,13 @@ import { lazy, Suspense } from "react";
 
 import PageLoader from "../../components/PageLoader";
 
-const SearchV2 = lazy(() => import("./SearchV2"));
+const Search = lazy(() => import("./Search"));
 
 export default function LazySearchV2() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <SearchV2 />
+      <h1>Renku Search</h1>
+      <Search />
     </Suspense>
   );
 }

@@ -41,12 +41,6 @@ export type FaviconStatus =
   | "pause";
 interface Display {
   favicon: FaviconStatus;
-  modals: {
-    sessionLogs: {
-      show: boolean;
-      targetServer: string;
-    };
-  };
 }
 
 export type { Display, FaviconSet, ProjectConfig, SessionConfig };
