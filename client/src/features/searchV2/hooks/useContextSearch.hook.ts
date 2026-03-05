@@ -16,21 +16,26 @@
  * limitations under the License.
  */
 
+/**
+ * @deprecated Use `useGetSearchQueryQuery` with `selectSearchApiQuery` from
+ * the Redux slice instead. This hook is superseded by `useSearchSync.hook.ts`.
+ */
+
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 
 import { useGetSearchQueryQuery } from "~/features/searchV2/api/searchV2Api.api";
-import { useGroup } from "../show/GroupPageContainer";
-import { generateQueryParams } from "./groupSearch.utils";
-import { SEARCH_DEBOUNCE_SECONDS } from "./groupsSearch.constants";
+import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
+import { SEARCH_DEBOUNCE_SECONDS } from "../contextSearch.constants";
+import { generateQueryParams } from "../contextSearch.utils";
 
-export function useGroupSearch(ignoredParams?: string[]) {
+export function useContextSearch(ignoredParams?: string[]) {
   const [searchParams] = useSearchParams();
-  const { group } = useGroup();
+  const { namespace } = useNamespaceContext();
 
   const params = useMemo(
-    () => generateQueryParams(searchParams, group.slug, ignoredParams),
-    [group.slug, ignoredParams, searchParams]
+    () => generateQueryParams(searchParams, namespace, ignoredParams),
+    [namespace, ignoredParams, searchParams]
   );
 
   return useGetSearchQueryQuery(

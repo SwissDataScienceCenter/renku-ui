@@ -82,7 +82,7 @@ describe("View v2 landing page", () => {
     cy.getDataCy("search-filter-role-owner").should("be.checked");
     cy.getDataCy("search-filter-role-editor").should("be.checked");
     cy.getDataCy("search-filter-role-viewer").should("be.checked");
-    cy.getDataCy("search-filter-type-group").should("be.checked");
+    cy.getDataCy("search-filter-type-Group").should("be.checked");
   });
 
   it("list projects", () => {
@@ -92,7 +92,7 @@ describe("View v2 landing page", () => {
     cy.getDataCy("search-filter-role-owner").should("be.checked");
     cy.getDataCy("search-filter-role-editor").should("be.checked");
     cy.getDataCy("search-filter-role-viewer").should("be.checked");
-    cy.getDataCy("search-filter-type-project").should("be.checked");
+    cy.getDataCy("search-filter-type-Project").should("be.checked");
   });
 });
 
@@ -122,7 +122,7 @@ describe("View v2 landing page empty", () => {
     cy.getDataCy("search-filter-role-owner").should("be.not.checked");
     cy.getDataCy("search-filter-role-editor").should("be.not.checked");
     cy.getDataCy("search-filter-role-viewer").should("be.not.checked");
-    cy.getDataCy("search-filter-type-project").should("be.checked");
+    cy.getDataCy("search-filter-type-Project").should("be.checked");
   });
 });
 

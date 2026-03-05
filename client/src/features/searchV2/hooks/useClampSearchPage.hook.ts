@@ -17,7 +17,10 @@
  */
 
 import { useEffect } from "react";
-import { useSearchParams } from "react-router";
+
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import { setPage } from "../searchV2.slice";
 
 interface UseClampSearchPageArgs {
   totalPages?: number | null | undefined;
@@ -26,25 +29,15 @@ interface UseClampSearchPageArgs {
 export default function useClampSearchPage({
   totalPages,
 }: UseClampSearchPageArgs) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useAppDispatch();
+  const { page } = useAppSelector(({ searchV2 }) => searchV2);
 
   useEffect(() => {
     if (totalPages == null || totalPages <= 0) {
       return;
     }
-
-    const pageRaw = searchParams.get("page");
-
-    const page = parseInt(pageRaw ?? "", 10);
     if (page > totalPages) {
-      setSearchParams(
-        (prev) => {
-          prev.set("page", `${totalPages}`);
-          return prev;
-        },
-        { replace: true }
-      );
-      return;
+      dispatch(setPage(totalPages));
     }
-  }, [searchParams, setSearchParams, totalPages]);
+  }, [dispatch, page, totalPages]);
 }
