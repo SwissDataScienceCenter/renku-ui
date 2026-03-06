@@ -17,9 +17,9 @@
  */
 
 import cx from "classnames";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
-  Controller,
+  useController,
   useWatch,
   type Control,
   type FieldValues,
@@ -52,6 +52,17 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
   });
 
   /* eslint-disable spellcheck/spell-checker */
+  const {
+    field: { onBlur, onChange, value, disabled },
+    fieldState: { error },
+  } = useController({
+    control,
+    ...controllerProps,
+    rules: controllerProps.rules ?? {
+      required: "Please select an environment type.",
+    },
+  });
+
   const compatibleFrontends = useMemo(() => {
     const builderVariantValue = (builderVariant?.value ??
       builderVariant ??
@@ -59,6 +70,22 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
     const compatible = getCompatibleFrontends(builderVariantValue);
     return BUILDER_FRONTENDS.filter((f) => compatible.includes(f.value));
   }, [builderVariant]);
+
+  const currentFrontend = value?.value ?? value ?? "";
+  const builderVariantValue = (builderVariant?.value ??
+    builderVariant ??
+    "") as string;
+  const isCompatible =
+    BUILDER_FRONTEND_COMBINATIONS[builderVariantValue]?.includes(
+      currentFrontend
+    ) ?? true;
+
+  // Auto-set form value when the current selection is incompatible
+  useEffect(() => {
+    if (!isCompatible && compatibleFrontends.length > 0) {
+      onChange(compatibleFrontends[0]);
+    }
+  }, [isCompatible, compatibleFrontends, onChange]);
 
   const defaultValue = useMemo(() => {
     if (controllerProps.defaultValue) return controllerProps.defaultValue;
@@ -71,70 +98,35 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
       <Label for="builder-environment-frontend-select-input">
         User interface
       </Label>
-      <Controller
-        control={control}
-        {...controllerProps}
-        render={({
-          field: { onBlur, onChange, value, disabled },
-          fieldState: { error },
-        }) => {
-          const currentFrontend = value?.value ?? value ?? "";
-          const builderVariantValue = (builderVariant?.value ??
-            builderVariant ??
-            "") as string;
-          const isCompatible =
-            BUILDER_FRONTEND_COMBINATIONS[builderVariantValue]?.includes(
-              currentFrontend
-            ) ?? true;
-
-          return (
-            <>
-              <div
-                className={cx(error && "is-invalid")}
-                data-cy="environment-type-select"
-              >
-                <BuilderSelectorCommon
-                  defaultValue={defaultValue}
-                  disabled={disabled}
-                  id="builder-environment-frontend-select"
-                  inputId="builder-environment-frontend-select-input"
-                  name={controllerProps.name}
-                  onBlur={onBlur}
-                  /* eslint-disable spellcheck/spell-checker */
-                  onChange={(newValue) => {
-                    if (!isCompatible && compatibleFrontends.length > 0) {
-                      onChange(compatibleFrontends[0]);
-                    } else {
-                      onChange(newValue);
-                    }
-                  }}
-                  options={compatibleFrontends}
-                  value={
-                    isCompatible
-                      ? typeof value === "string"
-                        ? value
-                        : value?.value ?? ""
-                      : compatibleFrontends[0]?.value ?? ""
-                  }
-                  /* eslint-enable spellcheck/spell-checker */
-                />
-              </div>
-              <div className="invalid-feedback">
-                {error?.message ? (
-                  <>{error.message}</>
-                ) : (
-                  <>Please select a valid environment type.</>
-                )}
-              </div>
-            </>
-          );
-        }}
-        rules={
-          controllerProps.rules ?? {
-            required: "Please select an environment type.",
+      <div
+        className={cx(error && "is-invalid")}
+        data-cy="environment-type-select"
+      >
+        <BuilderSelectorCommon
+          defaultValue={defaultValue}
+          disabled={disabled}
+          id="builder-environment-frontend-select"
+          inputId="builder-environment-frontend-select-input"
+          name={controllerProps.name}
+          onBlur={onBlur}
+          onChange={onChange}
+          options={compatibleFrontends}
+          value={
+            isCompatible
+              ? typeof value === "string"
+                ? value
+                : value?.value ?? ""
+              : compatibleFrontends[0]?.value ?? ""
           }
-        }
-      />
+        />
+      </div>
+      <div className="invalid-feedback">
+        {error?.message ? (
+          <>{error.message}</>
+        ) : (
+          <>Please select a valid environment type.</>
+        )}
+      </div>
     </div>
   );
 }
