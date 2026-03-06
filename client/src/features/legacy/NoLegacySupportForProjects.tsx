@@ -31,6 +31,8 @@ export default function NoLegacySupportForProjects() {
       hostname === "dev.renku.ch" ||
       hostname.endsWith(".dev.renku.ch")
     ) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsRenkulabIo(true);
     }
   }, []);

@@ -147,6 +147,7 @@ function EditCodeRepositoryModal({
     reset({ repositoryUrl });
   }, [repositoryUrl, reset]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchRepositoryUrl = watch("repositoryUrl");
 
   return (

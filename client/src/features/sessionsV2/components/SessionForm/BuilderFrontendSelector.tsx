@@ -28,8 +28,8 @@ import { Label } from "reactstrap";
 import { BUILDER_FRONTENDS } from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
-interface BuilderFrontendSelectorProps<T extends FieldValues>
-  extends UseControllerProps<T> {}
+type BuilderFrontendSelectorProps<T extends FieldValues> =
+  UseControllerProps<T>;
 
 export default function BuilderFrontendSelector<T extends FieldValues>({
   ...controllerProps

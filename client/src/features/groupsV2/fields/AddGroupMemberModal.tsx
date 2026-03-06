@@ -76,10 +76,12 @@ export default function AddGroupMemberModal({
   );
 }
 
-interface GroupMemberForAdd extends GroupMemberPatchRequest {}
+type GroupMemberForAdd = GroupMemberPatchRequest;
 
-interface AddGroupMemberAccessFormProps
-  extends Pick<AddGroupMemberModalProps, "members" | "groupSlug" | "toggle"> {}
+type AddGroupMemberAccessFormProps = Pick<
+  AddGroupMemberModalProps,
+  "members" | "groupSlug" | "toggle"
+>;
 function AddGroupMemberAccessForm({
   members,
   groupSlug,

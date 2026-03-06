@@ -63,7 +63,6 @@ function EditProjectMemberAccessForm({
   toggle,
   member,
 }: EditProjectMemberAccessFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [patchProjectMembers, result] =
     usePatchProjectsByProjectIdMembersMutation();
   const {

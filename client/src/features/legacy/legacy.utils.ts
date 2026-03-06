@@ -30,7 +30,7 @@ export function doesUrlHostMatchHost(url: string, host: string) {
   try {
     const parsedUrl = new URL(urlString);
     return parsedUrl.host === host;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

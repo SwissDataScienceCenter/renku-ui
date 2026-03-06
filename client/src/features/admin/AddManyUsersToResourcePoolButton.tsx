@@ -161,6 +161,7 @@ function AddManyUsersToResourcePoolModal({
     [addUsersToResourcePool, resourcePool.id, setError, setValue, step]
   );
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchUserEmails = watch("userEmails");
   const userEmailsCount = useMemo(() => {
     const userEmailList = parseUserEmails(watchUserEmails);

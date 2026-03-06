@@ -93,6 +93,8 @@ export const Clipboard = ({
       role="button"
       type="button"
     >
+      {/* // TODO: fix react-hooks/static-components */}
+      {/* eslint-disable-next-line react-hooks/static-components */}
       <Wrap>
         {copied ? (
           <CheckLg className="bi" />

@@ -633,10 +633,15 @@ export function AddStorageType({
   );
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
-    if (state.showAllSchema) setState({ showAllSchema: false });
-    (hasProviderShortlist(value) ||
-      STORAGES_WITH_ACCESS_MODE.includes(value)) &&
+    if (state.showAllSchema) {
+      setState({ showAllSchema: false });
+    }
+    if (
+      hasProviderShortlist(value) ||
+      STORAGES_WITH_ACCESS_MODE.includes(value)
+    ) {
       scrollToProvider();
+    }
   };
 
   const schemaItems = availableSchema.map((s, index) => {

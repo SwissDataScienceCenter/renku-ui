@@ -135,6 +135,8 @@ export default function ShowSessionPage() {
   const [showPatchErrorToast, setShowPatchErrorToast] = useState(false);
   useEffect(() => {
     if (postponePauseError) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowPatchErrorToast(true);
     }
   }, [postponePauseError]);
@@ -145,6 +147,8 @@ export default function ShowSessionPage() {
       ? new Date(thisSession.status.will_hibernate_at)
       : null;
     if (!willHibernateAt) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNextPauseWarning(null);
       return;
     }
@@ -152,12 +156,16 @@ export default function ShowSessionPage() {
       willHibernateAt.getTime() -
         PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS * 1000
     );
+    // TODO: fix react-hooks/set-state-in-effect
+
     setNextPauseWarning(notificationTime);
   }, [thisSession?.status.will_hibernate_at]);
 
   // Handle showing the pause warning
   useEffect(() => {
     if (!nextPauseWarning) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowPauseWarningModal(false);
       return;
     }
@@ -167,11 +175,15 @@ export default function ShowSessionPage() {
     const showWarningIfNeeded = () => {
       // Show the modal only if enough time has passed since last close
       if (!lastClosedWarningModal) {
+        // TODO: fix react-hooks/set-state-in-effect
+
         setShowPauseWarningModal(true);
         return;
       }
       const timeSinceLastClose = Date.now() - lastClosedWarningModal.getTime();
       if (timeSinceLastClose >= PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS * 1000) {
+        // TODO: fix react-hooks/set-state-in-effect
+
         setShowPauseWarningModal(true);
       }
     };

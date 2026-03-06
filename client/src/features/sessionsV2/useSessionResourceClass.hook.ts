@@ -89,6 +89,8 @@ export default function useSessionResourceClass({
         isCustomLaunch) &&
       !hasSessionClassAssigned
     ) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsPendingResourceClass(true);
       return;
     }

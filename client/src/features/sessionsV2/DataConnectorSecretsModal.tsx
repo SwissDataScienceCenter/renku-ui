@@ -263,6 +263,8 @@ export default function DataConnectorSecretsModal({
     if (dataConnectorConfigs == null) return;
     if (dataConnectorConfigs[index].active && !validationResult.isSuccess)
       return;
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     onNext(dataConnectorConfigs);
   }, [
     dataConnectorConfigs,

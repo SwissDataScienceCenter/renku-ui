@@ -68,6 +68,8 @@ export default function SessionIframe({
     return null;
   }
 
+  // TODO: fix react-hooks/error-boundaries
+  /* eslint-disable react-hooks/error-boundaries */
   try {
     const secureUrl = ensureHTTPS(url);
     return (

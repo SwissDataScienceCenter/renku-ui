@@ -244,6 +244,7 @@ function DocumentationModal({
                 name="documentation"
               />
             ) : (
+              // eslint-disable-next-line react-hooks/incompatible-library
               <LazyMarkdown>{watch("documentation")}</LazyMarkdown>
             )}
           </div>

@@ -91,8 +91,12 @@ export function convertFromAdvancedConfig(
   storage: CloudStorageDetails
 ): string {
   const values: string[] = [];
-  storage.schema && values.push(`type = ${storage.schema}`);
-  storage.provider && values.push(`provider = ${storage.provider}`);
+  if (storage.schema) {
+    values.push(`type = ${storage.schema}`);
+  }
+  if (storage.provider) {
+    values.push(`provider = ${storage.provider}`);
+  }
   if (storage.options) {
     Object.entries(storage.options).forEach(([key, value]) => {
       if (value != undefined && value !== "") values.push(`${key} = ${value}`);
@@ -309,7 +313,7 @@ export function findSensitive(
   if (!schema) return [];
   return schema.options
     ? schema.options
-        .filter((o) => o.ispassword || o.sensitive) // eslint-disable-line spellcheck/spell-checker
+        .filter((o) => o.ispassword || o.sensitive)
         .map((o) => o.name)
     : [];
 }
