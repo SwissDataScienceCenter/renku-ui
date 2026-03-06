@@ -27,11 +27,13 @@ import {
 } from "react-hook-form";
 import { Label } from "reactstrap";
 
+/* eslint-disable spellcheck/spell-checker */
 import {
   BUILDER_FRONTEND_COMBINATIONS,
   BUILDER_FRONTENDS,
   getCompatibleFrontends,
 } from "../../session.constants";
+/* eslint-enable spellcheck/spell-checker */
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
 interface BuilderFrontendSelectorProps<T extends FieldValues>
@@ -48,6 +50,7 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
     name: "builder_variant",
   });
 
+  /* eslint-disable spellcheck/spell-checker */
   const compatibleFrontends = useMemo(() => {
     const compatible = getCompatibleFrontends(builderVariant ?? "");
     return BUILDER_FRONTENDS.filter((f) => compatible.includes(f.value));
@@ -57,6 +60,7 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
     if (controllerProps.defaultValue) return controllerProps.defaultValue;
     return compatibleFrontends[0] ?? BUILDER_FRONTENDS[0];
   }, [controllerProps.defaultValue, compatibleFrontends]);
+  /* eslint-enable spellcheck/spell-checker */
 
   return (
     <div>
@@ -88,6 +92,7 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
                   inputId="builder-environment-frontend-select-input"
                   name={controllerProps.name}
                   onBlur={onBlur}
+                  /* eslint-disable spellcheck/spell-checker */
                   onChange={(newValue) => {
                     if (!isCompatible && compatibleFrontends.length > 0) {
                       onChange(compatibleFrontends[0]);
@@ -103,6 +108,7 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
                         : value?.value ?? ""
                       : compatibleFrontends[0]?.value ?? ""
                   }
+                  /* eslint-enable spellcheck/spell-checker */
                 />
               </div>
               <div className="invalid-feedback">

@@ -147,14 +147,13 @@ export const BUILDER_FRONTENDS = [
     /* eslint-enable spellcheck/spell-checker */
   },
   {
-    /* eslint-disable spellcheck/spell-checker */
     value: "rstudio",
     label: "RStudio",
     description: "Web-based integrated development environment for R.",
-    /* eslint-enable spellcheck/spell-checker */
   },
 ] as readonly BuilderSelectorOption[];
 
+/* eslint-disable spellcheck/spell-checker */
 export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
   python: ["vscodium", "jupyterlab", "ttyd"],
   r: ["rstudio"],
@@ -163,6 +162,7 @@ export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
 export const getCompatibleFrontends = (builderVariant: string) => {
   return BUILDER_FRONTEND_COMBINATIONS[builderVariant] ?? [];
 };
+/* eslint-enable spellcheck/spell-checker */
 
 export const BUILDER_PLATFORMS = [
   {
