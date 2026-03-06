@@ -1,7 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { CloudArrowUp, PlusLg, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect, useMemo } from "react";
+import { ArrowRepeat, InfoCircle, Pencil, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -21,58 +21,40 @@ import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
-import { ProviderKind } from "~/features/connectedServices/api/connectedServices.generated-api";
-import { DataConnectorRead } from "../api/data-connectors.api";
-import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
+import { Deposit } from "../api/data-connectors.api";
+import { usePatchDepositsByDepositIdMutation } from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
-import { PROVIDER_OPTIONS } from "./deposits.const";
-import { CreateDepositionForm } from "./deposits.types";
+import { EditDepositionForm } from "./deposits.types";
 
-interface DepositCreationModalProps {
-  dataConnector: DataConnectorRead;
+interface DepositEditModalProps {
+  deposit?: Deposit;
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
 }
-export default function DepositCreationModal({
-  dataConnector,
+export default function DepositEditModal({
+  deposit,
   isOpen,
   setOpen,
-}: DepositCreationModalProps) {
-  // Posting deposition
-  const { control, handleSubmit, reset, watch } = useForm<CreateDepositionForm>(
-    {
-      defaultValues: {
-        name: "",
-        path: "",
-        provider: PROVIDER_OPTIONS[0].value,
-      },
-    }
-  );
-  const [postDeposit, result] = usePostDepositsMutation();
+}: DepositEditModalProps) {
+  // Patch deposition
+  const { control, handleSubmit, reset } = useForm<EditDepositionForm>({
+    defaultValues: {
+      name: deposit?.name ?? "",
+    },
+  });
 
-  // Fetch connection information for the selected provider
-  const userSelectedProvider = watch("provider");
-  const [targetProviderString, setTargetProviderString] =
-    useState<ProviderKind | null>(null);
+  const [patchDeposit, result] = usePatchDepositsByDepositIdMutation();
 
-  useEffect(() => {
-    const next: ProviderKind | null = ["zenodo"].includes(userSelectedProvider)
-      ? userSelectedProvider
-      : null;
-    setTargetProviderString((prev) => (prev === next ? prev : next));
-  }, [userSelectedProvider]);
-
+  // Fetch connection information for the target provider
   const {
     data: providers,
     error: providersError,
     isLoading: isLoadingProviders,
-  } = useGetOauth2ProvidersQuery(targetProviderString ? undefined : skipToken);
+  } = useGetOauth2ProvidersQuery(deposit?.provider ? undefined : skipToken);
 
   const targetProvider = useMemo(() => {
-    return providers?.find(
-      (provider) => provider.kind === targetProviderString
-    );
-  }, [providers, targetProviderString]);
+    return providers?.find((provider) => provider.kind === deposit?.provider);
+  }, [providers, deposit?.provider]);
 
   const {
     data: connections,
@@ -89,17 +71,15 @@ export default function DepositCreationModal({
   const error = providersError || connectionsError;
 
   const onSubmit = useCallback(
-    (data: CreateDepositionForm) => {
-      postDeposit({
-        depositPost: {
-          data_connector_id: dataConnector.id,
+    (data: EditDepositionForm) => {
+      patchDeposit({
+        depositId: deposit!.id ?? "",
+        depositPatch: {
           name: data.name,
-          path: data.path,
-          provider: data.provider,
         },
       });
     },
-    [dataConnector.id, postDeposit]
+    [deposit, patchDeposit]
   );
 
   useEffect(() => {
@@ -120,11 +100,18 @@ export default function DepositCreationModal({
     <Modal centered data-cy="deposit-creation-modal" isOpen={isOpen} size="lg">
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader tag="h2">
-          <CloudArrowUp className={cx("bi", "me-1")} />
-          Export data
+          <Pencil className={cx("bi", "me-1")} />
+          Edit data export
         </ModalHeader>
         <ModalBody>
           {result.error && <RtkOrDataServicesError error={result.error} />}
+          <p>
+            <InfoCircle className={cx("bi", "me-1")} />
+            Some fields cannot be edited. If you need to change them, please
+            delete this export and create a new one with the desired
+            configuration.
+          </p>
+
           <FormGroup
             className={cx("d-flex", "flex-column", "gap-3", "field-group")}
             noMargin
@@ -163,22 +150,11 @@ export default function DepositCreationModal({
 
             <div>
               <Label for="path">Folder</Label>
-              <Controller
-                control={control}
-                name="path"
-                rules={{ required: "A path is required to create a deposit" }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <Input
-                      id="path"
-                      type="text"
-                      placeholder="Folder (e.g. /data/processed)"
-                      invalid={!!fieldState.error}
-                      {...field}
-                    />
-                    <div className="invalid-feedback">Please enter a path.</div>
-                  </>
-                )}
+              <Input
+                disabled
+                id="path"
+                type="text"
+                value={deposit?.path ?? ""}
               />
               <FormText>
                 The source folder on the data connector (e.g. /data/processed)
@@ -187,39 +163,15 @@ export default function DepositCreationModal({
             </div>
 
             <div>
-              <Label for="provider">Target Provider</Label>
-              <Controller
-                control={control}
-                name="provider"
-                rules={{
-                  required: "A provider is required to create a deposit",
-                }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <Input
-                      className="shadow-none"
-                      id="provider"
-                      invalid={!!fieldState.error}
-                      placeholder="Target provider (e.g. Zenodo)"
-                      type="select"
-                      {...field}
-                    >
-                      {PROVIDER_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Input>
-                    <div className="invalid-feedback">
-                      Please select a provider.
-                    </div>
-                  </>
-                )}
+              <Label for="path">Target Provider</Label>
+              <Input
+                disabled
+                id="provider"
+                type="text"
+                value={deposit?.provider ?? ""}
               />
               <FormText>
-                The target platform where you want to export the files.
-                Different platforms might have different
-                limitations/requirements.
+                The target platform where the files will be exported.
               </FormText>
               <div className="mt-1">
                 <DepositIntegrationInfo
@@ -238,12 +190,12 @@ export default function DepositCreationModal({
             data-cy="create-deposit-modal-button"
             type="submit"
           >
-            <PlusLg className={cx("bi", "me-1")} />
-            Start data export
+            <ArrowRepeat className={cx("bi", "me-1")} />
+            Restart data export
           </Button>
           <Button color="outline-primary" onClick={() => setOpen(false)}>
             <XLg className={cx("bi", "me-1")} />
-            Close
+            Cancel
           </Button>
         </ModalFooter>
       </Form>

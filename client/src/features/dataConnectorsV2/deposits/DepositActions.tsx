@@ -5,6 +5,7 @@ import {
   ArrowRepeat,
   DatabaseLock,
   FileEarmarkText,
+  Pencil,
   Trash,
   XLg,
 } from "react-bootstrap-icons";
@@ -26,6 +27,7 @@ import {
   useDeleteDepositsByDepositIdMutation,
   useGetDepositsByDepositIdQuery,
 } from "../api/data-connectors.enhanced-api";
+import DepositEditModal from "./DepositEditModal";
 
 interface DepositActionsProps {
   deposit: Deposit;
@@ -35,6 +37,11 @@ export default function DepositActions({
   deposit,
   toggleDepositView,
 }: DepositActionsProps) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const toggleEditModalOpen = useCallback(() => {
+    setIsEditModalOpen((open) => !open);
+  }, []);
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const toggleDeleteModalOpen = useCallback(() => {
     setIsDeleteModalOpen((open) => !open);
@@ -69,6 +76,20 @@ export default function DepositActions({
           },
         ]
       : []),
+    ...(deposit.status === "cancelled"
+      ? [
+          {
+            key: "deposit-edit-button",
+            onClick: () => toggleEditModalOpen(),
+            content: (
+              <>
+                <Pencil className={cx("me-1", "bi")} />
+                Edit
+              </>
+            ),
+          },
+        ]
+      : []),
     ...[
       {
         key: "deposit-show-logs-button",
@@ -80,6 +101,22 @@ export default function DepositActions({
           </>
         ),
       },
+    ],
+    ...(deposit.status === "in_progress"
+      ? [
+          {
+            key: "deposit-edit-button",
+            onClick: () => toggleEditModalOpen(),
+            content: (
+              <>
+                <Pencil className={cx("me-1", "bi")} />
+                Edit
+              </>
+            ),
+          },
+        ]
+      : []),
+    ...[
       {
         key: "deposit-delete-button",
         onClick: () => toggleDeleteModalOpen(),
@@ -107,6 +144,12 @@ export default function DepositActions({
           </DropdownItem>
         ))}
       </DropdownButton>
+
+      <DepositEditModal
+        deposit={deposit}
+        isOpen={isEditModalOpen}
+        setOpen={setIsEditModalOpen}
+      />
 
       <DepositRemovalModal
         deposit={deposit}
