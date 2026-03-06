@@ -128,8 +128,8 @@ export default function DataConnectorBoxListDisplay({
 
   // Deposits logic
   const lastDeposit = useMemo(() => {
-    if (!deposits.data || deposits.data.length === 0) return undefined;
-    return deposits.data[0];
+    if (!deposits.data || deposits.data.deposits.length === 0) return undefined;
+    return deposits.data.deposits[0];
   }, [deposits.data]);
   useEffect(() => {
     if (lastDeposit && lastDeposit.status === "in_progress") {
