@@ -118,7 +118,7 @@
     "@storybook/test-runner": "^0.22.0",
     "@storybook/testing-library": "^0.2.2",
     "@storybook/theming": "8.6.15",
-    "storybook": "8.6.15",
+    "storybook": "8.6.18",
     "@eslint/compat": "^2.0.2",
     "@eslint/eslintrc": "^3.3.4",
     "@eslint/js": "~9.39.3",
