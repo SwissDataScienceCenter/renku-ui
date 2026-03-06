@@ -155,6 +155,15 @@ export const BUILDER_FRONTENDS = [
   },
 ] as readonly BuilderSelectorOption[];
 
+export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
+  python: ["vscodium", "jupyterlab", "ttyd"],
+  r: ["rstudio"],
+};
+
+export const getCompatibleFrontends = (builderVariant: string) => {
+  return BUILDER_FRONTEND_COMBINATIONS[builderVariant] ?? [];
+};
+
 export const BUILDER_PLATFORMS = [
   {
     value: "linux/amd64" as const,
