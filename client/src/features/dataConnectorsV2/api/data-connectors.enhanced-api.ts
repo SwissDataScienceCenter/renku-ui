@@ -6,6 +6,8 @@ import type {
   GetDataConnectorsApiResponse as GetDataConnectorsApiResponseOrig,
   GetDataConnectorsByDataConnectorIdApiArg,
   GetDataConnectorsByDataConnectorIdApiResponse,
+  GetDataConnectorsByDataConnectorIdDepositsApiArg,
+  GetDataConnectorsByDataConnectorIdDepositsApiResponse as GetDataConnectorsByDataConnectorIdDepositsApiResponseOrig,
   GetDataConnectorsByDataConnectorIdSecretsApiArg,
   GetDataConnectorsByDataConnectorIdSecretsApiResponse,
 } from "./data-connectors.api";
@@ -14,6 +16,11 @@ import { dataConnectorsApi as api } from "./data-connectors.api";
 export interface GetDataConnectorsApiResponse
   extends AbstractKgPaginatedResponse {
   dataConnectors: GetDataConnectorsApiResponseOrig;
+}
+
+export interface GetDataConnectorsByDataConnectorIdDepositsApiResponse
+  extends AbstractKgPaginatedResponse {
+  deposits: GetDataConnectorsByDataConnectorIdDepositsApiResponseOrig;
 }
 
 interface GetDataConnectorsListByDataConnectorIdsApiArg {
@@ -35,6 +42,7 @@ type GetDataConnectorListSecretsApiResponse = Record<
 >;
 
 const injectedApi = api.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getDataConnectorsPaged: builder.query<
       GetDataConnectorsApiResponse,
@@ -61,6 +69,39 @@ const injectedApi = api.injectEndpoints({
 
         return {
           dataConnectors,
+          page: headerResponse.page,
+          perPage: headerResponse.perPage,
+          total: headerResponse.total,
+          totalPages: headerResponse.totalPages,
+        };
+      },
+    }),
+    getDataConnectorsByDataConnectorIdDeposits: builder.query<
+      GetDataConnectorsByDataConnectorIdDepositsApiResponse,
+      GetDataConnectorsByDataConnectorIdDepositsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/${queryArg.dataConnectorId}/deposits`,
+        params: {
+          page: queryArg.params?.page,
+          per_page: queryArg.params?.per_page,
+        },
+      }),
+      transformResponse: (response, meta, queryArg) => {
+        const deposits =
+          response as GetDataConnectorsByDataConnectorIdDepositsApiResponseOrig;
+
+        const headers = meta?.response?.headers;
+        const headerResponse = processPaginationHeaders(
+          headers,
+          queryArg.params == null
+            ? {}
+            : { page: queryArg.params.page, perPage: queryArg.params.per_page },
+          deposits
+        );
+
+        return {
+          deposits,
           page: headerResponse.page,
           perPage: headerResponse.perPage,
           total: headerResponse.total,
@@ -115,6 +156,7 @@ const injectedApi = api.injectEndpoints({
 
 const enhancedApi = injectedApi.enhanceEndpoints({
   addTagTypes: [
+    "Deposits",
     "DataConnectors",
     "DataConnectorsProjectLinks",
     "DataConnectorSecrets",
@@ -134,11 +176,20 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     deleteDataConnectorsByDataConnectorIdSecrets: {
       invalidatesTags: ["DataConnectorSecrets"],
     },
+    deleteDepositsByDepositId: {
+      invalidatesTags: (_result, _error, { depositId }) =>
+        depositId
+          ? [{ id: depositId, type: "Deposits" }, "Deposits"]
+          : ["Deposits"],
+    },
     getDataConnectorsPaged: {
       providesTags: ["DataConnectors"],
     },
     getDataConnectorsByDataConnectorId: {
       providesTags: ["DataConnectors"],
+    },
+    getDataConnectorsByDataConnectorIdDeposits: {
+      providesTags: ["Deposits"],
     },
     getDataConnectorsListByDataConnectorIds: {
       providesTags: ["DataConnectors"],
@@ -151,6 +202,15 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     },
     getDataConnectorsByDataConnectorIdSecrets: {
       providesTags: ["DataConnectorSecrets"],
+    },
+    getDeposits: {
+      providesTags: ["Deposits"],
+    },
+    getDepositsByDepositId: {
+      providesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "Deposits" }, "Deposits"]
+          : ["Deposits"],
     },
     getNamespacesByNamespaceDataConnectorsAndSlug: {
       providesTags: ["DataConnectors"],
@@ -172,6 +232,12 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     patchDataConnectorsByDataConnectorIdSecrets: {
       invalidatesTags: ["DataConnectorSecrets"],
     },
+    patchDepositsByDepositId: {
+      invalidatesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "Deposits" }, "Deposits"]
+          : ["Deposits"],
+    },
     postDataConnectors: {
       invalidatesTags: ["DataConnectors"],
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
@@ -191,6 +257,9 @@ const enhancedApi = injectedApi.enhanceEndpoints({
         });
       },
     },
+    postDeposits: {
+      invalidatesTags: ["Deposits"],
+    },
   },
 });
 
@@ -200,19 +269,25 @@ export const {
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
+  useDeleteDepositsByDepositIdMutation,
   useGetDataConnectorsPagedQuery: useGetDataConnectorsQuery,
   useGetDataConnectorsByDataConnectorIdQuery,
+  useGetDataConnectorsByDataConnectorIdDepositsQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   useGetDataConnectorsListByDataConnectorIdsQuery,
   useGetDataConnectorsListSecretsQuery,
+  useGetDepositsQuery,
+  useGetDepositsByDepositIdQuery,
   useGetNamespacesByNamespaceDataConnectorsAndSlugQuery,
   useGetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
+  usePatchDepositsByDepositIdMutation,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsMutation,
   usePostDataConnectorsGlobalMutation,
+  usePostDepositsMutation,
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
