@@ -6,6 +6,8 @@ import type {
   GetDataConnectorsApiResponse as GetDataConnectorsApiResponseOrig,
   GetDataConnectorsByDataConnectorIdApiArg,
   GetDataConnectorsByDataConnectorIdApiResponse,
+  GetDataConnectorsByDataConnectorIdDepositsApiArg,
+  GetDataConnectorsByDataConnectorIdDepositsApiResponse as GetDataConnectorsByDataConnectorIdDepositsApiResponseOrig,
   GetDataConnectorsByDataConnectorIdSecretsApiArg,
   GetDataConnectorsByDataConnectorIdSecretsApiResponse,
 } from "./data-connectors.api";
@@ -14,6 +16,11 @@ import { dataConnectorsApi as api } from "./data-connectors.api";
 export interface GetDataConnectorsApiResponse
   extends AbstractKgPaginatedResponse {
   dataConnectors: GetDataConnectorsApiResponseOrig;
+}
+
+export interface GetDataConnectorsByDataConnectorIdDepositsApiResponse
+  extends AbstractKgPaginatedResponse {
+  deposits: GetDataConnectorsByDataConnectorIdDepositsApiResponseOrig;
 }
 
 interface GetDataConnectorsListByDataConnectorIdsApiArg {
@@ -35,6 +42,7 @@ type GetDataConnectorListSecretsApiResponse = Record<
 >;
 
 const injectedApi = api.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getDataConnectorsPaged: builder.query<
       GetDataConnectorsApiResponse,
@@ -61,6 +69,39 @@ const injectedApi = api.injectEndpoints({
 
         return {
           dataConnectors,
+          page: headerResponse.page,
+          perPage: headerResponse.perPage,
+          total: headerResponse.total,
+          totalPages: headerResponse.totalPages,
+        };
+      },
+    }),
+    getDataConnectorsByDataConnectorIdDeposits: builder.query<
+      GetDataConnectorsByDataConnectorIdDepositsApiResponse,
+      GetDataConnectorsByDataConnectorIdDepositsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/${queryArg.dataConnectorId}/deposits`,
+        params: {
+          page: queryArg.params?.page,
+          per_page: queryArg.params?.per_page,
+        },
+      }),
+      transformResponse: (response, meta, queryArg) => {
+        const deposits =
+          response as GetDataConnectorsByDataConnectorIdDepositsApiResponseOrig;
+
+        const headers = meta?.response?.headers;
+        const headerResponse = processPaginationHeaders(
+          headers,
+          queryArg.params == null
+            ? {}
+            : { page: queryArg.params.page, perPage: queryArg.params.per_page },
+          deposits
+        );
+
+        return {
+          deposits,
           page: headerResponse.page,
           perPage: headerResponse.perPage,
           total: headerResponse.total,
