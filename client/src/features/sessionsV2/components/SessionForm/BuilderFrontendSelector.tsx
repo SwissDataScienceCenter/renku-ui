@@ -20,27 +20,43 @@ import cx from "classnames";
 import { useMemo } from "react";
 import {
   Controller,
+  useWatch,
+  type Control,
   type FieldValues,
   type UseControllerProps,
 } from "react-hook-form";
 import { Label } from "reactstrap";
 
-import { BUILDER_FRONTENDS } from "../../session.constants";
+import {
+  BUILDER_FRONTEND_COMBINATIONS,
+  BUILDER_FRONTENDS,
+  getCompatibleFrontends,
+} from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
-type BuilderFrontendSelectorProps<T extends FieldValues> =
-  UseControllerProps<T>;
+interface BuilderFrontendSelectorProps<T extends FieldValues>
+  extends UseControllerProps<T> {
+  control: Control<T>;
+}
 
 export default function BuilderFrontendSelector<T extends FieldValues>({
+  control,
   ...controllerProps
 }: BuilderFrontendSelectorProps<T>) {
-  const defaultValue = useMemo(
-    () =>
-      controllerProps.defaultValue
-        ? controllerProps.defaultValue
-        : BUILDER_FRONTENDS[0],
-    [controllerProps.defaultValue]
-  );
+  const builderVariant = useWatch({
+    control: control as Control<FieldValues>,
+    name: "builder_variant",
+  });
+
+  const compatibleFrontends = useMemo(() => {
+    const compatible = getCompatibleFrontends(builderVariant ?? "");
+    return BUILDER_FRONTENDS.filter((f) => compatible.includes(f.value));
+  }, [builderVariant]);
+
+  const defaultValue = useMemo(() => {
+    if (controllerProps.defaultValue) return controllerProps.defaultValue;
+    return compatibleFrontends[0] ?? BUILDER_FRONTENDS[0];
+  }, [controllerProps.defaultValue, compatibleFrontends]);
 
   return (
     <div>
@@ -52,33 +68,53 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
         render={({
           field: { onBlur, onChange, value, disabled },
           fieldState: { error },
-        }) => (
-          <>
-            <div
-              className={cx(error && "is-invalid")}
-              data-cy="environment-type-select"
-            >
-              <BuilderSelectorCommon
-                defaultValue={defaultValue}
-                disabled={disabled}
-                id="builder-environment-frontend-select"
-                inputId="builder-environment-frontend-select-input"
-                name={controllerProps.name}
-                onBlur={onBlur}
-                onChange={onChange}
-                options={BUILDER_FRONTENDS}
-                value={value ?? ""}
-              />
-            </div>
-            <div className="invalid-feedback">
-              {error?.message ? (
-                <>{error.message}</>
-              ) : (
-                <>Please select a valid environment type.</>
-              )}
-            </div>
-          </>
-        )}
+        }) => {
+          const currentFrontend = value?.value ?? value ?? "";
+          const isCompatible =
+            BUILDER_FRONTEND_COMBINATIONS[builderVariant ?? ""]?.includes(
+              currentFrontend
+            ) ?? true;
+
+          return (
+            <>
+              <div
+                className={cx(error && "is-invalid")}
+                data-cy="environment-type-select"
+              >
+                <BuilderSelectorCommon
+                  defaultValue={defaultValue}
+                  disabled={disabled}
+                  id="builder-environment-frontend-select"
+                  inputId="builder-environment-frontend-select-input"
+                  name={controllerProps.name}
+                  onBlur={onBlur}
+                  onChange={(newValue) => {
+                    if (!isCompatible && compatibleFrontends.length > 0) {
+                      onChange(compatibleFrontends[0]);
+                    } else {
+                      onChange(newValue);
+                    }
+                  }}
+                  options={compatibleFrontends}
+                  value={
+                    isCompatible
+                      ? typeof value === "string"
+                        ? value
+                        : value?.value ?? ""
+                      : compatibleFrontends[0]?.value ?? ""
+                  }
+                />
+              </div>
+              <div className="invalid-feedback">
+                {error?.message ? (
+                  <>{error.message}</>
+                ) : (
+                  <>Please select a valid environment type.</>
+                )}
+              </div>
+            </>
+          );
+        }}
         rules={
           controllerProps.rules ?? {
             required: "Please select an environment type.",
