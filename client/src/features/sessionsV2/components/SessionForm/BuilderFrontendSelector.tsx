@@ -23,6 +23,7 @@ import {
   useWatch,
   type Control,
   type FieldValues,
+  type Path,
   type UseControllerProps,
 } from "react-hook-form";
 import { Label } from "reactstrap";
@@ -46,13 +47,16 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
   ...controllerProps
 }: BuilderFrontendSelectorProps<T>) {
   const builderVariant = useWatch({
-    control: control as Control<FieldValues>,
-    name: "builder_variant",
+    control,
+    name: "builder_variant" as Path<T>,
   });
 
   /* eslint-disable spellcheck/spell-checker */
   const compatibleFrontends = useMemo(() => {
-    const compatible = getCompatibleFrontends(builderVariant ?? "");
+    const builderVariantValue = (builderVariant?.value ??
+      builderVariant ??
+      "") as string;
+    const compatible = getCompatibleFrontends(builderVariantValue);
     return BUILDER_FRONTENDS.filter((f) => compatible.includes(f.value));
   }, [builderVariant]);
 
@@ -68,14 +72,18 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
         User interface
       </Label>
       <Controller
+        control={control}
         {...controllerProps}
         render={({
           field: { onBlur, onChange, value, disabled },
           fieldState: { error },
         }) => {
           const currentFrontend = value?.value ?? value ?? "";
+          const builderVariantValue = (builderVariant?.value ??
+            builderVariant ??
+            "") as string;
           const isCompatible =
-            BUILDER_FRONTEND_COMBINATIONS[builderVariant ?? ""]?.includes(
+            BUILDER_FRONTEND_COMBINATIONS[builderVariantValue]?.includes(
               currentFrontend
             ) ?? true;
 
