@@ -18,16 +18,10 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { Display, FaviconStatus, SessionConfig } from "./display.types";
+import type { Display, FaviconStatus } from "./display.types";
 
 const initialState: Display = {
   favicon: "general",
-  modals: {
-    sessionLogs: {
-      show: false,
-      targetServer: "",
-    },
-  },
 };
 
 export const displaySlice = createSlice({
@@ -40,26 +34,8 @@ export const displaySlice = createSlice({
     resetFavicon: (state) => {
       state.favicon = initialState.favicon;
     },
-
-    showSessionLogsModal: (state, action: PayloadAction<SessionConfig>) => {
-      state.modals.sessionLogs = {
-        show: true,
-        targetServer: action.payload.targetServer,
-      };
-    },
-    hideSessionLogsModal: (state) => {
-      state.modals.sessionLogs.show = false;
-    },
-    toggleSessionLogsModal: (state, action: PayloadAction<SessionConfig>) => {
-      state.modals.sessionLogs = {
-        show: !state.modals.sessionLogs.show,
-        targetServer: action.payload.targetServer ?? "",
-      };
-    },
-
     reset: () => initialState,
   },
 });
 
-export const { toggleSessionLogsModal, reset, resetFavicon, setFavicon } =
-  displaySlice.actions;
+export const { reset, resetFavicon, setFavicon } = displaySlice.actions;
