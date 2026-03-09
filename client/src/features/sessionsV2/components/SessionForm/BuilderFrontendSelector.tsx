@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   useController,
   useWatch,
@@ -63,6 +63,19 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
     },
   });
 
+  const handleChange = useCallback(
+    (option: unknown) => {
+      if (typeof option === "string") {
+        onChange(option);
+      } else if (option && typeof option === "object" && "value" in option) {
+        onChange((option as { value: string }).value);
+      } else {
+        onChange("");
+      }
+    },
+    [onChange]
+  );
+
   const compatibleFrontends = useMemo(() => {
     const builderVariantValue = (builderVariant?.value ??
       builderVariant ??
@@ -85,7 +98,7 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
     if (!isCompatible && compatibleFrontends.length > 0) {
       onChange(compatibleFrontends[0]);
     }
-  }, [isCompatible, compatibleFrontends, onChange]);
+  }, [isCompatible, compatibleFrontends, handleChange]);
 
   const defaultValue = useMemo(() => {
     if (controllerProps.defaultValue) return controllerProps.defaultValue;
@@ -109,14 +122,15 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
           inputId="builder-environment-frontend-select-input"
           name={controllerProps.name}
           onBlur={onBlur}
-          onChange={onChange}
+          onChange={handleChange}
           options={compatibleFrontends}
           value={
-            isCompatible
-              ? typeof value === "string"
-                ? value
-                : value?.value ?? ""
-              : compatibleFrontends[0]?.value ?? ""
+            compatibleFrontends.find(
+              (f) =>
+                f.value === (typeof value === "string" ? value : value?.value)
+            ) ??
+            compatibleFrontends[0] ??
+            null
           }
         />
       </div>
