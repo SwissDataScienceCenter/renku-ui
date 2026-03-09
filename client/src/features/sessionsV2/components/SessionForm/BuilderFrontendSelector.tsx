@@ -28,13 +28,11 @@ import {
 } from "react-hook-form";
 import { Label } from "reactstrap";
 
-/* eslint-disable spellcheck/spell-checker */
 import {
   BUILDER_FRONTEND_COMBINATIONS,
   BUILDER_FRONTENDS,
   getCompatibleFrontends,
 } from "../../session.constants";
-/* eslint-enable spellcheck/spell-checker */
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
 interface BuilderFrontendSelectorProps<T extends FieldValues>
@@ -51,7 +49,6 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
     name: "builder_variant" as Path<T>,
   }) as string;
 
-  /* eslint-disable spellcheck/spell-checker */
   const {
     field: { onBlur, onChange, value: currentFrontend, disabled },
     fieldState: { error },
@@ -113,5 +110,4 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
       </div>
     </div>
   );
-  /* eslint-enable spellcheck/spell-checker */
 }
