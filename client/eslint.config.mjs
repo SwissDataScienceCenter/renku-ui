@@ -101,6 +101,7 @@ const jsRules = {
         "fortran",
         "frameborder",
         "frontend",
+        "frontends",
         "func",
         "gemoji",
         "gitlab",
