@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   useController,
   useWatch,
@@ -49,11 +49,11 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
   const builderVariant = useWatch({
     control,
     name: "builder_variant" as Path<T>,
-  });
+  }) as string;
 
   /* eslint-disable spellcheck/spell-checker */
   const {
-    field: { onBlur, onChange, value, disabled },
+    field: { onBlur, onChange, value: currentFrontend, disabled },
     fieldState: { error },
   } = useController({
     control,
@@ -63,48 +63,25 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
     },
   });
 
-  const handleChange = useCallback(
-    (option: unknown) => {
-      if (typeof option === "string") {
-        onChange(option);
-      } else if (option && typeof option === "object" && "value" in option) {
-        onChange((option as { value: string }).value);
-      } else {
-        onChange("");
-      }
-    },
-    [onChange]
-  );
-
   const compatibleFrontends = useMemo(() => {
-    const builderVariantValue = (builderVariant?.value ??
-      builderVariant ??
-      "") as string;
-    const compatible = getCompatibleFrontends(builderVariantValue);
+    const compatible = getCompatibleFrontends(builderVariant);
     return BUILDER_FRONTENDS.filter((f) => compatible.includes(f.value));
   }, [builderVariant]);
 
-  const currentFrontend = value?.value ?? value ?? "";
-  const builderVariantValue = (builderVariant?.value ??
-    builderVariant ??
-    "") as string;
   const isCompatible =
-    BUILDER_FRONTEND_COMBINATIONS[builderVariantValue]?.includes(
-      currentFrontend
-    ) ?? true;
+    BUILDER_FRONTEND_COMBINATIONS[builderVariant]?.includes(currentFrontend) ??
+    true;
 
-  // Auto-set form value when the current selection is incompatible
   useEffect(() => {
     if (!isCompatible && compatibleFrontends.length > 0) {
-      onChange(compatibleFrontends[0]);
+      onChange(compatibleFrontends[0].value);
     }
-  }, [isCompatible, compatibleFrontends, handleChange]);
+  }, [isCompatible, compatibleFrontends, onChange]);
 
-  const defaultValue = useMemo(() => {
-    if (controllerProps.defaultValue) return controllerProps.defaultValue;
-    return compatibleFrontends[0] ?? BUILDER_FRONTENDS[0];
-  }, [controllerProps.defaultValue, compatibleFrontends]);
-  /* eslint-enable spellcheck/spell-checker */
+  const defaultOption = useMemo(
+    () => compatibleFrontends[0] ?? BUILDER_FRONTENDS[0],
+    [compatibleFrontends]
+  );
 
   return (
     <div>
@@ -116,22 +93,15 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
         data-cy="environment-type-select"
       >
         <BuilderSelectorCommon
-          defaultValue={defaultValue}
+          defaultValue={defaultOption}
           disabled={disabled}
           id="builder-environment-frontend-select"
           inputId="builder-environment-frontend-select-input"
           name={controllerProps.name}
           onBlur={onBlur}
-          onChange={handleChange}
+          onChange={onChange}
           options={compatibleFrontends}
-          value={
-            compatibleFrontends.find(
-              (f) =>
-                f.value === (typeof value === "string" ? value : value?.value)
-            ) ??
-            compatibleFrontends[0] ??
-            null
-          }
+          value={currentFrontend}
         />
       </div>
       <div className="invalid-feedback">
@@ -143,4 +113,5 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
       </div>
     </div>
   );
+  /* eslint-enable spellcheck/spell-checker */
 }
