@@ -34,7 +34,7 @@ const location: Location<void> = {
   key: "default",
   state: undefined,
 };
-// eslint-disable-line @typescript-eslint/no-empty-function
+
 const navigate = vi.fn();
 const url = "https://fakedev.renku.ch/";
 // @ts-expect-error mocking window.location

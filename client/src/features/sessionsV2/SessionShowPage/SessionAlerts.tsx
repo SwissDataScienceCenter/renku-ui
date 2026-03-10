@@ -81,6 +81,8 @@ function Alerts({ alerts }: AlertsProps) {
   useEffect(() => {
     if (!alerts || alerts.length === 0) {
       prevAlertIdsRef.current = new Set();
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsOpen(false);
       return;
     }
@@ -92,6 +94,8 @@ function Alerts({ alerts }: AlertsProps) {
     );
 
     if (hasNewAlerts) {
+      // TODO: fix react-hooks/set-state-in-effect
+
       setIsOpen(true);
     }
 

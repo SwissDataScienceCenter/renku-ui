@@ -101,6 +101,7 @@ export default function AddCodeRepositoryModal({
     }
   }, [isOpen, reset, result]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchRepositoryUrl = watch("repositoryUrl");
 
   return (

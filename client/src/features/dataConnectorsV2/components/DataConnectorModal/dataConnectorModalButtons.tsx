@@ -44,10 +44,7 @@ import {
 } from "../../../cloudStorage/projectCloudStorage.types";
 import dataConnectorFormSlice from "../../state/dataConnectors.slice";
 
-interface DataConnectorModalForwardBackButtonProps {}
-
-interface DataConnectorModalBackButtonProps
-  extends DataConnectorModalForwardBackButtonProps {
+interface DataConnectorModalBackButtonProps {
   success: boolean;
   toggle: () => void;
   initialStep?: number;
@@ -99,8 +96,7 @@ export function DataConnectorModalBackButton({
   );
 }
 
-interface DataConnectorModalContinueButtonProps
-  extends DataConnectorModalForwardBackButtonProps {
+interface DataConnectorModalContinueButtonProps {
   addButtonDisableReason: string;
   addOrEditStorage: () => void;
   disableAddButton: boolean;
@@ -293,8 +289,7 @@ export function DataConnectorConnectionTestResult() {
   );
 }
 
-interface TestConnectionAndContinueButtonsProps
-  extends DataConnectorModalForwardBackButtonProps {
+interface TestConnectionAndContinueButtonsProps {
   continueId: string;
   step: number;
   testId: string;

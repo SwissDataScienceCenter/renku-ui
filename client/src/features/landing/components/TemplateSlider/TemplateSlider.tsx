@@ -119,7 +119,6 @@ export default function TemplateSlider() {
         "opacity-50",
         "align-items-end"
       )}
-      // eslint-disable-next-line spellcheck/spell-checker
       role="progressbar"
     >
       <div

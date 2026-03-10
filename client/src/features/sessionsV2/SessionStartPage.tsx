@@ -106,6 +106,8 @@ function SaveCloudStorage({
       status: results[i],
       step: `Saving credentials for ${cs.storageName}`,
     }));
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSteps(theSteps);
   }, [credentialsToSave, results]);
 
@@ -113,6 +115,8 @@ function SaveCloudStorage({
   useEffect(() => {
     if (credentialsToSave.length < 1 || index >= credentialsToSave.length)
       return;
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setResults((prev) => {
       const newResults = [...prev];
       newResults[index] = StatusStepProgressBar.EXECUTING;
@@ -137,6 +141,8 @@ function SaveCloudStorage({
     )
       return;
     if (saveCredentialsResult.data != null) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResults((prev) => {
         const newResults = [...prev];
         newResults[index] = StatusStepProgressBar.READY;
@@ -144,6 +150,8 @@ function SaveCloudStorage({
       });
     }
     if (saveCredentialsResult.error != null) {
+      // TODO: fix react-hooks/set-state-in-effect
+
       setResults((prev) => {
         const newResults = [...prev];
         newResults[index] = StatusStepProgressBar.FAILED;
@@ -267,6 +275,8 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
 
   // Update the loading steps UI
   useEffect(() => {
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSteps([
       {
         id: 0,
@@ -364,6 +374,8 @@ function StartSessionWithCloudStorageModal({
 
   useEffect(() => {
     if (configsNeedingCredentials.length > 0)
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowDataConnectorSecretsModal(true);
   }, [configsNeedingCredentials]);
 
@@ -510,8 +522,12 @@ function StartSessionFromLauncher({
       startSessionOptionsV2.dataConnectors &&
       shouldSaveCredentials
     ) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowSaveCredentials(true);
     } else {
+      // TODO: fix react-hooks/set-state-in-effect
+
       setShowSaveCredentials(false);
     }
 

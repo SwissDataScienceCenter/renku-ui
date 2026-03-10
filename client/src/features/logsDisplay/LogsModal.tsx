@@ -235,6 +235,8 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
   // Reset the active tab if the container name has disappeared
   useEffect(() => {
     if (sortedLogs.every(({ tab }) => tab !== activeTab)) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(sortedLogs.at(0)?.tab ?? "");
     }
   }, [activeTab, sortedLogs]);

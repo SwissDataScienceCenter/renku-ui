@@ -126,6 +126,8 @@ function AnonymousDeleteSessionModal({
 
   useEffect(() => {
     if (isStopping && isSuccess && !isWaiting) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsStopping(false);
       navigate(backUrl);
     }
@@ -259,6 +261,8 @@ function PauseSessionModalContent({
 
   useEffect(() => {
     if (isStopping && isSuccess && !isWaiting) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsStopping(false);
       navigate(backUrl);
     }
@@ -373,6 +377,8 @@ function DeleteSessionModalContent({
 
   useEffect(() => {
     if (isStopping && isSuccess && !isWaiting) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsStopping(false);
       navigate(backUrl);
     }

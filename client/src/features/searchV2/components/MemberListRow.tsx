@@ -86,6 +86,8 @@ export default function MemberListRow({ members }: MemberListRowProps) {
     if (!container) return;
 
     measureItemWidths();
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     recalculate();
 
     const observer = new ResizeObserver(() => {

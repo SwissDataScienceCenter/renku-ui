@@ -30,8 +30,7 @@ import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { BUILDER_TYPES, IMAGE_BUILD_DOCS } from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
-interface BuilderTypeSelectorProps<T extends FieldValues>
-  extends UseControllerProps<T> {}
+type BuilderTypeSelectorProps<T extends FieldValues> = UseControllerProps<T>;
 
 export default function BuilderTypeSelector<T extends FieldValues>({
   ...controllerProps

@@ -87,6 +87,7 @@ export default function ProjectCopyModal({
       visibility: project.visibility,
     },
   });
+  // eslint-disable-next-line react-hooks/incompatible-library
   const name = watch("name");
   useEffect(() => {
     setValue("slug", slugFromTitle(name, true, true));

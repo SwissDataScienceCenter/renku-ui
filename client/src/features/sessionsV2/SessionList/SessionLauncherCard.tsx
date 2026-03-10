@@ -137,6 +137,8 @@ export default function SessionLauncherCard({
 
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
+  // Ref: https://github.com/facebook/react/issues/35577
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const resourcePool = useMemo(() => {
     if (launcher?.resource_class_id == null || resourcePools == null) {
       return undefined;

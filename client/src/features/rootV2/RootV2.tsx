@@ -109,6 +109,8 @@ export default function RootV2() {
   }, [dispatch, isFirstRender, navigate, renku10Enabled]);
 
   useEffect(() => {
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsFirstRender(false);
   }, []);
 

@@ -73,6 +73,7 @@ export default function NewSessionLauncherModal({
       port: DEFAULT_PORT,
       repository: "",
       platform: "",
+      builder_variant: "python",
     },
   });
   const {
@@ -142,7 +143,7 @@ export default function NewSessionLauncherModal({
             disk_storage: diskStorage,
             name,
             // TODO: fix types for this session environment
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
             environment: environment.data,
           },
         });
