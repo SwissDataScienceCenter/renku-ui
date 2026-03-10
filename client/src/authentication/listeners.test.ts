@@ -33,6 +33,7 @@ const location: Location<void> = {
   hash: "",
   key: "default",
   state: undefined,
+  unstable_mask: undefined,
 };
 
 const navigate = vi.fn();
