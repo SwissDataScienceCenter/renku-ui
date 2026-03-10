@@ -12,11 +12,11 @@ export default function DepositStatusBadge({
   status,
 }: DepositStatusBadgeProps) {
   const badgeColor =
-    status === "complete"
+    status === "complete" || status === "upload_complete"
       ? "info"
       : status === "in_progress"
       ? "warning"
-      : status === "cancelled" || status === "missing"
+      : status === "failed"
       ? "danger"
       : "light";
 
