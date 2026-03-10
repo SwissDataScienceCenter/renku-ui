@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Check2,
   CloudArrowUp,
   Lock,
   NodeMinus,
@@ -59,6 +60,7 @@ import {
 } from "../api/data-connectors.enhanced-api";
 import DepositCreationModal from "../deposits/DepositCreationModal";
 import DepositEditModal from "../deposits/DepositEditModal";
+import DepositFinalizationModal from "../deposits/DepositFinalizationModal";
 import { POLL_TIME_INACTIVE_DEPOSITS } from "../deposits/deposits.const";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { getDataConnectorScope } from "./dataConnector.utils";
@@ -374,6 +376,8 @@ function DataConnectorActionsInner({
   const [isNewDepositOpen, setNewDepositOpen] = useState(false);
   const [isEditDepositOpen, setEditDepositOpen] = useState(false);
   const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
+  const [isFinalizationDepositOpen, setFinalizationDepositOpen] =
+    useState(false);
 
   // Actions
   const toggleCredentials = useCallback(() => {
@@ -398,6 +402,9 @@ function DataConnectorActionsInner({
   }, []);
   const toggleEditDeposit = useCallback(() => {
     setEditDepositOpen((open) => !open);
+  }, []);
+  const toggleFinalizationDepositOpen = useCallback(() => {
+    setFinalizationDepositOpen((open) => !open);
   }, []);
 
   // Data
@@ -473,6 +480,17 @@ function DataConnectorActionsInner({
                   <>
                     <CloudArrowUp className={cx("bi", "me-1")} />
                     Export data
+                  </>
+                ),
+              }
+            : lastDeposit.status === "upload_complete"
+            ? {
+                key: "data-connector-deposit-finalize",
+                onClick: () => toggleFinalizationDepositOpen(),
+                content: (
+                  <>
+                    <Check2 className={cx("bi", "me-1")} />
+                    Finalize deposit
                   </>
                 ),
               }
@@ -591,11 +609,19 @@ function DataConnectorActionsInner({
         setOpen={setNewDepositOpen}
       />
       {lastDeposit && (
-        <DepositEditModal
-          deposit={lastDeposit}
-          isOpen={isEditDepositOpen}
-          setOpen={setEditDepositOpen}
-        />
+        <>
+          <DepositEditModal
+            deposit={lastDeposit}
+            isOpen={isEditDepositOpen}
+            setOpen={setEditDepositOpen}
+          />
+
+          <DepositFinalizationModal
+            deposit={lastDeposit}
+            isOpen={isFinalizationDepositOpen}
+            toggleModal={toggleFinalizationDepositOpen}
+          />
+        </>
       )}
       {dataConnectorLink && (
         <DataConnectorRemoveUnlinkModal
