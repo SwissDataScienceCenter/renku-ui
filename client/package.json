@@ -67,6 +67,7 @@
     "bootstrap": "^5.3.3",
     "classnames": "^2.3.2",
     "compression": "^1.8.1",
+    "cookie": "^1.1.1",
     "express": "^5.2.1",
     "express-prom-bundle": "^8.0.0",
     "file-saver": "^2.0.5",
