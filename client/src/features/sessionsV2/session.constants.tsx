@@ -110,6 +110,17 @@ export const BUILDER_TYPES = [
       </>
     ),
   },
+  {
+    value: "r",
+    label: "R",
+    description: (
+      <>
+        Create a R environment from an <code>renv.lock</code> file. This file
+        must be at the root of the repository. See the documentation for
+        examples. Only compatible with RStudio for now
+      </>
+    ),
+  },
 ] as readonly BuilderSelectorOption[];
 
 export const BUILDER_FRONTENDS = [
@@ -135,7 +146,23 @@ export const BUILDER_FRONTENDS = [
     description: "Web-based terminal, with minimalist interface.",
     /* eslint-enable spellcheck/spell-checker */
   },
+  {
+    value: "rstudio",
+    label: "RStudio",
+    description: "Web-based integrated development environment for R.",
+  },
 ] as readonly BuilderSelectorOption[];
+
+/* eslint-disable spellcheck/spell-checker */
+export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
+  python: ["vscodium", "jupyterlab", "ttyd"],
+  r: ["rstudio"],
+};
+
+export const getCompatibleFrontends = (builderVariant: string) => {
+  return BUILDER_FRONTEND_COMBINATIONS[builderVariant] ?? [];
+};
+/* eslint-enable spellcheck/spell-checker */
 
 export const BUILDER_PLATFORMS = [
   {
