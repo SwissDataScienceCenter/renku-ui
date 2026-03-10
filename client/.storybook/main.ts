@@ -4,10 +4,9 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
   staticDirs: ["../public"],
   addons: [
-    "@storybook/addon-essentials",
-    "@storybook/addon-interactions",
     "@storybook/addon-links",
     "@storybook/react-vite",
+    "@storybook/addon-docs",
   ],
   framework: {
     name: "@storybook/react-vite",
@@ -25,9 +24,6 @@ const config: StorybookConfig = {
         esModuleInterop: false,
       },
     },
-  },
-  docs: {
-    autodocs: true,
   },
   // This adjusts Vite build options to preserve class and function names when building for production.
   viteFinal: async (config, { configType }) => {

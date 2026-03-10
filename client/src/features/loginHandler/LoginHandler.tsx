@@ -45,8 +45,12 @@ export default function LoginHandler() {
 
   useEffect(() => {
     if (error != null) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState({ isLoggedIn: false });
     } else if (user != null) {
+      // TODO: fix react-hooks/set-state-in-effect
+
       setState({ isLoggedIn: user.isLoggedIn });
     }
   }, [error, user]);

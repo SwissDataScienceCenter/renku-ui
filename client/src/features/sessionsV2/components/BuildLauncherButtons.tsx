@@ -26,6 +26,7 @@ import {
 } from "react-bootstrap-icons";
 import { Button, ButtonGroup, DropdownItem } from "reactstrap";
 
+import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import {
@@ -36,7 +37,6 @@ import {
 import {
   BuildActionFailedModal,
   BuildActionsProps,
-  BuildLogsModal,
 } from "./BuildStatusComponents";
 
 export function RebuildLauncherDropdownItem({ launcher }: BuildActionsProps) {

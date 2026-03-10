@@ -206,6 +206,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
       is_template: project.is_template ?? false,
     },
   });
+  // eslint-disable-next-line react-hooks/incompatible-library
   const currentNamespace = watch("namespace");
   const currentName = watch("name");
   const isDirtyExceptKeyword = Object.keys(dirtyFields).some(

@@ -284,6 +284,8 @@ export default function EnvVariablesModal({
       !hasAddedDefaultValue
     ) {
       append({ name: "", value: "" });
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasAddedDefaultValue(true);
     }
   }, [append, fields, hasAddedDefaultValue, isDirty, result]);

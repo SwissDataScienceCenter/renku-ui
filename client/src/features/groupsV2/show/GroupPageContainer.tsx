@@ -19,15 +19,10 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect } from "react";
-import {
-  generatePath,
-  Outlet,
-  useNavigate,
-  useOutletContext,
-  useParams,
-} from "react-router";
+import { generatePath, Outlet, useNavigate, useParams } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import { NamespaceContextType } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import { Loader } from "../../../components/Loader";
@@ -66,7 +61,7 @@ export default function GroupPageContainer() {
   useEffect(() => {
     if (slug && namespace?.namespace_kind === "user") {
       navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.users.show, { username: slug }),
+        generatePath(ABSOLUTE_ROUTES.v2.users.show.root, { username: slug }),
         {
           replace: true,
         }
@@ -122,17 +117,20 @@ export default function GroupPageContainer() {
         </Col>
         <Col xs={12}>
           <main>
-            <Outlet context={{ group: group } satisfies ContextType} />
+            <Outlet
+              context={
+                {
+                  kind: "group",
+                  namespace: group.slug,
+                  group: group,
+                } satisfies NamespaceContextType
+              }
+            />
           </main>
         </Col>
       </Row>
     </ContainerWrap>
   );
-}
-
-type ContextType = { group: GroupResponse };
-export function useGroup() {
-  return useOutletContext<ContextType>();
 }
 
 function GroupHeader({ group, slug }: { group: GroupResponse; slug: string }) {

@@ -164,6 +164,7 @@ function IncidentBannerSection() {
   } = useForm<IncidentBannerForm>({
     defaultValues: { incidentBanner: platformConfig?.incident_banner },
   });
+  // eslint-disable-next-line react-hooks/incompatible-library
   const incidentBanner = watch("incidentBanner");
 
   const onSubmit = useCallback(

@@ -16,16 +16,6 @@
  * limitations under the License
  */
 
-import {
-  Database,
-  Folder2Open,
-  Globe2,
-  Icon,
-  Lock,
-  People,
-  Person,
-} from "react-bootstrap-icons";
-
 import type { Role } from "../projectsV2/api/projectV2.api";
 import type {
   AfterDateValue,
@@ -33,20 +23,11 @@ import type {
   CreationDateFilter,
   RoleFilter,
   SearchDateFilter,
-  SearchDateFilters,
   SearchEntityType,
   SearchEntityVisibility,
-  SearchFilter,
-  SearchFilters,
-  SortBy,
-  SortByValue,
   TypeFilter,
   VisibilityFilter,
 } from "./searchV2.types";
-
-export const FIRST_PAGE = 1;
-export const DEFAULT_PAGE_SIZE = 12;
-export const MAX_PAGE_SIZE = 100;
 
 export const TERM_SEPARATOR = " ";
 export const KEY_VALUE_SEPARATOR = ":";
@@ -117,91 +98,12 @@ export const DATE_FILTER_AFTER_KNOWN_VALUES: AfterDateValue[] = [
 
 export const DATE_FILTER_BEFORE_KNOWN_VALUES: BeforeDateValue[] = ["today-90d"];
 
-export const CREATION_DATE_FILTER_PREDEFINED_FILTERS: {
-  optionKey: string;
-  filter: CreationDateFilter;
-}[] = [
-  { optionKey: "all", filter: DEFAULT_CREATION_DATE_FILTER },
-  {
-    optionKey: "last-week",
-    filter: { key: "created", value: { after: "today-7d" } },
-  },
-  {
-    optionKey: "last-month",
-    filter: { key: "created", value: { after: "today-31d" } },
-  },
-  {
-    optionKey: "last-90-days",
-    filter: { key: "created", value: { after: "today-90d" } },
-  },
-  {
-    optionKey: "older-than-90-days",
-    filter: { key: "created", value: { before: "today-90d" } },
-  },
-];
+// Pagination constants
 
-// Labels for all filters
+export const FIRST_PAGE = 1;
+export const DEFAULT_PAGE_SIZE = 10;
+export const MAX_PAGE_SIZE = 100;
 
-export const FILTER_KEY_LABELS: {
-  [key in keyof SearchFilters | keyof SearchDateFilters]: { label: string };
-} = {
-  role: { label: "Role" },
-  type: { label: "Type" },
-  visibility: { label: "Visibility" },
-  created: { label: "Creation date" },
-};
+// Content type default
 
-export const FILTER_VALUE_LABELS: {
-  [key in SearchFilter["values"][number]]: { icon?: Icon; label: string };
-} = {
-  owner: { label: "Owner" },
-  editor: { label: "Editor" },
-  viewer: { label: "Viewer" },
-
-  group: { icon: People, label: "Group" },
-  project: { icon: Folder2Open, label: "Project" },
-  user: { icon: Person, label: "User" },
-  dataconnector: { icon: Database, label: "Data connector" }, // eslint-disable-line spellcheck/spell-checker
-
-  private: { icon: Lock, label: "Private" },
-  public: { icon: Globe2, label: "Public" },
-};
-
-export const DATE_FILTER_AFTER_VALUE_LABELS: {
-  [key in SearchDateFilter["value"]["after"] & string]: { label: string };
-} = {
-  "today-7d": { label: "Last week" },
-  "today-31d": { label: "Last month" },
-  "today-90d": { label: "Last 90 days" },
-};
-
-export const DATE_FILTER_BEFORE_VALUE_LABELS: {
-  [key in SearchDateFilter["value"]["before"] & string]: { label: string };
-} = {
-  "today-90d": { label: "Older than 90 days" },
-};
-
-// Sort by constants
-
-export const SORT_BY_KEY: SortBy["key"] = "sort";
-
-export const DEFAULT_SORT_BY: SortBy = {
-  key: "sort",
-  value: "score-desc",
-};
-
-export const SORT_BY_ALLOWED_VALUES: SortByValue[] = [
-  "score-desc",
-  "created-desc",
-  "created-asc",
-  "name-asc",
-  "name-desc",
-];
-
-export const SORT_BY_LABELS: { [key in SortByValue]: { label: string } } = {
-  "score-desc": { label: "Score: best match" },
-  "created-desc": { label: "Newest" },
-  "created-asc": { label: "Oldest" },
-  "name-asc": { label: "Name: alphabetical" },
-  "name-desc": { label: "Name: reverse" },
-};
+export const DEFAULT_CONTENT_TYPE = "Project";

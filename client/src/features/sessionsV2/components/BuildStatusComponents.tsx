@@ -19,7 +19,7 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   BootstrapReboot,
   BoxArrowUpRight,
@@ -41,24 +41,19 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
-import { EnvironmentLogsPresent, ILogs } from "../../../components/LogsV2";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
 import { TimeCaption } from "../../../components/TimeCaption";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { ResourcePoolWithId } from "../api/computeResources.api";
-import type {
-  Build,
-  BuildList,
-  CreationDate,
-} from "../api/sessionLaunchersV2.api";
+import type { Build, CreationDate } from "../api/sessionLaunchersV2.api";
 import {
   SessionLauncher,
-  useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
@@ -208,83 +203,6 @@ export function BuildActionFailedModal({
         </Button>
       </ModalFooter>
     </ScrollableModal>
-  );
-}
-
-interface BuildLogsModalProps {
-  builds: BuildList | undefined;
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-export function BuildLogsModal({
-  builds,
-  isOpen,
-  toggle,
-}: BuildLogsModalProps) {
-  const lastBuild = builds?.at(0);
-  const name = lastBuild?.id ?? "build_logs";
-  const inProgressBuild = useMemo(
-    () => builds?.find(({ status }) => status === "in_progress"),
-    [builds]
-  );
-  const hasInProgressBuild = !!inProgressBuild;
-
-  const [logs, setLogs] = useState<ILogs>({
-    data: {},
-    fetched: false,
-    fetching: false,
-    show: isOpen,
-  });
-
-  const { data, isFetching, refetch } = useGetBuildLogsQuery(
-    isOpen && lastBuild
-      ? {
-          buildId: lastBuild.id,
-        }
-      : skipToken
-  );
-  const fetchLogs = useCallback(
-    () =>
-      refetch().then((result) => {
-        if (result.error) {
-          throw result.error;
-        }
-        if (result.data == null) {
-          throw new Error("Could not retrieve logs");
-        }
-        return result.data;
-      }),
-    [refetch]
-  );
-
-  useEffect(() => {
-    setLogs((prevState) => ({ ...prevState, show: isOpen ? name : false }));
-  }, [isOpen, name]);
-  useEffect(() => {
-    setLogs((prevState) => ({ ...prevState, fetching: isFetching }));
-  }, [isFetching]);
-  useEffect(() => {
-    setLogs((prevState) => ({
-      ...prevState,
-      fetched: !!data,
-      data: data ? data : {},
-    }));
-  }, [data]);
-
-  if (lastBuild == null) {
-    return null;
-  }
-
-  return (
-    <EnvironmentLogsPresent
-      fetchLogs={fetchLogs}
-      toggleLogs={toggle}
-      logs={logs}
-      name={name}
-      title={`${hasInProgressBuild ? "Current" : "Last"} build logs`}
-      defaultTab="step-build-and-push"
-    />
   );
 }
 

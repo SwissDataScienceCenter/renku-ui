@@ -46,10 +46,9 @@ import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import { Loader } from "~/components/Loader";
 import useRenkuToast from "~/components/toast/useRenkuToast";
+import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
-import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import { toggleSessionLogsModal } from "../../../display/displaySlice";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
@@ -92,10 +91,10 @@ export default function ActiveSessionButton({
   const { data: user } = useGetUserQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
 
-  const dispatch = useAppDispatch();
-  const onToggleLogs = useCallback(() => {
-    dispatch(toggleSessionLogsModal({ targetServer: session.name }));
-  }, [dispatch, session.name]);
+  const [showLogsModal, setShowLogsModal] = useState<boolean>(false);
+  const toggleLogsModal = useCallback(() => {
+    setShowLogsModal((isOpen) => !isOpen);
+  }, []);
 
   // Handle resuming session
   const [isResuming, setIsResuming] = useState(false);
@@ -108,6 +107,8 @@ export default function ActiveSessionButton({
       sessionId: session.name,
       sessionPatchRequest: { state: "running" },
     });
+    // TODO: fix react-hooks/set-state-in-effect
+
     setIsResuming(true);
   }, [resumeSession, session.name]);
   const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatusV2({
@@ -117,8 +118,12 @@ export default function ActiveSessionButton({
   });
   useEffect(() => {
     if (isResuming && isSuccessResumeSession && !isWaitingForResumedSession) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsResuming(false);
       navigate(showSessionUrl);
+      // TODO: fix react-hooks/set-state-in-effect
+
       setIsResuming(false);
     }
   }, [
@@ -134,6 +139,8 @@ export default function ActiveSessionButton({
         textHeader: NOTIFICATION_TOPICS.SESSION_START,
         textBody: "Unable to resume the session",
       });
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsResuming(false);
     }
   }, [errorResumeSession, renkuToastDanger]);
@@ -159,6 +166,8 @@ export default function ActiveSessionButton({
     });
   useEffect(() => {
     if (isSuccessHibernateSession && !isWaitingForHibernatedSession) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsHibernating(false);
     }
   }, [isSuccessHibernateSession, isWaitingForHibernatedSession]);
@@ -168,6 +177,8 @@ export default function ActiveSessionButton({
         textHeader: NOTIFICATION_TOPICS.SESSION_START,
         textBody: "Unable to pause the session",
       });
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsHibernating(false);
     }
   }, [errorHibernateSession, renkuToastDanger]);
@@ -178,6 +189,8 @@ export default function ActiveSessionButton({
   const [isStopping, setIsStopping] = useState<boolean>(false);
   const onStopSession = useCallback(() => {
     stopSession({ sessionId: session.name });
+    // TODO: fix react-hooks/set-state-in-effect
+
     setIsStopping(true);
   }, [session.name, stopSession]);
   useEffect(() => {
@@ -186,6 +199,8 @@ export default function ActiveSessionButton({
         textHeader: NOTIFICATION_TOPICS.SESSION_START,
         textBody: "Unable to delete the session",
       });
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsStopping(false);
     }
   }, [errorStopSession, renkuToastDanger]);
@@ -323,7 +338,7 @@ export default function ActiveSessionButton({
         <Button
           color="outline-primary"
           data-cy="show-logs-session-button"
-          onClick={onToggleLogs}
+          onClick={toggleLogsModal}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
           Get logs
@@ -343,7 +358,7 @@ export default function ActiveSessionButton({
         <Button
           color="outline-primary"
           data-cy={"show-logs-session-button"}
-          onClick={onToggleLogs}
+          onClick={toggleLogsModal}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
           Get logs
@@ -414,7 +429,7 @@ export default function ActiveSessionButton({
   );
 
   const logsAction = status !== "hibernated" && (
-    <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
+    <DropdownItem data-cy="session-log-button" onClick={toggleLogsModal}>
       <FileEarmarkText className={cx("bi", "me-1")} />
       Get logs
     </DropdownItem>
@@ -454,6 +469,11 @@ export default function ActiveSessionButton({
         status={session.status}
         toggleModal={toggleModifySession}
         resource_class_id={session.resource_class_id}
+      />
+      <SessionLogsModal
+        isOpen={showLogsModal}
+        sessionName={session.name}
+        toggle={toggleLogsModal}
       />
     </div>
   );
@@ -604,6 +624,8 @@ function ModifySessionModalContent({
     const currentSessionClass = resourcePools
       ?.flatMap((pool) => pool.classes)
       .find((c) => c.id == resource_class_id);
+    // TODO: fix react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentSessionClass(currentSessionClass);
   }, [resource_class_id, resourcePools]);
 

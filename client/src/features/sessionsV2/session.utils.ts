@@ -316,7 +316,7 @@ export function getLauncherDefaultValues(
 export function safeStringify(value: unknown) {
   try {
     return JSON.stringify(value);
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -344,7 +344,7 @@ export function safeParseJSONStringArray(value: string): ParseResult {
       };
 
     return { parsed: true, data: parsedValue };
-  } catch (error) {
+  } catch {
     return { parsed: false, error: "Input must be a valid JSON format" };
   }
 }
@@ -389,7 +389,7 @@ export function ensureHTTPS(url: string): string {
     }
 
     throw new Error("Unsupported protocol");
-  } catch (error) {
+  } catch {
     throw new Error(`Invalid URL: ${url}`);
   }
 }

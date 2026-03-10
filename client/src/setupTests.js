@@ -4,12 +4,8 @@ import "jest-localstorage-mock";
 
 if (global.document) {
   document.createRange = () => ({
-    setStart: () => {
-      // eslint-disable-line @typescript-eslint/no-empty-function
-    },
-    setEnd: () => {
-      // eslint-disable-line @typescript-eslint/no-empty-function
-    },
+    setStart: () => {},
+    setEnd: () => {},
     commonAncestorContainer: {
       nodeName: "BODY",
       ownerDocument: document,

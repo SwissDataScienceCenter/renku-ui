@@ -85,6 +85,8 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
 
   useEffect(() => {
     if (!isOpen) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState({ step: "add-secret-slot" });
     }
   }, [isOpen]);

@@ -43,16 +43,16 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import RenkuFrogIcon from "../../../components/icons/RenkuIcon";
 import { Loader } from "../../../components/Loader";
-import EnvironmentLogsV2 from "../../../components/LogsV2";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
-import { displaySlice, resetFavicon, setFavicon } from "../../display";
+import { resetFavicon, setFavicon } from "../../display";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
@@ -135,6 +135,8 @@ export default function ShowSessionPage() {
   const [showPatchErrorToast, setShowPatchErrorToast] = useState(false);
   useEffect(() => {
     if (postponePauseError) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowPatchErrorToast(true);
     }
   }, [postponePauseError]);
@@ -145,6 +147,8 @@ export default function ShowSessionPage() {
       ? new Date(thisSession.status.will_hibernate_at)
       : null;
     if (!willHibernateAt) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNextPauseWarning(null);
       return;
     }
@@ -152,12 +156,16 @@ export default function ShowSessionPage() {
       willHibernateAt.getTime() -
         PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS * 1000
     );
+    // TODO: fix react-hooks/set-state-in-effect
+
     setNextPauseWarning(notificationTime);
   }, [thisSession?.status.will_hibernate_at]);
 
   // Handle showing the pause warning
   useEffect(() => {
     if (!nextPauseWarning) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowPauseWarningModal(false);
       return;
     }
@@ -167,11 +175,15 @@ export default function ShowSessionPage() {
     const showWarningIfNeeded = () => {
       // Show the modal only if enough time has passed since last close
       if (!lastClosedWarningModal) {
+        // TODO: fix react-hooks/set-state-in-effect
+
         setShowPauseWarningModal(true);
         return;
       }
       const timeSinceLastClose = Date.now() - lastClosedWarningModal.getTime();
       if (timeSinceLastClose >= PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS * 1000) {
+        // TODO: fix react-hooks/set-state-in-effect
+
         setShowPauseWarningModal(true);
       }
     };
@@ -201,11 +213,10 @@ export default function ShowSessionPage() {
     };
   }, [thisSession?.status?.state, isLoading, isFetching, dispatch]);
 
-  const toggleModalLogs = useCallback(() => {
-    dispatch(
-      displaySlice.actions.toggleSessionLogsModal({ targetServer: sessionName })
-    );
-  }, [dispatch, sessionName]);
+  const [showLogsModal, setShowLogsModal] = useState<boolean>(false);
+  const toggleLogsModal = useCallback(() => {
+    setShowLogsModal((isOpen) => !isOpen);
+  }, []);
 
   const [showModalPauseOrDeleteSession, setShowModalPauseOrDeleteSession] =
     useState(false);
@@ -251,7 +262,13 @@ export default function ShowSessionPage() {
       toggleModal={togglePauseOrDeleteSession}
     />
   );
-  const logs = thisSession && <EnvironmentLogsV2 name={sessionName} />;
+  const logs = thisSession && (
+    <SessionLogsModal
+      isOpen={showLogsModal}
+      sessionName={sessionName}
+      toggle={toggleLogsModal}
+    />
+  );
   const content =
     !isLoading && !isFetching && !thisSession ? (
       <SessionUnavailable />
@@ -262,13 +279,13 @@ export default function ShowSessionPage() {
         {thisSession.status.state !== "running" && (
           <StartSessionProgressBarV2
             session={thisSession}
-            toggleLogs={toggleModalLogs}
+            toggleLogs={toggleLogsModal}
           />
         )}
         <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
       </>
     ) : (
-      <StartSessionProgressBarV2 toggleLogs={toggleModalLogs} />
+      <StartSessionProgressBarV2 toggleLogs={toggleLogsModal} />
     );
 
   const backButton = (
@@ -315,7 +332,7 @@ export default function ShowSessionPage() {
             )}
           >
             {backButton}
-            <LogsBtn toggle={toggleModalLogs} />
+            <LogsBtn toggle={toggleLogsModal} />
             <PauseSessionBtn openPauseSession={openPauseSession} />
             <DeleteSessionBtn openDeleteSession={openDeleteSession} />
             <ShareSessionLinkButton

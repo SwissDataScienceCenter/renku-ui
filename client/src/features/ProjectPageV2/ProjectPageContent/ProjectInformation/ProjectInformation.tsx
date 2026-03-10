@@ -141,7 +141,7 @@ export default function ProjectInformation({
         ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
             slug: project.namespace,
           })
-        : generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+        : generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
             username: project.namespace,
           }),
     [namespace?.namespace_kind, project.namespace]
@@ -264,7 +264,7 @@ function ProjectInformationMember({
     return (
       <p className="mb-0">
         <Link
-          to={generatePath(ABSOLUTE_ROUTES.v2.users.show, {
+          to={generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
             username: member.namespace,
           })}
         >

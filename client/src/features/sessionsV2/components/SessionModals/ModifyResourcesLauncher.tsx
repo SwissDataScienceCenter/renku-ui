@@ -130,6 +130,7 @@ export function ModifyResourcesLauncherModal({
     }
   }, [diskStorage, isOpen, reset, resourceClassId, resourcePools]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchCurrentSessionClass = watch("resourceClass");
   const watchCurrentDiskStorage = watch("diskStorage");
 

@@ -48,7 +48,7 @@ interface AddProjectMemberModalProps {
   toggle: () => void;
 }
 
-interface ProjectMemberForAdd extends ProjectMemberResponse {}
+type ProjectMemberForAdd = ProjectMemberResponse;
 
 interface AddProjectMemberAccessFormProps
   extends Pick<AddProjectMemberModalProps, "members" | "projectId" | "toggle"> {
