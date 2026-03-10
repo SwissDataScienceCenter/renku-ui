@@ -57,13 +57,13 @@ import {
 } from "../contextSearch.utils";
 import { useReduxFilterParam } from "../hooks/useReduxFilterParam.hook";
 import { selectSearchApiQuery } from "../searchV2.slice";
-import { buildApiQueryWithoutType } from "../searchV2.utils";
+import { selectApiQueryWithoutType } from "../searchV2.utils";
 
 export default function SearchFilters() {
   const state = useAppSelector(({ searchV2 }) => searchV2);
   const apiQuery = useAppSelector(selectSearchApiQuery);
   const apiQueryWithoutType = useMemo(
-    () => buildApiQueryWithoutType(state),
+    () => selectApiQueryWithoutType(state),
     [state]
   );
 

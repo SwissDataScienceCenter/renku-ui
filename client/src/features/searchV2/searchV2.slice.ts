@@ -30,7 +30,7 @@ import type {
   InitFromUrlParams,
   SearchV2State,
 } from "./searchV2.types";
-import { buildApiQuery } from "./searchV2.utils";
+import { selectApiQuery } from "./searchV2.utils";
 
 const initialState: SearchV2State = {
   query: "",
@@ -155,5 +155,5 @@ export const {
 } = searchV2Slice.actions;
 
 export function selectSearchApiQuery(state: RootState): SearchQuery {
-  return buildApiQuery(state.searchV2);
+  return selectApiQuery(state.searchV2);
 }
