@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest";
+
 import { SessionStartDataConnectorConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
 import { CloudStorageSchema } from "./projectCloudStorage.types";
 import {

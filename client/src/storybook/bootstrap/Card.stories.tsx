@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react-vite";
 import { Card, CardBody, CardFooter, CardHeader } from "reactstrap";
 
 const componentDescription = `

@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react-vite";
 import cx from "classnames";
 import React from "react";
 import { Pencil, PencilSquare, PlusLg, Trash } from "react-bootstrap-icons";

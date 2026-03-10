@@ -253,6 +253,7 @@ const jsRules = {
         "uploadable",
         "uploader",
         "uploadprogress",
+        "upsert",
         "urls",
         "validators",
         "versioned",

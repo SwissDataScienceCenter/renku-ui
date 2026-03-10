@@ -30,12 +30,12 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useProject } from "~/routes/projects/root";
 import { SuccessAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import { usePostSessionSecretSlotsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import DescriptionField from "./fields/DescriptionField";
 import FilenameField from "./fields/FilenameField";
 import NameField from "./fields/NameField";
