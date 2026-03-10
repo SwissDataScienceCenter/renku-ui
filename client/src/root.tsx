@@ -61,9 +61,8 @@ type ServerLoaderReturn = ReturnType<typeof data<ServerLoaderReturn_>>;
 export const middleware = [storeMiddleware] satisfies MiddlewareFunction[];
 
 export async function loader(): Promise<ServerLoaderReturn> {
-  // const clientSideFetch =
-  //   process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
-  const clientSideFetch = process.env.CYPRESS === "1";
+  const clientSideFetch =
+    process.env.NODE_ENV === "development" || process.env.CYPRESS === "1";
   if (clientSideFetch) {
     //? In development, we load the /config.json data client-side
     return data({
