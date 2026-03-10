@@ -73,6 +73,7 @@ export default function NewSessionLauncherModal({
       port: DEFAULT_PORT,
       repository: "",
       platform: "",
+      builder_variant: "python",
     },
   });
   const {
