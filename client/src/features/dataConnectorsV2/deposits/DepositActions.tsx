@@ -2,7 +2,6 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import {
-  ArrowRepeat,
   Check2,
   DatabaseLock,
   FileEarmarkText,
@@ -24,10 +23,13 @@ import DropdownButton from "~/components/buttons/DropdownButton";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
-import { Deposit } from "../api/data-connectors.api";
+import LogsModal from "~/features/logsDisplay/LogsModal";
+import {
+  Deposit,
+  useGetDepositsByDepositIdLogsQuery,
+} from "../api/data-connectors.api";
 import {
   useDeleteDepositsByDepositIdMutation,
-  useGetDepositsByDepositIdQuery,
   usePatchDepositsByDepositIdMutation,
 } from "../api/data-connectors.enhanced-api";
 import DepositEditModal from "./DepositEditModal";
@@ -274,23 +276,6 @@ function DepositRemovalModal({
   );
 }
 
-interface RefreshLogsParagraphProps {
-  refetch: () => void;
-}
-function RefreshLogsParagraph({ refetch }: RefreshLogsParagraphProps) {
-  return (
-    <>
-      <p>
-        You can try to{" "}
-        <Button color="primary" onClick={refetch} size="sm">
-          Refresh logs
-        </Button>{" "}
-        .
-      </p>
-    </>
-  );
-}
-
 interface DepositLogsModalProps {
   deposit: Deposit;
   isOpen: boolean;
@@ -301,48 +286,22 @@ function DepositLogsModal({
   toggleModal,
   isOpen,
 }: DepositLogsModalProps) {
-  const { data, error, refetch, isLoading } = useGetDepositsByDepositIdQuery(
+  const query = useGetDepositsByDepositIdLogsQuery(
     deposit.id ? { depositId: deposit.id } : skipToken
   );
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
-      <ModalHeader tag="h2" toggle={toggleModal}>
-        <FileEarmarkText className={cx("bi", "me-1")} /> Deposit logs
-      </ModalHeader>
-      <ModalBody>
-        {isLoading ? (
-          <Loader />
-        ) : error ? (
-          <>
-            <p>There was an error fetching the deposit logs.</p>
-            <RefreshLogsParagraph refetch={refetch} />
-            <RtkOrDataServicesError error={error} />
-          </>
-        ) : !data ? (
-          <>
-            <p>No logs available for this deposit yet.</p>
-            <RefreshLogsParagraph refetch={refetch} />
-          </>
-        ) : (
-          <>
-            <p>Deposit logs</p>
-            <pre className="overflow-auto">{"LOGS HERE"}</pre>
-          </>
-        )}
-      </ModalBody>
-      <ModalFooter>
-        <Button disabled={isLoading} color="outline-primary" onClick={refetch}>
-          <ArrowRepeat className={cx("bi", "me-1")} />
-          Refresh logs
-        </Button>
-
-        <Button color="outline-primary" onClick={toggleModal}>
-          <XLg className={cx("bi", "me-1")} />
-          Close
-        </Button>
-      </ModalFooter>
-    </Modal>
+    <LogsModal
+      isOpen={isOpen}
+      name={deposit.id ?? "deposit-logs"}
+      query={query}
+      title={
+        <>
+          <FileEarmarkText className={cx("bi", "me-1")} /> Deposit logs
+        </>
+      }
+      toggle={toggleModal}
+    />
   );
 }
 
