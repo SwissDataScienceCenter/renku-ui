@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,17 +16,25 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { API_BASE_URL } from "~/utils/api/api.constants";
-import { prepareHeaders } from "~/utils/api/api.utils";
+type CookieState = {
+  renkuSessionCookie: string;
+};
 
-// initialize an empty api service that we'll inject endpoints into later as needed
-export const usersEmptyApi = createApi({
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE_URL,
-    prepareHeaders,
-  }),
-  endpoints: () => ({}),
-  reducerPath: "usersApi",
+const initialState: CookieState = {
+  renkuSessionCookie: "",
+};
+
+export const cookieSlice = createSlice({
+  name: "cookie",
+  initialState,
+  reducers: {
+    setRenkuSessionCookie: (state, action: PayloadAction<string>) => {
+      state.renkuSessionCookie = action.payload;
+    },
+  },
 });
+
+export const { setRenkuSessionCookie } = cookieSlice.actions;
+export default cookieSlice;

@@ -18,8 +18,8 @@
 
 import { Col, Row } from "reactstrap";
 
+import { useProject } from "~/routes/projects/root";
 import SessionsV2 from "../../sessionsV2/SessionsV2";
-import { useProject } from "../ProjectPageContainer/ProjectPageContainer";
 import { CodeRepositoriesDisplay } from "./CodeRepositories/RepositoriesBox";
 import ProjectDataConnectorsBox from "./DataConnectors/ProjectDataConnectorsBox";
 import Documentation from "./Documentation/Documentation";

@@ -35,6 +35,7 @@ import {
 
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
+import { useProject } from "~/routes/projects/root";
 import { RenkuAlert, SuccessAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
@@ -48,7 +49,6 @@ import ProjectDescriptionFormField from "../../../projectsV2/fields/ProjectDescr
 import ProjectNameFormField from "../../../projectsV2/fields/ProjectNameFormField";
 import ProjectNamespaceFormField from "../../../projectsV2/fields/ProjectNamespaceFormField";
 import ProjectVisibilityFormField from "../../../projectsV2/fields/ProjectVisibilityFormField";
-import { useProject } from "../../ProjectPageContainer/ProjectPageContainer";
 import type {
   ProjectV2Metadata,
   ProjectV2MetadataWithKeyword,

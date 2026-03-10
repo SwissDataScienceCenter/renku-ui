@@ -49,7 +49,7 @@ export const CONFIG_JSON = {
   RENKU_CHART_VERSION: process.env.RENKU_CHART_VERSION,
   UI_SHORT_SHA: process.env.RENKU_UI_SHORT_SHA,
   BASE_URL: process.env.BASE_URL || "http://renku.build",
-  GATEWAY_URL: process.env.GATEWAY_URL || "http://gateway.renku.build",
+  GATEWAY_URL: process.env.GATEWAY_URL || "http://gateway.renku.build/api",
   UISERVER_URL: process.env.UISERVER_URL || "http://uiserver.renku.build",
   KEYCLOAK_REALM: process.env.KEYCLOAK_REALM || "Renku",
   DASHBOARD_MESSAGE: safeJsonToObject(process.env.DASHBOARD_MESSAGE),
