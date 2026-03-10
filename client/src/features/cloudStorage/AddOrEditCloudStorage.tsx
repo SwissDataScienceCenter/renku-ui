@@ -863,7 +863,7 @@ export function AddStorageOptions({
     value: string | number | boolean
   ) => {
     setValue(option, value);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const { sourcePath, ...validOptions } = getValues();
     setStorage({ options: validOptions });
   };

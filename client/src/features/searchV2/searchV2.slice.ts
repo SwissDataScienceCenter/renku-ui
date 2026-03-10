@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import type { RootState } from "../../store/store";
-import type { SearchQuery } from "./api/searchV2Api.api";
+import type { RootState } from "~/store/store";
 import {
   DEFAULT_CONTENT_TYPE,
   DEFAULT_PAGE_SIZE,
@@ -30,7 +29,7 @@ import type {
   InitFromUrlParams,
   SearchV2State,
 } from "./searchV2.types";
-import { selectApiQuery } from "./searchV2.utils";
+import { buildApiQuery } from "./searchV2.utils";
 
 const initialState: SearchV2State = {
   query: "",
@@ -154,6 +153,25 @@ export const {
   reset,
 } = searchV2Slice.actions;
 
-export function selectSearchApiQuery(state: RootState): SearchQuery {
-  return selectApiQuery(state.searchV2);
-}
+export const selectSearchApiQuery = createSelector(
+  (state: RootState) => {
+    const { searchBarFilterKeys, ...searchState } = state.searchV2;
+    return searchState;
+  },
+  (searchState) => buildApiQuery(searchState)
+);
+
+/**
+ * Build an API query ignoring the content type filter.
+ * Used to fetch facet counts across all entity types.
+ */
+export const selectApiQueryWithoutType = createSelector(
+  (state: RootState) => {
+    const { contentType, searchBarFilterKeys, ...searchState } = state.searchV2;
+    return searchState;
+  },
+  (searchState) => {
+    const stateWithoutType = { ...searchState, contentType: "" };
+    return buildApiQuery(stateWithoutType);
+  }
+);

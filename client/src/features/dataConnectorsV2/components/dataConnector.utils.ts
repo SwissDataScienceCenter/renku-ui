@@ -148,7 +148,7 @@ export function dataConnectorToFlattened(
   const configurationOptions = dataConnector.storage.configuration
     ? dataConnector.storage.configuration
     : {};
-  const { type, provider, ...options } = configurationOptions; // eslint-disable-line @typescript-eslint/no-unused-vars
+  const { type, provider, ...options } = configurationOptions;
   const flattened: DataConnectorFlat = {
     dataConnectorId: dataConnector.id,
     keywords: dataConnector.keywords,
