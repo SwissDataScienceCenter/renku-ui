@@ -208,6 +208,21 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getDepositsByDepositIdLogs: build.query<
+      GetDepositsByDepositIdLogsApiResponse,
+      GetDepositsByDepositIdLogsApiArg
+    >({
+      query: (queryArg) => ({ url: `/deposits/${queryArg.depositId}/logs` }),
+    }),
+    postDepositsByDepositIdJob: build.mutation<
+      PostDepositsByDepositIdJobApiResponse,
+      PostDepositsByDepositIdJobApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/deposits/${queryArg.depositId}/job`,
+        method: "POST",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -362,6 +377,17 @@ export type PatchDepositsByDepositIdApiArg = {
 };
 export type DeleteDepositsByDepositIdApiResponse = unknown;
 export type DeleteDepositsByDepositIdApiArg = {
+  /** the ID of the data deposit */
+  depositId: Ulid;
+};
+export type GetDepositsByDepositIdLogsApiResponse =
+  /** status 200 The data deposit logs */ DepositLogs;
+export type GetDepositsByDepositIdLogsApiArg = {
+  /** the ID of the data deposit */
+  depositId: Ulid;
+};
+export type PostDepositsByDepositIdJobApiResponse = unknown;
+export type PostDepositsByDepositIdJobApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
 };
@@ -622,8 +648,8 @@ export type DepositPost = {
 export type DepositStatus =
   | "complete"
   | "in_progress"
-  | "cancelled"
-  | "missing";
+  | "failed"
+  | "upload_complete";
 export type Deposit = DepositPost & {
   id?: Ulid;
   status?: DepositStatus;
@@ -640,6 +666,10 @@ export type InaccessibleDataConnectorLinks = {
 export type DepositPatch = {
   name?: DataConnectorName;
   status?: DepositStatus;
+  path?: DepositSourcePath;
+};
+export type DepositLogs = {
+  [key: string]: string;
 };
 export const {
   useGetDataConnectorsQuery,
@@ -666,4 +696,6 @@ export const {
   useGetDepositsByDepositIdQuery,
   usePatchDepositsByDepositIdMutation,
   useDeleteDepositsByDepositIdMutation,
+  useGetDepositsByDepositIdLogsQuery,
+  usePostDepositsByDepositIdJobMutation,
 } = injectedRtkApi;

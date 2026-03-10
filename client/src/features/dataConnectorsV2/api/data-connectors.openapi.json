@@ -847,6 +847,57 @@
         },
         "tags": ["deposit"]
       }
+    },
+    "/deposits/{deposit_id}/logs": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "deposit_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data deposit"
+        }
+      ],
+      "get": {
+        "summary": "Get the logs of a data deposit",
+        "responses": {
+          "200": {
+            "description": "The data deposit logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositLogs"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["deposit"]
+      }
+    },
+    "/deposits/{deposit_id}/job": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "deposit_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data deposit"
+        }
+      ],
+      "post": {
+        "summary": "Rerun a deposit job",
+        "responses": {
+          "201": {
+            "description": "The data deposit job has been recreated"
+          }
+        },
+        "tags": ["deposit"]
+      }
     }
   },
   "components": {
@@ -1550,7 +1601,7 @@
       },
       "DepositStatus": {
         "type": "string",
-        "enum": ["complete", "in_progress", "cancelled", "missing"]
+        "enum": ["complete", "in_progress", "failed", "upload_complete"]
       },
       "DepositSourcePath": {
         "type": "string",
@@ -1623,6 +1674,9 @@
           },
           "status": {
             "$ref": "#/components/schemas/DepositStatus"
+          },
+          "path": {
+            "$ref": "#/components/schemas/DepositSourcePath"
           }
         }
       },
@@ -1630,6 +1684,16 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/Deposit"
+        }
+      },
+      "DepositLogs": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "container-A": "Log line 1\nLog line 2",
+          "container-B": "Log line 1\nLog line 2"
         }
       }
     },

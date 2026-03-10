@@ -260,6 +260,12 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postDeposits: {
       invalidatesTags: ["Deposits"],
     },
+    postDepositsByDepositIdJob: {
+      invalidatesTags: (_result, _error, { depositId }) =>
+        depositId
+          ? [{ id: depositId, type: "Deposits" }, "Deposits"]
+          : ["Deposits"],
+    },
   },
 });
 
@@ -288,6 +294,7 @@ export const {
   usePostDataConnectorsMutation,
   usePostDataConnectorsGlobalMutation,
   usePostDepositsMutation,
+  usePostDepositsByDepositIdJobMutation,
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
