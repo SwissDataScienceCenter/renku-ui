@@ -7,6 +7,7 @@ export interface CreateDepositionForm {
 }
 export interface EditDepositionForm {
   name: string;
+  path: string;
   status: DepositStatus;
 }
 export type ProviderOption = { value: DepositProvider; label: string };

@@ -590,11 +590,13 @@ function DataConnectorActionsInner({
         isOpen={isNewDepositOpen}
         setOpen={setNewDepositOpen}
       />
-      <DepositEditModal
-        deposit={lastDeposit}
-        isOpen={isEditDepositOpen}
-        setOpen={setEditDepositOpen}
-      />
+      {lastDeposit && (
+        <DepositEditModal
+          deposit={lastDeposit}
+          isOpen={isEditDepositOpen}
+          setOpen={setEditDepositOpen}
+        />
+      )}
       {dataConnectorLink && (
         <DataConnectorRemoveUnlinkModal
           dataConnector={dataConnector}

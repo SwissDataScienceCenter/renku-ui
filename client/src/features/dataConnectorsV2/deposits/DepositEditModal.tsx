@@ -1,7 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
-import { ArrowRepeat, InfoCircle, Pencil, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ArrowRepeat, Pencil, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -17,17 +17,21 @@ import {
 } from "reactstrap";
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import { Loader } from "~/components/Loader";
 import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
 import { Deposit } from "../api/data-connectors.api";
-import { usePatchDepositsByDepositIdMutation } from "../api/data-connectors.enhanced-api";
+import {
+  usePatchDepositsByDepositIdMutation,
+  usePostDepositsByDepositIdJobMutation,
+} from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
 import { EditDepositionForm } from "./deposits.types";
 
 interface DepositEditModalProps {
-  deposit?: Deposit;
+  deposit: Deposit;
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
 }
@@ -40,10 +44,14 @@ export default function DepositEditModal({
   const { control, handleSubmit, reset } = useForm<EditDepositionForm>({
     defaultValues: {
       name: deposit?.name ?? "",
+      path: deposit?.path ?? "",
     },
   });
 
-  const [patchDeposit, result] = usePatchDepositsByDepositIdMutation();
+  // Mutations
+  const [patchDeposit, patchDepositResult] =
+    usePatchDepositsByDepositIdMutation();
+  const [postJob, postJobResult] = usePostDepositsByDepositIdJobMutation();
 
   // Fetch connection information for the target provider
   const {
@@ -70,31 +78,50 @@ export default function DepositEditModal({
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
 
+  // Handle form submission
   const onSubmit = useCallback(
-    (data: EditDepositionForm) => {
-      patchDeposit({
-        depositId: deposit!.id ?? "",
-        depositPatch: {
-          name: data.name,
-        },
-      });
+    async (data: EditDepositionForm) => {
+      if (!deposit?.id) return;
+
+      const depositPatch = {
+        ...(data.name !== deposit.name ? { name: data.name } : {}),
+        ...(data.path !== deposit.path ? { path: data.path } : {}),
+      };
+
+      try {
+        if (Object.keys(depositPatch).length > 0) {
+          await patchDeposit({
+            depositId: deposit.id,
+            depositPatch,
+          }).unwrap();
+        }
+
+        await postJob({
+          depositId: deposit.id,
+        }).unwrap();
+      } catch (err) {
+        console.error(err);
+      }
     },
-    [deposit, patchDeposit]
+    [deposit, patchDeposit, postJob, setOpen]
   );
 
+  // Close modal after successful post job
   useEffect(() => {
-    if (!result.isSuccess || !isOpen) {
+    if (!postJobResult.isSuccess || !isOpen) {
       return;
     }
     setOpen(false);
-  }, [isOpen, result.isSuccess, setOpen]);
+  }, [isOpen, postJobResult.isSuccess, setOpen]);
 
+  // Reset form and mutation results when modal is closed
   useEffect(() => {
     if (!isOpen) {
       reset();
-      result.reset();
+      patchDepositResult.reset();
+      postJobResult.reset();
     }
-  }, [isOpen, reset, result]);
+  }, [isOpen, reset, patchDepositResult, postJobResult]);
 
   return (
     <Modal centered data-cy="deposit-creation-modal" isOpen={isOpen} size="lg">
@@ -104,14 +131,6 @@ export default function DepositEditModal({
           Edit data export
         </ModalHeader>
         <ModalBody>
-          {result.error && <RtkOrDataServicesError error={result.error} />}
-          <p>
-            <InfoCircle className={cx("bi", "me-1")} />
-            Some fields cannot be edited. If you need to change them, please
-            delete this export and create a new one with the desired
-            configuration.
-          </p>
-
           <FormGroup
             className={cx("d-flex", "flex-column", "gap-3", "field-group")}
             noMargin
@@ -150,11 +169,22 @@ export default function DepositEditModal({
 
             <div>
               <Label for="path">Folder</Label>
-              <Input
-                disabled
-                id="path"
-                type="text"
-                value={deposit?.path ?? ""}
+              <Controller
+                control={control}
+                name="path"
+                rules={{ required: "A path is required to create a deposit" }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Input
+                      id="path"
+                      type="text"
+                      placeholder="Folder (e.g. /data/processed)"
+                      invalid={!!fieldState.error}
+                      {...field}
+                    />
+                    <div className="invalid-feedback">Please enter a path.</div>
+                  </>
+                )}
               />
               <FormText>
                 The source folder on the data connector (e.g. /data/processed)
@@ -171,7 +201,9 @@ export default function DepositEditModal({
                 value={deposit?.provider ?? ""}
               />
               <FormText>
-                The target platform where the files will be exported.
+                The target platform where the files will be exported. If you
+                need to change it, please delete this export and create a new
+                one with the desired configuration.
               </FormText>
               <div className="mt-1">
                 <DepositIntegrationInfo
@@ -183,6 +215,19 @@ export default function DepositEditModal({
               </div>
             </div>
           </FormGroup>
+
+          {patchDepositResult.error && (
+            <RtkOrDataServicesError
+              className="mt-3"
+              error={patchDepositResult.error}
+            />
+          )}
+          {!patchDepositResult.error && postJobResult.error && (
+            <RtkOrDataServicesError
+              className="mt-3"
+              error={postJobResult.error}
+            />
+          )}
         </ModalBody>
         <ModalFooter>
           <Button
@@ -190,8 +235,17 @@ export default function DepositEditModal({
             data-cy="create-deposit-modal-button"
             type="submit"
           >
-            <ArrowRepeat className={cx("bi", "me-1")} />
-            Restart data export
+            {postJobResult.isLoading || patchDepositResult.isLoading ? (
+              <>
+                <Loader className="me-1" inline size={16} />
+                Processing...
+              </>
+            ) : (
+              <>
+                <ArrowRepeat className={cx("bi", "me-1")} />
+                Edit and restart data export
+              </>
+            )}
           </Button>
           <Button color="outline-primary" onClick={() => setOpen(false)}>
             <XLg className={cx("bi", "me-1")} />

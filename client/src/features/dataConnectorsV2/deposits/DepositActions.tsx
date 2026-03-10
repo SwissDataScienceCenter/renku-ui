@@ -79,7 +79,7 @@ export default function DepositActions({
           },
         ]
       : []),
-    ...(deposit.status === "cancelled"
+    ...(deposit.status === "failed"
       ? [
           {
             key: "deposit-edit-button",
