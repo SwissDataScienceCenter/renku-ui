@@ -478,7 +478,7 @@ function DataConnectorActionsInner({
           !lastDeposit
             ? {
                 key: "data-connector-deposit-create",
-                onClick: () => toggleNewDeposit(),
+                onClick: toggleNewDeposit,
                 content: (
                   <>
                     <CloudArrowUp className={cx("bi", "me-1")} />
@@ -489,7 +489,7 @@ function DataConnectorActionsInner({
             : lastDeposit.status === "upload_complete"
             ? {
                 key: "data-connector-deposit-finalize",
-                onClick: () => toggleFinalizationDepositOpen(),
+                onClick: toggleFinalizationDepositOpen,
                 content: (
                   <>
                     <Check2 className={cx("bi", "me-1")} />
@@ -499,7 +499,7 @@ function DataConnectorActionsInner({
               }
             : {
                 key: "data-connector-deposit-edit",
-                onClick: () => toggleEditDeposit(),
+                onClick: toggleEditDeposit,
                 content: (
                   <>
                     <Pencil className={cx("bi", "me-1")} />

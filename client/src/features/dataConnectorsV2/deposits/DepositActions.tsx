@@ -67,7 +67,7 @@ export default function DepositActions({
       ? [
           {
             key: "deposit-finalize-button",
-            onClick: () => toggleFinalizationModalOpen(),
+            onClick: toggleFinalizationModalOpen,
             content: (
               <>
                 <DatabaseLock className={cx("me-1", "bi")} />
@@ -81,7 +81,7 @@ export default function DepositActions({
       ? [
           {
             key: "deposit-edit-button",
-            onClick: () => toggleEditModalOpen(),
+            onClick: toggleEditModalOpen,
             content: (
               <>
                 <Pencil className={cx("me-1", "bi")} />
@@ -94,7 +94,7 @@ export default function DepositActions({
     ...[
       {
         key: "deposit-show-logs-button",
-        onClick: () => toggleLogsModalOpen(),
+        onClick: toggleLogsModalOpen,
         content: (
           <>
             <FileEarmarkText className={cx("bi", "me-1")} />
@@ -107,7 +107,7 @@ export default function DepositActions({
       ? [
           {
             key: "deposit-edit-button",
-            onClick: () => toggleEditModalOpen(),
+            onClick: toggleEditModalOpen,
             content: (
               <>
                 <Pencil className={cx("me-1", "bi")} />
@@ -120,7 +120,7 @@ export default function DepositActions({
     ...[
       {
         key: "deposit-delete-button",
-        onClick: () => toggleDeleteModalOpen(),
+        onClick: toggleDeleteModalOpen,
         content: (
           <>
             <Trash className={cx("bi", "me-1")} />
