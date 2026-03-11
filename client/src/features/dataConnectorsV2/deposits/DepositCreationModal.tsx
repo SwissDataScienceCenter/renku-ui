@@ -120,7 +120,6 @@ export default function DepositCreationModal({
           Export data
         </ModalHeader>
         <ModalBody>
-          {result.error && <RtkOrDataServicesError error={result.error} />}
           <FormGroup
             className={cx("d-flex", "flex-column", "gap-3", "field-group")}
             noMargin
@@ -227,6 +226,10 @@ export default function DepositCreationModal({
               </div>
             </div>
           </FormGroup>
+
+          {result.error && (
+            <RtkOrDataServicesError className="mt-3" error={result.error} />
+          )}
         </ModalBody>
         <ModalFooter>
           <Button
