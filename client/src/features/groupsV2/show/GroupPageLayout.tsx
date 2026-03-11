@@ -21,12 +21,14 @@ import { ReactNode } from "react";
 import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
 import UserAvatar, { AvatarTypeWrap } from "../../usersV2/show/UserAvatar";
+import GroupNew from "../new/GroupNew";
 
 interface GroupPageLayoutProps {
   group: GroupResponse;
@@ -50,6 +52,9 @@ export default function GroupPageLayout({
   };
   return (
     <ContainerWrap className="py-0">
+      <ProjectV2New />
+      <GroupNew />
+
       <EntityWatermark type="group" />
       <Row className="py-3">
         <Col xs={12}>
