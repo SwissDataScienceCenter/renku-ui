@@ -22,6 +22,7 @@ import ProjectNotFound from "~/features/projectsV2/notFound/ProjectNotFound";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { store } from "~/store/store";
 import { storeContext } from "~/store/store.utils.server";
+import renkuProjectSocialCard from "~/styles/assets/renkuProjectSocialCard.png";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 import type { Route } from "./+types/root";
@@ -100,7 +101,10 @@ export function meta({
     return metaError;
   }
   if (project == null) {
-    return makeMeta({ title: makeMetaTitle(["Project Page", "Renku"]) });
+    return makeMeta({
+      title: makeMetaTitle(["Project Page", "Renku"]),
+      image: renkuProjectSocialCard,
+    });
   }
 
   const matchSettings = matchPath(
@@ -116,6 +120,7 @@ export function meta({
   return makeMeta({
     title,
     description: project.description || undefined,
+    image: renkuProjectSocialCard,
   });
 }
 
