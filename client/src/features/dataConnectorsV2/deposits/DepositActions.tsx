@@ -216,31 +216,28 @@ function DepositRemovalModal({
         Delete deposit
       </ModalHeader>
       <ModalBody>
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <>
-            <p>
-              Are you sure you want to delete this deposit?{" "}
-              <strong>This action cannot be undone.</strong>
-            </p>
-            <p>
-              Please type the deposit name <strong>{deposit.name}</strong> to
-              confirm.
-            </p>
-            <Input
-              data-cy="delete-confirmation-input"
-              value={typedName}
-              onChange={onChange}
+        <>
+          <p>
+            Are you sure you want to delete this deposit?{" "}
+            <strong>This action cannot be undone.</strong>
+          </p>
+          <p>
+            Please type the deposit name <strong>{deposit.name}</strong> to
+            confirm.
+          </p>
+          <Input
+            data-cy="delete-confirmation-input"
+            disabled={isLoading}
+            value={typedName}
+            onChange={onChange}
+          />
+          {error && (
+            <RtkOrDataServicesError
+              className={cx("mb-0", "mt-3")}
+              error={error}
             />
-            {error && (
-              <RtkOrDataServicesError
-                className={cx("mb-0", "mt-3")}
-                error={error}
-              />
-            )}
-          </>
-        )}
+          )}
+        </>
       </ModalBody>
       <ModalFooter>
         <Button color="outline-danger" onClick={toggleModal}>
@@ -258,7 +255,7 @@ function DepositRemovalModal({
           {isLoading ? (
             <>
               <Loader className="me-1" inline size={16} />
-              Delete deposit
+              Deleting deposit...
             </>
           ) : (
             <>
