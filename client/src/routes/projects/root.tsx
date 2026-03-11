@@ -56,6 +56,7 @@ export async function loader({ context, params }: Route.LoaderArgs) {
   if (error && "status" in error && typeof error.status === "number") {
     return data({ clientSideFetch, project, error }, error.status);
   }
+  // TODO: redirect to the canonical page, see below the effects which navigate()
   return data({ clientSideFetch, project, error });
 }
 
@@ -217,7 +218,7 @@ export default function ProjectPagesRoot({
   }
 
   if (error || project == null) {
-    return <ProjectNotFound error={error} />;
+    return <ProjectNotFound error={error ?? loaderData.error} />;
   }
 
   return (

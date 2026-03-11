@@ -16,82 +16,27 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect } from "react";
-import { generatePath, Outlet, useNavigate, useParams } from "react-router";
+import { ReactNode } from "react";
+import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { NamespaceContextType } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
-import { Loader } from "../../../components/Loader";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
-import LazyNotFound from "../../../not-found/LazyNotFound";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { GroupResponse } from "../../projectsV2/api/namespace.api";
-import {
-  useGetGroupsByGroupSlugQuery,
-  useGetNamespacesByNamespaceSlugQuery,
-} from "../../projectsV2/api/projectV2.enhanced-api";
-import GroupNotFound from "../../projectsV2/notFound/GroupNotFound";
+import type { GroupResponse } from "../../projectsV2/api/namespace.api";
 import UserAvatar, { AvatarTypeWrap } from "../../usersV2/show/UserAvatar";
 
-export default function GroupPageContainer() {
-  const { slug } = useParams<{ slug: string }>();
+interface GroupPageLayoutProps {
+  group: GroupResponse;
+  children?: ReactNode;
+}
 
-  const navigate = useNavigate();
-
-  const {
-    currentData: namespace,
-    isLoading: isLoadingNamespace,
-    error: namespaceError,
-  } = useGetNamespacesByNamespaceSlugQuery(
-    slug ? { namespaceSlug: slug } : skipToken
-  );
-  const {
-    data: group,
-    isLoading: isLoadingGroup,
-    error: groupError,
-  } = useGetGroupsByGroupSlugQuery(slug ? { groupSlug: slug } : skipToken);
-
-  const isLoading = isLoadingNamespace || isLoadingGroup;
-  const error = namespaceError ?? groupError;
-
-  useEffect(() => {
-    if (slug && namespace?.namespace_kind === "user") {
-      navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.users.show.root, { username: slug }),
-        {
-          replace: true,
-        }
-      );
-    } else if (
-      slug &&
-      namespace?.namespace_kind === "group" &&
-      namespace.slug !== slug
-    ) {
-      navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: namespace.slug,
-        }),
-        { replace: true }
-      );
-    }
-  }, [namespace?.namespace_kind, namespace?.slug, navigate, slug]);
-
-  if (!slug) {
-    return <LazyNotFound />;
-  }
-
-  if (isLoading) {
-    return <Loader className="align-self-center" />;
-  }
-
-  if (error || !namespace || !group) {
-    return <GroupNotFound error={error} />;
-  }
-
+export default function GroupPageLayout({
+  group,
+  children,
+}: GroupPageLayoutProps) {
   const options: PageNavOptions = {
     overviewUrl: generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
       slug: group.slug,
@@ -108,7 +53,7 @@ export default function GroupPageContainer() {
       <EntityWatermark type="group" />
       <Row className="py-3">
         <Col xs={12}>
-          <GroupHeader group={group} slug={slug} />
+          <GroupHeader group={group} slug={group.slug} />
         </Col>
         <Col xs={12} className="mb-0">
           <div className="my-3">
@@ -116,17 +61,7 @@ export default function GroupPageContainer() {
           </div>
         </Col>
         <Col xs={12}>
-          <main>
-            <Outlet
-              context={
-                {
-                  kind: "group",
-                  namespace: group.slug,
-                  group: group,
-                } satisfies NamespaceContextType
-              }
-            />
-          </main>
+          <main>{children}</main>
         </Col>
       </Row>
     </ContainerWrap>
