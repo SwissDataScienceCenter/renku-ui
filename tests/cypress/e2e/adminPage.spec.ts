@@ -203,4 +203,37 @@ describe("admin page", () => {
       .should("be.visible");
     cy.get(".modal").contains("button", "Cancel").should("be.visible").click();
   });
+
+  it("should show support remote resources", () => {
+    fixtures
+      .userAdmin()
+      .resourcePoolsTest()
+      .adminResourcePoolUsers()
+      .adminKeycloakUser()
+      .postResourcePoolWithRunaiRemote();
+    cy.visit("/");
+    cy.wait("@getUser");
+
+    cy.visit("/admin");
+
+    cy.get("h1").contains("Admin Panel").should("be.visible");
+
+    // Check the "Add Resource Pool" button
+    cy.get("button").contains("Add Resource Pool").should("be.visible").click();
+    cy.get(".modal").within(() => {
+      cy.contains(".modal-title", "Add resource pool").should("be.visible");
+      cy.get("#addResourcePoolRemote").should("be.visible").click();
+      cy.get("#addResourcePoolName").should("be.visible").type("Remote pool");
+      cy.get("#addResourcePoolKind-firecrest").should("be.visible");
+      cy.get("#addResourcePoolKind-runai").should("be.visible").click();
+      cy.get("#addResourcePoolRemoteBaseUrl")
+        .should("be.visible")
+        .type("https://runai.example.com");
+    });
+    cy.get(".modal")
+      .contains("button", "Add Resource Pool")
+      .should("be.visible")
+      .click();
+    cy.wait("@postResourcePool");
+  });
 });
