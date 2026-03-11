@@ -50,6 +50,20 @@ export default [
     // Not found page for /g/*
     route("*", "routes/groups/catchall.tsx"),
   ]),
+  // User pages
+  ...prefix(RELATIVE_ROUTES.v2.users.root, [
+    index("routes/users/searchRedirect.tsx"),
+    route(RELATIVE_ROUTES.v2.users.show.root, "routes/users/root.tsx", [
+      index("routes/users/index.tsx"),
+      //   route(RELATIVE_ROUTES.v2.groups.show.search, "routes/groups/search.tsx"),
+      //   route(
+      //     RELATIVE_ROUTES.v2.groups.show.settings,
+      //     "routes/groups/settings.tsx"
+      //   ),
+    ]),
+    // Not found page for /u/*
+    route("*", "routes/users/catchall.tsx"),
+  ]),
   // * matches all URLs, the ? makes it optional so it will match / as well
   route("*?", "routes/catchall.tsx"),
 ] satisfies RouteConfig;

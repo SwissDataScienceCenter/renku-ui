@@ -27,8 +27,6 @@ import {
   useNavigate,
 } from "react-router";
 
-import LazyUserContainer from "~/features/usersV2/LazyUserContainer";
-import LazyUserV2Search from "~/features/usersV2/LazyUserV2Search";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import {
@@ -48,7 +46,6 @@ import LazySecretsV2 from "../secretsV2/LazySecretsV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
-import LazyUserShow from "../usersV2/LazyUserShow";
 
 function BetaV2Redirect() {
   const navigate = useNavigate();
@@ -130,10 +127,10 @@ export default function RootV2() {
             path={RELATIVE_ROUTES.v2.user}
             element={<LazyUserRedirect />}
           />
-          <Route
+          {/* <Route
             path={RELATIVE_ROUTES.v2.users.root}
             element={<UserV2Routes />}
-          />
+          /> */}
           <Route
             path={RELATIVE_ROUTES.v2.projects.root}
             element={<ProjectsV2Routes />}
@@ -248,27 +245,27 @@ function ProjectSessionsRoutes() {
   );
 }
 
-function UserV2Routes() {
-  return (
-    <Routes>
-      <Route index element={<RedirectToSearch entityType="user" />} />
-      <Route path={RELATIVE_ROUTES.v2.users.show.root}>
-        <Route element={<LazyUserContainer />}>
-          <Route index element={<LazyUserShow />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.users.show.search}
-            element={<LazyUserV2Search />}
-          />
-        </Route>
-      </Route>
-      <Route
-        path="*"
-        element={
-          <ContainerWrap fullSize>
-            <LazyNotFound />
-          </ContainerWrap>
-        }
-      />
-    </Routes>
-  );
-}
+// function UserV2Routes() {
+//   return (
+//     <Routes>
+//       <Route index element={<RedirectToSearch entityType="user" />} />
+//       <Route path={RELATIVE_ROUTES.v2.users.show.root}>
+//         <Route element={<LazyUserContainer />}>
+//           <Route index element={<LazyUserShow />} />
+//           <Route
+//             path={RELATIVE_ROUTES.v2.users.show.search}
+//             element={<LazyUserV2Search />}
+//           />
+//         </Route>
+//       </Route>
+//       <Route
+//         path="*"
+//         element={
+//           <ContainerWrap fullSize>
+//             <LazyNotFound />
+//           </ContainerWrap>
+//         }
+//       />
+//     </Routes>
+//   );
+// }

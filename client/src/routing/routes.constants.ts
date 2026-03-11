@@ -153,9 +153,9 @@ export const RELATIVE_ROUTES = {
     secrets: "secrets",
     user: "user",
     users: {
-      root: "u/*",
+      root: "u",
       show: {
-        root: ":username/*",
+        root: ":username",
         search: "search",
       },
     },

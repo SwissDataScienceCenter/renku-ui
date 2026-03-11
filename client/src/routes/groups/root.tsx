@@ -30,7 +30,7 @@ export async function loader({ context, params }: Route.LoaderArgs) {
   const store = context.get(storeContext);
   const clientSideFetch = store == null || process.env.CYPRESS === "1";
   if (clientSideFetch) {
-    //? In testing, we load the project data client-side
+    //? In testing, we load the group data client-side
     return data({
       clientSideFetch,
       namespace: undefined,
@@ -152,13 +152,16 @@ export default function GroupPagesRoot({
 
   const dispatch = useAppDispatch();
 
-  const [isCacheReady, setIsCacheReady] = useState<boolean>(false);
+  const [isNamespaceCacheReady, setIsNamespaceCacheReady] =
+    useState<boolean>(false);
+  const [isGroupCacheReady, setIsGroupCacheReady] = useState<boolean>(false);
+  const isCacheReady = isNamespaceCacheReady && isGroupCacheReady;
 
   //? Inject the server-side data into the RTK Query cache
   useEffect(() => {
-    if (loaderData.namespace != null && loaderData.group != null) {
+    if (loaderData.namespace != null) {
       let ignore: boolean = false;
-      const namespaceApiArgs = { namespaceSlug: slug };
+      const namespaceApiArgs = { namespaceSlug: loaderData.namespace.slug };
       const namespacePromise = dispatch(
         projectV2Api.util.upsertQueryData(
           "getNamespacesByNamespaceSlug",
@@ -166,7 +169,20 @@ export default function GroupPagesRoot({
           loaderData.namespace
         )
       );
-      const groupApiArgs = { groupSlug: slug };
+      namespacePromise.then(() => {
+        if (!ignore) {
+          setIsNamespaceCacheReady(true);
+        }
+      });
+      return () => {
+        ignore = true;
+      };
+    }
+  }, [dispatch, loaderData.namespace]);
+  useEffect(() => {
+    if (loaderData.group != null) {
+      let ignore: boolean = false;
+      const groupApiArgs = { groupSlug: loaderData.group.slug };
       const groupPromise = dispatch(
         projectV2Api.util.upsertQueryData(
           "getGroupsByGroupSlug",
@@ -174,16 +190,16 @@ export default function GroupPagesRoot({
           loaderData.group
         )
       );
-      Promise.all([namespacePromise, groupPromise]).then(() => {
+      groupPromise.then(() => {
         if (!ignore) {
-          setIsCacheReady(true);
+          setIsGroupCacheReady(true);
         }
       });
       return () => {
         ignore = true;
       };
     }
-  }, [dispatch, loaderData.group, loaderData.namespace, slug]);
+  }, [dispatch, loaderData.group]);
 
   //? Subscribe this component to the namespace and group queries:
   //? * if the data is loaded client-side
@@ -193,7 +209,7 @@ export default function GroupPagesRoot({
     isLoading: isLoadingNamespace,
     error: namespaceError,
   } = useGetNamespacesByNamespaceSlugQuery(
-    loaderData.clientSideFetch || isCacheReady
+    loaderData.clientSideFetch || isNamespaceCacheReady
       ? { namespaceSlug: slug }
       : skipToken
   );
@@ -202,7 +218,9 @@ export default function GroupPagesRoot({
     isLoading: isLoadingGroup,
     error: groupError,
   } = useGetGroupsByGroupSlugQuery(
-    loaderData.clientSideFetch || isCacheReady ? { groupSlug: slug } : skipToken
+    loaderData.clientSideFetch || isGroupCacheReady
+      ? { groupSlug: slug }
+      : skipToken
   );
   const isLoading = isLoadingNamespace || isLoadingGroup;
   const error = namespaceError ?? groupError;
