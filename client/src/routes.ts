@@ -38,6 +38,7 @@ export default [
   ]),
   // Group pages
   ...prefix("g", [
+    index("routes/groups/searchRedirect.tsx"),
     route(":slug", "routes/groups/root.tsx", [
       index("routes/groups/index.tsx"),
       route(RELATIVE_ROUTES.v2.groups.show.search, "routes/groups/search.tsx"),
@@ -46,6 +47,8 @@ export default [
         "routes/groups/settings.tsx"
       ),
     ]),
+    // Not found page for /g/*
+    route("*", "routes/groups/catchall.tsx"),
   ]),
   // * matches all URLs, the ? makes it optional so it will match / as well
   route("*?", "routes/catchall.tsx"),
