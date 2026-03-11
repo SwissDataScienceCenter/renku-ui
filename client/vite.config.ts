@@ -40,4 +40,18 @@ export default defineConfig(({ isSsrBuild }) => ({
       "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: "modern-compiler",
+        // See: https://github.com/twbs/bootstrap/issues/40849
+        silenceDeprecations: [
+          "color-functions",
+          "import",
+          "global-builtin",
+          "if-function",
+        ],
+      },
+    },
+  },
 }));
