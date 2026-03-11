@@ -231,6 +231,7 @@ export default function DepositEditModal({
           <Button
             color="primary"
             data-cy="create-deposit-modal-button"
+            disabled={postJobResult.isLoading || patchDepositResult.isLoading}
             type="submit"
           >
             {postJobResult.isLoading || patchDepositResult.isLoading ? (

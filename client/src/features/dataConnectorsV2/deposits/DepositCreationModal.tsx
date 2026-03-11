@@ -1,8 +1,8 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { CloudArrowUp, PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   Button,
   Form,
@@ -17,11 +17,11 @@ import {
 } from "reactstrap";
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import { Loader } from "~/components/Loader";
 import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
-import { ProviderKind } from "~/features/connectedServices/api/connectedServices.generated-api";
 import { DataConnectorRead } from "../api/data-connectors.api";
 import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
@@ -39,28 +39,23 @@ export default function DepositCreationModal({
   setOpen,
 }: DepositCreationModalProps) {
   // Posting deposition
-  const { control, handleSubmit, reset, watch } = useForm<CreateDepositionForm>(
-    {
-      defaultValues: {
-        name: "",
-        path: "",
-        provider: PROVIDER_OPTIONS[0].value,
-      },
-    }
-  );
+  const { control, handleSubmit, reset } = useForm<CreateDepositionForm>({
+    defaultValues: {
+      name: "",
+      path: "",
+      provider: PROVIDER_OPTIONS[0].value,
+    },
+  });
   const [postDeposit, result] = usePostDepositsMutation();
 
   // Fetch connection information for the selected provider
-  const userSelectedProvider = watch("provider");
-  const [targetProviderString, setTargetProviderString] =
-    useState<ProviderKind | null>(null);
-
-  useEffect(() => {
-    const next: ProviderKind | null = ["zenodo"].includes(userSelectedProvider)
-      ? userSelectedProvider
-      : null;
-    setTargetProviderString((prev) => (prev === next ? prev : next));
-  }, [userSelectedProvider]);
+  const userSelectedProvider = useWatch({
+    control,
+    name: "provider",
+  });
+  const targetProviderString = ["zenodo"].includes(userSelectedProvider)
+    ? userSelectedProvider
+    : null;
 
   const {
     data: providers,
@@ -236,10 +231,20 @@ export default function DepositCreationModal({
           <Button
             color="primary"
             data-cy="create-deposit-modal-button"
+            disabled={result.isLoading}
             type="submit"
           >
-            <PlusLg className={cx("bi", "me-1")} />
-            Start data export
+            {result.isLoading ? (
+              <>
+                <Loader className="me-1" inline size={16} />
+                Starting export...
+              </>
+            ) : (
+              <>
+                <PlusLg className={cx("bi", "me-1")} />
+                Start data export
+              </>
+            )}
           </Button>
           <Button color="outline-primary" onClick={() => setOpen(false)}>
             <XLg className={cx("bi", "me-1")} />
