@@ -610,6 +610,7 @@ function DataConnectorActionsInner({
         dataConnector={dataConnector}
         isOpen={isNewDepositOpen}
         setOpen={setNewDepositOpen}
+        toggleModal={toggleNewDeposit}
       />
       {lastDeposit && (
         <>
@@ -622,6 +623,7 @@ function DataConnectorActionsInner({
           <DepositFinalizationModal
             deposit={lastDeposit}
             isOpen={isFinalizationDepositOpen}
+            setOpen={setFinalizationDepositOpen}
             toggleModal={toggleFinalizationDepositOpen}
           />
         </>

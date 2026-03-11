@@ -12,11 +12,13 @@ import { usePatchDepositsByDepositIdMutation } from "../api/data-connectors.enha
 interface DepositFinalizationModalProps {
   deposit: Deposit;
   isOpen: boolean;
+  setOpen: (isOpen: boolean) => void;
   toggleModal: () => void;
 }
 export default function DepositFinalizationModal({
   deposit,
   toggleModal,
+  setOpen,
   isOpen,
 }: DepositFinalizationModalProps) {
   const [patchDeposit, result] = usePatchDepositsByDepositIdMutation();
@@ -31,11 +33,10 @@ export default function DepositFinalizationModal({
   }, [deposit, patchDeposit]);
 
   useEffect(() => {
-    if (!result.isSuccess || !isOpen) {
-      return;
+    if (result.isSuccess && isOpen) {
+      setOpen(false);
     }
-    toggleModal();
-  }, [isOpen, result.isSuccess, toggleModal]);
+  }, [isOpen, result.isSuccess, setOpen]);
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>

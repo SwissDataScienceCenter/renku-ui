@@ -168,6 +168,7 @@ export default function DepositActions({
       <DepositFinalizationModal
         deposit={deposit}
         isOpen={isFinalizationModalOpen}
+        setOpen={setIsFinalizationModalOpen}
         toggleModal={toggleFinalizationModalOpen}
       />
     </>

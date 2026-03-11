@@ -32,11 +32,13 @@ interface DepositCreationModalProps {
   dataConnector: DataConnectorRead;
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
+  toggleModal: () => void;
 }
 export default function DepositCreationModal({
   dataConnector,
   isOpen,
   setOpen,
+  toggleModal,
 }: DepositCreationModalProps) {
   // Posting deposition
   const { control, handleSubmit, reset } = useForm<CreateDepositionForm>({
@@ -98,10 +100,9 @@ export default function DepositCreationModal({
   );
 
   useEffect(() => {
-    if (!result.isSuccess || !isOpen) {
-      return;
+    if (result.isSuccess && isOpen) {
+      setOpen(false);
     }
-    setOpen(false);
   }, [isOpen, result.isSuccess, setOpen]);
 
   useEffect(() => {
@@ -114,7 +115,7 @@ export default function DepositCreationModal({
   return (
     <Modal centered data-cy="deposit-creation-modal" isOpen={isOpen} size="lg">
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader tag="h2">
+        <ModalHeader tag="h2" toggle={toggleModal}>
           <CloudArrowUp className={cx("bi", "me-1")} />
           Export data
         </ModalHeader>
