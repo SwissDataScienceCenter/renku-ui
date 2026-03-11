@@ -127,10 +127,6 @@ export default function RootV2() {
             path={RELATIVE_ROUTES.v2.user}
             element={<LazyUserRedirect />}
           />
-          {/* <Route
-            path={RELATIVE_ROUTES.v2.users.root}
-            element={<UserV2Routes />}
-          /> */}
           <Route
             path={RELATIVE_ROUTES.v2.projects.root}
             element={<ProjectsV2Routes />}
@@ -244,28 +240,3 @@ function ProjectSessionsRoutes() {
     </Routes>
   );
 }
-
-// function UserV2Routes() {
-//   return (
-//     <Routes>
-//       <Route index element={<RedirectToSearch entityType="user" />} />
-//       <Route path={RELATIVE_ROUTES.v2.users.show.root}>
-//         <Route element={<LazyUserContainer />}>
-//           <Route index element={<LazyUserShow />} />
-//           <Route
-//             path={RELATIVE_ROUTES.v2.users.show.search}
-//             element={<LazyUserV2Search />}
-//           />
-//         </Route>
-//       </Route>
-//       <Route
-//         path="*"
-//         element={
-//           <ContainerWrap fullSize>
-//             <LazyNotFound />
-//           </ContainerWrap>
-//         }
-//       />
-//     </Routes>
-//   );
-// }

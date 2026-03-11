@@ -55,11 +55,7 @@ export default [
     index("routes/users/searchRedirect.tsx"),
     route(RELATIVE_ROUTES.v2.users.show.root, "routes/users/root.tsx", [
       index("routes/users/index.tsx"),
-      //   route(RELATIVE_ROUTES.v2.groups.show.search, "routes/groups/search.tsx"),
-      //   route(
-      //     RELATIVE_ROUTES.v2.groups.show.settings,
-      //     "routes/groups/settings.tsx"
-      //   ),
+      route(RELATIVE_ROUTES.v2.users.show.search, "routes/users/search.tsx"),
     ]),
     // Not found page for /u/*
     route("*", "routes/users/catchall.tsx"),

@@ -22,6 +22,8 @@ import { generatePath } from "react-router";
 import { Badge, Col, Row } from "reactstrap";
 
 import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
+import GroupNew from "~/features/groupsV2/new/GroupNew";
+import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import {
   useGetUserQueryState,
   type UserWithId,
@@ -54,6 +56,9 @@ export default function UserPageLayout({
   };
   return (
     <ContainerWrap className="py-0">
+      <ProjectV2New />
+      <GroupNew />
+
       <EntityWatermark type="user" />
       <Row className="py-3">
         <Col xs={12}>
