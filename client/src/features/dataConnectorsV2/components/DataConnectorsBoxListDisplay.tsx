@@ -143,7 +143,6 @@ export default function DataConnectorBoxListDisplay({
     depositQueryArg,
     {
       pollingInterval: depositPollingInterval,
-      skipPollingIfUnfocused: true,
     }
   );
 
