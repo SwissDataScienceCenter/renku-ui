@@ -37,9 +37,9 @@ export default [
     ]),
   ]),
   // Group pages
-  ...prefix("g", [
+  ...prefix(RELATIVE_ROUTES.v2.groups.root, [
     index("routes/groups/searchRedirect.tsx"),
-    route(":slug", "routes/groups/root.tsx", [
+    route(RELATIVE_ROUTES.v2.groups.show.root, "routes/groups/root.tsx", [
       index("routes/groups/index.tsx"),
       route(RELATIVE_ROUTES.v2.groups.show.search, "routes/groups/search.tsx"),
       route(

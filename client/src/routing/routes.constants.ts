@@ -122,10 +122,9 @@ export const RELATIVE_ROUTES = {
     betaRoot: "/v2/*",
     integrations: "integrations",
     groups: {
-      root: "g/*",
-      new: "new",
+      root: "g",
       show: {
-        root: ":slug/*",
+        root: ":slug",
         search: "search",
         settings: "settings",
       },
@@ -139,7 +138,6 @@ export const RELATIVE_ROUTES = {
     },
     projects: {
       root: "p/*",
-      new: "new",
       show: {
         root: ":namespace/:slug/*",
         settings: "settings",
