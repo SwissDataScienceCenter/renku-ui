@@ -46,7 +46,7 @@ export default function useLocationHash(): [string, SetLocationHash] {
   return [hash, setLocationHash];
 }
 
-export type SetLocationHash = (
+type SetLocationHash = (
   next?: string | ((prev: string) => string),
   options?: NavigateOptions
 ) => void;

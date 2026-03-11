@@ -273,7 +273,7 @@ export function SessionStatusV2Description({
 interface StatusExtraDetailsV2Props {
   status: SessionStatus;
 }
-export function SessionListRowStatusExtraDetailsV2({
+function SessionListRowStatusExtraDetailsV2({
   status,
 }: StatusExtraDetailsV2Props) {
   const ref = useRef<HTMLElement>(null);

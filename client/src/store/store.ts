@@ -31,7 +31,6 @@ import { notificationsEmptyApi as notificationsApi } from "~/features/notificati
 import { platformEmptyApi as platformApi } from "~/features/platform/api/platform-empty.api";
 import { statuspageEmptyApi as statuspageApi } from "~/features/platform/statuspage-api/statuspage-empty.api";
 import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
-import { recentUserActivityApi } from "~/features/recentUserActivity/RecentUserActivityApi";
 import { repositoriesApi } from "~/features/repositories/api/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "~/features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "~/features/searchV2/searchV2.slice";
@@ -66,7 +65,6 @@ export const store = configureStore({
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
-    [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
     [sessionLaunchersV2Api.reducerPath]: sessionLaunchersV2Api.reducer,
@@ -91,7 +89,6 @@ export const store = configureStore({
       .concat(platformApi.middleware)
       .concat(projectCloudStorageApi.middleware)
       .concat(projectV2Api.middleware)
-      .concat(recentUserActivityApi.middleware)
       .concat(repositoriesApi.middleware)
       .concat(searchV2Api.middleware)
       .concat(sessionLaunchersV2Api.middleware)

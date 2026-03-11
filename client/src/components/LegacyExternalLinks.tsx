@@ -89,7 +89,7 @@ function ExternalLinkText({
   );
 }
 
-export type ExternalLinkRole = "button" | "link" | "text";
+type ExternalLinkRole = "button" | "link" | "text";
 
 interface ExternalLinkProps {
   children?: React.ReactNode | null;

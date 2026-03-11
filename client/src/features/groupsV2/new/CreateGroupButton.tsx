@@ -22,7 +22,7 @@ import { Button } from "reactstrap";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { GROUP_CREATION_HASH } from "./createGroup.constants";
 
-export interface CreateGroupButtonProps {
+interface CreateGroupButtonProps {
   children?: React.ReactNode;
   className?: string;
   color?: string;

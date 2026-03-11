@@ -78,7 +78,7 @@ export const VISIBILITY_FILTER_ALLOWED_VALUES: SearchEntityVisibility[] = [
 
 // Creation date filter constants
 
-export const DEFAULT_DATE_FILTER_VALUE: SearchDateFilter["value"] = {};
+const DEFAULT_DATE_FILTER_VALUE: SearchDateFilter["value"] = {};
 
 export const DATE_AFTER_LEEWAY = "-1d";
 export const DATE_BEFORE_LEEWAY = "+1d";

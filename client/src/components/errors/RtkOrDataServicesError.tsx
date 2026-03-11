@@ -23,7 +23,7 @@ import cx from "classnames";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 import { ErrorAlert } from "../Alert";
 
-export interface BackendErrorResponse {
+interface BackendErrorResponse {
   error: {
     code: number;
     message: string;
