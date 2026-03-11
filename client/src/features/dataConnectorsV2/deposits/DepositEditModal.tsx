@@ -83,27 +83,25 @@ export default function DepositEditModal({
     async (data: EditDepositionForm) => {
       if (!deposit?.id) return;
 
+      // Patch if needed
       const depositPatch = {
         ...(data.name !== deposit.name ? { name: data.name } : {}),
         ...(data.path !== deposit.path ? { path: data.path } : {}),
       };
 
-      try {
-        if (Object.keys(depositPatch).length > 0) {
-          await patchDeposit({
-            depositId: deposit.id,
-            depositPatch,
-          }).unwrap();
-        }
-
-        await postJob({
+      if (Object.keys(depositPatch).length > 0) {
+        const patchResult = await patchDeposit({
           depositId: deposit.id,
-        }).unwrap();
-      } catch (err) {
-        console.error(err);
+          depositPatch,
+        });
+
+        if (patchResult.error) return;
       }
+
+      // Restart job
+      await postJob({ depositId: deposit.id });
     },
-    [deposit, patchDeposit, postJob, setOpen]
+    [deposit, patchDeposit, postJob]
   );
 
   // Close modal after successful post job
