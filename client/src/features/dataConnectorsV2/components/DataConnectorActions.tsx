@@ -503,7 +503,7 @@ function DataConnectorActionsInner({
                 content: (
                   <>
                     <Pencil className={cx("bi", "me-1")} />
-                    Modify data export
+                    Edit or rerun data export
                   </>
                 ),
               },

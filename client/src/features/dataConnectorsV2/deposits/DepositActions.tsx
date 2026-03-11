@@ -85,7 +85,7 @@ export default function DepositActions({
             content: (
               <>
                 <Pencil className={cx("me-1", "bi")} />
-                Edit
+                Edit or rerun
               </>
             ),
           },

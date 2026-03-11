@@ -2,7 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { ArrowRepeat, Pencil, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   Button,
   Form,
@@ -121,12 +121,24 @@ export default function DepositEditModal({
     }
   }, [isOpen, reset, patchDepositResult, postJobResult]);
 
+  // Check user changes
+  const watchNewName = useWatch({
+    control,
+    name: "name",
+  });
+  const watchNewPath = useWatch({
+    control,
+    name: "path",
+  });
+  const isModified =
+    watchNewName !== deposit?.name || watchNewPath !== deposit?.path;
+
   return (
     <Modal centered data-cy="deposit-creation-modal" isOpen={isOpen} size="lg">
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader tag="h2">
           <Pencil className={cx("bi", "me-1")} />
-          Edit data export
+          Edit or rerun data export
         </ModalHeader>
         <ModalBody>
           <FormGroup
@@ -242,7 +254,9 @@ export default function DepositEditModal({
             ) : (
               <>
                 <ArrowRepeat className={cx("bi", "me-1")} />
-                Edit and restart data export
+                {isModified
+                  ? "Edit and rerun data export"
+                  : "Rerun data export"}
               </>
             )}
           </Button>
