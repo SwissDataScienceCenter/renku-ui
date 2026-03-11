@@ -549,16 +549,9 @@ export function parsedResultToSliceParams(
   return params;
 }
 
-/**
- * Build an API query ignoring the content type filter.
- * Used to fetch facet counts across all entity types.
- */
-export function buildApiQueryWithoutType(state: SearchV2State): SearchQuery {
-  const stateWithoutType = { ...state, contentType: "" };
-  return buildApiQuery(stateWithoutType);
-}
-
-export function buildApiQuery(state: SearchV2State): SearchQuery {
+export function buildApiQuery(
+  state: Omit<SearchV2State, "searchBarFilterKeys">
+): SearchQuery {
   const terms: string[] = [];
 
   if (state.contentType) {

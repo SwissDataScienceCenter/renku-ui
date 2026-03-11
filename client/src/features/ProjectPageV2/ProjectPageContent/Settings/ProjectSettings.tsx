@@ -228,7 +228,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
     (data: ProjectV2MetadataWithKeyword) => {
       const namespaceChanged = data.namespace !== project.namespace;
       setRedirectAfterUpdate(namespaceChanged);
-      const { keyword, ...editedData } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
+      const { keyword, ...editedData } = data;
       updateProject({
         "If-Match": project.etag ? project.etag : "",
         projectId: project.id,
