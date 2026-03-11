@@ -14,7 +14,7 @@ import {
   SEARCH_PARAM_SOURCE,
 } from "~/features/connectedServices/connectedServices.constants";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { PROVIDER_OPTIONS } from "./deposits.const";
+import { PROVIDER_OPTIONS } from "./deposits.constants";
 
 interface DepositIntegrationInfoProps {
   connection?: Connection;

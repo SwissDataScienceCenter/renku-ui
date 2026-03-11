@@ -56,7 +56,7 @@ import {
   DEPOSIT_QUERY_PARAMS,
   POLL_TIME_ACTIVE_DEPOSITS,
   POLL_TIME_INACTIVE_DEPOSITS,
-} from "../deposits/deposits.const";
+} from "../deposits/deposits.constants";
 import DepositStatusBadge from "../deposits/DepositStatusBadge";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import {

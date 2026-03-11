@@ -64,7 +64,7 @@ import DepositFinalizationModal from "../deposits/DepositFinalizationModal";
 import {
   DEPOSIT_QUERY_PARAMS,
   POLL_TIME_INACTIVE_DEPOSITS,
-} from "../deposits/deposits.const";
+} from "../deposits/deposits.constants";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";

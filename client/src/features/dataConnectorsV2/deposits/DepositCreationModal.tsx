@@ -25,7 +25,7 @@ import {
 import { DataConnectorRead } from "../api/data-connectors.api";
 import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
-import { PROVIDER_OPTIONS } from "./deposits.const";
+import { PROVIDER_OPTIONS } from "./deposits.constants";
 import { CreateDepositionForm } from "./deposits.types";
 
 interface DepositCreationModalProps {
