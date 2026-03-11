@@ -77,7 +77,7 @@ export default function DepositActions({
           },
         ]
       : []),
-    ...(deposit.status === "failed"
+    ...(deposit.status === "failed" || deposit.status === "upload_complete"
       ? [
           {
             key: "deposit-edit-button",
@@ -111,7 +111,7 @@ export default function DepositActions({
             content: (
               <>
                 <Pencil className={cx("me-1", "bi")} />
-                Edit
+                Edit or rerun
               </>
             ),
           },
