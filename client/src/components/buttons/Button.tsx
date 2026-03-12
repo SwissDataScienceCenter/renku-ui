@@ -121,8 +121,6 @@ interface ButtonWithMenuV2Props {
   size?: string;
   isDisabledDropdownToggle?: boolean;
 }
-// ? We should replace this with either DropdownButton or a non ReactStrap implementation of a dropdown button
-// ? See https://github.com/SwissDataScienceCenter/renku-ui/issues/3688
 export function ButtonWithMenuV2({
   children,
   className,

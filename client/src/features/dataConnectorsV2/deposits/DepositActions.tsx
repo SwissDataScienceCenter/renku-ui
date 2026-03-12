@@ -18,7 +18,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import DropdownButton from "~/components/buttons/DropdownButton";
+import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import LogsModal from "~/features/logsDisplay/LogsModal";
@@ -130,13 +130,22 @@ export default function DepositActions({
       },
     ],
   ];
+  const defaultButton = (
+    <Button
+      color="outline-primary"
+      data-cy="deposit-actions-dropdown-main"
+      onClick={actions[0].onClick}
+    >
+      {actions[0].content}
+    </Button>
+  );
 
   return (
     <>
-      <DropdownButton
+      <ButtonWithMenuV2
+        color="outline-primary"
         dataCy="deposit-actions-dropdown"
-        primaryButtonContent={actions[0].content}
-        primaryButtonOnclick={actions[0].onClick}
+        default={defaultButton}
         size="sm"
       >
         {actions.slice(1).map(({ key, onClick, content }) => (
@@ -144,7 +153,7 @@ export default function DepositActions({
             {content}
           </DropdownItem>
         ))}
-      </DropdownButton>
+      </ButtonWithMenuV2>
 
       <DepositEditModal
         deposit={deposit}
