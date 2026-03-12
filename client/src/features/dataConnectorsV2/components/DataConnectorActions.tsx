@@ -62,7 +62,7 @@ import DepositCreationModal from "../deposits/DepositCreationModal";
 import DepositEditModal from "../deposits/DepositEditModal";
 import DepositFinalizationModal from "../deposits/DepositFinalizationModal";
 import {
-  DEPOSIT_QUERY_PARAMS,
+  LAST_DEPOSIT_QUERY_PARAMS,
   POLL_TIME_INACTIVE_DEPOSITS,
 } from "../deposits/deposits.constants";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
@@ -417,7 +417,7 @@ function DataConnectorActionsInner({
   const deposits = useGetDataConnectorsByDataConnectorIdDepositsQuery(
     {
       dataConnectorId: dataConnector.id,
-      params: DEPOSIT_QUERY_PARAMS,
+      params: LAST_DEPOSIT_QUERY_PARAMS,
     },
     { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS }
   );

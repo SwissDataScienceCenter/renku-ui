@@ -53,7 +53,7 @@ import {
 } from "../api/data-connectors.api";
 import { dataConnectorsApi } from "../api/data-connectors.enhanced-api";
 import {
-  DEPOSIT_QUERY_PARAMS,
+  LAST_DEPOSIT_QUERY_PARAMS,
   POLL_TIME_ACTIVE_DEPOSITS,
   POLL_TIME_INACTIVE_DEPOSITS,
 } from "../deposits/deposits.constants";
@@ -121,7 +121,7 @@ export default function DataConnectorBoxListDisplay({
   const depositQueryArg = useMemo(
     () => ({
       dataConnectorId: dataConnector.id,
-      params: DEPOSIT_QUERY_PARAMS,
+      params: LAST_DEPOSIT_QUERY_PARAMS,
     }),
     [dataConnector.id]
   );
