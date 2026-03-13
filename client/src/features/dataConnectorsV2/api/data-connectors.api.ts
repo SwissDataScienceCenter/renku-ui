@@ -151,6 +151,7 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/data_connectors/${queryArg.dataConnectorId}/deposits`,
+        params: { params: queryArg.params },
       }),
     }),
     getProjectsByProjectIdDataConnectorLinks: build.query<
@@ -177,7 +178,10 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getDeposits: build.query<GetDepositsApiResponse, GetDepositsApiArg>({
-      query: () => ({ url: `/deposits` }),
+      query: (queryArg) => ({
+        url: `/deposits`,
+        params: { params: queryArg.params },
+      }),
     }),
     getDepositsByDepositId: build.query<
       GetDepositsByDepositIdApiResponse,
@@ -202,6 +206,21 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/deposits/${queryArg.depositId}`,
         method: "DELETE",
+      }),
+    }),
+    getDepositsByDepositIdLogs: build.query<
+      GetDepositsByDepositIdLogsApiResponse,
+      GetDepositsByDepositIdLogsApiArg
+    >({
+      query: (queryArg) => ({ url: `/deposits/${queryArg.depositId}/logs` }),
+    }),
+    postDepositsByDepositIdJob: build.mutation<
+      PostDepositsByDepositIdJobApiResponse,
+      PostDepositsByDepositIdJobApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/deposits/${queryArg.depositId}/job`,
+        method: "POST",
       }),
     }),
   }),
@@ -317,6 +336,8 @@ export type GetDataConnectorsByDataConnectorIdDepositsApiResponse =
 export type GetDataConnectorsByDataConnectorIdDepositsApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
+  /** Query parameters */
+  params?: PaginationRequest;
 };
 export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
   /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
@@ -337,7 +358,10 @@ export type PostDepositsApiArg = {
 };
 export type GetDepositsApiResponse =
   /** status 200 The list of data deposits */ DepositList;
-export type GetDepositsApiArg = void;
+export type GetDepositsApiArg = {
+  /** Query parameters */
+  params?: PaginationRequest;
+};
 export type GetDepositsByDepositIdApiResponse =
   /** status 200 The data deposit */ Deposit;
 export type GetDepositsByDepositIdApiArg = {
@@ -353,6 +377,17 @@ export type PatchDepositsByDepositIdApiArg = {
 };
 export type DeleteDepositsByDepositIdApiResponse = unknown;
 export type DeleteDepositsByDepositIdApiArg = {
+  /** the ID of the data deposit */
+  depositId: Ulid;
+};
+export type GetDepositsByDepositIdLogsApiResponse =
+  /** status 200 The data deposit logs */ DepositLogs;
+export type GetDepositsByDepositIdLogsApiArg = {
+  /** the ID of the data deposit */
+  depositId: Ulid;
+};
+export type PostDepositsByDepositIdJobApiResponse = unknown;
+export type PostDepositsByDepositIdJobApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
 };
@@ -613,13 +648,15 @@ export type DepositPost = {
 export type DepositStatus =
   | "complete"
   | "in_progress"
-  | "cancelled"
-  | "missing";
+  | "failed"
+  | "upload_complete";
 export type Deposit = DepositPost & {
   id?: Ulid;
   status?: DepositStatus;
   /** The URL from the provider where the deposit can be accessed */
   external_url?: string;
+  creation_date?: CreationDate;
+  updated_at?: CreationDate;
 };
 export type DepositList = Deposit[];
 export type InaccessibleDataConnectorLinks = {
@@ -629,6 +666,10 @@ export type InaccessibleDataConnectorLinks = {
 export type DepositPatch = {
   name?: DataConnectorName;
   status?: DepositStatus;
+  path?: DepositSourcePath;
+};
+export type DepositLogs = {
+  [key: string]: string;
 };
 export const {
   useGetDataConnectorsQuery,
@@ -655,4 +696,6 @@ export const {
   useGetDepositsByDepositIdQuery,
   usePatchDepositsByDepositIdMutation,
   useDeleteDepositsByDepositIdMutation,
+  useGetDepositsByDepositIdLogsQuery,
+  usePostDepositsByDepositIdJobMutation,
 } = injectedRtkApi;

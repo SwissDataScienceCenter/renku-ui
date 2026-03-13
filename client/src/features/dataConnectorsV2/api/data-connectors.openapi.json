@@ -624,6 +624,18 @@
       ],
       "get": {
         "summary": "Get all deposits for a specific data connector",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/PaginationRequest"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "The list of deposits",
@@ -745,6 +757,18 @@
       },
       "get": {
         "summary": "List all data deposits",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/PaginationRequest"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "The list of data deposits",
@@ -819,6 +843,57 @@
         "responses": {
           "204": {
             "description": "The data deposit was deleted"
+          }
+        },
+        "tags": ["deposit"]
+      }
+    },
+    "/deposits/{deposit_id}/logs": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "deposit_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data deposit"
+        }
+      ],
+      "get": {
+        "summary": "Get the logs of a data deposit",
+        "responses": {
+          "200": {
+            "description": "The data deposit logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositLogs"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["deposit"]
+      }
+    },
+    "/deposits/{deposit_id}/job": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "deposit_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "description": "the ID of the data deposit"
+        }
+      ],
+      "post": {
+        "summary": "Rerun a deposit job",
+        "responses": {
+          "201": {
+            "description": "The data deposit job has been recreated"
           }
         },
         "tags": ["deposit"]
@@ -1350,6 +1425,12 @@
         "format": "date-time",
         "example": "2023-11-01T17:32:28Z"
       },
+      "UpdatedAt": {
+        "description": "The date and time the resource was updated (in UTC and ISO-8601 format)",
+        "type": "string",
+        "format": "date-time",
+        "example": "2023-11-01T17:32:28Z"
+      },
       "UserId": {
         "type": "string",
         "description": "Keycloak user ID",
@@ -1520,7 +1601,7 @@
       },
       "DepositStatus": {
         "type": "string",
-        "enum": ["complete", "in_progress", "cancelled", "missing"]
+        "enum": ["complete", "in_progress", "failed", "upload_complete"]
       },
       "DepositSourcePath": {
         "type": "string",
@@ -1563,6 +1644,12 @@
               "external_url": {
                 "type": "string",
                 "description": "The URL from the provider where the deposit can be accessed"
+              },
+              "creation_date": {
+                "$ref": "#/components/schemas/CreationDate"
+              },
+              "updated_at": {
+                "$ref": "#/components/schemas/CreationDate"
               }
             }
           }
@@ -1574,7 +1661,9 @@
           "data_connector_id",
           "path",
           "status",
-          "external_url"
+          "external_url",
+          "creation_date",
+          "updated_at"
         ]
       },
       "DepositPatch": {
@@ -1585,6 +1674,9 @@
           },
           "status": {
             "$ref": "#/components/schemas/DepositStatus"
+          },
+          "path": {
+            "$ref": "#/components/schemas/DepositSourcePath"
           }
         }
       },
@@ -1592,6 +1684,16 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/Deposit"
+        }
+      },
+      "DepositLogs": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "container-A": "Log line 1\nLog line 2",
+          "container-B": "Log line 1\nLog line 2"
         }
       }
     },
