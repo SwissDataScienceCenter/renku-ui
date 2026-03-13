@@ -93,7 +93,7 @@ export default function LogsModal({
   return (
     <ScrollableModal className="modal-xl" isOpen={isOpen} toggle={toggle}>
       <ModalHeader className="header-multiline" toggle={toggle} tag="div">
-        <h2>{title}</h2>
+        <h2 className={cx(!sessionState && "mb-0")}>{title}</h2>
         {sessionState && (
           <h3
             className={cx(
