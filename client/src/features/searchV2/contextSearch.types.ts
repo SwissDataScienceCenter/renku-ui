@@ -44,7 +44,7 @@ interface BaseFilter {
   validFor?: SearchEntity["type"][];
 }
 
-export interface StringFilter extends BaseFilter {
+interface StringFilter extends BaseFilter {
   defaultValue?: string;
   type: "string";
 }
@@ -57,7 +57,7 @@ export interface EnumFilter extends BaseFilter {
   valueSeparator?: string;
 }
 
-export interface NumberFilter extends BaseFilter {
+interface NumberFilter extends BaseFilter {
   defaultValue?: number;
   maxValue?: number;
   minValue?: number;
@@ -70,26 +70,3 @@ export type Filter<T extends Filter_["type"] = Filter_["type"]> = Extract<
   Filter_ & { type: T },
   Filter_
 >;
-
-type ValueType<T extends Filter["type"] = Filter["type"]> = T extends "number"
-  ? number
-  : T extends "string" | "enum"
-  ? string
-  : string | number;
-
-type FilterWithValue_ =
-  | {
-      filter: StringFilter | EnumFilter;
-      value: string;
-    }
-  | { filter: NumberFilter; value: number };
-
-export type FilterWithValue<T extends Filter["type"] = Filter["type"]> =
-  Extract<
-    FilterWithValue_ & { filter: Filter<T>; value: ValueType<T> },
-    FilterWithValue_
-  >;
-
-export type SearchQueryFilters = {
-  [key: Filter["name"]]: FilterWithValue | undefined;
-};

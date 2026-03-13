@@ -22,7 +22,7 @@ import type {
   Role,
 } from "../../projectsV2/api/projectV2.api";
 
-export type RoleOrNone = Role | "none";
+type RoleOrNone = Role | "none";
 const ROLE_MAP: Record<RoleOrNone, number> = {
   owner: 30,
   editor: 20,

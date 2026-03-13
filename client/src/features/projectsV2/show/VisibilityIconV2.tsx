@@ -22,7 +22,7 @@ import { useRef } from "react";
 import { Globe, Lock } from "react-bootstrap-icons";
 import { UncontrolledTooltip } from "reactstrap";
 
-export interface VisibilityIconV2Props {
+interface VisibilityIconV2Props {
   visibility: "public" | "private";
   className?: string;
 }

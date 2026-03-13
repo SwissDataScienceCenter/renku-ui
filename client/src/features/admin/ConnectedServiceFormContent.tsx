@@ -23,7 +23,7 @@ import { Input, Label } from "reactstrap";
 import { InfoAlert } from "~/components/Alert";
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 
-export interface ConnectedServiceFormContentProps {
+interface ConnectedServiceFormContentProps {
   control: Control<ProviderForm, unknown>;
 }
 export default function ConnectedServiceFormContent({

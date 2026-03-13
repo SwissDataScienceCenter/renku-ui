@@ -27,10 +27,7 @@ export interface CloudStorage
   sensitive_fields?: { name: string; help: string }[];
 }
 
-export type CloudStorageSensitiveFieldDefinition = Pick<
-  RCloneOption,
-  "name" | "help"
->;
+type CloudStorageSensitiveFieldDefinition = Pick<RCloneOption, "name" | "help">;
 
 export interface CloudStorageCredential
   extends CloudStorageSensitiveFieldDefinition {
@@ -105,10 +102,3 @@ export type CloudStorageDetails = {
 };
 
 export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
-
-export interface AddStorageMountForm {
-  name: string;
-  mountPoint: string;
-  readOnly: boolean;
-  saveCredentials: boolean;
-}
