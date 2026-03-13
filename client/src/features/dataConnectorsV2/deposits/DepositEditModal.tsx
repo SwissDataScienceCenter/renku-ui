@@ -99,7 +99,7 @@ export default function DepositEditModal({
       }
 
       // Restart job
-      await postJob({ depositId: deposit.id });
+      postJob({ depositId: deposit.id });
     },
     [deposit, patchDeposit, postJob]
   );
