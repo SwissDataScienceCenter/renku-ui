@@ -22,6 +22,7 @@ import ProjectNotFound from "~/features/projectsV2/notFound/ProjectNotFound";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { store } from "~/store/store";
 import { storeContext } from "~/store/store.utils.server";
+import renkuProjectSocialCard from "~/styles/assets/renkuProjectSocialCard.png";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 import type { Route } from "./+types/root";
@@ -55,6 +56,7 @@ export async function loader({ context, params }: Route.LoaderArgs) {
   if (error && "status" in error && typeof error.status === "number") {
     return data({ clientSideFetch, project, error }, error.status);
   }
+  // TODO: redirect to the canonical page, see below the effects which navigate()
   return data({ clientSideFetch, project, error });
 }
 
@@ -100,7 +102,10 @@ export function meta({
     return metaError;
   }
   if (project == null) {
-    return makeMeta({ title: makeMetaTitle(["Project Page", "Renku"]) });
+    return makeMeta({
+      title: makeMetaTitle(["Project Page", "Renku"]),
+      image: renkuProjectSocialCard,
+    });
   }
 
   const matchSettings = matchPath(
@@ -116,6 +121,7 @@ export function meta({
   return makeMeta({
     title,
     description: project.description || undefined,
+    image: renkuProjectSocialCard,
   });
 }
 
@@ -212,7 +218,7 @@ export default function ProjectPagesRoot({
   }
 
   if (error || project == null) {
-    return <ProjectNotFound error={error} />;
+    return <ProjectNotFound error={error ?? loaderData.error} />;
   }
 
   return (

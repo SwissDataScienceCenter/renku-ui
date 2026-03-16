@@ -16,99 +16,53 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect } from "react";
-import { generatePath, Outlet, useNavigate, useParams } from "react-router";
+import { ReactNode } from "react";
+import { generatePath } from "react-router";
 import { Badge, Col, Row } from "reactstrap";
 
 import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
-import { Loader } from "~/components/Loader";
-import UserNotFound from "~/features/projectsV2/notFound/UserNotFound";
-import { NamespaceContextType } from "~/features/searchV2/hooks/useNamespaceContext.hook";
+import GroupNew from "~/features/groupsV2/new/GroupNew";
+import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import {
-  useGetUserByIdQuery,
   useGetUserQueryState,
-  UserWithId,
+  type UserWithId,
 } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
-import { useGetNamespacesByNamespaceSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import UserAvatar, { AvatarTypeWrap } from "../../usersV2/show/UserAvatar";
+import UserAvatar, { AvatarTypeWrap } from "./UserAvatar";
 
-export default function UserPageContainer() {
-  const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
+interface UserPageLayoutProps {
+  user: UserWithId;
+  children?: ReactNode;
+}
 
-  const {
-    currentData: namespace,
-    isLoading: isLoadingNamespace,
-    error: namespaceError,
-  } = useGetNamespacesByNamespaceSlugQuery(
-    username ? { namespaceSlug: username } : skipToken
-  );
-
-  const {
-    data: user,
-    isLoading: isLoadingUser,
-    error: userError,
-  } = useGetUserByIdQuery(
-    namespace?.namespace_kind === "user" && namespace.created_by
-      ? { userId: namespace.created_by }
-      : skipToken
-  );
-
+export default function UserPageLayout({
+  user,
+  children,
+}: UserPageLayoutProps) {
   const name =
     user?.first_name && user?.last_name
       ? `${user.first_name} ${user.last_name}`
       : user?.first_name || user?.last_name;
-
-  const isLoading = isLoadingNamespace || isLoadingUser;
-  const error = namespaceError ?? userError;
-
-  useEffect(() => {
-    if (username && namespace?.namespace_kind === "group") {
-      navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: username }),
-        { replace: true }
-      );
-    } else if (
-      username &&
-      namespace?.namespace_kind === "user" &&
-      namespace.slug !== username
-    ) {
-      navigate(
-        generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-          username: namespace.slug,
-        }),
-        { replace: true }
-      );
-    }
-  }, [namespace?.namespace_kind, namespace?.slug, navigate, username]);
-
-  if (isLoading) {
-    return <Loader className="align-self-center" />;
-  }
-
-  if (error || !username || !namespace || !user) {
-    return <UserNotFound error={error} />;
-  }
-
   const options: PageNavOptions = {
     overviewUrl: generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-      username: namespace.slug,
+      username: user.username,
     }),
     searchUrl: generatePath(ABSOLUTE_ROUTES.v2.users.show.search, {
-      username: namespace.slug,
+      username: user.username,
     }),
   };
   return (
     <ContainerWrap className="py-0">
+      <ProjectV2New />
+      <GroupNew />
+
       <EntityWatermark type="user" />
       <Row className="py-3">
         <Col xs={12}>
-          <UserHeader user={user} username={username} name={name ?? ""} />
+          <UserHeader user={user} username={user.username} name={name ?? ""} />
         </Col>
         <Col xs={12} className="mb-0">
           <div className="my-3">
@@ -116,17 +70,7 @@ export default function UserPageContainer() {
           </div>
         </Col>
         <Col xs={12}>
-          <main>
-            <Outlet
-              context={
-                {
-                  kind: "user",
-                  namespace: username,
-                  user: user,
-                } satisfies NamespaceContextType
-              }
-            />
-          </main>
+          <main>{children}</main>
         </Col>
       </Row>
     </ContainerWrap>
