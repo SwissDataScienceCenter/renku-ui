@@ -601,6 +601,11 @@ function SessionDetails({
             </div>
             <SessionRowResourceRequests
               resourceRequests={session?.resources?.requests}
+              usageAvailable={{
+                hours: undefined,
+                percentage: undefined,
+                quotaEnforced: false,
+              }}
             />
           </div>
           <div

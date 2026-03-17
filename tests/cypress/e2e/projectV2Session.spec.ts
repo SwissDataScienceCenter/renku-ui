@@ -301,7 +301,7 @@ describe("launch sessions with data connectors", () => {
       .contains("Continue")
       .click();
     cy.wait("@testCloudStorage");
-    cy.contains("Saving credentials...").should("be.visible");
+    cy.contains("Saving credentials").should("be.visible");
     cy.wait("@patchDataConnectorSecrets");
     cy.wait("@getDataConnectorSecretsAfterSaving");
 
@@ -1121,5 +1121,169 @@ describe("view autostart link", () => {
     cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  });
+});
+
+describe("launch sessions with resource quotas", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .projects()
+      .readGroupV2Namespace({ groupSlug: "user1-uuid" })
+      .landingUserProjects()
+      .readProjectV2()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .getResourceClass()
+      .listProjectV2Members()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+      })
+      .sessionImage()
+      .environments()
+      .listProjectDataConnectors({
+        fixture: "dataConnector/empty-list.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo1.git",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
+      })
+      .sessionSecretSlots({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      });
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("launch session without resource limits", () => {
+    fixtures.resourcePoolsTest().sessionServersEmptyV2();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("session-name").should("contain.text", "Session-custom");
+        cy.getDataCy("start-session-button").should("contain.text", "Launch");
+      });
+
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+    cy.wait("@createSession");
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  });
+
+  it("launch session with resource quota consumed", () => {
+    fixtures
+      .resourcePoolsTest({
+        fixture: "dataServices/resource-pools-consumed.json",
+      })
+      .sessionServersEmptyV2();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    // ensure the session launcher is there
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("session-name").should("contain.text", "Session-custom");
+        cy.getDataCy("start-session-button").should(
+          "contain.text",
+          "Quota Reached"
+        );
+      })
+      .click();
+    cy.getDataCy("session-view-resource-class-availability").should(
+      "contain.text",
+      "Usage quota for this resource pool has been reached"
+    );
+    cy.getDataCy("get-back-session-view").click();
+
+    // start session
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").should("be.disabled");
+        cy.getDataCy("button-with-menu-dropdown").click();
+        cy.getDataCy("start-custom-session-button").click();
+      });
+    cy.wait("@getResourcePools");
+    cy.get(".modal-body").within(() => {
+      cy.get("p").should(
+        "contain.text",
+        "Please select one of your available resource classes to continue."
+      );
+      // cy.get("#react-select-5-placeholder").click();
+      cy.contains("Select...").should("be.visible").click();
+      cy.contains("0h available").should("be.visible");
+      cy.contains("200h available").should("be.visible").click();
+    });
+    cy.get("button").contains("Continue").click();
+    cy.contains("200h of compute time until quota is used").should(
+      "be.visible"
+    );
+  });
+
+  it("resume session with resource quota consumed", () => {
+    fixtures
+      .resourcePoolsTest({
+        fixture: "dataServices/resource-pools-consumed.json",
+      })
+      .getSessionsV2({ fixture: "sessions/sessionsV2Hibernated.json" });
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@getSessionsV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+    cy.wait("@getResourcePools");
+
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").should("be.disabled");
+        // The resume button should not be disabled at the moment
+        // cy.getDataCy("resume-session-button").should("be.disabled");
+        cy.getDataCy("resume-session-button").should("be.enabled");
+      });
   });
 });

@@ -52,6 +52,7 @@ import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/Se
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import {
+  ResourceClassWithIdFiltered,
   useGetClassesByClassIdQuery,
   useGetResourcePoolsQuery,
 } from "../api/computeResources.api";
@@ -117,6 +118,16 @@ function SessionCard({
   session: SessionV2;
   project: Project;
 }) {
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const currentSessionClassId = session.resource_class_id;
+  const userLauncherClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == currentSessionClassId),
+    [currentSessionClassId, resourcePools]
+  );
+  const quotaEnforced = false; // TODO: Pass the actual value when available from the API
   return (
     <SessionCardContent
       color={getSessionColor(session.status.state)}
@@ -124,6 +135,11 @@ function SessionCard({
       contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
         <ActiveSessionButton
+          usageAvailable={{
+            hours: userLauncherClass?.usage_available,
+            percentage: userLauncherClass?.usage_available_percentage,
+            quotaEnforced,
+          }}
           session={session}
           showSessionUrl={getShowSessionUrlByProject(project, session.name)}
         />
@@ -131,6 +147,12 @@ function SessionCard({
       contentResources={
         <SessionRowResourceRequests
           resourceRequests={session.resources?.requests}
+          usageAvailable={{
+            // The quota information is shown in the content description, no need to duplicate
+            hours: undefined,
+            percentage: undefined,
+            quotaEnforced,
+          }}
         />
       }
     />
@@ -140,9 +162,11 @@ function SessionCard({
 function SessionCardNotRunning({
   launcher,
   project,
+  resourceClass,
 }: {
   launcher: SessionLauncher;
   project: Project;
+  resourceClass: ResourceClassWithIdFiltered | undefined;
 }) {
   return (
     <SessionCardContent
@@ -172,6 +196,7 @@ function SessionCardNotRunning({
           <StartSessionButton
             launcher={launcher}
             namespace={project.namespace}
+            resourceClass={resourceClass}
             slug={project.slug}
           />
         </div>
@@ -303,6 +328,11 @@ export function SessionView({
             launcher?.disk_storage ?? launcherResourceClass.default_storage,
           gpu: launcherResourceClass.gpu,
         }}
+        usageAvailable={{
+          hours: userLauncherResourceClass?.usage_available,
+          percentage: userLauncherResourceClass?.usage_available_percentage,
+          quotaEnforced: false, // TODO: Pass the actual value when available from the API
+        }}
       />
     ) : (
       <p>This session launcher does not have a default resource class.</p>
@@ -368,6 +398,7 @@ export function SessionView({
                   <SessionCardNotRunning
                     project={project}
                     launcher={launcher}
+                    resourceClass={userLauncherResourceClass}
                   />
                 )}
               </div>

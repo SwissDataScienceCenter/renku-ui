@@ -125,3 +125,9 @@ export interface SessionEnvironmentVariable {
   name: string;
   value: string;
 }
+
+export interface SessionLauncherResourceUsageAvailable {
+  hours: number | undefined;
+  percentage: number | undefined;
+  quotaEnforced: boolean; // TODO: Replace this placeholder with the actual value when available from the API
+}

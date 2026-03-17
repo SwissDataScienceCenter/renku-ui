@@ -16,6 +16,9 @@
  * limitations under the License
  */
 
+import cx from "classnames";
+import { Alarm, Stopwatch } from "react-bootstrap-icons";
+
 import { FaviconStatus } from "../display/display.types";
 import type { ResourcePoolWithId } from "./api/computeResources.api";
 import type {
@@ -418,4 +421,39 @@ export function isImageCompatibleWith(
     ({ os, architecture }) => `${os}/${architecture}`
   );
   return imagePlatforms.some((p) => p === platform);
+}
+
+export function usageAvailableString(
+  usageAvailableHours: number | undefined,
+  short = false
+): string | null {
+  if (usageAvailableHours == null) return null;
+  if (short) return `${usageAvailableHours}h available`;
+  return `(${usageAvailableHours}h of compute available)`;
+}
+
+export function UsageAvailable({
+  usageAvailableHours,
+}: {
+  usageAvailableHours: number;
+}) {
+  if (usageAvailableHours <= 0)
+    return (
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        <Alarm fontSize={16} className="flex-shrink-0" />
+        <span>
+          Usage quota for this resource pool <strong>has been reached</strong>
+        </span>
+      </div>
+    );
+
+  return (
+    <div className={cx("d-flex", "align-items-center", "gap-2")}>
+      <Stopwatch fontSize={16} className="flex-shrink-0" />
+      <span>
+        <strong>{usageAvailableHours}h of compute time</strong> until quota is
+        used
+      </span>
+    </div>
+  );
 }
