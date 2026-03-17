@@ -18,65 +18,17 @@
 
 import type { ReactNode } from "react";
 
-import type { CloudStorageDetailsOptions } from "../cloudStorage/projectCloudStorage.types";
 import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
   BuildParametersPost,
   DefaultUrl,
   EnvironmentGid,
   EnvironmentId,
-  EnvironmentKind,
   EnvironmentPort,
   EnvironmentPost,
   EnvironmentUid,
-  SessionLauncherEnvironmentParams,
   SessionLauncherPost,
 } from "./api/sessionLaunchersV2.api";
-
-export type SessionLauncherEnvironment = {
-  id?: string;
-  name: string;
-  description?: string;
-  container_image: string;
-  default_url?: string;
-  uid?: number;
-  gid?: number;
-  working_directory?: string;
-  mount_directory?: string;
-  port?: number;
-  environment_kind: EnvironmentKind;
-  command?: string[];
-  args?: string[];
-};
-
-export interface GetProjectSessionLauncherParams {
-  id: string;
-}
-export interface GetProjectSessionLaunchersParams {
-  projectId: string;
-}
-
-export type AddSessionLauncherParams = {
-  description?: string;
-  name: string;
-  project_id: string;
-  resource_class_id?: number;
-  disk_storage?: number;
-  environment: SessionLauncherEnvironmentParams;
-};
-
-export interface UpdateSessionLauncherParams {
-  launcherId: string;
-  description?: string;
-  name?: string;
-  resource_class_id?: number;
-  disk_storage?: number | null;
-  environment?: SessionLauncherEnvironmentParams;
-}
-
-export interface DeleteSessionLauncherParams {
-  launcherId: string;
-}
 
 export interface SessionLauncherForm
   extends Pick<
@@ -146,43 +98,6 @@ export interface SessionV2 {
   project_id: string;
   launcher_id: string;
   resource_class_id: number;
-}
-
-export interface SessionCloudStorageV2 {
-  configuration: CloudStorageDetailsOptions;
-  readonly: boolean;
-  source_path: string;
-  storage_id: string;
-  target_path: string;
-}
-
-export interface LaunchSessionParams {
-  launcher_id: string;
-  disk_storage?: number;
-  cloudstorage?: SessionCloudStorageV2[];
-  resource_class_id?: number;
-}
-
-export interface PatchSessionParams {
-  session_id: string;
-  state?: Extract<"running" | "hibernated", SessionStatus["state"]>;
-  resource_class_id?: number;
-}
-
-export interface GetLogsParams {
-  session_id: string;
-  max_lines: number;
-}
-
-export interface StopSessionParams {
-  session_id: string;
-}
-export interface SessionImageParams {
-  image_url: string;
-}
-
-export interface DockerImage {
-  error?: unknown;
 }
 
 export interface BuilderSelectorOption<T extends string = string> {

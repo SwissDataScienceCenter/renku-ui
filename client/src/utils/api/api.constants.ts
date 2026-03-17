@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,28 +16,9 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
+import { CONFIG_JSON_SERVER_ONLY } from "../constants/config.constants";
 
-interface ClampedParagraphProps {
-  children: React.ReactNode;
-  className?: string;
-  lines?: number;
-}
-export default function ClampedParagraph({
-  children,
-  className,
-  lines = 3,
-}: ClampedParagraphProps) {
-  const style = {
-    display: "-webkit-box",
-    overflow: "hidden",
-    WebkitBoxOrient: "vertical" as const,
-    WebkitLineClamp: lines,
-  };
-
-  return (
-    <p className={cx(className)} style={style}>
-      {children}
-    </p>
-  );
-}
+/** The base URL for the Renku API, works both client-side and server-side. */
+export const API_BASE_URL = CONFIG_JSON_SERVER_ONLY?.GATEWAY_URL
+  ? `${CONFIG_JSON_SERVER_ONLY.GATEWAY_URL}/data`
+  : "/api/data";

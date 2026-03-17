@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react-vite";
 import cx from "classnames";
 import { Eye, Sliders } from "react-bootstrap-icons";
 import { Nav, NavItem, NavLink } from "reactstrap";

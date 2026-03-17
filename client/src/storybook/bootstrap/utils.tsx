@@ -51,7 +51,7 @@ export function resolveCssVar(value: string) {
     .trim();
 }
 
-export function getRootFontSize(): number {
+function getRootFontSize(): number {
   return parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 

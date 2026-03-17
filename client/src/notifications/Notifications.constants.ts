@@ -16,23 +16,9 @@
  * limitations under the License.
  */
 
-export enum NOTIFICATION_LEVELS {
-  INFO = "info",
-  SUCCESS = "success",
-  WARNING = "warning",
-  ERROR = "error",
-}
-
 export enum NOTIFICATION_TOPICS {
   AUTHENTICATION = "Authentication",
   SESSION_START = "Session",
   PROJECT_DELETED = "Project deleted",
   PROJECT_UPDATED = "Project updated",
 }
-
-export const NotificationTypes = {
-  TOAST: "toast",
-  DROPDOWN: "dropdown",
-  COMPLETE: "complete",
-  CUSTOM: "custom",
-};

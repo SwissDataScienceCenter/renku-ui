@@ -351,7 +351,7 @@ interface DataConnectorNotVisibleToAllUsersBadgeProps {
   warning?: string;
 }
 
-export function DataConnectorNotVisibleToAllUsersBadge({
+function DataConnectorNotVisibleToAllUsersBadge({
   className,
 }: DataConnectorNotVisibleToAllUsersBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);

@@ -19,8 +19,6 @@
 import { SuccessAlert } from "../../../../components/Alert";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 
-export type AuxiliaryCommandStatus = "failure" | "none" | "success" | "trying";
-
 interface DataConnectorModalResultProps {
   alreadyExisted: boolean;
 }

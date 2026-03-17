@@ -253,7 +253,7 @@ interface DataConnectorModalHeaderProps {
   dataConnectorId: string | null;
   initialStep?: number;
 }
-export function DataConnectorModalHeader({
+function DataConnectorModalHeader({
   dataConnectorId,
   initialStep,
 }: DataConnectorModalHeaderProps) {

@@ -253,6 +253,7 @@ const jsRules = {
         "uploadable",
         "uploader",
         "uploadprogress",
+        "upsert",
         "urls",
         "validators",
         "versioned",
@@ -378,7 +379,10 @@ export default defineConfig([
       },
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { ignoreRestSiblings: true },
+      ],
       ...jsRules,
     },
   },

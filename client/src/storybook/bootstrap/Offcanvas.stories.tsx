@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react-vite";
 import cx from "classnames";
 import { useState } from "react";
 import { Button, Offcanvas, OffcanvasBody } from "reactstrap";

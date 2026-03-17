@@ -39,7 +39,7 @@ type MessageHandlersType = Record<
   Record<string, Array<MessageData> | undefined> | undefined
 >;
 
-export const MESSAGE_HANDLERS = {
+const MESSAGE_HANDLERS = {
   user: {
     init: [
       {

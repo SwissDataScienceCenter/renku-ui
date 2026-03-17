@@ -26,13 +26,13 @@ import {
 import { EMPTY_CLOUD_STORAGE_STATE } from "../../cloudStorage/projectCloudStorage.constants";
 import {
   AddCloudStorageState,
+  AuxiliaryCommandStatus,
   CloudStorageSchema,
 } from "../../cloudStorage/projectCloudStorage.types";
 import {
   EMPTY_DATA_CONNECTOR_FLAT,
   type DataConnectorFlat,
 } from "../components/dataConnector.utils";
-import type { AuxiliaryCommandStatus } from "../components/DataConnectorModal/DataConnectorModalResult";
 
 interface BackendResult {
   isSuccess: boolean | undefined;

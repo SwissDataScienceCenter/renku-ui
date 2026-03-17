@@ -31,53 +31,13 @@ import {
   Tag,
 } from "react-bootstrap-icons";
 
-import {
-  EnumFilter,
-  Filter,
-  NumberFilter,
-  StringFilter,
-} from "./contextSearch.types";
+import { EnumFilter } from "./contextSearch.types";
 import { DATE_AFTER_LEEWAY, DATE_BEFORE_LEEWAY } from "./searchV2.constants";
 
 export const VALUE_SEPARATOR_AND = "+";
-export const VALUE_SEPARATOR_OR = ",";
+const VALUE_SEPARATOR_OR = ",";
 
 export const DEFAULT_ELEMENTS_LIMIT_IN_FILTERS = 5;
-
-export const FILTER_PAGE: NumberFilter &
-  Required<Pick<NumberFilter, "defaultValue" | "minValue">> = {
-  name: "page",
-  label: "Page",
-  type: "number",
-  defaultValue: 1,
-  minValue: 1,
-};
-
-export const FILTER_PER_PAGE: NumberFilter &
-  Required<Pick<NumberFilter, "defaultValue" | "minValue" | "maxValue">> = {
-  name: "perPage",
-  label: "Per page",
-  type: "number",
-  defaultValue: 10,
-  minValue: 1,
-  maxValue: 100,
-};
-
-export const FILTER_QUERY: StringFilter = {
-  name: "q",
-  label: "Query",
-  type: "string",
-  defaultValue: "",
-};
-
-export const NAMESPACE_FILTER: StringFilter = {
-  name: "namespace",
-  label: "Namespace",
-  type: "string",
-  defaultValue: "",
-};
-
-export const DEFAULT_INCLUDE_COUNTS = true;
 
 export const FILTER_CONTENT: EnumFilter = {
   name: "type",
@@ -318,47 +278,3 @@ export const FILTER_DATE: EnumFilter = {
     });
   },
 };
-
-export const COMMON_FILTERS: Filter[] = [
-  FILTER_CONTENT,
-  FILTER_PAGE,
-  FILTER_PER_PAGE,
-  FILTER_QUERY,
-];
-
-export const PROJECT_FILTERS: Filter[] = [
-  FILTER_MEMBER,
-  FILTER_KEYWORD,
-  FILTER_VISIBILITY,
-  FILTER_MY_ROLE,
-  FILTER_DATE,
-];
-
-export const DATACONNECTORS_FILTERS: Filter[] = [
-  FILTER_KEYWORD,
-  FILTER_VISIBILITY,
-  FILTER_DATE,
-];
-
-export const SELECTABLE_FILTERS: Filter[] = [
-  FILTER_CONTENT,
-  FILTER_MEMBER,
-  FILTER_KEYWORD,
-  FILTER_VISIBILITY,
-  FILTER_MY_ROLE,
-  FILTER_DATE,
-];
-
-export const ALL_FILTERS: Filter[] = [
-  FILTER_PAGE,
-  FILTER_PER_PAGE,
-  FILTER_QUERY,
-  FILTER_CONTENT,
-  FILTER_MEMBER,
-  FILTER_KEYWORD,
-  FILTER_VISIBILITY,
-  FILTER_MY_ROLE,
-  FILTER_DATE,
-];
-
-export const SEARCH_DEBOUNCE_SECONDS = 1;
