@@ -176,7 +176,7 @@ function ProjectConnectDataConnectorModeSwitch({
         className={cx("btn", "btn-outline-primary", "mb-0")}
       >
         <NodePlus className={cx("bi", "me-1")} />
-        Link a data connector
+        Link a data connector x
       </Label>
 
       <Input
