@@ -10,6 +10,7 @@
       "gpu": 0,
       "storage": 1000000
     },
+    "user_used": 10,
     "classes": [
       {
         "id": 1,
@@ -20,7 +21,9 @@
         "max_storage": 20,
         "default_storage": 5,
         "default": true,
-        "matching": false
+        "matching": false,
+        "resource_available": 90,
+        "resource_available_percentage": 90
       },
       {
         "id": 2,
@@ -31,7 +34,9 @@
         "max_storage": 40,
         "default_storage": 5,
         "default": false,
-        "matching": true
+        "matching": true,
+        "resource_available": 45,
+        "resource_available_percentage": 90
       }
     ]
   },

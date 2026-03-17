@@ -276,22 +276,27 @@ interface OptionOrSingleValueContentProps {
 const OptionOrSingleValueContent = ({
   sessionClass,
 }: OptionOrSingleValueContentProps) => {
+  const canBeUsed =
+    sessionClass.matching &&
+    (sessionClass.resource_available == null ||
+      sessionClass.resource_available > 0);
   const labelClassName = cx(
     "text-wrap",
     "text-break",
     styles.label,
-    sessionClass.matching && styles.labelMatches
+    canBeUsed && styles.labelMatches
   );
   const detailValueClassName = cx(styles.detail, styles.detailValue);
   const detailLabelClassName = cx(styles.detail, styles.detailLabel);
+  const icon = canBeUsed ? faCheckCircle : faExclamationTriangle;
   return (
     <>
       <span className={labelClassName}>
-        <FontAwesomeIcon
-          icon={sessionClass.matching ? faCheckCircle : faExclamationTriangle}
-          fixedWidth
-        />{" "}
-        {sessionClass.name}
+        <FontAwesomeIcon icon={icon} /> {sessionClass.name}{" "}
+        <span className="text-muted">
+          {sessionClass.resource_available != null &&
+            `(${sessionClass.resource_available}h available)`}
+        </span>
       </span>{" "}
       <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
       <span className={detailLabelClassName}>CPUs</span>{" "}
