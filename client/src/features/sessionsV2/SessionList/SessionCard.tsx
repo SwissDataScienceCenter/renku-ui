@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useMemo } from "react";
 import { Col, Row } from "reactstrap";
 
 import { Project } from "../../projectsV2/api/projectV2.api";
+import { useGetResourcePoolsQuery } from "../api/computeResources.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
   getSessionStatusStyles,
@@ -36,6 +39,17 @@ interface SessionCardProps {
   session?: SessionV2;
 }
 export default function SessionCard({ project, session }: SessionCardProps) {
+  const { data: resourcePools } = useGetResourcePoolsQuery(
+    session ? {} : skipToken
+  );
+  const currentSessionClassId = session?.resource_class_id;
+  const userLauncherClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == currentSessionClassId),
+    [currentSessionClassId, resourcePools]
+  );
   if (!session) return null;
 
   const stylesPerSession = getSessionStatusStyles(session);
@@ -99,6 +113,10 @@ export default function SessionCard({ project, session }: SessionCardProps) {
           >
             <div>
               <ActiveSessionButton
+                usageLimit={{
+                  resourceClass: userLauncherClass,
+                  quotaEnforced: false, // TODO: Pass the actual value when available from the API
+                }}
                 session={session}
                 showSessionUrl={getShowSessionUrlByProject(
                   project,
