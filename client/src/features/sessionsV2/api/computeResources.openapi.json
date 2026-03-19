@@ -1189,7 +1189,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The user was removed or it was not part of the pool"
+            "description": "The user was removed, or it was not part of the pool"
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -1898,6 +1898,12 @@
           },
           "node_affinities": {
             "$ref": "#/components/schemas/NodeAffinityList"
+          },
+          "resource_available": {
+            "$ref": "#/components/schemas/ResourceAvailable"
+          },
+          "resource_available_percentage": {
+            "$ref": "#/components/schemas/ResourceAvailablePercentage"
           }
         },
         "required": [
@@ -2328,6 +2334,9 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "resource_usage": {
+            "$ref": "#/components/schemas/ResourceUsage"
           }
         },
         "required": ["classes", "name", "id", "public", "default", "platform"],
@@ -2545,6 +2554,29 @@
         "example": 8,
         "minimum": 0,
         "maximum": 9223372036854776000
+      },
+      "ResourceAvailable": {
+        "type": "number",
+        "format": "double",
+        "description": "Amount of a resource available (in hours)",
+        "example": 3.141,
+        "minimum": 0
+      },
+      "ResourceAvailablePercentage": {
+        "type": "number",
+        "format": "float",
+        "description": "Percentage of available resources based on quota",
+        "example": 75.5,
+        "minimum": 0,
+        "maximum": 100,
+        "default": null
+      },
+      "ResourceUsage": {
+        "type": "number",
+        "format": "double",
+        "description": "Amount of a resource used (in credits)",
+        "example": 3.141,
+        "minimum": 0
       },
       "Storage": {
         "type": "integer",
