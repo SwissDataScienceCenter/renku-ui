@@ -601,6 +601,10 @@ function SessionDetails({
             </div>
             <SessionRowResourceRequests
               resourceRequests={session?.resources?.requests}
+              usageLimit={{
+                resourceClass: undefined,
+                quotaEnforced: false,
+              }}
             />
           </div>
           <div

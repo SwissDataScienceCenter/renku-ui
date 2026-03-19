@@ -86,12 +86,12 @@ export default function SessionLauncherCard({
   const { data: builds, isLoading } = useGetBuildsQuery(
     imageBuildersEnabled && isCodeEnvironment
       ? { environmentId: environment.id }
-      : skipToken,
+      : skipToken
   );
 
   const lastBuild = builds?.at(0);
   const lastSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
+    (build) => build.status === "succeeded" && build.id !== lastBuild?.id
   );
   const hasSession = !!sessions?.length;
 
@@ -101,7 +101,7 @@ export default function SessionLauncherCard({
       : skipToken,
     {
       pollingInterval: 1_000,
-    },
+    }
   );
 
   const otherLauncherActions = launcher &&
@@ -132,20 +132,24 @@ export default function SessionLauncherCard({
     useGetSessionsImagesQuery(
       environment?.container_image != null
         ? { imageUrl: environment.container_image }
-        : skipToken,
+        : skipToken
     );
 
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
   // Ref: https://github.com/facebook/react/issues/35577
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
-  const resourcePool = useMemo(() => {
+  const { resourcePool, resourceClass } = useMemo(() => {
     if (launcher?.resource_class_id == null || resourcePools == null) {
-      return undefined;
+      return { resourcePool: undefined, resourceClass: undefined };
     }
-    return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id),
+    const resourcePool = resourcePools.find(({ classes }) =>
+      classes.some(({ id }) => id === launcher.resource_class_id)
     );
+    const resourceClass = resourcePool?.classes.find(
+      ({ id }) => id === launcher.resource_class_id
+    );
+    return { resourcePool, resourceClass };
   }, [launcher?.resource_class_id, resourcePools]);
 
   return (
@@ -154,7 +158,7 @@ export default function SessionLauncherCard({
         styles.SessionLauncherCard,
         "cursor-pointer",
         "shadow-none",
-        "rounded-0",
+        "rounded-0"
       )}
       data-cy="session-launcher-item"
       onClick={toggleSessionView}
@@ -266,8 +270,8 @@ export default function SessionLauncherCard({
                         lastBuild?.status === "succeeded"
                           ? lastBuild?.result?.completed_at
                           : lastSuccessfulBuild?.status === "succeeded"
-                            ? lastSuccessfulBuild?.result?.completed_at
-                            : undefined
+                          ? lastSuccessfulBuild?.result?.completed_at
+                          : undefined
                       }
                     />
                   </Col>
@@ -292,7 +296,7 @@ export default function SessionLauncherCard({
                     "d-flex",
                     "flex-column",
                     "align-items-end",
-                    "gap-2",
+                    "gap-2"
                   )}
                 >
                   <SessionLauncherButtons
@@ -301,6 +305,7 @@ export default function SessionLauncherCard({
                     launcher={launcher}
                     namespace={project.namespace}
                     otherActions={otherLauncherActions}
+                    resourceClass={resourceClass}
                     slug={project.slug}
                     useOldImage={
                       isCodeEnvironment &&

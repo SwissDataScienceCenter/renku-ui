@@ -28,65 +28,39 @@ import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import { ResourceClassWithIdFiltered } from "./api/computeResources.generated-api";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
 import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
+import { UsageQuotaReachedLaunchButton } from "./components/SessionLauncherButtons";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 
-interface StartSessionButtonProps {
-  namespace: string;
-  slug: string;
-  launcher: SessionLauncher;
-  disabled?: boolean;
-  useOldImage?: boolean;
-  otherActions?: ReactNode;
-  isDisabledDropdownToggle?: boolean;
+interface SessionStartDefaultActionButtonProps
+  extends Pick<StartSessionButtonProps, "launcher" | "resourceClass"> {
+  force: boolean;
+  isLaunchButtonDisabled: boolean;
+  startUrl: string;
 }
 
-export default function StartSessionButton({
+function SessionStartDefaultActionButton({
+  force,
+  isLaunchButtonDisabled,
   launcher,
-  namespace,
-  slug,
-}: StartSessionButtonProps) {
-  const startUrl = generatePath(
-    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
-    {
-      launcherId: launcher.id,
-      namespace,
-      slug,
-    },
-  );
-  const environment = launcher?.environment;
-  const isExternalImageEnvironment =
-    environment?.environment_kind === "CUSTOM" &&
-    environment?.environment_image_source === "image";
-  const { data, isLoading } = useGetSessionsImagesQuery(
-    environment &&
-      environment.environment_kind === "CUSTOM" &&
-      environment.container_image
-      ? { imageUrl: environment.container_image }
-      : skipToken,
-  );
-  const { params } = useContext(AppContext);
-  const imageBuildersEnabled =
-    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
-  const { data: builds } = useGetBuildsQuery(
-    imageBuildersEnabled && environment.environment_image_source === "build"
-      ? { environmentId: environment.id }
-      : skipToken,
-  );
-
-  const hasSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded",
-  );
-
-  const force = isExternalImageEnvironment && !isLoading && !data?.accessible;
-
-  const isLaunchButtonDisabled =
-    environment.environment_image_source === "build" && !hasSuccessfulBuild;
+  resourceClass,
+  startUrl,
+}: SessionStartDefaultActionButtonProps) {
   const launchButtonDisableReason =
     "No image available. Run the Build action to generate an image.";
 
-  const launchAction = (
+  if (resourceClass) {
+    if (
+      resourceClass.usage_available != null &&
+      resourceClass.usage_available <= 0
+    ) {
+      return <UsageQuotaReachedLaunchButton />;
+    }
+  }
+
+  return (
     <span id={`launch-btn-${launcher.id}`}>
       <Link
         className={cx(
@@ -94,7 +68,7 @@ export default function StartSessionButton({
           "btn-sm",
           force ? "btn-outline-primary" : "btn-primary",
           "rounded-end-0",
-          isLaunchButtonDisabled && "disabled",
+          isLaunchButtonDisabled && "disabled"
         )}
         to={startUrl}
         data-cy="start-session-button"
@@ -112,6 +86,61 @@ export default function StartSessionButton({
       )}
     </span>
   );
+}
+
+interface StartSessionButtonProps {
+  namespace: string;
+  slug: string;
+  launcher: SessionLauncher;
+  resourceClass: ResourceClassWithIdFiltered | undefined;
+  disabled?: boolean;
+  useOldImage?: boolean;
+  otherActions?: ReactNode;
+  isDisabledDropdownToggle?: boolean;
+}
+
+export default function StartSessionButton({
+  launcher,
+  namespace,
+  slug,
+  resourceClass,
+}: StartSessionButtonProps) {
+  const startUrl = generatePath(
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
+    {
+      launcherId: launcher.id,
+      namespace,
+      slug,
+    }
+  );
+  const environment = launcher?.environment;
+  const isExternalImageEnvironment =
+    environment?.environment_kind === "CUSTOM" &&
+    environment?.environment_image_source === "image";
+  const { data, isLoading } = useGetSessionsImagesQuery(
+    environment &&
+      environment.environment_kind === "CUSTOM" &&
+      environment.container_image
+      ? { imageUrl: environment.container_image }
+      : skipToken
+  );
+  const { params } = useContext(AppContext);
+  const imageBuildersEnabled =
+    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+  const { data: builds } = useGetBuildsQuery(
+    imageBuildersEnabled && environment.environment_image_source === "build"
+      ? { environmentId: environment.id }
+      : skipToken
+  );
+
+  const hasSuccessfulBuild = builds?.find(
+    (build) => build.status === "succeeded"
+  );
+
+  const force = isExternalImageEnvironment && !isLoading && !data?.accessible;
+
+  const isLaunchButtonDisabled =
+    environment.environment_image_source === "build" && !hasSuccessfulBuild;
 
   const customizeLaunch = (
     <Link
@@ -133,7 +162,15 @@ export default function StartSessionButton({
     <>
       <ButtonWithMenuV2
         color={"primary"}
-        default={launchAction}
+        default={
+          <SessionStartDefaultActionButton
+            isLaunchButtonDisabled={isLaunchButtonDisabled}
+            force={force}
+            launcher={launcher}
+            resourceClass={resourceClass}
+            startUrl={startUrl}
+          />
+        }
         preventPropagation
         size="sm"
         disabled={isLaunchButtonDisabled}

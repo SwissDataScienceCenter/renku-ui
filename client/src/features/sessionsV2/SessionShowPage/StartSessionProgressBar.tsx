@@ -20,6 +20,8 @@ import cx from "classnames";
 import { Button } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
+import { useGetResourcePoolsQuery } from "../api/computeResources.generated-api";
+import { UsageAvailable } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 
 import progressBoxStyles from "~/components/progress/ProgressBox.module.scss";
@@ -32,6 +34,10 @@ export function StartSessionProgressBarV2({
   session,
   toggleLogs,
 }: StartSessionProgressBarV2Props) {
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const resourceClass = resourcePools
+    ?.flatMap((pool) => pool.classes)
+    .find((cls) => cls.id === session?.resource_class_id);
   const statusData = session?.status;
   const description =
     statusData?.ready_containers != null &&
@@ -49,8 +55,11 @@ export function StartSessionProgressBarV2({
     >
       <div data-cy="session-status-starting">
         <h2 className="fw-bold">Launching Session</h2>
-        <p className="pb-2">Starting session services</p>
-        <div className={cx("d-flex", "gap-3")}>
+        <p className="pb-0">Starting session services</p>
+        {resourceClass?.usage_available != null && (
+          <UsageAvailable usageAvailableHours={resourceClass.usage_available} />
+        )}
+        <div className={cx("d-flex", "gap-3", "mt-3")}>
           <Loader inline={true} size={24} />
           <div>{description}</div>
         </div>
