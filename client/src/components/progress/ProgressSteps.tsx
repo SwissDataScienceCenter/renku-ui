@@ -71,16 +71,18 @@ interface ProgressStepsIndicatorProps {
   style: ProgressStyle;
   title: string;
   description: string;
-  status: StepsProgressBar[];
   moreOptions?: React.ReactNode;
+  extraDescription?: React.ReactNode;
+  status: StepsProgressBar[];
 }
 
 export default function ProgressStepsIndicator({
   style = ProgressStyle.Dark,
   title,
   description,
-  status,
   moreOptions,
+  extraDescription,
+  status,
 }: ProgressStepsIndicatorProps) {
   const content = status.map((s) => (
     <ProgressStep key={`step-${s.id}`} step={s} />
@@ -88,8 +90,9 @@ export default function ProgressStepsIndicator({
   return (
     <div className={cx(styles.progressBox, styles[`progressBox_${style}`])}>
       <h2>{title}</h2>
-      <p className="pb-2">{description}</p>
-      <div className="mt-3">
+      <p className="pb-0">{description}</p>
+      {extraDescription}
+      <div className={cx("mt-3", "pt-2")}>
         {content}
         {moreOptions}
       </div>
