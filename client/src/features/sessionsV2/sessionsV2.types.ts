@@ -18,7 +18,10 @@
 
 import type { ReactNode } from "react";
 
-import type { ResourceClassWithId } from "./api/computeResources.api";
+import type {
+  ResourceClassWithId,
+  ResourceClassWithIdFiltered,
+} from "./api/computeResources.api";
 import type {
   BuildParametersPost,
   DefaultUrl,
@@ -124,4 +127,9 @@ export enum SessionStatusStateEnum {
 export interface SessionEnvironmentVariable {
   name: string;
   value: string;
+}
+
+export interface SessionLauncherResourceUsageLimit {
+  resourceClass: ResourceClassWithIdFiltered | undefined;
+  quotaEnforced: boolean; // TODO: Replace this placeholder with the actual value when available from the API
 }

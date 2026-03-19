@@ -484,7 +484,7 @@ export type GetResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   userId: string;
 };
 export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiResponse =
-  /** status 204 The user was removed or it was not part of the pool */ void;
+  /** status 204 The user was removed, or it was not part of the pool */ void;
 export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   resourcePoolId: number;
   userId: string;
@@ -629,6 +629,8 @@ export type QuotaWithId = {
   gpu: Gpu;
   id: Name;
 };
+export type UsageAvailable = number;
+export type UsageLimitTotal = number;
 export type ResourceClassWithIdFiltered = {
   name: Name;
   cpu: Cpu;
@@ -641,6 +643,8 @@ export type ResourceClassWithIdFiltered = {
   matching?: boolean;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
+  usage_available?: UsageAvailable;
+  usage_limit_total?: UsageLimitTotal;
 };
 export type PublicFlag = boolean;
 export type RemoteConfigurationFirecrestProviderId = string;
@@ -669,6 +673,7 @@ export type IdleThreshold = number;
 export type HibernationThreshold = number;
 export type HibernationWarningPeriod = number;
 export type RuntimePlatform = "linux/amd64" | "linux/arm64";
+export type ResourceUsage = number;
 export type ResourcePoolWithIdFiltered = {
   quota?: QuotaWithId;
   classes: ResourceClassWithIdFiltered[];
@@ -682,6 +687,7 @@ export type ResourcePoolWithIdFiltered = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform: RuntimePlatform;
+  resource_usage?: ResourceUsage;
 };
 export type ResourcePoolsWithIdFiltered = ResourcePoolWithIdFiltered[];
 export type CpuFilter = number;

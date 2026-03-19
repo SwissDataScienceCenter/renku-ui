@@ -1,0 +1,22 @@
+[
+  {
+    "image": "renku/renkulab-py:3.10-0.15.0",
+    "name": "renku-2-86688c93091df68dffdc594bfd022ce3",
+    "resources": {
+      "cpu": 0.1,
+      "memory": "1G",
+      "storage": "1G"
+    },
+    "started": "2024-04-19T09:44:38+00:00",
+    "status": {
+      "state": "hibernated",
+      "will_delete_at": "2024-04-20T09:44:38+00:00",
+      "ready_containers": 0,
+      "total_containers": 0
+    },
+    "url": "https://dev.renku.ch/sessions/renku-2-86688c93091df68dffdc594bfd022ce3",
+    "project_id": "THEPROJECTULID26CHARACTERS",
+    "launcher_id": "01HYJE99XEKWNKPYN8WRB6QA8Z",
+    "resource_class_id": 1
+  }
+]
