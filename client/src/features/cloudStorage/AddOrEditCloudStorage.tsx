@@ -103,32 +103,25 @@ export function AddStorageAdvancedToggle({
   const infoId = "switch-storage-advanced-mode-info";
   return (
     <>
-      <div className="form-rk-green">
-        <div
-          className={cx("form-check", "form-switch", "mb-3", "d-flex")}
-          data-cy="cloud-storage-edit-advanced-toggle"
+      <div
+        className={cx("form-check", "form-switch", "d-flex")}
+        data-cy="cloud-storage-edit-advanced-toggle"
+      >
+        <Input
+          className={cx("form-check-input", "rounded-pill", "my-auto", "me-2")}
+          checked={state.advancedMode}
+          id="switch-storage-advanced-mode"
+          onChange={toggleAdvanced}
+          role="switch"
+          type="checkbox"
+        />
+        <Label
+          className={cx("form-check-label", "my-auto")}
+          for="switch-storage-advanced-mode"
         >
-          <Input
-            className={cx(
-              "form-check-input",
-              "rounded-pill",
-              "my-auto",
-              "me-2"
-            )}
-            checked={state.advancedMode}
-            id="switch-storage-advanced-mode"
-            onChange={toggleAdvanced}
-            role="switch"
-            type="checkbox"
-          />
-          <Label
-            className={cx("form-check-label", "my-auto")}
-            for="addCloudStorageAdvancedSwitch"
-          >
-            Advanced mode{" "}
-            <QuestionCircle id={infoId} className={cx("bi", "ms-1")} />
-          </Label>
-        </div>
+          Advanced mode{" "}
+          <QuestionCircle id={infoId} className={cx("bi", "ms-1")} />
+        </Label>
       </div>
       <UncontrolledTooltip placement="bottom" target={infoId}>
         Advanced mode uses rclone configurations to set up cloud storage.

@@ -69,6 +69,7 @@ interface AddOrEditDataConnectorProps {
   dataConnector?: DataConnectorRead | null;
   project?: Project;
   storageSecrets: DataConnectorSecret[];
+  switchMode?: () => void;
 }
 
 type DataConnectorModalBodyProps = AddOrEditDataConnectorProps;
@@ -77,6 +78,7 @@ export default function DataConnectorModalBody({
   dataConnector = null,
   project,
   storageSecrets,
+  switchMode,
 }: DataConnectorModalBodyProps) {
   const { flatDataConnector, schemata, success } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -95,6 +97,7 @@ export default function DataConnectorModalBody({
         dataConnector={dataConnector}
         project={project}
         storageSecrets={storageSecrets}
+        switchMode={switchMode}
       />
     </>
   );
@@ -104,6 +107,7 @@ function AddOrEditDataConnector({
   dataConnector,
   project,
   storageSecrets,
+  switchMode,
 }: AddOrEditDataConnectorProps) {
   const { cloudStorageState, flatDataConnector, schemata, validationResult } =
     useAppSelector((state) => state.dataConnectorFormSlice);
@@ -140,10 +144,28 @@ function AddOrEditDataConnector({
     return (
       <>
         {!flatDataConnector.dataConnectorId && cloudStorageState.step <= 1 && (
-          <p className="text-body-secondary">
-            Add published datasets from data repositories for use in your
-            project. Or, connect to cloud storage to read and write custom data.
-          </p>
+          <>
+            <p>
+              Create a new data connector to read and write data from any
+              supported cloud storage.
+            </p>
+            {switchMode && (
+              <p>
+                You can also{" "}
+                <Button
+                  className={cx("align-baseline", "p-0")}
+                  color="link"
+                  // color="primary"
+                  // size="sm"
+                  type="button"
+                  onClick={switchMode}
+                >
+                  link an existing data connector
+                </Button>
+                .
+              </p>
+            )}
+          </>
         )}
         <div className={cx("d-flex", "justify-content-end")}>
           <AddStorageAdvancedToggle
