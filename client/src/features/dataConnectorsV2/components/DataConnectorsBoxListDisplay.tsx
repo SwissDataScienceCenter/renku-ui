@@ -243,7 +243,7 @@ interface DataConnectorNotVisibleToAllUsersBadgeProps {
   warning?: string;
 }
 
-export function DataConnectorNotVisibleToAllUsersBadge({
+function DataConnectorNotVisibleToAllUsersBadge({
   className,
 }: DataConnectorNotVisibleToAllUsersBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -275,7 +275,7 @@ interface IntegrationBadgeProps {
   dataConnector: DataConnector;
 }
 
-export function IntegrationBadge({ dataConnector }: IntegrationBadgeProps) {
+function IntegrationBadge({ dataConnector }: IntegrationBadgeProps) {
   const providerKind = useMemo(
     () =>
       CLOUD_STORAGE_INTEGRATION_KIND_MAP[dataConnector.storage.storage_type],

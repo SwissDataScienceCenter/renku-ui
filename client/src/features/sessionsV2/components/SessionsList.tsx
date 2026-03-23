@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export interface SessionLauncherResources {
+interface SessionLauncherResources {
   poolName?: string;
   name?: string;
   cpu?: number;
@@ -25,7 +25,7 @@ export interface SessionLauncherResources {
   storage?: number;
 }
 
-export interface SessionResources {
+interface SessionResources {
   requests?: { cpu?: number; memory?: string; storage?: string };
   usage?: { cpu?: number; memory?: string; storage?: string };
 }

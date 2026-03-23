@@ -18,6 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { capitalize } from "lodash-es";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Cloud,
@@ -52,7 +53,6 @@ import { WarnAlert } from "../../../components/Alert";
 import { Clipboard } from "../../../components/clipboard/Clipboard";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import { toCapitalized } from "../../../utils/helpers/HelperFunctions";
 import { CredentialMoreInfo } from "../../cloudStorage/CloudStorageItem";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -376,7 +376,7 @@ function DataConnectorViewConfiguration({
       {scope !== "global" &&
         nonRequiredCredentialConfigurationKeys.map((key) => {
           const title =
-            key == "provider" && hasAccessMode ? "Mode" : toCapitalized(key);
+            key == "provider" && hasAccessMode ? "Mode" : capitalize(key);
           const value = storageDefinition.configuration[key]?.toString() ?? "";
           return (
             <DataConnectorPropertyValue key={key} title={title}>

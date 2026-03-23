@@ -16,31 +16,13 @@
  * limitations under the License.
  */
 
-interface ProjectConfig {
-  projectPath: string;
-  gitUrl: string;
-  branch: string;
-}
-
-interface SessionConfig {
-  targetServer: string;
-}
-
-interface FaviconSet {
-  ico: string;
-  png_32x: string;
-  png_16x: string;
-  svg: string;
-}
-
 export type FaviconStatus =
   | "general"
   | "running"
   | "waiting"
   | "error"
   | "pause";
-interface Display {
+
+export interface Display {
   favicon: FaviconStatus;
 }
-
-export type { Display, FaviconSet, ProjectConfig, SessionConfig };

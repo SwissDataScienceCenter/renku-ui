@@ -29,9 +29,6 @@ import {
   setVisibility,
 } from "../searchV2.slice";
 
-/**
- * Redux-based replacement for useSearchFilterParam.
- */
 export function useReduxFilterParam(filterName: string) {
   const dispatch = useAppDispatch();
   const state = useAppSelector(({ searchV2 }) => searchV2);

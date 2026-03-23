@@ -28,7 +28,7 @@ import { Alert } from "reactstrap";
 
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 
-export interface LoginAlertProps {
+interface LoginAlertProps {
   logged: boolean;
   noWrapper?: boolean;
   textIntro?: string;

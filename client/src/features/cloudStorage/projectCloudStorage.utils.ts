@@ -46,7 +46,7 @@ import type {
 
 const LAST_POSITION = 1000;
 
-export interface CloudStorageOptions extends RCloneOption {
+interface CloudStorageOptions extends RCloneOption {
   requiredCredential: boolean;
 }
 

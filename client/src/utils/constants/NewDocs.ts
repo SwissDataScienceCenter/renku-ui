@@ -28,7 +28,7 @@ const DEFAULT_NEW_DOC_LINK_ARGS: NewDocLinkArgs = {
   version: "latest",
 };
 
-export const NEW_DOCS_ROOT = "https://docs.renkulab.io/";
+const NEW_DOCS_ROOT = "https://docs.renkulab.io/";
 
 function newDocsBase({ language, version }: NewDocLinkArgs): string {
   return `${NEW_DOCS_ROOT}${language}/${version}/`;
@@ -54,10 +54,6 @@ export const NEW_DOCS_ADMIN_OPERATIONS_REMOTE_SESSIONS =
 
 export const NEW_DOCS_DATA_CONNECTORS_FROM_REPO = newDocsLinkPage(
   "docs/users/data/guides/connect-data/connect-data-from-data-repositories"
-)(DEFAULT_NEW_DOC_LINK_ARGS);
-
-export const NEW_DOCS_MIGRATION_INFO = newDocsLinkPage(
-  "docs/users/migrate-v1-v2/migrate-renku-1-project-to-renku-2"
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
 export const NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE = newDocsLinkPage(

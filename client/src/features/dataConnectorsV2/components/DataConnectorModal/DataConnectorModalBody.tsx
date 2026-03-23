@@ -211,9 +211,7 @@ type DataConnectorMountFormFields =
   | "slug"
   | "visibility";
 
-export function DataConnectorMount({
-  dataConnector,
-}: AddOrEditDataConnectorProps) {
+function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
   const dispatch = useAppDispatch();
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
     (state) => state.dataConnectorFormSlice

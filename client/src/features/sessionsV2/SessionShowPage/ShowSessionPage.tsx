@@ -52,7 +52,7 @@ import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
-import { resetFavicon, setFavicon } from "../../display";
+import { resetFavicon, setFavicon } from "../../display/displaySlice";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
