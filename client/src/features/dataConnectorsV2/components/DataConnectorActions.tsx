@@ -17,8 +17,16 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { Lock, NodeMinus, Pencil, Trash, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Check2,
+  CloudArrowUp,
+  Lock,
+  NodeMinus,
+  Pencil,
+  Trash,
+  XLg,
+} from "react-bootstrap-icons";
 import { matchPath, useLocation } from "react-router";
 import {
   Button,
@@ -47,8 +55,16 @@ import type {
 import {
   useDeleteDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdMutation,
+  useGetDataConnectorsByDataConnectorIdDepositsQuery,
   useGetDataConnectorsByDataConnectorIdProjectLinksQuery,
 } from "../api/data-connectors.enhanced-api";
+import DepositCreationModal from "../deposits/DepositCreationModal";
+import DepositEditModal from "../deposits/DepositEditModal";
+import DepositFinalizationModal from "../deposits/DepositFinalizationModal";
+import {
+  LAST_DEPOSIT_QUERY_PARAMS,
+  POLL_TIME_INACTIVE_DEPOSITS,
+} from "../deposits/deposits.constants";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
@@ -101,7 +117,7 @@ function DataConnectorRemoveDeleteModal({
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
-      <ModalHeader className="text-danger" toggle={toggleModal}>
+      <ModalHeader className="text-danger" tag="h2" toggle={toggleModal}>
         Delete data connector
       </ModalHeader>
       <ModalBody>
@@ -357,15 +373,59 @@ function DataConnectorActionsInner({
   toggleView,
   toggleEdit,
 }: DataConnectorActionsProps) {
+  // Local states
+  const [isCredentialsOpen, setCredentialsOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isNewDepositOpen, setNewDepositOpen] = useState(false);
+  const [isEditDepositOpen, setEditDepositOpen] = useState(false);
+  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
+  const [isFinalizationDepositOpen, setFinalizationDepositOpen] =
+    useState(false);
+
+  // Actions
+  const toggleCredentials = useCallback(() => {
+    setCredentialsOpen((open) => !open);
+  }, []);
+  const toggleDelete = useCallback(() => {
+    setIsDeleteOpen((open) => !open);
+  }, []);
+  const toggleUnlink = useCallback(() => {
+    setIsUnlinkOpen((open) => !open);
+  }, []);
+  const onDelete = useCallback(() => {
+    if (toggleView) toggleView();
+    setIsDeleteOpen(false);
+  }, [toggleView]);
+  const onUnlink = useCallback(() => {
+    if (toggleView) toggleView();
+    setIsUnlinkOpen(false);
+  }, [toggleView]);
+  const toggleNewDeposit = useCallback(() => {
+    setNewDepositOpen((open) => !open);
+  }, []);
+  const toggleEditDeposit = useCallback(() => {
+    setEditDepositOpen((open) => !open);
+  }, []);
+  const toggleFinalizationDepositOpen = useCallback(() => {
+    setFinalizationDepositOpen((open) => !open);
+  }, []);
+
+  // Data
   const { id: dataConnectorId } = dataConnector;
   const scope = getDataConnectorScope(dataConnector.namespace);
   const { permissions } = useDataConnectorPermissions({ dataConnectorId });
+  const deposits = useGetDataConnectorsByDataConnectorIdDepositsQuery(
+    {
+      dataConnectorId: dataConnector.id,
+      params: LAST_DEPOSIT_QUERY_PARAMS,
+    },
+    { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS }
+  );
 
   const { project_id: projectId } = dataConnectorLink ?? {};
   const projectPermissions = useProjectPermissions({
     projectId: projectId ?? "",
   });
-
   const location = useLocation();
   const pathMatch = matchPath(
     ABSOLUTE_ROUTES.v2.projects.show.root,
@@ -382,30 +442,14 @@ function DataConnectorActionsInner({
       : "unlink";
   const requiresCredentials =
     dataConnector.storage.sensitive_fields?.length > 0;
-  const [isCredentialsOpen, setCredentialsOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
-  const onDelete = useCallback(() => {
-    toggleView();
-    setIsDeleteOpen(false);
-  }, [toggleView]);
-  const onUnlink = useCallback(() => {
-    toggleView();
-    setIsUnlinkOpen(false);
-  }, [toggleView]);
-  const toggleCredentials = useCallback(() => {
-    setCredentialsOpen((open) => !open);
-  }, []);
-  const toggleDelete = useCallback(() => {
-    setIsDeleteOpen((open) => !open);
-  }, []);
+  const lastDeposit = useMemo(() => {
+    if (!deposits.data || deposits.data.deposits.length === 0) return undefined;
+    return deposits.data.deposits[0];
+  }, [deposits.data]);
 
-  const toggleUnlink = useCallback(() => {
-    setIsUnlinkOpen((open) => !open);
-  }, []);
-
+  // List of actionable items
   const actions = [
-    ...(permissions.write
+    ...(permissions.write && scope !== "global"
       ? [
           {
             key: "data-connector-edit",
@@ -427,6 +471,42 @@ function DataConnectorActionsInner({
               </>
             ),
           },
+        ]
+      : []),
+    ...(permissions.write && scope !== "global"
+      ? [
+          !lastDeposit
+            ? {
+                key: "data-connector-deposit-create",
+                onClick: toggleNewDeposit,
+                content: (
+                  <>
+                    <CloudArrowUp className={cx("bi", "me-1")} />
+                    Export data
+                  </>
+                ),
+              }
+            : lastDeposit.status === "upload_complete"
+            ? {
+                key: "data-connector-deposit-finalize",
+                onClick: toggleFinalizationDepositOpen,
+                content: (
+                  <>
+                    <Check2 className={cx("bi", "me-1")} />
+                    Finalize deposit
+                  </>
+                ),
+              }
+            : {
+                key: "data-connector-deposit-edit",
+                onClick: toggleEditDeposit,
+                content: (
+                  <>
+                    <Pencil className={cx("bi", "me-1")} />
+                    Edit or rerun data export
+                  </>
+                ),
+              },
         ]
       : []),
     ...(requiresCredentials
@@ -526,6 +606,28 @@ function DataConnectorActionsInner({
         onDelete={onDelete}
         toggleModal={toggleDelete}
       />
+      <DepositCreationModal
+        dataConnector={dataConnector}
+        isOpen={isNewDepositOpen}
+        setOpen={setNewDepositOpen}
+        toggleModal={toggleNewDeposit}
+      />
+      {lastDeposit && (
+        <>
+          <DepositEditModal
+            deposit={lastDeposit}
+            isOpen={isEditDepositOpen}
+            setOpen={setEditDepositOpen}
+          />
+
+          <DepositFinalizationModal
+            deposit={lastDeposit}
+            isOpen={isFinalizationDepositOpen}
+            setOpen={setFinalizationDepositOpen}
+            toggleModal={toggleFinalizationDepositOpen}
+          />
+        </>
+      )}
       {dataConnectorLink && (
         <DataConnectorRemoveUnlinkModal
           dataConnector={dataConnector}
@@ -544,7 +646,7 @@ function DataConnectorActionsInner({
 interface DataConnectorActionsProps {
   dataConnector: DataConnectorRead;
   dataConnectorLink?: DataConnectorToProjectLink;
-  toggleView: () => void;
+  toggleView?: () => void;
   toggleEdit: (initialStep: number) => void;
 }
 
