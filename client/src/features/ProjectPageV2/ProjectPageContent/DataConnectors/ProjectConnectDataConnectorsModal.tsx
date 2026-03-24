@@ -44,6 +44,7 @@ import {
 } from "reactstrap";
 
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "~/features/dataConnectorsV2/components/DataConnectorModal";
@@ -211,6 +212,18 @@ function ProjectSearchDataConnectorBodyAndFooter({
     currentUser?.isLoggedIn && currentUser?.username ? currentUser.username : ""
   }`;
 
+  // Get the project data connectors to exclude from the search results
+  const projectDataConnectorLinks =
+    useGetProjectsByProjectIdDataConnectorLinksQuery({
+      projectId: project.id,
+    });
+  const projectDataConnectorIds = useMemo(() => {
+    if (projectDataConnectorLinks.data == null) return new Set<string>();
+    return new Set(
+      projectDataConnectorLinks.data.map((link) => link.data_connector_id)
+    );
+  }, [projectDataConnectorLinks.data]);
+
   // Debounce logic to avoid sending search queries on every keystroke
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -243,33 +256,38 @@ function ProjectSearchDataConnectorBodyAndFooter({
 
   // Clean the results to avoid duplicates
   const searchIdentifierResults = useMemo(
-    () => searchIdentifier.data?.items ?? [],
-    [searchIdentifier.data?.items]
-  ) as SearchDataConnector[];
-  const searchIdentifierIds = useMemo(
-    () => new Set((searchIdentifier.data?.items ?? []).map((dc) => dc.id)),
-    [searchIdentifier.data?.items]
+    () =>
+      (searchIdentifier.data?.items ?? []).filter(
+        (dc) => !projectDataConnectorIds.has(dc.id)
+      ) as SearchDataConnector[],
+    [searchIdentifier.data?.items, projectDataConnectorIds]
   );
+  const searchIdentifierIds = useMemo(() => {
+    const ids = new Set(projectDataConnectorIds);
+    searchIdentifierResults.forEach((dc) => ids.add(dc.id));
+    return ids;
+  }, [projectDataConnectorIds, searchIdentifierResults]);
 
   const searchMembershipResults = useMemo(
     () =>
       (searchMembership.data?.items ?? []).filter(
         (dc) => !searchIdentifierIds.has(dc.id)
-      ),
+      ) as SearchDataConnector[],
     [searchMembership.data?.items, searchIdentifierIds]
-  ) as SearchDataConnector[];
-  const membershipIds = useMemo(
-    () => new Set(searchMembershipResults.map((dc) => dc.id)),
-    [searchMembershipResults]
   );
+  const membershipIds = useMemo(() => {
+    const ids = new Set(searchIdentifierIds);
+    searchMembershipResults.forEach((dc) => ids.add(dc.id));
+    return ids;
+  }, [searchIdentifierIds, searchMembershipResults]);
 
   const searchPublicResults = useMemo(
     () =>
       (searchPublic.data?.items ?? []).filter(
         (dc) => !membershipIds.has(dc.id)
-      ),
+      ) as SearchDataConnector[],
     [searchPublic.data?.items, membershipIds]
-  ) as SearchDataConnector[];
+  );
 
   // Variables to adjust the UI interactions
   const allIds = useMemo(() => {
