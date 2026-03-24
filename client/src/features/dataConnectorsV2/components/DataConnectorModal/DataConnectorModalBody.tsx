@@ -144,28 +144,24 @@ function AddOrEditDataConnector({
     return (
       <>
         {!flatDataConnector.dataConnectorId && cloudStorageState.step <= 1 && (
-          <>
-            <p>
-              Create a new data connector to read and write data from any
-              supported cloud storage.
-            </p>
+          <p>
+            Create a new data connector
             {switchMode && (
-              <p>
-                You can also{" "}
+              <span>
+                {" "}
+                or{" "}
                 <Button
-                  className={cx("align-baseline", "p-0")}
-                  color="link"
-                  // color="primary"
-                  // size="sm"
+                  className="align-baseline"
+                  color="primary"
+                  size="sm"
                   type="button"
                   onClick={switchMode}
                 >
                   link an existing data connector
                 </Button>
-                .
-              </p>
+              </span>
             )}
-          </>
+          </p>
         )}
         <div className={cx("d-flex", "justify-content-end")}>
           <AddStorageAdvancedToggle

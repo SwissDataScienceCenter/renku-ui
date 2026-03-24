@@ -26,14 +26,11 @@ import {
   Link45deg,
   NodePlus,
   People,
-  PlusLg,
-  Search,
   XLg,
 } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { createSearchParams, Link } from "react-router";
 import {
   Button,
-  ButtonGroup,
   Col,
   Form,
   Input,
@@ -55,22 +52,13 @@ import {
   useGetSearchQueryQuery,
 } from "~/features/searchV2/api/searchV2Api.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { NEW_DOCS_DATA_CONNECTORS_FROM_REPO } from "~/utils/constants/NewDocs";
-import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
-import { ExternalLink } from "../../../../components/LegacyExternalLinks";
-import { Loader } from "../../../../components/Loader";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import ModalHeader from "../../../../components/modal/ModalHeader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import {
-  dataConnectorsApi,
-  usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
-  usePostDataConnectorsGlobalMutation,
-} from "../../../dataConnectorsV2/api/data-connectors.enhanced-api";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
-import { doiFromUrl } from "../../utils/dataConnectorUtils";
 
 import styles from "~/features/dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
@@ -83,7 +71,7 @@ interface ProjectConnectDataConnectorsModalProps
   switchMode?: () => void;
 }
 
-type ProjectConnectDataConnectorMode = "create" | "link" | "doi" | "search";
+type ProjectConnectDataConnectorMode = "create" | "search";
 
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
@@ -119,9 +107,7 @@ export default function ProjectConnectDataConnectorsModal({
         modalTitle={<ProjectConnectDataConnectorModalTitle />}
         toggle={toggle}
         data-cy="project-data-connector-connect-header"
-      >
-        <ProjectConnectDataConnectorModeSwitch mode={mode} setMode={setMode} />
-      </ModalHeader>
+      ></ModalHeader>
       {mode === "create" ? (
         <ProjectCreateDataConnectorBodyAndFooter
           {...{
@@ -129,24 +115,6 @@ export default function ProjectConnectDataConnectorsModal({
             namespace,
             project,
             switchMode,
-            toggle,
-          }}
-        />
-      ) : mode === "link" ? (
-        <ProjectLinkDataConnectorBodyAndFooter
-          {...{
-            isOpen,
-            namespace,
-            project,
-            toggle,
-          }}
-        />
-      ) : mode === "doi" ? (
-        <ProjectDoiDataConnectorBodyAndFooter
-          {...{
-            isOpen,
-            namespace,
-            project,
             toggle,
           }}
         />
@@ -184,100 +152,6 @@ function ProjectConnectDataConnectorModalTitle() {
   );
 }
 
-function ProjectConnectDataConnectorModeSwitch({
-  mode,
-  setMode,
-}: {
-  mode: ProjectConnectDataConnectorMode;
-  setMode: (mode: ProjectConnectDataConnectorMode) => void;
-}) {
-  return (
-    <ButtonGroup>
-      <Input
-        type="radio"
-        className="btn-check"
-        id="project-data-controller-mode-search"
-        value="search"
-        checked={mode === "search"}
-        onChange={() => {
-          setMode("search");
-        }}
-      />
-      <Label
-        data-cy="project-data-controller-mode-search"
-        for="project-data-controller-mode-search"
-        className={cx("btn", "btn-outline-primary", "mb-0")}
-      >
-        <NodePlus className={cx("bi", "me-1")} />
-        NEW
-      </Label>
-
-      <Input
-        type="radio"
-        className="btn-check"
-        id="project-data-controller-mode-link"
-        value="link"
-        checked={mode === "link"}
-        onChange={() => {
-          setMode("link");
-        }}
-      />
-      <Label
-        data-cy="project-data-controller-mode-link"
-        for="project-data-controller-mode-link"
-        className={cx("btn", "btn-outline-primary", "mb-0")}
-      >
-        <NodePlus className={cx("bi", "me-1")} />
-        Link
-      </Label>
-
-      <Input
-        type="radio"
-        className="btn-check"
-        id="project-data-controller-mode-doi"
-        value="link"
-        checked={mode === "doi"}
-        onChange={() => {
-          setMode("doi");
-        }}
-      />
-      <Label
-        data-cy="project-data-controller-mode-doi"
-        for="project-data-controller-mode-doi"
-        className={cx(
-          "btn",
-          "btn-outline-primary",
-          "mb-0",
-          "border-end-0",
-          "border-start-0"
-        )}
-      >
-        <Link45deg className={cx("bi", "me-1")} />
-        DOI
-      </Label>
-
-      <Input
-        type="radio"
-        className="btn-check"
-        id="project-data-controller-mode-create"
-        value="create"
-        checked={mode === "create"}
-        onChange={() => {
-          setMode("create");
-        }}
-      />
-      <Label
-        data-cy="project-data-controller-mode-create"
-        for="project-data-controller-mode-create"
-        className={cx("btn", "btn-outline-primary", "mb-0")}
-      >
-        <PlusLg className={cx("bi", "me-1")} />
-        Create
-      </Label>
-    </ButtonGroup>
-  );
-}
-
 function ProjectCreateDataConnectorBodyAndFooter({
   isOpen,
   namespace,
@@ -296,324 +170,6 @@ function ProjectCreateDataConnectorBodyAndFooter({
         toggle,
       }}
     />
-  );
-}
-
-interface DataConnectorLinkFormFields {
-  dataConnectorIdentifier: string;
-}
-
-function ProjectLinkDataConnectorBodyAndFooter({
-  project,
-  toggle,
-}: ProjectConnectDataConnectorsModalProps) {
-  const dispatch = useAppDispatch();
-
-  const toggleModal = useCallback(() => {
-    dispatch(dataConnectorFormSlice.actions.resetTransientState());
-    toggle();
-  }, [dispatch, toggle]);
-  const [fetchOnePartSlug, onePartSlugQuery] =
-    dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug.useLazyQuery();
-  const [fetchTwoPartsSlug, twoPartsSlugQuery] =
-    dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug.useLazyQuery();
-  const [fetchThreePartsSlug, threePartsSlugQuery] =
-    dataConnectorsApi.endpoints.getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug.useLazyQuery();
-
-  const [requestId, setRequestId] = useState<string>("");
-  const currentQuery = useMemo(
-    () =>
-      onePartSlugQuery.requestId === requestId
-        ? onePartSlugQuery
-        : twoPartsSlugQuery.requestId === requestId
-        ? twoPartsSlugQuery
-        : threePartsSlugQuery.requestId === requestId
-        ? threePartsSlugQuery
-        : undefined,
-    [requestId, onePartSlugQuery, twoPartsSlugQuery, threePartsSlugQuery]
-  );
-
-  const [
-    linkDataConnector,
-    { error: linkDataConnectorError, isLoading, isSuccess },
-  ] = usePostDataConnectorsByDataConnectorIdProjectLinksMutation();
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<DataConnectorLinkFormFields>({
-    defaultValues: {
-      dataConnectorIdentifier: "",
-    },
-  });
-
-  const onSubmit = useCallback(
-    (values: DataConnectorLinkFormFields) => {
-      const [part1, part2, part3] = values.dataConnectorIdentifier.split(
-        "/",
-        3
-      );
-      const { requestId } =
-        part2 == null
-          ? fetchOnePartSlug({
-              slug: part1,
-            })
-          : part3 == null
-          ? fetchTwoPartsSlug({
-              namespace: part1,
-              slug: part2,
-            })
-          : fetchThreePartsSlug({
-              namespace: part1,
-              project: part2,
-              slug: part3,
-            });
-      setRequestId(requestId);
-    },
-    [fetchOnePartSlug, fetchThreePartsSlug, fetchTwoPartsSlug]
-  );
-
-  useEffect(() => {
-    const dataConnector = currentQuery?.currentData;
-    if (dataConnector == null) {
-      return;
-    }
-    linkDataConnector({
-      dataConnectorId: dataConnector.id,
-      dataConnectorToProjectLinkPost: {
-        project_id: project.id,
-      },
-    });
-  }, [currentQuery?.currentData, linkDataConnector, project.id]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      reset();
-      toggle();
-    }
-  }, [isSuccess, reset, toggle]);
-
-  const error = currentQuery?.error ?? linkDataConnectorError;
-
-  return (
-    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-      <ModalBody data-cy="data-connector-edit-body">
-        <p className="text-body-secondary">
-          Link an existing data connector to this project. Permission
-          restrictions might apply to users accessing the project.
-        </p>
-        <div className="mb-3">
-          <Label className="form-label" for="data-connector-identifier">
-            Data connector identifier
-          </Label>
-          <Controller
-            control={control}
-            name="dataConnectorIdentifier"
-            render={({ field }) => (
-              <Input
-                className={cx(
-                  "form-control",
-                  errors.dataConnectorIdentifier && "is-invalid"
-                )}
-                id="data-connector-identifier"
-                placeholder="namespace/slug"
-                type="text"
-                {...field}
-              />
-            )}
-            rules={{
-              required: true,
-              pattern: /^[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+){0,2}$/,
-            }}
-          />
-          <div className="invalid-feedback">
-            {errors.dataConnectorIdentifier == null
-              ? undefined
-              : errors.dataConnectorIdentifier.message != null &&
-                errors.dataConnectorIdentifier.message.length > 0
-              ? errors.dataConnectorIdentifier.message
-              : "Please provide an identifier for the data connector"}
-          </div>
-          <div className="form-text">
-            Paste a data connector identifier. You can find it on the the data
-            connector&apos;s side panel
-          </div>
-        </div>
-        {error != null && <RtkOrDataServicesError error={error} />}
-      </ModalBody>
-
-      <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
-        <Button color="outline-primary" onClick={toggleModal}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
-        </Button>
-        <Button
-          color="primary"
-          data-cy="link-data-connector-button"
-          disabled={isLoading}
-          type="submit"
-        >
-          {isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <NodePlus className={cx("bi", "me-1")} />
-          )}
-          Link data connector
-        </Button>
-      </ModalFooter>
-    </Form>
-  );
-}
-
-interface DataConnectorDoiFormFields {
-  doi: string;
-}
-
-function ProjectDoiDataConnectorBodyAndFooter({
-  project,
-  toggle,
-}: ProjectConnectDataConnectorsModalProps) {
-  const [
-    postDataConnector,
-    {
-      data: postDataConnectorData,
-      error: postDataConnectorError,
-      isLoading: postDataConnectorLoading,
-      isSuccess: postDataConnectorSuccess,
-    },
-  ] = usePostDataConnectorsGlobalMutation();
-
-  const [
-    linkDataConnector,
-    {
-      error: linkDataConnectorError,
-      isLoading: linkDataConnectorLoading,
-      isSuccess: linkDataConnectorSuccess,
-    },
-  ] = usePostDataConnectorsByDataConnectorIdProjectLinksMutation();
-
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<DataConnectorDoiFormFields>({
-    defaultValues: {
-      doi: "",
-    },
-  });
-
-  const error = postDataConnectorError ?? linkDataConnectorError;
-  const isLoading = postDataConnectorLoading || linkDataConnectorLoading;
-
-  const onSubmit = useCallback(
-    (values: DataConnectorDoiFormFields) => {
-      const doi = doiFromUrl(values.doi);
-      postDataConnector({
-        globalDataConnectorPost: {
-          storage: {
-            configuration: {
-              type: "doi",
-              doi: doi,
-            },
-            source_path: "/",
-            target_path: "/",
-            readonly: true,
-          },
-        },
-      });
-    },
-    [postDataConnector]
-  );
-
-  // Link the data connector to the project if creation was successful
-  useEffect(() => {
-    if (postDataConnectorSuccess && postDataConnectorData) {
-      linkDataConnector({
-        dataConnectorId: postDataConnectorData.id,
-        dataConnectorToProjectLinkPost: {
-          project_id: project.id,
-        },
-      });
-    }
-  }, [
-    linkDataConnector,
-    postDataConnectorData,
-    postDataConnectorSuccess,
-    project.id,
-  ]);
-
-  // Close the modal and reset the Form if linking was successful
-  useEffect(() => {
-    if (linkDataConnectorSuccess) {
-      reset();
-      toggle();
-    }
-  }, [linkDataConnectorSuccess, reset, toggle]);
-
-  return (
-    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-      <ModalBody data-cy="data-connector-edit-body">
-        <p className="text-body-secondary">
-          Connect to data on Zenodo, Dataverse, and similar data repositories.
-          More information{" "}
-          <ExternalLink
-            iconAfter={true}
-            role="link"
-            title="in our documentation"
-            url={NEW_DOCS_DATA_CONNECTORS_FROM_REPO}
-          />
-          .
-        </p>
-        <div className="mb-3">
-          <Label className="form-label" for="data-connector-identifier">
-            DOI
-          </Label>
-          <Controller
-            control={control}
-            name="doi"
-            render={({ field }) => (
-              <Input
-                className={cx("form-control", errors.doi && "is-invalid")}
-                id="doi"
-                placeholder="DOI identifier"
-                type="text"
-                {...field}
-              />
-            )}
-            rules={{
-              required: true,
-            }}
-          />
-          <div className="invalid-feedback">Please provide a valid DOI</div>
-          <div className="form-text">
-            Paste a DOI, e.g. <code>10.5281/zenodo.3831980</code>.
-          </div>
-        </div>
-        {error !== null && <RtkOrDataServicesError error={error} />}
-      </ModalBody>
-
-      <ModalFooter className="border-top" data-cy="data-connector-edit-footer">
-        <Button color="outline-primary" onClick={() => toggle()}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
-        </Button>
-        <Button
-          color="primary"
-          data-cy="doi-data-connector-button"
-          disabled={isLoading}
-          type="submit"
-        >
-          {isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <Link45deg className={cx("bi", "me-1")} />
-          )}
-          Import DOI as data connector
-        </Button>
-      </ModalFooter>
-    </Form>
   );
 }
 
@@ -647,14 +203,24 @@ function ProjectSearchDataConnectorBodyAndFooter({
     [selectedItemId]
   );
 
+  const SEARCH_QUERY_DEBOUNCE_MS = 300;
   const LIKELY_DOI_ID = ":likely-doi";
-
   const searchType = "type:DataConnector";
-
   const searchIdentifierPrefix = "path:";
   const membershipString = `inherited_member:@${
     currentUser?.isLoggedIn && currentUser?.username ? currentUser.username : ""
   }`;
+
+  // Debounce logic to avoid sending search queries on every keystroke
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setQuerySearchInput(userSearchInput);
+    }, SEARCH_QUERY_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [userSearchInput]);
 
   const isLikelyDOI = isWellFormedDoi(querySearchInput);
 
@@ -677,21 +243,20 @@ function ProjectSearchDataConnectorBodyAndFooter({
 
   // Clean the results to avoid duplicates
   const searchIdentifierResults = useMemo(
-    () => searchIdentifier.currentData?.items ?? [],
-    [searchIdentifier.currentData?.items]
+    () => searchIdentifier.data?.items ?? [],
+    [searchIdentifier.data?.items]
   ) as SearchDataConnector[];
   const searchIdentifierIds = useMemo(
-    () =>
-      new Set((searchIdentifier.currentData?.items ?? []).map((dc) => dc.id)),
-    [searchIdentifier.currentData?.items]
+    () => new Set((searchIdentifier.data?.items ?? []).map((dc) => dc.id)),
+    [searchIdentifier.data?.items]
   );
 
   const searchMembershipResults = useMemo(
     () =>
-      (searchMembership.currentData?.items ?? []).filter(
+      (searchMembership.data?.items ?? []).filter(
         (dc) => !searchIdentifierIds.has(dc.id)
       ),
-    [searchMembership.currentData?.items, searchIdentifierIds]
+    [searchMembership.data?.items, searchIdentifierIds]
   ) as SearchDataConnector[];
   const membershipIds = useMemo(
     () => new Set(searchMembershipResults.map((dc) => dc.id)),
@@ -700,10 +265,10 @@ function ProjectSearchDataConnectorBodyAndFooter({
 
   const searchPublicResults = useMemo(
     () =>
-      (searchPublic.currentData?.items ?? []).filter(
+      (searchPublic.data?.items ?? []).filter(
         (dc) => !membershipIds.has(dc.id)
       ),
-    [searchPublic.currentData?.items, membershipIds]
+    [searchPublic.data?.items, membershipIds]
   ) as SearchDataConnector[];
 
   // Variables to adjust the UI interactions
@@ -739,51 +304,36 @@ function ProjectSearchDataConnectorBodyAndFooter({
   return (
     <Form noValidate>
       <ModalBody data-cy="data-connector-search-body" toggle={toggle}>
-        {/* <p>
-          You can paste an identifier (e.g. <code>sdsc/deeplnafrica-data</code>
-          ), a DOI (e.g. <code>10.5281/zenodo.3831980</code>), or type any text
-          to search through our catalogue.
-        </p> */}
         <p>
-          Link an existing data connector to the{" "}
-          <span className={cx("fst-italic", "fw-semibold")}>
-            {project.name}
-          </span>{" "}
-          project.
+          Link an existing data connector
+          {switchMode && (
+            <span>
+              {" "}
+              or{" "}
+              <Button
+                className="align-baseline"
+                color="primary"
+                size="sm"
+                type="button"
+                onClick={switchMode}
+              >
+                create a new data connector
+              </Button>
+            </span>
+          )}
         </p>
 
-        {switchMode && (
-          <p>
-            If you need something specific, you can{" "}
-            <Button
-              className={cx("align-baseline", "p-0")}
-              color="link"
-              // color="outline-primary"
-              // size="sm"
-              type="button"
-              onClick={switchMode}
-            >
-              create a new data connector
-            </Button>
-            .
-          </p>
-        )}
-
         <div className="mb-3">
-          <Label className="d-none" for="data-connector-identifier">
-            Search
+          <Label className="" for="data-connector-identifier">
+            Find a data connector
           </Label>
           <InputGroup>
             <Input
-              className="form-control"
+              className="lg"
               id="search"
-              // placeholder="Paste an identifier, a DOI, or search..."
-              placeholder="Type to search..."
+              placeholder="Paste an identifier, a DOI, or search..."
               type="text"
               value={userSearchInput}
-              onBlur={() => {
-                setQuerySearchInput(userSearchInput);
-              }}
               onChange={(e) => setUserSearchInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -792,15 +342,6 @@ function ProjectSearchDataConnectorBodyAndFooter({
                 }
               }}
             />
-            <Button
-              color="primary"
-              data-cy="search-data-connectors-button"
-              id="search-button"
-              type="button"
-              onClick={() => setQuerySearchInput(userSearchInput)}
-            >
-              <Search className={cx("bi", "me-1")} /> Search
-            </Button>
           </InputGroup>
           <p className="form-text">
             You can paste an identifier (e.g.{" "}
@@ -810,15 +351,30 @@ function ProjectSearchDataConnectorBodyAndFooter({
           </p>
         </div>
 
-        <div>
-          <h4>Existing data connectors</h4>
-        </div>
-        {!anythingMatched && (
-          <div>
-            No data connectors found. You can try the following: (same options
-            shown for Other options, but no collapsible element)
-          </div>
-        )}
+        <p className="mb-1">
+          {anythingMatched ? (
+            <>
+              <span className="fw-semibold">Pick from the list</span> or
+            </>
+          ) : (
+            <>
+              <span className="fw-semibold">Nothing relevant found.</span>{" "}
+              Adjust the input or
+            </>
+          )}{" "}
+          <Link
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.search,
+              search: createSearchParams({
+                type: "DataConnector",
+                q: querySearchInput,
+              }).toString(),
+            }}
+          >
+            go to the search page
+          </Link>{" "}
+          to find more.
+        </p>
 
         <ListGroup>
           {isLikelyDOI && (
@@ -873,23 +429,6 @@ function ProjectSearchDataConnectorBodyAndFooter({
             );
           })}
         </ListGroup>
-
-        {anythingMatched && (
-          <p className="form-text">
-            Button to load more? I would rely on the full search instead...
-          </p>
-        )}
-
-        {anythingMatched && (
-          <div className="mt-3">
-            <h4 className="mb-0">&gt; Other options</h4>
-            <div className="form-text">
-              Todo -- collapsible element, include link to search and the
-              possibility to force actions (E.G: try to link or import DOI even
-              for unmatched strings)
-            </div>
-          </div>
-        )}
       </ModalBody>
       <ModalFooter
         className="border-top"
@@ -945,6 +484,7 @@ function SearchResultListItem({
         "text-body",
         "list-group-item",
         "list-group-item-action",
+        "py-2",
         highlight && ["bg-opacity-10", "bg-primary", "border-primary-subtle"]
       )}
       data-cy="link-data-connector-list-item"
