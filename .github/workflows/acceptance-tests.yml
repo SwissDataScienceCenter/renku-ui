@@ -78,7 +78,7 @@ jobs:
             You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
 
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
@@ -169,7 +169,7 @@ jobs:
           - sessionSecrets
     steps:
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
@@ -227,7 +227,7 @@ jobs:
             Tearing down the temporary RenkuLab deplyoment for this PR.
 
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
