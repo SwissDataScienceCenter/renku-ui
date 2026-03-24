@@ -830,7 +830,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
                   storageType: "doi",
                 } as SearchDataConnector
               }
-              highlight={selectedItemId === LIKELY_DOI_ID}
+              highlight={selectedItemIdEffective === LIKELY_DOI_ID}
               key={LIKELY_DOI_ID}
               selectItem={onSelectItem}
               source="doi"
@@ -841,7 +841,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
             return (
               <SearchResultListItem
                 dataConnector={item}
-                highlight={selectedItemId === item.id}
+                highlight={selectedItemIdEffective === item.id}
                 key={item.id}
                 selectItem={onSelectItem}
                 source="identifier"
@@ -853,7 +853,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
             return (
               <SearchResultListItem
                 dataConnector={item}
-                highlight={selectedItemId === item.id}
+                highlight={selectedItemIdEffective === item.id}
                 key={item.id}
                 selectItem={onSelectItem}
                 source="membership"
@@ -865,7 +865,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
             return (
               <SearchResultListItem
                 dataConnector={item}
-                highlight={selectedItemId === item.id}
+                highlight={selectedItemIdEffective === item.id}
                 key={item.id}
                 selectItem={onSelectItem}
                 source={item.storageType === "doi" ? "doi" : "public"}
