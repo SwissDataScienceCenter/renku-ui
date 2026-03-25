@@ -24,7 +24,7 @@ import { parseDocument } from "yaml";
 
 const GH_BASE_URL = "https://raw.githubusercontent.com";
 const DATA_SERVICES_REPO = "SwissDataScienceCenter/renku-data-services";
-const DATA_SERVICES_RELEASE = "ciyer/resource_quotas";
+const DATA_SERVICES_RELEASE = "build/resource-quotas";
 
 async function main() {
   argv.forEach((arg) => {
