@@ -46,6 +46,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   return data(null);
 }
 
+export async function clientLoader() {
+  return null;
+}
+
 export default function Component() {
   return <CatchallApp />;
 }

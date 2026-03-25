@@ -416,12 +416,16 @@ describe("Set up data connectors", () => {
     cy.wait("@listProjectDataConnectors");
 
     cy.contains("example storage").should("be.visible").click();
-    cy.getDataCy("data-connector-credentials")
-      .should("be.visible")
-      .parent()
+
+    cy.getDataCy("data-connector-view")
       .find("[data-cy=data-connector-menu-dropdown]")
       .click();
-    cy.getDataCy("data-connector-unlink").should("be.visible").click();
+
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-unlink"]')
+      .should("be.visible")
+      .click();
+
     cy.wait("@getProjectV2Permissions");
     cy.contains("Are you sure you want to unlink the data connector").should(
       "be.visible"
@@ -452,6 +456,7 @@ describe("Set up data connectors", () => {
 
   it("should clear state after a data connector has been created", () => {
     fixtures
+      .getDataConnectorPermissions()
       .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
       .listProjectDataConnectors()
       .getDataConnector()
@@ -531,7 +536,6 @@ describe("Set up data connectors", () => {
     // Now edit a data connector
     fixtures
       .testCloudStorage({ success: true })
-      .getDataConnectorPermissions()
       .patchDataConnector({ namespace: "user1-uuid" })
       .patchDataConnectorSecrets({
         content: [],
@@ -539,7 +543,12 @@ describe("Set up data connectors", () => {
       });
 
     cy.contains("example storage").should("be.visible").click();
-    cy.getDataCy("data-connector-edit").should("be.visible").click();
+
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-edit"]')
+      .should("be.visible")
+      .click();
+
     // Fill out the details
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@patchDataConnector");
@@ -760,10 +769,6 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("env-variables-input_0-customized").click();
     cy.getDataCy("env-variables-input_0-value").clear().type("some value");
     cy.getDataCy("env-variables-customized_0").should("be.visible");
-    // cy.get("#define-launch-links-button").click();
-    // cy.contains(
-    //   "To add environment variables, see the Environment Variables section of the session launcher."
-    // ).should("be.visible");
   });
 
   it("create session launch links with no environment variables", () => {
