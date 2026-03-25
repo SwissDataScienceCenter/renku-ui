@@ -635,6 +635,7 @@ function SearchResultListItem({
           <Col className={cx("align-items-center", "d-flex")} xs="auto">
             {justAdded ? (
               <RenkuBadge
+                className="my-1" // ? takes the same vertical space as a <Button size="sm" />
                 color="success"
                 data-cy="data-connector-link-successful-badge"
               >
