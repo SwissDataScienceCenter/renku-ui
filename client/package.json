@@ -156,7 +156,7 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.8",
     "wait-on": "^8.0.3",
-    "yaml": "^2.7.1"
+    "yaml": "^2.8.3"
   },
   "overrides": {
     "react-popper": {
