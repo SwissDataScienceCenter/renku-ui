@@ -205,6 +205,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
   // const DC_SEARCH_NAMESPACE_PREFIX = "namespace:"; // ! TODO: update the logic to match the identifier
   // const DC_SEARCH_DOI_PREFIX = "doi:"; // ! TODO: search for doi when it exists
   const SUCCESS_MESSAGE_TIMEOUT_MS = 10_000;
+  const DC_SEARCH_MAX_RESULTS = 10;
 
   const DC_SEARCH_TYPE = "type:DataConnector";
   const membershipString = `inherited_member:@${
@@ -262,11 +263,13 @@ function ProjectSearchDataConnectorBodyAndFooter({
   );
   const searchMembership = useGetSearchQueryQuery({
     params: {
+      per_page: DC_SEARCH_MAX_RESULTS,
       q: `${DC_SEARCH_TYPE} ${membershipString} ${querySearchInput}`,
     },
   });
   const searchPublic = useGetSearchQueryQuery({
     params: {
+      per_page: DC_SEARCH_MAX_RESULTS * 2, // ? x2 because we might be unlucky and get all the membership results that we filter out
       q: `${DC_SEARCH_TYPE} ${querySearchInput}`,
     },
   });
@@ -298,13 +301,19 @@ function ProjectSearchDataConnectorBodyAndFooter({
     return ids;
   }, [searchIdentifierIds, searchMembershipResults]);
 
-  const searchPublicResults = useMemo(
-    () =>
-      (searchPublic.data?.items ?? []).filter(
-        (dc) => !membershipIds.has(dc.id)
-      ) as SearchDataConnector[],
-    [searchPublic.data?.items, membershipIds]
-  );
+  const searchPublicResults = useMemo(() => {
+    const results: SearchDataConnector[] = [];
+    const maxLength = DC_SEARCH_MAX_RESULTS - searchMembershipResults.length;
+
+    for (const dc of searchPublic.data?.items ?? []) {
+      if (!membershipIds.has(dc.id)) {
+        results.push(dc as SearchDataConnector);
+        if (results.length === maxLength) break;
+      }
+    }
+
+    return results;
+  }, [searchPublic.data?.items, membershipIds, searchMembershipResults.length]);
 
   // Variables to adjust the UI interactions
   // // const allIds = useMemo(() => {
