@@ -21,10 +21,10 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bullseye, // eslint-disable-line spellcheck/spell-checker
+  Check,
   Database,
   Globe,
   Link45deg,
-  NodePlus,
   People,
   XLg,
 } from "react-bootstrap-icons";
@@ -43,8 +43,13 @@ import {
   Row,
 } from "reactstrap";
 
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
-import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import {
+  useGetProjectsByProjectIdDataConnectorLinksQuery,
+  usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
+  usePostDataConnectorsGlobalMutation,
+} from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "~/features/dataConnectorsV2/components/DataConnectorModal";
@@ -60,6 +65,7 @@ import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
+import { doiFromUrl } from "../../utils/dataConnectorUtils";
 
 import styles from "~/features/dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
@@ -182,37 +188,42 @@ function ProjectSearchDataConnectorBodyAndFooter({
   switchMode,
   toggle,
 }: ProjectConnectDataConnectorsModalProps) {
-  // ? INFO HERE
-  // ? 1. search for "slug:{search}" -- or perhaps "path:" then "slug:"?
-  // ? 2. search for "inherited_member:@<current-user>"
-  // ? 3. search for anything else -- if needed. Start with 1. and 2. and see if we need 3.
-  // ? END INFO
-  // ! Switch to the "lazy" version if we settle on querying only on click
+  // ? The logic for the input string is the following:
+  // ? 0. check if it's a doi
+  // ? 1. search for a DC with same identifier with "slug:" and "namespace:"
+  // ? 2. search for DCs shared with the user with "inherited_member:@<current-user>"
+  // ? 3. search for public DCs
 
   const { data: currentUser } = useGetUserQueryState();
 
   const [userSearchInput, setUserSearchInput] = useState("");
   const [querySearchInput, setQuerySearchInput] = useState("");
 
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const onSelectItem = useCallback(
-    (dataConnectorId: string) => {
-      setSelectedItemId(
-        dataConnectorId === selectedItemId ? null : dataConnectorId
-      );
-    },
-    [selectedItemId]
-  );
-
-  const SEARCH_QUERY_DEBOUNCE_MS = 300;
+  const DC_SEARCH_QUERY_DEBOUNCE_MS = 300;
   const LIKELY_DOI_ID = ":likely-doi";
-  const searchType = "type:DataConnector";
-  const searchIdentifierPrefix = "path:";
+  const DC_SEARCH_SLUG_PREFIX = "slug:";
+  // const DC_SEARCH_NAMESPACE_PREFIX = "namespace:"; // ! TODO: update the logic to match the identifier
+  // const DC_SEARCH_DOI_PREFIX = "doi:"; // ! TODO: search for doi when it exists
+  const SUCCESS_MESSAGE_TIMEOUT_MS = 10_000;
+
+  const DC_SEARCH_TYPE = "type:DataConnector";
   const membershipString = `inherited_member:@${
     currentUser?.isLoggedIn && currentUser?.username ? currentUser.username : ""
   }`;
 
-  // Get the project data connectors to exclude from the search results
+  // Keep track of the imported item to show a "success" feedback
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  useEffect(() => {
+    if (selectedItemId == null) return;
+
+    const timeout = setTimeout(() => {
+      setSelectedItemId(null);
+    }, SUCCESS_MESSAGE_TIMEOUT_MS);
+
+    return () => clearTimeout(timeout);
+  }, [selectedItemId]);
+
+  // Get the project data connectors to exclude from the search results, except from recently added
   const projectDataConnectorLinks =
     useGetProjectsByProjectIdDataConnectorLinksQuery({
       projectId: project.id,
@@ -220,15 +231,17 @@ function ProjectSearchDataConnectorBodyAndFooter({
   const projectDataConnectorIds = useMemo(() => {
     if (projectDataConnectorLinks.data == null) return new Set<string>();
     return new Set(
-      projectDataConnectorLinks.data.map((link) => link.data_connector_id)
+      projectDataConnectorLinks.data
+        .map((link) => link.data_connector_id)
+        .filter((id) => id !== selectedItemId)
     );
-  }, [projectDataConnectorLinks.data]);
+  }, [projectDataConnectorLinks.data, selectedItemId]);
 
   // Debounce logic to avoid sending search queries on every keystroke
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       setQuerySearchInput(userSearchInput);
-    }, SEARCH_QUERY_DEBOUNCE_MS);
+    }, DC_SEARCH_QUERY_DEBOUNCE_MS);
 
     return () => {
       window.clearTimeout(timeoutId);
@@ -242,16 +255,20 @@ function ProjectSearchDataConnectorBodyAndFooter({
     querySearchInput
       ? {
           params: {
-            q: `${searchType} ${searchIdentifierPrefix}${querySearchInput}`,
+            q: `${DC_SEARCH_TYPE} ${DC_SEARCH_SLUG_PREFIX}${querySearchInput}`,
           },
         }
       : skipToken
   );
   const searchMembership = useGetSearchQueryQuery({
-    params: { q: `${searchType} ${membershipString} ${querySearchInput}` },
+    params: {
+      q: `${DC_SEARCH_TYPE} ${membershipString} ${querySearchInput}`,
+    },
   });
   const searchPublic = useGetSearchQueryQuery({
-    params: { q: `${searchType} ${querySearchInput}` },
+    params: {
+      q: `${DC_SEARCH_TYPE} ${querySearchInput}`,
+    },
   });
 
   // Clean the results to avoid duplicates
@@ -290,13 +307,13 @@ function ProjectSearchDataConnectorBodyAndFooter({
   );
 
   // Variables to adjust the UI interactions
-  const allIds = useMemo(() => {
-    const ids = new Set<string>();
-    searchIdentifierResults.forEach((dc) => ids.add(dc.id));
-    searchMembershipResults.forEach((dc) => ids.add(dc.id));
-    searchPublicResults.forEach((dc) => ids.add(dc.id));
-    return ids;
-  }, [searchIdentifierResults, searchMembershipResults, searchPublicResults]);
+  // // const allIds = useMemo(() => {
+  // //   const ids = new Set<string>();
+  // //   searchIdentifierResults.forEach((dc) => ids.add(dc.id));
+  // //   searchMembershipResults.forEach((dc) => ids.add(dc.id));
+  // //   searchPublicResults.forEach((dc) => ids.add(dc.id));
+  // //   return ids;
+  // // }, [searchIdentifierResults, searchMembershipResults, searchPublicResults]);
 
   const anythingMatched =
     isLikelyDOI ||
@@ -304,19 +321,81 @@ function ProjectSearchDataConnectorBodyAndFooter({
     searchMembershipResults.length > 0 ||
     searchPublicResults.length > 0;
 
-  const isAnythingFetching =
-    searchIdentifier.isFetching ||
-    searchMembership.isFetching ||
-    searchPublic.isFetching;
+  // // const isAnythingFetching =
+  // //   searchIdentifier.isFetching ||
+  // //   searchMembership.isFetching ||
+  // //   searchPublic.isFetching;
 
-  // ? This prevents accidentally adding a previously selected item that is not listed anymore
-  const selectedItemIdEffective =
-    selectedItemId &&
-    (selectedItemId === LIKELY_DOI_ID
-      ? isLikelyDOI
-      : allIds.has(selectedItemId))
-      ? selectedItemId
-      : null;
+  // Link data connectors or doi
+  const [postGlobalDataConnectorMutation, postGlobalDataConnectorStatus] =
+    usePostDataConnectorsGlobalMutation();
+  const [postLinkDataConnectorMutation, postLinkDataConnectorStatus] =
+    usePostDataConnectorsByDataConnectorIdProjectLinksMutation();
+
+  const onImportAndLinkGlobalDataConnector = useCallback(
+    async (dataConnectorId: string) => {
+      setSelectedItemId(
+        dataConnectorId === selectedItemId ? null : dataConnectorId
+      );
+
+      const doiParsed = doiFromUrl(querySearchInput);
+      const postResult = await postGlobalDataConnectorMutation({
+        globalDataConnectorPost: {
+          storage: {
+            configuration: {
+              type: "doi",
+              doi: doiParsed,
+            },
+            source_path: "/",
+            target_path: "/",
+            readonly: true,
+          },
+        },
+      });
+
+      if (postResult.error || !postResult.data) return;
+
+      postLinkDataConnectorMutation({
+        dataConnectorId: postResult.data.id,
+        dataConnectorToProjectLinkPost: {
+          project_id: project.id,
+        },
+      });
+    },
+    [
+      postGlobalDataConnectorMutation,
+      postLinkDataConnectorMutation,
+      project.id,
+      selectedItemId,
+      querySearchInput,
+    ]
+  );
+  const onLinkDataConnector = useCallback(
+    (dataConnectorId: string) => {
+      setSelectedItemId(
+        dataConnectorId === selectedItemId ? null : dataConnectorId
+      );
+      postLinkDataConnectorMutation({
+        dataConnectorId,
+        dataConnectorToProjectLinkPost: {
+          project_id: project.id,
+        },
+      });
+    },
+    [selectedItemId, project.id, postLinkDataConnectorMutation]
+  );
+
+  const isAnythingPosting =
+    postGlobalDataConnectorStatus.isLoading ||
+    postLinkDataConnectorStatus.isLoading;
+
+  // ? Temporary solution: ignore conflict errors when linking
+  // ! TODO: check for existing DOIs before trying to post again
+  const isErrorPosting =
+    postGlobalDataConnectorStatus.isError ||
+    (postLinkDataConnectorStatus.isError &&
+      "data" in postLinkDataConnectorStatus.error &&
+      postLinkDataConnectorStatus.error.status !== 409);
 
   // Show components
   return (
@@ -394,9 +473,19 @@ function ProjectSearchDataConnectorBodyAndFooter({
           to find more.
         </p>
 
+        {isErrorPosting && (
+          <RtkOrDataServicesError
+            error={
+              postGlobalDataConnectorStatus.error ||
+              postLinkDataConnectorStatus.error
+            }
+          />
+        )}
+
         <ListGroup>
           {isLikelyDOI && (
             <SearchResultListItem
+              action={onImportAndLinkGlobalDataConnector}
               dataConnector={
                 {
                   id: LIKELY_DOI_ID,
@@ -404,9 +493,14 @@ function ProjectSearchDataConnectorBodyAndFooter({
                   storageType: "doi",
                 } as SearchDataConnector
               }
-              highlight={selectedItemIdEffective === LIKELY_DOI_ID}
+              disabled={isAnythingPosting}
+              justAdded={
+                selectedItemId === LIKELY_DOI_ID &&
+                !isErrorPosting &&
+                !isAnythingPosting
+              }
+              highlight={true}
               key={LIKELY_DOI_ID}
-              selectItem={onSelectItem}
               source="doi"
             />
           )}
@@ -414,10 +508,20 @@ function ProjectSearchDataConnectorBodyAndFooter({
           {searchIdentifierResults.map((item) => {
             return (
               <SearchResultListItem
+                action={onLinkDataConnector}
                 dataConnector={item}
-                highlight={selectedItemIdEffective === item.id}
+                disabled={isAnythingPosting}
+                justAdded={
+                  selectedItemId === item.id &&
+                  !isErrorPosting &&
+                  !isAnythingPosting
+                }
+                highlight={
+                  selectedItemId === item.id &&
+                  !isErrorPosting &&
+                  !isAnythingPosting
+                }
                 key={item.id}
-                selectItem={onSelectItem}
                 source="identifier"
               />
             );
@@ -426,10 +530,20 @@ function ProjectSearchDataConnectorBodyAndFooter({
           {searchMembershipResults.map((item) => {
             return (
               <SearchResultListItem
+                action={onLinkDataConnector}
                 dataConnector={item}
-                highlight={selectedItemIdEffective === item.id}
+                disabled={isAnythingPosting}
+                justAdded={
+                  selectedItemId === item.id &&
+                  !isErrorPosting &&
+                  !isAnythingPosting
+                }
+                highlight={
+                  selectedItemId === item.id &&
+                  !isErrorPosting &&
+                  !isAnythingPosting
+                }
                 key={item.id}
-                selectItem={onSelectItem}
                 source="membership"
               />
             );
@@ -438,10 +552,20 @@ function ProjectSearchDataConnectorBodyAndFooter({
           {searchPublicResults.map((item) => {
             return (
               <SearchResultListItem
+                action={onLinkDataConnector}
                 dataConnector={item}
-                highlight={selectedItemIdEffective === item.id}
+                disabled={isAnythingPosting}
+                justAdded={
+                  selectedItemId === item.id &&
+                  !isErrorPosting &&
+                  !isAnythingPosting
+                }
+                highlight={
+                  selectedItemId === item.id &&
+                  !isErrorPosting &&
+                  !isAnythingPosting
+                }
                 key={item.id}
-                selectItem={onSelectItem}
                 source={item.storageType === "doi" ? "doi" : "public"}
               />
             );
@@ -454,24 +578,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
       >
         <Button color="outline-primary" onClick={() => toggle()} type="button">
           <XLg className={cx("bi", "me-1")} />
-          Cancel
-        </Button>
-        <Button
-          color="primary"
-          disabled={isAnythingFetching || !selectedItemIdEffective}
-          type="button"
-        >
-          {selectedItemIdEffective === LIKELY_DOI_ID ? (
-            <>
-              <NodePlus className={cx("bi", "me-1")} />
-              Import and link DOI
-            </>
-          ) : (
-            <>
-              <Link45deg className={cx("bi", "me-1")} />
-              Link data connector
-            </>
-          )}
+          Close
         </Button>
       </ModalFooter>
     </Form>
@@ -480,15 +587,19 @@ function ProjectSearchDataConnectorBodyAndFooter({
 
 type DataConnectorSearchSource = "doi" | "identifier" | "membership" | "public";
 interface SearchResultListItemProps {
+  action?: (dataConnectorId: string) => void;
   dataConnector: SearchDataConnector;
+  disabled?: boolean;
+  justAdded?: boolean;
   highlight?: boolean;
-  selectItem: (dataConnectorId: string) => void;
   source: DataConnectorSearchSource;
 }
 function SearchResultListItem({
+  action,
   dataConnector,
+  disabled,
+  justAdded,
   highlight,
-  selectItem,
   source,
 }: SearchResultListItemProps) {
   // TODO: We want to add an ExternalLink to let users check the data connector before linking it.
@@ -497,22 +608,47 @@ function SearchResultListItem({
   return (
     <ListGroupItem
       className={cx(
-        "cursor-pointer",
-        "link-primary",
         "text-body",
-        "list-group-item",
         "list-group-item-action",
         "py-2",
         highlight && ["bg-opacity-10", "bg-primary", "border-primary-subtle"]
       )}
       data-cy="link-data-connector-list-item"
-      onClick={() => selectItem(dataConnector.id)}
     >
       <Row className="g-2">
-        <Col className={cx()}>{dataConnector.name}</Col>
-        <Col xs="auto">
+        <Col className={cx("align-items-center", "d-flex")}>
+          {dataConnector.name}
+        </Col>
+        <Col className={cx("align-items-center", "d-flex")} xs="auto">
           <DataConnectorSearchSourceBadge source={source} />
         </Col>
+        {action && (
+          <Col className={cx("align-items-center", "d-flex")} xs="auto">
+            {justAdded ? (
+              <RenkuBadge
+                color="success"
+                data-cy="data-connector-link-successful-badge"
+              >
+                <Check className={cx("bi", "me-1")} />
+                Linked
+              </RenkuBadge>
+            ) : (
+              <Button
+                color="primary"
+                data-cy="data-connector-link-button"
+                disabled={disabled}
+                onClick={() => {
+                  action(dataConnector.id);
+                }}
+                size="sm"
+                type="button"
+              >
+                <Link45deg className={cx("bi", "me-1")} />
+                Link
+              </Button>
+            )}
+          </Col>
+        )}
       </Row>
     </ListGroupItem>
   );
@@ -555,13 +691,14 @@ function DataConnectorSearchSourceBadge({
 }
 
 export function isWellFormedDoi(input: string): boolean {
-  const s = input
+  const doiConverted = doiFromUrl(input);
+  const doiString = doiConverted
     .trim()
     .replace(/^doi:\s*/iu, "")
     .replace(/^https?:\/\/(?:dx\.)?doi\.org\//iu, "");
 
   // Prefix: DOI requires 10.<something> (digits, optionally split by dots)
-  const match = /^10\.\d+(?:\.\d+)*\/([\s\S]+)$/u.exec(s);
+  const match = /^10\.\d+(?:\.\d+)*\/([\s\S]+)$/u.exec(doiString);
   if (!match) return false;
 
   const suffix = match[1];
