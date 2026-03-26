@@ -202,7 +202,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
   const DC_SEARCH_QUERY_DEBOUNCE_MS = 300;
   const LIKELY_DOI_ID = ":likely-doi";
   const DC_SEARCH_SLUG_PREFIX = "slug:";
-  // const DC_SEARCH_NAMESPACE_PREFIX = "namespace:"; // ! TODO: update the logic to match the identifier
+  const DC_SEARCH_NAMESPACE_PREFIX = "namespace:";
   // const DC_SEARCH_DOI_PREFIX = "doi:"; // ! TODO: search for doi when it exists
   const SUCCESS_MESSAGE_TIMEOUT_MS = 10_000;
   const DC_SEARCH_MAX_RESULTS = 10;
@@ -256,7 +256,15 @@ function ProjectSearchDataConnectorBodyAndFooter({
     querySearchInput
       ? {
           params: {
-            q: `${DC_SEARCH_TYPE} ${DC_SEARCH_SLUG_PREFIX}${querySearchInput}`,
+            q: querySearchInput.includes("/")
+              ? `${DC_SEARCH_TYPE} ${DC_SEARCH_NAMESPACE_PREFIX}${querySearchInput.slice(
+                  0,
+                  querySearchInput.lastIndexOf("/")
+                )} ${DC_SEARCH_SLUG_PREFIX}${querySearchInput.slice(
+                  querySearchInput.lastIndexOf("/") + 1
+                )}
+                `
+              : `${DC_SEARCH_TYPE} ${DC_SEARCH_SLUG_PREFIX}${querySearchInput}`,
           },
         }
       : skipToken
@@ -525,60 +533,58 @@ function ProjectSearchDataConnectorBodyAndFooter({
                   !isErrorPosting &&
                   !isAnythingPosting
                 }
-                highlight={
-                  selectedItemId === item.id &&
-                  !isErrorPosting &&
-                  !isAnythingPosting
-                }
+                highlight={true}
                 key={item.id}
                 source="identifier"
               />
             );
           })}
 
-          {searchMembershipResults.map((item) => {
-            return (
-              <SearchResultListItem
-                action={onLinkDataConnector}
-                dataConnector={item}
-                disabled={isAnythingPosting}
-                justAdded={
-                  selectedItemId === item.id &&
-                  !isErrorPosting &&
-                  !isAnythingPosting
-                }
-                highlight={
-                  selectedItemId === item.id &&
-                  !isErrorPosting &&
-                  !isAnythingPosting
-                }
-                key={item.id}
-                source="membership"
-              />
-            );
-          })}
+          {searchIdentifierResults.length < 1 &&
+            searchMembershipResults.map((item) => {
+              return (
+                <SearchResultListItem
+                  action={onLinkDataConnector}
+                  dataConnector={item}
+                  disabled={isAnythingPosting}
+                  justAdded={
+                    selectedItemId === item.id &&
+                    !isErrorPosting &&
+                    !isAnythingPosting
+                  }
+                  highlight={
+                    selectedItemId === item.id &&
+                    !isErrorPosting &&
+                    !isAnythingPosting
+                  }
+                  key={item.id}
+                  source="membership"
+                />
+              );
+            })}
 
-          {searchPublicResults.map((item) => {
-            return (
-              <SearchResultListItem
-                action={onLinkDataConnector}
-                dataConnector={item}
-                disabled={isAnythingPosting}
-                justAdded={
-                  selectedItemId === item.id &&
-                  !isErrorPosting &&
-                  !isAnythingPosting
-                }
-                highlight={
-                  selectedItemId === item.id &&
-                  !isErrorPosting &&
-                  !isAnythingPosting
-                }
-                key={item.id}
-                source={item.storageType === "doi" ? "doi" : "public"}
-              />
-            );
-          })}
+          {searchIdentifierResults.length < 1 &&
+            searchPublicResults.map((item) => {
+              return (
+                <SearchResultListItem
+                  action={onLinkDataConnector}
+                  dataConnector={item}
+                  disabled={isAnythingPosting}
+                  justAdded={
+                    selectedItemId === item.id &&
+                    !isErrorPosting &&
+                    !isAnythingPosting
+                  }
+                  highlight={
+                    selectedItemId === item.id &&
+                    !isErrorPosting &&
+                    !isAnythingPosting
+                  }
+                  key={item.id}
+                  source={item.storageType === "doi" ? "doi" : "public"}
+                />
+              );
+            })}
         </ListGroup>
       </ModalBody>
       <ModalFooter
