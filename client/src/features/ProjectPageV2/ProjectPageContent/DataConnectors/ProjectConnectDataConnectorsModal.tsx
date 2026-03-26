@@ -21,7 +21,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bullseye, // eslint-disable-line spellcheck/spell-checker
-  Check,
+  CheckLg,
   Database,
   Globe,
   Link45deg,
@@ -203,7 +203,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
   const LIKELY_DOI_ID = ":likely-doi";
   const DC_SEARCH_SLUG_PREFIX = "slug:";
   const DC_SEARCH_NAMESPACE_PREFIX = "namespace:";
-  // const DC_SEARCH_DOI_PREFIX = "doi:"; // ! TODO: search for doi when it exists
+  const DC_SEARCH_DOI_PREFIX = "doi:";
   const SUCCESS_MESSAGE_TIMEOUT_MS = 10_000;
   const DC_SEARCH_MAX_RESULTS = 10;
 
@@ -249,9 +249,19 @@ function ProjectSearchDataConnectorBodyAndFooter({
     };
   }, [userSearchInput]);
 
-  const isLikelyDOI = isWellFormedDoi(querySearchInput);
+  const normalizedDOI = normalizeAsDoi(querySearchInput);
 
-  // Fetch the data. We match by 1) identifier, 2) membership, and 3) anything public
+  // Fetch the data. We match by 0) DOI 1) identifier, 2) membership, and 3) anything public
+  const searchImportedDoi = useGetSearchQueryQuery(
+    normalizedDOI
+      ? {
+          params: {
+            q: `${DC_SEARCH_TYPE} ${DC_SEARCH_DOI_PREFIX}${normalizedDOI}`,
+          },
+        }
+      : skipToken
+  );
+
   const searchIdentifier = useGetSearchQueryQuery(
     querySearchInput
       ? {
@@ -282,66 +292,58 @@ function ProjectSearchDataConnectorBodyAndFooter({
     },
   });
 
-  // Clean the results to avoid duplicates
-  const searchIdentifierResults = useMemo(
+  // Process results to exclude duplicates
+  const searchImportedDoiResult = useMemo(
     () =>
-      (searchIdentifier.data?.items ?? []).filter(
+      (searchImportedDoi.data?.items ?? []).find(
         (dc) => !projectDataConnectorIds.has(dc.id)
-      ) as SearchDataConnector[],
+      ) as SearchDataConnector | undefined,
+    [searchImportedDoi.data?.items, projectDataConnectorIds]
+  );
+
+  const searchIdentifierResult = useMemo(
+    () =>
+      (searchIdentifier.data?.items ?? []).find(
+        (dc) => !projectDataConnectorIds.has(dc.id)
+      ) as SearchDataConnector | undefined,
     [searchIdentifier.data?.items, projectDataConnectorIds]
   );
-  const searchIdentifierIds = useMemo(() => {
-    const ids = new Set(projectDataConnectorIds);
-    searchIdentifierResults.forEach((dc) => ids.add(dc.id));
-    return ids;
-  }, [projectDataConnectorIds, searchIdentifierResults]);
+  const searchIdentifierId = useMemo(() => {
+    return searchIdentifierResult?.id;
+  }, [searchIdentifierResult]);
 
   const searchMembershipResults = useMemo(
     () =>
       (searchMembership.data?.items ?? []).filter(
-        (dc) => !searchIdentifierIds.has(dc.id)
+        (dc) =>
+          dc.id !== searchIdentifierId && !projectDataConnectorIds.has(dc.id)
       ) as SearchDataConnector[],
-    [searchMembership.data?.items, searchIdentifierIds]
+    [projectDataConnectorIds, searchIdentifierId, searchMembership.data?.items]
   );
   const membershipIds = useMemo(() => {
-    const ids = new Set(searchIdentifierIds);
+    const ids = new Set(searchIdentifierId ? [searchIdentifierId] : []);
     searchMembershipResults.forEach((dc) => ids.add(dc.id));
     return ids;
-  }, [searchIdentifierIds, searchMembershipResults]);
+  }, [searchIdentifierId, searchMembershipResults]);
 
   const searchPublicResults = useMemo(() => {
     const results: SearchDataConnector[] = [];
     const maxLength = DC_SEARCH_MAX_RESULTS - searchMembershipResults.length;
 
     for (const dc of searchPublic.data?.items ?? []) {
-      if (!membershipIds.has(dc.id)) {
+      if (!membershipIds.has(dc.id) && !projectDataConnectorIds.has(dc.id)) {
         results.push(dc as SearchDataConnector);
         if (results.length === maxLength) break;
       }
     }
 
     return results;
-  }, [searchPublic.data?.items, membershipIds, searchMembershipResults.length]);
-
-  // Variables to adjust the UI interactions
-  // // const allIds = useMemo(() => {
-  // //   const ids = new Set<string>();
-  // //   searchIdentifierResults.forEach((dc) => ids.add(dc.id));
-  // //   searchMembershipResults.forEach((dc) => ids.add(dc.id));
-  // //   searchPublicResults.forEach((dc) => ids.add(dc.id));
-  // //   return ids;
-  // // }, [searchIdentifierResults, searchMembershipResults, searchPublicResults]);
-
-  const anythingMatched =
-    isLikelyDOI ||
-    searchIdentifierResults.length > 0 ||
-    searchMembershipResults.length > 0 ||
-    searchPublicResults.length > 0;
-
-  // // const isAnythingFetching =
-  // //   searchIdentifier.isFetching ||
-  // //   searchMembership.isFetching ||
-  // //   searchPublic.isFetching;
+  }, [
+    membershipIds,
+    projectDataConnectorIds,
+    searchMembershipResults.length,
+    searchPublic.data?.items,
+  ]);
 
   // Link data connectors or doi
   const [postGlobalDataConnectorMutation, postGlobalDataConnectorStatus] =
@@ -402,12 +404,23 @@ function ProjectSearchDataConnectorBodyAndFooter({
     [selectedItemId, project.id, postLinkDataConnectorMutation]
   );
 
+  // Variables to adjust the UI interactions
+  const anythingMatched =
+    normalizedDOI ||
+    searchIdentifierResult ||
+    searchMembershipResults.length > 0 ||
+    searchPublicResults.length > 0;
+
   const isAnythingPosting =
     postGlobalDataConnectorStatus.isLoading ||
     postLinkDataConnectorStatus.isLoading;
 
-  // ? Temporary solution: ignore conflict errors when linking
-  // ! TODO: check for existing DOIs before trying to post again
+  const alreadyImportedDataConnector = [
+    searchIdentifier.data?.items?.at(0) as SearchDataConnector | undefined,
+    searchImportedDoi.data?.items?.at(0) as SearchDataConnector | undefined,
+  ].find((dc) => dc && projectDataConnectorIds.has(dc.id));
+
+  // ? This shouldn't happen anymore since we check for existing DOIs/identifiers
   const isErrorPosting =
     postGlobalDataConnectorStatus.isError ||
     (postLinkDataConnectorStatus.isError &&
@@ -500,47 +513,65 @@ function ProjectSearchDataConnectorBodyAndFooter({
         )}
 
         <ListGroup>
-          {isLikelyDOI && (
+          {alreadyImportedDataConnector && (
             <SearchResultListItem
-              action={onImportAndLinkGlobalDataConnector}
+              dataConnector={alreadyImportedDataConnector}
+              key={alreadyImportedDataConnector.id}
+              source="existing"
+            />
+          )}
+
+          {!alreadyImportedDataConnector && normalizedDOI && (
+            <SearchResultListItem
+              action={
+                searchImportedDoiResult
+                  ? onLinkDataConnector
+                  : onImportAndLinkGlobalDataConnector
+              }
               dataConnector={
-                {
+                searchImportedDoiResult ??
+                ({
                   id: LIKELY_DOI_ID,
                   name: "This looks like a DOI! Import it?",
                   storageType: "doi",
-                } as SearchDataConnector
+                } as SearchDataConnector)
               }
               disabled={isAnythingPosting}
               justAdded={
-                selectedItemId === LIKELY_DOI_ID &&
+                selectedItemId ===
+                  (searchImportedDoiResult
+                    ? searchImportedDoiResult.id
+                    : LIKELY_DOI_ID) &&
                 !isErrorPosting &&
                 !isAnythingPosting
               }
               highlight={true}
-              key={LIKELY_DOI_ID}
+              key={
+                searchImportedDoiResult
+                  ? searchImportedDoiResult.id
+                  : LIKELY_DOI_ID
+              }
               source="doi"
             />
           )}
 
-          {searchIdentifierResults.map((item) => {
-            return (
-              <SearchResultListItem
-                action={onLinkDataConnector}
-                dataConnector={item}
-                disabled={isAnythingPosting}
-                justAdded={
-                  selectedItemId === item.id &&
-                  !isErrorPosting &&
-                  !isAnythingPosting
-                }
-                highlight={true}
-                key={item.id}
-                source="identifier"
-              />
-            );
-          })}
+          {!alreadyImportedDataConnector && searchIdentifierResult && (
+            <SearchResultListItem
+              action={onLinkDataConnector}
+              dataConnector={searchIdentifierResult}
+              disabled={isAnythingPosting}
+              justAdded={
+                selectedItemId === searchIdentifierResult.id &&
+                !isErrorPosting &&
+                !isAnythingPosting
+              }
+              highlight={true}
+              key={searchIdentifierResult.id}
+              source="identifier"
+            />
+          )}
 
-          {searchIdentifierResults.length < 1 &&
+          {!searchIdentifierResult &&
             searchMembershipResults.map((item) => {
               return (
                 <SearchResultListItem
@@ -563,7 +594,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
               );
             })}
 
-          {searchIdentifierResults.length < 1 &&
+          {!searchIdentifierResult &&
             searchPublicResults.map((item) => {
               return (
                 <SearchResultListItem
@@ -600,7 +631,12 @@ function ProjectSearchDataConnectorBodyAndFooter({
   );
 }
 
-type DataConnectorSearchSource = "doi" | "identifier" | "membership" | "public";
+type DataConnectorSearchSource =
+  | "doi"
+  | "identifier"
+  | "membership"
+  | "public"
+  | "existing";
 interface SearchResultListItemProps {
   action?: (dataConnectorId: string) => void;
   dataConnector: SearchDataConnector;
@@ -625,7 +661,7 @@ function SearchResultListItem({
       className={cx(
         "text-body",
         "list-group-item-action",
-        "py-2",
+        "py-1",
         highlight && ["bg-opacity-10", "bg-primary", "border-primary-subtle"]
       )}
       data-cy="link-data-connector-list-item"
@@ -645,7 +681,7 @@ function SearchResultListItem({
                 color="success"
                 data-cy="data-connector-link-successful-badge"
               >
-                <Check className={cx("bi", "me-1")} />
+                <CheckLg className={cx("bi", "me-1")} />
                 Linked
               </RenkuBadge>
             ) : (
@@ -692,6 +728,11 @@ function DataConnectorSearchSourceBadge({
         <People className={cx("bi", "me-1")} />
         Your groups or projects
       </div>
+    ) : source === "existing" ? (
+      <div>
+        <Database className={cx("bi", "me-1")} />
+        Already linked to project
+      </div>
     ) : (
       <div>
         <Globe className={cx("bi", "me-1")} />
@@ -706,7 +747,7 @@ function DataConnectorSearchSourceBadge({
   );
 }
 
-export function isWellFormedDoi(input: string): boolean {
+export function normalizeAsDoi(input: string): string {
   const doiConverted = doiFromUrl(input);
   const doiString = doiConverted
     .trim()
@@ -715,15 +756,15 @@ export function isWellFormedDoi(input: string): boolean {
 
   // Prefix: DOI requires 10.<something> (digits, optionally split by dots)
   const match = /^10\.\d+(?:\.\d+)*\/([\s\S]+)$/u.exec(doiString);
-  if (!match) return false;
+  if (!match) return "";
 
   const suffix = match[1];
-  if (suffix.length === 0) return false;
+  if (suffix.length === 0) return "";
 
   // Reject Unicode "Other" category (controls, format chars, surrogates,
   // private-use, unassigned) and line/paragraph separators.
   // Spaces inside the suffix are allowed by the DOI spec.
-  if (/[\p{C}\p{Zl}\p{Zp}]/u.test(suffix)) return false;
+  if (/[\p{C}\p{Zl}\p{Zp}]/u.test(suffix)) return "";
 
-  return true;
+  return doiString;
 }
