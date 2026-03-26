@@ -51,15 +51,24 @@ describe("Search V2", () => {
     cy.getDataCy("search-list-item").should("have.length", 5);
   });
 
-  it("/g redirects to search", () => {
+  it("/g redirects to group search", () => {
     fixtures.searchV2ListProjects();
     cy.visit("/g");
     cy.location("pathname").should("eq", "/search");
+    cy.location("search").should("include", "type=Group");
   });
 
-  it("/p redirects to search", () => {
+  it("/p redirects to project search", () => {
     fixtures.searchV2ListProjects();
     cy.visit("/p");
     cy.location("pathname").should("eq", "/search");
+    cy.location("search").should("include", "type=Project");
+  });
+
+  it("/u redirects to user search", () => {
+    fixtures.searchV2ListProjects();
+    cy.visit("/u");
+    cy.location("pathname").should("eq", "/search");
+    cy.location("search").should("include", "type=User");
   });
 });
