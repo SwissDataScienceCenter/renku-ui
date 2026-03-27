@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bullseye, // eslint-disable-line spellcheck/spell-checker
   CheckLg,
@@ -184,6 +184,7 @@ function ProjectCreateDataConnectorBodyAndFooter({
 //   search: string;
 // }
 function ProjectSearchDataConnectorBodyAndFooter({
+  isOpen,
   project,
   switchMode,
   toggle,
@@ -427,6 +428,18 @@ function ProjectSearchDataConnectorBodyAndFooter({
       "data" in postLinkDataConnectorStatus.error &&
       postLinkDataConnectorStatus.error.status !== 409);
 
+  // Handle input auto-focus
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const id = window.setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, [isOpen]);
+
   // Show components
   return (
     <Form noValidate>
@@ -458,6 +471,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
             <Input
               className="lg"
               id="search"
+              innerRef={searchInputRef}
               placeholder="Paste an identifier, a DOI, or search..."
               type="text"
               value={userSearchInput}
