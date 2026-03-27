@@ -32,6 +32,13 @@ interface ExactUser {
   last_name?: string;
 }
 
+interface PostResourcePoolArgs extends SimpleFixture {
+  remote?: {
+    kind: string;
+    base_url?: string;
+  };
+}
+
 interface UrlRedirectFixture extends NameOnlyFixture {
   sourceUrl: string;
   targetUrl: string | null;
@@ -50,6 +57,34 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("GET", "/api/data/resource_pools*", response).as(name);
+      return this;
+    }
+
+    postResourcePool(args?: PostResourcePoolArgs) {
+      const {
+        fixture = "dataServices/resource-pools.json",
+        name = "postResourcePool",
+        remote,
+      } = args ?? {};
+      cy.fixture(fixture).then((resourcePool) => {
+        cy.intercept("POST", "/api/data/resource_pools", (req) => {
+          if (remote == null) {
+            if (req.body.remote !== undefined) {
+              throw new Error("remote must be undefined");
+            }
+          } else {
+            if (req.body.remote.kind != remote.kind) {
+              throw new Error(`remote.kind must be ${remote.kind}`);
+            }
+            if (req.body.remote.base_url != remote.base_url) {
+              throw new Error(
+                `remote.base_url ${req.body.remote.base_url} must equal ${remote.base_url}`
+              );
+            }
+          }
+          req.reply({ body: resourcePool, statusCode: 201, delay: 1000 });
+        }).as(name);
+      });
       return this;
     }
 
