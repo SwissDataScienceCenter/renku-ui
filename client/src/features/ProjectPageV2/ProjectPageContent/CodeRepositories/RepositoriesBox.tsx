@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FileCode, PlusLg } from "react-bootstrap-icons";
 import {
   Badge,
@@ -28,11 +28,18 @@ import {
   ListGroup,
 } from "reactstrap";
 
+import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import AddCodeRepositoryModal from "./AddCodeRepositoryModal";
 import { RepositoryItem } from "./CodeRepositoryDisplay";
+import {
+  buildCodeRepositoryFragment,
+  getCodeRepositoryUrlHash,
+  parseCodeRepositoryFragment,
+  resolveRepositoryUrlFromCodeRepositoryHash,
+} from "./codeRepositoryFragment.utils";
 
 export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   const permissions = useProjectPermissions({ projectId: project.id });
@@ -40,6 +47,56 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
+
+  const [locationHash, setLocationHash] = useLocationHash();
+  const repositoryUrls = useMemo(
+    () => project.repositories ?? [],
+    [project.repositories]
+  );
+
+  const parsedFragment = useMemo(
+    () => parseCodeRepositoryFragment(locationHash),
+    [locationHash]
+  );
+
+  const [resolvedRepositoryUrl, setResolvedRepositoryUrl] = useState<
+    string | null
+  >(null);
+
+  useEffect(() => {
+    if (repositoryUrls.length === 0 || parsedFragment == null) {
+      setResolvedRepositoryUrl(null);
+      return;
+    }
+
+    let cancelled = false;
+    void resolveRepositoryUrlFromCodeRepositoryHash(
+      locationHash,
+      repositoryUrls
+    ).then((url) => {
+      if (!cancelled) setResolvedRepositoryUrl(url);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [locationHash, parsedFragment, repositoryUrls]);
+
+  const toggleRepositoryDetails = useCallback(
+    (repositoryUrl: string) => {
+      // Hashing is async (WebCrypto). We rely on the hash cache to keep this fast.
+      void (async () => {
+        const urlHash = await getCodeRepositoryUrlHash(repositoryUrl);
+        const targetFragment = buildCodeRepositoryFragment(urlHash);
+
+        setLocationHash((prev) => {
+          const isAlreadyOpen = prev === targetFragment;
+          return isAlreadyOpen ? "" : targetFragment;
+        });
+      })();
+    },
+    [setLocationHash]
+  );
 
   const totalRepositories = project.repositories?.length || 0;
   return (
@@ -93,6 +150,8 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
                 key={index}
                 project={project}
                 url={repositoryUrl}
+                showDetails={resolvedRepositoryUrl === repositoryUrl}
+                toggleDetails={() => toggleRepositoryDetails(repositoryUrl)}
               />
             ))}
           </ListGroup>
