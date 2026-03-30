@@ -235,7 +235,11 @@ function SearchResultItemMembers({ item }: SearchResultItemMembersProps) {
     return <MemberListRow members={members.data} />;
   }
 
-  if (item.type === "DataConnector" && item.createdBy) {
+  if (
+    item.type === "DataConnector" &&
+    item.createdBy &&
+    item.storageType !== "doi"
+  ) {
     return (
       <div className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
         <span className="fst-italic">Created by</span>{" "}
