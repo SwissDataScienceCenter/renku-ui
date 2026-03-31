@@ -24,9 +24,10 @@ import {
   CheckLg,
   Database,
   Globe,
+  Journals,
   Link45deg,
   People,
-  XLg,
+  XCircleFill,
 } from "react-bootstrap-icons";
 import { createSearchParams, Link } from "react-router";
 import {
@@ -39,7 +40,6 @@ import {
   ListGroup,
   ListGroupItem,
   ModalBody,
-  ModalFooter,
   Row,
 } from "reactstrap";
 
@@ -66,8 +66,6 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { doiFromUrl } from "../../utils/dataConnectorUtils";
-
-import styles from "~/features/dataConnectorsV2/components/DataConnectorModal/DataConnectorModal.module.scss";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -101,7 +99,6 @@ export default function ProjectConnectDataConnectorsModal({
     <ScrollableModal
       backdrop="static"
       centered
-      className={styles.modal}
       data-cy="project-data-connector-connect-modal"
       fullscreen="lg"
       id="connect-project-data-connector"
@@ -417,8 +414,12 @@ function ProjectSearchDataConnectorBodyAndFooter({
     postLinkDataConnectorStatus.isLoading;
 
   const alreadyImportedDataConnector = [
-    searchIdentifier.data?.items?.at(0) as SearchDataConnector | undefined,
-    searchImportedDoi.data?.items?.at(0) as SearchDataConnector | undefined,
+    searchIdentifier.currentData?.items?.at(0) as
+      | SearchDataConnector
+      | undefined,
+    searchImportedDoi.currentData?.items?.at(0) as
+      | SearchDataConnector
+      | undefined,
   ].find((dc) => dc && projectDataConnectorIds.has(dc.id));
 
   // ? This shouldn't happen anymore since we check for existing DOIs/identifiers
@@ -439,6 +440,13 @@ function ProjectSearchDataConnectorBodyAndFooter({
 
     return () => window.clearTimeout(id);
   }, [isOpen]);
+
+  // Handle input reset
+  const onReset = useCallback(() => {
+    setUserSearchInput("");
+    setQuerySearchInput("");
+    searchInputRef.current?.focus();
+  }, []);
 
   // Show components
   return (
@@ -463,7 +471,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
           )}
         </p>
 
-        <div className="mb-3">
+        <div className="mb-4">
           <Label className="" for="data-connector-identifier">
             Find a data connector
           </Label>
@@ -483,6 +491,16 @@ function ProjectSearchDataConnectorBodyAndFooter({
                 }
               }}
             />
+            <Button
+              color="outline-secondary"
+              className="border-secondary-subtle"
+              data-cy="search-clear-button"
+              onClick={onReset}
+              id="search-button"
+              type="button"
+            >
+              <XCircleFill className={cx("bi")} />
+            </Button>
           </InputGroup>
           <p className="form-text">
             You can paste an identifier (e.g.{" "}
@@ -493,7 +511,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
         </div>
 
         <p className="mb-1">
-          {anythingMatched ? (
+          {anythingMatched || alreadyImportedDataConnector ? (
             <>
               <span className="fw-semibold">Pick from the list</span> or
             </>
@@ -632,15 +650,6 @@ function ProjectSearchDataConnectorBodyAndFooter({
             })}
         </ListGroup>
       </ModalBody>
-      <ModalFooter
-        className="border-top"
-        data-cy="data-connector-search-footer"
-      >
-        <Button color="outline-primary" onClick={() => toggle()} type="button">
-          <XLg className={cx("bi", "me-1")} />
-          Close
-        </Button>
-      </ModalFooter>
     </Form>
   );
 }
@@ -680,14 +689,14 @@ function SearchResultListItem({
       )}
       data-cy="link-data-connector-list-item"
     >
-      <Row className="g-2">
+      <Row className="g-3">
         <Col className={cx("align-items-center", "d-flex")}>
           {dataConnector.name}
         </Col>
         <Col className={cx("align-items-center", "d-flex")} xs="auto">
           <DataConnectorSearchSourceBadge source={source} />
         </Col>
-        {action && (
+        {action ? (
           <Col className={cx("align-items-center", "d-flex")} xs="auto">
             {justAdded ? (
               <RenkuBadge
@@ -700,7 +709,7 @@ function SearchResultListItem({
               </RenkuBadge>
             ) : (
               <Button
-                color="primary"
+                color="outline-primary"
                 data-cy="data-connector-link-button"
                 disabled={disabled}
                 onClick={() => {
@@ -713,6 +722,12 @@ function SearchResultListItem({
                 Link
               </Button>
             )}
+          </Col>
+        ) : (
+          <Col className="px-0" xs="auto">
+            <div aria-hidden className={cx("my-1", "opacity-0")}>
+              &#x200B;
+            </div>
           </Col>
         )}
       </Row>
@@ -729,7 +744,7 @@ function DataConnectorSearchSourceBadge({
   const badgeText =
     source === "doi" ? (
       <div>
-        <Link45deg className={cx("bi", "me-1")} />
+        <Journals className={cx("bi", "me-1")} />
         DOI
       </div>
     ) : source === "identifier" ? (
@@ -754,11 +769,7 @@ function DataConnectorSearchSourceBadge({
       </div>
     );
 
-  return (
-    <RenkuBadge color="light" data-cy={`search-result-source-${source}`}>
-      {badgeText}
-    </RenkuBadge>
-  );
+  return <p className={cx("mb-0", "small", "text-muted")}>{badgeText}</p>;
 }
 
 export function normalizeAsDoi(input: string): string {
