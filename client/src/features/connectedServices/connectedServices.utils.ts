@@ -17,7 +17,8 @@
  */
 
 import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils";
-import type { Provider } from "./api/connectedServices.api";
+import type { Provider, ProviderKind } from "./api/connectedServices.api";
+import { CHECK_STATUS_QUERY_PARAM } from "./connectedServices.constants";
 
 type GetSettingsUrlArgs = Pick<Provider, "app_slug" | "url">;
 
@@ -35,4 +36,35 @@ export function getSettingsUrl({
   }
 
   return safeNewUrl(`github-apps/${app_slug}/installations/select_target`, url);
+}
+
+type GetOauth2AuthorizeUrlArgs = {
+  providerId: string;
+  kind?: ProviderKind;
+  registryUrl?: string;
+  nextUrl: string;
+};
+
+/**
+ * Build the OAuth2 "authorize" URL for a connected service provider.
+ *
+ * Note: for GitHub providers, we optionally append a callback marker
+ * (`check-status=<providerId>`) to the `nextUrl` so other parts of the UI
+ * can react immediately after returning from the OAuth flow.
+ */
+export function getOauth2AuthorizeUrl({
+  providerId,
+  kind,
+  registryUrl,
+  nextUrl,
+}: GetOauth2AuthorizeUrlArgs): string {
+  const hereUrl = new URL(nextUrl);
+
+  // Keep behavior consistent with `ConnectButton` in `ConnectedServicesPage`.
+  if (kind === "github" && !registryUrl) {
+    hereUrl.searchParams.append(CHECK_STATUS_QUERY_PARAM, providerId);
+  }
+
+  const authorizeUrl = `/api/data/oauth2/providers/${providerId}/authorize`;
+  return `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl.href)}`;
 }

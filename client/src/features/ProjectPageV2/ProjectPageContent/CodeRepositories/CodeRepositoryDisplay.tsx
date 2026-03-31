@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
@@ -28,7 +29,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import {
   Button,
   Col,
@@ -51,11 +52,14 @@ import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import ExternalLink from "~/components/ExternalLink";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import { useGetOauth2ProvidersByProviderIdQuery } from "~/features/connectedServices/api/connectedServices.api";
 import {
+  CHECK_STATUS_QUERY_PARAM,
   SEARCH_PARAM_ACTION_REQUIRED,
   SEARCH_PARAM_PROVIDER,
   SEARCH_PARAM_SOURCE,
 } from "~/features/connectedServices/connectedServices.constants";
+import { getOauth2AuthorizeUrl } from "~/features/connectedServices/connectedServices.utils";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
@@ -739,11 +743,17 @@ export function RepositoryCallToActionAlert({
   hasWriteAccess,
   repositoryUrl,
 }: RepositoryCallToActionAlertProps) {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, search: locationSearch } = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { params } = useContext(AppContext);
   const renkuContactEmail =
     params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
-  const { data, isLoading, error } = useGetRepositoryQuery({
+  const {
+    data,
+    isLoading,
+    error,
+    refetch: refetchRepository,
+  } = useGetRepositoryQuery({
     url: repositoryUrl,
   });
 
@@ -751,6 +761,35 @@ export function RepositoryCallToActionAlert({
   const anonymousUser = useMemo(() => {
     return userInfo && !userInfo?.isLoggedIn;
   }, [userInfo]);
+
+  const providerId = data?.provider?.id;
+  const shouldFetchProvider = !!providerId && !!userInfo?.isLoggedIn;
+  const { data: oauthProvider, isLoading: isLoadingOauthProvider } =
+    useGetOauth2ProvidersByProviderIdQuery(
+      shouldFetchProvider ? { providerId } : skipToken
+    );
+
+  const nextUrl = useMemo(() => {
+    return `${window.location.origin}${pathname}${locationSearch}${hash}`;
+  }, [pathname, locationSearch, hash]);
+
+  const callbackProviderId = searchParams.get(CHECK_STATUS_QUERY_PARAM);
+  useEffect(() => {
+    if (!callbackProviderId) return;
+    if (!providerId) return;
+    if (callbackProviderId !== providerId) return;
+
+    // After returning from OAuth, re-check repository permissions and hide/update the alert.
+    void refetchRepository();
+
+    setSearchParams(
+      (prevSearch) => {
+        prevSearch.delete(CHECK_STATUS_QUERY_PARAM);
+        return prevSearch;
+      },
+      { replace: true }
+    );
+  }, [callbackProviderId, providerId, refetchRepository, setSearchParams]);
 
   const search = useMemo(() => {
     return `?${new URLSearchParams({
@@ -889,6 +928,15 @@ export function RepositoryCallToActionAlert({
     data?.connection?.status !== "connected" &&
     hasWriteAccess
   ) {
+    const connectUrl =
+      oauthProvider &&
+      getOauth2AuthorizeUrl({
+        providerId: oauthProvider.id,
+        kind: oauthProvider.kind,
+        nextUrl,
+        registryUrl: oauthProvider.image_registry_url,
+      });
+
     return (
       <WarnAlert
         className="mb-0"
@@ -900,16 +948,28 @@ export function RepositoryCallToActionAlert({
           <span className="fst-italic">{data.provider.name}</span> to enable
           pushing to repositories for which you have permissions.
         </p>
-        <Link
-          className={cx("btn", "btn-primary", "btn-sm")}
-          to={{
-            pathname: ABSOLUTE_ROUTES.v2.integrations,
-            search: searchActionRequired,
-          }}
-        >
-          <Plugin className={cx("bi", "me-1")} />
-          View integration
-        </Link>
+        {anonymousUser ? (
+          <Link
+            className={cx("btn", "btn-primary", "btn-sm")}
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.integrations,
+              search: searchActionRequired,
+            }}
+          >
+            <Plugin className={cx("bi", "me-1")} />
+            View integration
+          </Link>
+        ) : isLoadingOauthProvider || !connectUrl ? (
+          <span className="d-inline-flex align-items-center">
+            <Loader inline className="me-1" size={16} />
+            Preparing connection...
+          </span>
+        ) : (
+          <a className={cx("btn", "btn-primary", "btn-sm")} href={connectUrl}>
+            <Plugin className={cx("bi", "me-1")} />
+            Connect
+          </a>
+        )}
       </WarnAlert>
     );
   }
@@ -920,6 +980,15 @@ export function RepositoryCallToActionAlert({
     data?.connection?.status !== "connected" &&
     !hasWriteAccess
   ) {
+    const connectUrl =
+      oauthProvider &&
+      getOauth2AuthorizeUrl({
+        providerId: oauthProvider.id,
+        kind: oauthProvider.kind,
+        nextUrl,
+        registryUrl: oauthProvider.image_registry_url,
+      });
+
     return (
       <InfoAlert
         className="mb-0"
@@ -934,17 +1003,16 @@ export function RepositoryCallToActionAlert({
         </p>
         {anonymousUser ? (
           <LogInWarning />
+        ) : isLoadingOauthProvider || !connectUrl ? (
+          <span className="d-inline-flex align-items-center">
+            <Loader inline className="me-1" size={16} />
+            Preparing connection...
+          </span>
         ) : (
-          <Link
-            className={cx("btn", "btn-primary", "btn-sm")}
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.integrations,
-              search: searchActionRequired,
-            }}
-          >
+          <a className={cx("btn", "btn-primary", "btn-sm")} href={connectUrl}>
             <Plugin className={cx("bi", "me-1")} />
-            View integration
-          </Link>
+            Connect
+          </a>
         )}
       </InfoAlert>
     );

@@ -19,3 +19,6 @@
 export const SEARCH_PARAM_PROVIDER = "targetProvider";
 export const SEARCH_PARAM_ACTION_REQUIRED = "actionRequired";
 export const SEARCH_PARAM_SOURCE = "source";
+
+// Used as a callback marker in OAuth flows for GitHub providers.
+export const CHECK_STATUS_QUERY_PARAM = "check-status";
