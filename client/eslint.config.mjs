@@ -164,6 +164,7 @@ const jsRules = {
         "ntlm",
         "nullable",
         "oauth2",
+        "oauth",
         "objectstores",
         "oidc",
         "onloadend",

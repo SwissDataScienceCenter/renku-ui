@@ -65,14 +65,16 @@ import {
 } from "./api/connectedServices.api";
 import { AppInstallationsPaginated } from "./api/connectedServices.types";
 import {
+  CHECK_STATUS_QUERY_PARAM,
   SEARCH_PARAM_ACTION_REQUIRED,
   SEARCH_PARAM_PROVIDER,
   SEARCH_PARAM_SOURCE,
 } from "./connectedServices.constants";
-import { getSettingsUrl } from "./connectedServices.utils";
+import {
+  getOauth2AuthorizeUrl,
+  getSettingsUrl,
+} from "./connectedServices.utils";
 import ContactUsCard from "./ContactUsCard";
-
-const CHECK_STATUS_QUERY_PARAM = "check-status";
 
 export default function ConnectedServicesPage() {
   const { data: user } = usersApi.endpoints.getUser.useQueryState();
@@ -312,16 +314,14 @@ export function ConnectButton({
   kind,
   registryUrl,
 }: ConnectButtonParams) {
-  const hereUrl = useMemo(() => {
-    const here = new URL(window.location.href);
-    if (kind === "github" && !registryUrl) {
-      here.searchParams.append(CHECK_STATUS_QUERY_PARAM, id);
-    }
-    return here.href;
+  const url = useMemo(() => {
+    return getOauth2AuthorizeUrl({
+      kind,
+      nextUrl: window.location.href,
+      providerId: id,
+      registryUrl,
+    });
   }, [id, kind, registryUrl]);
-
-  const authorizeUrl = `/api/data/oauth2/providers/${id}/authorize`;
-  const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
 
   const text = connectionStatus === "connected" ? "Reconnect" : "Connect";
   const color =
