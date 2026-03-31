@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowRightCircle,
   BoxArrowUpRight,
@@ -656,6 +656,14 @@ function ModifySessionModalContent({
     />
   );
 
+  const userLauncherClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == currentSessionClass?.id),
+    [currentSessionClass, resourcePools]
+  );
+
   return (
     <>
       <ModalBody className="py-0">
@@ -667,6 +675,11 @@ function ModifySessionModalContent({
               <span>
                 <SessionRowResourceRequests
                   resourceRequests={resources?.requests}
+                  resourcesAvailable={{
+                    hours: userLauncherClass?.resource_available,
+                    percentage:
+                      userLauncherClass?.resource_available_percentage,
+                  }}
                 />
               </span>
             </div>

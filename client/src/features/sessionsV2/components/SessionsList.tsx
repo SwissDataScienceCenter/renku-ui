@@ -25,6 +25,11 @@ interface SessionLauncherResources {
   storage?: number;
 }
 
+interface SessionLauncherResourcesAvailable {
+  hours: number | undefined;
+  percentage: number | undefined;
+}
+
 interface SessionResources {
   requests?: { cpu?: number; memory?: string; storage?: string };
   usage?: { cpu?: number; memory?: string; storage?: string };
@@ -32,10 +37,12 @@ interface SessionResources {
 
 interface SessionRowResourceRequestsProps {
   resourceRequests: SessionResources["requests"] | SessionLauncherResources;
+  resourcesAvailable: SessionLauncherResourcesAvailable;
 }
 
 export function SessionRowResourceRequests({
   resourceRequests,
+  resourcesAvailable,
 }: SessionRowResourceRequestsProps) {
   if (!resourceRequests) {
     return null;
@@ -61,24 +68,36 @@ export function SessionRowResourceRequests({
     ) : null;
 
   return (
-    <div data-cy="session-view-resource-class-description">
-      {resourceClassName && (
-        <span key="name">
-          <span className="text-nowrap">{resourceClassName}</span>
-          {" | "}
-        </span>
-      )}
-      {numericEntries.map(([key, value], index) => (
-        <span key={key}>
-          <span className="text-nowrap">
-            <span className="fw-bold">
-              {value} {(key === "memory" || key === "storage") && "GB "}
-            </span>
-            {key}
+    <>
+      <div data-cy="session-view-resource-class-description">
+        {resourceClassName && (
+          <span key="name">
+            <span className="text-nowrap">{resourceClassName}</span>
+            {" | "}
           </span>
-          {numericEntries.length - 1 === index ? " " : " | "}
-        </span>
-      ))}
-    </div>
+        )}
+        {numericEntries.map(([key, value], index) => (
+          <span key={key}>
+            <span className="text-nowrap">
+              <span className="fw-bold">
+                {value} {(key === "memory" || key === "storage") && "GB "}
+              </span>
+              {key}
+            </span>
+            {numericEntries.length - 1 === index ? " " : " | "}
+          </span>
+        ))}
+      </div>
+      {resourcesAvailable.hours != null && (
+        <div data-cy="session-view-resource-class-availability">
+          <span key="available">
+            <span className="text-nowrap">
+              <span className="fw-bold">{resourcesAvailable.hours}h</span>{" "}
+              available
+            </span>
+          </span>
+        </div>
+      )}
+    </>
   );
 }

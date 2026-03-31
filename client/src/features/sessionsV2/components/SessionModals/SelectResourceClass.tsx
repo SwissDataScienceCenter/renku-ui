@@ -136,6 +136,14 @@ export function SelectResourceClassModal({
     />
   );
 
+  const userLauncherClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == launcherClass?.id),
+    [launcherClass, resourcePools]
+  );
+
   const resourceDetails =
     !isLoadingLauncherClass && launcherClass ? (
       <SessionRowResourceRequests
@@ -144,6 +152,10 @@ export function SelectResourceClassModal({
           memory: `${launcherClass.memory}G`,
           storage: `${launcherClass.default_storage}G`,
           gpu: launcherClass.gpu,
+        }}
+        resourcesAvailable={{
+          hours: userLauncherClass?.resource_available,
+          percentage: userLauncherClass?.resource_available_percentage,
         }}
       />
     ) : (

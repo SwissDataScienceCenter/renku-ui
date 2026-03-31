@@ -1224,7 +1224,13 @@ describe("launch sessions with resource quotas", () => {
           "contain.text",
           "Quota Reached"
         );
-      });
+      })
+      .click();
+    cy.getDataCy("session-view-resource-class-availability").should(
+      "contain.text",
+      "0h available"
+    );
+    cy.getDataCy("get-back-session-view").click();
 
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
