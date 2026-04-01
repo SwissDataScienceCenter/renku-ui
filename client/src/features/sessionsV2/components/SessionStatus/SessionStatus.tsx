@@ -33,6 +33,10 @@ import {
 
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
+import {
+  ResourceClassWithIdFiltered,
+  useGetResourcePoolsQuery,
+} from "../../api/computeResources.api";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   SESSION_STATES,
@@ -249,7 +253,7 @@ export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
 }: ActiveSessionDescV2Props) {
-  const { started, status } = session;
+  const { resource_class_id, started, status } = session;
   return (
     <div
       className={cx(
@@ -261,7 +265,11 @@ export function SessionStatusV2Description({
       )}
     >
       {started && (
-        <SessionStatusV2Text startTimestamp={started} status={status} />
+        <SessionStatusV2Text
+          resourceClassId={resource_class_id}
+          startTimestamp={started}
+          status={status}
+        />
       )}
       {showInfoDetails && (
         <SessionListRowStatusExtraDetailsV2 status={status} />
@@ -347,14 +355,20 @@ export function SessionStatusV2Title({
   return text ? <p className={cx("fst-italic", "mb-2")}>{text}</p> : null;
 }
 interface SessionStatusV2TextProps {
+  resourceClassId: number;
   startTimestamp: string;
   status: SessionStatus;
 }
 function SessionStatusV2Text({
+  resourceClassId,
   startTimestamp,
   status,
 }: SessionStatusV2TextProps) {
   const { state, will_hibernate_at, will_delete_at } = status;
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const resourceClass = resourcePools
+    ?.flatMap((pool) => pool.classes)
+    .find((cls) => cls.id === resourceClassId);
   const startTimeText = (
     <TimeCaption datetime={startTimestamp} enableTooltip noCaption />
   );
@@ -365,11 +379,13 @@ function SessionStatusV2Text({
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>Launched {startTimeText}</span>
+      <SessionStatusV2TextQuotaInformation resourceClass={resourceClass} />
     </div>
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock size="16" className="flex-shrink-0" />
       <span>Launching since {startTimeText}</span>
+      <SessionStatusV2TextQuotaInformation resourceClass={resourceClass} />
     </div>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
@@ -383,6 +399,7 @@ function SessionStatusV2Text({
           suffix=" "
         />
       </span>
+      <SessionStatusV2TextQuotaInformation resourceClass={resourceClass} />
     </div>
   ) : state === "hibernated" && hibernationTimestamp ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
@@ -391,6 +408,7 @@ function SessionStatusV2Text({
         Paused
         <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />
       </span>
+      <SessionStatusV2TextQuotaInformation resourceClass={resourceClass} />
     </div>
   ) : state === "hibernated" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
@@ -399,6 +417,7 @@ function SessionStatusV2Text({
         Paused
         <MissingHibernationInfo />
       </span>
+      <SessionStatusV2TextQuotaInformation resourceClass={resourceClass} />
     </div>
   ) : state === "failed" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
@@ -409,4 +428,19 @@ function SessionStatusV2Text({
       </span>
     </div>
   ) : null;
+}
+
+function SessionStatusV2TextQuotaInformation({
+  resourceClass,
+}: {
+  resourceClass: ResourceClassWithIdFiltered | undefined;
+}) {
+  if (!resourceClass || resourceClass.resource_available == null) return null;
+
+  return (
+    <span className={cx("text-muted")}>
+      <strong>{resourceClass.resource_available}h running time </strong> until{" "}
+      quota is used
+    </span>
+  );
 }
