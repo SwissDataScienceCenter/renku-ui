@@ -37,6 +37,7 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
+import LazyOAuthCompletePage from "../connectedServices/LazyOAuthCompletePage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
@@ -147,6 +148,10 @@ export default function RootV2() {
                 <LazyConnectedServicesPage />
               </ContainerWrap>
             }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v2.oauth.complete}
+            element={<LazyOAuthCompletePage />}
           />
           <Route
             path={RELATIVE_ROUTES.v2.secrets}

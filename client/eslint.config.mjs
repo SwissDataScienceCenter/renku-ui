@@ -163,6 +163,7 @@ const jsRules = {
         "nteract",
         "ntlm",
         "nullable",
+        "oauth",
         "oauth2",
         "objectstores",
         "oidc",

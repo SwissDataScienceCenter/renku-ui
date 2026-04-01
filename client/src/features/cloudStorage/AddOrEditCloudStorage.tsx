@@ -35,7 +35,7 @@ import {
   QuestionCircle,
 } from "react-bootstrap-icons";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 import {
   Badge,
   Button,
@@ -56,14 +56,12 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
+  type ConnectionStatus,
 } from "../connectedServices/api/connectedServices.api";
-import {
-  SEARCH_PARAM_ACTION_REQUIRED,
-  SEARCH_PARAM_PROVIDER,
-  SEARCH_PARAM_SOURCE,
-} from "../connectedServices/connectedServices.constants";
+import { SEARCH_PARAM_PROVIDER } from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
+import { ConnectButton } from "./../connectedServices/ConnectedServicesPage";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_INTEGRATION_KIND_MAP,
@@ -1034,8 +1032,6 @@ interface IntegrationAlertProps {
 }
 
 export function IntegrationAlert({ schema }: IntegrationAlertProps) {
-  const { pathname, hash } = useLocation();
-
   const {
     data: providers,
     error: providersError,
@@ -1119,29 +1115,26 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
   }
 
   if (providersForSchema && providersForSchema.length > 0) {
-    // We don't know which provider to pick when there are multiple.
     const provider = providersForSchema[0];
-    const link = (
-      <Link
-        to={{
-          pathname: ABSOLUTE_ROUTES.v2.integrations,
-          search: new URLSearchParams({
-            [SEARCH_PARAM_PROVIDER]: provider.id,
-            [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
-            [SEARCH_PARAM_ACTION_REQUIRED]: "true",
-          }).toString(),
-        }}
-      >
-        {provider.display_name}
-      </Link>
+    const connection = connections?.find(
+      ({ provider_id }) => provider_id === provider.id
     );
 
     return (
       <WarnAlert dismissible={false}>
         <h3>Action required</h3>
-        <p className="mb-0">
-          Please connect with the {link} Renku integration first.
+        <p className="mb-2">
+          Please connect the{" "}
+          <span className="fst-italic">{provider.display_name}</span> Renku
+          integration first.
         </p>
+        <ConnectButton
+          className="btn-sm"
+          connectionStatus={connection?.status as ConnectionStatus | undefined}
+          includeSource
+          provider={provider}
+          withIcon
+        />
       </WarnAlert>
     );
   }
