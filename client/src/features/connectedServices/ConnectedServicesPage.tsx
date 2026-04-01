@@ -42,37 +42,37 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types.ts";
+import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook.ts";
+import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils.ts";
 import { InfoAlert, WarnAlert } from "../../components/Alert";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
-import { safeNewUrl } from "../../utils/helpers/safeNewUrl.utils";
 import { usersApi } from "../usersV2/api/users.api";
 import {
+  ConnectedAccount as Account,
   connectedServicesApi,
   useDeleteOauth2ConnectionsByConnectionIdMutation,
   useGetOauth2ConnectionsByConnectionIdAccountQuery,
   useGetOauth2ConnectionsByConnectionIdInstallationsQuery,
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
-  type ConnectedAccount as Account,
   type AppInstallation,
   type Connection,
   type ConnectionStatus,
   type Provider,
-  type ProviderKind,
 } from "./api/connectedServices.api";
-import { AppInstallationsPaginated } from "./api/connectedServices.types";
 import {
+  CHECK_STATUS_QUERY_PARAM,
+  OAUTH_CONNECT_POLLING_INTERVAL_MS,
   SEARCH_PARAM_ACTION_REQUIRED,
   SEARCH_PARAM_PROVIDER,
   SEARCH_PARAM_SOURCE,
 } from "./connectedServices.constants";
 import { getSettingsUrl } from "./connectedServices.utils";
 import ContactUsCard from "./ContactUsCard";
-
-const CHECK_STATUS_QUERY_PARAM = "check-status";
 
 export default function ConnectedServicesPage() {
   const { data: user } = usersApi.endpoints.getUser.useQueryState();
@@ -202,7 +202,7 @@ function ConnectedServiceCard({
   provider,
   source,
 }: ConnectedServiceCardProps) {
-  const { id, display_name, kind, url } = provider;
+  const { id, display_name, url } = provider;
 
   const { data: connections } =
     connectedServicesApi.endpoints.getOauth2Connections.useQueryState();
@@ -260,10 +260,8 @@ function ConnectedServiceCard({
               <h2 className="me-2">{display_name}</h2>
               <div className={cx("d-flex", "gap-2", "ms-auto")}>
                 <ConnectButton
-                  id={id}
+                  provider={provider}
                   connectionStatus={connection?.status}
-                  kind={kind}
-                  registryUrl={provider.image_registry_url}
                 />
                 <DisconnectButton
                   connectionStatus={connection?.status}
@@ -297,40 +295,49 @@ function ConnectedServiceCard({
   );
 }
 
-interface ConnectButtonParams {
-  className?: string;
+export interface ConnectButtonParams {
+  provider: Provider | null | undefined;
   connectionStatus?: ConnectionStatus;
-  id: string;
-  kind?: ProviderKind;
-  registryUrl?: string;
+  className?: string;
+  includeSource?: boolean;
+  onConnected?: () => void;
+  labelConnect?: string;
+  labelReconnect?: string;
+  /** When true, render with Plugin icon (for alert CTAs) */
+  withIcon?: boolean;
 }
 
 export function ConnectButton({
+  provider,
   connectionStatus,
   className,
-  id,
-  kind,
-  registryUrl,
+  includeSource = false,
+  onConnected,
+  labelConnect = "Connect",
+  labelReconnect = "Reconnect",
+  withIcon = false,
 }: ConnectButtonParams) {
-  const hereUrl = useMemo(() => {
-    const here = new URL(window.location.href);
-    if (kind === "github" && !registryUrl) {
-      here.searchParams.append(CHECK_STATUS_QUERY_PARAM, id);
-    }
-    return here.href;
-  }, [id, kind, registryUrl]);
+  const { startConnect, authorizeHref } = useOAuthProviderConnect(provider, {
+    includeSource,
+    onConnected,
+  });
 
-  const authorizeUrl = `/api/data/oauth2/providers/${id}/authorize`;
-  const url = `${authorizeUrl}?next_url=${encodeURIComponent(hereUrl)}`;
+  if (!provider || !authorizeHref) return null;
 
-  const text = connectionStatus === "connected" ? "Reconnect" : "Connect";
-  const color =
-    connectionStatus === "connected" ? "btn-outline-primary" : "btn-primary";
+  const text = connectionStatus === "connected" ? labelReconnect : labelConnect;
+  const outline = connectionStatus === "connected";
 
   return (
-    <a className={cx(color, "btn", className)} href={url}>
+    <Button
+      className={cx("btn", className)}
+      color="primary"
+      onClick={startConnect}
+      outline={outline}
+      type="button"
+    >
+      {withIcon && <Plugin className={cx("bi", "me-1")} />}
       {text}
-    </a>
+    </Button>
   );
 }
 
@@ -589,76 +596,12 @@ function GitHubAppInstallationItem({
   );
 }
 
-interface GitHubStatusCheckProps {
-  account: Account;
-  installations: AppInstallationsPaginated;
+export interface GitHubStatusCheckModalProps {
   provider: Provider;
   refetchInstallations: () => void;
 }
 
-function GitHubStatusCheck({
-  account,
-  installations,
-  provider,
-  refetchInstallations,
-}: GitHubStatusCheckProps) {
-  const [search, setSearch] = useSearchParams();
-
-  const isEnabled = useMemo(
-    () => search.get(CHECK_STATUS_QUERY_PARAM) === provider.id,
-    [provider.id, search]
-  );
-
-  const isInstalledForUser = useMemo(() => {
-    const userInstallation = installations.data.find(
-      ({ account_login }) => account_login === account.username
-    );
-    return !!userInstallation && !userInstallation.suspended_at;
-  }, [account.username, installations.data]);
-
-  useEffect(() => {
-    if (
-      isEnabled &&
-      (isInstalledForUser || installations.pagination.totalPages > 1)
-    ) {
-      setSearch(
-        (prevSearch) => {
-          prevSearch.delete(CHECK_STATUS_QUERY_PARAM);
-          return prevSearch;
-        },
-        { replace: true }
-      );
-    }
-  }, [
-    installations.pagination.totalPages,
-    isEnabled,
-    isInstalledForUser,
-    setSearch,
-  ]);
-
-  //? NOTE: if the user has more than 100 installations, assume the app is installed for the user
-  if (
-    !isEnabled ||
-    isInstalledForUser ||
-    installations.pagination.totalPages > 1
-  ) {
-    return null;
-  }
-
-  return (
-    <GitHubStatusCheckModal
-      provider={provider}
-      refetchInstallations={refetchInstallations}
-    />
-  );
-}
-
-interface GitHubStatusCheckModalProps {
-  provider: Provider;
-  refetchInstallations: () => void;
-}
-
-function GitHubStatusCheckModal({
+export function GitHubStatusCheckModal({
   provider,
   refetchInstallations,
 }: GitHubStatusCheckModalProps) {
@@ -667,7 +610,6 @@ function GitHubStatusCheckModal({
   const [isOpen, setIsOpen] = useState(true);
   const [hasOpenedTheLink, setHasOpenedTheLink] = useState(false);
   const toggle = useCallback(() => {
-    // ? NOTE: refetch when the modal is closed in case the user has updated the settings
     if (hasOpenedTheLink) refetchInstallations();
     setIsOpen((open) => !open);
   }, [hasOpenedTheLink, refetchInstallations]);
@@ -732,5 +674,133 @@ function GitHubStatusCheckModal({
         </Button>
       </ModalFooter>
     </Modal>
+  );
+}
+
+export interface GitHubStatusCheckProps {
+  account: Account;
+  installations: AppInstallationsPaginated;
+  provider: Provider;
+  refetchInstallations: () => void;
+}
+
+export function GitHubStatusCheck({
+  account,
+  installations,
+  provider,
+  refetchInstallations,
+}: GitHubStatusCheckProps) {
+  const [search, setSearch] = useSearchParams();
+
+  const isEnabled = useMemo(
+    () => search.get(CHECK_STATUS_QUERY_PARAM) === provider.id,
+    [provider.id, search]
+  );
+
+  const isInstalledForUser = useMemo(() => {
+    const userInstallation = installations.data.find(
+      ({ account_login }) => account_login === account.username
+    );
+    return !!userInstallation && !userInstallation.suspended_at;
+  }, [account.username, installations.data]);
+
+  useEffect(() => {
+    if (
+      isEnabled &&
+      (isInstalledForUser || installations.pagination.totalPages > 1)
+    ) {
+      setSearch(
+        (prevSearch) => {
+          prevSearch.delete(CHECK_STATUS_QUERY_PARAM);
+          return prevSearch;
+        },
+        { replace: true }
+      );
+    }
+  }, [
+    installations.pagination.totalPages,
+    isEnabled,
+    isInstalledForUser,
+    setSearch,
+  ]);
+
+  if (
+    !isEnabled ||
+    isInstalledForUser ||
+    installations.pagination.totalPages > 1
+  ) {
+    return null;
+  }
+
+  return (
+    <GitHubStatusCheckModal
+      provider={provider}
+      refetchInstallations={refetchInstallations}
+    />
+  );
+}
+
+/** GitHub App follow-up on `/oauth/complete` when `check-status` is present */
+export function GitHubOAuthCompleteFollowUp() {
+  const [searchParams] = useSearchParams();
+  const checkId = searchParams.get(CHECK_STATUS_QUERY_PARAM);
+
+  const { data: providers } = useGetOauth2ProvidersQuery();
+
+  const provider = providers?.find((p) => p.id === checkId);
+  const hasRegistry = !!provider?.image_registry_url;
+  const isGithubFollowUp =
+    !!checkId && !!provider && provider.kind === "github" && !hasRegistry;
+
+  const { data: connections } =
+    connectedServicesApi.endpoints.getOauth2Connections.useQueryState();
+
+  const hasGithubConnection =
+    !!checkId &&
+    !!connections?.some(
+      (c) => c.provider_id === checkId && c.status === "connected"
+    );
+
+  connectedServicesApi.endpoints.getOauth2Connections.useQuerySubscription(
+    isGithubFollowUp && !hasGithubConnection ? undefined : skipToken,
+    { pollingInterval: OAUTH_CONNECT_POLLING_INTERVAL_MS }
+  );
+
+  const connection = connections?.find(
+    (c) => c.provider_id === checkId && c.status === "connected"
+  );
+
+  const skipData =
+    !checkId ||
+    !provider ||
+    provider.kind !== "github" ||
+    hasRegistry ||
+    !connection;
+
+  const { data: account } = useGetOauth2ConnectionsByConnectionIdAccountQuery(
+    skipData ? skipToken : { connectionId: connection.id }
+  );
+
+  const { data: installations, refetch: refetchInstallations } =
+    useGetOauth2ConnectionsByConnectionIdInstallationsQuery(
+      skipData
+        ? skipToken
+        : {
+            connectionId: connection.id,
+            params: { per_page: 100 },
+          }
+    );
+
+  if (skipData || account == null || installations == null) {
+    return null;
+  }
+
+  return (
+    <GitHubStatusCheck
+      account={account}
+      installations={installations}
+      provider={provider}
+      refetchInstallations={refetchInstallations}
+    />
   );
 }

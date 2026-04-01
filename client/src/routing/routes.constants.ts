@@ -54,6 +54,9 @@ export const ABSOLUTE_ROUTES = {
   v2: {
     root: "/",
     admin: "/admin",
+    oauth: {
+      complete: "/oauth/complete",
+    },
     integrations: "/integrations",
     groups: {
       show: {
@@ -120,6 +123,9 @@ export const RELATIVE_ROUTES = {
     root: "/*",
     admin: "admin",
     betaRoot: "/v2/*",
+    oauth: {
+      complete: "oauth/complete",
+    },
     integrations: "integrations",
     groups: {
       root: "g/*",
