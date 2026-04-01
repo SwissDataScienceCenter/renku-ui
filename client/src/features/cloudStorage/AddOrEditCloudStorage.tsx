@@ -56,12 +56,9 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
+  type ConnectionStatus,
 } from "../connectedServices/api/connectedServices.api";
-import {
-  SEARCH_PARAM_ACTION_REQUIRED,
-  SEARCH_PARAM_PROVIDER,
-  SEARCH_PARAM_SOURCE,
-} from "../connectedServices/connectedServices.constants";
+import { SEARCH_PARAM_PROVIDER } from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
 import { ConnectButton } from "./../connectedServices/ConnectedServicesPage";
