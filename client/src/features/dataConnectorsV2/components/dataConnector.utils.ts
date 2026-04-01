@@ -20,6 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
 
 import { findSensitive } from "~/features/cloudStorage/projectCloudStorage.utils";
+import { doiFromUrl } from "~/features/ProjectPageV2/utils/dataConnectorUtils";
 import type { PostStorageSchemaTestConnectionApiArg } from "../../cloudStorage/api/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
@@ -291,4 +292,27 @@ export function parseDoi(doi: string): string {
     return doi;
   }
   return doi;
+}
+
+// Tries to catch all the valid doi cases -- it returns the string directly, but we could consider reusing parseDoi to extract the initial string
+export function normalizeAsDoi(input: string): string {
+  const doiConverted = doiFromUrl(input);
+  const doiString = doiConverted
+    .trim()
+    .replace(/^doi:\s*/iu, "")
+    .replace(/^https?:\/\/(?:dx\.)?doi\.org\//iu, "");
+
+  // Prefix: DOI requires 10.<something> (digits, optionally split by dots)
+  const match = /^10\.\d+(?:\.\d+)*\/([\s\S]+)$/u.exec(doiString);
+  if (!match) return "";
+
+  const suffix = match[1];
+  if (suffix.length === 0) return "";
+
+  // Reject Unicode "Other" category (controls, format chars, surrogates,
+  // private-use, unassigned) and line/paragraph separators.
+  // Spaces inside the suffix are allowed by the DOI spec.
+  if (/[\p{C}\p{Zl}\p{Zp}]/u.test(suffix)) return "";
+
+  return doiString;
 }

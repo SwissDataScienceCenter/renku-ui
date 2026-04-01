@@ -50,6 +50,7 @@ import {
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsGlobalMutation,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import { normalizeAsDoi } from "~/features/dataConnectorsV2/components/dataConnector.utils";
 import DataConnectorModal, {
   DataConnectorModalBodyAndFooter,
 } from "~/features/dataConnectorsV2/components/DataConnectorModal";
@@ -177,9 +178,6 @@ function ProjectCreateDataConnectorBodyAndFooter({
   );
 }
 
-// interface DataConnectorSearchFormFields {
-//   search: string;
-// }
 function ProjectSearchDataConnectorBodyAndFooter({
   isOpen,
   project,
@@ -770,26 +768,4 @@ function DataConnectorSearchSourceBadge({
     );
 
   return <p className={cx("mb-0", "small", "text-muted")}>{badgeText}</p>;
-}
-
-export function normalizeAsDoi(input: string): string {
-  const doiConverted = doiFromUrl(input);
-  const doiString = doiConverted
-    .trim()
-    .replace(/^doi:\s*/iu, "")
-    .replace(/^https?:\/\/(?:dx\.)?doi\.org\//iu, "");
-
-  // Prefix: DOI requires 10.<something> (digits, optionally split by dots)
-  const match = /^10\.\d+(?:\.\d+)*\/([\s\S]+)$/u.exec(doiString);
-  if (!match) return "";
-
-  const suffix = match[1];
-  if (suffix.length === 0) return "";
-
-  // Reject Unicode "Other" category (controls, format chars, surrogates,
-  // private-use, unassigned) and line/paragraph separators.
-  // Spaces inside the suffix are allowed by the DOI spec.
-  if (/[\p{C}\p{Zl}\p{Zp}]/u.test(suffix)) return "";
-
-  return doiString;
 }
