@@ -396,17 +396,21 @@ interface RepositoryItemProps {
   project: Project;
   readonly?: boolean;
   url: string;
+  showDetails?: boolean;
+  toggleDetails?: () => void;
 }
 export function RepositoryItem({
   project,
   readonly = false,
   url,
+  showDetails,
+  toggleDetails,
 }: RepositoryItemProps) {
   const projectPermissions = useProjectPermissions({ projectId: project.id });
-  const [showDetails, setShowDetails] = useState(false);
-  const toggleDetails = useCallback(() => {
-    setShowDetails((open) => !open);
-  }, []);
+
+  const safeToggleDetails = useCallback(() => {
+    toggleDetails?.();
+  }, [toggleDetails]);
   const canonicalUrlStr = useMemo(
     () => `${url.replace(/(?:\.git|\/)$/i, "")}`,
     [url]
@@ -419,7 +423,7 @@ export function RepositoryItem({
         className: cx(
           !readonly && ["cursor-pointer", "link-primary", "text-body"]
         ),
-        onClick: toggleDetails,
+        onClick: safeToggleDetails,
       }
     : {};
 
@@ -461,9 +465,9 @@ export function RepositoryItem({
         <RepositoryView
           project={project}
           repositoryUrl={url}
-          showDetails={showDetails}
+          showDetails={!!showDetails}
           title={title}
-          toggleDetails={toggleDetails}
+          toggleDetails={safeToggleDetails}
         />
       )}
     </>
