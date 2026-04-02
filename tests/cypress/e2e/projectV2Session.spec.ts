@@ -1256,7 +1256,11 @@ describe("launch sessions with resource quotas", () => {
       // cy.get("#react-select-5-placeholder").click();
       cy.contains("Select...").should("be.visible").click();
       cy.contains("0h available").should("be.visible");
-      cy.contains("200h available").should("be.visible");
+      cy.contains("200h available").should("be.visible").click();
     });
+    cy.get("button").contains("Continue").click();
+    cy.contains("Preparing to start session (200h available)").should(
+      "be.visible"
+    );
   });
 });
