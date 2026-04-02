@@ -48,6 +48,7 @@ import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageCo
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
+import { useGetResourcePoolsQuery } from "./api/computeResources.generated-api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
@@ -67,6 +68,37 @@ import type {
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
+
+interface StartSessionProgressStepsProps {
+  launcher: SessionLauncher;
+  startSessionOptionsV2: StartSessionOptionsV2;
+  steps: StepsProgressBar[];
+}
+function StartSessionPrepareProgressSteps({
+  launcher,
+  startSessionOptionsV2,
+  steps,
+}: StartSessionProgressStepsProps) {
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const resourceClass = resourcePools
+    ?.flatMap((pool) => pool.classes)
+    .find((cls) => cls.id === startSessionOptionsV2.sessionClass);
+  const resourceAvailableMessage = useMemo(() => {
+    if (resourceClass?.resource_available == null) return null;
+    return `(${resourceClass?.resource_available}h available)`;
+  }, [resourceClass]);
+  return (
+    <ProgressStepsIndicator
+      description={`Preparing to start session\n${
+        resourceAvailableMessage ?? ""
+      }`}
+      type={ProgressType.Determinate}
+      style={ProgressStyle.Light}
+      title={`Launching session ${launcher.name}`}
+      status={steps}
+    />
+  );
+}
 
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "project"> {
@@ -190,12 +222,10 @@ function SaveCloudStorage({
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
-      <ProgressStepsIndicator
-        description="Saving credentials..."
-        type={ProgressType.Determinate}
-        style={ProgressStyle.Light}
-        title={`Launching session ${launcher.name}`}
-        status={steps}
+      <StartSessionPrepareProgressSteps
+        launcher={launcher}
+        startSessionOptionsV2={startSessionOptionsV2}
+        steps={steps}
       />
     </div>
   );
@@ -209,7 +239,6 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
-
   const [
     startSessionV2,
     { data: session, error: error, isLoading: isLoadingStartSession, isError },
@@ -300,12 +329,10 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       {error && <RtkOrDataServicesError error={error} dismissible={false} />}
 
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
+        <StartSessionPrepareProgressSteps
+          launcher={launcher}
+          startSessionOptionsV2={startSessionOptionsV2}
+          steps={steps}
         />
       </div>
     </div>
@@ -623,12 +650,10 @@ function StartSessionFromLauncher({
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
-      <ProgressStepsIndicator
-        description="Preparing to start session"
-        type={ProgressType.Determinate}
-        style={ProgressStyle.Light}
-        title={`Launching session ${launcher.name}`}
-        status={steps}
+      <StartSessionPrepareProgressSteps
+        launcher={launcher}
+        startSessionOptionsV2={startSessionOptionsV2}
+        steps={steps}
       />
       <SelectResourceClassModal
         isOpen={isPendingResourceClass}
@@ -726,12 +751,10 @@ function StartSessionWithSessionSecretsModal({
   return (
     <div>
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
+        <StartSessionPrepareProgressSteps
+          launcher={launcher}
+          startSessionOptionsV2={startSessionOptionsV2}
+          steps={steps}
         />
         <SessionSecretsModal
           isOpen={showModal}
@@ -769,12 +792,10 @@ function StartSessionImageModal({
   return (
     <div>
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
+        <StartSessionPrepareProgressSteps
+          launcher={launcher}
+          startSessionOptionsV2={startSessionOptionsV2}
+          steps={steps}
         />
         <SessionImageModal
           isOpen={showModal}
@@ -812,12 +833,10 @@ function StartSessionRepositoriesModal({
   return (
     <div>
       <div className={cx("progress-box-small", "progress-box-small--steps")}>
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
+        <StartSessionPrepareProgressSteps
+          launcher={launcher}
+          startSessionOptionsV2={startSessionOptionsV2}
+          steps={steps}
         />
         <SessionRepositoriesModal isOpen={showModal} project={project} />
       </div>

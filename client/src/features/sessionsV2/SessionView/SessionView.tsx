@@ -117,6 +117,15 @@ function SessionCard({
   session: SessionV2;
   project: Project;
 }) {
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const currentSessionClassId = session.resource_class_id;
+  const userLauncherClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == currentSessionClassId),
+    [currentSessionClassId, resourcePools]
+  );
   return (
     <SessionCardContent
       color={getSessionColor(session.status.state)}
@@ -131,6 +140,10 @@ function SessionCard({
       contentResources={
         <SessionRowResourceRequests
           resourceRequests={session.resources?.requests}
+          resourcesAvailable={{
+            hours: userLauncherClass?.resource_available,
+            percentage: userLauncherClass?.resource_available_percentage,
+          }}
         />
       }
     />
@@ -302,6 +315,10 @@ export function SessionView({
           storage:
             launcher?.disk_storage ?? launcherResourceClass.default_storage,
           gpu: launcherResourceClass.gpu,
+        }}
+        resourcesAvailable={{
+          hours: userLauncherResourceClass?.resource_available,
+          percentage: userLauncherResourceClass?.resource_available_percentage,
         }}
       />
     ) : (
