@@ -181,7 +181,8 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       },
     },
     postDataConnectorsByDataConnectorIdProjectLinks: {
-      invalidatesTags: ["DataConnectorsProjectLinks"],
+      // ? We add "DataConnectors" to force refreshing the list of DC in the project page
+      invalidatesTags: ["DataConnectors", "DataConnectorsProjectLinks"],
     },
     postDataConnectorsGlobal: {
       invalidatesTags: ["DataConnectors"],
