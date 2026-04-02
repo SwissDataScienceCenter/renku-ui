@@ -153,6 +153,7 @@
     "vite": "^6.4.1",
     "vite-bundle-visualizer": "^1.2.1",
     "vite-env-only": "^3.0.3",
+    "vite-plugin-istanbul": "^8.0.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.8",
     "wait-on": "^8.0.3",
