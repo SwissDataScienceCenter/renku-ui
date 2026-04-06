@@ -17,25 +17,15 @@
  */
 
 import cx from "classnames";
-import { useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
 import { SEARCH_PARAM_SOURCE } from "./connectedServices.constants";
 import { GitHubOAuthCompleteFollowUp } from "./ConnectedServicesPage";
 
-const DEFAULT_WAITING_TIME = 500;
-
 export default function OAuthCompletePage() {
   const [params] = useSearchParams();
   const source = params.get(SEARCH_PARAM_SOURCE);
-
-  useEffect(() => {
-    const id = window.setTimeout(() => {
-      window.close();
-    }, DEFAULT_WAITING_TIME);
-    return () => window.clearTimeout(id);
-  }, []);
 
   return (
     <ContainerWrap>

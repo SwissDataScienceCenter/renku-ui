@@ -668,6 +668,7 @@ function RepositoryView({
                       <RepositoryCallToActionAlert
                         hasWriteAccess={projectPermissions?.write}
                         repositoryUrl={repositoryUrl}
+                        project={project}
                       />
                     </div>
 
@@ -740,10 +741,12 @@ function LogInWarning() {
 interface RepositoryCallToActionAlertProps {
   hasWriteAccess: boolean;
   repositoryUrl: string;
+  project: Project;
 }
 export function RepositoryCallToActionAlert({
   hasWriteAccess,
   repositoryUrl,
+  project,
 }: RepositoryCallToActionAlertProps) {
   const dispatch = useAppDispatch();
   const { pathname, hash } = useLocation();
@@ -768,12 +771,14 @@ export function RepositoryCallToActionAlert({
   );
 
   const onRepositoryOAuthConnected = useCallback(() => {
-    dispatch(
-      repositoriesApi.util.invalidateTags([
-        { type: "Repository", id: repositoryUrl },
-      ])
-    );
-  }, [dispatch, repositoryUrl]);
+    project.repositories?.map((repoUrl) => {
+      dispatch(
+        repositoriesApi.util.invalidateTags([
+          { type: "Repository", id: repoUrl },
+        ])
+      );
+    });
+  }, [dispatch, project]);
 
   const search = useMemo(() => {
     return `?${new URLSearchParams({
