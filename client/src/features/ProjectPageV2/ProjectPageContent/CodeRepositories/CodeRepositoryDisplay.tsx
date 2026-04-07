@@ -780,12 +780,6 @@ export function RepositoryCallToActionAlert({
     });
   }, [dispatch, project]);
 
-  const search = useMemo(() => {
-    return `?${new URLSearchParams({
-      [SEARCH_PARAM_PROVIDER]: data?.provider?.id ?? "",
-      [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
-    }).toString()}`;
-  }, [data, pathname, hash]);
   const searchActionRequired = useMemo(() => {
     return `?${new URLSearchParams({
       [SEARCH_PARAM_PROVIDER]: data?.provider?.id ?? "",
@@ -809,29 +803,16 @@ export function RepositoryCallToActionAlert({
         {data?.provider?.id ? (
           <>
             <p className="mb-2">
-              Either the repository does not exist, or you do not have access to
-              it.
+              The repository is not accessible and your connection to{" "}
+              <span className="fst-italic">{data.provider.name}</span> is
+              invalid.
             </p>
             {anonymousUser ? (
               <LogInWarning />
             ) : (
               <>
-                <p className="mb-2">
-                  If you think you should have access, check your integration{" "}
-                  <span className="fst-italic">{data.provider.name}</span>.
-                </p>
-                {data?.connection?.status === "connected" ? (
-                  <Link
-                    className={cx("btn", "btn-primary", "btn-sm")}
-                    to={{
-                      pathname: ABSOLUTE_ROUTES.v2.integrations,
-                      search,
-                    }}
-                  >
-                    <Plugin className={cx("bi", "me-1")} />
-                    View integration
-                  </Link>
-                ) : oauthProvider ? (
+                <p className="mb-2">You can try to refresh it.</p>
+                {oauthProvider && (
                   <ConnectButton
                     className="btn-sm"
                     connectionStatus={
@@ -842,18 +823,16 @@ export function RepositoryCallToActionAlert({
                     provider={oauthProvider}
                     withIcon
                   />
-                ) : (
-                  <Link
-                    className={cx("btn", "btn-primary", "btn-sm")}
-                    to={{
-                      pathname: ABSOLUTE_ROUTES.v2.integrations,
-                      search: searchActionRequired,
-                    }}
-                  >
-                    <Plugin className={cx("bi", "me-1")} />
-                    View integration
-                  </Link>
                 )}
+                <Link
+                  className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
+                  to={{
+                    pathname: ABSOLUTE_ROUTES.v2.integrations,
+                    search: searchActionRequired,
+                  }}
+                >
+                  Check integration
+                </Link>
               </>
             )}
           </>
@@ -945,11 +924,11 @@ export function RepositoryCallToActionAlert({
         data-cy="code-repository-alert"
       >
         <p className="mb-2">
-          You can log in through the integration{" "}
+          You can connect to{" "}
           <span className="fst-italic">{data.provider.name}</span> to enable
           pushing to repositories for which you have permissions.
         </p>
-        {oauthProvider ? (
+        {oauthProvider && (
           <ConnectButton
             className="btn-sm"
             connectionStatus={
@@ -960,18 +939,16 @@ export function RepositoryCallToActionAlert({
             provider={oauthProvider}
             withIcon
           />
-        ) : (
-          <Link
-            className={cx("btn", "btn-primary", "btn-sm")}
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.integrations,
-              search: searchActionRequired,
-            }}
-          >
-            <Plugin className={cx("bi", "me-1")} />
-            View integration
-          </Link>
         )}
+        <Link
+          className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
+          to={{
+            pathname: ABSOLUTE_ROUTES.v2.integrations,
+            search: searchActionRequired,
+          }}
+        >
+          Check integration
+        </Link>
       </WarnAlert>
     );
   }
@@ -996,29 +973,29 @@ export function RepositoryCallToActionAlert({
         </p>
         {anonymousUser ? (
           <LogInWarning />
-        ) : oauthProvider ? (
-          <ConnectButton
-            className="btn-sm"
-            connectionStatus={
-              data.connection?.status as ConnectionStatus | undefined
-            }
-            includeSource
-            onConnected={onRepositoryOAuthConnected}
-            provider={oauthProvider}
-            withIcon
-          />
         ) : (
-          <Link
-            className={cx("btn", "btn-primary", "btn-sm")}
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.integrations,
-              search: searchActionRequired,
-            }}
-          >
-            <Plugin className={cx("bi", "me-1")} />
-            View integration
-          </Link>
+          oauthProvider && (
+            <ConnectButton
+              className="btn-sm"
+              connectionStatus={
+                data.connection?.status as ConnectionStatus | undefined
+              }
+              includeSource
+              onConnected={onRepositoryOAuthConnected}
+              provider={oauthProvider}
+              withIcon
+            />
+          )
         )}
+        <Link
+          className={cx("btn", "btn-primary", "btn-sm", "ms-2")}
+          to={{
+            pathname: ABSOLUTE_ROUTES.v2.integrations,
+            search: searchActionRequired,
+          }}
+        >
+          Check integration
+        </Link>
       </InfoAlert>
     );
   }
