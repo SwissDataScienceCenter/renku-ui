@@ -17,15 +17,16 @@
  */
 
 import cx from "classnames";
-import { Link, useSearchParams } from "react-router";
+import { XLg } from "react-bootstrap-icons";
+import { Button } from "reactstrap";
 
 import ContainerWrap from "../../components/container/ContainerWrap";
-import { SEARCH_PARAM_SOURCE } from "./connectedServices.constants";
 import { GitHubOAuthCompleteFollowUp } from "./ConnectedServicesPage";
 
 export default function OAuthCompletePage() {
-  const [params] = useSearchParams();
-  const source = params.get(SEARCH_PARAM_SOURCE);
+  const onCloseTab = () => {
+    window.close();
+  };
 
   return (
     <ContainerWrap>
@@ -45,12 +46,17 @@ export default function OAuthCompletePage() {
         <p className={cx("mb-0")}>
           You are now connected. You can close this tab and return to Renku.
         </p>
-        {source && (
-          <p className={cx("mb-0")}>
-            <Link to={source}>Back to where you were</Link>
-          </p>
-        )}
         <GitHubOAuthCompleteFollowUp />
+        <p>
+          <Button
+            color="primary"
+            className={cx("btn-primary", "btn-sm")}
+            onClick={onCloseTab}
+          >
+            <XLg className={cx("bi", "me-1")} />
+            Close Tab
+          </Button>
+        </p>
       </div>
     </ContainerWrap>
   );
