@@ -25,6 +25,7 @@ export default function DepositFinalizationModal({
 
   const finalizeDeposit = useCallback(() => {
     patchDeposit({
+      "If-Match": deposit.etag ?? "",
       depositId: deposit!.id ?? "",
       depositPatch: {
         status: "complete",

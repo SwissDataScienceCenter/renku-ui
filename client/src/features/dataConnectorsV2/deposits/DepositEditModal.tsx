@@ -91,6 +91,7 @@ export default function DepositEditModal({
 
       if (Object.keys(depositPatch).length > 0) {
         const patchResult = await patchDeposit({
+          "If-Match": deposit.etag ?? "",
           depositId: deposit.id,
           depositPatch,
         });

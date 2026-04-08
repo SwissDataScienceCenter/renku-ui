@@ -197,6 +197,7 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/deposits/${queryArg.depositId}`,
         method: "PATCH",
         body: queryArg.depositPatch,
+        headers: { "If-Match": queryArg["If-Match"] },
       }),
     }),
     deleteDepositsByDepositId: build.mutation<
@@ -373,9 +374,12 @@ export type PatchDepositsByDepositIdApiResponse =
 export type PatchDepositsByDepositIdApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
   depositPatch: DepositPatch;
 };
-export type DeleteDepositsByDepositIdApiResponse = unknown;
+export type DeleteDepositsByDepositIdApiResponse =
+  /** status 204 The data deposit was deleted */ void;
 export type DeleteDepositsByDepositIdApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
@@ -386,7 +390,8 @@ export type GetDepositsByDepositIdLogsApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
 };
-export type PostDepositsByDepositIdJobApiResponse = unknown;
+export type PostDepositsByDepositIdJobApiResponse =
+  /** status 201 The data deposit job has been recreated */ void;
 export type PostDepositsByDepositIdJobApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
@@ -657,6 +662,7 @@ export type Deposit = DepositPost & {
   external_url?: string;
   creation_date?: CreationDate;
   updated_at?: CreationDate;
+  etag?: ETag;
 };
 export type DepositList = Deposit[];
 export type InaccessibleDataConnectorLinks = {
