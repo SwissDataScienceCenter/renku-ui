@@ -23,15 +23,11 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import type { RequestWithUser } from "../authentication/authentication.types";
 import config from "../config";
 import logger from "../logger";
-import { Storage } from "../storage";
 import { getCookieValueByName, serializeCookie } from "../utils";
-import { lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
-import { lastSearchQueriesMiddleware } from "../utils/middlewares/lastSearchQueriesMiddleware";
 import uploadFileMiddleware from "../utils/middlewares/uploadFileMiddleware";
 import { validateCSP } from "../utils/url";
 
 import { CheckURLResponse } from "./apis.interfaces";
-import { getUserData } from "./helperFunctions";
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
@@ -86,11 +82,7 @@ const proxyMiddleware = createProxyMiddleware({
   },
 });
 
-function registerApiRoutes(
-  app: express.Application,
-  prefix: string,
-  storage: Storage
-): void {
+function registerApiRoutes(app: express.Application, prefix: string): void {
   // Locally defined APIs
   if (config.sentry.enabled && config.sentry.debugMode) {
     app.get(prefix + "/fake-error", async () => {
@@ -130,46 +122,6 @@ function registerApiRoutes(
     res.json(validationResponse);
   });
 
-  app.get(
-    prefix + "/last-projects/:length",
-    async (req: RequestWithUser, res) => {
-      const user = req.user;
-      if (!user?.id) {
-        res.json({ error: "User not authenticated" });
-        return;
-      }
-
-      const length = parseInt(req.params["length"]) || 0;
-      const data = await getUserData(
-        config.data.projectsStoragePrefix,
-        user.id,
-        storage,
-        length
-      );
-      res.json({ projects: data });
-    }
-  );
-
-  app.get(
-    prefix + "/last-searches/:length",
-    async (req: RequestWithUser, res) => {
-      const user = req.user;
-      if (!user?.id) {
-        res.json({ error: "User not authenticated" });
-        return;
-      }
-
-      const length = parseInt(req.params["length"]) || 0;
-      const data = await getUserData(
-        config.data.searchStoragePrefix,
-        user.id,
-        storage,
-        length
-      );
-      res.json({ queries: data });
-    }
-  );
-
   // /version endpoint
   const uiServerShortSha = process.env["RENKU_UI_SHORT_SHA"] || "unknown";
   const uiServerVersion = process.env["UI_SERVER_VERSION"] || uiServerShortSha;
@@ -186,19 +138,9 @@ function registerApiRoutes(
   /*
    * All the unmatched APIs will be routed to the gateway using the http-proxy-middleware middleware
    */
-  app.get(
-    prefix + "/projects/:projectName",
-    [lastProjectsMiddleware(storage)],
-    proxyMiddleware
-  );
   app.post(
     prefix + "/renku/cache.files_upload",
     [uploadFileMiddleware],
-    proxyMiddleware
-  );
-  app.get(
-    prefix + "/kg/entities",
-    [lastSearchQueriesMiddleware(storage)],
     proxyMiddleware
   );
   app.delete(prefix + "/*", proxyMiddleware);

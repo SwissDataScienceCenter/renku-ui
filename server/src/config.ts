@@ -17,7 +17,6 @@
  */
 
 import { convertType, urlJoin } from "./utils";
-import { StoragePrefix } from "./storage";
 
 const SERVER = {
   url: process.env.SERVER_URL,
@@ -56,25 +55,9 @@ const AUTHENTICATION = {
   authHeaderPrefix: "bearer ",
 };
 
-const REDIS = {
-  host: process.env.REDIS_HOST || "localhost",
-  port: convertType(process.env.REDIS_PORT) || 6379,
-  database: convertType(process.env.REDIS_DATABASE) || 0,
-  password: process.env.REDIS_PASSWORD || null,
-  isSentinel: convertType(process.env.REDIS_IS_SENTINEL) || false,
-  masterSet: process.env.REDIS_MASTER_SET || "mymaster",
-};
-
 const ROUTES = {
   api: "/api",
   auth: "/auth",
-};
-
-const DATA = {
-  projectsStoragePrefix: StoragePrefix.LAST_PROJECTS,
-  searchStoragePrefix: StoragePrefix.LAST_SEARCHES,
-  searchDefaultLength: 10,
-  projectsDefaultLength: 20,
 };
 
 const WEBSOCKET = {
@@ -96,10 +79,8 @@ const PROMETHEUS = {
 
 const config = {
   auth: AUTHENTICATION,
-  data: DATA,
   deployment: DEPLOYMENT,
   prometheus: PROMETHEUS,
-  redis: REDIS,
   routes: ROUTES,
   sentry: SENTRY,
   server: SERVER,

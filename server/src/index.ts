@@ -24,7 +24,6 @@ import APIClient from "./api-client";
 import config from "./config";
 import logger from "./logger";
 import routes from "./routes";
-import { RedisStorage } from "./storage/RedisStorage";
 import { errorHandler } from "./utils/errorHandler";
 import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
 import { initializePrometheus } from "./utils/prometheus/prometheus";
@@ -64,9 +63,6 @@ initializeSentry(app);
 // set up Prometheus metrics
 initializePrometheus(app);
 
-// configure storage
-const storage = new RedisStorage();
-
 // configure authenticator
 const authenticator = new Authenticator();
 const authPromise = authenticator.init();
@@ -76,7 +72,7 @@ authPromise.catch(() => {
 });
 
 // register routes
-routes.register(app, prefix, storage);
+routes.register(app, prefix);
 
 app.use(errorHandlerMiddleware);
 
@@ -99,7 +95,7 @@ function createWsServer() {
   addWebSocketServerContext(wsServer);
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
-    configureWebsocket(wsServer, storage, apiClient);
+    configureWebsocket(wsServer, apiClient);
   });
   return wsServer;
 }
@@ -112,9 +108,6 @@ function shutdownServer() {
       logger.error(error);
       process.exit(1);
     } else {
-      logger.info("Shutting down storage");
-      storage.shutdown();
-      logger.info("Shutdown completed.");
       setImmediate(() => {
         process.exit(0);
       });

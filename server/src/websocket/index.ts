@@ -22,7 +22,6 @@ import ws from "ws";
 import APIClient from "../api-client";
 import config from "../config";
 import logger from "../logger";
-import { Storage } from "../storage";
 import { getCookieValueByName } from "../utils";
 import { errorHandler } from "../utils/errorHandler";
 
@@ -120,11 +119,7 @@ const shortLoopFunctions: Array<WebSocketHandler> = [
  * @param storage - storage component
  * @param apiClient - api to fetch data
  */
-async function channelLongLoop(
-  sessionId: string,
-  storage: Storage,
-  apiClient: APIClient
-) {
+async function channelLongLoop(sessionId: string, apiClient: APIClient) {
   const infoPrefix = `${sessionId} - long loop:`;
 
   // checking user
@@ -136,16 +131,6 @@ async function channelLongLoop(
 
   // checking authentication
   const timeoutLength = (config.websocket.longIntervalSec as number) * 1_000;
-  if (!storage.ready) {
-    logger.info(
-      `${infoPrefix} Storage not ready yet, skipping to the next loop`
-    );
-    setTimeout(
-      () => channelLongLoop(sessionId, storage, apiClient),
-      timeoutLength
-    );
-    return false;
-  }
 
   // get the auth headers
   const headers = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
@@ -165,10 +150,7 @@ async function channelLongLoop(
 
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach((socket) => socket.ping());
-  setTimeout(
-    () => channelLongLoop(sessionId, storage, apiClient),
-    timeoutLength
-  );
+  setTimeout(() => channelLongLoop(sessionId, apiClient), timeoutLength);
 }
 
 /**
@@ -178,11 +160,7 @@ async function channelLongLoop(
  * @param storage - storage component
  * @param apiClient - api client
  */
-async function channelShortLoop(
-  sessionId: string,
-  storage: Storage,
-  apiClient: APIClient
-) {
+async function channelShortLoop(sessionId: string, apiClient: APIClient) {
   const infoPrefix = `${sessionId} - short loop:`;
 
   // checking user
@@ -194,16 +172,6 @@ async function channelShortLoop(
 
   // checking authentication
   const timeoutLength = (config.websocket.shortIntervalSec as number) * 1_000;
-  if (!storage.ready) {
-    logger.info(
-      `${infoPrefix} Storage not ready yet, skipping to the next loop`
-    );
-    setTimeout(
-      () => channelShortLoop(sessionId, storage, apiClient),
-      timeoutLength
-    );
-    return;
-  }
 
   // get the auth headers
   const headers = { Cookie: `${config.auth.cookiesKey}=${sessionId}` };
@@ -223,10 +191,7 @@ async function channelShortLoop(
 
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach((socket) => socket.ping());
-  setTimeout(
-    () => channelShortLoop(sessionId, storage, apiClient),
-    timeoutLength
-  );
+  setTimeout(() => channelShortLoop(sessionId, apiClient), timeoutLength);
 }
 
 // *** WebSocket startup and configuration ***
@@ -239,11 +204,7 @@ async function channelShortLoop(
  * @param storage - storage component
  * @param apiClient - api client
  */
-function configureWebsocket(
-  server: ws.Server,
-  storage: Storage,
-  apiClient: APIClient
-): void {
+function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
   server.on("connection", async (socket, request) => {
     // ? Should we Upgrade here? And verify the Origin since same-origin policy doesn't work for WS?
 
@@ -301,10 +262,10 @@ function configureWebsocket(
       // add a buffer before starting the loop, so we can receive setup messages
 
       setTimeout(() => {
-        channelShortLoop(sessionId, storage, apiClient);
+        channelShortLoop(sessionId, apiClient);
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
         setTimeout(() => {
-          channelLongLoop(sessionId, storage, apiClient);
+          channelLongLoop(sessionId, apiClient);
         }, 1_000);
       }, config.websocket.delayStartSec * 1_000);
     }
