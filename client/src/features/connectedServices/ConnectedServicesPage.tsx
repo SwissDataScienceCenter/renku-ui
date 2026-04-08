@@ -66,13 +66,13 @@ import {
 } from "./api/connectedServices.api";
 import {
   CHECK_STATUS_QUERY_PARAM,
-  OAUTH_CONNECT_POLLING_INTERVAL_MS,
   SEARCH_PARAM_ACTION_REQUIRED,
   SEARCH_PARAM_PROVIDER,
   SEARCH_PARAM_SOURCE,
 } from "./connectedServices.constants";
 import { getSettingsUrl } from "./connectedServices.utils";
 import ContactUsCard from "./ContactUsCard";
+import type { GithubOAuthCompleteFollowUpData } from "./useGithubOAuthCompleteFollowUpData.hook";
 
 export default function ConnectedServicesPage() {
   const { data: user } = usersApi.endpoints.getUser.useQueryState();
@@ -740,50 +740,24 @@ export function GitHubStatusCheckModal({
   );
 }
 
+type GitHubOAuthCompleteFollowUpProps = Pick<
+  GithubOAuthCompleteFollowUpData,
+  "skipData" | "connection" | "provider"
+>;
+
 /** GitHub App follow-up on `/oauth/complete` when `check-status` is present */
-export function GitHubOAuthCompleteFollowUp() {
-  const [searchParams] = useSearchParams();
-  const checkId = searchParams.get(CHECK_STATUS_QUERY_PARAM);
-
-  const { data: providers } = useGetOauth2ProvidersQuery();
-
-  const provider = providers?.find((p) => p.id === checkId);
-  const hasRegistry = !!provider?.image_registry_url;
-  const isGithubFollowUp =
-    !!checkId && !!provider && provider.kind === "github" && !hasRegistry;
-
-  const { data: connections } =
-    connectedServicesApi.endpoints.getOauth2Connections.useQueryState();
-
-  const hasGithubConnection =
-    !!checkId &&
-    !!connections?.some(
-      (c) => c.provider_id === checkId && c.status === "connected"
-    );
-
-  connectedServicesApi.endpoints.getOauth2Connections.useQuerySubscription(
-    isGithubFollowUp && !hasGithubConnection ? undefined : skipToken,
-    { pollingInterval: OAUTH_CONNECT_POLLING_INTERVAL_MS }
-  );
-
-  const connection = connections?.find(
-    (c) => c.provider_id === checkId && c.status === "connected"
-  );
-
-  const skipData =
-    !checkId ||
-    !provider ||
-    provider.kind !== "github" ||
-    hasRegistry ||
-    !connection;
-
+export function GitHubOAuthCompleteFollowUp({
+  skipData,
+  connection,
+  provider,
+}: GitHubOAuthCompleteFollowUpProps) {
   const { data: account } = useGetOauth2ConnectionsByConnectionIdAccountQuery(
-    skipData ? skipToken : { connectionId: connection.id }
+    skipData || !connection ? skipToken : { connectionId: connection.id }
   );
 
   const { data: installations, refetch: refetchInstallations } =
     useGetOauth2ConnectionsByConnectionIdInstallationsQuery(
-      skipData
+      skipData || !connection
         ? skipToken
         : {
             connectionId: connection.id,
@@ -791,7 +765,7 @@ export function GitHubOAuthCompleteFollowUp() {
           }
     );
 
-  if (skipData || account == null || installations == null) {
+  if (skipData || account == null || installations == null || !provider) {
     return null;
   }
 

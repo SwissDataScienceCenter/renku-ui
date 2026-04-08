@@ -17,15 +17,91 @@
  */
 
 import cx from "classnames";
+import { useCallback, useEffect, useState } from "react";
 import { XLg } from "react-bootstrap-icons";
+import { useSearchParams } from "react-router";
 import { Button } from "reactstrap";
 
+import { ErrorAlert } from "../../components/Alert";
 import ContainerWrap from "../../components/container/ContainerWrap";
+import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import {
+  CHECK_STATUS_QUERY_PARAM,
+  SEARCH_PARAM_ACTION_REQUIRED,
+  SEARCH_PARAM_PROVIDER,
+} from "./connectedServices.constants";
 import { GitHubOAuthCompleteFollowUp } from "./ConnectedServicesPage";
+import {
+  deriveOAuthCompleteSuccessAutoClose,
+  useGithubOAuthCompleteFollowUpData,
+} from "./useGithubOAuthCompleteFollowUpData.hook";
+
+const SECONDS_TO_AUTO_CLOSE_TAB = 5;
+
+function SuccessAutoCloseMessage({ onAutoClose }: { onAutoClose: () => void }) {
+  const [secondsRemaining, setSecondsRemaining] = useState(
+    SECONDS_TO_AUTO_CLOSE_TAB
+  );
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setSecondsRemaining((prev) => {
+        if (prev <= 1) {
+          window.clearInterval(id);
+          onAutoClose();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(id);
+  }, [onAutoClose]);
+
+  return (
+    <p className={cx("mb-0")}>
+      This tab will close automatically in {secondsRemaining} seconds.
+    </p>
+  );
+}
 
 export default function OAuthCompletePage() {
-  const onCloseTab = () => {
+  const [searchParams] = useSearchParams();
+  const oauthError = searchParams.get("error");
+  const oauthErrorMessage =
+    searchParams.get("error_description") ??
+    searchParams.get("message") ??
+    oauthError;
+  const hasError = oauthErrorMessage != null;
+  const checkStatusProviderId = searchParams.get(CHECK_STATUS_QUERY_PARAM);
+  const githubFollowUpData = useGithubOAuthCompleteFollowUpData();
+  const allowSuccessAutoClose = deriveOAuthCompleteSuccessAutoClose(
+    hasError,
+    githubFollowUpData
+  );
+
+  const onCloseTab = useCallback(() => {
     window.close();
+  }, []);
+
+  const onTryAgain = () => {
+    if (window.opener && !window.opener.closed) {
+      const retryUrl = new URL(
+        ABSOLUTE_ROUTES.v2.integrations,
+        window.location.origin
+      );
+      if (checkStatusProviderId) {
+        retryUrl.searchParams.set(SEARCH_PARAM_PROVIDER, checkStatusProviderId);
+        retryUrl.searchParams.set(SEARCH_PARAM_ACTION_REQUIRED, "true");
+      }
+      window.opener.location.assign(retryUrl.toString());
+      window.opener.focus();
+      window.close();
+      return;
+    }
+
+    // Fallback for browsers that refuse closing manually-opened tabs.
+    window.location.assign(ABSOLUTE_ROUTES.v2.integrations);
   };
 
   return (
@@ -42,11 +118,46 @@ export default function OAuthCompletePage() {
         data-cy="oauth2-complete-page"
         style={{ maxWidth: "36rem" }}
       >
-        <h1 className={cx("h3")}>Connection complete</h1>
-        <p className={cx("mb-0")}>
-          You are now connected. You can close this tab and return to Renku.
-        </p>
-        <GitHubOAuthCompleteFollowUp />
+        <h1 className={cx("h3")}>
+          {hasError
+            ? "We could not complete the connection"
+            : "Connection complete"}
+        </h1>
+        {hasError ? (
+          <>
+            <p className={cx("mb-0")}>
+              Something went wrong while connecting your external service.
+            </p>
+            <ErrorAlert dismissible={false}>
+              <p className={cx("mb-0")}>
+                {oauthErrorMessage ?? "Unexpected OAuth error."}
+              </p>
+            </ErrorAlert>
+            <p className={cx("mb-0")}>
+              <Button
+                color="primary"
+                className={cx("btn-primary", "btn-sm")}
+                onClick={onTryAgain}
+              >
+                Try again
+              </Button>
+            </p>
+          </>
+        ) : (
+          <>
+            <p className={cx("mb-0")}>
+              You are now connected. You can close this tab and return to Renku.
+            </p>
+            {allowSuccessAutoClose && (
+              <SuccessAutoCloseMessage onAutoClose={onCloseTab} />
+            )}
+            <GitHubOAuthCompleteFollowUp
+              skipData={githubFollowUpData.skipData}
+              connection={githubFollowUpData.connection}
+              provider={githubFollowUpData.provider}
+            />
+          </>
+        )}
         <p>
           <Button
             color="primary"
