@@ -20,7 +20,6 @@ import fetch from "cross-fetch";
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
-import type { RequestWithUser } from "../authentication/authentication.types";
 import config from "../config";
 import logger from "../logger";
 import { getCookieValueByName, serializeCookie } from "../utils";

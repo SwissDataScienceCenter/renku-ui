@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { convertType, urlJoin } from "./utils";
+import { urlJoin } from "./utils";
 
 const SERVER = {
   url: process.env.SERVER_URL,

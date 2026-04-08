@@ -18,8 +18,6 @@
 
 import express from "express";
 
-import logger from "../logger";
-
 function registerInternalRoutes(app: express.Application): void {
   // define a route handler for the default home page
   app.get("/", (req, res) => {
