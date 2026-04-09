@@ -19,17 +19,12 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { XLg } from "react-bootstrap-icons";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { Button } from "reactstrap";
 
 import { ErrorAlert } from "../../components/Alert";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
-import {
-  CHECK_STATUS_QUERY_PARAM,
-  SEARCH_PARAM_ACTION_REQUIRED,
-  SEARCH_PARAM_PROVIDER,
-} from "./connectedServices.constants";
 import { GitHubOAuthCompleteFollowUp } from "./ConnectedServicesPage";
 import {
   shouldAutoCloseAfterOAuth,
@@ -73,7 +68,6 @@ export default function OAuthCompletePage() {
     searchParams.get("message") ??
     oauthError;
   const hasError = oauthErrorMessage != null;
-  const checkStatusProviderId = searchParams.get(CHECK_STATUS_QUERY_PARAM);
   const githubFollowUpData = useGithubOAuthCompleteFollowUpData();
   const allowSuccessAutoClose = shouldAutoCloseAfterOAuth(
     hasError,
@@ -83,26 +77,6 @@ export default function OAuthCompletePage() {
   const onCloseTab = useCallback(() => {
     window.close();
   }, []);
-
-  const onTryAgain = () => {
-    if (window.opener && !window.opener.closed) {
-      const retryUrl = new URL(
-        ABSOLUTE_ROUTES.v2.integrations,
-        window.location.origin
-      );
-      if (checkStatusProviderId) {
-        retryUrl.searchParams.set(SEARCH_PARAM_PROVIDER, checkStatusProviderId);
-        retryUrl.searchParams.set(SEARCH_PARAM_ACTION_REQUIRED, "true");
-      }
-      window.opener.location.assign(retryUrl.toString());
-      window.opener.focus();
-      window.close();
-      return;
-    }
-
-    // Fallback for browsers that refuse closing manually-opened tabs.
-    window.location.assign(ABSOLUTE_ROUTES.v2.integrations);
-  };
 
   return (
     <ContainerWrap>
@@ -134,12 +108,21 @@ export default function OAuthCompletePage() {
               </p>
             </ErrorAlert>
             <p className={cx("mb-0")}>
-              <Button
-                color="primary"
-                className={cx("btn-primary", "btn-sm")}
-                onClick={onTryAgain}
+              <Link
+                className={cx("btn", "btn-primary", "btn-sm", "ms-2")}
+                to={{
+                  pathname: ABSOLUTE_ROUTES.v2.integrations,
+                }}
               >
-                Try again
+                Go to integration list to try again
+              </Link>
+              <Button
+                color="white"
+                className={cx("btn-outline-primary", "btn-sm", "ms-2")}
+                onClick={onCloseTab}
+              >
+                <XLg className={cx("bi", "me-1")} />
+                Close Tab
               </Button>
             </p>
           </>
@@ -156,18 +139,18 @@ export default function OAuthCompletePage() {
               connection={githubFollowUpData.connection}
               provider={githubFollowUpData.provider}
             />
+            <p>
+              <Button
+                color="primary"
+                className={cx("btn-primary", "btn-sm")}
+                onClick={onCloseTab}
+              >
+                <XLg className={cx("bi", "me-1")} />
+                Close Tab
+              </Button>
+            </p>
           </>
         )}
-        <p>
-          <Button
-            color="primary"
-            className={cx("btn-primary", "btn-sm")}
-            onClick={onCloseTab}
-          >
-            <XLg className={cx("bi", "me-1")} />
-            Close Tab
-          </Button>
-        </p>
       </div>
     </ContainerWrap>
   );
