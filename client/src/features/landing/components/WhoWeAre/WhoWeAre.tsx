@@ -73,7 +73,7 @@ export default function WhoWeAre() {
                 url={`mailto:${renkuContactEmail}`}
                 title=""
               >
-                <Envelope size={20} /> Email us!
+                <Envelope fontSize={20} /> Email us!
               </ExternalLink>
 
               <ExternalLink
@@ -82,7 +82,7 @@ export default function WhoWeAre() {
                 title=""
                 url={Links.GITHUB}
               >
-                <Github className="text-black" size={24} />
+                <Github className="text-black" fontSize={24} />
                 Go to the Github repository
               </ExternalLink>
             </div>
