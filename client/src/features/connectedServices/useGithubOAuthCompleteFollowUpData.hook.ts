@@ -88,12 +88,7 @@ export function useGithubOAuthCompleteFollowUpData(): GithubOAuthCompleteFollowU
   };
 }
 
-/**
- * Whether the OAuth success page may auto-close: skip when a GitHub app
- * follow-up might still run (same `skipData` semantics as the follow-up
- * component), and while provider/connection queries are still loading.
- */
-export function deriveOAuthCompleteSuccessAutoClose(
+export function shouldAutoCloseAfterOAuth(
   hasError: boolean,
   data: GithubOAuthCompleteFollowUpData
 ): boolean {

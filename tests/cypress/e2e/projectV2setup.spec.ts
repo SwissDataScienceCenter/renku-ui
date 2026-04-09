@@ -768,7 +768,7 @@ describe("Customize session environment variables", () => {
   });
 });
 
-describe.only("Repository connection cases", () => {
+describe("Repository connection cases", () => {
   beforeEach(() => {
     fixtures
       .config()

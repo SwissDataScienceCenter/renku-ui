@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { ABSOLUTE_ROUTES } from "~/routing/routes.constants.ts";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import type { Provider } from "./api/connectedServices.api";
 import {
   CHECK_STATUS_QUERY_PARAM,

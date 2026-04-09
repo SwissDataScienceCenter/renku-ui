@@ -42,9 +42,9 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types.ts";
-import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook.ts";
-import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils.ts";
+import { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types";
+import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook";
+import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils";
 import { InfoAlert, WarnAlert } from "../../components/Alert";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../components/LegacyExternalLinks";
@@ -303,7 +303,6 @@ export interface ConnectButtonParams {
   onConnected?: () => void;
   labelConnect?: string;
   labelReconnect?: string;
-  /** When true, render with Plugin icon (for alert CTAs) */
   withIcon?: boolean;
 }
 
@@ -745,7 +744,6 @@ type GitHubOAuthCompleteFollowUpProps = Pick<
   "skipData" | "connection" | "provider"
 >;
 
-/** GitHub App follow-up on `/oauth/complete` when `check-status` is present */
 export function GitHubOAuthCompleteFollowUp({
   skipData,
   connection,

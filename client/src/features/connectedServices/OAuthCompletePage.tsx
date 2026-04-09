@@ -32,7 +32,7 @@ import {
 } from "./connectedServices.constants";
 import { GitHubOAuthCompleteFollowUp } from "./ConnectedServicesPage";
 import {
-  deriveOAuthCompleteSuccessAutoClose,
+  shouldAutoCloseAfterOAuth,
   useGithubOAuthCompleteFollowUpData,
 } from "./useGithubOAuthCompleteFollowUpData.hook";
 
@@ -75,7 +75,7 @@ export default function OAuthCompletePage() {
   const hasError = oauthErrorMessage != null;
   const checkStatusProviderId = searchParams.get(CHECK_STATUS_QUERY_PARAM);
   const githubFollowUpData = useGithubOAuthCompleteFollowUpData();
-  const allowSuccessAutoClose = deriveOAuthCompleteSuccessAutoClose(
+  const allowSuccessAutoClose = shouldAutoCloseAfterOAuth(
     hasError,
     githubFollowUpData
   );
