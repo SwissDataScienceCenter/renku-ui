@@ -18,13 +18,16 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
+  Box2,
   BoxArrowUpRight,
   CircleFill,
   HandIndexThumb,
   InfoCircle,
   Plugin,
+  PlusLg,
+  Send,
   XLg,
 } from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
@@ -34,16 +37,24 @@ import {
   Button,
   Card,
   CardBody,
+  CardHeader,
   CardText,
   CardTitle,
+  Col,
+  ListGroup,
+  ListGroupItem,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Row,
 } from "reactstrap";
 
 import { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types";
 import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook";
+import { NEW_DOCS_USER_INTEGRATIONS } from "~/utils/constants/NewDocs";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils";
 import { InfoAlert, WarnAlert } from "../../components/Alert";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
@@ -74,6 +85,11 @@ import { getSettingsUrl } from "./connectedServices.utils";
 import ContactUsCard from "./ContactUsCard";
 import type { GithubOAuthCompleteFollowUpData } from "./useGithubOAuthCompleteFollowUpData.hook";
 
+import DashboardStyles from "~/features/dashboardV2/DashboardV2.module.scss";
+
+const CONNECTED_SERVICES_POLLING_INTERVAL_MS = 10_000;
+const DEFAULT_MODAL_PROVIDERS_COUNT = 4;
+
 export default function ConnectedServicesPage() {
   const { data: user } = usersApi.endpoints.getUser.useQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
@@ -81,14 +97,25 @@ export default function ConnectedServicesPage() {
   const targetProviderId = searchParams.get(SEARCH_PARAM_PROVIDER);
   const source = searchParams.get(SEARCH_PARAM_SOURCE);
   const actionRequired = searchParams.get(SEARCH_PARAM_ACTION_REQUIRED);
-
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   const {
     data: providers,
     isLoading: isLoadingProviders,
     error: providersError,
-  } = useGetOauth2ProvidersQuery(isUserLoggedIn ? undefined : skipToken);
-  const { isLoading: isLoadingConnections, error: connectionsError } =
-    useGetOauth2ConnectionsQuery(isUserLoggedIn ? undefined : skipToken);
+  } = useGetOauth2ProvidersQuery(isUserLoggedIn ? undefined : skipToken, {
+    pollingInterval: CONNECTED_SERVICES_POLLING_INTERVAL_MS,
+  });
+  const {
+    data: connections,
+    isLoading: isLoadingConnections,
+    error: connectionsError,
+  } = useGetOauth2ConnectionsQuery(isUserLoggedIn ? undefined : skipToken, {
+    pollingInterval: CONNECTED_SERVICES_POLLING_INTERVAL_MS,
+  });
+  const [isAddIntegrationModalOpen, setIsAddIntegrationModalOpen] =
+    useState(false);
 
   const targetProvider = useMemo(() => {
     return providers?.find((provider) => provider.id === targetProviderId);
@@ -98,6 +125,29 @@ export default function ConnectedServicesPage() {
     if (!targetProvider) return providers;
     return [targetProvider, ...providers.filter((p) => p !== targetProvider)];
   }, [providers, targetProvider]);
+  const providersWithConnection = useMemo(
+    () =>
+      sortedProviders.map((provider) => ({
+        provider,
+        connection: connections?.find(
+          ({ provider_id }) => provider_id === provider.id
+        ),
+      })),
+    [connections, sortedProviders]
+  );
+  const mainListProviders = useMemo(
+    () =>
+      providersWithConnection.filter(
+        ({ connection }) =>
+          connection?.status === "connected" || connection?.status === "pending"
+      ),
+    [providersWithConnection]
+  );
+  const modalProviders = useMemo(
+    () =>
+      providersWithConnection.filter(({ connection }) => connection == null),
+    [providersWithConnection]
+  );
 
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
@@ -118,20 +168,62 @@ export default function ConnectedServicesPage() {
       </div>
     </>
   ) : (
-    <div className={cx("row", "g-3")}>
-      {sortedProviders.map((provider) => (
-        <ConnectedServiceCard
-          key={provider.id}
-          actionRequired={!!actionRequired}
-          highlighted={provider.id === targetProviderId}
-          provider={provider}
-          source={
-            provider.id === targetProviderId && source ? source : undefined
-          }
-        />
-      ))}
-      <ContactUsCard />
-    </div>
+    <>
+      <Card data-cy="connected-services-list">
+        <CardHeader className={cx("d-flex", "gap-2")}>
+          <h2 className={cx("mb-0", "my-auto")}>My integrations</h2>
+          <Button
+            className={cx("btn-sm", "ms-auto", "my-auto")}
+            color="outline-primary"
+            id="ActivateIntegration"
+            onClick={() => setIsAddIntegrationModalOpen(true)}
+            type="button"
+          >
+            <PlusLg className="bi" />
+          </Button>
+        </CardHeader>
+        <CardBody>
+          {mainListProviders.length === 0 ? (
+            <p className="mb-0">
+              You have no integrations configured.{" "}
+              <a
+                className={cx("text-primary", "cursor-pointer")}
+                onClick={() => setIsAddIntegrationModalOpen(true)}
+              >
+                {" "}
+                Click here{" "}
+              </a>{" "}
+              to activate integrations.
+            </p>
+          ) : (
+            <ListGroup flush>
+              {mainListProviders.map(({ provider, connection }) => (
+                <ConnectedServiceListItem
+                  key={provider.id}
+                  actionRequired={!!actionRequired}
+                  connection={connection}
+                  highlighted={provider.id === targetProviderId}
+                  provider={provider}
+                  source={
+                    provider.id === targetProviderId && source
+                      ? source
+                      : undefined
+                  }
+                />
+              ))}
+            </ListGroup>
+          )}
+        </CardBody>
+      </Card>
+      <div className={cx("mt-3", "row", "g-3")}>
+        <ContactUsCard />
+      </div>
+      <AddIntegrationModal
+        isOpen={isAddIntegrationModalOpen}
+        onToggle={() => setIsAddIntegrationModalOpen((isOpen) => !isOpen)}
+        providers={modalProviders}
+      />
+    </>
   );
 
   return (
@@ -144,7 +236,50 @@ export default function ConnectedServicesPage() {
         Integrations with external services allow you to connect your Renku
         projects with external private repositories and images.
       </p>
-      {content}
+      <Row className="g-4">
+        <Col xs={12} md={8}>
+          <Row className="g-4">
+            <Col xs={12}>{content}</Col>
+          </Row>
+        </Col>
+        {isUserLoggedIn && (
+          <Col xs={12} md={4}>
+            <Card
+              className={cx(DashboardStyles.DashboardCard, "border-1", "mb-3")}
+            >
+              <CardBody className={DashboardStyles.FooterCard}>
+                <p>
+                  Do you have another platform you&apos;d like to connect to
+                  Renku?
+                </p>
+                <p>
+                  <Link
+                    to={`mailto:${renkuContactEmail}`}
+                    className={cx("btn", "btn-outline-primary")}
+                    target="_blank"
+                  >
+                    <Send size={27} className="me-2" />
+                    Contact us
+                  </Link>{" "}
+                  to add it to this list!
+                </p>
+              </CardBody>
+            </Card>
+            <Card className={cx("border-1")}>
+              <CardBody>
+                <p>
+                  Check out our documentation to learn more about{" "}
+                  <ExternalLink role="link" url={NEW_DOCS_USER_INTEGRATIONS}>
+                    integrations in Renku
+                    <BoxArrowUpRight className={cx("bi", "ms-1")} />
+                  </ExternalLink>
+                  .
+                </p>
+              </CardBody>
+            </Card>
+          </Col>
+        )}
+      </Row>
     </div>
   );
 }
@@ -189,28 +324,22 @@ function ConnectedServiceStatus({ connection }: ConnectedServiceStatusProps) {
   );
 }
 
-interface ConnectedServiceCardProps {
+interface ConnectedServiceListItemProps {
   actionRequired?: boolean;
+  connection?: Connection;
   highlighted?: boolean;
   provider: Provider;
   source?: string;
 }
 
-function ConnectedServiceCard({
+function ConnectedServiceListItem({
   actionRequired = false,
+  connection,
   highlighted = false,
   provider,
   source,
-}: ConnectedServiceCardProps) {
-  const { id, display_name, url } = provider;
-
-  const { data: connections } =
-    connectedServicesApi.endpoints.getOauth2Connections.useQueryState();
-
-  const connection = useMemo(
-    () => connections?.find(({ provider_id }) => provider_id === id),
-    [connections, id]
-  );
+}: ConnectedServiceListItemProps) {
+  const { display_name, url } = provider;
 
   const goBackButton = source && (
     <Link to={source} className={cx("primary")}>
@@ -219,66 +348,63 @@ function ConnectedServiceCard({
   );
 
   return (
-    <div data-cy="connected-services-card" className={cx("col-12", "col-lg-6")}>
-      <Card
-        className={cx("h-100", highlighted && ["bg-primary", "bg-opacity-10"])}
-      >
-        <CardBody>
-          {highlighted && (
-            <Alert
-              color={actionRequired ? "warning" : "info"}
-              className={cx(
-                actionRequired ? "border-warning" : "border-info",
-                "shadow-sm"
-              )}
-            >
-              <p className="mb-0">
-                {actionRequired ? (
-                  <>
-                    <HandIndexThumb className={cx("bi", "me-1")} />
-                    Action required. Please connect to this integration
-                    {source && <> and then {goBackButton}</>}.
-                  </>
-                ) : (
-                  <>
-                    <InfoCircle className={cx("bi", "me-1")} />
-                    Check your integration settings here.
-                    {source && (
-                      <span>
-                        <br />
-                        You can later {goBackButton}.
-                      </span>
-                    )}
-                  </>
-                )}
-              </p>
-            </Alert>
+    <ListGroupItem data-cy="connected-services-item" action={true}>
+      {highlighted && (
+        <Alert
+          color={actionRequired ? "warning" : "info"}
+          className={cx(
+            actionRequired ? "border-warning" : "border-info",
+            "shadow-sm"
           )}
-
+        >
+          <p className="mb-0">
+            {actionRequired ? (
+              <>
+                <HandIndexThumb className={cx("bi", "me-1")} />
+                Action required. Please connect to this integration
+                {source && <> and then {goBackButton}</>}.
+              </>
+            ) : (
+              <>
+                <InfoCircle className={cx("bi", "me-1")} />
+                Check your integration settings here.
+                {source && (
+                  <span>
+                    <br />
+                    You can later {goBackButton}.
+                  </span>
+                )}
+              </>
+            )}
+          </p>
+        </Alert>
+      )}
+      <div className={cx("d-flex", "align-items-start", "gap-3")}>
+        <div className={cx("flex-grow-1")}>
           <CardTitle>
-            <div className={cx("d-flex", "flex-wrap", "align-items-center")}>
-              <h2 className="me-2">{display_name}</h2>
-              <div className={cx("d-flex", "gap-2", "ms-auto")}>
-                <ConnectButton
-                  provider={provider}
-                  connectionStatus={connection?.status}
-                />
-                <DisconnectButton
-                  connectionStatus={connection?.status}
-                  connectionId={connection?.id}
-                />
-              </div>
-            </div>
+            <h4 className={cx("mb-2", "fw-bold")}>
+              <Box2 className={cx("bi", "me-1")} />
+              {display_name}
+            </h4>
           </CardTitle>
-          <CardText>
-            URL:{" "}
-            <ExternalLink url={url} role="text">
-              <BoxArrowUpRight className={cx("bi", "me-1")} />
+          <CardText
+            className={cx(
+              "d-flex",
+              "flex-wrap",
+              "align-items-center",
+              "gap-2",
+              "mb-2"
+            )}
+          >
+            <ExternalLink
+              url={url}
+              role="text"
+              iconAfter={false}
+              showLinkIcon={true}
+            >
               {url}
             </ExternalLink>
-          </CardText>
-          <CardText>
-            Status: <ConnectedServiceStatus connection={connection} />
+            <ConnectedServiceStatus connection={connection} />
           </CardText>
           {connection?.status === "connected" && (
             <ConnectedAccount connection={connection} />
@@ -289,9 +415,108 @@ function ConnectedServiceCard({
               provider={provider}
             />
           )}
-        </CardBody>
-      </Card>
-    </div>
+        </div>
+        <div className={cx("d-flex", "gap-2", "ms-auto")}>
+          <DisconnectButton
+            connectionStatus={connection?.status}
+            connectionId={connection?.id}
+          />
+          <ConnectButton
+            provider={provider}
+            connectionStatus={connection?.status}
+          />
+        </div>
+      </div>
+    </ListGroupItem>
+  );
+}
+
+interface AddIntegrationModalProps {
+  isOpen: boolean;
+  onToggle: () => void;
+  providers: Array<{ provider: Provider; connection?: Connection }>;
+}
+function AddIntegrationModal({
+  isOpen,
+  onToggle,
+  providers,
+}: AddIntegrationModalProps) {
+  const [showAllIntegrations, setShowAllIntegrations] = useState(false);
+  const isExpanded = isOpen && showAllIntegrations;
+
+  const visibleProviders = useMemo(() => {
+    if (isExpanded) return providers;
+    return providers.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
+  }, [isExpanded, providers]);
+
+  return (
+    <Modal centered isOpen={isOpen} size="lg" toggle={onToggle}>
+      <ModalHeader tag="h2" toggle={onToggle}>
+        <Plugin className={cx("bi", "me-1")} />
+        Activate integration
+      </ModalHeader>
+      <ModalBody>
+        {providers.length === 0 ? (
+          <p>
+            There are currently no more external services users can connect to.
+          </p>
+        ) : (
+          <>
+            <p>Add a new code, data, or compute integration.</p>
+            <ListGroup
+              className={cx(
+                "bg-white",
+                "rounded-3",
+                "border",
+                "border-rk-green"
+              )}
+            >
+              {visibleProviders.map(({ provider, connection }) => (
+                <ListGroupItem key={provider.id} action={true}>
+                  <div className={cx("d-flex", "align-items-center", "gap-3")}>
+                    <div className={cx("flex-grow-1")}>
+                      <h4 className={cx("mb-2", "fw-bold")}>
+                        <Box2 className={cx("bi", "me-1")} />
+                        {provider.display_name}
+                      </h4>
+                      <div
+                        className={cx(
+                          "d-flex",
+                          "flex-wrap",
+                          "align-items-center",
+                          "gap-2"
+                        )}
+                      >
+                        <ExternalLink
+                          url={provider.url}
+                          role="text"
+                          iconAfter={false}
+                          showLinkIcon={true}
+                        >
+                          {provider.url}
+                        </ExternalLink>
+                      </div>
+                    </div>
+                    <ConnectButton
+                      provider={provider}
+                      connectionStatus={connection?.status}
+                    />
+                  </div>
+                </ListGroupItem>
+              ))}
+              {providers.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
+                <ListGroupItem
+                  onClick={() => setShowAllIntegrations(!showAllIntegrations)}
+                  className="fw-bold"
+                >
+                  {!isExpanded ? <>See all integrations </> : <>Show less </>}
+                </ListGroupItem>
+              )}
+            </ListGroup>
+          </>
+        )}
+      </ModalBody>
+    </Modal>
   );
 }
 
@@ -358,6 +583,16 @@ export function DisconnectButton({
     }
   }, [deleteConnection, connectionId]);
 
+  if (connectionStatus === "pending")
+    return (
+      <Button
+        color="outline-primary"
+        className={cx(className)}
+        onClick={onDisconnect}
+      >
+        Remove
+      </Button>
+    );
   if (connectionStatus !== "connected" || !connectionId) return null;
 
   return (
