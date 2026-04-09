@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "4.20.0",
+  "version": "4.21.0",
   "private": true,
   "scripts": {
     "start": "NODE_OPTIONS='--import ./instrument.server.mjs' react-router dev --port 3000",
