@@ -25,6 +25,7 @@ import { Button } from "reactstrap";
 import { ErrorAlert, SuccessAlert } from "../../components/Alert";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import { CHECK_STATUS_QUERY_PARAM } from "./connectedServices.constants";
 import { GitHubOAuthCompleteFollowUp } from "./ConnectedServicesPage";
 import {
   shouldAutoCloseAfterOAuth,
@@ -77,6 +78,22 @@ export default function OAuthCompletePage() {
   const onCloseTab = useCallback(() => {
     window.close();
   }, []);
+
+  const onTryAgain = () => {
+    if (window.opener && !window.opener.closed) {
+      const retryUrl = new URL(
+        ABSOLUTE_ROUTES.v2.integrations,
+        window.location.origin
+      );
+      window.opener.location.assign(retryUrl.toString());
+      window.opener.focus();
+      window.close();
+      return;
+    }
+
+    // Fallback for browsers that refuse closing manually-opened tabs.
+    window.location.assign(ABSOLUTE_ROUTES.v2.integrations);
+  };
 
   return (
     <ContainerWrap>
