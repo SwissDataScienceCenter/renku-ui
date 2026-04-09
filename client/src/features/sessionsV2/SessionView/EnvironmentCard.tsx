@@ -131,7 +131,7 @@ export default function EnvironmentCard({
                   value={environment?.container_image || ""}
                 />
                 <EnvironmentRow>
-                  <Clock size="16" className="flex-shrink-0" />
+                  <Clock fontSize={16} className="flex-shrink-0" />
                   Created by <strong>Renku</strong> on{" "}
                   {toHumanDateTime({
                     datetime: launcher.creation_date,

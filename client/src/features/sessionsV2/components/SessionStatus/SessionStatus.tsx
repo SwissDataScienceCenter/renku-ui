@@ -165,7 +165,7 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
       <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
         <CircleFill
           className={cx("bi", "me-1", "text-danger-emphasis")}
-          size={16}
+          fontSize={16}
         />
         <span className="text-danger-emphasis">Error in Session</span>
       </SessionBadge>
@@ -363,17 +363,17 @@ function SessionStatusV2Text({
 
   return state === "running" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Clock fontSize={16} className="flex-shrink-0" />
       <span>Launched {startTimeText}</span>
     </div>
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Clock fontSize={16} className="flex-shrink-0" />
       <span>Launching since {startTimeText}</span>
     </div>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Hourglass size="16" className="flex-shrink-0" />
+      <Hourglass fontSize={16} className="flex-shrink-0" />
       <span>
         Session will be deleted in{" "}
         <TimeCaption
@@ -386,7 +386,7 @@ function SessionStatusV2Text({
     </div>
   ) : state === "hibernated" && hibernationTimestamp ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Clock fontSize={16} className="flex-shrink-0" />
       <span>
         Paused
         <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />
@@ -394,7 +394,7 @@ function SessionStatusV2Text({
     </div>
   ) : state === "hibernated" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Clock fontSize={16} className="flex-shrink-0" />
       <span>
         Paused
         <MissingHibernationInfo />
@@ -402,7 +402,7 @@ function SessionStatusV2Text({
     </div>
   ) : state === "failed" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock size="16" className="flex-shrink-0" />
+      <Clock fontSize={16} className="flex-shrink-0" />
       <span>
         Error {"("}created {startTimeText}
         {")"}

@@ -81,8 +81,8 @@ export function ButtonWithMenu(props: ButtonWithMenuProps) {
       >
         <ChevronDown
           data-cy="more-options-button"
-          size="20"
           className="btn-with-menu-icon"
+          fontSize={20}
         />
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>

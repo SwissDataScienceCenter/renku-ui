@@ -191,7 +191,8 @@ export type ProviderKind =
   | "generic_oidc"
   | "github"
   | "gitlab"
-  | "google";
+  | "google"
+  | "zenodo";
 export type ApplicationSlug = string;
 export type ClientId = string;
 export type ClientSecret = string;

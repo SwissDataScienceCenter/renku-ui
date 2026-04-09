@@ -752,17 +752,6 @@
           }
         }
       }
-    },
-    "securitySchemes": {
-      "oidc": {
-        "type": "openIdConnect",
-        "openIdConnectUrl": "/auth/realms/Renku/.well-known/openid-configuration"
-      }
     }
-  },
-  "security": [
-    {
-      "oidc": ["openid"]
-    }
-  ]
+  }
 }
