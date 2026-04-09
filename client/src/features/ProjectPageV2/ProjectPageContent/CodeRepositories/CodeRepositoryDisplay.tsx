@@ -988,7 +988,7 @@ export function RepositoryCallToActionAlert({
           )
         )}
         <Link
-          className={cx("btn", "btn-primary", "btn-sm", "ms-2")}
+          className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
           to={{
             pathname: ABSOLUTE_ROUTES.v2.integrations,
             search: searchActionRequired,
