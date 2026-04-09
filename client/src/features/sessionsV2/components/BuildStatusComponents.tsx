@@ -140,8 +140,8 @@ export function BuildStatusDescription({
   return status === "succeeded" && isOldImage ? (
     <div className={cx("d-flex", "gap-2", "time-caption")}>
       <ExclamationTriangleFill
-        size="16"
         className={cx("flex-shrink-0", "text-warning-emphasis")}
+        fontSize={16}
       />
       <span className="text-warning-emphasis">
         Last successfully built {completedTimeText}
@@ -151,21 +151,21 @@ export function BuildStatusDescription({
     <div
       className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
     >
-      <Clock size="16" className="flex-shrink-0" />
+      <Clock fontSize={16} className="flex-shrink-0" />
       <span>Last successfully built {completedTimeText}</span>
     </div>
   ) : status === "in_progress" ? (
     <div
       className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
     >
-      <Clock size="16" className="flex-shrink-0" />
+      <Clock fontSize={16} className="flex-shrink-0" />
       <span>Building since {startTimeText}</span>
     </div>
   ) : status === "failed" ? (
     <div
       className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
     >
-      <XCircle size="16" className="flex-shrink-0" />
+      <XCircle fontSize={16} className="flex-shrink-0" />
       <span>Build failed {startTimeText}</span>
     </div>
   ) : null;
