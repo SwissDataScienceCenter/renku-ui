@@ -257,7 +257,6 @@ export default function DataConnectorBoxListDisplay({
                   )}
                 </div>
               </div>
-
               {lastDeposit && (
                 <div
                   className={cx(

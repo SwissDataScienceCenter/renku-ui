@@ -78,14 +78,14 @@ jobs:
             You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
 
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.CI_RENKU_AZURE_SUBSCRIPTION_ID }}
 
       - name: Set AKS context
-        uses: azure/aks-set-context@v4
+        uses: azure/aks-set-context@v5
         with:
           resource-group: "renku-dev"
           cluster-name: "aks-switzerlandnorth-renku-dev"
@@ -169,13 +169,13 @@ jobs:
           - sessionSecrets
     steps:
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.CI_RENKU_AZURE_SUBSCRIPTION_ID }}
       - name: Set AKS context
-        uses: azure/aks-set-context@v4
+        uses: azure/aks-set-context@v5
         with:
           resource-group: "renku-dev"
           cluster-name: "aks-switzerlandnorth-renku-dev"
@@ -184,7 +184,7 @@ jobs:
           az aks get-credentials --resource-group renku-dev --name aks-switzerlandnorth-renku-dev --file "${{ github.workspace }}/renkubot-kube.config"
           chmod 400 "${{ github.workspace }}/renkubot-kube.config"
       - name: Install kubectl
-        uses: azure/setup-kubectl@v4
+        uses: azure/setup-kubectl@v5
         with:
           version: "latest"
       - name: Check kubectl config and access to cluster
@@ -227,14 +227,14 @@ jobs:
             Tearing down the temporary RenkuLab deplyoment for this PR.
 
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.CI_RENKU_AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.CI_RENKU_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.CI_RENKU_AZURE_SUBSCRIPTION_ID }}
 
       - name: Set AKS context
-        uses: azure/aks-set-context@v4
+        uses: azure/aks-set-context@v5
         with:
           resource-group: "renku-dev"
           cluster-name: "aks-switzerlandnorth-renku-dev"

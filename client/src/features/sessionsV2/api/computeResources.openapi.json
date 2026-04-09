@@ -2622,6 +2622,9 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/RemoteConfigurationFirecrest"
+          },
+          {
+            "$ref": "#/components/schemas/RemoteConfigurationRunai"
           }
         ]
       },
@@ -2671,6 +2674,31 @@
         "description": "The partition to use when submitting jobs",
         "example": "normal"
       },
+      "RemoteConfigurationRunai": {
+        "type": "object",
+        "description": "The configuration for starting sessions remotely using Runai\n",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["runai"],
+            "description": "Kind of remote resource pool",
+            "example": "runai"
+          },
+          "base_url": {
+            "$ref": "#/components/schemas/RemoteConfigurationRunaiApiUrl"
+          },
+          "provider_id": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestProviderId"
+          }
+        },
+        "required": ["kind", "base_url"]
+      },
+      "RemoteConfigurationRunaiApiUrl": {
+        "type": "string",
+        "description": "The base URL of the Runai server",
+        "example": "https://sdsc.run.ai"
+      },
       "RemoteConfigurationPatch": {
         "type": "object",
         "description": "Patch for the configuration used by to start sessions remotely\n",
@@ -2680,6 +2708,9 @@
           },
           {
             "$ref": "#/components/schemas/RemoteConfigurationFirecrestPatch"
+          },
+          {
+            "$ref": "#/components/schemas/RemoteConfigurationRunaiPatch"
           }
         ]
       },
@@ -2710,6 +2741,25 @@
           },
           "partition": {
             "$ref": "#/components/schemas/RemoteConfigurationFirecrestPartition"
+          }
+        }
+      },
+      "RemoteConfigurationRunaiPatch": {
+        "type": "object",
+        "description": "The configuration for starting sessions remotely using Runai\n",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["runai"],
+            "description": "Kind of remote resource pool",
+            "example": "runai"
+          },
+          "base_url": {
+            "$ref": "#/components/schemas/RemoteConfigurationRunaiApiUrl"
+          },
+          "provider_id": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestProviderId"
           }
         }
       },

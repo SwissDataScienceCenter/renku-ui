@@ -36,6 +36,7 @@ export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
       ((error instanceof TypeError &&
         (error.message.toLowerCase().includes("module") ||
           error.message.toLowerCase().includes("text/html"))) ||
+        error.message.toLowerCase().includes("preload CSS") ||
         error?.name === "ChunkLoadError")
     ) {
       const url = new URL(window.location.href);
