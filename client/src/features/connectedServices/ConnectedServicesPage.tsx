@@ -442,21 +442,51 @@ function AddIntegrationModal({
   providers,
 }: AddIntegrationModalProps) {
   const [showAllIntegrations, setShowAllIntegrations] = useState(false);
+  const [connectedDuringSession, setConnectedDuringSession] = useState<
+    Record<string, Provider>
+  >({});
   const isExpanded = isOpen && showAllIntegrations;
 
+  const modalSessionProviders = useMemo(() => {
+    const providerById = new Map<
+      string,
+      { provider: Provider; connection?: Connection }
+    >();
+    providers.forEach((entry) => {
+      providerById.set(entry.provider.id, entry);
+    });
+    Object.values(connectedDuringSession).forEach((provider) => {
+      if (!providerById.has(provider.id)) {
+        providerById.set(provider.id, { provider });
+      }
+    });
+    return Array.from(providerById.values());
+  }, [connectedDuringSession, providers]);
+
   const visibleProviders = useMemo(() => {
-    if (isExpanded) return providers;
-    return providers.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
-  }, [isExpanded, providers]);
+    if (isExpanded) return modalSessionProviders;
+    return modalSessionProviders.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
+  }, [isExpanded, modalSessionProviders]);
+
+  const handleClosed = useCallback(() => {
+    setShowAllIntegrations(false);
+    setConnectedDuringSession({});
+  }, []);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={onToggle}>
+    <Modal
+      centered
+      isOpen={isOpen}
+      onClosed={handleClosed}
+      size="lg"
+      toggle={onToggle}
+    >
       <ModalHeader tag="h2" toggle={onToggle}>
         <Plugin className={cx("bi", "me-1")} />
         Activate integration
       </ModalHeader>
       <ModalBody>
-        {providers.length === 0 ? (
+        {modalSessionProviders.length === 0 ? (
           <p>
             There are currently no more external services users can connect to.
           </p>
@@ -497,14 +527,26 @@ function AddIntegrationModal({
                         </ExternalLink>
                       </div>
                     </div>
-                    <ConnectButton
-                      provider={provider}
-                      connectionStatus={connection?.status}
-                    />
+                    {connectedDuringSession[provider.id] ? (
+                      <Button color="primary" disabled={true} type="button">
+                        Connected
+                      </Button>
+                    ) : (
+                      <ConnectButton
+                        provider={provider}
+                        connectionStatus={connection?.status}
+                        onConnected={() =>
+                          setConnectedDuringSession((current) => ({
+                            ...current,
+                            [provider.id]: provider,
+                          }))
+                        }
+                      />
+                    )}
                   </div>
                 </ListGroupItem>
               ))}
-              {providers.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
+              {modalSessionProviders.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
                 <ListGroupItem
                   onClick={() => setShowAllIntegrations(!showAllIntegrations)}
                   className="fw-bold"
