@@ -18,7 +18,14 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   Box2,
   BoxArrowUpRight,
@@ -39,7 +46,6 @@ import {
   CardBody,
   CardHeader,
   CardText,
-  CardTitle,
   Col,
   ListGroup,
   ListGroupItem,
@@ -50,7 +56,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types";
+import type { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types";
 import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook";
 import { NEW_DOCS_USER_INTEGRATIONS } from "~/utils/constants/NewDocs";
 import AppContext from "~/utils/context/appContext";
@@ -83,6 +89,10 @@ import {
 } from "./connectedServices.constants";
 import { getSettingsUrl } from "./connectedServices.utils";
 import ContactUsCard from "./ContactUsCard";
+import {
+  useConnectedServiceProviderLists,
+  type ProviderWithConnection,
+} from "./useConnectedServiceProviderLists.hook";
 import type { GithubOAuthCompleteFollowUpData } from "./useGithubOAuthCompleteFollowUpData.hook";
 
 import DashboardStyles from "~/features/dashboardV2/DashboardV2.module.scss";
@@ -117,37 +127,12 @@ export default function ConnectedServicesPage() {
   const [isAddIntegrationModalOpen, setIsAddIntegrationModalOpen] =
     useState(false);
 
-  const targetProvider = useMemo(() => {
-    return providers?.find((provider) => provider.id === targetProviderId);
-  }, [providers, targetProviderId]);
-  const sortedProviders = useMemo(() => {
-    if (!providers) return [];
-    if (!targetProvider) return providers;
-    return [targetProvider, ...providers.filter((p) => p !== targetProvider)];
-  }, [providers, targetProvider]);
-  const providersWithConnection = useMemo(
-    () =>
-      sortedProviders.map((provider) => ({
-        provider,
-        connection: connections?.find(
-          ({ provider_id }) => provider_id === provider.id
-        ),
-      })),
-    [connections, sortedProviders]
-  );
-  const mainListProviders = useMemo(
-    () =>
-      providersWithConnection.filter(
-        ({ connection }) =>
-          connection?.status === "connected" || connection?.status === "pending"
-      ),
-    [providersWithConnection]
-  );
-  const modalProviders = useMemo(
-    () =>
-      providersWithConnection.filter(({ connection }) => connection == null),
-    [providersWithConnection]
-  );
+  const { mainListProviders, modalProviders } =
+    useConnectedServiceProviderLists({
+      providers,
+      connections,
+      targetProviderId,
+    });
 
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
@@ -332,6 +317,40 @@ interface ConnectedServiceListItemProps {
   source?: string;
 }
 
+interface ProviderRowHeaderProps {
+  provider: Provider;
+  statusSlot?: ReactNode;
+}
+function ProviderRowHeader({ provider, statusSlot }: ProviderRowHeaderProps) {
+  return (
+    <>
+      <h4 className={cx("mb-2", "fw-bold")}>
+        <Box2 className={cx("bi", "me-1")} />
+        {provider.display_name}
+      </h4>
+      <div
+        className={cx(
+          "d-flex",
+          "flex-wrap",
+          "align-items-center",
+          "gap-2",
+          "mb-2"
+        )}
+      >
+        <ExternalLink
+          url={provider.url}
+          role="text"
+          iconAfter={false}
+          showLinkIcon={true}
+        >
+          {provider.url}
+        </ExternalLink>
+        {statusSlot}
+      </div>
+    </>
+  );
+}
+
 function ConnectedServiceListItem({
   actionRequired = false,
   connection,
@@ -339,8 +358,6 @@ function ConnectedServiceListItem({
   provider,
   source,
 }: ConnectedServiceListItemProps) {
-  const { display_name, url } = provider;
-
   const goBackButton = source && (
     <Link to={source} className={cx("primary")}>
       go back to your project
@@ -381,31 +398,10 @@ function ConnectedServiceListItem({
       )}
       <div className={cx("d-flex", "align-items-start", "gap-3")}>
         <div className={cx("flex-grow-1")}>
-          <CardTitle>
-            <h4 className={cx("mb-2", "fw-bold")}>
-              <Box2 className={cx("bi", "me-1")} />
-              {display_name}
-            </h4>
-          </CardTitle>
-          <CardText
-            className={cx(
-              "d-flex",
-              "flex-wrap",
-              "align-items-center",
-              "gap-2",
-              "mb-2"
-            )}
-          >
-            <ExternalLink
-              url={url}
-              role="text"
-              iconAfter={false}
-              showLinkIcon={true}
-            >
-              {url}
-            </ExternalLink>
-            <ConnectedServiceStatus connection={connection} />
-          </CardText>
+          <ProviderRowHeader
+            provider={provider}
+            statusSlot={<ConnectedServiceStatus connection={connection} />}
+          />
           {connection?.status === "connected" && (
             <ConnectedAccount connection={connection} />
           )}
@@ -434,7 +430,7 @@ function ConnectedServiceListItem({
 interface AddIntegrationModalProps {
   isOpen: boolean;
   onToggle: () => void;
-  providers: Array<{ provider: Provider; connection?: Connection }>;
+  providers: ProviderWithConnection[];
 }
 function AddIntegrationModal({
   isOpen,
@@ -447,11 +443,8 @@ function AddIntegrationModal({
   >({});
   const isExpanded = isOpen && showAllIntegrations;
 
-  const modalSessionProviders = useMemo(() => {
-    const providerById = new Map<
-      string,
-      { provider: Provider; connection?: Connection }
-    >();
+  const modalSessionProviders = useMemo<ProviderWithConnection[]>(() => {
+    const providerById = new Map<string, ProviderWithConnection>();
     providers.forEach((entry) => {
       providerById.set(entry.provider.id, entry);
     });
@@ -505,27 +498,7 @@ function AddIntegrationModal({
                 <ListGroupItem key={provider.id} action={true}>
                   <div className={cx("d-flex", "align-items-center", "gap-3")}>
                     <div className={cx("flex-grow-1")}>
-                      <h4 className={cx("mb-2", "fw-bold")}>
-                        <Box2 className={cx("bi", "me-1")} />
-                        {provider.display_name}
-                      </h4>
-                      <div
-                        className={cx(
-                          "d-flex",
-                          "flex-wrap",
-                          "align-items-center",
-                          "gap-2"
-                        )}
-                      >
-                        <ExternalLink
-                          url={provider.url}
-                          role="text"
-                          iconAfter={false}
-                          showLinkIcon={true}
-                        >
-                          {provider.url}
-                        </ExternalLink>
-                      </div>
+                      <ProviderRowHeader provider={provider} />
                     </div>
                     {connectedDuringSession[provider.id] ? (
                       <Button color="primary" disabled={true} type="button">
