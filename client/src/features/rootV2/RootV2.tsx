@@ -41,6 +41,7 @@ import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
 import ProjectV2New from "../projectsV2/new/ProjectV2New";
+import { SearchEntity } from "../searchV2/api/searchV2Api.api";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySecretsV2 from "../secretsV2/LazySecretsV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
@@ -169,13 +170,17 @@ export default function RootV2() {
   );
 }
 
-function RedirectToSearch({ entityType }: { entityType: string }) {
+function RedirectToSearch({
+  entityType,
+}: {
+  entityType: SearchEntity["type"];
+}) {
   const navigate = useNavigate();
   useEffect(() => {
     navigate(
       {
         pathname: ABSOLUTE_ROUTES.v2.search,
-        search: `q=type:${entityType}`,
+        search: `type=${entityType}`,
       },
       { replace: true }
     );
@@ -187,7 +192,7 @@ function RedirectToSearch({ entityType }: { entityType: string }) {
 function ProjectsV2Routes() {
   return (
     <Routes>
-      <Route index element={<RedirectToSearch entityType="project" />} />
+      <Route index element={<RedirectToSearch entityType="Project" />} />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route
           path={RELATIVE_ROUTES.v2.projects.show.sessions.root}

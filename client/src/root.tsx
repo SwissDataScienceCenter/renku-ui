@@ -88,18 +88,19 @@ const clientCache = clientOnly$(new Map<"config", typeof CONFIG_JSON>());
 export async function clientLoader({
   serverLoader,
 }: Route.ClientLoaderArgs): Promise<ClientLoaderReturn> {
+  const cached = clientCache?.get("config");
+  if (cached != null) {
+    return { config: cached, clientSideFetch: false };
+  }
   const { config, clientSideFetch } = await serverLoader();
   //? Load the config.json contents from localhost in development
   if (clientSideFetch) {
-    const cached = clientCache?.get("config");
-    if (cached != null) {
-      return { config: cached, clientSideFetch };
-    }
     const configResponse = await fetch("/config.json");
     const configData = await configResponse.json();
     clientCache?.set("config", configData);
     return { config: configData as typeof CONFIG_JSON, clientSideFetch };
   }
+  clientCache?.set("config", config);
   return { config, clientSideFetch };
 }
 clientLoader.hydrate = true as const;

@@ -120,18 +120,6 @@ export type VisibilityFilter = SearchFilterBase<
 
 export type SearchEntityVisibility = Lowercase<Visibility>;
 
-export interface SortBy {
-  key: "sort";
-  value: SortByValue;
-}
-
-export type SortByValue =
-  | "score-desc"
-  | "created-desc"
-  | "created-asc"
-  | "name-asc"
-  | "name-desc";
-
 // Types related to parsing a search query
 export interface ParseSearchQueryResult {
   canonicalQuery: string;

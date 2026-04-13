@@ -371,7 +371,10 @@ describe("Work with group data connectors", () => {
       .first()
       .should("contain.text", "public-storage")
       .click();
-    cy.getDataCy("data-connector-edit").should("be.visible").click();
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-edit"]')
+      .should("be.visible")
+      .click();
     // Fill out the details
     cy.getDataCy("data-connector-edit-update-button").click();
     cy.wait("@patchDataConnector");
@@ -394,8 +397,14 @@ describe("Work with group data connectors", () => {
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
     cy.contains("public-storage").should("be.visible").click();
-    cy.getDataCy("data-connector-menu-dropdown").should("be.visible").click();
-    cy.getDataCy("data-connector-delete").should("be.visible").click();
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-menu-dropdown"]')
+      .should("be.visible")
+      .click();
+    cy.getDataCy("data-connector-view")
+      .find('[data-cy="data-connector-delete"]')
+      .should("be.visible")
+      .click();
     cy.contains("Are you sure you want to delete this data connector").should(
       "be.visible"
     );

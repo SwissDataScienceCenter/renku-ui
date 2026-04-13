@@ -23,7 +23,7 @@ import { Input, Label } from "reactstrap";
 import { InfoAlert } from "~/components/Alert";
 import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
 
-export interface ConnectedServiceFormContentProps {
+interface ConnectedServiceFormContentProps {
   control: Control<ProviderForm, unknown>;
 }
 export default function ConnectedServiceFormContent({
@@ -57,6 +57,7 @@ export default function ConnectedServiceFormContent({
                 <option value="github">GitHub</option>
                 <option value="gitlab">GitLab</option>
                 <option value="google">Google</option>
+                <option value="zenodo">Zenodo</option>
               </Input>
             </>
           )}

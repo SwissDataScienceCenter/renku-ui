@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { CoreErrorContent } from "../../utils/types/coreService.types";
-
 export interface BaseVersionResponse {
   name: string;
   versions: BaseVersion[];
@@ -35,6 +33,15 @@ interface CoreComponent extends BaseVersion {
 
 export interface CoreVersionDetails extends BaseVersionResponse {
   versions: CoreComponent[];
+}
+
+interface CoreErrorContent {
+  code: number;
+  devMessage: string;
+  devReference?: string;
+  sentry?: string;
+  userMessage: string;
+  userReference?: string;
 }
 
 export interface CoreVersionResponse {

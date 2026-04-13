@@ -280,7 +280,7 @@ function parseTerm(term: string): InterpretedTerm {
   };
 }
 
-export function valuesAsSet<T>(values: T[]): Set<T> {
+function valuesAsSet<T>(values: T[]): Set<T> {
   return values.reduce((set, value) => set.add(value), new Set<T>());
 }
 

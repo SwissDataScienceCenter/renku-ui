@@ -56,7 +56,7 @@ export interface StepsProgressBar {
   step: string;
 }
 
-export interface ProgressStepsIndicatorProps {
+interface ProgressStepsIndicatorProps {
   /**
    * Type of progress-bar. Indeterminate or Determinate
    * @default Indeterminate

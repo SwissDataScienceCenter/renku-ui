@@ -158,7 +158,7 @@ interface UserSelectorProps {
   onSetQuery: (q: string) => void;
   query: string;
 }
-export function UserSelector({
+function UserSelector({
   currentUser,
   isFetchingMore,
   users,

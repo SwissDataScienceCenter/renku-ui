@@ -30,13 +30,13 @@ import Select, {
 
 import styles from "~/features/sessionsV2/components/SessionForm/Select.module.scss";
 
-export interface ProjectMemberRoleOption {
+interface ProjectMemberRoleOption {
   label: string;
   value: string;
   description?: ReactNode;
 }
 
-export const GROUP_MEMBER_ROLE_OPTIONS = [
+const GROUP_MEMBER_ROLE_OPTIONS = [
   {
     value: "viewer",
     label: "Viewer",
