@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@v9
         with:
           script: |
             const script = require('./.github/workflows/cleanup-old-deployments.js')
