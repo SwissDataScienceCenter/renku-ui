@@ -460,10 +460,10 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
 
     postGlobalDataConnector(args?: PostGlobalDataConnectorArgs) {
       const {
+        doi = "10.1234/zenodo.123456",
         fixture = "dataConnector/data-connector-global.json",
         name = "postGlobalDataConnector",
       } = args ?? {};
-      const doi = args?.doi ?? "10.1234/zenodo.123456";
       cy.fixture(fixture).then((dataConnector) => {
         cy.intercept("POST", "/api/data/data_connectors/global", (req) => {
           if (req.body.storage.configuration.type != "doi") {
