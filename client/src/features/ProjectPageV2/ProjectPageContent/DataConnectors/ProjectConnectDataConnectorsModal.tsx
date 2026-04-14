@@ -678,7 +678,12 @@ function ProjectSearchDataConnectorBodyAndFooter({
             })}
         </ListGroup>
 
-        <p className={cx("mb-0", "mt-2")}>
+        <p
+          className={cx(
+            "mb-0",
+            (anythingMatched || alreadyImportedDataConnector) && "mt-2"
+          )}
+        >
           {anythingMatched || alreadyImportedDataConnector ? (
             <>
               <span>Explore more results in the</span>
