@@ -26,12 +26,15 @@ import {
   Globe,
   Journals,
   Link45deg,
+  NodePlus,
   People,
+  PlusLg,
   XCircleFill,
 } from "react-bootstrap-icons";
 import { createSearchParams, Link } from "react-router";
 import {
   Button,
+  ButtonGroup,
   Col,
   Form,
   Input,
@@ -177,6 +180,62 @@ function ProjectCreateDataConnectorBodyAndFooter({
         toggle,
       }}
     />
+  );
+}
+
+export function ProjectConnectDataConnectorModeSwitch({
+  mode,
+  switchMode,
+}: {
+  mode: ProjectConnectDataConnectorMode;
+  switchMode: () => void;
+}) {
+  return (
+    <ButtonGroup>
+      <Input
+        type="radio"
+        className="btn-check"
+        id="project-data-controller-mode-search"
+        value="search"
+        checked={mode === "search"}
+        onChange={switchMode}
+      />
+      <Label
+        data-cy="project-data-controller-mode-search"
+        for="project-data-controller-mode-search"
+        className={cx(
+          "align-items-center",
+          "btn-outline-primary",
+          "btn",
+          "d-flex"
+        )}
+      >
+        <NodePlus className={cx("fs-3", "me-1")} />
+        Link a data connector
+      </Label>
+
+      <Input
+        type="radio"
+        className="btn-check"
+        id="project-data-controller-mode-create"
+        value="create"
+        checked={mode === "create"}
+        onChange={switchMode}
+      />
+      <Label
+        data-cy="project-data-controller-mode-create"
+        for="project-data-controller-mode-create"
+        className={cx(
+          "align-items-center",
+          "btn-outline-primary",
+          "btn",
+          "d-flex"
+        )}
+      >
+        <PlusLg className={cx("fs-3", "me-1")} />
+        Create a data connector
+      </Label>
+    </ButtonGroup>
   );
 }
 
@@ -452,25 +511,14 @@ function ProjectSearchDataConnectorBodyAndFooter({
   return (
     <Form noValidate>
       <ModalBody data-cy="data-connector-search-body" toggle={toggle}>
-        <p>
-          Link an existing data connector
-          {switchMode && (
-            <span>
-              {" "}
-              or{" "}
-              <Button
-                className="align-baseline"
-                color="primary"
-                data-cy="create-data-connector-button"
-                size="sm"
-                type="button"
-                onClick={switchMode}
-              >
-                create a new data connector
-              </Button>
-            </span>
-          )}
-        </p>
+        {switchMode && (
+          <div className="mb-3">
+            <ProjectConnectDataConnectorModeSwitch
+              mode="search"
+              switchMode={switchMode}
+            />
+          </div>
+        )}
 
         <div className="mb-4">
           <Label className="" for="data-connector-identifier">

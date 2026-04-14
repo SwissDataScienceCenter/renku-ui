@@ -36,6 +36,7 @@ import {
   getSchema,
   getSchemaOptions,
 } from "~/features/cloudStorage/projectCloudStorage.utils";
+import { ProjectConnectDataConnectorModeSwitch } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
@@ -143,26 +144,15 @@ function AddOrEditDataConnector({
   if (CloudStorageContentByStep)
     return (
       <>
-        {!flatDataConnector.dataConnectorId && cloudStorageState.step <= 1 && (
-          <p>
-            Create a new data connector
-            {switchMode && (
-              <span>
-                {" "}
-                or{" "}
-                <Button
-                  className="align-baseline"
-                  color="primary"
-                  size="sm"
-                  type="button"
-                  onClick={switchMode}
-                >
-                  link an existing data connector
-                </Button>
-              </span>
-            )}
-          </p>
+        {switchMode && (
+          <div className="mb-3">
+            <ProjectConnectDataConnectorModeSwitch
+              mode="create"
+              switchMode={switchMode}
+            />
+          </div>
         )}
+
         <div className={cx("d-flex", "justify-content-end")}>
           <AddStorageAdvancedToggle
             state={cloudStorageState}
