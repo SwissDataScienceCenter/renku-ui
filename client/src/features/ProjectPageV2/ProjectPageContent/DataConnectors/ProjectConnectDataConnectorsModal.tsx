@@ -44,6 +44,7 @@ import {
 } from "reactstrap";
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
   useGetProjectsByProjectIdDataConnectorLinksQuery,
@@ -60,6 +61,7 @@ import {
 } from "~/features/searchV2/api/searchV2Api.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import { NEW_DOCS_DATA_CONNECTORS } from "~/utils/constants/NewDocs";
 import ModalHeader from "../../../../components/modal/ModalHeader";
 import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
@@ -459,6 +461,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
               <Button
                 className="align-baseline"
                 color="primary"
+                data-cy="create-data-connector-button"
                 size="sm"
                 type="button"
                 onClick={switchMode}
@@ -471,14 +474,15 @@ function ProjectSearchDataConnectorBodyAndFooter({
 
         <div className="mb-4">
           <Label className="" for="data-connector-identifier">
-            Find a data connector
+            Search
           </Label>
           <InputGroup>
             <Input
               className="lg"
+              data-cy="data-connector-search-input"
               id="search"
               innerRef={searchInputRef}
-              placeholder="Paste an identifier, a DOI, or search..."
+              placeholder="Search by name, DOI or identifier..."
               type="text"
               value={userSearchInput}
               onChange={(e) => setUserSearchInput(e.target.value)}
@@ -501,37 +505,15 @@ function ProjectSearchDataConnectorBodyAndFooter({
             </Button>
           </InputGroup>
           <p className="form-text">
-            You can paste an identifier (e.g.{" "}
-            <code>sdsc/deeplnafrica-data</code>
-            ), a DOI (e.g. <code>10.5281/zenodo.3831980</code>), or type any
-            text to search through our catalogue.
+            Search data connectors, import a DOI (e.g.{" "}
+            <code>10.5281/zenodo.3831980</code>), or paste an identifier (e.g.{" "}
+            <code>sdsc/deeplnafrica-data</code>). Learn more about{" "}
+            <ExternalLink href={NEW_DOCS_DATA_CONNECTORS}>
+              data connectors
+            </ExternalLink>
+            .
           </p>
         </div>
-
-        <p className="mb-1">
-          {anythingMatched || alreadyImportedDataConnector ? (
-            <>
-              <span className="fw-semibold">Pick from the list</span> or
-            </>
-          ) : (
-            <>
-              <span className="fw-semibold">Nothing relevant found.</span>{" "}
-              Adjust the input or
-            </>
-          )}{" "}
-          <Link
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.search,
-              search: createSearchParams({
-                type: "DataConnector",
-                q: querySearchInput,
-              }).toString(),
-            }}
-          >
-            go to the search page
-          </Link>{" "}
-          to find more.
-        </p>
 
         {isErrorPosting && (
           <RtkOrDataServicesError
@@ -647,6 +629,30 @@ function ProjectSearchDataConnectorBodyAndFooter({
               );
             })}
         </ListGroup>
+
+        <p className={cx("mb-0", "mt-2")}>
+          {anythingMatched || alreadyImportedDataConnector ? (
+            <>
+              <span>Explore more results in the</span>
+            </>
+          ) : (
+            <>
+              <span className="fw-semibold">Nothing found.</span> Try
+            </>
+          )}{" "}
+          <Link
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.search,
+              search: createSearchParams({
+                type: "DataConnector",
+                q: querySearchInput,
+              }).toString(),
+            }}
+          >
+            Search page
+          </Link>
+          .
+        </p>
       </ModalBody>
     </Form>
   );
