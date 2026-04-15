@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { XLg } from "react-bootstrap-icons";
+import { Plugin, XLg } from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
 import { Button } from "reactstrap";
 
@@ -85,16 +85,20 @@ export default function OAuthCompletePage() {
         data-cy="oauth2-complete-page"
         style={{ maxWidth: "48rem" }}
       >
+        <h1 className={cx("m-0", "h2")}>
+          <Plugin className={cx("bi", "me-1")} />
+          Authentication Status
+        </h1>
         {hasError ? (
           <>
-            <ErrorAlert dismissible={false}>
-              <h1 className={cx("h3")}>We could not complete the connection</h1>
+            <ErrorAlert dismissible={false} className={cx("mb-0")}>
+              <h3>We could not complete the connection</h3>
               <p>
                 Something went wrong while connecting your external service.
               </p>
               <code>{oauthErrorMessage ?? "Unexpected OAuth error."}</code>
             </ErrorAlert>
-            <div className={cx("mt-3")}>
+            <div className={cx("mt-0")}>
               <Link
                 className={cx("btn", "btn-primary", "btn-sm")}
                 to={{
@@ -115,28 +119,32 @@ export default function OAuthCompletePage() {
           </>
         ) : (
           <>
-            <SuccessAlert dismissible={false} timeout={0}>
+            <SuccessAlert
+              dismissible={false}
+              timeout={0}
+              className={cx("mb-0")}
+            >
               <h1 className={cx("h3")}>Connection complete</h1>
               <p className={cx("mb-0")}>
                 You are now connected. You can close this tab and return to
                 Renku.
               </p>
-              <div className={cx("d-flex", "gap-2", "align-items-end")}>
-                {allowSuccessAutoClose && (
-                  <SuccessAutoCloseMessage onAutoClose={onCloseTab} />
-                )}
-                <div>
-                  <Button
-                    color="primary"
-                    className={cx("btn-primary", "btn-sm")}
-                    onClick={onCloseTab}
-                  >
-                    <XLg className={cx("bi", "me-1")} />
-                    Close Tab
-                  </Button>
-                </div>
-              </div>
             </SuccessAlert>
+            <div className={cx("d-flex", "gap-2", "align-items-end")}>
+              {allowSuccessAutoClose && (
+                <SuccessAutoCloseMessage onAutoClose={onCloseTab} />
+              )}
+              <div>
+                <Button
+                  color="primary"
+                  className={cx("btn-primary", "btn-sm")}
+                  onClick={onCloseTab}
+                >
+                  <XLg className={cx("bi", "me-1")} />
+                  Close Tab
+                </Button>
+              </div>
+            </div>
             <GitHubOAuthCompleteFollowUp
               skipData={githubFollowUpData.skipData}
               connection={githubFollowUpData.connection}

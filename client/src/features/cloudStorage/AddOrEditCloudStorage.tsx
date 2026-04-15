@@ -35,7 +35,7 @@ import {
   QuestionCircle,
 } from "react-bootstrap-icons";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import {
   Badge,
   Button,
@@ -57,7 +57,11 @@ import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "../connectedServices/api/connectedServices.api";
-import { SEARCH_PARAM_PROVIDER } from "../connectedServices/connectedServices.constants";
+import {
+  SEARCH_PARAM_ACTION_REQUIRED,
+  SEARCH_PARAM_PROVIDER,
+  SEARCH_PARAM_SOURCE,
+} from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
 import { ConnectButton } from "./../connectedServices/ConnectedServicesPage";
@@ -1043,6 +1047,7 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
   } = useGetOauth2ConnectionsQuery();
   const error = providersError ?? connectionsError;
   const isLoading = isLoadingProviders || isLoadingConnections;
+  const { pathname, hash } = useLocation();
 
   const providerKind = useMemo(
     () => CLOUD_STORAGE_INTEGRATION_KIND_MAP[schema.name],
@@ -1134,6 +1139,19 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
           provider={provider}
           withIcon
         />
+        <Link
+          className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
+          to={{
+            pathname: ABSOLUTE_ROUTES.v2.integrations.root,
+            search: new URLSearchParams({
+              [SEARCH_PARAM_PROVIDER]: provider.id,
+              [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
+              [SEARCH_PARAM_ACTION_REQUIRED]: "true",
+            }).toString(),
+          }}
+        >
+          Check integration
+        </Link>
       </WarnAlert>
     );
   }

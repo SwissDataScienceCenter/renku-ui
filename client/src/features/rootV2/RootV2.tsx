@@ -150,7 +150,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path={RELATIVE_ROUTES.v2.integrations.complete}
+            path={`${RELATIVE_ROUTES.v2.integrations.root}/${RELATIVE_ROUTES.v2.integrations.complete}`}
             element={<LazyOAuthCompletePage />}
           />
           <Route
