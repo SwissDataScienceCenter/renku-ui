@@ -27,8 +27,6 @@ import {
   useNavigate,
 } from "react-router";
 
-import LazyUserContainer from "~/features/usersV2/LazyUserContainer";
-import LazyUserV2Search from "~/features/usersV2/LazyUserV2Search";
 import ContainerWrap from "../../components/container/ContainerWrap";
 import LazyNotFound from "../../not-found/LazyNotFound";
 import {
@@ -40,10 +38,6 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
 import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
-import LazyGroupContainer from "../groupsV2/LazyGroupContainer";
-import LazyGroupV2Overview from "../groupsV2/LazyGroupV2Overview";
-import LazyGroupV2Search from "../groupsV2/LazyGroupV2Search";
-import LazyGroupV2Settings from "../groupsV2/LazyGroupV2Settings";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
 import ProjectV2New from "../projectsV2/new/ProjectV2New";
@@ -53,7 +47,6 @@ import LazySecretsV2 from "../secretsV2/LazySecretsV2";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
-import LazyUserShow from "../usersV2/LazyUserShow";
 
 function BetaV2Redirect() {
   const navigate = useNavigate();
@@ -136,14 +129,6 @@ export default function RootV2() {
             element={<LazyUserRedirect />}
           />
           <Route
-            path={RELATIVE_ROUTES.v2.users.root}
-            element={<UserV2Routes />}
-          />
-          <Route
-            path={RELATIVE_ROUTES.v2.groups.root}
-            element={<GroupsV2Routes />}
-          />
-          <Route
             path={RELATIVE_ROUTES.v2.projects.root}
             element={<ProjectsV2Routes />}
           />
@@ -182,35 +167,6 @@ export default function RootV2() {
         </Routes>
       </div>
     </div>
-  );
-}
-
-function GroupsV2Routes() {
-  return (
-    <Routes>
-      <Route index element={<RedirectToSearch entityType="Group" />} />
-      <Route path={RELATIVE_ROUTES.v2.groups.show.root}>
-        <Route element={<LazyGroupContainer />}>
-          <Route index element={<LazyGroupV2Overview />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.groups.show.search}
-            element={<LazyGroupV2Search />}
-          />
-          <Route
-            path={RELATIVE_ROUTES.v2.groups.show.settings}
-            element={<LazyGroupV2Settings />}
-          />
-        </Route>
-      </Route>
-      <Route
-        path="*"
-        element={
-          <ContainerWrap fullSize>
-            <LazyNotFound />
-          </ContainerWrap>
-        }
-      />
-    </Routes>
   );
 }
 
@@ -278,31 +234,6 @@ function ProjectSessionsRoutes() {
           </ContainerWrap>
         }
       />
-      <Route
-        path="*"
-        element={
-          <ContainerWrap fullSize>
-            <LazyNotFound />
-          </ContainerWrap>
-        }
-      />
-    </Routes>
-  );
-}
-
-function UserV2Routes() {
-  return (
-    <Routes>
-      <Route index element={<RedirectToSearch entityType="User" />} />
-      <Route path={RELATIVE_ROUTES.v2.users.show.root}>
-        <Route element={<LazyUserContainer />}>
-          <Route index element={<LazyUserShow />} />
-          <Route
-            path={RELATIVE_ROUTES.v2.users.show.search}
-            element={<LazyUserV2Search />}
-          />
-        </Route>
-      </Route>
       <Route
         path="*"
         element={
