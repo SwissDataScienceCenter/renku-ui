@@ -19,9 +19,10 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { generatePath } from "react-router";
-import { Badge, Col, Row } from "reactstrap";
+import { Col, Row } from "reactstrap";
 
 import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import {
@@ -31,7 +32,7 @@ import {
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
-import UserAvatar, { AvatarTypeWrap } from "./UserAvatar";
+import UserAvatar from "./UserAvatar";
 
 interface UserPageLayoutProps {
   user: UserWithId;
@@ -55,19 +56,28 @@ export default function UserPageLayout({
     }),
   };
   return (
-    <ContainerWrap className="py-0">
+    <ContainerWrap>
       <ProjectV2New />
       <GroupNew />
 
-      <EntityWatermark type="user" />
-      <Row className="py-3">
+      <Row className="my-3">
         <Col xs={12}>
-          <UserHeader user={user} username={user.username} name={name ?? ""} />
+          <Row>
+            <Col className="mb-3">
+              <UserHeader name={name ?? ""} username={user.username} />
+            </Col>
+            <Col className={cx("d-md-block", "d-none")} md="auto">
+              <div className="position-relative">
+                <EntityWatermark
+                  className={cx("end-0", "position-absolute", "top-0")}
+                  type="user"
+                />
+              </div>
+            </Col>
+          </Row>
         </Col>
-        <Col xs={12} className="mb-0">
-          <div className="my-3">
-            <PageNav options={options} />
-          </div>
+        <Col xs={12} className="mb-3">
+          <PageNav options={options} />
         </Col>
         <Col xs={12}>
           <main>{children}</main>
@@ -77,54 +87,26 @@ export default function UserPageLayout({
   );
 }
 
-function UserHeader({
-  username,
-  name,
-}: {
-  user: UserWithId;
-  username: string;
+interface UserHeaderProps {
   name: string;
-}) {
+  username: string;
+}
+function UserHeader({ name, username }: UserHeaderProps) {
+  const { data: currentUser } = useGetUserQueryState();
+
   return (
-    <div className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
-      <div className={cx("d-flex", "gap-2")}>
-        <AvatarTypeWrap type={"User"}>
-          <UserAvatar namespace={username} size="lg" />
-        </AvatarTypeWrap>
-        <div className={cx("d-flex", "gap-2")}>
-          <h1 className="mb-0" data-cy="user-name">
-            {name}
-          </h1>
-          <div>
-            <ItsYouBadge username={username} />
-          </div>
-        </div>
+    <div className={cx("d-flex", "flex-nowrap", "flex-row", "gap-2")}>
+      <UserAvatar namespace={username} size="md" />
+      <div className={cx("align-items-center", "d-flex", "gap-2")}>
+        <h1 className="mb-0" data-cy="user-name">
+          {name}
+        </h1>
+        {currentUser?.isLoggedIn && currentUser.username === username && (
+          <RenkuBadge pill color="info">
+            It&apos;s you!
+          </RenkuBadge>
+        )}
       </div>
     </div>
   );
-}
-
-interface ItsYouBadgeProps {
-  username: string;
-}
-function ItsYouBadge({ username }: ItsYouBadgeProps) {
-  const { data: currentUser } = useGetUserQueryState();
-
-  if (currentUser?.isLoggedIn && currentUser.username === username) {
-    return (
-      <Badge
-        className={cx(
-          "border",
-          "border-warning",
-          "bg-warning-subtle",
-          "text-warning-emphasis"
-        )}
-        pill
-      >
-        It&apos;s you!
-      </Badge>
-    );
-  }
-
-  return null;
 }
