@@ -708,7 +708,7 @@ function RepositoryView({
                           (
                           <Link
                             to={{
-                              pathname: ABSOLUTE_ROUTES.v2.integrations,
+                              pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                               search,
                             }}
                           >
@@ -827,7 +827,7 @@ export function RepositoryCallToActionAlert({
                 <Link
                   className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
                   to={{
-                    pathname: ABSOLUTE_ROUTES.v2.integrations,
+                    pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                     search: searchActionRequired,
                   }}
                 >
@@ -848,7 +848,7 @@ export function RepositoryCallToActionAlert({
                   currently supported{" "}
                   <Link
                     to={{
-                      pathname: ABSOLUTE_ROUTES.v2.integrations,
+                      pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                     }}
                   >
                     <Plugin className={cx("bi", "me-1")} />
@@ -943,7 +943,7 @@ export function RepositoryCallToActionAlert({
         <Link
           className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
           to={{
-            pathname: ABSOLUTE_ROUTES.v2.integrations,
+            pathname: ABSOLUTE_ROUTES.v2.integrations.root,
             search: searchActionRequired,
           }}
         >
@@ -990,7 +990,7 @@ export function RepositoryCallToActionAlert({
         <Link
           className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
           to={{
-            pathname: ABSOLUTE_ROUTES.v2.integrations,
+            pathname: ABSOLUTE_ROUTES.v2.integrations.root,
             search: searchActionRequired,
           }}
         >

@@ -258,7 +258,7 @@ function CustomImageEnvironmentValues({
                   registry is in the currently supported{" "}
                   <Link
                     to={{
-                      pathname: ABSOLUTE_ROUTES.v2.integrations,
+                      pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                       search,
                     }}
                   >
@@ -293,7 +293,7 @@ function CustomImageEnvironmentValues({
                     <Link
                       className={cx("btn", "btn-primary", "btn-sm")}
                       to={{
-                        pathname: ABSOLUTE_ROUTES.v2.integrations,
+                        pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                         search,
                       }}
                     >
@@ -313,7 +313,7 @@ function CustomImageEnvironmentValues({
                 <Link
                   className={cx("btn", "btn-primary", "btn-sm")}
                   to={{
-                    pathname: ABSOLUTE_ROUTES.v2.integrations,
+                    pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                     search,
                   }}
                 >

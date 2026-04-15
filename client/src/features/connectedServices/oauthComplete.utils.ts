@@ -30,7 +30,7 @@ export function buildOAuthCompleteUrl(
   source?: string
 ): string {
   const url = new URL(
-    ABSOLUTE_ROUTES.v2.oauth.complete,
+    ABSOLUTE_ROUTES.v2.integrations.complete,
     window.location.origin
   );
   if (source) {

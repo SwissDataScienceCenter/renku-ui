@@ -142,7 +142,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path={RELATIVE_ROUTES.v2.integrations}
+            path={RELATIVE_ROUTES.v2.integrations.root}
             element={
               <ContainerWrap>
                 <LazyConnectedServicesPage />
@@ -150,7 +150,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path={RELATIVE_ROUTES.v2.oauth.complete}
+            path={RELATIVE_ROUTES.v2.integrations.complete}
             element={<LazyOAuthCompletePage />}
           />
           <Route

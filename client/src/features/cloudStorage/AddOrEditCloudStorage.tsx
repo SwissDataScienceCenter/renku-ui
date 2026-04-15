@@ -56,7 +56,6 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
-  type ConnectionStatus,
 } from "../connectedServices/api/connectedServices.api";
 import { SEARCH_PARAM_PROVIDER } from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
@@ -1092,7 +1091,7 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
     const link = singleProvider && (
       <Link
         to={{
-          pathname: ABSOLUTE_ROUTES.v2.integrations,
+          pathname: ABSOLUTE_ROUTES.v2.integrations.root,
           search: new URLSearchParams({
             [SEARCH_PARAM_PROVIDER]: singleProvider.id,
           }).toString(),
@@ -1130,7 +1129,7 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
         </p>
         <ConnectButton
           className="btn-sm"
-          connectionStatus={connection?.status as ConnectionStatus | undefined}
+          connectionStatus={connection?.status}
           includeSource
           provider={provider}
           withIcon

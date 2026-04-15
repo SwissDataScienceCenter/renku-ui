@@ -81,7 +81,7 @@ export default function OAuthCompletePage() {
   return (
     <ContainerWrap>
       <div
-        className={cx("d-flex", "flex-column", "gap-3", "mx-auto", "py-5")}
+        className={cx("d-flex", "flex-column", "gap-3", "mx-auto", "pt-5")}
         data-cy="oauth2-complete-page"
         style={{ maxWidth: "48rem" }}
       >
@@ -98,10 +98,10 @@ export default function OAuthCompletePage() {
               <Link
                 className={cx("btn", "btn-primary", "btn-sm")}
                 to={{
-                  pathname: ABSOLUTE_ROUTES.v2.integrations,
+                  pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                 }}
               >
-                Go to integration list to try again
+                Go to integrations to retry
               </Link>
               <Button
                 color="white"
