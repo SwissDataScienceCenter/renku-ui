@@ -52,3 +52,12 @@ export function EntityWatermark({ className, type }: EntityWatermarkProps) {
     </div>
   );
 }
+
+interface EntityWatermarkPlaceholderProps {
+  className?: string;
+}
+export function EntityWatermarkPlaceholder({
+  className,
+}: EntityWatermarkPlaceholderProps) {
+  return <div className={cx(className, styles.EntityWatermarkPlaceholder)} />;
+}
