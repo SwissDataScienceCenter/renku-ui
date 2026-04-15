@@ -56,7 +56,6 @@ import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
-  type ConnectionStatus,
 } from "../connectedServices/api/connectedServices.api";
 import { SEARCH_PARAM_PROVIDER } from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
