@@ -30,8 +30,6 @@ import {
   Box2,
   BoxArrowUpRight,
   CircleFill,
-  HandIndexThumb,
-  InfoCircle,
   Plugin,
   PlusLg,
   Send,
@@ -39,7 +37,6 @@ import {
 } from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
 import {
-  Alert,
   Badge,
   Button,
   Card,
@@ -62,7 +59,7 @@ import { NEW_DOCS_USER_INTEGRATIONS } from "~/utils/constants/NewDocs";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils";
-import { InfoAlert, WarnAlert } from "../../components/Alert";
+import { InfoAlert, RenkuAlert, WarnAlert } from "../../components/Alert";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { Loader } from "../../components/Loader";
@@ -136,6 +133,18 @@ export default function ConnectedServicesPage() {
 
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
+  const targetedProvider = providers?.find(
+    (provider) => provider.id === targetProviderId
+  );
+  const IsTargetedProviderVisible = mainListProviders.some(
+    (provider) => provider.provider.id === targetProviderId
+  );
+
+  const goBackButton = source && (
+    <Link to={source} className={cx("primary")}>
+      go back to your project
+    </Link>
+  );
 
   const content = isLoading ? (
     <PageLoader />
@@ -154,6 +163,30 @@ export default function ConnectedServicesPage() {
     </>
   ) : (
     <>
+      {targetedProvider && !IsTargetedProviderVisible && actionRequired && (
+        <RenkuAlert
+          timeout={0}
+          color={actionRequired ? "warning" : "info"}
+          className={cx(
+            actionRequired ? "border-warning" : "border-info",
+            "shadow-sm"
+          )}
+        >
+          <p className="mb-0">
+            Action required. Please{" "}
+            <a
+              className={cx("text-primary", "cursor-pointer")}
+              onClick={() => setIsAddIntegrationModalOpen(true)}
+            >
+              add integration to{" "}
+              <span className="fst-italic">
+                {targetedProvider.display_name}
+              </span>
+            </a>{" "}
+            {source && <>and then {goBackButton}</>}.
+          </p>
+        </RenkuAlert>
+      )}
       <Card data-cy="connected-services-list">
         <CardHeader className={cx("d-flex", "gap-2")}>
           <h2 className={cx("mb-0", "my-auto")}>My integrations</h2>
@@ -169,7 +202,7 @@ export default function ConnectedServicesPage() {
         </CardHeader>
         <CardBody>
           {mainListProviders.length === 0 ? (
-            <p className="mb-0">
+            <p className={cx("mb-0", "text-muted")}>
               You have no integrations configured.{" "}
               <a
                 className={cx("text-primary", "cursor-pointer")}
@@ -367,7 +400,8 @@ function ConnectedServiceListItem({
   return (
     <ListGroupItem data-cy="connected-services-item" action={true}>
       {highlighted && (
-        <Alert
+        <RenkuAlert
+          timeout={0}
           color={actionRequired ? "warning" : "info"}
           className={cx(
             actionRequired ? "border-warning" : "border-info",
@@ -375,26 +409,19 @@ function ConnectedServiceListItem({
           )}
         >
           <p className="mb-0">
-            {actionRequired ? (
+            {actionRequired && connection?.status === "pending" ? (
               <>
-                <HandIndexThumb className={cx("bi", "me-1")} />
-                Action required. Please connect to this integration
-                {source && <> and then {goBackButton}</>}.
+                Action required. Please connect to this integration{" "}
+                {source && <>and then {goBackButton}</>}.
               </>
             ) : (
               <>
-                <InfoCircle className={cx("bi", "me-1")} />
-                Check your integration settings here.
-                {source && (
-                  <span>
-                    <br />
-                    You can later {goBackButton}.
-                  </span>
-                )}
+                Check your integration settings here.{" "}
+                {source && <span>You can later {goBackButton}.</span>}
               </>
             )}
           </p>
-        </Alert>
+        </RenkuAlert>
       )}
       <div className={cx("d-flex", "align-items-start", "gap-3")}>
         <div className={cx("flex-grow-1")}>
@@ -546,14 +573,12 @@ export function ConnectButton({
   if (!provider || !authorizeHref) return null;
 
   const text = connectionStatus === "connected" ? labelReconnect : labelConnect;
-  const outline = connectionStatus === "connected";
 
   return (
     <Button
       className={cx("btn", className)}
       color="primary"
       onClick={handleConnectClick}
-      outline={outline}
       type="button"
     >
       {withIcon && <Plugin className={cx("bi", "me-1")} />}
