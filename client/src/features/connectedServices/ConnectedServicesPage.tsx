@@ -438,32 +438,15 @@ function AddIntegrationModal({
   providers,
 }: AddIntegrationModalProps) {
   const [showAllIntegrations, setShowAllIntegrations] = useState(false);
-  const [connectedDuringSession, setConnectedDuringSession] = useState<
-    Record<string, Provider>
-  >({});
-  const isExpanded = isOpen && showAllIntegrations;
-
-  const modalSessionProviders = useMemo<ProviderWithConnection[]>(() => {
-    const providerById = new Map<string, ProviderWithConnection>();
-    providers.forEach((entry) => {
-      providerById.set(entry.provider.id, entry);
-    });
-    Object.values(connectedDuringSession).forEach((provider) => {
-      if (!providerById.has(provider.id)) {
-        providerById.set(provider.id, { provider });
-      }
-    });
-    return Array.from(providerById.values());
-  }, [connectedDuringSession, providers]);
+  const isListExpanded = isOpen && showAllIntegrations;
 
   const visibleProviders = useMemo(() => {
-    if (isExpanded) return modalSessionProviders;
-    return modalSessionProviders.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
-  }, [isExpanded, modalSessionProviders]);
+    if (isListExpanded) return providers;
+    return providers.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
+  }, [isListExpanded, providers]);
 
   const handleClosed = useCallback(() => {
     setShowAllIntegrations(false);
-    setConnectedDuringSession({});
   }, []);
 
   return (
@@ -479,7 +462,7 @@ function AddIntegrationModal({
         Activate integration
       </ModalHeader>
       <ModalBody>
-        {modalSessionProviders.length === 0 ? (
+        {providers.length === 0 ? (
           <p>
             There are currently no more external services users can connect to.
           </p>
@@ -500,31 +483,24 @@ function AddIntegrationModal({
                     <div className={cx("flex-grow-1")}>
                       <ProviderRowHeader provider={provider} />
                     </div>
-                    {connectedDuringSession[provider.id] ? (
-                      <Button color="primary" disabled={true} type="button">
-                        Connected
-                      </Button>
-                    ) : (
-                      <ConnectButton
-                        provider={provider}
-                        connectionStatus={connection?.status}
-                        onConnected={() =>
-                          setConnectedDuringSession((current) => ({
-                            ...current,
-                            [provider.id]: provider,
-                          }))
-                        }
-                      />
-                    )}
+                    <ConnectButton
+                      provider={provider}
+                      connectionStatus={connection?.status}
+                      onConnectStart={onToggle}
+                    />
                   </div>
                 </ListGroupItem>
               ))}
-              {modalSessionProviders.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
+              {providers.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
                 <ListGroupItem
                   onClick={() => setShowAllIntegrations(!showAllIntegrations)}
                   className="fw-bold"
                 >
-                  {!isExpanded ? <>See all integrations </> : <>Show less </>}
+                  {!isListExpanded ? (
+                    <>See all integrations </>
+                  ) : (
+                    <>Show less </>
+                  )}
                 </ListGroupItem>
               )}
             </ListGroup>
@@ -540,6 +516,7 @@ export interface ConnectButtonParams {
   connectionStatus?: ConnectionStatus;
   className?: string;
   includeSource?: boolean;
+  onConnectStart?: () => void;
   onConnected?: () => void;
   labelConnect?: string;
   labelReconnect?: string;
@@ -551,6 +528,7 @@ export function ConnectButton({
   connectionStatus,
   className,
   includeSource = false,
+  onConnectStart,
   onConnected,
   labelConnect = "Connect",
   labelReconnect = "Reconnect",
@@ -560,6 +538,10 @@ export function ConnectButton({
     includeSource,
     onConnected,
   });
+  const handleConnectClick = useCallback(() => {
+    onConnectStart?.();
+    startConnect();
+  }, [onConnectStart, startConnect]);
 
   if (!provider || !authorizeHref) return null;
 
@@ -570,7 +552,7 @@ export function ConnectButton({
     <Button
       className={cx("btn", className)}
       color="primary"
-      onClick={startConnect}
+      onClick={handleConnectClick}
       outline={outline}
       type="button"
     >
