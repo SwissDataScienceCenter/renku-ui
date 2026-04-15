@@ -194,6 +194,7 @@ export default function ConnectedServicesPage() {
             className={cx("btn-sm", "ms-auto", "my-auto")}
             color="outline-primary"
             id="ActivateIntegration"
+            data-cy="activate-integration-button"
             onClick={() => setIsAddIntegrationModalOpen(true)}
             type="button"
           >
@@ -218,6 +219,7 @@ export default function ConnectedServicesPage() {
               {mainListProviders.map(({ provider, connection }) => (
                 <ConnectedServiceListItem
                   key={provider.id}
+                  data-cy="connected-service-item"
                   actionRequired={!!actionRequired}
                   connection={connection}
                   highlighted={provider.id === targetProviderId}
@@ -398,7 +400,7 @@ function ConnectedServiceListItem({
   );
 
   return (
-    <ListGroupItem data-cy="connected-services-item" action={true}>
+    <ListGroupItem data-cy="connected-service-item" action={true}>
       {highlighted && (
         <RenkuAlert
           timeout={0}
@@ -505,7 +507,11 @@ function AddIntegrationModal({
               )}
             >
               {visibleProviders.map(({ provider, connection }) => (
-                <ListGroupItem key={provider.id} action={true}>
+                <ListGroupItem
+                  key={provider.id}
+                  action={true}
+                  data-cy="provider-item"
+                >
                   <div className={cx("d-flex", "align-items-center", "gap-3")}>
                     <div className={cx("flex-grow-1")}>
                       <ProviderRowHeader provider={provider} />
