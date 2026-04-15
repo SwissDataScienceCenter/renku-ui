@@ -21,6 +21,7 @@ import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
+  ArrowsAngleExpand,
   CardText,
   Cloud,
   CloudArrowUp,
@@ -135,6 +136,16 @@ export default function DataConnectorView({
     [dataConnector.namespace]
   );
 
+  const namespaceParts = dataConnector.namespace?.split("/") ?? [];
+  const dataConnectorStandaloneLink = generatePath(
+    ABSOLUTE_ROUTES.v2.dataConnectors.show.root,
+    {
+      projectNamespace: namespaceParts[0] ?? null,
+      dataConnectorNamespace: namespaceParts[1] ?? null,
+      slug: dataConnector.slug,
+    }
+  );
+
   return (
     <Offcanvas
       toggle={toggleView}
@@ -143,7 +154,7 @@ export default function DataConnectorView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="data-connector-view">
-        <div className="mb-3">
+        <div className={cx("mb-3", "d-flex", "gap-2")}>
           <button
             aria-label="Close"
             className="btn-close"
@@ -151,6 +162,13 @@ export default function DataConnectorView({
             data-bs-dismiss="offcanvas"
             onClick={toggleView}
           ></button>
+          <Link
+            className="link-secondary"
+            data-cy="data-connector-standalone-page-link"
+            to={dataConnectorStandaloneLink}
+          >
+            <ArrowsAngleExpand />
+          </Link>
         </div>
         <DataConnectorViewHeader
           {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
@@ -191,16 +209,64 @@ export default function DataConnectorView({
   );
 }
 
+export function DataConnectorLastDepositBody({
+  deposit,
+}: DataConnectorLastDepositProps) {
+  return (
+    <>
+      <DataConnectorPropertyValue key="name" title="Name">
+        {deposit.name}
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue key="provider" title="Provider">
+        {deposit.provider}
+      </DataConnectorPropertyValue>
+      {deposit.external_url && (
+        <DataConnectorPropertyValue key="external_url" title="URL">
+          <ExternalLink href={deposit.external_url}>
+            {deposit.external_url}
+          </ExternalLink>
+        </DataConnectorPropertyValue>
+      )}
+      <DataConnectorPropertyValue key="status" title="Status">
+        <DepositStatusBadge status={deposit.status} />
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue key="path" title="Path">
+        {deposit.path ?? <span className="fst-italic">N/A</span>}
+      </DataConnectorPropertyValue>
+      {deposit.creation_date && (
+        <DataConnectorPropertyValue key="creation_date" title="Created">
+          <TimeCaption
+            datetime={deposit.creation_date}
+            enableTooltip
+            noCaption
+            prefix=""
+          />
+        </DataConnectorPropertyValue>
+      )}
+      {deposit.updated_at && deposit.updated_at !== deposit.creation_date && (
+        <DataConnectorPropertyValue key="updated_at" title="Last updated">
+          <TimeCaption
+            datetime={deposit.updated_at}
+            enableTooltip
+            noCaption
+            prefix=""
+          />
+        </DataConnectorPropertyValue>
+      )}
+    </>
+  );
+}
+
 interface DataConnectorLastDepositProps {
-  dataConnector: DataConnectorRead;
+  dataConnector?: DataConnectorRead | null;
   deposit: Deposit;
 }
-function DataConnectorLastDeposit({
+export function DataConnectorLastDeposit({
   dataConnector,
   deposit,
 }: DataConnectorLastDepositProps) {
   const { permissions } = useDataConnectorPermissions({
-    dataConnectorId: dataConnector.id,
+    dataConnectorId: dataConnector?.id,
   });
 
   return (
@@ -228,45 +294,7 @@ function DataConnectorLastDeposit({
         />
       </div>
       <div>
-        <DataConnectorPropertyValue key="name" title="Name">
-          {deposit.name}
-        </DataConnectorPropertyValue>
-        <DataConnectorPropertyValue key="provider" title="Provider">
-          {deposit.provider}
-        </DataConnectorPropertyValue>
-        {deposit.external_url && (
-          <DataConnectorPropertyValue key="external_url" title="URL">
-            <ExternalLink href={deposit.external_url}>
-              {deposit.external_url}
-            </ExternalLink>
-          </DataConnectorPropertyValue>
-        )}
-        <DataConnectorPropertyValue key="status" title="Status">
-          <DepositStatusBadge status={deposit.status} />
-        </DataConnectorPropertyValue>
-        <DataConnectorPropertyValue key="path" title="Path">
-          {deposit.path ?? <span className="fst-italic">N/A</span>}
-        </DataConnectorPropertyValue>
-        {deposit.creation_date && (
-          <DataConnectorPropertyValue key="creation_date" title="Created">
-            <TimeCaption
-              datetime={deposit.creation_date}
-              enableTooltip
-              noCaption
-              prefix=""
-            />
-          </DataConnectorPropertyValue>
-        )}
-        {deposit.updated_at && deposit.updated_at !== deposit.creation_date && (
-          <DataConnectorPropertyValue key="updated_at" title="Last updated">
-            <TimeCaption
-              datetime={deposit.updated_at}
-              enableTooltip
-              noCaption
-              prefix=""
-            />
-          </DataConnectorPropertyValue>
-        )}
+        <DataConnectorLastDepositBody deposit={deposit} />
       </div>
     </section>
   );

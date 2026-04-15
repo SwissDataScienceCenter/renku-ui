@@ -20,6 +20,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { parseCookie } from "cookie";
 import { createContext, type MiddlewareFunction } from "react-router";
 
+import { dataConnectorsApi } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { platformApi } from "~/features/platform/api/platform.api";
 import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import { usersApi } from "~/features/usersV2/api/users.api";
@@ -38,12 +39,14 @@ function makeStore() {
       [cookieSlice.reducerPath]: cookieSlice.reducer,
       // APIs
       [platformApi.reducerPath]: platformApi.reducer,
+      [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
       [projectV2Api.reducerPath]: projectV2Api.reducer,
       [usersApi.reducerPath]: usersApi.reducer,
     },
     middleware: (gDM) =>
       gDM()
         .concat(platformApi.middleware)
+        .concat(dataConnectorsApi.middleware)
         .concat(projectV2Api.middleware)
         .concat(usersApi.middleware),
   });

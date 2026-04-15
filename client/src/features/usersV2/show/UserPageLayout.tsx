@@ -54,6 +54,7 @@ export default function UserPageLayout({
     searchUrl: generatePath(ABSOLUTE_ROUTES.v2.users.show.search, {
       username: user.username,
     }),
+    type: "user",
   };
   return (
     <ContainerWrap>

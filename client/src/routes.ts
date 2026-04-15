@@ -62,6 +62,23 @@ export default [
     // Not found page for /u/*
     route("*", "routes/users/catchall.tsx"),
   ]),
+  // Data connector pages
+  ...prefix(RELATIVE_ROUTES.v2.dataConnectors.root, [
+    index("routes/dataConnectors/searchRedirect.tsx"),
+    route(
+      RELATIVE_ROUTES.v2.dataConnectors.show.root,
+      "routes/dataConnectors/root.tsx",
+      [
+        index("routes/dataConnectors/index.tsx"),
+        route(
+          RELATIVE_ROUTES.v2.dataConnectors.show.settings,
+          "routes/dataConnectors/settings.tsx"
+        ),
+      ]
+    ),
+    // Not found page for /d/*
+    route("*", "routes/dataConnectors/catchall.tsx"),
+  ]),
   // Legacy projects (may redirect)
   route(RELATIVE_ROUTES.projects.splat, "routes/legacy/projects.tsx"),
   // * matches all URLs, the ? makes it optional so it will match / as well
