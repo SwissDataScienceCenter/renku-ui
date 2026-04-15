@@ -22,24 +22,25 @@ import { People, Person } from "react-bootstrap-icons";
 import styles from "./entityWatermark.module.scss";
 
 interface EntityWatermarkProps {
+  className?: string;
   type: "user" | "group";
 }
-export function EntityWatermark({ type }: EntityWatermarkProps) {
+export function EntityWatermark({
+  className: className_,
+  type,
+}: EntityWatermarkProps) {
   return (
-    <div className="position-relative">
-      <div
-        className={cx(
-          "d-none",
-          "d-lg-block",
-          "position-absolute",
-          "top-0",
-          "end-0",
-          styles.EntityWatermark
-        )}
-      >
-        {type === "group" && <People />}
-        {type === "user" && <Person />}
-      </div>
+    <div
+      className={cx(
+        "d-flex",
+        "text-body-secondary",
+        "opacity-25",
+        className_,
+        styles.EntityWatermark
+      )}
+    >
+      {type === "group" && <People />}
+      {type === "user" && <Person />}
     </div>
   );
 }
