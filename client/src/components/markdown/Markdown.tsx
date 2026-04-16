@@ -111,6 +111,14 @@ export default function Markdown({
       className={styles.renkuMarkdown}
     >
       <ReactMarkdown
+        components={{
+          table: ({ className, ...props }) => (
+            <table
+              className={cx("table", "table-striped", className)}
+              {...props}
+            ></table>
+          ),
+        }}
         rehypePlugins={[...baseRehypePlugins, ...(rehypePlugins ?? [])]}
         remarkPlugins={[...baseRemarkPlugins]}
         {...props}
