@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import mermaid from "mermaid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
