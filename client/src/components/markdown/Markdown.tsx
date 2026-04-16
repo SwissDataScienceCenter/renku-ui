@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import mermaid from "mermaid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
@@ -25,6 +26,7 @@ import rehypeMermaid from "rehype-mermaid";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkGemoji from "remark-gemoji";
+import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 
 import "katex/dist/katex.min.css";
@@ -97,6 +99,7 @@ export default function Markdown({
   ];
 
   const baseRemarkPlugins = [
+    remarkGfm,
     remarkMath,
     remarkGemoji,
     ...(remarkPlugins ?? []),
@@ -109,6 +112,14 @@ export default function Markdown({
       className={styles.renkuMarkdown}
     >
       <ReactMarkdown
+        components={{
+          table: ({ className, ...props }) => (
+            <table
+              className={cx("table", "table-striped", className)}
+              {...props}
+            ></table>
+          ),
+        }}
         rehypePlugins={[...baseRehypePlugins, ...(rehypePlugins ?? [])]}
         remarkPlugins={[...baseRemarkPlugins]}
         {...props}
