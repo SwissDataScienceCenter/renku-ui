@@ -39,6 +39,17 @@ interface PostResourcePoolArgs extends SimpleFixture {
   };
 }
 
+interface ResourcePoolIdFixture extends SimpleFixture {
+  resourcePoolId: number;
+}
+
+interface PutResourcePoolLimitsFixture
+  extends Omit<ResourcePoolIdFixture, "fixture"> {
+  resourcePoolId: number;
+  totalLimit: number;
+  userLimit: number;
+}
+
 interface UrlRedirectFixture extends NameOnlyFixture {
   sourceUrl: string;
   targetUrl: string | null;
@@ -98,6 +109,43 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("/api/data/resource_pools/*/users", {
         fixture,
       });
+      return this;
+    }
+
+    resourcePoolLimits(args?: ResourcePoolIdFixture) {
+      const {
+        fixture = "dataServices/resource-pool-limits.json",
+        name = "getResourcePoolLimits",
+        resourcePoolId = 1,
+      } = args ?? {};
+      cy.fixture(fixture).then((limits) => {
+        limits = { ...limits, resource_pool_id: resourcePoolId };
+        cy.intercept(
+          "GET",
+          `/api/data/resource_pools/${resourcePoolId}/limits`,
+          { body: limits }
+        ).as(name);
+      });
+      return this;
+    }
+
+    putResourcePoolLimits(args?: PutResourcePoolLimitsFixture) {
+      const {
+        name = "putResourcePoolLimits",
+        resourcePoolId = 1,
+        totalLimit,
+        userLimit,
+      } = args ?? {};
+      const limits = { total_limit: totalLimit, user_limit: userLimit };
+      cy.intercept(
+        "PUT",
+        `/api/data/resource_pools/${resourcePoolId}/limits`,
+        (req) => {
+          expect(req.body.total_limit).to.equal(totalLimit);
+          expect(req.body.user_limit).to.equal(userLimit);
+          req.reply({ body: limits });
+        }
+      ).as(name);
       return this;
     }
 
