@@ -72,6 +72,17 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { doiFromUrl } from "../../utils/dataConnectorUtils";
+import {
+  DC_LIKELY_DOI_ID,
+  DC_SEARCH_DOI_PREFIX,
+  DC_SEARCH_INHERITED_PREFIX,
+  DC_SEARCH_MAX_RESULTS,
+  DC_SEARCH_NAMESPACE_PREFIX,
+  DC_SEARCH_QUERY_DEBOUNCE_MS,
+  DC_SEARCH_SLUG_PREFIX,
+  DC_SEARCH_TYPE,
+  DC_SUCCESS_MESSAGE_TIMEOUT_MS,
+} from "./projectDataConnectors.constants";
 
 interface ProjectConnectDataConnectorsModalProps
   extends Omit<
@@ -256,16 +267,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
   const [userSearchInput, setUserSearchInput] = useState("");
   const [querySearchInput, setQuerySearchInput] = useState("");
 
-  const DC_SEARCH_QUERY_DEBOUNCE_MS = 300;
-  const LIKELY_DOI_ID = ":likely-doi";
-  const DC_SEARCH_SLUG_PREFIX = "slug:";
-  const DC_SEARCH_NAMESPACE_PREFIX = "namespace:";
-  const DC_SEARCH_DOI_PREFIX = "doi:";
-  const SUCCESS_MESSAGE_TIMEOUT_MS = 10_000;
-  const DC_SEARCH_MAX_RESULTS = 10;
-
-  const DC_SEARCH_TYPE = "type:DataConnector";
-  const membershipString = `inherited_member:@${
+  const membershipString = `${DC_SEARCH_INHERITED_PREFIX}${
     currentUser?.isLoggedIn && currentUser?.username ? currentUser.username : ""
   }`;
 
@@ -276,7 +278,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
 
     const timeout = setTimeout(() => {
       setSelectedItemId(null);
-    }, SUCCESS_MESSAGE_TIMEOUT_MS);
+    }, DC_SUCCESS_MESSAGE_TIMEOUT_MS);
 
     return () => clearTimeout(timeout);
   }, [selectedItemId]);
@@ -591,7 +593,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
               dataConnector={
                 searchImportedDoiResult ??
                 ({
-                  id: LIKELY_DOI_ID,
+                  id: DC_LIKELY_DOI_ID,
                   name: "This looks like a DOI! Import it?",
                   storageType: "doi",
                 } as SearchDataConnector)
@@ -601,7 +603,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
                 selectedItemId ===
                   (searchImportedDoiResult
                     ? searchImportedDoiResult.id
-                    : LIKELY_DOI_ID) &&
+                    : DC_LIKELY_DOI_ID) &&
                 !isErrorPosting &&
                 !isAnythingPosting
               }
@@ -609,7 +611,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
               key={
                 searchImportedDoiResult
                   ? searchImportedDoiResult.id
-                  : LIKELY_DOI_ID
+                  : DC_LIKELY_DOI_ID
               }
               source="doi"
             />
@@ -757,7 +759,7 @@ function SearchResultListItem({
           <Col className={cx("align-items-center", "d-flex")} xs="auto">
             {justAdded ? (
               <RenkuBadge
-                className="my-1" // ? takes the same vertical space as a <Button size="sm" />
+                className="my-1 fade" // ? takes the same vertical space as a <Button size="sm" />
                 color="success"
                 data-cy="data-connector-link-successful-badge"
               >
