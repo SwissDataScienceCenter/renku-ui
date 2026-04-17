@@ -737,6 +737,22 @@ function SearchResultListItem({
 }: SearchResultListItemProps) {
   // TODO: We want to add an ExternalLink to let users check the data connector before linking it.
   // TODO: We can do that as soon as we have a page for data connectors.
+  const successRef = useRef<HTMLSpanElement | null>(null);
+
+  useEffect(() => {
+    if (!justAdded || !successRef.current) return;
+
+    const element = successRef.current;
+    element.classList.add("show");
+
+    const fadeTimeout = window.setTimeout(() => {
+      element.classList.remove("show");
+    }, DC_SUCCESS_MESSAGE_TIMEOUT_MS / 2);
+
+    return () => {
+      window.clearTimeout(fadeTimeout);
+    };
+  }, [justAdded]);
 
   return (
     <ListGroupItem
@@ -758,14 +774,22 @@ function SearchResultListItem({
         {action ? (
           <Col className={cx("align-items-center", "d-flex")} xs="auto">
             {justAdded ? (
-              <RenkuBadge
-                className="my-1 fade" // ? takes the same vertical space as a <Button size="sm" />
-                color="success"
-                data-cy="data-connector-link-successful-badge"
+              <span
+                ref={successRef}
+                className="fade"
+                style={{
+                  transitionDuration: `${DC_SUCCESS_MESSAGE_TIMEOUT_MS / 2}ms`,
+                }}
               >
-                <CheckLg className={cx("bi", "me-1")} />
-                Linked
-              </RenkuBadge>
+                <RenkuBadge
+                  className="my-1" // ? takes the same vertical space as a <Button size="sm" />
+                  color="success"
+                  data-cy="data-connector-link-successful-badge"
+                >
+                  <CheckLg className={cx("bi", "me-1")} />
+                  Linked
+                </RenkuBadge>
+              </span>
             ) : (
               <Button
                 color="outline-primary"
