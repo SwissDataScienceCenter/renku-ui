@@ -23,6 +23,21 @@ const withTagHandling = resourceUsageGeneratedApi.enhanceEndpoints({
         dispatch(computeResourcesApi.util.invalidateTags(["ResourcePool"]));
       },
     },
+    deleteResourcePoolsByResourcePoolIdClassesAndClassIdCost: {
+      invalidatesTags: (result, _error, arg) =>
+        result
+          ? [
+              {
+                id: `${arg.resourcePoolId}-${arg.classId}`,
+                type: "ResourceClassCost",
+              },
+            ]
+          : ["ResourceClassCost"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+        dispatch(computeResourcesApi.util.invalidateTags(["ResourcePool"]));
+      },
+    },
     getResourcePoolsByResourcePoolIdClassesAndClassIdCost: {
       providesTags: (result, _error, arg) =>
         result
@@ -45,6 +60,10 @@ const withTagHandling = resourceUsageGeneratedApi.enhanceEndpoints({
               },
             ]
           : ["ResourceClassCost"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+        dispatch(computeResourcesApi.util.invalidateTags(["ResourcePool"]));
+      },
     },
   },
 });
