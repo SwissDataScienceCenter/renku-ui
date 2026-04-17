@@ -32,6 +32,7 @@ import { platformEmptyApi as platformApi } from "~/features/platform/api/platfor
 import { statuspageEmptyApi as statuspageApi } from "~/features/platform/statuspage-api/statuspage-empty.api";
 import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import { repositoriesApi } from "~/features/repositories/api/repositories.api";
+import { resourceUsageEmptyApi as resourceUsageApi } from "~/features/resourceUsage/api/resourceUsage.empty-api";
 import { searchV2EmptyApi as searchV2Api } from "~/features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "~/features/searchV2/searchV2.slice";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
@@ -66,6 +67,7 @@ export const store = configureStore({
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
+    [resourceUsageApi.reducerPath]: resourceUsageApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
     [sessionLaunchersV2Api.reducerPath]: sessionLaunchersV2Api.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
@@ -90,6 +92,7 @@ export const store = configureStore({
       .concat(projectCloudStorageApi.middleware)
       .concat(projectV2Api.middleware)
       .concat(repositoriesApi.middleware)
+      .concat(resourceUsageApi.middleware)
       .concat(searchV2Api.middleware)
       .concat(sessionLaunchersV2Api.middleware)
       .concat(sessionsV2Api.middleware)

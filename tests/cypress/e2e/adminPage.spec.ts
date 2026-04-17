@@ -268,4 +268,48 @@ describe("admin page", () => {
       .click();
     cy.wait("@postResourcePool");
   });
+
+  it("should allow editing usage quotas", () => {
+    fixtures
+      .userAdmin()
+      .resourcePoolsTest()
+      .resourcePoolLimits({ resourcePoolId: 2 })
+      .putResourcePoolLimits({
+        resourcePoolId: 2,
+        totalLimit: 100,
+        userLimit: 10,
+      })
+      .adminResourcePoolUsers()
+      .adminKeycloakUser();
+    cy.visit("/");
+    cy.wait("@getUser");
+
+    cy.visit("/admin");
+
+    // check public resource pool
+    cy.get(".card")
+      .contains("button", "Special pool")
+      .should("be.visible")
+      .click();
+    cy.get(".card")
+      .contains(".card", "Special pool")
+      .within(() => {
+        cy.contains("10 credits / user").should("be.visible");
+        cy.getDataCy("update-resource-pool-usage-limits-button")
+          .should("be.visible")
+          .click();
+      });
+    cy.get("button[type='submit']").should("be.visible").click();
+    cy.wait("@putResourcePoolLimits");
+    cy.get(".card")
+      .contains(".card", "Special pool")
+      .within(() => {
+        cy.getDataCy("update-resource-class-cost-button")
+          .first()
+          .should("be.visible")
+          .click();
+      });
+    cy.get("#UpdateResourceClassCost-2").type("2");
+    cy.contains("5.00 hours / user").should("be.visible");
+  });
 });
