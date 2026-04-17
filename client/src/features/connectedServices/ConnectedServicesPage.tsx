@@ -53,6 +53,7 @@ import {
   Row,
 } from "reactstrap";
 
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon.tsx";
 import type { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types";
 import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook";
 import { NEW_DOCS_USER_INTEGRATIONS } from "~/utils/constants/NewDocs";
@@ -525,16 +526,25 @@ function AddIntegrationModal({
                 </ListGroupItem>
               ))}
               {providers.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
-                <ListGroupItem
+                <button
                   onClick={() => setShowAllIntegrations(!showAllIntegrations)}
-                  className="fw-bold"
+                  className={cx(
+                    "text-primary",
+                    "list-group-item",
+                    "text-start",
+                    "text-decoration-underline"
+                  )}
                 >
                   {!isListExpanded ? (
                     <>See all integrations </>
                   ) : (
                     <>Show less </>
                   )}
-                </ListGroupItem>
+                  <ChevronFlippedIcon
+                    className="ms-1"
+                    flipped={showAllIntegrations}
+                  />
+                </button>
               )}
             </ListGroup>
           </>
