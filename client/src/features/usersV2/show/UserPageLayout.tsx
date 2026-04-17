@@ -21,7 +21,10 @@ import { ReactNode } from "react";
 import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
+import {
+  EntityWatermark,
+  EntityWatermarkPlaceholder,
+} from "~/components/entityWatermark/EntityWatermark";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
@@ -68,6 +71,7 @@ export default function UserPageLayout({
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">
               <div className="position-relative">
+                <EntityWatermarkPlaceholder />
                 <EntityWatermark
                   className={cx("end-0", "position-absolute", "top-0")}
                   type="user"
@@ -98,7 +102,7 @@ function UserHeader({ name, username }: UserHeaderProps) {
     <div className={cx("d-flex", "flex-nowrap", "flex-row", "gap-2")}>
       <UserAvatar namespace={username} size="md" />
       <div className={cx("align-items-center", "d-flex", "gap-2")}>
-        <h1 className="mb-0" data-cy="user-name">
+        <h1 className={cx("text-break", "mb-0")} data-cy="user-name">
           {name}
         </h1>
         {currentUser?.isLoggedIn && currentUser.username === username && (

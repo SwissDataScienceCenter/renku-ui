@@ -25,17 +25,14 @@ interface EntityWatermarkProps {
   className?: string;
   type: "user" | "group";
 }
-export function EntityWatermark({
-  className: className_,
-  type,
-}: EntityWatermarkProps) {
+export function EntityWatermark({ className, type }: EntityWatermarkProps) {
   return (
     <div
       className={cx(
         "d-flex",
         "text-body-secondary",
         "opacity-25",
-        className_,
+        className,
         styles.EntityWatermark
       )}
     >
@@ -43,4 +40,13 @@ export function EntityWatermark({
       {type === "user" && <Person />}
     </div>
   );
+}
+
+interface EntityWatermarkPlaceholderProps {
+  className?: string;
+}
+export function EntityWatermarkPlaceholder({
+  className,
+}: EntityWatermarkPlaceholderProps) {
+  return <div className={cx(className, styles.EntityWatermarkPlaceholder)} />;
 }
