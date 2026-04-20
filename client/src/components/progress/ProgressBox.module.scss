@@ -1,0 +1,26 @@
+// TODO: use bootstrap margin classes
+.progressBoxSmall {
+  max-width: 500px;
+  margin: auto;
+
+  &Steps {
+    padding-top: 110px;
+  }
+}
+
+.progressBox {
+  width: 100%;
+  padding: 40px 25px 20px 25px;
+
+  & h2 {
+    color: var(--bs-dark);
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  & p {
+    color: var(--bs-dark);
+    font-weight: normal;
+    font-size: 16px;
+  }
+}

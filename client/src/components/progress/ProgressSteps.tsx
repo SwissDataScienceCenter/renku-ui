@@ -24,7 +24,7 @@ import {
 
 import { Loader } from "../Loader";
 
-import "./Progress.css";
+// import "./Progress.css";
 
 /**
  *  renku-ui

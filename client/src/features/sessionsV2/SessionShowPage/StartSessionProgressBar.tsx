@@ -22,6 +22,8 @@ import { Button } from "reactstrap";
 import { Loader } from "~/components/Loader";
 import { SessionV2 } from "../sessionsV2.types";
 
+import progressBoxStyles from "~/components/progress/ProgressBox.module.scss";
+
 interface StartSessionProgressBarV2Props {
   session?: SessionV2;
   toggleLogs: () => void;
@@ -39,7 +41,12 @@ export function StartSessionProgressBarV2({
       : "Requesting session resources";
 
   return (
-    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+    <div
+      className={cx(
+        progressBoxStyles.progressBoxSmall,
+        progressBoxStyles.progressBoxSmallSteps
+      )}
+    >
       <div data-cy="session-status-starting">
         <h2 className="fw-bold">Launching Session</h2>
         <p className="pb-2">Starting session services</p>
@@ -48,7 +55,7 @@ export function StartSessionProgressBarV2({
           <div>{description}</div>
         </div>
       </div>
-      <div className={cx("progress-box", "pt-0")}>
+      <div>
         <Button className="mt-3" color="outline-primary" onClick={toggleLogs}>
           Open Logs
         </Button>
