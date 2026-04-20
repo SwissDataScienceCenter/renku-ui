@@ -28,12 +28,18 @@ import {
 } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
-import { Button, Form, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import {
+  Button,
+  Form,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
 
 import { SuccessAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
-import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import {
   usePostSessionLaunchersMutation as useAddSessionLauncherMutation,
@@ -44,6 +50,8 @@ import { getFormattedEnvironmentValues } from "../../session.utils";
 import { LauncherStep, SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
+
+import scrollableModalStyles from "~/components/modal/ScrollableModal.module.scss";
 
 interface NewSessionLauncherModalProps {
   isOpen: boolean;
@@ -194,12 +202,17 @@ export default function NewSessionLauncherModal({
     }
   }, [isOpen, reset, result, setStep]);
 
+  //? NOTE: the scrollable modal breaks when we use react-select inside it
   return (
-    <ScrollableModal
+    <Modal
       backdrop="static"
       centered
+      className={cx(
+        step !== LauncherStep.LauncherDetails && scrollableModalStyles.modal
+      )}
       fullscreen="lg"
       isOpen={isOpen}
+      scrollable={step !== LauncherStep.LauncherDetails}
       size="lg"
       toggle={toggle}
     >
@@ -285,7 +298,7 @@ export default function NewSessionLauncherModal({
           </Button>
         )}
       </ModalFooter>
-    </ScrollableModal>
+    </Modal>
   );
 }
 
