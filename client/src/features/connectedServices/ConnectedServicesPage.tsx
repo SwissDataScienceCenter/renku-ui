@@ -53,6 +53,7 @@ import {
   Row,
 } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon.tsx";
 import type { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types";
 import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook";
@@ -62,7 +63,6 @@ import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils";
 import { InfoAlert, RenkuAlert, WarnAlert } from "../../components/Alert";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
-import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { Loader } from "../../components/Loader";
 import PageLoader from "../../components/PageLoader";
 import { usersApi } from "../usersV2/api/users.api";
@@ -141,6 +141,10 @@ export default function ConnectedServicesPage() {
     (provider) => provider.provider.id === targetProviderId
   );
 
+  const toggleAddIntegrationModal = useCallback(() => {
+    setIsAddIntegrationModalOpen((isOpen) => !isOpen);
+  }, []);
+
   const goBackButton = source && (
     <Link to={source} className={cx("primary")}>
       go back to your project
@@ -177,14 +181,14 @@ export default function ConnectedServicesPage() {
             Action required. Please{" "}
             <a
               className={cx("text-primary", "cursor-pointer")}
-              onClick={() => setIsAddIntegrationModalOpen(true)}
+              onClick={toggleAddIntegrationModal}
             >
               add integration to{" "}
               <span className="fst-italic">
                 {targetedProvider.display_name}
               </span>
             </a>{" "}
-            {source && <>and then {goBackButton}</>}.
+            {goBackButton && <>and then {goBackButton}</>}.
           </p>
         </RenkuAlert>
       )}
@@ -208,10 +212,10 @@ export default function ConnectedServicesPage() {
               You have no integrations configured.{" "}
               <a
                 className={cx("text-primary", "cursor-pointer")}
-                onClick={() => setIsAddIntegrationModalOpen(true)}
+                onClick={toggleAddIntegrationModal}
               >
                 {" "}
-                Click here{" "}
+                Click here
               </a>{" "}
               to activate integrations.
             </p>
@@ -290,9 +294,8 @@ export default function ConnectedServicesPage() {
               <CardBody>
                 <p>
                   Check out our documentation to learn more about{" "}
-                  <ExternalLink role="link" url={NEW_DOCS_USER_INTEGRATIONS}>
+                  <ExternalLink href={NEW_DOCS_USER_INTEGRATIONS}>
                     integrations in Renku
-                    <BoxArrowUpRight className={cx("bi", "ms-1")} />
                   </ExternalLink>
                   .
                 </p>
@@ -373,14 +376,7 @@ function ProviderRowHeader({ provider, statusSlot }: ProviderRowHeaderProps) {
           "mb-2"
         )}
       >
-        <ExternalLink
-          url={provider.url}
-          role="text"
-          iconAfter={false}
-          showLinkIcon={true}
-        >
-          {provider.url}
-        </ExternalLink>
+        <ExternalLink href={provider.url}>{provider.url}</ExternalLink>
         {statusSlot}
       </div>
     </>
@@ -420,7 +416,7 @@ function ConnectedServiceListItem({
             ) : (
               <>
                 Check your integration settings here.{" "}
-                {source && <span>You can later {goBackButton}.</span>}
+                {goBackButton && "You can later {goBackButton}."}
               </>
             )}
           </p>
@@ -535,11 +531,7 @@ function AddIntegrationModal({
                     "text-decoration-underline"
                   )}
                 >
-                  {!isListExpanded ? (
-                    <>See all integrations </>
-                  ) : (
-                    <>Show less </>
-                  )}
+                  {!isListExpanded ? "See all integrations" : "Show less "}
                   <ChevronFlippedIcon
                     className="ms-1"
                     flipped={showAllIntegrations}
@@ -680,9 +672,7 @@ function ConnectedAccount({ connection }: ConnectedAccountProps) {
     <CardText>
       Account:{" "}
       {account.web_url ? (
-        <ExternalLink role="text" url={account.web_url}>
-          {text}
-        </ExternalLink>
+        <ExternalLink href={account.web_url}>{text}</ExternalLink>
       ) : (
         text
       )}
@@ -821,7 +811,7 @@ function GitHubAppInstallations({
 
       {settingsUrl && (
         <ExternalLink
-          url={settingsUrl.href}
+          href={settingsUrl.href}
           role="button"
           color="outline-primary"
         >
@@ -853,7 +843,7 @@ function GitHubAppInstallationItem({
 
   return (
     <li className="mb-1">
-      <ExternalLink url={account_web_url} role="text">
+      <ExternalLink href={account_web_url}>
         <BoxArrowUpRight className={cx("bi", "me-1")} />
         <span className={cx(isSuspended && "text-decoration-line-through")}>
           {account_login}
@@ -983,7 +973,7 @@ export function GitHubStatusCheckModal({
                 color="primary"
                 onClick={() => setHasOpenedTheLink(true)}
                 role="button"
-                url={settingsUrl.href}
+                href={settingsUrl.href}
               >
                 Configure {provider.app_slug} on {provider.display_name}
               </ExternalLink>
