@@ -99,10 +99,10 @@ function UserHeader({ name, username }: UserHeaderProps) {
   const { data: currentUser } = useGetUserQueryState();
 
   return (
-    <div className={cx("d-flex", "flex-nowrap", "flex-row", "gap-2")}>
+    <header className={cx("d-flex", "flex-nowrap", "flex-row", "gap-2")}>
       <UserAvatar namespace={username} size="md" />
       <div className={cx("align-items-center", "d-flex", "gap-2")}>
-        <h1 className={cx("text-break", "mb-0")} data-cy="user-name">
+        <h1 className={cx("mb-0", "text-break")} data-cy="user-name">
           {name}
         </h1>
         {currentUser?.isLoggedIn && currentUser.username === username && (
@@ -111,6 +111,6 @@ function UserHeader({ name, username }: UserHeaderProps) {
           </RenkuBadge>
         )}
       </div>
-    </div>
+    </header>
   );
 }
