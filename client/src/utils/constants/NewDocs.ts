@@ -99,3 +99,7 @@ export const NEW_DOCS_HOW_RENKU_WORKS = newDocsLinkPage(
 export const NEW_DOCS_SEARCH_QUERY = newDocsLinkPage(
   "docs/users/search/search-query"
 )(DEFAULT_NEW_DOC_LINK_ARGS);
+
+export const NEW_DOCS_DATA_CONNECTORS = newDocsLinkPage("docs/users/data/data")(
+  DEFAULT_NEW_DOC_LINK_ARGS
+);

@@ -1,16 +1,16 @@
 {
-  "id": "doi:10.7910/DVN/DXH6FK",
+  "id": "10.5281/zenodo.123456",
   "name": "Gastroenteritis: Rehydration of children with Severe Acute Malnutrition (GASTROSAM)",
-  "slug": "doi-10.7910-dvn-dxh6fk",
+  "slug": "10.5281-zenodo-123456",
   "storage": {
     "storage_type": "doi",
     "configuration": {
-      "doi": "doi:10.7910/DVN/DXH6FK",
+      "doi": "10.5281/zenodo.123456",
       "type": "doi",
       "provider": "dataverse"
     },
     "source_path": "/",
-    "target_path": "gastroenteritis-rehydration-of-doi-10.7910-dvn-dxh6fk",
+    "target_path": "gastroenteritis-rehydration-of-10.5281-zenodo-123456",
     "readonly": true,
     "sensitive_fields": []
   },
