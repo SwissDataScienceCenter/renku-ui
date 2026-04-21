@@ -17,7 +17,7 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { NameOnlyFixture } from "./fixtures.types";
+import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 import { generateProjects } from "./projectV2";
 
 interface SearchV2ListProjectsArgs extends NameOnlyFixture {
@@ -51,6 +51,10 @@ function generateSearchUsers(num: number) {
     users.push(user);
   }
   return users;
+}
+
+interface FixtureAndQueryString extends SimpleFixture {
+  queryPartialString?: string;
 }
 
 export function SearchV2<T extends FixturesConstructor>(Parent: T) {
@@ -99,6 +103,25 @@ export function SearchV2<T extends FixturesConstructor>(Parent: T) {
           body,
         });
       }).as(name);
+      return this;
+    }
+
+    searchContent(args?: FixtureAndQueryString) {
+      const {
+        fixture = "searchV2/search-empty.json",
+        name = "searchContent",
+        queryPartialString = "",
+      } = args ?? {};
+
+      cy.fixture(fixture).then(() => {
+        cy.intercept("GET", "/api/data/search/query*", (req) => {
+          const q = req.query.q || "";
+          if (q.toString().includes(queryPartialString)) {
+            req.alias = name;
+            req.reply({ fixture });
+          }
+        });
+      });
       return this;
     }
   };
