@@ -16,9 +16,14 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { ReactNode } from "react";
 import { Col, Row } from "reactstrap";
 
+import {
+  EntityWatermark,
+  EntityWatermarkPlaceholder,
+} from "~/components/entityWatermark/EntityWatermark";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
@@ -40,9 +45,22 @@ export default function ProjectPageLayout({
       <ProjectV2New />
       <GroupNew />
 
-      <Row>
+      <Row className="my-3">
         <Col xs={12}>
-          <ProjectPageHeader project={project} />
+          <Row>
+            <Col className="mb-3">
+              <ProjectPageHeader project={project} />
+            </Col>
+            <Col className={cx("d-md-block", "d-none")} md="auto">
+              <div className="position-relative">
+                <EntityWatermarkPlaceholder />
+                <EntityWatermark
+                  className={cx("end-0", "position-absolute", "top-0")}
+                  type="project"
+                />
+              </div>
+            </Col>
+          </Row>
         </Col>
         <Col xs={12} className="mb-2">
           <div className="mb-3">
