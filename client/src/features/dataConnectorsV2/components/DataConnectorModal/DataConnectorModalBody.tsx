@@ -36,6 +36,7 @@ import {
   getSchema,
   getSchemaOptions,
 } from "~/features/cloudStorage/projectCloudStorage.utils";
+import { ProjectConnectDataConnectorModeSwitch } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
@@ -69,6 +70,7 @@ interface AddOrEditDataConnectorProps {
   dataConnector?: DataConnectorRead | null;
   project?: Project;
   storageSecrets: DataConnectorSecret[];
+  switchMode?: () => void;
 }
 
 type DataConnectorModalBodyProps = AddOrEditDataConnectorProps;
@@ -77,6 +79,7 @@ export default function DataConnectorModalBody({
   dataConnector = null,
   project,
   storageSecrets,
+  switchMode,
 }: DataConnectorModalBodyProps) {
   const { flatDataConnector, schemata, success } = useAppSelector(
     (state) => state.dataConnectorFormSlice
@@ -95,6 +98,7 @@ export default function DataConnectorModalBody({
         dataConnector={dataConnector}
         project={project}
         storageSecrets={storageSecrets}
+        switchMode={switchMode}
       />
     </>
   );
@@ -104,6 +108,7 @@ function AddOrEditDataConnector({
   dataConnector,
   project,
   storageSecrets,
+  switchMode,
 }: AddOrEditDataConnectorProps) {
   const { cloudStorageState, flatDataConnector, schemata, validationResult } =
     useAppSelector((state) => state.dataConnectorFormSlice);
@@ -139,12 +144,15 @@ function AddOrEditDataConnector({
   if (CloudStorageContentByStep)
     return (
       <>
-        {!flatDataConnector.dataConnectorId && cloudStorageState.step <= 1 && (
-          <p className="text-body-secondary">
-            Add published datasets from data repositories for use in your
-            project. Or, connect to cloud storage to read and write custom data.
-          </p>
+        {switchMode && (
+          <div className="mb-3">
+            <ProjectConnectDataConnectorModeSwitch
+              mode="create"
+              switchMode={switchMode}
+            />
+          </div>
         )}
+
         <div className={cx("d-flex", "justify-content-end")}>
           <AddStorageAdvancedToggle
             state={cloudStorageState}

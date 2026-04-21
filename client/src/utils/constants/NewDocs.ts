@@ -95,3 +95,7 @@ export const NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED = newDocsLinkPage(
 export const NEW_DOCS_HOW_RENKU_WORKS = newDocsLinkPage(
   "docs/users/knowledge-base/about"
 )(DEFAULT_NEW_DOC_LINK_ARGS);
+
+export const NEW_DOCS_DATA_CONNECTORS = newDocsLinkPage("docs/users/data/data")(
+  DEFAULT_NEW_DOC_LINK_ARGS
+);
