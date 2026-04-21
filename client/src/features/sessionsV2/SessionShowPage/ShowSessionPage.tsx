@@ -603,7 +603,7 @@ function SessionDetails({
               resourceRequests={session?.resources?.requests}
               usageAvailable={{
                 hours: undefined,
-                percentage: undefined,
+                totalLimit: undefined,
                 quotaEnforced: false,
               }}
             />

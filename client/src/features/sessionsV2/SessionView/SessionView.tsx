@@ -137,7 +137,7 @@ function SessionCard({
         <ActiveSessionButton
           usageAvailable={{
             hours: userLauncherClass?.usage_available,
-            percentage: userLauncherClass?.usage_available_percentage,
+            totalLimit: userLauncherClass?.usage_limit_total,
             quotaEnforced,
           }}
           session={session}
@@ -150,7 +150,7 @@ function SessionCard({
           usageAvailable={{
             // The quota information is shown in the content description, no need to duplicate
             hours: undefined,
-            percentage: undefined,
+            totalLimit: undefined,
             quotaEnforced,
           }}
         />
@@ -330,7 +330,7 @@ export function SessionView({
         }}
         usageAvailable={{
           hours: userLauncherResourceClass?.usage_available,
-          percentage: userLauncherResourceClass?.usage_available_percentage,
+          totalLimit: userLauncherResourceClass?.usage_limit_total,
           quotaEnforced: false, // TODO: Pass the actual value when available from the API
         }}
       />

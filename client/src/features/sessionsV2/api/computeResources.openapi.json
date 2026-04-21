@@ -1902,8 +1902,8 @@
           "usage_available": {
             "$ref": "#/components/schemas/UsageAvailable"
           },
-          "usage_available_percentage": {
-            "$ref": "#/components/schemas/UsageAvailablePercentage"
+          "usage_limit_total": {
+            "$ref": "#/components/schemas/UsageLimitTotal"
           }
         },
         "required": [
@@ -2562,13 +2562,12 @@
         "example": 3.141,
         "minimum": 0
       },
-      "UsageAvailablePercentage": {
+      "UsageLimitTotal": {
         "type": "number",
         "format": "float",
-        "description": "Percentage of available resources based on quota",
-        "example": 75.5,
+        "description": "Total number of a resources hours available to the user",
+        "example": 10,
         "minimum": 0,
-        "maximum": 100,
         "default": null
       },
       "ResourceUsage": {

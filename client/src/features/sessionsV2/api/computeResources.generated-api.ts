@@ -630,7 +630,7 @@ export type QuotaWithId = {
   id: Name;
 };
 export type UsageAvailable = number;
-export type UsageAvailablePercentage = number;
+export type UsageLimitTotal = number;
 export type ResourceClassWithIdFiltered = {
   name: Name;
   cpu: Cpu;
@@ -644,7 +644,7 @@ export type ResourceClassWithIdFiltered = {
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   usage_available?: UsageAvailable;
-  usage_available_percentage?: UsageAvailablePercentage;
+  usage_limit_total?: UsageLimitTotal;
 };
 export type PublicFlag = boolean;
 export type RemoteConfigurationFirecrestProviderId = string;

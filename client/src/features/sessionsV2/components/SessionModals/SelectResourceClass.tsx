@@ -155,7 +155,7 @@ export function SelectResourceClassModal({
         }}
         usageAvailable={{
           hours: userLauncherClass?.usage_available,
-          percentage: userLauncherClass?.usage_available_percentage,
+          totalLimit: userLauncherClass?.usage_limit_total,
           quotaEnforced: false, // TODO: Pass the actual value when available from the API
         }}
       />
