@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,12 +16,16 @@
  * limitations under the License.
  */
 
-export const SEARCH_PARAM_PROVIDER = "targetProvider";
-export const SEARCH_PARAM_ACTION_REQUIRED = "actionRequired";
-export const SEARCH_PARAM_SOURCE = "source";
+import { lazy, Suspense } from "react";
 
-/** OAuth callback / integrations: GitHub App install follow-up when present in URL */
-export const CHECK_STATUS_QUERY_PARAM = "check-status";
+import PageLoader from "../../components/PageLoader";
 
-export const OAUTH_CONNECT_POLLING_INTERVAL_MS = 1_000;
-export const OAUTH_CONNECT_POLLING_TIMEOUT_MS = 600_000;
+const OAuthCompletePage = lazy(() => import("./OAuthCompletePage"));
+
+export default function LazyOAuthCompletePage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <OAuthCompletePage />
+    </Suspense>
+  );
+}
