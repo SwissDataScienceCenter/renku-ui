@@ -150,8 +150,8 @@ export function Layout({ children }: { children: ReactNode }) {
         <div id="root" className={cx("d-flex", "flex-column", "min-vh-100")}>
           {children}
         </div>
-        <Scripts />
         <ScrollRestoration />
+        <Scripts />
         <script data-cy-bootstrap suppressHydrationWarning>
           {" "}
         </script>
