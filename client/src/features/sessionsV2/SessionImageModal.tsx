@@ -94,7 +94,7 @@ export default function SessionImageModal({
               currently supported{" "}
               <Link
                 to={{
-                  pathname: ABSOLUTE_ROUTES.v2.integrations,
+                  pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                   search,
                 }}
               >
@@ -129,7 +129,7 @@ export default function SessionImageModal({
                 <Link
                   className={cx("btn", "btn-primary", "btn-sm")}
                   to={{
-                    pathname: ABSOLUTE_ROUTES.v2.integrations,
+                    pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                     search,
                   }}
                 >
@@ -149,7 +149,7 @@ export default function SessionImageModal({
             <Link
               className={cx("btn", "btn-primary", "btn-sm")}
               to={{
-                pathname: ABSOLUTE_ROUTES.v2.integrations,
+                pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                 search,
               }}
             >

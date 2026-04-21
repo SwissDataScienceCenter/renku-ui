@@ -31,8 +31,6 @@ import {
 } from "react-bootstrap-icons";
 import { Alert } from "reactstrap";
 
-import { ALERT_ICON_SIZE } from "./Alert.constants";
-
 /**
  * Display a alert that can be dismissed.
  *
@@ -87,10 +85,10 @@ class RenkuAlert extends Component {
 
   getIcon() {
     const icon = {
-      danger: <ExclamationTriangle size={ALERT_ICON_SIZE} />,
-      info: <InfoCircle size={ALERT_ICON_SIZE} />,
-      warning: <ExclamationTriangle size={ALERT_ICON_SIZE} />,
-      success: <CheckCircle size={ALERT_ICON_SIZE} />,
+      danger: <ExclamationTriangle />,
+      info: <InfoCircle />,
+      warning: <ExclamationTriangle />,
+      success: <CheckCircle />,
     }[this.props.color];
 
     return icon;
@@ -110,7 +108,7 @@ class RenkuAlert extends Component {
         data-cy={this.props.dataCy || this.props["data-cy"]}
       >
         <div className={cx("d-flex", "gap-3")}>
-          <div>{alertIcon}</div>
+          <div className="fs-1">{alertIcon}</div>
           <div className={cx("my-auto", "overflow-auto", "w-100")}>
             {this.props.children}
           </div>
