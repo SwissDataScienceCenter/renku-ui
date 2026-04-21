@@ -21,7 +21,7 @@ import { useMemo } from "react";
 import {
   Database,
   Eye,
-  Folder2Open,
+  Folder,
   Globe2,
   Lock,
   Pencil,
@@ -196,7 +196,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
 
 function SearchResultListItemIcon({ item }: { item: SearchEntity }) {
   return item.type === "Project" ? (
-    <Folder2Open />
+    <Folder />
   ) : item.type === "DataConnector" ? (
     <Database />
   ) : item.type === "User" ? (
@@ -316,7 +316,7 @@ function SearchResultCounts({ item }: { item: SearchEntity }) {
   return (
     <div className={cx("d-flex", "gap-4")}>
       <div>
-        <Folder2Open className={cx("bi", "me-1")} />
+        <Folder className={cx("bi", "me-1")} />
         Projects <Badge className="ms-1">{item.project_count}</Badge>
       </div>
       <div>
