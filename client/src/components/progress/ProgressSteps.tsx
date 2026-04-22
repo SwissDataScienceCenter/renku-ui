@@ -27,8 +27,6 @@ import { Loader } from "../Loader";
 
 import styles from "./ProgressBox.module.scss";
 
-// import "./Progress.css";
-
 /**
  *  renku-ui
  *
