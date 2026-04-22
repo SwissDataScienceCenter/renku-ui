@@ -54,6 +54,7 @@ export function DataConnectorModalBodyAndFooter({
   namespace,
   project,
   toggle,
+  switchMode,
   initialStep,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
@@ -120,6 +121,7 @@ export function DataConnectorModalBodyAndFooter({
             dataConnector={dataConnector}
             project={project}
             storageSecrets={connectorSecrets ?? []}
+            switchMode={switchMode}
           />
         )}
       </ModalBody>
@@ -157,19 +159,21 @@ function DataConnectorModalBodyAndFooterUnauthorized() {
 
 interface DataConnectorModalProps {
   dataConnector?: DataConnectorRead | null;
+  initialStep?: number;
   isOpen: boolean;
   namespace?: string;
   project?: Project;
+  switchMode?: () => void;
   toggle: (initialStep?: number) => void;
-  initialStep?: number;
 }
 export default function DataConnectorModal({
   dataConnector = null,
+  initialStep,
   isOpen,
   namespace,
   project,
+  switchMode,
   toggle: originalToggle,
-  initialStep,
 }: DataConnectorModalProps) {
   const dataConnectorId = dataConnector?.id ?? null;
   const scope = getDataConnectorScope(dataConnector?.namespace);
@@ -239,6 +243,7 @@ export default function DataConnectorModal({
             isOpen,
             namespace,
             project,
+            switchMode,
             toggle,
           }}
         />
