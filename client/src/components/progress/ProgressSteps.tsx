@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import {
   CheckCircleFill,
   SlashCircle,
@@ -23,6 +24,8 @@ import {
 } from "react-bootstrap-icons";
 
 import { Loader } from "../Loader";
+
+import styles from "./ProgressBox.module.scss";
 
 // import "./Progress.css";
 
@@ -74,31 +77,27 @@ interface ProgressStepsIndicatorProps {
   moreOptions?: React.ReactNode;
 }
 
-/**
- * Project Visibility functional component
- * @param {ProgressIndicatorProps} props - progress indicator options
- */
-const ProgressStepsIndicator = ({
+export default function ProgressStepsIndicator({
   style = ProgressStyle.Dark,
   title,
   description,
   status,
   moreOptions,
-}: ProgressStepsIndicatorProps) => {
+}: ProgressStepsIndicatorProps) {
   const content = status.map((s) => (
     <ProgressStep key={`step-${s.id}`} step={s} />
   ));
   return (
-    <div className={`progress-box progress-box--${style}`}>
-      <h2 className="progress-title">{title}</h2>
+    <div className={cx(styles.progressBox, styles[`progressBox_${style}`])}>
+      <h2>{title}</h2>
       <p className="pb-2">{description}</p>
-      <div className="mt-3 details-progress-box">
+      <div className="mt-3">
         {content}
         {moreOptions}
       </div>
     </div>
   );
-};
+}
 
 interface progressStepProps {
   step: StepsProgressBar;
@@ -148,7 +147,9 @@ function ProgressStep({ step }: progressStepProps) {
       break;
   }
 
-  return <div className="d-flex gap-2 mt-2 align-items-center">{content}</div>;
+  return (
+    <div className={cx("d-flex", "gap-2", "mt-2", "align-items-center")}>
+      {content}
+    </div>
+  );
 }
-
-export default ProgressStepsIndicator;
