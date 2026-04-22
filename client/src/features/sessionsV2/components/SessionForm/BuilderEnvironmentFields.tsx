@@ -59,8 +59,7 @@ export default function BuilderEnvironmentFields({
     () =>
       data?.findIndex(
         (repo) =>
-          repo.data?.status === "valid" &&
-          repo.data.metadata?.pull_permission
+          repo.data?.status === "valid" && repo.data.metadata?.pull_permission
       ),
     [data]
   );
@@ -91,8 +90,8 @@ export default function BuilderEnvironmentFields({
     </>
   ) : firstEligibleRepository == null || firstEligibleRepository < 0 ? (
     <WarnAlert dismissible={false}>
-      No accessible code repositories found in this project.
-      Please ensure that you have proper access to them.
+      No accessible code repositories found in this project. Please ensure that
+      you have proper access to them.
     </WarnAlert>
   ) : (
     <div className={cx("d-flex", "flex-column", "gap-3")}>

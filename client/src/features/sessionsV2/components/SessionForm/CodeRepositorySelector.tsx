@@ -164,7 +164,7 @@ function CodeRepositorySelect({
       unstyled
       isOptionDisabled={(option) =>
         option.data?.status !== "valid" ||
-        ! option.data.metadata?.pull_permission
+        !option.data.metadata?.pull_permission
       }
       onChange={onChange}
       onBlur={onBlur}
