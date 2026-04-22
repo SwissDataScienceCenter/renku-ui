@@ -96,6 +96,10 @@ export const NEW_DOCS_HOW_RENKU_WORKS = newDocsLinkPage(
   "docs/users/knowledge-base/about"
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
+export const NEW_DOCS_SEARCH_QUERY = newDocsLinkPage(
+  "docs/users/search/search-query"
+)(DEFAULT_NEW_DOC_LINK_ARGS);
+
 export const NEW_DOCS_USER_INTEGRATIONS = newDocsLinkPage(
   "docs/users/code/guides/connect-renku-account-to-github-or-gitlab-account"
 )(DEFAULT_NEW_DOC_LINK_ARGS);

@@ -60,7 +60,7 @@ import {
 import {
   SEARCH_PARAM_ACTION_REQUIRED,
   SEARCH_PARAM_PROVIDER,
-  SEARCH_PARAM_SOURCE
+  SEARCH_PARAM_SOURCE,
 } from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
