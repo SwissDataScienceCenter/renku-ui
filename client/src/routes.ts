@@ -16,6 +16,8 @@ import { RELATIVE_ROUTES } from "./routing/routes.constants";
  */
 
 export default [
+  // Index page "/", which is the landing page for anonymous users and the dashboard for logged in users
+  index("routes/index.tsx"),
   // Help pages
   route(RELATIVE_ROUTES.v2.help.root, "routes/help/root.tsx", [
     index("routes/help/index.tsx"),
