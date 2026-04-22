@@ -195,6 +195,7 @@ describe("Set up data connectors", () => {
   });
 
   it("create a simple data connector", () => {
+    const projectFullFlug = "user1-uuid/test-2-v2-project";
     fixtures
       .readProjectV2WithoutDocumentation({
         fixture: "projectV2/read-projectV2-empty.json",
@@ -204,12 +205,12 @@ describe("Set up data connectors", () => {
       .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
       .testCloudStorage({ success: false })
       .postDataConnector({
-        namespace: "user1-uuid/test-2-v2-project",
+        namespace: projectFullFlug,
         visibility: "public",
       })
       .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" })
       .readProjectV2Namespace();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.visit(`/p/${projectFullFlug}`);
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
 
@@ -265,78 +266,6 @@ describe("Set up data connectors", () => {
     cy.wait("@listProjectDataConnectors");
   });
 
-  it("creates and link global data connector", () => {
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .testCloudStorage({ success: false })
-      .postGlobalDataConnector()
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-DOI-1" });
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@listProjectDataConnectors");
-
-    // Open modal
-    cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("project-data-controller-mode-doi").click();
-
-    // Check validation is working
-    cy.getDataCy("doi-data-connector-button").click();
-    cy.getDataCy("project-data-connector-connect-modal")
-      .find(".invalid-feedback")
-      .should("exist");
-
-    // Add DOI
-    cy.get("#doi").type("10.1234/zenodo.123456");
-    cy.getDataCy("doi-data-connector-button").click();
-    cy.getDataCy("project-data-connector-connect-modal").should("be.visible");
-    cy.wait("@postGlobalDataConnector");
-    cy.get("[data-cy=project-data-connector-connect-modal]").should(
-      "not.exist"
-    );
-  });
-
-  it("creates and link global data connector by URL", () => {
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .testCloudStorage({ success: false })
-      .postGlobalDataConnector({ doi: "10.5281/zenodo.123456" })
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-DOI-1" });
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@listProjectDataConnectors");
-
-    // Open modal
-    cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("project-data-controller-mode-doi").click();
-
-    // Check validation is working
-    cy.getDataCy("doi-data-connector-button").click();
-    cy.getDataCy("project-data-connector-connect-modal")
-      .find(".invalid-feedback")
-      .should("exist");
-
-    // Add DOI
-    cy.get("#doi").type("https://zenodo.org/records/123456");
-    cy.getDataCy("doi-data-connector-button").click();
-    cy.getDataCy("project-data-connector-connect-modal").should("be.visible");
-    cy.wait("@postGlobalDataConnector");
-    cy.get("[data-cy=project-data-connector-connect-modal]").should(
-      "not.exist"
-    );
-  });
-
   it("link a data connector", () => {
     fixtures
       .readProjectV2WithoutDocumentation({
@@ -345,21 +274,37 @@ describe("Set up data connectors", () => {
       .listProjectDataConnectors()
       .getDataConnector()
       .getDataConnectorByNamespaceAndSlug()
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-1" });
+      .postDataConnectorProjectLink({
+        dataConnectorId: "01KMG56188ZXT9N2FJ4000000",
+      })
+      .searchContent({
+        name: "matchAnyDataConnector",
+        queryPartialString: "type:DataConnector",
+      })
+      .searchContent({
+        fixture: "searchV2/search-DC-from-id.json",
+        name: "matchSpecificNameDataConnector",
+        queryPartialString: "user1-uuid/example-storage",
+      });
+
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
 
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("project-data-controller-mode-link").click();
-    cy.get("#data-connector-identifier").type("user1-uuid/example-storage");
-    cy.getDataCy("link-data-connector-button").click();
+    cy.getDataCy("data-connector-search-input").type(
+      "user1-uuid/example-storage"
+    );
+    cy.getDataCy("data-connector-link-button").click();
+
     cy.wait("@postDataConnectorProjectLink");
     cy.wait("@listProjectDataConnectors");
+    cy.getDataCy("data-connector-link-successful-badge").should("be.visible");
   });
 
-  it("link a global data connector", () => {
+  it("create and link a global data connector", () => {
+    const doi = "doi:10.7910/DVN/DXH6FK";
     fixtures
       .readProjectV2WithoutDocumentation({
         fixture: "projectV2/read-projectV2-empty.json",
@@ -367,39 +312,53 @@ describe("Set up data connectors", () => {
       .listProjectDataConnectors()
       .getDataConnector()
       .getDataConnectorByGlobalSlug()
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-DOI-1" });
+      .postGlobalDataConnector({ doi })
+      .postDataConnectorProjectLink({
+        dataConnectorId: doi,
+      });
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
 
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("project-data-controller-mode-link").click();
-    cy.get("#data-connector-identifier").type("ULID-DOI-1");
-    cy.getDataCy("link-data-connector-button").click();
+    cy.getDataCy("data-connector-search-input").type(doi);
+    cy.getDataCy("data-connector-link-button").click();
     cy.wait("@postDataConnectorProjectLink");
     cy.wait("@listProjectDataConnectors");
+    cy.getDataCy("data-connector-link-successful-badge").should("be.visible");
   });
 
-  it("link a data connector not found", () => {
+  it("creates and link global data connector by URL", () => {
+    const doi = "10.5281/zenodo.123456";
     fixtures
       .readProjectV2WithoutDocumentation({
         fixture: "projectV2/read-projectV2-empty.json",
       })
       .listProjectDataConnectors()
-      .getDataConnectorByNamespaceAndSlugNotFound();
+      .getDataConnector()
+      .getDataConnectorByGlobalSlug()
+      .postGlobalDataConnector({
+        doi,
+        fixture: "dataConnector/data-connector-global-2.json",
+      })
+      .postDataConnectorProjectLink({
+        dataConnectorId: doi,
+      });
+
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@listProjectDataConnectors");
 
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("project-data-controller-mode-link").click();
-    cy.get("#data-connector-identifier").type("user1-uuid/example-storage");
-    cy.getDataCy("link-data-connector-button").click();
-    cy.contains(
-      "Data connector with identifier 'user1-uuid/example-storage' does not exist or you do not have access to it."
-    ).should("be.visible");
+    cy.getDataCy("data-connector-search-input").type(
+      "https://zenodo.org/records/123456"
+    );
+    cy.getDataCy("data-connector-link-button").click();
+    cy.wait("@postDataConnectorProjectLink");
+    cy.wait("@listProjectDataConnectors");
+    cy.getDataCy("data-connector-link-successful-badge").should("be.visible");
   });
 
   it("unlink a data connector", () => {

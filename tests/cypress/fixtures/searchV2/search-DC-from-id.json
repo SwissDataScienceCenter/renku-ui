@@ -1,0 +1,42 @@
+{
+  "items": [
+    {
+      "id": "01KMG56188ZXT9N2FJ4000000",
+      "storageType": "webdav",
+      "readonly": true,
+      "name": "Example",
+      "slug": "example-storage",
+      "path": "user1-uuid/example-storage",
+      "namespace": {
+        "id": "01KKY4KQ41F1F816PYGS000000",
+        "name": "Test public project",
+        "slug": "test-public-project",
+        "path": "user1-uuid/test-public-project",
+        "repositories": [],
+        "visibility": "public",
+        "creationDate": "2026-03-17T14:53:44Z",
+        "keywords": [],
+        "type": "Project"
+      },
+      "visibility": "public",
+      "createdBy": {
+        "id": "3bdfa5fd-835e-493d-0000-b75fd049ea7f",
+        "path": "user1-uuid",
+        "slug": "user1-uuid",
+        "firstName": "User1",
+        "lastName": "User1",
+        "type": "User"
+      },
+      "creationDate": "2026-03-24T14:50:04Z",
+      "keywords": [],
+      "score": 2.5,
+      "type": "DataConnector"
+    }
+  ],
+  "facets": { "entityType": { "DataConnector": 1 }, "keywords": {} },
+  "pagingInfo": {
+    "page": { "limit": 20, "offset": 0 },
+    "totalResult": 1,
+    "totalPages": 1
+  }
+}

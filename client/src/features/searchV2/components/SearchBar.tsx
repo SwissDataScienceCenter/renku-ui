@@ -22,6 +22,8 @@ import { Search, XCircleFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Form, InputGroup } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
+import { NEW_DOCS_SEARCH_QUERY } from "~/utils/constants/NewDocs";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { applyParsedSearch, reset as resetSearch } from "../searchV2.slice";
@@ -35,7 +37,10 @@ interface SearchBarForm {
   query: string;
 }
 
-export default function SearchBar() {
+interface SearchBarProps {
+  showLinkToDocs?: boolean;
+}
+export default function SearchBar({ showLinkToDocs = true }: SearchBarProps) {
   const dispatch = useAppDispatch();
   const state = useAppSelector(({ searchV2 }) => searchV2);
 
@@ -70,8 +75,8 @@ export default function SearchBar() {
   );
 
   return (
-    <>
-      <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
+    <div className="mb-3">
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <InputGroup>
           <Controller
             control={control}
@@ -113,6 +118,15 @@ export default function SearchBar() {
           </Button>
         </InputGroup>
       </Form>
-    </>
+      {showLinkToDocs && (
+        <p className={cx("form-text", "mb-0", "mt-1")}>
+          We support{" "}
+          <ExternalLink href={NEW_DOCS_SEARCH_QUERY}>
+            a rich syntax
+          </ExternalLink>{" "}
+          for search queries.
+        </p>
+      )}
+    </div>
   );
 }
