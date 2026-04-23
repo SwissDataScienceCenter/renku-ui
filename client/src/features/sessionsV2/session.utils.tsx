@@ -429,7 +429,7 @@ export function usageAvailableString(
 ): string | null {
   if (usageAvailableHours == null) return null;
   if (short) return `${usageAvailableHours}h available`;
-  return `(${usageAvailableHours}h of compute available)`;
+  return `${usageAvailableHours}h of compute time`;
 }
 
 export function UsageAvailable({
@@ -451,8 +451,8 @@ export function UsageAvailable({
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Stopwatch fontSize={16} className="flex-shrink-0" />
       <span>
-        <strong>{usageAvailableHours}h of compute time</strong> until quota is
-        used
+        <strong>{usageAvailableString(usageAvailableHours, false)}</strong>{" "}
+        until quota is used
       </span>
     </div>
   );
