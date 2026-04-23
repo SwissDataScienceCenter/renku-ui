@@ -67,7 +67,7 @@ export default function GroupNotFound({ error }: GroupNotFoundProps) {
               <RtkOrDataServicesError error={error} dismissible={false} />
             )}
             <Link
-              to={ABSOLUTE_ROUTES.v2.root}
+              to={ABSOLUTE_ROUTES.v2.index}
               className={cx("btn", "btn-primary")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />

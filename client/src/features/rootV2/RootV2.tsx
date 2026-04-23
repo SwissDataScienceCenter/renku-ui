@@ -37,7 +37,6 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
-import LazyDashboardV2 from "../dashboardV2/LazyDashboardV2";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
 import ProjectV2New from "../projectsV2/new/ProjectV2New";
@@ -78,9 +77,14 @@ function BetaV2Redirect() {
       );
     }
   }, [navigate, betaGroupsMatch?.params]);
-  return <Navigate to={generatePath(ABSOLUTE_ROUTES.v2.root)} replace={true} />;
+  return (
+    <Navigate to={generatePath(ABSOLUTE_ROUTES.v2.index)} replace={true} />
+  );
 }
 
+/**
+ * @deprecated Use routing from react-router
+ */
 export default function RootV2() {
   const navigate = useNavigate();
 
@@ -112,14 +116,6 @@ export default function RootV2() {
 
       <div className={cx("d-flex", "flex-grow-1")}>
         <Routes>
-          <Route
-            index
-            element={
-              <ContainerWrap fullSize={true}>
-                <LazyDashboardV2 />
-              </ContainerWrap>
-            }
-          />
           <Route
             path={RELATIVE_ROUTES.v2.betaRoot}
             element={<BetaV2Redirect />}

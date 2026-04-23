@@ -88,7 +88,7 @@ function GroupDeleteConfirmation({
       renkuToastSuccess({
         textHeader: `Group ${group.name} has been successfully deleted.`,
       });
-      navigate(generatePath(ABSOLUTE_ROUTES.v2.root));
+      navigate(generatePath(ABSOLUTE_ROUTES.v2.index));
     }
   }, [
     group.name,
