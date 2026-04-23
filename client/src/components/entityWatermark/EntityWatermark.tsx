@@ -17,13 +17,13 @@
  */
 
 import cx from "classnames";
-import { Folder, People, Person } from "react-bootstrap-icons";
+import { Database, Folder, People, Person } from "react-bootstrap-icons";
 
 import styles from "./entityWatermark.module.scss";
 
 interface EntityWatermarkProps {
   className?: string;
-  type: "group" | "user" | "project";
+  type: "dataConnector" | "group" | "user" | "project";
 }
 export function EntityWatermark({ className, type }: EntityWatermarkProps) {
   return (
