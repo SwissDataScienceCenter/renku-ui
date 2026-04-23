@@ -1269,7 +1269,7 @@ describe("launch sessions with resource quotas", () => {
       .resourcePoolsTest({
         fixture: "dataServices/resource-pools-consumed.json",
       })
-      .getSessionsV2({ fixture: "sessions/sessionsV2Hibernated.json" });
+      .getSessionsV2({ fixture: "sessions/sessionsV2Paused.json" });
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@getSessionsV2");
