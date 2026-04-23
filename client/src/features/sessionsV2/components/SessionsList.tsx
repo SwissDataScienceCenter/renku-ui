@@ -17,7 +17,7 @@
  */
 
 import { UsageAvailable } from "../session.utils";
-import type { SessionLauncherResourceUsageAvailable } from "../sessionsV2.types";
+import type { SessionLauncherResourceUsageLimit } from "../sessionsV2.types";
 
 interface SessionLauncherResources {
   poolName?: string;
@@ -35,12 +35,12 @@ interface SessionResources {
 
 interface SessionRowResourceRequestsProps {
   resourceRequests: SessionResources["requests"] | SessionLauncherResources;
-  usageAvailable: SessionLauncherResourceUsageAvailable;
+  usageLimit: SessionLauncherResourceUsageLimit;
 }
 
 export function SessionRowResourceRequests({
   resourceRequests,
-  usageAvailable,
+  usageLimit,
 }: SessionRowResourceRequestsProps) {
   if (!resourceRequests) {
     return null;
@@ -86,11 +86,13 @@ export function SessionRowResourceRequests({
           </span>
         ))}
       </div>
-      {usageAvailable.hours != null && (
+      {usageLimit.resourceClass?.usage_available != null && (
         <div data-cy="session-view-resource-class-availability">
           <span key="available">
             <span className="text-nowrap">
-              <UsageAvailable usageAvailableHours={usageAvailable.hours} />
+              <UsageAvailable
+                usageAvailableHours={usageLimit.resourceClass.usage_available}
+              />
             </span>
           </span>
         </div>

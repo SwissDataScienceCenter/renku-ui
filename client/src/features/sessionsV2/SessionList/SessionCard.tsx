@@ -113,9 +113,8 @@ export default function SessionCard({ project, session }: SessionCardProps) {
           >
             <div>
               <ActiveSessionButton
-                usageAvailable={{
-                  hours: userLauncherClass?.usage_available,
-                  totalLimit: userLauncherClass?.usage_limit_total,
+                usageLimit={{
+                  resourceClass: userLauncherClass,
                   quotaEnforced: false, // TODO: Pass the actual value when available from the API
                 }}
                 session={session}

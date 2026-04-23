@@ -59,7 +59,7 @@ import {
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
 } from "../../api/sessionsV2.api";
 import type {
-  SessionLauncherResourceUsageAvailable,
+  SessionLauncherResourceUsageLimit,
   SessionResources,
   SessionStatus,
   SessionStatusState,
@@ -77,7 +77,7 @@ import { SessionRowResourceRequests } from "../SessionsList";
 interface ActiveSessionDefaultButtonProps
   extends Pick<
     ActiveSessionButtonProps,
-    "usageAvailable" | "session" | "showSessionUrl"
+    "usageLimit" | "session" | "showSessionUrl"
   > {
   isHibernating: boolean;
   isResuming: boolean;
@@ -95,7 +95,7 @@ function ActiveSessionDefaultButton({
   onHibernateSession,
   onResumeSession,
   onStopSession,
-  usageAvailable,
+  usageLimit,
   session,
   showSessionUrl,
   toggleLogsModal,
@@ -180,9 +180,9 @@ function ActiveSessionDefaultButton({
     );
   if (status === "hibernated") {
     if (
-      usageAvailable.quotaEnforced &&
-      usageAvailable.hours != null &&
-      usageAvailable.hours <= 0
+      usageLimit.quotaEnforced &&
+      usageLimit.resourceClass?.usage_available != null &&
+      usageLimit.resourceClass.usage_available <= 0
     ) {
       return (
         <>
@@ -278,14 +278,14 @@ function ActiveSessionDefaultButton({
 
 interface ActiveSessionButtonProps {
   className?: string;
-  usageAvailable: SessionLauncherResourceUsageAvailable;
+  usageLimit: SessionLauncherResourceUsageLimit;
   session: SessionV2;
   showSessionUrl: string;
 }
 
 export default function ActiveSessionButton({
   className,
-  usageAvailable,
+  usageLimit,
   session,
   showSessionUrl,
 }: ActiveSessionButtonProps) {
@@ -469,7 +469,7 @@ export default function ActiveSessionButton({
       onHibernateSession={onHibernateSession}
       onResumeSession={onResumeSession}
       onStopSession={onStopSession}
-      usageAvailable={usageAvailable}
+      usageLimit={usageLimit}
       session={session}
       showSessionUrl={showSessionUrl}
       toggleLogsModal={toggleLogsModal}
@@ -770,9 +770,8 @@ function ModifySessionModalContent({
               <span>
                 <SessionRowResourceRequests
                   resourceRequests={resources?.requests}
-                  usageAvailable={{
-                    hours: userLauncherClass?.usage_available,
-                    totalLimit: userLauncherClass?.usage_limit_total,
+                  usageLimit={{
+                    resourceClass: userLauncherClass,
                     quotaEnforced: false, // TODO: Pass the actual value when available from the API
                   }}
                 />

@@ -231,9 +231,8 @@ function DashboardSession({ session }: DashboardSessionProps) {
       <div className={cx(styles.sessionButton, "position-absolute")}>
         <ActiveSessionButton
           className="my-auto"
-          usageAvailable={{
-            hours: userLauncherClass?.usage_available,
-            totalLimit: userLauncherClass?.usage_limit_total,
+          usageLimit={{
+            resourceClass: userLauncherClass,
             quotaEnforced: false, // TODO: Pass the actual value when available from the API
           }}
           session={session}

@@ -135,9 +135,8 @@ function SessionCard({
       contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
         <ActiveSessionButton
-          usageAvailable={{
-            hours: userLauncherClass?.usage_available,
-            totalLimit: userLauncherClass?.usage_limit_total,
+          usageLimit={{
+            resourceClass: userLauncherClass,
             quotaEnforced,
           }}
           session={session}
@@ -147,10 +146,9 @@ function SessionCard({
       contentResources={
         <SessionRowResourceRequests
           resourceRequests={session.resources?.requests}
-          usageAvailable={{
+          usageLimit={{
             // The quota information is shown in the content description, no need to duplicate
-            hours: undefined,
-            totalLimit: undefined,
+            resourceClass: undefined,
             quotaEnforced,
           }}
         />
@@ -328,9 +326,8 @@ export function SessionView({
             launcher?.disk_storage ?? launcherResourceClass.default_storage,
           gpu: launcherResourceClass.gpu,
         }}
-        usageAvailable={{
-          hours: userLauncherResourceClass?.usage_available,
-          totalLimit: userLauncherResourceClass?.usage_limit_total,
+        usageLimit={{
+          resourceClass: userLauncherResourceClass,
           quotaEnforced: false, // TODO: Pass the actual value when available from the API
         }}
       />
