@@ -68,6 +68,8 @@ import type {
 } from "./startSessionOptionsV2.types";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
 
+import progressBoxStyles from "~/components/progress/ProgressBox.module.scss";
+
 interface SaveCloudStorageProps
   extends Omit<StartSessionFromLauncherProps, "project"> {
   startSessionOptionsV2: StartSessionOptionsV2;
@@ -189,7 +191,12 @@ function SaveCloudStorage({
   ]);
 
   return (
-    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+    <div
+      className={cx(
+        progressBoxStyles.progressBoxSmall,
+        progressBoxStyles.progressBoxSmallSteps
+      )}
+    >
       <ProgressStepsIndicator
         description="Saving credentials..."
         type={ProgressType.Determinate}
@@ -299,7 +306,12 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
     <div>
       {error && <RtkOrDataServicesError error={error} dismissible={false} />}
 
-      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <div
+        className={cx(
+          progressBoxStyles.progressBoxSmall,
+          progressBoxStyles.progressBoxSmallSteps
+        )}
+      >
         <ProgressStepsIndicator
           description="Preparing to start session"
           type={ProgressType.Determinate}
@@ -420,7 +432,12 @@ function StartSessionWithCloudStorageModal({
 
   return (
     <div>
-      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <div
+        className={cx(
+          progressBoxStyles.progressBoxSmall,
+          progressBoxStyles.progressBoxSmallSteps
+        )}
+      >
         <ProgressStepsIndicator
           description="Preparing to start session"
           type={ProgressType.Determinate}
@@ -622,7 +639,12 @@ function StartSessionFromLauncher({
   }
 
   return (
-    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+    <div
+      className={cx(
+        progressBoxStyles.progressBoxSmall,
+        progressBoxStyles.progressBoxSmallSteps
+      )}
+    >
       <ProgressStepsIndicator
         description="Preparing to start session"
         type={ProgressType.Determinate}
@@ -725,7 +747,12 @@ function StartSessionWithSessionSecretsModal({
 
   return (
     <div>
-      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <div
+        className={cx(
+          progressBoxStyles.progressBoxSmall,
+          progressBoxStyles.progressBoxSmallSteps
+        )}
+      >
         <ProgressStepsIndicator
           description="Preparing to start session"
           type={ProgressType.Determinate}
@@ -768,7 +795,12 @@ function StartSessionImageModal({
 
   return (
     <div>
-      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <div
+        className={cx(
+          progressBoxStyles.progressBoxSmall,
+          progressBoxStyles.progressBoxSmallSteps
+        )}
+      >
         <ProgressStepsIndicator
           description="Preparing to start session"
           type={ProgressType.Determinate}
@@ -811,7 +843,12 @@ function StartSessionRepositoriesModal({
 
   return (
     <div>
-      <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <div
+        className={cx(
+          progressBoxStyles.progressBoxSmall,
+          progressBoxStyles.progressBoxSmallSteps
+        )}
+      >
         <ProgressStepsIndicator
           description="Preparing to start session"
           type={ProgressType.Determinate}

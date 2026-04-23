@@ -52,7 +52,7 @@ export const ABSOLUTE_ROUTES = {
     sessions: "/v1/sessions",
   },
   v2: {
-    root: "/",
+    index: "/",
     admin: "/admin",
     integrations: {
       root: "/integrations",
@@ -120,7 +120,7 @@ export const RELATIVE_ROUTES = {
     styleGuide: "style-guide",
   },
   v2: {
-    root: "/*",
+    index: "/",
     admin: "admin",
     betaRoot: "/v2/*",
     integrations: {

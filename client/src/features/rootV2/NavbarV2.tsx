@@ -185,7 +185,7 @@ export default function NavbarV2() {
             <RenkuNavLinkV2
               id="link-home"
               data-cy="link-home"
-              to={ABSOLUTE_ROUTES.v2.root}
+              to={ABSOLUTE_ROUTES.v2.index}
             >
               <img src={RENKU_LOGO} alt="Renku" height="50" />
             </RenkuNavLinkV2>
@@ -224,7 +224,7 @@ export default function NavbarV2() {
                   data-cy="navbar-link-dashboard"
                   end
                   title="Dashboard"
-                  to={ABSOLUTE_ROUTES.v2.root}
+                  to={ABSOLUTE_ROUTES.v2.index}
                 >
                   {user?.isLoggedIn ? "Dashboard" : "Home"}
                 </RenkuNavLinkV2>

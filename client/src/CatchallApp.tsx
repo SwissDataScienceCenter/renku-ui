@@ -21,7 +21,6 @@ import { ReactNode } from "react";
 import { Route, Routes } from "react-router";
 
 import LazyAdminPage from "./features/admin/LazyAdminPage";
-import LazyAnonymousHome from "./features/landing/LazyAnonymousHome";
 import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
 import LegacyDatasets from "./features/legacy/LegacyDatasets";
 import LegacyProjectView from "./features/legacy/LegacyProjectView";
@@ -39,18 +38,6 @@ export default function CatchallApp() {
   const { data: user } = useGetUserQueryState();
   return (
     <Routes>
-      <Route
-        index
-        element={
-          user?.isLoggedIn ? (
-            <LazyRootV2 />
-          ) : (
-            <div className="w-100">
-              <LazyAnonymousHome />
-            </div>
-          )
-        }
-      />
       <Route path="/projects/*" element={<LegacyProjectView />} />
       <Route
         path="/datasets/:identifier/add"
