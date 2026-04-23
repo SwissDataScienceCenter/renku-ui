@@ -26,6 +26,7 @@ export const ABSOLUTE_ROUTES = {
     root: "/projects",
     splat: "/projects/*",
   },
+  v1: { splat: "/v1/*" },
   v2: {
     index: "/",
     admin: "/admin",
@@ -75,6 +76,7 @@ export const RELATIVE_ROUTES = {
   root: "/",
   datasets: "/datasets",
   projects: "/projects",
+  v1: { splat: "v1/*" },
   v2: {
     index: "/",
     admin: "admin",
