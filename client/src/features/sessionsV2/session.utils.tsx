@@ -439,21 +439,21 @@ export function UsageAvailable({
 }) {
   if (usageAvailableHours <= 0)
     return (
-      <div className={cx("d-flex", "align-items-center", "gap-2")}>
-        <Alarm fontSize={16} className="flex-shrink-0" />
+      <>
+        <Alarm fontSize={16} className={cx("flex-shrink-0", "me-2")} />
         <span>
           Usage quota for this resource pool <strong>has been reached</strong>
         </span>
-      </div>
+      </>
     );
 
   return (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Stopwatch fontSize={16} className="flex-shrink-0" />
+    <>
+      <Stopwatch fontSize={16} className={cx("flex-shrink-0", "me-2")} />
       <span>
         <strong>{usageAvailableString(usageAvailableHours, false)}</strong>{" "}
         until quota is used
       </span>
-    </div>
+    </>
   );
 }
