@@ -44,13 +44,11 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                 <Input
                   aria-describedby="projectVisibilityHelp"
                   type="radio"
-                  className={cx("btn-check")}
+                  className="btn-check"
                   id={`${formId}-project-visibility-public`}
                   value="public"
                   checked={field.value === "public"}
-                  onChange={(e) => {
-                    field.onChange(e);
-                  }}
+                  onChange={field.onChange}
                 />
                 <Label
                   className={cx("btn", "btn-outline-primary", "mb-0")}
@@ -67,9 +65,7 @@ export default function ProjectVisibilityFormField<T extends FieldValues>({
                   id={`${formId}-project-visibility-private`}
                   value="private"
                   checked={field.value === "private"}
-                  onChange={(e) => {
-                    field.onChange(e);
-                  }}
+                  onChange={field.onChange}
                 />
                 <Label
                   className={cx("btn", "btn-outline-primary", "mb-0")}
