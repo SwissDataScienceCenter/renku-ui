@@ -19,6 +19,5 @@
 import NoLegacySupport from "./NoLegacySupport";
 
 export default function LegacyRoot() {
-  console.log("legacy");
   return <NoLegacySupport />;
 }
