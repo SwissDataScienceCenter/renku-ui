@@ -200,7 +200,7 @@ export default function ConnectedServicesPage() {
             color="outline-primary"
             id="ActivateIntegration"
             data-cy="activate-integration-button"
-            onClick={() => setIsAddIntegrationModalOpen(true)}
+            onClick={toggleAddIntegrationModal}
             type="button"
           >
             <PlusLg className="bi" />
@@ -245,7 +245,7 @@ export default function ConnectedServicesPage() {
       </div>
       <AddIntegrationModal
         isOpen={isAddIntegrationModalOpen}
-        onToggle={() => setIsAddIntegrationModalOpen((isOpen) => !isOpen)}
+        onToggle={toggleAddIntegrationModal}
         providers={modalProviders}
       />
     </>
@@ -569,29 +569,31 @@ export function ConnectButton({
   labelReconnect = "Reconnect",
   withIcon = false,
 }: ConnectButtonParams) {
-  const { startConnect, authorizeHref } = useOAuthProviderConnect(provider, {
+  const { startPolling, authorizeHref } = useOAuthProviderConnect(provider, {
     includeSource,
     onConnected,
   });
   const handleConnectClick = useCallback(() => {
     onConnectStart?.();
-    startConnect();
-  }, [onConnectStart, startConnect]);
+    startPolling();
+  }, [onConnectStart, startPolling]);
 
   if (!provider || !authorizeHref) return null;
 
   const text = connectionStatus === "connected" ? labelReconnect : labelConnect;
 
   return (
-    <Button
+    <a
+      href={authorizeHref}
       className={cx("btn", className)}
       color="primary"
+      target="_blank"
+      rel="noopener noreferrer"
       onClick={handleConnectClick}
-      type="button"
     >
       {withIcon && <Plugin className={cx("bi", "me-1")} />}
       {text}
-    </Button>
+    </a>
   );
 }
 
