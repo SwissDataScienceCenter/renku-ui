@@ -134,9 +134,7 @@ export default function BuilderEnvironmentFields({
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       {!isEdit && (
         <p className={cx("mb-0")}>
-          Let RenkuLab create a customized environment from a code repository. A
-          container image will be created based on the requirements found in the
-          code repository.
+          Let RenkuLab create a customized environment from a code repository.
         </p>
       )}
       {content}
