@@ -685,6 +685,22 @@ function RepositoryView({
                       </span>
                     </div>
 
+                    <div className="mb-3" data-cy="code-repository-visibility">
+                      <span>
+                        Visibility:{" "}
+                        <RenkuBadge
+                          color={
+                            data?.metadata?.visibility === "private"
+                              ? "danger"
+                              : "success"
+                          }
+                          pill
+                        >
+                          {data?.metadata?.visibility ?? "Unknown"}
+                        </RenkuBadge>
+                      </span>
+                    </div>
+
                     <p>
                       Integration:{" "}
                       {!data?.provider?.id ? (
