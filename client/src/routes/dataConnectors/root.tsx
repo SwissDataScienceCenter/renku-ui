@@ -263,6 +263,11 @@ export default function DataConnectorPagesRoot({
 
   const [isCacheReady, setIsCacheReady] = useState<boolean>(false);
 
+  const shouldQuery =
+    loaderData.clientSideFetch ||
+    isCacheReady ||
+    loaderData.dataConnector == null;
+
   //? Inject the server-side data into the RTK Query cache
   useEffect(() => {
     if (loaderData.dataConnector == null) return;
@@ -325,15 +330,11 @@ export default function DataConnectorPagesRoot({
   //? * once the cache is ready (will use cache data)
   const globalQuery =
     dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug.useQuery(
-      !projectNamespace && (loaderData.clientSideFetch || isCacheReady)
-        ? { slug }
-        : skipToken
+      !projectNamespace && shouldQuery ? { slug } : skipToken
     );
 
   const namespaceQuery = useGetNamespacesByNamespaceDataConnectorsAndSlugQuery(
-    projectNamespace &&
-      !dataConnectorNamespace &&
-      (loaderData.clientSideFetch || isCacheReady)
+    projectNamespace && !dataConnectorNamespace && shouldQuery
       ? {
           namespace: projectNamespace,
           slug,
@@ -343,9 +344,7 @@ export default function DataConnectorPagesRoot({
 
   const projectQuery =
     useGetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugQuery(
-      projectNamespace &&
-        dataConnectorNamespace &&
-        (loaderData.clientSideFetch || isCacheReady)
+      projectNamespace && dataConnectorNamespace && shouldQuery
         ? {
             namespace: projectNamespace,
             project: dataConnectorNamespace,
@@ -354,15 +353,17 @@ export default function DataConnectorPagesRoot({
         : skipToken
     );
 
-  const {
-    currentData: dataConnector,
-    isLoading,
-    error,
-  } = projectNamespace && dataConnectorNamespace
-    ? projectQuery
-    : projectNamespace
-    ? namespaceQuery
-    : globalQuery;
+  const queryResult =
+    projectNamespace && dataConnectorNamespace
+      ? projectQuery
+      : projectNamespace
+      ? namespaceQuery
+      : globalQuery;
+
+  const dataConnector = queryResult.currentData ?? loaderData.dataConnector;
+  const error =
+    queryResult.error ?? (dataConnector == null ? loaderData.error : undefined);
+  const isLoading = queryResult.isLoading || queryResult.isFetching;
 
   useEffect(() => {
     if (dataConnector == null) return;
