@@ -23,7 +23,6 @@ import { Route, Routes } from "react-router";
 import LazyAdminPage from "./features/admin/LazyAdminPage";
 import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
 import LegacyDatasets from "./features/legacy/LegacyDatasets";
-import LegacyProjectView from "./features/legacy/LegacyProjectView";
 import LegacyRoot from "./features/legacy/LegacyRoot";
 import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
@@ -38,7 +37,6 @@ export default function CatchallApp() {
   const { data: user } = useGetUserQueryState();
   return (
     <Routes>
-      <Route path="/projects/*" element={<LegacyProjectView />} />
       <Route
         path="/datasets/:identifier/add"
         element={<LegacyDatasetAddToProject />}

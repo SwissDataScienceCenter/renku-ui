@@ -22,42 +22,25 @@ import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import ContainerWrap from "~/components/container/ContainerWrap";
+import { Loader } from "~/components/Loader";
 import { useGetPlatformRedirectsBySourceUrlQuery } from "~/features/platform/api/platform.api";
 import { locationPathnameToSourceUrl } from "~/features/platform/api/platform.utils";
 import NoLegacySupportForProjects from "./NoLegacySupportForProjects";
 
-function CheckingForRedirect() {
-  return (
-    <ContainerWrap>
-      <div className={cx("d-flex")}>
-        <div className={cx("m-auto", "d-flex", "flex-column")}>
-          <h3
-            data-cy="not-found-title"
-            className={cx(
-              "fw-bold",
-              "mt-0",
-              "mb-3",
-              "d-flex",
-              "align-items-center",
-              "gap-3",
-              "text-primary"
-            )}
-          >
-            Checking for redirect...
-          </h3>
-        </div>
-      </div>
-    </ContainerWrap>
-  );
+interface ClientSideCheckForRedirectsProps {
+  projectSlug: string;
 }
 
-export default function CheckForRedirect() {
+export default function ClientSideCheckForRedirects({
+  projectSlug,
+}: ClientSideCheckForRedirectsProps) {
   const location = useLocation();
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
   );
-  const sourceUrl = locationPathnameToSourceUrl(location.pathname);
+
+  const sourceUrl = locationPathnameToSourceUrl(projectSlug);
   const { data: redirectPlan, isFetching: isFetchingRedirects } =
     useGetPlatformRedirectsBySourceUrlQuery(
       sourceUrl ? { sourceUrl } : skipToken
@@ -69,7 +52,11 @@ export default function CheckForRedirect() {
       navigate(
         {
           pathname: redirectPlan.target_url,
-          search: autostart ? `?autostartRedirect=true` : undefined,
+          search: autostart
+            ? new URLSearchParams({
+                autostartRedirect: "true",
+              }).toString()
+            : undefined,
         },
         {
           replace: true,
@@ -80,6 +67,23 @@ export default function CheckForRedirect() {
   if (isFetchingRedirects || redirectPlan?.target_url != null) {
     return <CheckingForRedirect />;
   }
-
   return <NoLegacySupportForProjects />;
+}
+
+function CheckingForRedirect() {
+  return (
+    <ContainerWrap>
+      <div className={cx("d-flex")}>
+        <div className={cx("m-auto", "d-flex", "flex-column")}>
+          <h3
+            data-cy="not-found-title"
+            className={cx("fw-bold", "mt-0", "mb-3", "text-primary")}
+          >
+            <Loader className={cx("bi", "me-2")} inline size={20} />
+            Checking for redirect...
+          </h3>
+        </div>
+      </div>
+    </ContainerWrap>
+  );
 }
