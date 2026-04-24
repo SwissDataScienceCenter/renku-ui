@@ -19,10 +19,10 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { type Control } from "react-hook-form";
+import { useWatch, type Control, type Path } from "react-hook-form";
 
 import { useProject } from "~/routes/projects/root";
-import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
@@ -53,6 +53,21 @@ export default function BuilderEnvironmentFields({
 
   const { data, isLoading, error } = useGetRepositoriesQuery(
     repositories.length > 0 ? repositories : skipToken
+  );
+
+  const selectedRepositoryUrl = useWatch({
+    control,
+    name: "repository" as Path<SessionLauncherForm>,
+  }) as string;
+
+  const selectedRepositoryIsPrivate = useMemo(
+    () =>
+      data?.find(
+        (repo) =>
+          repo.url === selectedRepositoryUrl &&
+          repo.data?.metadata?.visibility === "private"
+      ),
+    [data, selectedRepositoryUrl]
   );
 
   const firstEligibleRepository = useMemo(
@@ -101,6 +116,12 @@ export default function BuilderEnvironmentFields({
           control={control}
           repositoriesDetails={data}
         />
+        {selectedRepositoryIsPrivate && (
+          <InfoAlert dismissible={false} timeout={0}>
+            This is a private repository. The image built will be stored in a
+            separate dedicated registry.
+          </InfoAlert>
+        )}
         <CodeRepositoryAdvancedSettings control={control} />
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
