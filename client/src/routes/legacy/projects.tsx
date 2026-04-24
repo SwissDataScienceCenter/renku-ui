@@ -51,13 +51,12 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
 
   // Send redirect response if we found a match
   if (redirectPlan?.target_url != null) {
-    const redirectUrl = new URL(redirectPlan.target_url, request.url);
-    if (autostart) {
-      redirectUrl.search = new URLSearchParams({
-        autostartRedirect: "true",
-      }).toString();
-    }
-    return redirect(redirectUrl.toString(), 301);
+    const redirectUrl = makeRedirectUrl(
+      redirectPlan.target_url,
+      autostart,
+      request.url
+    );
+    return redirect(redirectUrl, 301);
   }
 
   return data({ clientSideFetch, redirectPlan, error });
@@ -74,4 +73,29 @@ export default function LegacyProjectPage({
     return <ClientSideCheckForRedirects projectSlug={params["*"]} />;
   }
   return <NoLegacySupportForProjects />;
+}
+
+function makeRedirectUrl(
+  targetUrl: string,
+  autostart: boolean,
+  requestUrl: string
+) {
+  // Local redirect to a Renku v2 project
+  if (targetUrl.startsWith("/") && autostart) {
+    const search = new URLSearchParams({
+      autostartRedirect: "true",
+    }).toString();
+    return `${targetUrl}?${search}`;
+  }
+  if (targetUrl.startsWith("/")) {
+    return targetUrl;
+  }
+  // Redirect to an external URL
+  const redirectUrl = new URL(targetUrl, requestUrl);
+  if (autostart) {
+    redirectUrl.search = new URLSearchParams({
+      autostartRedirect: "true",
+    }).toString();
+  }
+  return redirectUrl.toString();
 }
