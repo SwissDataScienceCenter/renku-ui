@@ -21,6 +21,7 @@ import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
+  ArrowsAngleExpand,
   CardText,
   Cloud,
   CloudArrowUp,
@@ -135,6 +136,16 @@ export default function DataConnectorView({
     [dataConnector.namespace]
   );
 
+  const namespaceParts = dataConnector.namespace?.split("/") ?? [];
+  const dataConnectorStandaloneLink = generatePath(
+    ABSOLUTE_ROUTES.v2.dataConnectors.show.root,
+    {
+      projectNamespace: namespaceParts[0] ?? null,
+      dataConnectorNamespace: namespaceParts[1] ?? null,
+      slug: dataConnector.slug,
+    }
+  );
+
   return (
     <Offcanvas
       toggle={toggleView}
@@ -143,7 +154,7 @@ export default function DataConnectorView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="data-connector-view">
-        <div className="mb-3">
+        <div className={cx("mb-3", "d-flex", "gap-2")}>
           <button
             aria-label="Close"
             className="btn-close"
@@ -151,6 +162,13 @@ export default function DataConnectorView({
             data-bs-dismiss="offcanvas"
             onClick={toggleView}
           ></button>
+          <Link
+            className="link-secondary"
+            data-cy="data-connector-standalone-page-link"
+            to={dataConnectorStandaloneLink}
+          >
+            <ArrowsAngleExpand />
+          </Link>
         </div>
         <DataConnectorViewHeader
           {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
