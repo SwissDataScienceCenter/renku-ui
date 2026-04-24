@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { type Control } from "react-hook-form";
+import { useWatch, type Control, type Path } from "react-hook-form";
 
 import { useProject } from "~/routes/projects/root";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
@@ -55,6 +55,21 @@ export default function BuilderEnvironmentFields({
     repositories.length > 0 ? repositories : skipToken
   );
 
+  const selectedRepositoryUrl = useWatch({
+    control,
+    name: "repository" as Path<SessionLauncherForm>,
+  }) as string;
+
+  const selectedRepository = useMemo(
+    () => data?.find((repo) => repo.url === selectedRepositoryUrl),
+    [data, selectedRepositoryUrl]
+  );
+
+  const selectedRepositoryIsPrivate = useMemo(
+    () => selectedRepository?.data?.metadata?.visibility === "private",
+    [selectedRepository]
+  );
+
   const firstEligibleRepository = useMemo(
     () =>
       data?.findIndex(
@@ -80,8 +95,8 @@ export default function BuilderEnvironmentFields({
     </p>
   ) : repositories?.length == 0 ? (
     <WarnAlert dismissible={false}>
-      No repositories found in this project. Add a repository first before
-      creating a session environment from one.
+      No accessible code repositories found in this project. Please ensure that
+      you have proper access to them.
     </WarnAlert>
   ) : error || !data ? (
     <>
@@ -94,19 +109,27 @@ export default function BuilderEnvironmentFields({
       you have proper access to them.
     </WarnAlert>
   ) : (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <div className={cx("d-flex", "flex-column", "gap-1")}>
-        <CodeRepositorySelector
-          name="repository"
-          control={control}
-          repositoriesDetails={data}
-        />
-        <CodeRepositoryAdvancedSettings control={control} />
+    <>
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        <div className={cx("d-flex", "flex-column", "gap-1")}>
+          <CodeRepositorySelector
+            name="repository"
+            control={control}
+            repositoriesDetails={data}
+          />
+          <CodeRepositoryAdvancedSettings control={control} />
+        </div>
+        <BuilderTypeSelector name="builder_variant" control={control} />
+        <BuilderFrontendSelector name="frontend_variant" control={control} />
+        <BuilderAdvancedSettings control={control} />
       </div>
-      <BuilderTypeSelector name="builder_variant" control={control} />
-      <BuilderFrontendSelector name="frontend_variant" control={control} />
-      <BuilderAdvancedSettings control={control} />
-    </div>
+      {selectedRepositoryIsPrivate && (
+        <WarnAlert dismissible={false}>
+          This is a private repository. Renku will build a container image from
+          it, but you may need an OAuth2 integration for full access.
+        </WarnAlert>
+      )}
+    </>
   );
 
   return (

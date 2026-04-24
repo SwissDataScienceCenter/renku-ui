@@ -83,6 +83,11 @@ export default function SessionRepositoriesModal({
     );
   }, [data, isLoading, projectPermissions?.write]);
 
+  const privateRepositories = useMemo(() => {
+    if (isLoading || !data) return [];
+    return data.filter((repo) => repo.data?.metadata?.visibility === "private");
+  }, [data, isLoading]);
+
   const dispatch = useAppDispatch();
   const onSkip = useCallback(() => {
     dispatch(startSessionOptionsV2Slice.actions.setRepositoriesReady(true));
@@ -117,6 +122,25 @@ export default function SessionRepositoriesModal({
             />
           ))}
         </ListGroup>
+        {privateRepositories.length > 0 && (
+          <>
+            <p
+              className="mt-3 mb-1"
+              data-cy="session-repositories-private-warning"
+            >
+              Private repositories:
+            </p>
+            <ListGroup>
+              {privateRepositories.map((repository) => (
+                <SessionRepositoryWarning
+                  key={repository.url}
+                  hasWriteAccess={projectPermissions?.write}
+                  repository={repository}
+                />
+              ))}
+            </ListGroup>
+          </>
+        )}
       </>
     );
 

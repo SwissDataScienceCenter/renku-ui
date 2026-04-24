@@ -37,6 +37,7 @@ import Select, {
 } from "react-select";
 import { Label } from "reactstrap";
 
+import { WarnAlert } from "~/components/Alert";
 import { GetRepositoriesApiResponse } from "~/features/repositories/api/repositories.api";
 import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 
@@ -206,6 +207,8 @@ interface OptionValueContentProps {
 
 function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
   const title = getRepositoryName(option.url);
+  const isPrivate = option.data?.metadata?.visibility === "private";
+
   return (
     <>
       <div>
@@ -225,6 +228,14 @@ function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
         )}
       </div>
       <div>{option.url}</div>
+      {isPrivate && (
+        <div className="mt-1">
+          <WarnAlert className="mb-0" dismissible={false}>
+            This is a private repository. Renku will build a container image
+            from it, but you may need an OAuth2 integration for full access.
+          </WarnAlert>
+        </div>
+      )}
     </>
   );
 }
@@ -235,6 +246,8 @@ interface SingleValueContentProps {
 }
 
 function SingleValueContent({ option, isDisabled }: SingleValueContentProps) {
+  const isPrivate = option.data?.metadata?.visibility === "private";
+
   return (
     <>
       <span className={cx(isDisabled && "text-decoration-line-through")}>
@@ -245,6 +258,14 @@ function SingleValueContent({ option, isDisabled }: SingleValueContentProps) {
           <XLg className={cx("bi", "me-1")} />
           No public access
         </span>
+      )}
+      {isPrivate && (
+        <div className="mt-1">
+          <WarnAlert className="mb-0" dismissible={false}>
+            This is a private repository. Renku will build a container image
+            from it, but you may need an OAuth2 integration for full access.
+          </WarnAlert>
+        </div>
       )}
     </>
   );
