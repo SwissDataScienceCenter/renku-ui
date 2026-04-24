@@ -388,7 +388,7 @@ function SessionStatusV2Text({
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock fontSize={16} className="flex-shrink-0" />
       <span>
-        Paused
+        Paused{" "}
         <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />
       </span>
     </div>

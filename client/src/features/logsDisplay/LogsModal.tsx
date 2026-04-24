@@ -259,13 +259,13 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
       </Nav>
       <TabContent
         activeTab={activeTab}
-        className={cx("flex-1", "overflow-auto")}
+        className={cx("flex-1", "overflow-hidden")}
       >
         {sortedLogs.map(({ tab, content }) => (
           <TabPane key={tab} tabId={tab}>
             <div className={cx("d-flex", "flex-column")}>
               <pre
-                className="overflow-visible"
+                className="overflow-auto"
                 // eslint-disable-next-line spellcheck/spell-checker
                 style={{ whiteSpace: "pre-line", maxHeight: "60vh" }}
                 ref={activeTab === tab ? preRef : undefined}
