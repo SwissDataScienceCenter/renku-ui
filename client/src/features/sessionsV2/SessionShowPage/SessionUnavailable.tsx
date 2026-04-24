@@ -41,7 +41,7 @@ export default function SessionUnavailable() {
   ) : (
     <Link
       className={cx("btn", "btn-primary", "btn-sm")}
-      to={ABSOLUTE_ROUTES.v2.root}
+      to={ABSOLUTE_ROUTES.v2.index}
     >
       go back to the dashboard
     </Link>

@@ -42,7 +42,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
 
   useEffect(() => {
     if (result.isSuccess) {
-      navigate(ABSOLUTE_ROUTES.v2.root);
+      navigate(ABSOLUTE_ROUTES.v2.index);
       renkuToastSuccess({
         textHeader: NOTIFICATION_TOPICS.PROJECT_DELETED,
         textBody: (
