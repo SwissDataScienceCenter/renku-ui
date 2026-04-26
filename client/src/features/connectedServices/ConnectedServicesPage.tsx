@@ -28,7 +28,6 @@ import {
 } from "react";
 import {
   Box2,
-  BoxArrowUpRight,
   CircleFill,
   Plugin,
   PlusLg,
@@ -416,7 +415,7 @@ function ConnectedServiceListItem({
             ) : (
               <>
                 Check your integration settings here.{" "}
-                {goBackButton && "You can later {goBackButton}."}
+                {goBackButton && <>You can later {goBackButton}.</>}
               </>
             )}
           </p>
@@ -585,8 +584,7 @@ export function ConnectButton({
   return (
     <a
       href={authorizeHref}
-      className={cx("btn", className)}
-      color="primary"
+      className={cx("btn", "btn-primary", className)}
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleConnectClick}
@@ -846,7 +844,6 @@ function GitHubAppInstallationItem({
   return (
     <li className="mb-1">
       <ExternalLink href={account_web_url}>
-        <BoxArrowUpRight className={cx("bi", "me-1")} />
         <span className={cx(isSuspended && "text-decoration-line-through")}>
           {account_login}
         </span>
