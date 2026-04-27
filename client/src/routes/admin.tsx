@@ -32,9 +32,6 @@ export async function loader({ context }: Route.LoaderArgs) {
   const selector = endpoint.select();
   const { data: selfUser, error } = selector(store.getState());
   store.dispatch(usersApi.util.resetApiState());
-
-  console.log({ selfUser, error });
-
   if (
     error != null ||
     selfUser == null ||
@@ -44,7 +41,6 @@ export async function loader({ context }: Route.LoaderArgs) {
     // Return 404 - not found
     return data({ clientSideFetch, selfUser, error }, 404);
   }
-
   return data({ clientSideFetch, selfUser, error });
 }
 
