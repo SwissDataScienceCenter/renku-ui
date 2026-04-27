@@ -15,7 +15,7 @@ import type { Route } from "./+types/admin";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const store = context.get(storeContext);
-  const clientSideFetch = true || store == null || process.env.CYPRESS === "1";
+  const clientSideFetch = store == null || process.env.CYPRESS === "1";
   if (clientSideFetch) {
     //? In testing, we load the user data client-side
     return data({
