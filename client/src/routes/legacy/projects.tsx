@@ -56,7 +56,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
       autostart,
       request.url
     );
-    return redirect(redirectUrl, 301);
+    throw redirect(redirectUrl, 301);
   }
 
   return data({ clientSideFetch, redirectPlan, error });
