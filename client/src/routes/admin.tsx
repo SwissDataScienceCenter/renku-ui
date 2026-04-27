@@ -86,13 +86,8 @@ export function meta({ loaderData }: Route.MetaArgs): MetaDescriptor[] {
   return meta_;
 }
 
-export default function AdminPage({ loaderData }: Route.ComponentProps) {
+export default function AdminPage() {
   const { data: user } = useGetUserQueryState();
-
-  useEffect(() => {
-    console.log({ loaderData });
-  }, [loaderData]);
-
   if (user == null || !user.isLoggedIn || !user.is_admin) {
     return (
       <ContainerWrap fullSize>
@@ -100,7 +95,6 @@ export default function AdminPage({ loaderData }: Route.ComponentProps) {
       </ContainerWrap>
     );
   }
-
   return (
     <ContainerWrap>
       <LazyAdminPageContent />
