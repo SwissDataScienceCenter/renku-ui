@@ -973,6 +973,17 @@ export function RepositoryCallToActionAlert({
         </p>
         {anonymousUser ? (
           <LogInWarning />
+        ) : oauthProvider ? (
+          <ConnectButton
+            className="btn-sm"
+            connectionStatus={
+              data.connection?.status as ConnectionStatus | undefined
+            }
+            includeSource
+            onConnected={onRepositoryOAuthConnected}
+            provider={oauthProvider}
+            withIcon
+          />
         ) : (
           oauthProvider && (
             <ConnectButton

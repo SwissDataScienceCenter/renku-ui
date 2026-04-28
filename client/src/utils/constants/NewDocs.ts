@@ -100,6 +100,10 @@ export const NEW_DOCS_SEARCH_QUERY = newDocsLinkPage(
   "docs/users/search/search-query"
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
+export const NEW_DOCS_USER_INTEGRATIONS = newDocsLinkPage(
+  "docs/users/code/guides/connect-renku-account-to-github-or-gitlab-account"
+)(DEFAULT_NEW_DOC_LINK_ARGS);
+
 export const NEW_DOCS_DATA_CONNECTORS = newDocsLinkPage("docs/users/data/data")(
   DEFAULT_NEW_DOC_LINK_ARGS
 );
