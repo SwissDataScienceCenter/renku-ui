@@ -164,7 +164,7 @@ export function Layout({ children }: { children: ReactNode }) {
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   if (isRouteErrorResponse(error)) {
     // TODO: Consider rendering the AppRoot here?
-    return <NotFound forceV2={true} />;
+    return <NotFound />;
   }
 
   let message: string = "An unexpected error occurred.";

@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useContext } from "react";
-import { Link, useLocation, useMatch } from "react-router";
+import { Link, useMatch } from "react-router";
 
 import { ExternalLink } from "~/components/LegacyExternalLinks";
 import { RENKU_LOGO } from "~/components/navbar/navbar.constants";
@@ -27,7 +27,6 @@ import { parseChartVersion } from "~/features/help/release.utils";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { Links } from "~/utils/constants/Docs";
 import AppContext from "~/utils/context/appContext";
-import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
 
 export default function RenkuFooterNavBar() {
   const matchesShowSessionPage = useMatch(
@@ -86,11 +85,7 @@ function RenkuFooterNavBarInner() {
 }
 
 function FooterNavbarLoggedInLinks() {
-  const location = useLocation();
-  const forceV2 = true;
-  const helpLocation = isRenkuLegacy(location.pathname, forceV2)
-    ? ABSOLUTE_ROUTES.v1.help.root
-    : ABSOLUTE_ROUTES.v2.help.root;
+  const helpLocation = ABSOLUTE_ROUTES.v2.help.root;
   return (
     <>
       <RenkuNavLinkV2 to={helpLocation}>Help</RenkuNavLinkV2>
