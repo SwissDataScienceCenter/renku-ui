@@ -34,7 +34,7 @@ export default function DepositIntegrationInfo({
   const link = provider && (
     <Link
       to={{
-        pathname: ABSOLUTE_ROUTES.v2.integrations,
+        pathname: ABSOLUTE_ROUTES.v2.integrations.root,
         search: new URLSearchParams({
           [SEARCH_PARAM_PROVIDER]: provider.id,
           [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,

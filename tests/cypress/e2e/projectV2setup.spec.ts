@@ -819,6 +819,9 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("Yes")
       .should("be.visible");
+    cy.getDataCy("code-repository-details").within(() => {
+      cy.getDataCy("code-repository-alert").should("not.exist");
+    });
   });
 
   it("read only", () => {
@@ -845,6 +848,9 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("Yes")
       .should("be.visible");
+    cy.getDataCy("code-repository-details").within(() => {
+      cy.getDataCy("code-repository-alert").should("not.exist");
+    });
   });
 
   it("inaccessible", () => {
@@ -871,6 +877,18 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("No")
       .should("be.visible");
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "The repository is not accessible")
+      .and("contain", "GitHub.com")
+      .and("contain", "invalid");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("You can try to refresh it.").should("be.visible");
+      cy.contains("button", "Reconnect").should("be.visible");
+      cy.get("a.btn-outline-primary")
+        .contains("Check integration")
+        .should("be.visible");
+    });
   });
 
   it("request integration", () => {
@@ -897,6 +915,15 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("Yes")
       .should("be.visible");
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "don't currently support this version control platform");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("a", "contact us")
+        .should("be.visible")
+        .and("have.attr", "href")
+        .and("match", /^mailto:/);
+    });
   });
 
   it("integration required", () => {
@@ -923,5 +950,166 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("No")
       .should("be.visible");
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "The repository is not accessible")
+      .and("contain", "GitHub.com");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("You can try to refresh it.").should("be.visible");
+      cy.get("a.btn-outline-primary")
+        .contains("Check integration")
+        .should("be.visible");
+    });
+  });
+
+  it("integration recommended", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture:
+          "repositories/repository-metadata-integration-recommended.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Integration recommended")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "You can connect to")
+      .and("contain", "GitHub.com");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("button", "Connect").should("be.visible");
+      cy.get("a.btn-outline-primary")
+        .contains("Check integration")
+        .should("be.visible");
+    });
+  });
+
+  it("integration recommended connect button", () => {
+    fixtures
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-viewer.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture:
+          "repositories/repository-metadata-integration-recommended.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Read only")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "log in through the integration")
+      .and("contain", "GitHub.com");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("button", "Connect").should("be.visible");
+      cy.get("a.btn-outline-primary")
+        .contains("Check integration")
+        .should("be.visible");
+    });
+  });
+
+  it("inaccessible without provider with error and contact us button", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture:
+          "repositories/repository-metadata-inaccessible-no-provider.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Inaccessible")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "version control platform we currently do not support");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("a", "integrations list.").should("be.visible");
+      cy.contains("a", "contact us")
+        .should("be.visible")
+        .and("have.attr", "href")
+        .and("match", /^mailto:/);
+    });
+  });
+
+  it("inaccessible without provider viewer", () => {
+    fixtures
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-viewer.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture:
+          "repositories/repository-metadata-inaccessible-no-provider.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Inaccessible")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "version control platform we currently do not support");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("a", "integrations list.").should("not.exist");
+      cy.contains("a", "contact us").should("not.exist");
+    });
+  });
+
+  it("inaccessible repository shows log-in warning for anonymous user", () => {
+    fixtures.userNone();
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture: "repositories/repository-metadata-inaccessible.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "The repository is not accessible");
+    cy.getDataCy("code-repository-alert")
+      .invoke("text")
+      .should(
+        "include",
+        "You need to be logged in to activate integrations and access private repositories."
+      );
+    cy.getDataCy("code-repository-alert")
+      .invoke("text")
+      .should("not.include", "You can try to refresh it.");
   });
 });

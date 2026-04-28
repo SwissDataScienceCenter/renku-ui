@@ -44,7 +44,7 @@ describe("Interact with Connected services", () => {
       .contains("Not connected");
     cy.getDataCy("connected-services-card")
       .filter(`:contains("GitHub.com")`)
-      .contains("a", "Connect");
+      .contains("button", "Connect");
 
     // ? Instead of clicking the Connect link, we just load the connection.
     fixtures.listConnectedServicesConnections();
@@ -55,7 +55,7 @@ describe("Interact with Connected services", () => {
       .contains("Connected");
     cy.getDataCy("connected-services-card")
       .filter(`:contains("GitHub.com")`)
-      .contains("a", "Reconnect");
+      .contains("button", "Reconnect");
   });
 
   it("GitHub user - check account", () => {
