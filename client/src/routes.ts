@@ -62,6 +62,8 @@ export default [
     // Not found page for /u/*
     route("*", "routes/users/catchall.tsx"),
   ]),
+  // Legacy projects (may redirect)
+  route(RELATIVE_ROUTES.projects.splat, "routes/legacy/projects.tsx"),
   // * matches all URLs, the ? makes it optional so it will match / as well
   route("*?", "routes/catchall.tsx"),
 ] satisfies RouteConfig;
