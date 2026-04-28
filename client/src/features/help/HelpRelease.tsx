@@ -17,7 +17,6 @@
  */
 
 import { useContext } from "react";
-import { useLocation } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import ExternalLink from "~/components/ExternalLink";
@@ -27,12 +26,7 @@ import { Links } from "~/utils/constants/Docs";
 import { RenkuRepositories } from "~/utils/constants/Repositories";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
-import { isRenkuLegacy } from "~/utils/helpers/HelperFunctionsV2";
-import {
-  useGetCoreVersionsQuery,
-  useGetDataServicesVersionQuery,
-  useGetKgVersionQuery,
-} from "../versions/versions.api";
+import { useGetDataServicesVersionQuery } from "../versions/versions.api";
 
 function componentDocsUrl(
   componentUrl: string,
@@ -75,22 +69,6 @@ function ComponentAndDevVersion({
   );
 }
 
-function CoreRelease() {
-  const { data, isFetching } = useGetCoreVersionsQuery();
-  if (isFetching) {
-    return <Loader inline size={16} />;
-  }
-  const coreVersion = data?.coreVersions[0];
-  const { taggedVersion, devHash } = parseChartVersion(coreVersion);
-  return (
-    <ComponentAndDevVersion
-      componentUrl={RenkuRepositories.Python}
-      devHash={devHash}
-      taggedVersion={taggedVersion}
-    />
-  );
-}
-
 function DataServicesRelease() {
   const { data, isFetching } = useGetDataServicesVersionQuery();
   if (isFetching) {
@@ -101,22 +79,6 @@ function DataServicesRelease() {
   return (
     <ComponentAndDevVersion
       componentUrl={RenkuRepositories.DataServices}
-      devHash={devHash}
-      taggedVersion={taggedVersion}
-    />
-  );
-}
-
-function KgRelease() {
-  const { data, isFetching } = useGetKgVersionQuery();
-  if (isFetching) {
-    return <Loader inline size={16} />;
-  }
-  const kgVersion = data?.version;
-  const { taggedVersion, devHash } = parseChartVersion(kgVersion);
-  return (
-    <ComponentAndDevVersion
-      componentUrl={RenkuRepositories.KnowledgeGraph}
       devHash={devHash}
       taggedVersion={taggedVersion}
     />
@@ -153,31 +115,6 @@ function UiRelease() {
 }
 
 function ComponentDetails() {
-  const location = useLocation();
-  const isLegacy = isRenkuLegacy(location.pathname);
-
-  if (isLegacy) {
-    return (
-      <>
-        <div className="fw-bold">Renku legacy component versions</div>
-        <ul>
-          <li>
-            UI: <UiRelease />
-          </li>
-          <li>
-            Core: <CoreRelease />
-          </li>
-          <li>
-            Data Services: <DataServicesRelease />
-          </li>
-          <li>
-            Knowledge Graph: <KgRelease />
-          </li>
-        </ul>
-      </>
-    );
-  }
-
   return (
     <>
       <div className="fw-bold">Renku component versions</div>

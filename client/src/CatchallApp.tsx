@@ -27,6 +27,7 @@ import LegacyRoot from "./features/legacy/LegacyRoot";
 import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
 import LazyRootV2 from "./features/rootV2/LazyRootV2";
 import { useGetUserQueryState } from "./features/usersV2/api/users.api";
+import { RELATIVE_ROUTES } from "./routing/routes.constants";
 
 /**
  * "Catch all" component
@@ -43,7 +44,7 @@ export default function CatchallApp() {
       />
       <Route path="/datasets/:identifier" element={<LegacyShowDataset />} />
       <Route path="/datasets" element={<LegacyDatasets />} />
-      <Route path="/v1/*" element={<LegacyRoot />} />
+      <Route path={RELATIVE_ROUTES.v1.splat} element={<LegacyRoot />} />
       {user?.isLoggedIn && user.is_admin && (
         <Route
           path="/admin"
