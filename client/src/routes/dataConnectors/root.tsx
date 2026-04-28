@@ -17,6 +17,7 @@ import {
   useGetNamespacesByNamespaceProjectsAndProjectDataConnectorsSlugQuery,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import DataConnectorPageLayout from "~/features/dataConnectorsV2/show/DataConnectorPageLayout";
+import DataConnectorNotFound from "~/features/projectsV2/notFound/DataConnectorNotFound";
 import { NamespaceContextType } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { store } from "~/store/store";
@@ -426,9 +427,7 @@ export default function DataConnectorPagesRoot({
   }
 
   if (error || dataConnector == null) {
-    return <h1>TODO: DC not found</h1>;
-    // ! Implement that "not found" page
-    // return <DataConnectorNotFound error={error ?? loaderData.error} />;
+    return <DataConnectorNotFound error={error ?? loaderData.error} />;
   }
 
   const routeParams = {
