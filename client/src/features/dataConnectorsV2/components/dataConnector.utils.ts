@@ -210,27 +210,29 @@ export function getDataConnectorScope(namespace?: string): DataConnectorScope {
   return "namespace";
 }
 
-export function useGetDataConnectorSource(dataConnector: DataConnector) {
+export function useGetDataConnectorSource(
+  dataConnector: DataConnector | undefined
+) {
   const scope = useMemo(
-    () => getDataConnectorScope(dataConnector.namespace),
-    [dataConnector.namespace]
+    () => getDataConnectorScope(dataConnector?.namespace),
+    [dataConnector?.namespace]
   );
 
   const { currentData: resolverResponse, isSuccess } = useGetHandlesByDoiQuery(
     scope === "global" &&
-      typeof dataConnector.storage.configuration["doi"] === "string"
+      typeof dataConnector?.storage.configuration["doi"] === "string"
       ? { doi: parseDoi(dataConnector.storage.configuration["doi"]), index: 1 }
       : skipToken
   );
   const source = useMemo(() => {
-    if (dataConnector.publisher_name != null) {
+    if (dataConnector?.publisher_name != null) {
       return dataConnector.publisher_name;
     }
     if (
       scope !== "global" ||
-      typeof dataConnector.storage.configuration["doi"] !== "string"
+      typeof dataConnector?.storage.configuration["doi"] !== "string"
     ) {
-      return dataConnector.namespace || "unknown";
+      return dataConnector?.namespace || "unknown";
     }
 
     if (
@@ -260,9 +262,9 @@ export function useGetDataConnectorSource(dataConnector: DataConnector) {
       return dataConnector.storage.configuration["doi"];
     }
   }, [
-    dataConnector.namespace,
-    dataConnector.storage.configuration,
-    dataConnector.publisher_name,
+    dataConnector?.namespace,
+    dataConnector?.storage.configuration,
+    dataConnector?.publisher_name,
     isSuccess,
     resolverResponse,
     scope,
