@@ -21,6 +21,7 @@ import { NamespaceContextType } from "~/features/searchV2/hooks/useNamespaceCont
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { store } from "~/store/store";
 import { storeContext } from "~/store/store.utils.server";
+import renkuDataConnectorSocialCard from "~/styles/assets/renkuDataSocialCard.png";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 import type { Route } from "./+types/root";
@@ -232,6 +233,7 @@ export function meta({
   if (dataConnector == null) {
     return makeMeta({
       title: makeMetaTitle(["Data Connector", "Renku"]),
+      image: renkuDataConnectorSocialCard,
     });
   }
   const matchSettings = matchPath(
@@ -248,6 +250,7 @@ export function meta({
   return makeMeta({
     title,
     description: dataConnector.description || undefined,
+    image: renkuDataConnectorSocialCard,
   });
 }
 
