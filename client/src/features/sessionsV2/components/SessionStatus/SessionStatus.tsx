@@ -33,7 +33,9 @@ import {
 
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
+import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
+import { UsageAvailable } from "../../session.utils";
 import {
   SESSION_STATES,
   SESSION_STYLES,
@@ -249,7 +251,7 @@ export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
 }: ActiveSessionDescV2Props) {
-  const { started, status } = session;
+  const { resource_class_id, started, status } = session;
   return (
     <div
       className={cx(
@@ -261,7 +263,11 @@ export function SessionStatusV2Description({
       )}
     >
       {started && (
-        <SessionStatusV2Text startTimestamp={started} status={status} />
+        <SessionStatusV2Text
+          resourceClassId={resource_class_id}
+          startTimestamp={started}
+          status={status}
+        />
       )}
       {showInfoDetails && (
         <SessionListRowStatusExtraDetailsV2 status={status} />
@@ -347,10 +353,12 @@ export function SessionStatusV2Title({
   return text ? <p className={cx("fst-italic", "mb-2")}>{text}</p> : null;
 }
 interface SessionStatusV2TextProps {
+  resourceClassId: number;
   startTimestamp: string;
   status: SessionStatus;
 }
 function SessionStatusV2Text({
+  resourceClassId,
   startTimestamp,
   status,
 }: SessionStatusV2TextProps) {
@@ -361,52 +369,93 @@ function SessionStatusV2Text({
   const hibernationTimestamp =
     state === "hibernated" ? will_hibernate_at ?? "" : null;
 
-  return state === "running" ? (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
-      <span>Launched {startTimeText}</span>
-    </div>
-  ) : state === "starting" ? (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
-      <span>Launching since {startTimeText}</span>
-    </div>
-  ) : state === "hibernated" && will_delete_at ? (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Hourglass fontSize={16} className="flex-shrink-0" />
-      <span>
-        Session will be deleted in{" "}
-        <TimeCaption
-          datetime={will_delete_at}
-          enableTooltip
-          noCaption
-          suffix=" "
+  if (state === "stopping") return null;
+  if (state === "failed")
+    return (
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        <Clock fontSize={16} className="flex-shrink-0" />
+        <span>
+          Error {"("}created {startTimeText}
+          {")"}
+        </span>
+      </div>
+    );
+
+  const sessionStatus =
+    state === "running" ? (
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        <Clock fontSize={16} className="flex-shrink-0" />
+        <span>Launched {startTimeText}</span>
+      </div>
+    ) : state === "starting" ? (
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        <Clock fontSize={16} className="flex-shrink-0" />
+        <span>Launching since {startTimeText}</span>
+      </div>
+    ) : state === "hibernated" && will_delete_at ? (
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        <Hourglass fontSize={16} className="flex-shrink-0" />
+        <span>
+          Session will be deleted{" "}
+          <TimeCaption
+            datetime={will_delete_at}
+            enableTooltip
+            noCaption
+            suffix=" "
+          />
+        </span>
+      </div>
+    ) : state === "hibernated" && hibernationTimestamp ? (
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        <Clock fontSize={16} className="flex-shrink-0" />
+        <span>
+          Paused
+          <TimeCaption
+            datetime={hibernationTimestamp}
+            enableTooltip
+            noCaption
+          />
+        </span>
+      </div>
+    ) : (
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        <Clock fontSize={16} className="flex-shrink-0" />
+        <span>
+          Paused
+          <MissingHibernationInfo />
+        </span>
+      </div>
+    );
+  return (
+    <div className={cx("d-flex", "flex-column", "gap-1")}>
+      {sessionStatus}
+      <div>
+        <SessionStatusV2TextQuotaInformation
+          resourceClassId={resourceClassId}
         />
-      </span>
+      </div>
     </div>
-  ) : state === "hibernated" && hibernationTimestamp ? (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
-      <span>
-        Paused
-        <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />
-      </span>
-    </div>
-  ) : state === "hibernated" ? (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
-      <span>
-        Paused
-        <MissingHibernationInfo />
-      </span>
-    </div>
-  ) : state === "failed" ? (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
-      <span>
-        Error {"("}created {startTimeText}
-        {")"}
-      </span>
-    </div>
-  ) : null;
+  );
+}
+
+function SessionStatusV2TextQuotaInformation({
+  resourceClassId,
+}: {
+  resourceClassId: SessionStatusV2TextProps["resourceClassId"];
+}) {
+  const pollingInterval = 60 * 1000; // 1 minute
+  const { data: resourcePools } = useGetResourcePoolsQuery(
+    {},
+    { pollingInterval }
+  );
+  const resourceClass = resourcePools
+    ?.flatMap((pool) => pool.classes)
+    .find((cls) => cls.id === resourceClassId);
+  if (!resourceClass || resourceClass.usage_available == null) return null;
+
+  return (
+    <span className={cx("text-muted")}>
+      <UsageAvailable usageAvailableHours={resourceClass.usage_available} />
+    </span>
+  );
 }

@@ -136,6 +136,14 @@ export function SelectResourceClassModal({
     />
   );
 
+  const userLauncherClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == launcherClass?.id),
+    [launcherClass, resourcePools]
+  );
+
   const resourceDetails =
     !isLoadingLauncherClass && launcherClass ? (
       <SessionRowResourceRequests
@@ -144,6 +152,10 @@ export function SelectResourceClassModal({
           memory: `${launcherClass.memory}G`,
           storage: `${launcherClass.default_storage}G`,
           gpu: launcherClass.gpu,
+        }}
+        usageLimit={{
+          resourceClass: userLauncherClass,
+          quotaEnforced: false, // TODO: Pass the actual value when available from the API
         }}
       />
     ) : (
