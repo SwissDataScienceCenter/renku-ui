@@ -23,6 +23,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -32,6 +33,7 @@ import {
   Plugin,
   PlusLg,
   Send,
+  XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
@@ -43,6 +45,9 @@ import {
   CardHeader,
   CardText,
   Col,
+  Input,
+  InputGroup,
+  Label,
   ListGroup,
   ListGroupItem,
   Modal,
@@ -456,14 +461,36 @@ function AddIntegrationModal({
 }: AddIntegrationModalProps) {
   const [showAllIntegrations, setShowAllIntegrations] = useState(false);
   const isListExpanded = isOpen && showAllIntegrations;
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [userSearchInput, setUserSearchInput] = useState("");
+
+  const normalizedSearchInput = useMemo(
+    () => userSearchInput.trim().toLowerCase(),
+    [userSearchInput]
+  );
+
+  const filteredProviders = useMemo(() => {
+    if (!normalizedSearchInput) return providers;
+
+    return providers.filter(({ provider }) =>
+      [provider.display_name, provider.url].some((value) =>
+        value.toLowerCase().includes(normalizedSearchInput)
+      )
+    );
+  }, [normalizedSearchInput, providers]);
 
   const visibleProviders = useMemo(() => {
-    if (isListExpanded) return providers;
-    return providers.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
-  }, [isListExpanded, providers]);
+    if (isListExpanded) return filteredProviders;
+    return filteredProviders.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
+  }, [filteredProviders, isListExpanded]);
 
   const toggleShowAllIntegrations = useCallback(() => {
     setShowAllIntegrations((open) => !open);
+  }, []);
+
+  const onResetSearch = useCallback(() => {
+    setUserSearchInput("");
+    searchInputRef.current?.focus();
   }, []);
 
   return (
@@ -484,50 +511,83 @@ function AddIntegrationModal({
         ) : (
           <>
             <p>Add a new code, data, or compute integration.</p>
-            <ListGroup
-              className={cx(
-                "bg-white",
-                "rounded-3",
-                "border",
-                "border-rk-green"
-              )}
-            >
-              {visibleProviders.map(({ provider, connection }) => (
-                <ListGroupItem
-                  key={provider.id}
-                  action={true}
-                  data-cy="provider-item"
+            <div className="mb-4">
+              <Label for="add-integration-search-input">Search</Label>
+              <InputGroup>
+                <Input
+                  className="lg"
+                  data-cy="add-integration-search-input"
+                  id="add-integration-search-input"
+                  innerRef={searchInputRef}
+                  placeholder="Search by name or url"
+                  type="text"
+                  value={userSearchInput}
+                  onChange={(e) => setUserSearchInput(e.target.value)}
+                />
+                <Button
+                  color="outline-secondary"
+                  className="border-secondary-subtle"
+                  data-cy="search-clear-button"
+                  onClick={onResetSearch}
+                  id="search-button"
+                  type="button"
                 >
-                  <div className={cx("d-flex", "align-items-center", "gap-3")}>
-                    <div className={cx("flex-grow-1")}>
-                      <ProviderRowHeader provider={provider} />
+                  <XCircleFill className={cx("bi")} />
+                </Button>
+              </InputGroup>
+            </div>
+            {normalizedSearchInput && filteredProviders.length === 0 ? (
+              <span className={cx("small", "text-muted")}>
+                No integrations found for &quot;{userSearchInput.trim()}&quot;.
+              </span>
+            ) : (
+              <ListGroup
+                className={cx(
+                  "bg-white",
+                  "rounded-3",
+                  "border",
+                  "border-rk-green"
+                )}
+              >
+                {visibleProviders.map(({ provider, connection }) => (
+                  <ListGroupItem
+                    key={provider.id}
+                    action={true}
+                    data-cy="provider-item"
+                  >
+                    <div
+                      className={cx("d-flex", "align-items-center", "gap-3")}
+                    >
+                      <div className={cx("flex-grow-1")}>
+                        <ProviderRowHeader provider={provider} />
+                      </div>
+                      <ConnectButton
+                        provider={provider}
+                        connectionStatus={connection?.status}
+                        onConnectStart={onToggle}
+                      />
                     </div>
-                    <ConnectButton
-                      provider={provider}
-                      connectionStatus={connection?.status}
-                      onConnectStart={onToggle}
+                  </ListGroupItem>
+                ))}
+                {filteredProviders.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
+                  <button
+                    onClick={toggleShowAllIntegrations}
+                    className={cx(
+                      "text-primary",
+                      "list-group-item",
+                      "text-start",
+                      "text-decoration-underline"
+                    )}
+                  >
+                    {!isListExpanded ? "See all integrations" : "Show less "}
+                    <ChevronFlippedIcon
+                      className="ms-1"
+                      flipped={showAllIntegrations}
                     />
-                  </div>
-                </ListGroupItem>
-              ))}
-              {providers.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
-                <button
-                  onClick={toggleShowAllIntegrations}
-                  className={cx(
-                    "text-primary",
-                    "list-group-item",
-                    "text-start",
-                    "text-decoration-underline"
-                  )}
-                >
-                  {!isListExpanded ? "See all integrations" : "Show less "}
-                  <ChevronFlippedIcon
-                    className="ms-1"
-                    flipped={showAllIntegrations}
-                  />
-                </button>
-              )}
-            </ListGroup>
+                  </button>
+                )}
+              </ListGroup>
+            )}
           </>
         )}
       </ModalBody>
