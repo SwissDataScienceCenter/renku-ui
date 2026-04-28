@@ -96,7 +96,7 @@ export default function SearchBar({ showLinkToDocs = true }: SearchBarProps) {
           <Button
             color="outline-secondary"
             className={cx(
-              "border-0",
+              "border-1",
               "border-top",
               "border-bottom",
               "shadow-none"
