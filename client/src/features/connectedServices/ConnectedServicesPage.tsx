@@ -407,17 +407,10 @@ function ConnectedServiceListItem({
           )}
         >
           <p className="mb-0">
-            {actionRequired && connection?.status === "pending" ? (
-              <>
-                Action required. Please connect to this integration{" "}
-                {source && <>and then {goBackButton}</>}.
-              </>
-            ) : (
-              <>
-                Check your integration settings here.{" "}
-                {goBackButton && <>You can later {goBackButton}.</>}
-              </>
-            )}
+            {actionRequired && connection?.status === "pending"
+              ? "Action required. Please connect to this integration "
+              : "Check your integration settings here."}
+            {goBackButton && <>and then {goBackButton}</>}
           </p>
         </RenkuAlert>
       )}
@@ -470,15 +463,15 @@ function AddIntegrationModal({
     return providers.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
   }, [isListExpanded, providers]);
 
-  const handleClosed = useCallback(() => {
-    setShowAllIntegrations(false);
+  const toggleShowAllIntegrations = useCallback(() => {
+    setShowAllIntegrations((open) => !open);
   }, []);
 
   return (
     <Modal
       centered
       isOpen={isOpen}
-      onClosed={handleClosed}
+      onClosed={toggleShowAllIntegrations}
       size="lg"
       toggle={onToggle}
     >
@@ -522,7 +515,7 @@ function AddIntegrationModal({
               ))}
               {providers.length > DEFAULT_MODAL_PROVIDERS_COUNT && (
                 <button
-                  onClick={() => setShowAllIntegrations(!showAllIntegrations)}
+                  onClick={toggleShowAllIntegrations}
                   className={cx(
                     "text-primary",
                     "list-group-item",

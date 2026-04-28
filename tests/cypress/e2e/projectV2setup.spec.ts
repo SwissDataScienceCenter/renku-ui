@@ -884,7 +884,7 @@ describe("Repository connection cases", () => {
       .and("contain", "invalid");
     cy.getDataCy("code-repository-alert").within(() => {
       cy.contains("You can try to refresh it.").should("be.visible");
-      cy.contains("button", "Reconnect").should("be.visible");
+      cy.contains("a", "Reconnect").should("be.visible");
       cy.get("a.btn-outline-primary")
         .contains("Check integration")
         .should("be.visible");
@@ -985,7 +985,7 @@ describe("Repository connection cases", () => {
       .and("contain", "You can connect to")
       .and("contain", "GitHub.com");
     cy.getDataCy("code-repository-alert").within(() => {
-      cy.contains("button", "Connect").should("be.visible");
+      cy.contains("a", "Connect").should("be.visible");
       cy.get("a.btn-outline-primary")
         .contains("Check integration")
         .should("be.visible");
@@ -1018,7 +1018,7 @@ describe("Repository connection cases", () => {
       .and("contain", "log in through the integration")
       .and("contain", "GitHub.com");
     cy.getDataCy("code-repository-alert").within(() => {
-      cy.contains("button", "Connect").should("be.visible");
+      cy.contains("a", "Connect").should("be.visible");
       cy.get("a.btn-outline-primary")
         .contains("Check integration")
         .should("be.visible");
