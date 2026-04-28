@@ -19,10 +19,10 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { type Control } from "react-hook-form";
+import { useWatch, type Control, type Path } from "react-hook-form";
 
 import { useProject } from "~/routes/projects/root";
-import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
@@ -55,12 +55,26 @@ export default function BuilderEnvironmentFields({
     repositories.length > 0 ? repositories : skipToken
   );
 
+  const selectedRepositoryUrl = useWatch({
+    control,
+    name: "repository" as Path<SessionLauncherForm>,
+  }) as string;
+
+  const selectedRepositoryIsPrivate = useMemo(
+    () =>
+      data?.find(
+        (repo) =>
+          repo.url === selectedRepositoryUrl &&
+          repo.data?.metadata?.visibility === "private"
+      ),
+    [data, selectedRepositoryUrl]
+  );
+
   const firstEligibleRepository = useMemo(
     () =>
       data?.findIndex(
         (repo) =>
-          repo.data?.status === "valid" &&
-          repo.data.metadata?.visibility === "public"
+          repo.data?.status === "valid" && repo.data.metadata?.pull_permission
       ),
     [data]
   );
@@ -91,8 +105,8 @@ export default function BuilderEnvironmentFields({
     </>
   ) : firstEligibleRepository == null || firstEligibleRepository < 0 ? (
     <WarnAlert dismissible={false}>
-      No publicly accessible code repositories found in this project. RenkuLab
-      can only build session environments from public code repositories.
+      No accessible code repositories found in this project. Please ensure that
+      you have proper access to them.
     </WarnAlert>
   ) : (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -102,6 +116,12 @@ export default function BuilderEnvironmentFields({
           control={control}
           repositoriesDetails={data}
         />
+        {selectedRepositoryIsPrivate && (
+          <InfoAlert dismissible={false} timeout={0}>
+            This is a private repository. The image built will be stored in a
+            separate dedicated registry.
+          </InfoAlert>
+        )}
         <CodeRepositoryAdvancedSettings control={control} />
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
@@ -114,9 +134,7 @@ export default function BuilderEnvironmentFields({
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       {!isEdit && (
         <p className={cx("mb-0")}>
-          Let RenkuLab create a customized environment from a code repository. A
-          container image will be created based on the requirements found in the
-          code repository.
+          Let RenkuLab create a customized environment from a code repository.
         </p>
       )}
       {content}
