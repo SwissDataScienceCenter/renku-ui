@@ -460,7 +460,6 @@ function AddIntegrationModal({
   providers,
 }: AddIntegrationModalProps) {
   const [showAllIntegrations, setShowAllIntegrations] = useState(false);
-  const isListExpanded = isOpen && showAllIntegrations;
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [userSearchInput, setUserSearchInput] = useState("");
 
@@ -480,24 +479,30 @@ function AddIntegrationModal({
   }, [normalizedSearchInput, providers]);
 
   const visibleProviders = useMemo(() => {
-    if (isListExpanded) return filteredProviders;
+    if (showAllIntegrations) return filteredProviders;
     return filteredProviders.slice(0, DEFAULT_MODAL_PROVIDERS_COUNT);
-  }, [filteredProviders, isListExpanded]);
+  }, [filteredProviders, showAllIntegrations]);
 
   const toggleShowAllIntegrations = useCallback(() => {
     setShowAllIntegrations((open) => !open);
   }, []);
 
-  const onResetSearch = useCallback(() => {
+  const resetSearch = useCallback(() => {
     setUserSearchInput("");
     searchInputRef.current?.focus();
+  }, []);
+
+  const resetModalState = useCallback(() => {
+    setShowAllIntegrations(false);
+    setUserSearchInput("");
   }, []);
 
   return (
     <Modal
       centered
       isOpen={isOpen}
-      onClosed={toggleShowAllIntegrations}
+      onClosed={resetModalState}
+      onOpened={resetSearch}
       size="lg"
       toggle={onToggle}
     >
@@ -515,7 +520,6 @@ function AddIntegrationModal({
               <Label for="add-integration-search-input">Search</Label>
               <InputGroup>
                 <Input
-                  className="lg"
                   data-cy="add-integration-search-input"
                   id="add-integration-search-input"
                   innerRef={searchInputRef}
@@ -528,8 +532,8 @@ function AddIntegrationModal({
                   color="outline-secondary"
                   className="border-secondary-subtle"
                   data-cy="search-clear-button"
-                  onClick={onResetSearch}
-                  id="search-button"
+                  onClick={resetSearch}
+                  id="search-clear-button"
                   type="button"
                 >
                   <XCircleFill className={cx("bi")} />
@@ -541,14 +545,7 @@ function AddIntegrationModal({
                 No integrations found for &quot;{userSearchInput.trim()}&quot;.
               </span>
             ) : (
-              <ListGroup
-                className={cx(
-                  "bg-white",
-                  "rounded-3",
-                  "border",
-                  "border-rk-green"
-                )}
-              >
+              <ListGroup className={cx("bg-white", "rounded-3", "border")}>
                 {visibleProviders.map(({ provider, connection }) => (
                   <ListGroupItem
                     key={provider.id}
@@ -579,7 +576,9 @@ function AddIntegrationModal({
                       "text-decoration-underline"
                     )}
                   >
-                    {!isListExpanded ? "See all integrations" : "Show less "}
+                    {!showAllIntegrations
+                      ? "See all integrations"
+                      : "Show less "}
                     <ChevronFlippedIcon
                       className="ms-1"
                       flipped={showAllIntegrations}
