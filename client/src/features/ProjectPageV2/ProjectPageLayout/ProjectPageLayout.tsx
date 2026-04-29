@@ -20,10 +20,7 @@ import cx from "classnames";
 import { ReactNode } from "react";
 import { Col, Row } from "reactstrap";
 
-import {
-  EntityWatermark,
-  EntityWatermarkPlaceholder,
-} from "~/components/entityWatermark/EntityWatermark";
+import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
@@ -52,7 +49,6 @@ export default function ProjectPageLayout({
               <ProjectPageHeader project={project} />
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">
-              <EntityWatermarkPlaceholder />
               <EntityWatermark type="project" />
             </Col>
           </Row>

@@ -23,10 +23,7 @@ import { Col, Row } from "reactstrap";
 
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import {
-  EntityWatermark,
-  EntityWatermarkPlaceholder,
-} from "../../../components/entityWatermark/EntityWatermark";
+import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
@@ -65,7 +62,6 @@ export default function GroupPageLayout({
               <GroupHeader group={group} slug={group.slug} />
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">
-              <EntityWatermarkPlaceholder />
               <EntityWatermark type="group" />
             </Col>
           </Row>
