@@ -186,8 +186,8 @@ export default function ConnectedServicesPage() {
               <span className="fst-italic">
                 {targetedProvider.display_name}
               </span>
-            </a>{" "}
-            {goBackButton && <>and then {goBackButton}</>}.
+            </a>
+            {goBackButton && <> and then {goBackButton}</>}.
           </p>
         </RenkuAlert>
       )}
@@ -208,15 +208,13 @@ export default function ConnectedServicesPage() {
         <CardBody>
           {mainListProviders.length === 0 ? (
             <p className={cx("mb-0", "text-muted")}>
-              You have no integrations configured.{" "}
+              You have no integrations configured.
               <a
-                className={cx("text-primary", "cursor-pointer")}
+                className={cx("text-primary", "cursor-pointer", "ms-1")}
                 onClick={toggleAddIntegrationModal}
               >
-                {" "}
-                Click here
-              </a>{" "}
-              to activate integrations.
+                Activate integrations
+              </a>
             </p>
           ) : (
             <ListGroup flush>
@@ -399,6 +397,7 @@ function ConnectedServiceListItem({
     <ListGroupItem data-cy="connected-service-item" action={true}>
       {highlighted && (
         <RenkuAlert
+          dismissible={false}
           timeout={0}
           color={actionRequired ? "warning" : "info"}
           className={cx(
@@ -408,9 +407,9 @@ function ConnectedServiceListItem({
         >
           <p className="mb-0">
             {actionRequired && connection?.status === "pending"
-              ? "Action required. Please connect to this integration "
-              : "Check your integration settings here."}
-            {goBackButton && <>and then {goBackButton}</>}
+              ? "Action required. Please connect to this integration"
+              : "Check your integration settings here"}
+            {goBackButton && <> and then {goBackButton}</>}.
           </p>
         </RenkuAlert>
       )}
@@ -481,9 +480,7 @@ function AddIntegrationModal({
       </ModalHeader>
       <ModalBody>
         {providers.length === 0 ? (
-          <p>
-            There are currently no more external services users can connect to.
-          </p>
+          <p>There are currently no external services users can connect to.</p>
         ) : (
           <>
             <p>Add a new code, data, or compute integration.</p>
