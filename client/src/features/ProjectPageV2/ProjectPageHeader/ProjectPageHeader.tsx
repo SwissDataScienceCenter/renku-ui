@@ -17,9 +17,11 @@
  */
 
 import cx from "classnames";
+import { useLocation } from "react-router";
 
 import ProjectGitLabWarnBanner from "../../legacy/ProjectGitLabWarnBanner";
 import { Project } from "../../projectsV2/api/projectV2.api";
+import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
 import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
 
@@ -27,6 +29,11 @@ interface ProjectPageHeaderProps {
   project: Project;
 }
 export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
+  // ? We still use `autostartRedirect` for legacy projects registered for redirect
+  const { search } = useLocation();
+  const isAutostartRedirect =
+    new URLSearchParams(search).get("autostartRedirect") === "true";
+
   return (
     <div className={cx("d-flex", "flex-column", "gap-2")}>
       <header>
@@ -45,7 +52,9 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
           <ProjectCopyBanner project={project} />
         </>
       )}
-
+      {isAutostartRedirect && (
+        <ProjectAutostartRedirectBanner project={project} />
+      )}
       <ProjectGitLabWarnBanner project={project} />
     </div>
   );
