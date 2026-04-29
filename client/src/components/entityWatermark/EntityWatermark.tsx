@@ -27,22 +27,27 @@ interface EntityWatermarkProps {
 }
 export function EntityWatermark({ className, type }: EntityWatermarkProps) {
   return (
-    <div
-      className={cx(
-        "d-flex",
-        "text-body-secondary",
-        "opacity-25",
-        className,
-        styles.EntityWatermark
-      )}
-    >
-      {type === "group" ? (
-        <People />
-      ) : type === "user" ? (
-        <Person />
-      ) : (
-        <Folder />
-      )}
+    <div className="position-relative">
+      <div
+        className={cx(
+          "d-flex",
+          "end-0",
+          "opacity-25",
+          "position-absolute",
+          "text-body-secondary",
+          "top-0",
+          className,
+          styles.EntityWatermark
+        )}
+      >
+        {type === "group" ? (
+          <People />
+        ) : type === "user" ? (
+          <Person />
+        ) : (
+          <Folder />
+        )}
+      </div>
     </div>
   );
 }

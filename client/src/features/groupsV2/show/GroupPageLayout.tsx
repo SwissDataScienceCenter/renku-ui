@@ -65,13 +65,8 @@ export default function GroupPageLayout({
               <GroupHeader group={group} slug={group.slug} />
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">
-              <div className="position-relative">
-                <EntityWatermarkPlaceholder />
-                <EntityWatermark
-                  className={cx("end-0", "position-absolute", "top-0")}
-                  type="group"
-                />
-              </div>
+              <EntityWatermarkPlaceholder />
+              <EntityWatermark type="group" />
             </Col>
           </Row>
         </Col>

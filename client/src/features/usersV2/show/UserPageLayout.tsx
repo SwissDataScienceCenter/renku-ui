@@ -70,13 +70,8 @@ export default function UserPageLayout({
               <UserHeader name={name ?? ""} username={user.username} />
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">
-              <div className="position-relative">
-                <EntityWatermarkPlaceholder />
-                <EntityWatermark
-                  className={cx("end-0", "position-absolute", "top-0")}
-                  type="user"
-                />
-              </div>
+              <EntityWatermarkPlaceholder />
+              <EntityWatermark type="user" />
             </Col>
           </Row>
         </Col>
