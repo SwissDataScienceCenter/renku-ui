@@ -27,7 +27,7 @@ import { EntityWatermark } from "../../../components/entityWatermark/EntityWater
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
-import UserAvatar, { AvatarTypeWrap } from "../../usersV2/show/UserAvatar";
+import UserAvatar from "../../usersV2/show/UserAvatar";
 import GroupNew from "../new/GroupNew";
 
 interface GroupPageLayoutProps {
@@ -51,19 +51,23 @@ export default function GroupPageLayout({
     }),
   };
   return (
-    <ContainerWrap className="py-0">
+    <ContainerWrap>
       <ProjectV2New />
       <GroupNew />
 
-      <EntityWatermark type="group" />
-      <Row className="py-3">
+      <Row className="my-3">
         <Col xs={12}>
-          <GroupHeader group={group} slug={group.slug} />
+          <Row>
+            <Col className="mb-3">
+              <GroupHeader group={group} slug={group.slug} />
+            </Col>
+            <Col className={cx("d-md-block", "d-none")} md="auto">
+              <EntityWatermark type="group" />
+            </Col>
+          </Row>
         </Col>
-        <Col xs={12} className="mb-0">
-          <div className="my-3">
-            <PageNav options={options} />
-          </div>
+        <Col xs={12} className="mb-3">
+          <PageNav options={options} />
         </Col>
         <Col xs={12}>
           <main>{children}</main>
@@ -75,22 +79,22 @@ export default function GroupPageLayout({
 
 function GroupHeader({ group, slug }: { group: GroupResponse; slug: string }) {
   return (
-    <div className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
-      <div className={cx("d-flex", "gap-2")}>
-        <AvatarTypeWrap type={"Group"}>
-          <UserAvatar namespace={slug} size="lg" />
-        </AvatarTypeWrap>
-        <div>
-          <h1 className="mb-0" data-cy="group-name">
+    <>
+      <header className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
+        <UserAvatar namespace={slug} size="md" />
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
             {group.name ?? "Unknown group"}
           </h1>
-          {group.description && (
-            <section>
-              <p data-cy="group-description">{group.description}</p>
-            </section>
-          )}
         </div>
-      </div>
-    </div>
+      </header>
+      {group.description && (
+        <div className="mt-2">
+          <p className="mb-0" data-cy="group-description">
+            {group.description}
+          </p>
+        </div>
+      )}
+    </>
   );
 }

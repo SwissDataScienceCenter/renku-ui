@@ -17,9 +17,9 @@
  */
 
 import cx from "classnames";
-import { JournalAlbum } from "react-bootstrap-icons";
+import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { Link } from "react-router";
-import { Col, Row } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
@@ -86,7 +86,23 @@ export default function UserShow() {
         </Row>
       </Col>
       <Col xs={12} md={4} xl={3}>
-        {information}
+        <Card data-cy="user-info-card">
+          <CardHeader>
+            <div
+              className={cx(
+                "align-items-center",
+                "d-flex",
+                "justify-content-between"
+              )}
+            >
+              <h2 className="m-0">
+                <InfoCircle className={cx("me-1", "bi")} />
+                Info
+              </h2>
+            </div>
+          </CardHeader>
+          <CardBody>{information}</CardBody>
+        </Card>
       </Col>
     </Row>
   );
