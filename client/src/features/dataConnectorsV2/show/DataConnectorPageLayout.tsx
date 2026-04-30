@@ -79,5 +79,9 @@ interface DataConnectorHeaderProps {
   name: string;
 }
 function DataConnectorHeader({ name }: DataConnectorHeaderProps) {
-  return <h1 data-cy="data-connector-name">{name}</h1>;
+  return (
+    <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">
+      {name}
+    </h1>
+  );
 }

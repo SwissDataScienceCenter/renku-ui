@@ -74,7 +74,7 @@ export default function EntityPill({
             "border-dark-subtle",
             "border",
             "d-flex",
-            "p-2",
+            size === "sm" ? "p-1" : "p-2",
             "text-dark-emphasis",
             sizeClass
           )}
