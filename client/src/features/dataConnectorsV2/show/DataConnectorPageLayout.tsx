@@ -4,10 +4,7 @@ import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import ContainerWrap from "~/components/container/ContainerWrap";
-import {
-  EntityWatermark,
-  EntityWatermarkPlaceholder,
-} from "~/components/entityWatermark/EntityWatermark";
+import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "~/components/PageNav";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
@@ -54,13 +51,7 @@ export default function DataConnectorPageLayout({
               <DataConnectorHeader name={dataConnector.name} />
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">
-              <div className="position-relative">
-                <EntityWatermarkPlaceholder />
-                <EntityWatermark
-                  className={cx("end-0", "position-absolute", "top-0")}
-                  type="dataConnector"
-                />
-              </div>
+              <EntityWatermark type="dataConnector" />
             </Col>
           </Row>
         </Col>

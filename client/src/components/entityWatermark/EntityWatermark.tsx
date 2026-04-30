@@ -38,26 +38,21 @@ export function EntityWatermark({ className, type }: EntityWatermarkProps) {
           "text-body-secondary",
           "top-0",
           className,
-          styles.EntityWatermark
+          type === "dataConnector"
+            ? styles.EntityWatermarkDatabase
+            : styles.EntityWatermark
         )}
       >
         {type === "group" ? (
           <People />
         ) : type === "user" ? (
           <Person />
+        ) : type === "dataConnector" ? (
+          <Database />
         ) : (
           <Folder />
         )}
       </div>
     </div>
   );
-}
-
-interface EntityWatermarkPlaceholderProps {
-  className?: string;
-}
-export function EntityWatermarkPlaceholder({
-  className,
-}: EntityWatermarkPlaceholderProps) {
-  return <div className={cx(className, styles.EntityWatermarkPlaceholder)} />;
 }
