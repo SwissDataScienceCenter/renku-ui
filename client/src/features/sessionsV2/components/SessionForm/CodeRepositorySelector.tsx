@@ -58,7 +58,7 @@ export default function CodeRepositorySelector<T extends FieldValues>({
         : repositoriesDetails.find(
             (repo) =>
               repo.data?.status === "valid" &&
-              repo.data.metadata?.visibility === "public"
+              repo.data.metadata?.pull_permission
           )?.url,
     [controllerProps.defaultValue, repositoriesDetails]
   );
@@ -164,7 +164,7 @@ function CodeRepositorySelect({
       unstyled
       isOptionDisabled={(option) =>
         option.data?.status !== "valid" ||
-        option.data.metadata?.visibility !== "public"
+        !option.data.metadata?.pull_permission
       }
       onChange={onChange}
       onBlur={onBlur}
