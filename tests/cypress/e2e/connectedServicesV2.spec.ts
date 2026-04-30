@@ -37,25 +37,24 @@ describe("Interact with Connected services", () => {
   it("Connect GitHub user", () => {
     fixtures.listConnectedServicesProviders();
     cy.visit("/integrations");
-    cy.getDataCy("connected-services-card").should("have.length", 2);
-    cy.getDataCy("connected-services-card").contains("GitHub.com");
-    cy.getDataCy("connected-services-card")
+    cy.getDataCy("activate-integration-button").click();
+    cy.getDataCy("provider-item").should("have.length", 2);
+    cy.getDataCy("provider-item").contains("GitHub.com");
+    cy.getDataCy("provider-item")
       .filter(`:contains("GitHub.com")`)
-      .contains("Not connected");
-    cy.getDataCy("connected-services-card")
-      .filter(`:contains("GitHub.com")`)
-      .contains("button", "Connect");
+      .contains("a", "Connect");
 
     // ? Instead of clicking the Connect link, we just load the connection.
     fixtures.listConnectedServicesConnections();
     cy.reload();
     cy.visit("/integrations");
-    cy.getDataCy("connected-services-card")
+    cy.getDataCy("connected-service-item").should("have.length", 1);
+    cy.getDataCy("connected-service-item")
       .filter(`:contains("GitHub.com")`)
       .contains("Connected");
-    cy.getDataCy("connected-services-card")
+    cy.getDataCy("connected-service-item")
       .filter(`:contains("GitHub.com")`)
-      .contains("button", "Reconnect");
+      .contains("a", "Reconnect");
   });
 
   it("GitHub user - check account", () => {
@@ -66,30 +65,30 @@ describe("Interact with Connected services", () => {
       .listConnectedServicesInstallations({ empty: true });
     cy.visit("/integrations");
 
-    cy.getDataCy("connected-services-card")
+    cy.getDataCy("connected-service-item")
       .should("contain", "@my-github-user")
       .and("contain", "is not installed for any user");
 
     fixtures.listConnectedServicesInstallations({
       fixture: "connectedServicesV2/installationsSuspended.json",
     });
-    cy.getDataCy("connected-services-card")
+    cy.getDataCy("connected-service-item")
       .filter(`:contains("GitHub.com")`)
       .contains("Check again")
       .click();
 
-    cy.getDataCy("connected-services-card")
+    cy.getDataCy("connected-service-item")
       .should("contain", "@my-github-user")
       .and("contain", "suspended")
       .and("contain", "not active for any user");
 
     fixtures.listConnectedServicesInstallations();
-    cy.getDataCy("connected-services-card")
+    cy.getDataCy("connected-service-item")
       .filter(`:contains("GitHub.com")`)
       .contains("Check again")
       .click();
 
-    cy.getDataCy("connected-services-card")
+    cy.getDataCy("connected-service-item")
       .should("contain", "@my-github-user")
       .and("contain", "is installed in");
   });

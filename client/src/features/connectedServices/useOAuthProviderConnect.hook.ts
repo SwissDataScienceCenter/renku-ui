@@ -89,11 +89,9 @@ export function useOAuthProviderConnect(
     return () => window.clearTimeout(t);
   }, [isPolling]);
 
-  const startConnect = useCallback(() => {
-    if (!authorizeHref) return;
-    window.open(authorizeHref, "_blank", "noopener,noreferrer");
+  const startPolling = useCallback(() => {
     setIsPolling(true);
-  }, [authorizeHref]);
+  }, []);
 
-  return { authorizeHref, startConnect, isPolling };
+  return { authorizeHref, startPolling, isPolling };
 }
