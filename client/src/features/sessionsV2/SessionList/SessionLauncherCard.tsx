@@ -19,10 +19,11 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
+import { Link45deg, Pencil, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
+import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -135,6 +136,15 @@ export default function SessionLauncherCard({
         : skipToken
     );
 
+  const {
+    data: imageRepositorySource,
+    isLoading: isLoadingImageRepositorySource,
+  } = useGetRepositoryQuery(
+    environment?.environment_image_source === "build"
+      ? { url: environment.build_parameters.repository }
+      : skipToken
+  );
+
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
   // Ref: https://github.com/facebook/react/issues/35577
@@ -221,6 +231,7 @@ export default function SessionLauncherCard({
                     {isCodeEnvironment &&
                     (isLoading ||
                       isLoadingContainerImage ||
+                      isLoadingImageRepositorySource ||
                       isLoadingResourcePools) ? (
                       <SessionBadge
                         className={cx("border-warning", "bg-warning-subtle")}
@@ -238,23 +249,17 @@ export default function SessionLauncherCard({
                       <BuildStatusBadge
                         buildStatus={lastBuild?.status}
                         imageCheck={containerImage}
+                        imageSourceCheck={imageRepositorySource}
                         resourcePool={resourcePool}
                       />
-                    ) : !hasSession ? (
-                      <SessionBadge
-                        className={cx("border-dark-subtle", "bg-light")}
-                      >
-                        <CircleFill
-                          className={cx("me-1", "bi", "text-light-emphasis")}
-                        />
-                        <span
-                          className="text-dark-emphasis"
-                          data-cy="session-status"
-                        >
-                          Not Running
-                        </span>
-                      </SessionBadge>
-                    ) : null}
+                    ) : (
+                      <SessionImageBadge
+                        data={containerImage}
+                        isLoading={isLoadingContainerImage}
+                        resourcePool={resourcePool}
+                        isLoadingResourcePools={isLoadingResourcePools}
+                      />
+                    )}
                   </Col>
                   <Col xs={12} xl="auto" className="d-flex">
                     <BuildStatusDescription

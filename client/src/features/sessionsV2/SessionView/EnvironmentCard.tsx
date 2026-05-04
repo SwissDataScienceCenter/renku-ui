@@ -24,6 +24,7 @@ import { Link, useLocation } from "react-router";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
+import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ErrorLabel } from "../../../components/formlabels/FormLabels";
@@ -217,6 +218,14 @@ function CustomImageEnvironmentValues({
       ? { imageUrl: environment.container_image }
       : skipToken
   );
+  const {
+    data: imageRepositorySource,
+    isLoading: isLoadingImageRepositorySource,
+  } = useGetRepositoryQuery(
+    environment?.environment_image_source === "build"
+      ? { url: environment.build_parameters.repository }
+      : skipToken
+  );
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
   const resourcePool = useMemo(() => {
@@ -248,82 +257,91 @@ function CustomImageEnvironmentValues({
             isLoadingResourcePools={isLoadingResourcePools}
           />
         )}
-        {!isLoading && data?.accessible === false && (
-          <div className="mt-2">
-            {!data.connection && !data.provider ? (
-              <ErrorAlert className="mb-0" dismissible={false}>
-                <p className="mb-2">
-                  The container image reference is invalid or points to an
-                  unsupported registry. Please verify the image and check if the
-                  registry is in the currently supported{" "}
-                  <Link
-                    to={{
-                      pathname: ABSOLUTE_ROUTES.v2.integrations,
-                      search,
-                    }}
-                  >
-                    <Plugin className={cx("bi", "me-1")} />
-                    integrations
-                  </Link>
-                  . If you&apos;re certain the image is correct and points to a
-                  registry we don&apos;t currently support,{" "}
-                  <a
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    href={`mailto:${renkuContactEmail}`}
-                  >
-                    <Send className={cx("bi", "me-1")} />
-                    contact us
-                  </a>{" "}
-                  about adding an integration.
-                </p>
-              </ErrorAlert>
-            ) : data.connection?.status === "connected" ? (
-              <ErrorAlert className="mb-0" dismissible={false}>
-                <p className="mb-0">
-                  Either the container image reference does not exist, or you do
-                  not have access to it.
-                </p>
-                {data?.provider?.id && (
-                  <>
-                    <p className={cx("mb-2", "mt-2")}>
-                      If you think you should have access, check your
-                      integration configuration.
-                    </p>
+        {!isLoading &&
+          data?.accessible === false &&
+          !isLoadingImageRepositorySource && (
+            <div className="mt-2">
+              {imageRepositorySource?.status === "invalid" ? (
+                <ErrorAlert className="mb-0" dismissible={false}>
+                  <p className="mb-2">
+                    You do not have access to the repository used to build the
+                    image for this session environment.
+                  </p>
+                </ErrorAlert>
+              ) : !data.connection && !data.provider ? (
+                <ErrorAlert className="mb-0" dismissible={false}>
+                  <p className="mb-2">
+                    The container image reference is invalid or points to an
+                    unsupported registry. Please verify the image and check if
+                    the registry is in the currently supported{" "}
                     <Link
-                      className={cx("btn", "btn-primary", "btn-sm")}
                       to={{
                         pathname: ABSOLUTE_ROUTES.v2.integrations,
                         search,
                       }}
                     >
                       <Plugin className={cx("bi", "me-1")} />
-                      View integration
+                      integrations
                     </Link>
-                  </>
-                )}
-              </ErrorAlert>
-            ) : (
-              <WarnAlert className="mb-0" dismissible={false}>
-                <p className="mb-2">
-                  This container image reference is from a supported registry,
-                  but you haven&apos;t activated the integration yet. Activate
-                  the integration to check if you have access to this image.
-                </p>
-                <Link
-                  className={cx("btn", "btn-primary", "btn-sm")}
-                  to={{
-                    pathname: ABSOLUTE_ROUTES.v2.integrations,
-                    search,
-                  }}
-                >
-                  <Plugin className={cx("bi", "me-1")} />
-                  Go to Integration
-                </Link>
-              </WarnAlert>
-            )}
-          </div>
-        )}
+                    . If you&apos;re certain the image is correct and points to
+                    a registry we don&apos;t currently support,{" "}
+                    <a
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      href={`mailto:${renkuContactEmail}`}
+                    >
+                      <Send className={cx("bi", "me-1")} />
+                      contact us
+                    </a>{" "}
+                    about adding an integration.
+                  </p>
+                </ErrorAlert>
+              ) : data.connection?.status === "connected" ? (
+                <ErrorAlert className="mb-0" dismissible={false}>
+                  <p className="mb-0">
+                    Either the container image reference does not exist, or you
+                    do not have access to it.
+                  </p>
+                  {data?.provider?.id && (
+                    <>
+                      <p className={cx("mb-2", "mt-2")}>
+                        If you think you should have access, check your
+                        integration configuration.
+                      </p>
+                      <Link
+                        className={cx("btn", "btn-primary", "btn-sm")}
+                        to={{
+                          pathname: ABSOLUTE_ROUTES.v2.integrations,
+                          search,
+                        }}
+                      >
+                        <Plugin className={cx("bi", "me-1")} />
+                        View integration
+                      </Link>
+                    </>
+                  )}
+                </ErrorAlert>
+              ) : (
+                <WarnAlert className="mb-0" dismissible={false}>
+                  <p className="mb-2">
+                    This container image reference is from a supported registry,
+                    but you haven&apos;t activated the integration yet. Activate
+                    the integration to check if you have access to this image.
+                  </p>
+                  <Link
+                    className={cx("btn", "btn-primary", "btn-sm")}
+                    to={{
+                      pathname: ABSOLUTE_ROUTES.v2.integrations,
+                      search,
+                    }}
+                  >
+                    <Plugin className={cx("bi", "me-1")} />
+                    Go to Integration
+                  </Link>
+                </WarnAlert>
+              )}
+            </div>
+          )}
       </div>
       <EnvironmentRowWithLabel
         dataCy="session-view-session-environment-image"
