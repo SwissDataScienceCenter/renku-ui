@@ -118,8 +118,8 @@ export default function BuilderEnvironmentFields({
         />
         {selectedRepositoryIsPrivate && (
           <InfoAlert dismissible={false} timeout={0}>
-            This is a private repository. The image built will be stored in a
-            separate dedicated registry.
+            This is a private repository, launching the session will only be
+            available to users who have pull access to the repository.
           </InfoAlert>
         )}
         <CodeRepositoryAdvancedSettings control={control} />
