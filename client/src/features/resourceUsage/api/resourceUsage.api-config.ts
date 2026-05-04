@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// Run `npm run generate-api:???` to generate the API
+// Run `npm run generate-api:resourceUsage` to generate the API
 
 import path from "path";
 import type { ConfigFile } from "@rtk-query/codegen-openapi";
