@@ -28,7 +28,7 @@ interface EntityWatermarkProps {
 export function EntityWatermark({ className, type }: EntityWatermarkProps) {
   return (
     <div className="position-relative">
-      <div className={cx(className, styles.EntityWatermarkPlaceholder)} />
+      <div className={cx(className, styles.EntityWatermark)} />
       <div
         className={cx(
           "d-flex",
