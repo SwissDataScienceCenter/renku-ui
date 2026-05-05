@@ -38,8 +38,25 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
     getSessionsV2(args?: SimpleFixture) {
       const { fixture = "sessions/sessions.json", name = "getSessionsV2" } =
         args ?? {};
-      const response = { fixture };
-      cy.intercept("GET", "/api/data/sessions*", response).as(name);
+      cy.fixture(fixture).then((sessions) => {
+        const currentSessions = sessions.map(
+          (session: Record<string, unknown>) => {
+            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+            session.started = fiveMinutesAgo.toISOString();
+            const status = session.status as Record<string, string>;
+            if (status.state == "hibernated") {
+              status.will_delete_at = new Date(
+                fiveMinutesAgo.getTime() + 24 * 60 * 60 * 1000
+              ).toISOString();
+            }
+            return session;
+          }
+        );
+        // eslint-disable-next-line max-nested-callbacks
+        cy.intercept("GET", "/api/data/sessions*", (req) => {
+          req.reply({ body: currentSessions });
+        }).as(name);
+      });
       return this;
     }
 

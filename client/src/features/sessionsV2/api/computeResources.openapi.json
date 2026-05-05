@@ -1189,7 +1189,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The user was removed or it was not part of the pool"
+            "description": "The user was removed, or it was not part of the pool"
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -1898,6 +1898,12 @@
           },
           "node_affinities": {
             "$ref": "#/components/schemas/NodeAffinityList"
+          },
+          "usage_available": {
+            "$ref": "#/components/schemas/UsageAvailable"
+          },
+          "usage_limit_total": {
+            "$ref": "#/components/schemas/UsageLimitTotal"
           }
         },
         "required": [
@@ -2328,6 +2334,9 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "resource_usage": {
+            "$ref": "#/components/schemas/ResourceUsage"
           }
         },
         "required": ["classes", "name", "id", "public", "default", "platform"],
@@ -2545,6 +2554,28 @@
         "example": 8,
         "minimum": 0,
         "maximum": 9223372036854776000
+      },
+      "UsageAvailable": {
+        "type": "number",
+        "format": "double",
+        "description": "Amount of a resource available (in hours)",
+        "example": 3.141,
+        "minimum": 0
+      },
+      "UsageLimitTotal": {
+        "type": "number",
+        "format": "float",
+        "description": "Total number of a resources hours available to the user",
+        "example": 10,
+        "minimum": 0,
+        "default": null
+      },
+      "ResourceUsage": {
+        "type": "number",
+        "format": "double",
+        "description": "Amount of a resource used (in credits)",
+        "example": 3.141,
+        "minimum": 0
       },
       "Storage": {
         "type": "integer",
@@ -2953,6 +2984,24 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "type": "http"
+      },
+      "oidc": {
+        "type": "openIdConnect",
+        "openIdConnectUrl": "/auth/realms/Renku/.well-known/openid-configuration"
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "bearer": []
+    },
+    {
+      "oidc": ["openid"]
+    }
+  ]
 }

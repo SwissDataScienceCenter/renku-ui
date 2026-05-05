@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowRightCircle,
   BoxArrowUpRight,
@@ -40,6 +40,7 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
@@ -57,7 +58,8 @@ import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
 } from "../../api/sessionsV2.api";
-import {
+import type {
+  SessionLauncherResourceUsageLimit,
   SessionResources,
   SessionStatus,
   SessionStatusState,
@@ -72,17 +74,220 @@ import {
 import ShutdownSessionContent from "../SessionModals/ShoutdownSessionContent";
 import { SessionRowResourceRequests } from "../SessionsList";
 
+interface ActiveSessionDefaultButtonProps
+  extends Pick<
+    ActiveSessionButtonProps,
+    "usageLimit" | "session" | "showSessionUrl"
+  > {
+  isHibernating: boolean;
+  isResuming: boolean;
+  isStopping: boolean;
+  onHibernateSession: () => void;
+  onResumeSession: () => void;
+  onStopSession: () => void;
+  toggleLogsModal: () => void;
+  toggleModifySession: () => void;
+}
+function ActiveSessionDefaultButton({
+  isHibernating,
+  isResuming,
+  isStopping,
+  onHibernateSession,
+  onResumeSession,
+  onStopSession,
+  usageLimit,
+  session,
+  showSessionUrl,
+  toggleLogsModal,
+  toggleModifySession,
+}: ActiveSessionDefaultButtonProps) {
+  const status = session.status.state;
+  const failedScheduling =
+    status === "failed" &&
+    (!!session.status.message?.includes(
+      "The resource quota has been exceeded."
+    ) ||
+      !!session.status.message?.includes(
+        // TODO: fix spelling in notebooks
+        // eslint-disable-next-line spellcheck/spell-checker
+        "Your session cannot be scheduled due to insufficent resources."
+      ));
+  const buttonClassName = cx(
+    "btn",
+    "btn-rk-green",
+    "btn-icon-text",
+    "start-session-button",
+    "py-1",
+    "px-2",
+    "btn-outline-primary"
+  );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
+  if (status === "stopping" || isStopping)
+    return (
+      <Button color="primary" data-cy="stopping-btn" disabled>
+        <Loader className="me-1" inline size={16} />
+        Shutting down
+      </Button>
+    );
+  if (isHibernating)
+    return (
+      <Button color="primary" data-cy="stopping-btn" disabled>
+        <Loader className="me-1" inline size={16} />
+        Pausing
+      </Button>
+    );
+  if (status === "starting")
+    return (
+      <Link
+        className={cx("btn", "btn-primary")}
+        data-cy="open-session"
+        to={showSessionUrl}
+      >
+        <ArrowRightCircle className={cx("bi", "me-1")} />
+        Open
+      </Link>
+    );
+  if (status === "running")
+    return (
+      <>
+        <Button
+          color="outline-primary"
+          className={buttonClassName}
+          data-cy={
+            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
+          }
+          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
+        >
+          {isUserLoggedIn ? (
+            <span className="align-self-start">
+              <PauseCircle className={cx("bi", "me-1")} />
+            </span>
+          ) : (
+            <Trash className={cx("bi", "me-1")} />
+          )}
+          {isUserLoggedIn ? "Pause" : "Delete"}
+        </Button>
+        <Link
+          className={cx("btn", "btn-primary")}
+          data-cy="open-session"
+          to={showSessionUrl}
+        >
+          <ArrowRightCircle className={cx("bi", "me-1")} />
+          Open
+        </Link>
+      </>
+    );
+  if (status === "hibernated") {
+    if (
+      usageLimit.quotaEnforced &&
+      usageLimit.resourceClass?.usage_available != null &&
+      usageLimit.resourceClass.usage_available <= 0
+    ) {
+      return (
+        <>
+          <UncontrolledTooltip target="resume-btn-quota-exceeded">
+            Please modify the session to use a different resource class. The
+            quota for this resource pool has been fully used.
+          </UncontrolledTooltip>
+          <span id="resume-btn-quota-exceeded">
+            <Button
+              color="outline-primary"
+              className={cx("disabled", "border-end-0", "rounded-end-0")}
+              disabled={true}
+              data-cy="resume-session-button"
+              size="sm"
+            >
+              Quota Reached
+            </Button>
+          </span>
+        </>
+      );
+    }
+    return (
+      <Button
+        color="primary"
+        data-cy="resume-session-button"
+        disabled={isResuming}
+        onClick={onResumeSession}
+      >
+        {isResuming ? (
+          <>
+            <Loader className="me-1" inline size={16} />
+            Resuming
+          </>
+        ) : (
+          <>
+            <PlayFill className={cx("bi", "me-1")} />
+            Resume
+          </>
+        )}
+      </Button>
+    );
+  }
+
+  if (failedScheduling) return;
+  <>
+    <Button
+      color="outline-primary"
+      data-cy="show-logs-session-button"
+      onClick={toggleLogsModal}
+    >
+      <FileEarmarkText className={cx("bi", "me-1")} />
+      Get logs
+    </Button>
+    <Button
+      color="primary"
+      className={buttonClassName}
+      data-cy="modify-session-button"
+      onClick={toggleModifySession}
+    >
+      <Tools className={cx("bi", "me-1")} />
+      Modify
+    </Button>
+  </>;
+  return (
+    <>
+      <Button
+        color="outline-primary"
+        data-cy={"show-logs-session-button"}
+        onClick={toggleLogsModal}
+      >
+        <FileEarmarkText className={cx("bi", "me-1")} />
+        Get logs
+      </Button>
+      <Button
+        color="primary"
+        data-cy={
+          isUserLoggedIn ? "pause-session-button" : "delete-session-button"
+        }
+        onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
+      >
+        {isUserLoggedIn ? (
+          <span className="align-self-start">
+            <PauseCircle className={cx("bi", "me-1")} />
+          </span>
+        ) : (
+          <Trash className={cx("bi", "me-1")} />
+        )}
+        {isUserLoggedIn ? "Pause" : "Delete"}
+      </Button>
+    </>
+  );
+}
+
 interface ActiveSessionButtonProps {
   className?: string;
+  usageLimit: SessionLauncherResourceUsageLimit;
   session: SessionV2;
   showSessionUrl: string;
-  toggleSessionDetails?: () => void;
 }
 
 export default function ActiveSessionButton({
+  className,
+  usageLimit,
   session,
   showSessionUrl,
-  className,
 }: ActiveSessionButtonProps) {
   const { renkuToastDanger } = useRenkuToast();
 
@@ -256,131 +461,21 @@ export default function ActiveSessionButton({
         "Your session cannot be scheduled due to insufficent resources."
       ));
 
-  const buttonClassName = cx(
-    "btn",
-    "btn-rk-green",
-    "btn-icon-text",
-    "start-session-button",
-    "py-1",
-    "px-2",
-    "btn-outline-primary"
+  const defaultAction = (
+    <ActiveSessionDefaultButton
+      isHibernating={isHibernating}
+      isResuming={isResuming}
+      isStopping={isStopping}
+      onHibernateSession={onHibernateSession}
+      onResumeSession={onResumeSession}
+      onStopSession={onStopSession}
+      usageLimit={usageLimit}
+      session={session}
+      showSessionUrl={showSessionUrl}
+      toggleLogsModal={toggleLogsModal}
+      toggleModifySession={toggleModifySession}
+    />
   );
-
-  const defaultAction =
-    status === "stopping" || isStopping ? (
-      <Button color="primary" data-cy="stopping-btn" disabled>
-        <Loader className="me-1" inline size={16} />
-        Shutting down
-      </Button>
-    ) : isHibernating ? (
-      <Button color="primary" data-cy="stopping-btn" disabled>
-        <Loader className="me-1" inline size={16} />
-        Pausing
-      </Button>
-    ) : status === "starting" ? (
-      <Link
-        className={cx("btn", "btn-primary")}
-        data-cy="open-session"
-        to={showSessionUrl}
-      >
-        <ArrowRightCircle className={cx("bi", "me-1")} />
-        Open
-      </Link>
-    ) : status === "running" ? (
-      <>
-        <Button
-          color="outline-primary"
-          className={buttonClassName}
-          data-cy={
-            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
-          }
-          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
-        >
-          {isUserLoggedIn ? (
-            <span className="align-self-start">
-              <PauseCircle className={cx("bi", "me-1")} />
-            </span>
-          ) : (
-            <Trash className={cx("bi", "me-1")} />
-          )}
-          {isUserLoggedIn ? "Pause" : "Delete"}
-        </Button>
-        <Link
-          className={cx("btn", "btn-primary")}
-          data-cy="open-session"
-          to={showSessionUrl}
-        >
-          <ArrowRightCircle className={cx("bi", "me-1")} />
-          Open
-        </Link>
-      </>
-    ) : status === "hibernated" ? (
-      <Button
-        color="primary"
-        data-cy="resume-session-button"
-        disabled={isResuming}
-        onClick={onResumeSession}
-      >
-        {isResuming ? (
-          <>
-            <Loader className="me-1" inline size={16} />
-            Resuming
-          </>
-        ) : (
-          <>
-            <PlayFill className={cx("bi", "me-1")} />
-            Resume
-          </>
-        )}
-      </Button>
-    ) : failedScheduling ? (
-      <>
-        <Button
-          color="outline-primary"
-          data-cy="show-logs-session-button"
-          onClick={toggleLogsModal}
-        >
-          <FileEarmarkText className={cx("bi", "me-1")} />
-          Get logs
-        </Button>
-        <Button
-          color="primary"
-          className={buttonClassName}
-          data-cy="modify-session-button"
-          onClick={toggleModifySession}
-        >
-          <Tools className={cx("bi", "me-1")} />
-          Modify
-        </Button>
-      </>
-    ) : (
-      <>
-        <Button
-          color="outline-primary"
-          data-cy={"show-logs-session-button"}
-          onClick={toggleLogsModal}
-        >
-          <FileEarmarkText className={cx("bi", "me-1")} />
-          Get logs
-        </Button>
-        <Button
-          color="primary"
-          data-cy={
-            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
-          }
-          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
-        >
-          {isUserLoggedIn ? (
-            <span className="align-self-start">
-              <PauseCircle className={cx("bi", "me-1")} />
-            </span>
-          ) : (
-            <Trash className={cx("bi", "me-1")} />
-          )}
-          {isUserLoggedIn ? "Pause" : "Delete"}
-        </Button>
-      </>
-    );
 
   const hibernateAction = status !== "stopping" &&
     (status !== "failed" || failedScheduling) &&
@@ -656,6 +751,14 @@ function ModifySessionModalContent({
     />
   );
 
+  const userLauncherClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == currentSessionClass?.id),
+    [currentSessionClass, resourcePools]
+  );
+
   return (
     <>
       <ModalBody className="py-0">
@@ -667,6 +770,10 @@ function ModifySessionModalContent({
               <span>
                 <SessionRowResourceRequests
                   resourceRequests={resources?.requests}
+                  usageLimit={{
+                    resourceClass: userLauncherClass,
+                    quotaEnforced: false, // TODO: Pass the actual value when available from the API
+                  }}
                 />
               </span>
             </div>

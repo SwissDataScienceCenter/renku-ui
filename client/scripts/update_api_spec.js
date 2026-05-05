@@ -24,7 +24,7 @@ import { parseDocument } from "yaml";
 
 const GH_BASE_URL = "https://raw.githubusercontent.com";
 const DATA_SERVICES_REPO = "SwissDataScienceCenter/renku-data-services";
-const DATA_SERVICES_RELEASE = "main";
+const DATA_SERVICES_RELEASE = "build/resource-quotas";
 
 async function main() {
   argv.forEach((arg) => {
@@ -46,6 +46,8 @@ async function main() {
       updateProjectV2Api();
     } else if (arg.trim() === "repositories") {
       updateRepositoriesApi();
+    } else if (arg.trim() === "resourceUsage") {
+      updateResourceUsageApi();
     } else if (arg.trim() === "searchV2") {
       updateSearchV2Api();
     } else if (arg.trim() === "sessionLaunchersV2") {
@@ -119,6 +121,13 @@ async function updateRepositoriesApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/repositories/api.spec.yaml",
     destFile: "src/features/repositories/api/repositories.openapi.json",
+  });
+}
+
+async function updateResourceUsageApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/resource_usage/api.spec.yaml",
+    destFile: "src/features/resourceUsage/api/resourceUsage.openapi.json",
   });
 }
 

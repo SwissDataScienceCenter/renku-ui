@@ -28,14 +28,71 @@ import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
+import { ResourceClassWithIdFiltered } from "./api/computeResources.generated-api";
 import { SessionLauncher } from "./api/sessionLaunchersV2.generated-api";
 import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
+import { UsageQuotaReachedLaunchButton } from "./components/SessionLauncherButtons";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
+
+interface SessionStartDefaultActionButtonProps
+  extends Pick<StartSessionButtonProps, "launcher" | "resourceClass"> {
+  force: boolean;
+  isLaunchButtonDisabled: boolean;
+  startUrl: string;
+}
+
+function SessionStartDefaultActionButton({
+  force,
+  isLaunchButtonDisabled,
+  launcher,
+  resourceClass,
+  startUrl,
+}: SessionStartDefaultActionButtonProps) {
+  const launchButtonDisableReason =
+    "No image available. Run the Build action to generate an image.";
+
+  if (resourceClass) {
+    if (
+      resourceClass.usage_available != null &&
+      resourceClass.usage_available <= 0
+    ) {
+      return <UsageQuotaReachedLaunchButton />;
+    }
+  }
+
+  return (
+    <span id={`launch-btn-${launcher.id}`}>
+      <Link
+        className={cx(
+          "btn",
+          "btn-sm",
+          force ? "btn-outline-primary" : "btn-primary",
+          "rounded-end-0",
+          isLaunchButtonDisabled && "disabled"
+        )}
+        to={startUrl}
+        data-cy="start-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        {force ? "Force launch" : "Launch"}
+      </Link>
+      {isLaunchButtonDisabled && (
+        <UncontrolledTooltip
+          placement="top"
+          target={`launch-btn-${launcher.id}`}
+        >
+          {launchButtonDisableReason}
+        </UncontrolledTooltip>
+      )}
+    </span>
+  );
+}
 
 interface StartSessionButtonProps {
   namespace: string;
   slug: string;
   launcher: SessionLauncher;
+  resourceClass: ResourceClassWithIdFiltered | undefined;
   disabled?: boolean;
   useOldImage?: boolean;
   otherActions?: ReactNode;
@@ -46,6 +103,7 @@ export default function StartSessionButton({
   launcher,
   namespace,
   slug,
+  resourceClass,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
@@ -83,35 +141,6 @@ export default function StartSessionButton({
 
   const isLaunchButtonDisabled =
     environment.environment_image_source === "build" && !hasSuccessfulBuild;
-  const launchButtonDisableReason =
-    "No image available. Run the Build action to generate an image.";
-
-  const launchAction = (
-    <span id={`launch-btn-${launcher.id}`}>
-      <Link
-        className={cx(
-          "btn",
-          "btn-sm",
-          force ? "btn-outline-primary" : "btn-primary",
-          "rounded-end-0",
-          isLaunchButtonDisabled && "disabled"
-        )}
-        to={startUrl}
-        data-cy="start-session-button"
-      >
-        <PlayCircle className={cx("bi", "me-1")} />
-        {force ? "Force launch" : "Launch"}
-      </Link>
-      {isLaunchButtonDisabled && (
-        <UncontrolledTooltip
-          placement="top"
-          target={`launch-btn-${launcher.id}`}
-        >
-          {launchButtonDisableReason}
-        </UncontrolledTooltip>
-      )}
-    </span>
-  );
 
   const customizeLaunch = (
     <Link
@@ -133,7 +162,15 @@ export default function StartSessionButton({
     <>
       <ButtonWithMenuV2
         color={"primary"}
-        default={launchAction}
+        default={
+          <SessionStartDefaultActionButton
+            isLaunchButtonDisabled={isLaunchButtonDisabled}
+            force={force}
+            launcher={launcher}
+            resourceClass={resourceClass}
+            startUrl={startUrl}
+          />
+        }
         preventPropagation
         size="sm"
         disabled={isLaunchButtonDisabled}
