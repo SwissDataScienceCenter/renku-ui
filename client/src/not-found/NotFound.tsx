@@ -26,19 +26,17 @@
 import cx from "classnames";
 import { ReactNode } from "react";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import ContainerWrap from "../components/container/ContainerWrap";
-import rkNotFoundImg from "../styles/assets/not-found.svg";
 import rkNotFoundImgV2 from "../styles/assets/not-foundV2.svg";
-import { isRenkuLegacy } from "../utils/helpers/HelperFunctionsV2";
 
 import "./NotFound.css";
 
 interface NotFoundProps {
   children?: ReactNode;
   description?: string | ReactNode;
-  forceV2?: boolean;
   title?: string;
 }
 
@@ -46,10 +44,7 @@ export default function NotFound({
   title: title_,
   description: description_,
   children,
-  forceV2,
 }: NotFoundProps) {
-  const location = useLocation();
-  const isV2 = forceV2 || !isRenkuLegacy(location.pathname);
   const title = title_ ?? "Page not found";
   const description =
     description_ ??
@@ -62,7 +57,6 @@ export default function NotFound({
       ? "p"
       : "div";
 
-  const homeLink = isV2 ? "/" : "/v1/";
   return (
     <ContainerWrap>
       <div className={cx("d-flex")}>
@@ -76,17 +70,17 @@ export default function NotFound({
               "d-flex",
               "align-items-center",
               "gap-3",
-              isV2 ? "text-primary" : "text-rk-green"
+              "text-primary"
             )}
           >
-            <img src={isV2 ? rkNotFoundImgV2 : rkNotFoundImg} />
+            <img src={rkNotFoundImgV2} />
             {title}
           </h3>
           <Tag data-cy="not-found-description">{description}</Tag>
           <div>
             <Link
-              to={homeLink}
-              className={cx("btn", isV2 ? "btn-primary" : "btn-rk-green")}
+              to={ABSOLUTE_ROUTES.v2.index}
+              className={cx("btn", "btn-primary")}
             >
               <ArrowLeft className={cx("bi", "me-1")} />
               Return to home

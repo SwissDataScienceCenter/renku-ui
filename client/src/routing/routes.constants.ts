@@ -18,43 +18,22 @@
 
 export const ABSOLUTE_ROUTES = {
   root: "/",
+  /** @deprecated Renku Legacy route */
   datasets: {
     root: "/datasets",
     splat: "/datasets/*",
   },
-  projects: {
-    root: "/projects",
-    splat: "/projects/*",
-  },
-  v1: {
-    root: "/v1",
-    splat: "/v1/*",
-    inactiveKGProjects: "/v1/inactive-kg-projects",
-    search: "/v1/search",
-    projects: {
-      root: "/v1/projects",
-      all: "/v1/projects/all",
-      new: "/v1/projects/new",
-      starred: "/v1/projects/starred",
-    },
-    help: {
-      root: "/v1/help",
-      documentation: "/v1/help/docs",
-      contact: "/v1/help/contact",
-      status: "/v1/help/status",
-      release: "/v1/help/release",
-      tos: "/v1/help/tos",
-      privacy: "/v1/help/privacy",
-    },
-    notifications: "/v1/notifications",
-    styleGuide: "/v1/style-guide",
-    secrets: "/v1/secrets",
-    sessions: "/v1/sessions",
-  },
+  /** @deprecated Renku Legacy route */
+  projects: { splat: "/projects/*" },
+  /** @deprecated Renku Legacy routes */
+  v1: { splat: "/v1/*" },
   v2: {
     index: "/",
     admin: "/admin",
-    integrations: "/integrations",
+    integrations: {
+      root: "/integrations",
+      complete: "/integrations/complete",
+    },
     groups: {
       show: {
         root: "/g/:slug",
@@ -98,29 +77,20 @@ export const ABSOLUTE_ROUTES = {
 
 export const RELATIVE_ROUTES = {
   root: "/",
+  /** @deprecated Renku Legacy route */
   datasets: "/datasets",
-  projects: "/projects",
-  v1: {
-    root: "v1/*",
-    projects: {
-      root: "projects/*",
-      all: "all",
-      new: "new",
-      starred: "starred",
-    },
-    help: "help/*",
-    inactiveKGProjects: "inactive-kg-projects",
-    notifications: "notifications",
-    search: "search",
-    secrets: "secrets",
-    sessions: "sessions",
-    styleGuide: "style-guide",
-  },
+  /** @deprecated Renku Legacy route */
+  projects: { splat: "projects/*" },
+  /** @deprecated Renku Legacy routes */
+  v1: { splat: "v1/*" },
   v2: {
     index: "/",
     admin: "admin",
     betaRoot: "/v2/*",
-    integrations: "integrations",
+    integrations: {
+      root: "integrations",
+      complete: "complete",
+    },
     groups: {
       root: "g",
       show: {

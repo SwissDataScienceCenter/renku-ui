@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { data, type MetaDescriptor } from "react-router";
 
 import ContainerWrap from "~/components/container/ContainerWrap";

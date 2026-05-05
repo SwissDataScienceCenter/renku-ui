@@ -64,6 +64,8 @@ export default [
   ]),
   // Admin page
   route(RELATIVE_ROUTES.v2.admin, "routes/admin.tsx"),
+  // Legacy projects (may redirect)
+  route(RELATIVE_ROUTES.projects.splat, "routes/legacy/projects.tsx"),
   // * matches all URLs, the ? makes it optional so it will match / as well
   route("*?", "routes/catchall.tsx"),
 ] satisfies RouteConfig;

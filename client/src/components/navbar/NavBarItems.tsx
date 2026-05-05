@@ -95,7 +95,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           User Secrets
         </DropdownItemTag>
 
-        <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.integrations}>
+        <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.integrations.root}>
           Integrations
         </DropdownItemTag>
 
