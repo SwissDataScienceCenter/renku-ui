@@ -70,30 +70,30 @@ import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 
 interface DataConnectorRemoveModalProps {
-  dataConnector: DataConnectorRead;
+  dataConnector?: DataConnectorRead | null;
   dataConnectorLink?: DataConnectorToProjectLink;
   isOpen: boolean;
   onDelete: () => void;
   toggleModal: () => void;
 }
 
-function DataConnectorRemoveDeleteModal({
+export function DataConnectorRemoveDeleteModal({
   dataConnector,
   onDelete,
   toggleModal,
   isOpen,
 }: DataConnectorRemoveModalProps) {
   const { permissions, isLoading: isLoadingPermissions } =
-    useDataConnectorPermissions({ dataConnectorId: dataConnector.id });
+    useDataConnectorPermissions({ dataConnectorId: dataConnector?.id });
 
   const {
     data: dataConnectorLinks,
     isLoading: isLoadingLinks,
     isError: isLoadingLinksError,
   } = useGetDataConnectorsByDataConnectorIdProjectLinksQuery({
-    dataConnectorId: dataConnector.id,
+    dataConnectorId: dataConnector?.id ?? "",
   });
-  const [deleteDataConnector, { isLoading, isSuccess }] =
+  const [deleteDataConnector, { error, isLoading, isSuccess }] =
     useDeleteDataConnectorsByDataConnectorIdMutation();
 
   const [typedName, setTypedName] = useState("");
@@ -111,9 +111,9 @@ function DataConnectorRemoveDeleteModal({
   }, [isOpen, isSuccess, onDelete]);
   const onDeleteDataCollector = useCallback(() => {
     deleteDataConnector({
-      dataConnectorId: dataConnector.id,
+      dataConnectorId: dataConnector?.id ?? "",
     });
-  }, [deleteDataConnector, dataConnector.id]);
+  }, [deleteDataConnector, dataConnector?.id]);
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
@@ -144,7 +144,7 @@ function DataConnectorRemoveDeleteModal({
                       possible that it is used in some projects.
                     </p>
                     <p>
-                      Please type <strong>{dataConnector.slug}</strong>, the
+                      Please type <strong>{dataConnector?.slug}</strong>, the
                       slug of the data connector, to confirm.
                     </p>
                     <Input
@@ -179,7 +179,7 @@ function DataConnectorRemoveDeleteModal({
                       )}
                     </p>
                     <p>
-                      Please type <strong>{dataConnector.slug}</strong>, the
+                      Please type <strong>{dataConnector?.slug}</strong>, the
                       slug of the data connector, to confirm.
                     </p>
                     <Input
@@ -195,6 +195,12 @@ function DataConnectorRemoveDeleteModal({
             userPermissions={permissions}
           />
         )}
+        {error && (
+          <RtkOrDataServicesError
+            className={cx("mb-0", "mt-3")}
+            error={error}
+          />
+        )}
       </ModalBody>
       <ModalFooter>
         <div className="d-flex justify-content-end">
@@ -208,9 +214,8 @@ function DataConnectorRemoveDeleteModal({
               <Button
                 color="danger"
                 className={cx("float-right", "ms-2")}
-                disabled={isLoading || typedName !== dataConnector.slug.trim()}
+                disabled={isLoading || typedName !== dataConnector?.slug.trim()}
                 data-cy="delete-data-connector-modal-button"
-                type="submit"
                 onClick={onDeleteDataCollector}
               >
                 {isLoading ? (
@@ -274,10 +279,10 @@ function DataConnectorRemoveUnlinkModal({
     if (!linkId) return;
 
     unlinkDataConnector({
-      dataConnectorId: dataConnector.id,
+      dataConnectorId: dataConnector?.id ?? "",
       linkId,
     });
-  }, [unlinkDataConnector, dataConnector.id, linkId]);
+  }, [unlinkDataConnector, dataConnector?.id, linkId]);
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
@@ -307,7 +312,7 @@ function DataConnectorRemoveUnlinkModal({
                     <>
                       <p>
                         Are you sure you want to unlink the data connector{" "}
-                        <strong>{dataConnector.slug}</strong> from the project{" "}
+                        <strong>{dataConnector?.slug}</strong> from the project{" "}
                         <strong>
                           {projectNamespace}/{projectSlug}
                         </strong>
@@ -340,7 +345,7 @@ function DataConnectorRemoveUnlinkModal({
                     className={cx("float-right", "ms-2")}
                     disabled={isLoadingUnlink}
                     data-cy="delete-data-connector-modal-button"
-                    type="submit"
+                    type="button"
                     onClick={onDeleteDataCollector}
                   >
                     {isLoadingUnlink ? (

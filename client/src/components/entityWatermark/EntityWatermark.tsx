@@ -17,18 +17,18 @@
  */
 
 import cx from "classnames";
-import { Folder, People, Person } from "react-bootstrap-icons";
+import { Database, Folder, People, Person } from "react-bootstrap-icons";
 
 import styles from "./entityWatermark.module.scss";
 
 interface EntityWatermarkProps {
   className?: string;
-  type: "group" | "user" | "project";
+  type: "dataConnector" | "group" | "user" | "project";
 }
 export function EntityWatermark({ className, type }: EntityWatermarkProps) {
   return (
     <div className="position-relative">
-      <div className={cx(className, styles.EntityWatermarkPlaceholder)} />
+      <div className={cx(className, styles.EntityWatermark)} />
       <div
         className={cx(
           "d-flex",
@@ -38,13 +38,17 @@ export function EntityWatermark({ className, type }: EntityWatermarkProps) {
           "text-body-secondary",
           "top-0",
           className,
-          styles.EntityWatermark
+          type === "dataConnector"
+            ? styles.EntityWatermarkDatabase
+            : styles.EntityWatermark
         )}
       >
         {type === "group" ? (
           <People />
         ) : type === "user" ? (
           <Person />
+        ) : type === "dataConnector" ? (
+          <Database />
         ) : (
           <Folder />
         )}

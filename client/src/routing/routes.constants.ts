@@ -30,9 +30,13 @@ export const ABSOLUTE_ROUTES = {
   v2: {
     index: "/",
     admin: "/admin",
-    integrations: {
-      root: "/integrations",
-      complete: "/integrations/complete",
+    dataConnectors: {
+      root: "/d/:slug",
+      show: {
+        root: "/d/:projectNamespace?/:dataConnectorNamespace?/:slug",
+        settings:
+          "/d/:projectNamespace?/:dataConnectorNamespace?/:slug/settings",
+      },
     },
     groups: {
       show: {
@@ -49,6 +53,10 @@ export const ABSOLUTE_ROUTES = {
       release: "/help/release",
       tos: "/help/tos",
       privacy: "/help/privacy",
+    },
+    integrations: {
+      root: "/integrations",
+      complete: "/integrations/complete",
     },
     projects: {
       show: {
@@ -87,9 +95,12 @@ export const RELATIVE_ROUTES = {
     index: "/",
     admin: "admin",
     betaRoot: "/v2/*",
-    integrations: {
-      root: "integrations",
-      complete: "complete",
+    dataConnectors: {
+      root: "d",
+      show: {
+        root: ":projectNamespace?/:dataConnectorNamespace?/:slug/*",
+        settings: "settings",
+      },
     },
     groups: {
       root: "g",
@@ -105,6 +116,10 @@ export const RELATIVE_ROUTES = {
       release: "release",
       tos: "tos",
       privacy: "privacy",
+    },
+    integrations: {
+      root: "integrations",
+      complete: "complete",
     },
     projects: {
       root: "p/*",

@@ -49,6 +49,7 @@ export default function GroupPageLayout({
     settingsUrl: generatePath(ABSOLUTE_ROUTES.v2.groups.show.settings, {
       slug: group.slug,
     }),
+    type: "group",
   };
   return (
     <ContainerWrap>
