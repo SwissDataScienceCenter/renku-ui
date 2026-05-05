@@ -336,7 +336,7 @@ export default function DataConnectorSettings() {
           <CardHeader>
             <h2 className="mb-0">
               <Trash className="me-1" />
-              Delete permanently
+              Delete
             </h2>
           </CardHeader>
           <CardBody>
