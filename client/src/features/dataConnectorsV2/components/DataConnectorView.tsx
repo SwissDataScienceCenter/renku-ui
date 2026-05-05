@@ -209,16 +209,64 @@ export default function DataConnectorView({
   );
 }
 
+export function DataConnectorLastDepositBody({
+  deposit,
+}: DataConnectorLastDepositProps) {
+  return (
+    <>
+      <DataConnectorPropertyValue key="name" title="Name">
+        {deposit.name}
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue key="provider" title="Provider">
+        {deposit.provider}
+      </DataConnectorPropertyValue>
+      {deposit.external_url && (
+        <DataConnectorPropertyValue key="external_url" title="URL">
+          <ExternalLink href={deposit.external_url}>
+            {deposit.external_url}
+          </ExternalLink>
+        </DataConnectorPropertyValue>
+      )}
+      <DataConnectorPropertyValue key="status" title="Status">
+        <DepositStatusBadge status={deposit.status} />
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue key="path" title="Path">
+        {deposit.path ?? <span className="fst-italic">N/A</span>}
+      </DataConnectorPropertyValue>
+      {deposit.creation_date && (
+        <DataConnectorPropertyValue key="creation_date" title="Created">
+          <TimeCaption
+            datetime={deposit.creation_date}
+            enableTooltip
+            noCaption
+            prefix=""
+          />
+        </DataConnectorPropertyValue>
+      )}
+      {deposit.updated_at && deposit.updated_at !== deposit.creation_date && (
+        <DataConnectorPropertyValue key="updated_at" title="Last updated">
+          <TimeCaption
+            datetime={deposit.updated_at}
+            enableTooltip
+            noCaption
+            prefix=""
+          />
+        </DataConnectorPropertyValue>
+      )}
+    </>
+  );
+}
+
 interface DataConnectorLastDepositProps {
-  dataConnector: DataConnectorRead;
+  dataConnector?: DataConnectorRead | null;
   deposit: Deposit;
 }
-function DataConnectorLastDeposit({
+export function DataConnectorLastDeposit({
   dataConnector,
   deposit,
 }: DataConnectorLastDepositProps) {
   const { permissions } = useDataConnectorPermissions({
-    dataConnectorId: dataConnector.id,
+    dataConnectorId: dataConnector?.id,
   });
 
   return (
@@ -246,45 +294,7 @@ function DataConnectorLastDeposit({
         />
       </div>
       <div>
-        <DataConnectorPropertyValue key="name" title="Name">
-          {deposit.name}
-        </DataConnectorPropertyValue>
-        <DataConnectorPropertyValue key="provider" title="Provider">
-          {deposit.provider}
-        </DataConnectorPropertyValue>
-        {deposit.external_url && (
-          <DataConnectorPropertyValue key="external_url" title="URL">
-            <ExternalLink href={deposit.external_url}>
-              {deposit.external_url}
-            </ExternalLink>
-          </DataConnectorPropertyValue>
-        )}
-        <DataConnectorPropertyValue key="status" title="Status">
-          <DepositStatusBadge status={deposit.status} />
-        </DataConnectorPropertyValue>
-        <DataConnectorPropertyValue key="path" title="Path">
-          {deposit.path ?? <span className="fst-italic">N/A</span>}
-        </DataConnectorPropertyValue>
-        {deposit.creation_date && (
-          <DataConnectorPropertyValue key="creation_date" title="Created">
-            <TimeCaption
-              datetime={deposit.creation_date}
-              enableTooltip
-              noCaption
-              prefix=""
-            />
-          </DataConnectorPropertyValue>
-        )}
-        {deposit.updated_at && deposit.updated_at !== deposit.creation_date && (
-          <DataConnectorPropertyValue key="updated_at" title="Last updated">
-            <TimeCaption
-              datetime={deposit.updated_at}
-              enableTooltip
-              noCaption
-              prefix=""
-            />
-          </DataConnectorPropertyValue>
-        )}
+        <DataConnectorLastDepositBody deposit={deposit} />
       </div>
     </section>
   );
