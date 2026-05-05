@@ -1,12 +1,15 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
-import { Pencil, Plug, Sliders } from "react-bootstrap-icons";
+import { Pencil, Plug, Sliders, Trash } from "react-bootstrap-icons";
+import { generatePath, useNavigate } from "react-router";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { getDataConnectorScope } from "../components/dataConnector.utils";
+import { DataConnectorRemoveDeleteModal } from "../components/DataConnectorActions";
 import DataConnectorModal from "../components/DataConnectorModal";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 
@@ -33,6 +36,16 @@ export default function DataConnectorSettings() {
   const toggleConnectionInformation = useCallback(() => {
     setIsConnectionInformationOpen((open) => !open);
   }, []);
+
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const toggleDelete = useCallback(() => {
+    setIsDeleteOpen((open) => !open);
+  }, []);
+  const navigate = useNavigate();
+  const onDelete = useCallback(() => {
+    const homeUrl = generatePath(ABSOLUTE_ROUTES.v2.index);
+    navigate(homeUrl);
+  }, [navigate]);
 
   if (scope === "global") {
     return (
@@ -113,11 +126,42 @@ export default function DataConnectorSettings() {
                   <Button
                     className="ms-auto"
                     color="primary"
-                    data-cy="data-connector-general-settings-update-button"
+                    data-cy="data-connector-connection-settings-update-button"
                     onClick={toggleConnectionInformation}
                   >
                     <Pencil className="me-1" />
                     Edit
+                  </Button>
+                }
+                requestedPermission="write"
+                userPermissions={permissions}
+              />
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card data-cy="data-connector-delete-settings">
+          <CardHeader>
+            <h2 className="mb-0">
+              <Trash className="me-1" />
+              Delete data connector
+            </h2>
+          </CardHeader>
+          <CardBody>
+            <p>Delete a data connector. This action cannot be undone!</p>
+
+            <div className={cx("d-flex", "gap-2")}>
+              <PermissionsGuard
+                disabled={null}
+                enabled={
+                  <Button
+                    className="ms-auto"
+                    color="danger"
+                    data-cy="data-connector-delete-settings-button"
+                    onClick={toggleDelete}
+                  >
+                    <Trash className="me-1" />
+                    Delete
                   </Button>
                 }
                 requestedPermission="write"
@@ -138,6 +182,13 @@ export default function DataConnectorSettings() {
             : toggleConnectionInformation
         }
         initialStep={isGeneralSettingsOpen ? 3 : 2}
+      />
+
+      <DataConnectorRemoveDeleteModal
+        dataConnector={dataConnector}
+        isOpen={isDeleteOpen}
+        onDelete={onDelete}
+        toggleModal={toggleDelete}
       />
     </>
   );
