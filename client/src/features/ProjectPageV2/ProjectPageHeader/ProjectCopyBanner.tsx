@@ -77,7 +77,7 @@ function ProjectViewerMakeCopyBanner({
   const isUserLoggedIn = !!user?.isLoggedIn;
   const loginUrl = useLoginUrl();
   return (
-    <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
+    <PrimaryAlert className="mb-0" icon={<Diagram3Fill className="bi" />}>
       <div
         className={cx(
           "d-flex",

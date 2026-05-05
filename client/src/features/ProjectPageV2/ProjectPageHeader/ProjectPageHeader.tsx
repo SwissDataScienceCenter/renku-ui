@@ -17,14 +17,10 @@
  */
 
 import cx from "classnames";
-import { generatePath, useLocation } from "react-router";
-import { Col, Row } from "reactstrap";
+import { useLocation } from "react-router";
 
-import { UnderlineArrowLink } from "../../../components/buttons/Button";
-import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import ProjectGitLabWarnBanner from "../../legacy/ProjectGitLabWarnBanner";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { ProjectImageView } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
 import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
 import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
@@ -33,62 +29,33 @@ interface ProjectPageHeaderProps {
   project: Project;
 }
 export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
-  const settingsUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
-    namespace: project.namespace ?? "",
-    slug: project.slug ?? "",
-  });
-
+  // ? We still use `autostartRedirect` for legacy projects registered for redirect
   const { search } = useLocation();
   const isAutostartRedirect =
     new URLSearchParams(search).get("autostartRedirect") === "true";
 
   return (
-    <header>
-      <Row>
-        <Col xs={12} lg={2}>
-          <div className={cx("d-none", "d-lg-block")}>
-            <ProjectImageView />
-          </div>
-        </Col>
-        <Col xs={12} lg={10}>
-          <Row>
-            <Col>
-              <h1 data-cy="project-name">{project.name}</h1>
-            </Col>
-          </Row>
-          <Col>
-            <div>
-              {project.description?.length ? (
-                <p data-cy="project-description">{project.description}</p>
-              ) : (
-                <p>
-                  <UnderlineArrowLink
-                    tooltip="Add project description"
-                    text="Add description"
-                    to={settingsUrl}
-                  />
-                </p>
-              )}
-              {project.is_template && (
-                <ProjectTemplateInfoBanner project={project} />
-              )}
-            </div>
-          </Col>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <ProjectGitLabWarnBanner project={project} />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          {project.is_template && <ProjectCopyBanner project={project} />}
-          {isAutostartRedirect && (
-            <ProjectAutostartRedirectBanner project={project} />
-          )}
-        </Col>
-      </Row>
-    </header>
+    <div className={cx("d-flex", "flex-column", "gap-2")}>
+      <header>
+        <h1 className={cx("mb-0", "text-break")} data-cy="project-name">
+          {project.name}
+        </h1>
+      </header>
+      {project.description && (
+        <p className="mb-0" data-cy="project-description">
+          {project.description}
+        </p>
+      )}
+      {project.is_template && (
+        <>
+          <ProjectTemplateInfoBanner project={project} />
+          <ProjectCopyBanner project={project} />
+        </>
+      )}
+      {isAutostartRedirect && (
+        <ProjectAutostartRedirectBanner project={project} />
+      )}
+      <ProjectGitLabWarnBanner project={project} />
+    </div>
   );
 }

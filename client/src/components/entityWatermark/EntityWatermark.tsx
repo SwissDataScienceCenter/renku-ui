@@ -17,28 +17,37 @@
  */
 
 import cx from "classnames";
-import { People, Person } from "react-bootstrap-icons";
+import { Folder, People, Person } from "react-bootstrap-icons";
 
 import styles from "./entityWatermark.module.scss";
 
 interface EntityWatermarkProps {
-  type: "user" | "group";
+  className?: string;
+  type: "group" | "user" | "project";
 }
-export function EntityWatermark({ type }: EntityWatermarkProps) {
+export function EntityWatermark({ className, type }: EntityWatermarkProps) {
   return (
     <div className="position-relative">
+      <div className={cx(className, styles.EntityWatermarkPlaceholder)} />
       <div
         className={cx(
-          "d-none",
-          "d-lg-block",
-          "position-absolute",
-          "top-0",
+          "d-flex",
           "end-0",
+          "opacity-25",
+          "position-absolute",
+          "text-body-secondary",
+          "top-0",
+          className,
           styles.EntityWatermark
         )}
       >
-        {type === "group" && <People />}
-        {type === "user" && <Person />}
+        {type === "group" ? (
+          <People />
+        ) : type === "user" ? (
+          <Person />
+        ) : (
+          <Folder />
+        )}
       </div>
     </div>
   );
