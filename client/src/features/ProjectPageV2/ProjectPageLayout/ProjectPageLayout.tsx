@@ -45,6 +45,9 @@ export default function ProjectPageLayout({
       <Row className="my-3">
         <Col xs={12}>
           <Row>
+            <Col className={cx("d-block", "d-md-none")} xs={12}>
+              <span className="text-muted">Project</span>
+            </Col>
             <Col className="mb-3">
               <ProjectPageHeader project={project} />
             </Col>
