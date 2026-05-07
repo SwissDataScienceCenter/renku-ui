@@ -11,7 +11,7 @@ import {
   Sliders,
   Trash,
 } from "react-bootstrap-icons";
-import { generatePath, useNavigate } from "react-router";
+import { generatePath } from "react-router";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
@@ -66,11 +66,6 @@ export default function DataConnectorSettings() {
   const toggleDelete = useCallback(() => {
     setIsDeleteOpen((open) => !open);
   }, []);
-  const navigate = useNavigate();
-  const onDelete = useCallback(() => {
-    const homeUrl = generatePath(ABSOLUTE_ROUTES.v2.index);
-    navigate(homeUrl);
-  }, [navigate]);
 
   // Credentials modal
   const [isCredentialsOpen, setCredentialsOpen] = useState(false);
@@ -382,7 +377,7 @@ export default function DataConnectorSettings() {
       <DataConnectorRemoveDeleteModal
         dataConnector={dataConnector}
         isOpen={isDeleteOpen}
-        onDelete={onDelete}
+        redirectOnSuccess={generatePath(ABSOLUTE_ROUTES.v2.index)}
         toggleModal={toggleDelete}
       />
 

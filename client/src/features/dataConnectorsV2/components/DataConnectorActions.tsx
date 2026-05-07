@@ -27,7 +27,7 @@ import {
   Trash,
   XLg,
 } from "react-bootstrap-icons";
-import { matchPath, useLocation } from "react-router";
+import { matchPath, useLocation, useNavigate } from "react-router";
 import {
   Button,
   Col,
@@ -72,16 +72,18 @@ import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 interface DataConnectorRemoveModalProps {
   dataConnector?: DataConnectorRead | null;
   dataConnectorLink?: DataConnectorToProjectLink;
+  executeOnSuccess?: () => void;
   isOpen: boolean;
-  onDelete: () => void;
+  redirectOnSuccess?: string;
   toggleModal: () => void;
 }
 
 export function DataConnectorRemoveDeleteModal({
   dataConnector,
-  onDelete,
-  toggleModal,
+  executeOnSuccess,
   isOpen,
+  redirectOnSuccess,
+  toggleModal,
 }: DataConnectorRemoveModalProps) {
   const { permissions, isLoading: isLoadingPermissions } =
     useDataConnectorPermissions({ dataConnectorId: dataConnector?.id });
@@ -104,16 +106,25 @@ export function DataConnectorRemoveDeleteModal({
     [setTypedName]
   );
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if (isSuccess && isOpen) {
-      onDelete();
+    if (isSuccess && executeOnSuccess) {
+      executeOnSuccess();
     }
-  }, [isOpen, isSuccess, onDelete]);
-  const onDeleteDataCollector = useCallback(() => {
-    deleteDataConnector({
-      dataConnectorId: dataConnector?.id ?? "",
-    });
-  }, [deleteDataConnector, dataConnector?.id]);
+  }, [isSuccess, executeOnSuccess]);
+  const onDeleteDataConnector = useCallback(async () => {
+    if (!dataConnector?.id) return;
+
+    try {
+      await deleteDataConnector({
+        dataConnectorId: dataConnector.id,
+      }).unwrap();
+      if (redirectOnSuccess) navigate(redirectOnSuccess);
+    } catch {
+      // keep existing `error` rendering from the mutation result
+    }
+  }, [dataConnector, deleteDataConnector, redirectOnSuccess, navigate]);
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
@@ -216,7 +227,7 @@ export function DataConnectorRemoveDeleteModal({
                 color="danger"
                 data-cy="delete-data-connector-modal-button"
                 disabled={isLoading || typedName !== dataConnector?.slug.trim()}
-                onClick={onDeleteDataCollector}
+                onClick={onDeleteDataConnector}
                 type="button"
               >
                 {isLoading ? (
@@ -251,11 +262,11 @@ interface DataConnectorRemoveUnlinkModalProps
 function DataConnectorRemoveUnlinkModal({
   dataConnector,
   dataConnectorLink,
-  onDelete,
+  executeOnSuccess,
+  isOpen,
   projectNamespace,
   projectSlug,
   toggleModal,
-  isOpen,
 }: DataConnectorRemoveUnlinkModalProps) {
   const [
     unlinkDataConnector,
@@ -271,12 +282,12 @@ function DataConnectorRemoveUnlinkModal({
   const linkId = dataConnectorLink.id;
 
   useEffect(() => {
-    if (isSuccess && isOpen) {
-      onDelete();
+    if (isSuccess && executeOnSuccess) {
+      executeOnSuccess();
     }
-  }, [isOpen, isSuccess, onDelete]);
+  }, [isSuccess, executeOnSuccess]);
 
-  const onDeleteDataCollector = useCallback(() => {
+  const onDeleteDataConnector = useCallback(() => {
     if (!linkId) return;
 
     unlinkDataConnector({
@@ -350,7 +361,7 @@ function DataConnectorRemoveUnlinkModal({
                     color="danger"
                     data-cy="delete-data-connector-modal-button"
                     disabled={isLoadingUnlink}
-                    onClick={onDeleteDataCollector}
+                    onClick={onDeleteDataConnector}
                     type="button"
                   >
                     {isLoadingUnlink ? (
@@ -612,8 +623,8 @@ function DataConnectorActionsInner({
       <DataConnectorRemoveDeleteModal
         dataConnector={dataConnector}
         dataConnectorLink={dataConnectorLink}
+        executeOnSuccess={onDelete}
         isOpen={isDeleteOpen}
-        onDelete={onDelete}
         toggleModal={toggleDelete}
       />
       <DepositCreationModal
@@ -642,8 +653,8 @@ function DataConnectorActionsInner({
         <DataConnectorRemoveUnlinkModal
           dataConnector={dataConnector}
           dataConnectorLink={dataConnectorLink}
+          executeOnSuccess={onUnlink}
           isOpen={isUnlinkOpen}
-          onDelete={onUnlink}
           projectNamespace={namespace!}
           projectSlug={slug!}
           toggleModal={toggleUnlink}
