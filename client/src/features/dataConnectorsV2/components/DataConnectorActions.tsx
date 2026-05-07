@@ -127,7 +127,13 @@ export function DataConnectorRemoveDeleteModal({
   }, [dataConnector, deleteDataConnector, redirectOnSuccess, navigate]);
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+    <Modal
+      data-cy="data-connector-edit-modal"
+      size="lg"
+      isOpen={isOpen}
+      toggle={toggleModal}
+      centered
+    >
       <ModalHeader className="text-danger" tag="h2" toggle={toggleModal}>
         Delete data connector
       </ModalHeader>

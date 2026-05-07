@@ -302,7 +302,7 @@ describe("Edit v2 project", () => {
       .readProjectV2()
       .updateProjectV2()
       .listManyNamespaceV2()
-      .readUserV2Namespace();
+      .readGenericNamespace();
     cy.getDataCy("dashboard-project-list")
       .contains("a", "test 2 v2-project")
       .should("be.visible")
@@ -312,7 +312,7 @@ describe("Edit v2 project", () => {
     cy.get("a[title='Settings']").should("be.visible").click();
     // Fetch the second page of namespaces
     cy.wait("@listNamespaceV2");
-    cy.wait("@readUserV2Namespace");
+    cy.wait("@readGenericNamespace");
     cy.findReactSelectOptions(
       "project-settings-form-project-namespace-input",
       "namespace-select"
@@ -913,7 +913,7 @@ describe("Project templates and copies", () => {
           slug: "template-project",
         },
       })
-      .readUserV2Namespace();
+      .readGenericNamespace();
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@readProjectV2ById");
@@ -931,7 +931,7 @@ describe("Project templates and copies", () => {
         projectId: "TEMPLATE-ULID",
         statusCode: 404,
       })
-      .readUserV2Namespace();
+      .readGenericNamespace();
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
     cy.wait("@readProjectV2ById");
