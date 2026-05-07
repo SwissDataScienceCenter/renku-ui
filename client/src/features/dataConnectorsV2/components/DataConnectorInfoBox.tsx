@@ -320,9 +320,9 @@ function DataConnectorAdditionalFields({
         const value =
           dataConnector.storage.configuration[fieldName]?.toString() ?? "";
         return (
-          <>
-            <InfoEntry title={title}>{value}</InfoEntry>
-          </>
+          <InfoEntry key={fieldName} title={title}>
+            {value}
+          </InfoEntry>
         );
       })}
     </>
