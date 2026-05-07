@@ -49,6 +49,7 @@ export default function GroupPageLayout({
     settingsUrl: generatePath(ABSOLUTE_ROUTES.v2.groups.show.settings, {
       slug: group.slug,
     }),
+    type: "group",
   };
   return (
     <ContainerWrap>
@@ -58,6 +59,9 @@ export default function GroupPageLayout({
       <Row className="my-3">
         <Col xs={12}>
           <Row>
+            <Col className={cx("d-block", "d-md-none")} xs={12}>
+              <span className="text-muted">Group</span>
+            </Col>
             <Col className="mb-3">
               <GroupHeader group={group} slug={group.slug} />
             </Col>

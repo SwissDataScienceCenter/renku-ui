@@ -54,6 +54,7 @@ export default function UserPageLayout({
     searchUrl: generatePath(ABSOLUTE_ROUTES.v2.users.show.search, {
       username: user.username,
     }),
+    type: "user",
   };
   return (
     <ContainerWrap>
@@ -63,6 +64,9 @@ export default function UserPageLayout({
       <Row className="my-3">
         <Col xs={12}>
           <Row>
+            <Col className={cx("d-block", "d-md-none")} xs={12}>
+              <span className="text-muted">User</span>
+            </Col>
             <Col className="mb-3">
               <UserHeader name={name ?? ""} username={user.username} />
             </Col>

@@ -25,13 +25,26 @@ import UserAvatar from "../../usersV2/show/UserAvatar";
 import { Project } from "../api/projectV2.api";
 import VisibilityIconV2 from "./VisibilityIconV2";
 
+type ProjectDisplayRows =
+  | "creation_or_update_time"
+  | "description"
+  | "namespace"
+  | "visibility";
+
 interface ProjectShortHandDisplayProps {
   className?: string | string[];
+  displayRows?: ProjectDisplayRows[];
   project: Project;
 }
 
 export default function ProjectShortHandDisplay({
   className,
+  displayRows = [
+    "creation_or_update_time",
+    "description",
+    "namespace",
+    "visibility",
+  ],
   project,
 }: ProjectShortHandDisplayProps) {
   const content = (
@@ -39,49 +52,37 @@ export default function ProjectShortHandDisplay({
       className={cx("d-flex", "flex-column", "flex-grow-1", "gap-1")}
       data-cy="project-item"
     >
-      <div className={cx("d-flex", "flex-column", "flex-md-row")}>
-        <p className={cx("m-0", "fw-bold", "text-truncate", "me-2")}>
-          {project.name}
-        </p>
-      </div>
+      <p className={cx("m-0", "fw-bold", "text-truncate")}>{project.name}</p>
 
-      <div
-        className={cx(
-          "d-flex",
-          "flex-row",
-          "text-truncate",
-          "gap-2",
-          "align-items-center"
-        )}
-      >
-        <UserAvatar namespace={project.namespace} size="sm" />
-        <p className={cx("mb-0", "text-truncate")}>{project.namespace}</p>
-      </div>
-
-      {project.description && (
-        <div className={cx("d-flex", "flex-column", "flex-md-row")}>
-          <p className={cx("mb-0", "text-truncate")}>{project.description}</p>
+      {displayRows.includes("namespace") && (
+        <div
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "gap-2",
+            "text-truncate"
+          )}
+        >
+          <UserAvatar namespace={project.namespace} size="sm" />
+          <p className={cx("mb-0", "text-truncate")}>{project.namespace}</p>
         </div>
       )}
 
-      <div className={cx("d-flex", "flex-column", "flex-md-row")}>
-        <VisibilityIconV2 visibility={project.visibility} />
-        {project.updated_at ? (
+      {project.description && displayRows.includes("description") && (
+        <p className={cx("mb-0", "text-truncate")}>{project.description}</p>
+      )}
+
+      {displayRows.includes("creation_or_update_time") && (
+        <div className={cx("d-flex", "flex-column", "flex-md-row")}>
+          <VisibilityIconV2 visibility={project.visibility} />
           <TimeCaption
-            className={cx("ms-0", "ms-md-auto", "my-auto", "text-truncate")}
-            datetime={project.updated_at}
+            className={cx("ms-md-auto", "my-auto", "text-truncate")}
+            datetime={project.updated_at ?? project.creation_date}
             enableTooltip
-            prefix="Updated"
+            prefix={project.updated_at ? "Updated" : "Created"}
           />
-        ) : (
-          <TimeCaption
-            className={cx("ms-auto", "my-auto", "text-truncate")}
-            datetime={project.creation_date}
-            enableTooltip
-            prefix="Created"
-          />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 
@@ -89,11 +90,10 @@ export default function ProjectShortHandDisplay({
     <Link
       className={cx(
         "link-primary",
-        "text-body",
-        "text-decoration-none",
-        className,
+        "list-group-item-action",
         "list-group-item",
-        "list-group-item-action"
+        "text-body",
+        className
       )}
       to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: project.namespace,
