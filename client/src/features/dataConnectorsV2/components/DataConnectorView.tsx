@@ -21,7 +21,7 @@ import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
-  ArrowsAngleExpand,
+  ArrowsFullscreen,
   CardText,
   Cloud,
   CloudArrowUp,
@@ -34,6 +34,7 @@ import {
   Lock,
   Pencil,
   PersonBadge,
+  XLg,
 } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import {
@@ -146,6 +147,9 @@ export default function DataConnectorView({
     }
   );
 
+  const refClose = useRef(null);
+  const refExpand = useRef(null);
+
   return (
     <Offcanvas
       toggle={toggleView}
@@ -154,21 +158,41 @@ export default function DataConnectorView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="data-connector-view">
-        <div className={cx("mb-3", "d-flex", "gap-2")}>
+        <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
           <button
             aria-label="Close"
-            className="btn-close"
+            className={cx(
+              "border-0",
+              "btn",
+              "d-flex",
+              "fs-2",
+              "link-secondary",
+              "p-0",
+              "shadow-none"
+            )}
             data-cy="data-connector-view-back-button"
             data-bs-dismiss="offcanvas"
+            ref={refClose}
             onClick={toggleView}
-          ></button>
+          >
+            <XLg />
+            <span className="visually-hidden">Close side panel</span>
+          </button>
+          <UncontrolledTooltip target={refClose}>
+            Close side panel
+          </UncontrolledTooltip>
           <Link
-            className="link-secondary"
+            className={cx("d-flex", "fs-3", "link-secondary")}
             data-cy="data-connector-standalone-page-link"
+            ref={refExpand}
             to={dataConnectorStandaloneLink}
           >
-            <ArrowsAngleExpand />
+            <ArrowsFullscreen />
+            <span className="visually-hidden">Open full page</span>
           </Link>
+          <UncontrolledTooltip target={refExpand}>
+            Open full page
+          </UncontrolledTooltip>
         </div>
         <DataConnectorViewHeader
           {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
