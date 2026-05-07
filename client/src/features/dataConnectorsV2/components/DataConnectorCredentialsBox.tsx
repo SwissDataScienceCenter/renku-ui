@@ -21,12 +21,17 @@ export default function DataConnectorCredentialsBox({
   headerTag = "h2",
 }: DataConnectorCredentialsBoxProps) {
   // Sensitive fields
-  const sensitiveFields = dataConnector.storage.sensitive_fields
-    ? dataConnector.storage.sensitive_fields.map((f) => f.name)
-    : [];
-  const anySensitiveField = Object.keys(
-    dataConnector.storage.configuration
-  ).some((key) => sensitiveFields.includes(key));
+  const sensitiveFieldNames = useMemo(
+    () => dataConnector.storage.sensitive_fields?.map((f) => f.name) ?? [],
+    [dataConnector.storage.sensitive_fields]
+  );
+  const anySensitiveField = useMemo(
+    () =>
+      Object.keys(dataConnector.storage.configuration).some((key) =>
+        sensitiveFieldNames.includes(key)
+      ),
+    [dataConnector.storage.configuration, sensitiveFieldNames]
+  );
 
   // Fields requiring credentials and their status
   const credentialFieldDefinitions = useMemo(
@@ -35,7 +40,7 @@ export default function DataConnectorCredentialsBox({
         storage: dataConnector.storage,
         sensitive_fields: dataConnector.storage.sensitive_fields,
       }),
-    [dataConnector]
+    [dataConnector.storage]
   );
   const requiredCredentials = useMemo(
     () =>
