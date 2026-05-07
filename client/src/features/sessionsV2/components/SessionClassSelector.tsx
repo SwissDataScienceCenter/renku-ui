@@ -279,7 +279,8 @@ const OptionOrSingleValueContent = ({
 }: OptionOrSingleValueContentProps) => {
   const canBeUsed =
     sessionClass.matching &&
-    (sessionClass.usage_available == null || sessionClass.usage_available > 0);
+    (sessionClass.usage_hours_remaining == null ||
+      sessionClass.usage_hours_remaining > 0);
   const labelClassName = cx(
     "text-wrap",
     "text-break",
@@ -294,7 +295,7 @@ const OptionOrSingleValueContent = ({
       <span className={labelClassName}>
         <FontAwesomeIcon icon={icon} /> {sessionClass.name}{" "}
         <span className="text-muted">
-          {usageAvailableString(sessionClass.usage_available, true)}
+          {usageAvailableString(sessionClass.usage_hours_remaining, true)}
         </span>
       </span>{" "}
       <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}

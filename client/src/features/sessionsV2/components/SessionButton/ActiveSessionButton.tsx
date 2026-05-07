@@ -181,8 +181,8 @@ function ActiveSessionDefaultButton({
   if (status === "hibernated") {
     if (
       usageLimit.quotaEnforced &&
-      usageLimit.resourceClass?.usage_available != null &&
-      usageLimit.resourceClass.usage_available <= 0
+      usageLimit.resourceClass?.usage_hours_remaining != null &&
+      usageLimit.resourceClass.usage_hours_remaining <= 0
     ) {
       return (
         <>

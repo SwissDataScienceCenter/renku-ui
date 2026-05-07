@@ -22,8 +22,8 @@
         "default_storage": 5,
         "default": true,
         "matching": false,
-        "usage_available": 0,
-        "usage_available_percentage": 0
+        "usage_hours_remaining": 0,
+        "usage_hours_total": 1
       },
       {
         "id": 2,
@@ -35,8 +35,8 @@
         "default_storage": 5,
         "default": false,
         "matching": true,
-        "usage_available": 0,
-        "usage_available_percentage": 0
+        "usage_hours_remaining": 0,
+        "usage_hours_total": 1
       }
     ]
   },
@@ -65,8 +65,8 @@
         "default_storage": 10,
         "default": false,
         "matching": true,
-        "usage_available": 200,
-        "usage_available_percentage": 100
+        "usage_hours_remaining": 200,
+        "usage_hours_total": 200
       },
       {
         "id": 4,
@@ -78,8 +78,8 @@
         "default_storage": 10,
         "default": false,
         "matching": true,
-        "usage_available": 100,
-        "usage_available_percentage": 100
+        "usage_hours_remaining": 100,
+        "usage_hours_total": 100
       },
       {
         "id": 5,
@@ -91,8 +91,8 @@
         "default_storage": 10,
         "default": false,
         "matching": true,
-        "usage_available": 50,
-        "usage_available_percentage": 100
+        "usage_hours_remaining": 50,
+        "usage_hours_total": 50
       },
       {
         "id": 6,
@@ -104,8 +104,8 @@
         "default_storage": 10,
         "default": false,
         "matching": true,
-        "usage_available": 25,
-        "usage_available_percentage": 100
+        "usage_hours_remaining": 25,
+        "usage_hours_total": 25
       }
     ]
   }

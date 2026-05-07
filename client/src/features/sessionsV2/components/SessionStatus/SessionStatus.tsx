@@ -451,11 +451,14 @@ function SessionStatusV2TextQuotaInformation({
   const resourceClass = resourcePools
     ?.flatMap((pool) => pool.classes)
     .find((cls) => cls.id === resourceClassId);
-  if (!resourceClass || resourceClass.usage_available == null) return null;
+  if (!resourceClass || resourceClass.usage_hours_remaining == null)
+    return null;
 
   return (
     <span className={cx("text-muted")}>
-      <UsageAvailable usageAvailableHours={resourceClass.usage_available} />
+      <UsageAvailable
+        usageAvailableHours={resourceClass.usage_hours_remaining}
+      />
     </span>
   );
 }

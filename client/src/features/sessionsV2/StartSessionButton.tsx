@@ -53,8 +53,8 @@ function SessionStartDefaultActionButton({
 
   if (resourceClass) {
     if (
-      resourceClass.usage_available != null &&
-      resourceClass.usage_available <= 0
+      resourceClass.usage_hours_remaining != null &&
+      resourceClass.usage_hours_remaining <= 0
     ) {
       return <UsageQuotaReachedLaunchButton />;
     }

@@ -56,8 +56,10 @@ export function StartSessionProgressBarV2({
       <div data-cy="session-status-starting">
         <h2 className="fw-bold">Launching Session</h2>
         <p className="pb-0">Starting session services</p>
-        {resourceClass?.usage_available != null && (
-          <UsageAvailable usageAvailableHours={resourceClass.usage_available} />
+        {resourceClass?.usage_hours_remaining != null && (
+          <UsageAvailable
+            usageAvailableHours={resourceClass.usage_hours_remaining}
+          />
         )}
         <div className={cx("d-flex", "gap-3", "mt-3")}>
           <Loader inline={true} size={24} />

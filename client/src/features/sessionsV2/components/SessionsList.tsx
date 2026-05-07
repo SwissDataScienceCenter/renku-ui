@@ -86,12 +86,14 @@ export function SessionRowResourceRequests({
           </span>
         ))}
       </div>
-      {usageLimit.resourceClass?.usage_available != null && (
+      {usageLimit.resourceClass?.usage_hours_remaining != null && (
         <div data-cy="session-view-resource-class-availability">
           <span key="available">
             <span className="text-nowrap">
               <UsageAvailable
-                usageAvailableHours={usageLimit.resourceClass.usage_available}
+                usageAvailableHours={
+                  usageLimit.resourceClass.usage_hours_remaining
+                }
               />
             </span>
           </span>

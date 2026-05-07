@@ -324,9 +324,9 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
           title={`Launching session ${launcher.name}`}
           status={steps}
           extraDescription={
-            resourceClass?.usage_available != null && (
+            resourceClass?.usage_hours_remaining != null && (
               <UsageAvailable
-                usageAvailableHours={resourceClass?.usage_available}
+                usageAvailableHours={resourceClass?.usage_hours_remaining}
               />
             )
           }
@@ -669,9 +669,9 @@ function StartSessionFromLauncher({
         title={`Launching session ${launcher.name}`}
         status={steps}
         extraDescription={
-          resourceClass?.usage_available != null && (
+          resourceClass?.usage_hours_remaining != null && (
             <UsageAvailable
-              usageAvailableHours={resourceClass?.usage_available}
+              usageAvailableHours={resourceClass?.usage_hours_remaining}
             />
           )
         }
