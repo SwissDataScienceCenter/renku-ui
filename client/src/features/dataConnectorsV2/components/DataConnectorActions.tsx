@@ -204,7 +204,7 @@ export function DataConnectorRemoveDeleteModal({
       </ModalBody>
       <ModalFooter>
         <div className="d-flex justify-content-end">
-          <Button color="outline-danger" onClick={toggleModal}>
+          <Button color="outline-danger" onClick={toggleModal} type="button">
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
@@ -212,11 +212,12 @@ export function DataConnectorRemoveDeleteModal({
             disabled={null}
             enabled={
               <Button
-                color="danger"
                 className={cx("float-right", "ms-2")}
-                disabled={isLoading || typedName !== dataConnector?.slug.trim()}
+                color="danger"
                 data-cy="delete-data-connector-modal-button"
+                disabled={isLoading || typedName !== dataConnector?.slug.trim()}
                 onClick={onDeleteDataCollector}
+                type="button"
               >
                 {isLoading ? (
                   <>
@@ -333,7 +334,11 @@ function DataConnectorRemoveUnlinkModal({
           <ModalFooter>
             {error && <RtkOrDataServicesError error={error} />}
             <div className="d-flex justify-content-end">
-              <Button color="outline-danger" onClick={toggleModal}>
+              <Button
+                color="outline-danger"
+                onClick={toggleModal}
+                type="button"
+              >
                 <XLg className={cx("bi", "me-1")} />
                 Cancel
               </Button>
@@ -341,12 +346,12 @@ function DataConnectorRemoveUnlinkModal({
                 disabled={null}
                 enabled={
                   <Button
-                    color="danger"
                     className={cx("float-right", "ms-2")}
-                    disabled={isLoadingUnlink}
+                    color="danger"
                     data-cy="delete-data-connector-modal-button"
-                    type="button"
+                    disabled={isLoadingUnlink}
                     onClick={onDeleteDataCollector}
+                    type="button"
                   >
                     {isLoadingUnlink ? (
                       <>
