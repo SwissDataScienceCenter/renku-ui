@@ -138,7 +138,7 @@ export default function DepositCreationModal({
                     <Input
                       id="name"
                       type="text"
-                      placeholder="Name (local)"
+                      placeholder="Name"
                       invalid={!!fieldState.error}
                       {...field}
                     />
