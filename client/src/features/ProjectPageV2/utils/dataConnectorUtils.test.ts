@@ -23,23 +23,23 @@ import { doiFromUrl } from "./dataConnectorUtils";
 describe("Test doiFromUrl", () => {
   it("handles zenodo", () => {
     expect(doiFromUrl("https://zenodo.org/records/12345")).toBe(
-      "10.5281/zenodo.12345"
+      "10.5281/zenodo.12345",
     );
   });
 
   it("handles dataverse", () => {
     expect(
-      doiFromUrl("https://dataverse.org/?persistentId=doi:10.1234/dataverse")
+      doiFromUrl("https://dataverse.org/?persistentId=doi:10.1234/dataverse"),
     ).toBe("10.1234/dataverse");
     expect(
       doiFromUrl(
-        "https://dataverse.org/?persistentId=doi:10.1234/dataverse&version=2.0"
-      )
+        "https://dataverse.org/?persistentId=doi:10.1234/dataverse&version=2.0",
+      ),
     ).toBe("10.1234/dataverse");
   });
   it("returns other input unchanged", () => {
     expect(doiFromUrl("https://example.com/some/path")).toBe(
-      "https://example.com/some/path"
+      "https://example.com/some/path",
     );
     // eslint-disable-next-line spellcheck/spell-checker
     expect(doiFromUrl("10.1000/xyz123")).toBe("10.1000/xyz123");

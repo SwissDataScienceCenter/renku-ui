@@ -43,7 +43,7 @@ export default function UserAvatar({
 }: UserAvatarProps) {
   const { data: namespace, isUninitialized: isNamespaceUninitialized } =
     projectV2Api.endpoints.getNamespacesByNamespaceSlug.useQueryState(
-      namespaceSlug ? { namespaceSlug } : skipToken
+      namespaceSlug ? { namespaceSlug } : skipToken,
     );
   const [fetchNamespace] =
     projectV2Api.endpoints.getNamespacesByNamespaceSlug.useLazyQuery();
@@ -57,7 +57,7 @@ export default function UserAvatar({
     usersApi.endpoints.getUsersByUserId.useQueryState(
       namespace?.namespace_kind === "user" && namespace.created_by
         ? { userId: namespace.created_by }
-        : skipToken
+        : skipToken,
     );
   const [fetchUser] = usersApi.endpoints.getUsersByUserId.useLazyQuery();
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function UserAvatar({
     projectV2Api.endpoints.getGroupsByGroupSlug.useQueryState(
       namespace?.namespace_kind === "group"
         ? { groupSlug: namespace.slug }
-        : skipToken
+        : skipToken,
     );
   const [fetchGroup] =
     projectV2Api.endpoints.getGroupsByGroupSlug.useLazyQuery();
@@ -100,8 +100,8 @@ export default function UserAvatar({
       return firstName && lastName
         ? `${firstName.slice(0, 1)}${lastName.slice(0, 1)}`
         : firstName || lastName
-        ? `${firstName}${lastName}`.slice(0, 2)
-        : username.slice(0, 2) || "??";
+          ? `${firstName}${lastName}`.slice(0, 2)
+          : username.slice(0, 2) || "??";
     }
     if (group) {
       const { name, slug } = group;
@@ -128,7 +128,7 @@ export default function UserAvatar({
         styles.avatar,
         size === "lg" && styles.large,
         size === "md" && styles.medium,
-        className
+        className,
       )}
       style={{ backgroundColor: randomPastelColor }}
     >
@@ -161,7 +161,7 @@ export function AvatarTypeWrap({ type, children }: AvatarTypeWrapProps) {
         styles.typeBadge,
         "d-flex",
         "align-items-end",
-        "position-relative"
+        "position-relative",
       )}
     >
       {children}
@@ -200,7 +200,7 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
           "rounded-circle",
           "text-center",
           "text-black",
-          styles.avatar
+          styles.avatar,
         )}
       >
         +{count}
@@ -209,7 +209,7 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
         {truncateTooltipText(
           hiddenMembers
             .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
-            .join(", ")
+            .join(", "),
         )}
       </UncontrolledTooltip>
     </>

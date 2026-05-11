@@ -75,7 +75,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
         ?.filter((pool) => pool.default)
         .flatMap(({ classes }) => classes)
         .find((c) => c.default),
-    [resourcePools]
+    [resourcePools],
   );
   const defaultQuota = useMemo(
     () =>
@@ -86,7 +86,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
             gpu: 2 * defaultSessionClass.gpu,
           }
         : { cpu: 1, memory: 1, gpu: 0 },
-    [defaultSessionClass]
+    [defaultSessionClass],
   );
 
   // Form state
@@ -144,23 +144,23 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
       const remote: RemoteConfiguration | undefined = !data.remote.enabled
         ? undefined
         : data.remote.kind == "firecrest"
-        ? {
-            kind: "firecrest",
-            provider_id: data.remote.firecrestConfiguration.providerId?.trim()
-              ? data.remote.firecrestConfiguration.providerId.trim()
-              : undefined,
-            api_url: data.remote.firecrestConfiguration.apiUrl.trim(),
-            system_name: data.remote.firecrestConfiguration.systemName.trim(),
-            partition: data.remote.firecrestConfiguration.partition?.trim()
-              ? data.remote.firecrestConfiguration.partition.trim()
-              : undefined,
-          }
-        : data.remote.kind == "runai"
-        ? {
-            kind: "runai",
-            base_url: data.remote.runaiConfiguration.baseUrl.trim(),
-          }
-        : undefined;
+          ? {
+              kind: "firecrest",
+              provider_id: data.remote.firecrestConfiguration.providerId?.trim()
+                ? data.remote.firecrestConfiguration.providerId.trim()
+                : undefined,
+              api_url: data.remote.firecrestConfiguration.apiUrl.trim(),
+              system_name: data.remote.firecrestConfiguration.systemName.trim(),
+              partition: data.remote.firecrestConfiguration.partition?.trim()
+                ? data.remote.firecrestConfiguration.partition.trim()
+                : undefined,
+            }
+          : data.remote.kind == "runai"
+            ? {
+                kind: "runai",
+                base_url: data.remote.runaiConfiguration.baseUrl.trim(),
+              }
+            : undefined;
       addResourcePool({
         resourcePool: {
           classes: populatedClass ? [populatedClass] : [],
@@ -179,7 +179,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
         },
       });
     },
-    [addResourcePool, defaultSessionClass]
+    [addResourcePool, defaultSessionClass],
   );
 
   useEffect(() => {
@@ -276,7 +276,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
                 <Input
                   className={cx(
                     "form-control",
-                    errors.idleThresholdMinutes && "is-invalid"
+                    errors.idleThresholdMinutes && "is-invalid",
                   )}
                   id="addResourcePoolIdleThreshold"
                   min="1"
@@ -313,7 +313,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
                 <Input
                   className={cx(
                     "form-control",
-                    errors.hibernationThresholdMinutes && "is-invalid"
+                    errors.hibernationThresholdMinutes && "is-invalid",
                   )}
                   id="addResourcePoolHibernationThreshold"
                   placeholder="hibernation threshold"

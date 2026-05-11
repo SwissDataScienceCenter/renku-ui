@@ -80,13 +80,13 @@ export function initializeWebSocket({
 function onOpen(
   ws: WebSocket,
   store: StoreType,
-  getIsActive: () => boolean
+  getIsActive: () => boolean,
 ): (event: Event) => void {
   const pingFn = pingServer(ws, store, getIsActive);
   const startPullingSessionStatusV2Fn = startPullingSessionStatusV2(
     ws,
     store,
-    getIsActive
+    getIsActive,
   );
 
   return function onOpenInner() {
@@ -104,7 +104,7 @@ function onOpen(
     if (WEBSOCKET_PING_INTERVAL_MILLIS) {
       const timeout = window.setInterval(
         pingFn,
-        WEBSOCKET_PING_INTERVAL_MILLIS
+        WEBSOCKET_PING_INTERVAL_MILLIS,
       );
       ws.addEventListener("close", () => {
         window.clearInterval(timeout);
@@ -116,7 +116,7 @@ function onOpen(
 function onClose(
   store: StoreType,
   getIsActive: () => boolean,
-  onRetryConnection: () => void
+  onRetryConnection: () => void,
 ): (event: CloseEvent) => void {
   return function onCloseInner(event: CloseEvent) {
     if (!getIsActive()) {
@@ -128,7 +128,7 @@ function onClose(
     // abnormal closure, restart the socket
     if (event.code === 1006 || event.code === 4000) {
       store.dispatch(
-        setError({ message: `WebSocket channel error ${event.code}` })
+        setError({ message: `WebSocket channel error ${event.code}` }),
       );
       onRetryConnection();
 
@@ -139,7 +139,7 @@ function onClose(
 
 function onError(
   store: StoreType,
-  getIsActive: () => boolean
+  getIsActive: () => boolean,
 ): (event: Event) => void {
   return function onErrorInner(event: Event) {
     if (!getIsActive()) {
@@ -149,7 +149,7 @@ function onError(
       setError({
         message: "WebSocket error",
         error: new Error("WebSocket error", { cause: event }),
-      })
+      }),
     );
   };
 }
@@ -158,7 +158,7 @@ function onError(
 function onMessage(
   ws: WebSocket,
   store: StoreType,
-  getIsActive: () => boolean
+  getIsActive: () => boolean,
 ): (event: MessageEvent) => void {
   const dispatcher = makeDispatcher();
 
@@ -180,7 +180,7 @@ function onMessage(
             message:
               "Incoming message is not correctly formed: " + error_.message,
             error: error_,
-          })
+          }),
         );
       }
       if (message == null) {
@@ -193,7 +193,7 @@ function onMessage(
           setError({
             message: dispatcherResult.error.message,
             error: dispatcherResult.error,
-          })
+          }),
         );
         return;
       }
@@ -209,7 +209,7 @@ function onMessage(
             setError({
               message: handlerResult.error.message,
               error: handlerResult.error,
-            })
+            }),
           );
         }
       } catch (error) {
@@ -221,7 +221,7 @@ function onMessage(
               message.type
             } command: ${error_.toString()}`,
             error: error_,
-          })
+          }),
         );
       }
 
@@ -232,7 +232,7 @@ function onMessage(
       setError({
         message: `Unexpected message: ${event}`,
         error: new Error("WebSocket unexpected message", { cause: event }),
-      })
+      }),
     );
   };
 }
@@ -240,7 +240,7 @@ function onMessage(
 function pingServer(
   ws: WebSocket,
   store: StoreType,
-  getIsActive: () => boolean
+  getIsActive: () => boolean,
 ): () => void {
   return function pingServerInner() {
     if (!getIsActive()) {
@@ -258,7 +258,7 @@ function pingServer(
 function startPullingSessionStatusV2(
   ws: WebSocket,
   store: StoreType,
-  getIsActive: () => boolean
+  getIsActive: () => boolean,
 ): () => void {
   return function inner() {
     if (!getIsActive()) {
@@ -274,7 +274,7 @@ function startPullingSessionStatusV2(
 
 function select<T>(
   store: StoreType,
-  selector: (state: ReturnType<StoreType["getState"]>) => T
+  selector: (state: ReturnType<StoreType["getState"]>) => T,
 ): T {
   return selector(store.getState());
 }

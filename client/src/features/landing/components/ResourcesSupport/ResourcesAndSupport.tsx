@@ -52,7 +52,7 @@ export function ResourcesAndSupport() {
             className={cx(
               "text-decoration-none",
               "text-body",
-              styles.RenkuCard
+              styles.RenkuCard,
             )}
           >
             <img src={renkuBlackIcon} alt="Renku" width="60" height="60" />

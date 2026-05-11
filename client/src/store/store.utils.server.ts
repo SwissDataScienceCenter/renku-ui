@@ -57,7 +57,7 @@ export type ServerAppDispatch = ServerStoreType["dispatch"];
 
 /** React-router context for the server-side redux store. */
 export const storeContext = createContext<ServerStoreType | undefined>(
-  undefined
+  undefined,
 );
 
 /** React-router middleware which sets up the redux store. */

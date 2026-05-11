@@ -5,7 +5,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 100;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-Thin.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-Thin.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-Thin.woff") format("woff");
 }
 @font-face {
@@ -13,7 +14,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 100;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-ThinItalic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-ThinItalic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-ThinItalic.woff") format("woff");
 }
 
@@ -22,7 +24,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 200;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-ExtraLight.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-ExtraLight.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-ExtraLight.woff") format("woff");
 }
 @font-face {
@@ -30,7 +33,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 200;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-ExtraLightItalic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-ExtraLightItalic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-ExtraLightItalic.woff") format("woff");
 }
 
@@ -39,7 +43,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-Light.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-Light.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-Light.woff") format("woff");
 }
 @font-face {
@@ -47,7 +52,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 300;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-LightItalic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-LightItalic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-LightItalic.woff") format("woff");
 }
 
@@ -56,7 +62,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-Regular.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-Regular.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-Regular.woff") format("woff");
 }
 @font-face {
@@ -64,7 +71,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-Italic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-Italic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-Italic.woff") format("woff");
 }
 
@@ -73,7 +81,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-Medium.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-Medium.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-Medium.woff") format("woff");
 }
 @font-face {
@@ -81,7 +90,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 500;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-MediumItalic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-MediumItalic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-MediumItalic.woff") format("woff");
 }
 
@@ -90,7 +100,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-SemiBold.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-SemiBold.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-SemiBold.woff") format("woff");
 }
 @font-face {
@@ -98,7 +109,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 600;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-SemiBoldItalic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-SemiBoldItalic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-SemiBoldItalic.woff") format("woff");
 }
 
@@ -107,7 +119,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-Bold.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-Bold.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-Bold.woff") format("woff");
 }
 @font-face {
@@ -115,7 +128,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 700;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-BoldItalic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-BoldItalic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-BoldItalic.woff") format("woff");
 }
 
@@ -124,7 +138,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 800;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-ExtraBold.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-ExtraBold.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-ExtraBold.woff") format("woff");
 }
 @font-face {
@@ -132,7 +147,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 800;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-ExtraBoldItalic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-ExtraBoldItalic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-ExtraBoldItalic.woff") format("woff");
 }
 
@@ -141,7 +157,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: normal;
   font-weight: 900;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-Black.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-Black.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-Black.woff") format("woff");
 }
 @font-face {
@@ -149,7 +166,8 @@ $baseUrl: "/src/styles/fonts/Inter";
   font-style: italic;
   font-weight: 900;
   font-display: swap;
-  src: url("#{$baseUrl}/Inter-BlackItalic.woff2") format("woff2"),
+  src:
+    url("#{$baseUrl}/Inter-BlackItalic.woff2") format("woff2"),
     url("#{$baseUrl}/Inter-BlackItalic.woff") format("woff");
 }
 

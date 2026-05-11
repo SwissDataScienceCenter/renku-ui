@@ -54,7 +54,7 @@ describe("View v2 landing page", () => {
       .click();
     cy.location("pathname").should(
       "contain",
-      "/p/user1-uuid/test-2-v2-project/sessions/show/renku-2-86688c93091df68dffdc594bfd022ce3"
+      "/p/user1-uuid/test-2-v2-project/sessions/show/renku-2-86688c93091df68dffdc594bfd022ce3",
     );
   });
 
@@ -64,7 +64,7 @@ describe("View v2 landing page", () => {
     cy.getDataCy("dashboard-project-list").children().first().click();
     cy.location("pathname").should(
       "contain",
-      "/p/user1-uuid/test-0-v2-project"
+      "/p/user1-uuid/test-0-v2-project",
     );
   });
 

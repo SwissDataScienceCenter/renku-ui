@@ -47,7 +47,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   const gatewayURL = params.GATEWAY_URL;
   const userAccountUrl = `${gatewayURL}/auth/user-profile`;
   const logoutURL = `${gatewayURL}/auth/logout?redirect_url=${encodeURIComponent(
-    params.BASE_URL
+    params.BASE_URL,
   )}`;
   const loginUrl = useLoginUrl({ params });
 

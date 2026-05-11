@@ -69,7 +69,7 @@ export default function Documentation({ project }: DocumentationProps) {
             className={cx(
               "align-items-center",
               "d-flex",
-              "justify-content-between"
+              "justify-content-between",
             )}
           >
             <h2 className="m-0">
@@ -170,7 +170,7 @@ function DocumentationModal({
         projectPatch: { documentation: data.documentation },
       });
     },
-    [project.etag, project.id, updateProject]
+    [project.etag, project.id, updateProject],
   );
 
   useEffect(() => {
@@ -258,7 +258,7 @@ function DocumentationModal({
               "d-flex",
               "align-items-center",
               "justify-content-between",
-              "w-100"
+              "w-100",
             )}
           >
             <div>

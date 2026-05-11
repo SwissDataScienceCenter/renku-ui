@@ -99,9 +99,9 @@ function SessionSecrets() {
   const secretsUsedInSessions = useMemo(
     () =>
       secrets?.filter(
-        ({ session_secret_slot_ids }) => session_secret_slot_ids.length > 0
+        ({ session_secret_slot_ids }) => session_secret_slot_ids.length > 0,
       ),
-    [secrets]
+    [secrets],
   );
 
   const content = isLoading ? (
@@ -234,9 +234,9 @@ function UnusedSecrets() {
   const unusedSecrets = useMemo(
     () =>
       secrets?.filter(
-        ({ session_secret_slot_ids }) => session_secret_slot_ids.length == 0
+        ({ session_secret_slot_ids }) => session_secret_slot_ids.length == 0,
       ),
-    [secrets]
+    [secrets],
   );
 
   if (!unusedSecrets || unusedSecrets.length == 0) {

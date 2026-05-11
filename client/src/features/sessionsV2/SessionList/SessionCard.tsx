@@ -47,7 +47,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
         `bg-${stylesPerSession.bgColor}`,
         `bg-opacity-${stylesPerSession.bgOpacity}`,
         "p-0",
-        "pb-3"
+        "pb-3",
       )}
     >
       <img
@@ -67,7 +67,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                   "d-inline-block",
                   "link-primary",
                   "text-body",
-                  "mt-1"
+                  "mt-1",
                 )}
               >
                 <span className={cx("small", "text-muted", "me-3")}>
@@ -102,7 +102,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                 session={session}
                 showSessionUrl={getShowSessionUrlByProject(
                   project,
-                  session.name
+                  session.name,
                 )}
               />
             </div>

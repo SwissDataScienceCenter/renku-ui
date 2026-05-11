@@ -53,7 +53,7 @@ export interface SessionV2 {
 
 function handlerRequestSessionStatusV2(
   data: Record<string, unknown>,
-  channel: Channel
+  channel: Channel,
 ): void {
   channel.data.set("sessionStatusV2", null);
 }
@@ -78,10 +78,10 @@ function heartbeatRequestSessionStatusV2({
       }
       const sessions = response.map((session) => flattenNestedObject(session));
       const sortedSessions = sessions.sort((a, b) =>
-        (a.name as string).localeCompare(b.name as string)
+        (a.name as string).localeCompare(b.name as string),
       );
       const currentHashedSessions = simpleHash(
-        JSON.stringify(sortedSessions)
+        JSON.stringify(sortedSessions),
       ).toString();
       // only send message when something change
       if (!util.isDeepStrictEqual(previousStatuses, currentHashedSessions)) {

@@ -85,7 +85,7 @@ export default function DataConnectorBoxListDisplay({
   const [hash, setHash] = useLocationHash();
   const dcHash = useMemo(
     () => `data-connector-${dataConnector.id}`,
-    [dataConnector.id]
+    [dataConnector.id],
   );
   const showOffCanvas = useMemo(() => hash === dcHash, [dcHash, hash]);
   const toggleOffCanvas = useCallback(() => {
@@ -123,7 +123,7 @@ export default function DataConnectorBoxListDisplay({
       dataConnectorId: dataConnector.id,
       params: LAST_DEPOSIT_QUERY_PARAMS,
     }),
-    [dataConnector.id]
+    [dataConnector.id],
   );
   const { lastDeposit } =
     dataConnectorsApi.endpoints.getDataConnectorsByDataConnectorIdDeposits.useQueryState(
@@ -133,7 +133,7 @@ export default function DataConnectorBoxListDisplay({
           lastDeposit:
             data && data.deposits.length > 0 ? data.deposits[0] : undefined,
         }),
-      }
+      },
     );
   const depositPollingInterval =
     lastDeposit?.status === "in_progress"
@@ -143,7 +143,7 @@ export default function DataConnectorBoxListDisplay({
     depositQueryArg,
     {
       pollingInterval: depositPollingInterval,
-    }
+    },
   );
 
   // Components
@@ -185,7 +185,7 @@ export default function DataConnectorBoxListDisplay({
             "link-primary",
             "py-3",
             "text-body",
-            "text-decoration-none"
+            "text-decoration-none",
           )}
           to={targetOffcanvasLocation}
         >
@@ -198,7 +198,7 @@ export default function DataConnectorBoxListDisplay({
                   "align-items-center",
                   "d-flex",
                   "flex-wrap",
-                  "gap-2"
+                  "gap-2",
                 )}
               >
                 <span className="fw-bold" data-cy="data-connector-name">
@@ -211,7 +211,7 @@ export default function DataConnectorBoxListDisplay({
                   "align-items-center",
                   "d-flex",
                   "flex-row",
-                  "gap-1"
+                  "gap-1",
                 )}
               >
                 {scopeIcon}
@@ -226,7 +226,7 @@ export default function DataConnectorBoxListDisplay({
                   "d-flex",
                   "flex-wrap",
                   "gap-1",
-                  "justify-content-between"
+                  "justify-content-between",
                 )}
               >
                 <div
@@ -235,7 +235,7 @@ export default function DataConnectorBoxListDisplay({
                     "d-flex",
                     "flex-wrap",
                     "gap-2",
-                    "mt-auto"
+                    "mt-auto",
                   )}
                 >
                   <div>
@@ -263,7 +263,7 @@ export default function DataConnectorBoxListDisplay({
                     "align-items-center",
                     "d-flex",
                     "flex-wrap",
-                    "gap-2"
+                    "gap-2",
                   )}
                 >
                   <div className={cx("align-items-center", "d-flex", "gap-1")}>
@@ -283,7 +283,7 @@ export default function DataConnectorBoxListDisplay({
                   "btn-sm",
                   "opacity-0",
                   "pe-none",
-                  "text-nowrap"
+                  "text-nowrap",
                 )}
               >
                 FakeButton123
@@ -364,7 +364,7 @@ function DataConnectorNotVisibleToAllUsersBadge({
           "bg-warning-subtle",
           "border-warning",
           "text-warning-emphasis",
-          className
+          className,
         )}
         color="primary"
         innerRef={ref}
@@ -389,7 +389,7 @@ export function IntegrationBadge({
   const providerKind = useMemo(
     () =>
       CLOUD_STORAGE_INTEGRATION_KIND_MAP[dataConnector.storage.storage_type],
-    [dataConnector.storage.storage_type]
+    [dataConnector.storage.storage_type],
   );
 
   const {
@@ -407,7 +407,7 @@ export function IntegrationBadge({
 
   const providersForSchema = useMemo(
     () => providers?.filter(({ kind }) => kind === providerKind),
-    [providerKind, providers]
+    [providerKind, providers],
   );
 
   const connectionsForSchema = useMemo(
@@ -415,9 +415,9 @@ export function IntegrationBadge({
       connections?.filter(
         ({ provider_id, status }) =>
           status === "connected" &&
-          providersForSchema?.some(({ id }) => id === provider_id)
+          providersForSchema?.some(({ id }) => id === provider_id),
       ),
-    [connections, providersForSchema]
+    [connections, providersForSchema],
   );
 
   if (error || !providerKind) {
@@ -427,10 +427,10 @@ export function IntegrationBadge({
   const color = isLoading
     ? "light"
     : connectionsForSchema && connectionsForSchema.length > 0
-    ? "success"
-    : providersForSchema && providersForSchema.length > 0
-    ? "warning"
-    : "danger";
+      ? "success"
+      : providersForSchema && providersForSchema.length > 0
+        ? "warning"
+        : "danger";
 
   return (
     <RenkuBadge className={cx("fw-normal", className)} color={color} pill>
@@ -445,8 +445,8 @@ export function IntegrationBadge({
           {connectionsForSchema && connectionsForSchema.length > 0
             ? "Uses integration"
             : providersForSchema && providersForSchema.length > 0
-            ? "Integration required"
-            : "Request integration"}
+              ? "Integration required"
+              : "Request integration"}
         </>
       )}
     </RenkuBadge>

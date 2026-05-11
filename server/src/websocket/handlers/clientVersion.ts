@@ -27,7 +27,7 @@ import type { WebSocketHandlerArgs } from "./handlers.types";
 function handlerRequestServerVersion(
   data: Record<string, unknown>,
   channel: Channel,
-  socket: ws
+  socket: ws,
 ): void {
   // save the request enabler
   if (data.requestServerVersion) {

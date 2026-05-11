@@ -25,7 +25,7 @@ class WsMessage {
   constructor(
     data: string | Record<string, unknown>,
     scope: string,
-    type: string
+    type: string,
   ) {
     this.timestamp = new Date();
     if (typeof data === "string") this.data = { message: data };

@@ -55,7 +55,7 @@ interface SelectResourceClassModalProps {
   isOpen: boolean;
   onContinue: (
     env: ResourceClassWithIdFiltered,
-    diskStorage: number | undefined
+    diskStorage: number | undefined,
   ) => void;
   projectUrl: string;
   resourceClassId?: number | null;
@@ -76,7 +76,7 @@ export function SelectResourceClassModal({
 
   const { data: launcherClass, isLoading: isLoadingLauncherClass } =
     useGetClassesByClassIdQuery(
-      resourceClassId ? { classId: `${resourceClassId}` } : skipToken
+      resourceClassId ? { classId: `${resourceClassId}` } : skipToken,
     );
 
   const {
@@ -97,11 +97,11 @@ export function SelectResourceClassModal({
         onContinue(data.resourceClass, diskStorage);
       }
     },
-    [onContinue]
+    [onContinue],
   );
   const onSubmit = useMemo(
     () => handleSubmit(onSubmitInner),
-    [handleSubmit, onSubmitInner]
+    [handleSubmit, onSubmitInner],
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library

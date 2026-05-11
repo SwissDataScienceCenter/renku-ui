@@ -70,7 +70,7 @@ export default function NotFound({
               "d-flex",
               "align-items-center",
               "gap-3",
-              "text-primary"
+              "text-primary",
             )}
           >
             <img src={rkNotFoundImgV2} />

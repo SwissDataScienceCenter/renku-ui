@@ -34,7 +34,7 @@ export default function ChevronFlippedIcon({
     "accordion",
     styles.chevron,
     flipped && styles.chevronIsOpen,
-    className_
+    className_,
   );
   return <ChevronDown className={className} {...rest} />;
 }

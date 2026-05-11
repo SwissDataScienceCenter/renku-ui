@@ -19,7 +19,7 @@
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
 export const isFetchBaseQueryError = (
-  error: FetchBaseQueryError | unknown
+  error: FetchBaseQueryError | unknown,
 ): error is FetchBaseQueryError => {
   if (error != null && typeof error === "object") {
     const error_ = error as { status?: unknown };

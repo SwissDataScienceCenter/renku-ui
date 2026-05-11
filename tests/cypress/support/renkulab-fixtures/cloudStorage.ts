@@ -57,7 +57,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         isV2
           ? "/ui-server/api/data/storages_v2?project_id=*"
           : "/api/data/storage?project_id=*",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -72,7 +72,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/data/storages_v2/${storageId}/secrets`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -93,7 +93,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "DELETE",
         `/ui-server/api/data/storages_v2/${storageId}/secrets`,
-        { body: null, delay: 1000 }
+        { body: null, delay: 1000 },
       ).as(name);
       return this;
     }
@@ -121,7 +121,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
               expect(secret.value).equal(content[index].value);
             });
             req.reply({ body: secrets, delay: 1000 });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -146,7 +146,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "PATCH",
         isV2 ? "/ui-server/api/data/storages_v2/*" : "/api/data/storage/*",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -171,7 +171,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "DELETE",
         isV2 ? "/ui-server/api/data/storages_v2/*" : "/api/data/storage/*",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -193,7 +193,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "POST",
         "/api/data/storage_schema/test_connection",
-        response
+        response,
       ).as(name);
       return this;
     }

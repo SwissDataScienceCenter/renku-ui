@@ -95,8 +95,7 @@ export default function ProjectDataConnectorsBox({
   );
 }
 
-interface ProjectDataConnectorBoxContentProps
-  extends DataConnectorListDisplayProps {
+interface ProjectDataConnectorBoxContentProps extends DataConnectorListDisplayProps {
   data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
   inaccessibleDataConnectorsCount: number;
 }
@@ -171,7 +170,7 @@ function ProjectDataConnectorBoxHeader({
         className={cx(
           "align-items-center",
           "d-flex",
-          "justify-content-between"
+          "justify-content-between",
         )}
       >
         <div className={cx("align-items-center", "d-flex", "gap-2")}>
@@ -216,7 +215,7 @@ function DataConnectorLoadingBoxContent() {
           className={cx(
             "align-items-center",
             "d-flex",
-            "justify-content-between"
+            "justify-content-between",
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>

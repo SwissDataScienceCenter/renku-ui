@@ -50,11 +50,10 @@ interface EditProjectMemberModalProps {
 
 type ProjectMemberForEdit = ProjectMemberResponse;
 
-interface EditProjectMemberAccessFormProps
-  extends Pick<
-    EditProjectMemberModalProps,
-    "members" | "projectId" | "toggle"
-  > {
+interface EditProjectMemberAccessFormProps extends Pick<
+  EditProjectMemberModalProps,
+  "members" | "projectId" | "toggle"
+> {
   member: ProjectMemberForEdit;
 }
 function EditProjectMemberAccessForm({
@@ -91,7 +90,7 @@ function EditProjectMemberAccessForm({
               id: m.id,
               role: data.role,
             }
-          : { id: m.id, role: m.role }
+          : { id: m.id, role: m.role },
       );
 
       patchProjectMembers({
@@ -99,7 +98,7 @@ function EditProjectMemberAccessForm({
         projectMemberListPatchRequest: projectMembers,
       });
     },
-    [patchProjectMembers, projectId, members, member]
+    [patchProjectMembers, projectId, members, member],
   );
 
   return (

@@ -44,7 +44,7 @@ export function StartSessionProgressBarV2({
     <div
       className={cx(
         progressBoxStyles.progressBoxSmall,
-        progressBoxStyles.progressBoxSmallSteps
+        progressBoxStyles.progressBoxSmallSteps,
       )}
     >
       <div data-cy="session-status-starting">

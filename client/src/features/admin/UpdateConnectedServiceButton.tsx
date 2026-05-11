@@ -120,7 +120,7 @@ function UpdateConnectedServiceModal({
         },
       });
     },
-    [provider.id, updateProvider]
+    [provider.id, updateProvider],
   );
 
   useEffect(() => {

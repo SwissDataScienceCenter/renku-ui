@@ -30,7 +30,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
         args ?? {};
       const response = { fixture };
       cy.intercept("GET", "/ui-server/api/notebooks/servers*", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -50,7 +50,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("GET", "/ui-server/api/notebooks/servers", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -62,7 +62,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("GET", "/ui-server/api/notebooks/servers", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -207,7 +207,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
         "GET",
         // eslint-disable-next-line max-len
         `/ui-server/api/projects/${projectId}/repository/files/.renku%2Frenku.ini/raw?ref=${ref}`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -223,7 +223,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/notebooks/e2e%2Flocal-test-project/autosave",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -232,7 +232,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       const { name = "getSessionImage" } = args ?? {};
       const response = { status: 200 };
       cy.intercept("GET", "/api/data/sessions/images?image_url=*", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -241,7 +241,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       const { name = "getSessionServers" } = args ?? {};
       const response = { body: { servers: {} } };
       cy.intercept("GET", "/ui-server/api/notebooks/servers", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -268,7 +268,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
         cy.intercept(
           "GET",
           "/ui-server/api/notebooks/server_options",
-          response
+          response,
         ).as(name);
       });
       return this;

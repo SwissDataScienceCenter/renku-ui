@@ -35,7 +35,7 @@ export default function CodeRepositoryAdvancedSettings({
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () => setIsOpen((isAdvancedSettingOpen) => !isAdvancedSettingOpen),
-    []
+    [],
   );
   return (
     <>
@@ -46,7 +46,7 @@ export default function CodeRepositoryAdvancedSettings({
             "align-items-center",
             "w-100",
             "bg-transparent",
-            "border-0"
+            "border-0",
           )}
           type="button"
           onClick={toggleIsOpen}

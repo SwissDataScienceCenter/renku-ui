@@ -176,12 +176,12 @@ function IncidentBannerSection() {
         platformConfigPatch: { incident_banner: incidentBanner },
       });
     },
-    [patchPlatformConfig, platformConfig?.etag]
+    [patchPlatformConfig, platformConfig?.etag],
   );
 
   const onClearIncidentBanner = useCallback(
     () => onSubmit({ incidentBanner: "" }),
-    [onSubmit]
+    [onSubmit],
   );
 
   useEffect(() => {
@@ -230,7 +230,7 @@ function IncidentBannerSection() {
             "p-3",
             "bg-transparent",
             "border-0",
-            "fw-bold"
+            "fw-bold",
           )}
           onClick={onToggleOpen}
           type="button"
@@ -260,7 +260,7 @@ function IncidentBannerSection() {
                   <button
                     className={cx(
                       "nav-link",
-                      tab === "preview-tab" && "active"
+                      tab === "preview-tab" && "active",
                     )}
                     onClick={onClickPreview}
                     type="button"
@@ -285,7 +285,7 @@ function IncidentBannerSection() {
                         "container-xxl",
                         "renku-container",
                         "border-0",
-                        "rounded-0"
+                        "rounded-0",
                       )}
                       fade={false}
                     >

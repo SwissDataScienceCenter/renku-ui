@@ -66,7 +66,7 @@ class APIClient {
    */
   async kgActivationStatus(
     projectId: number,
-    authHeaders: HeadersInit
+    authHeaders: HeadersInit,
   ): Promise<Response> {
     const headers = new Headers(authHeaders);
     const activationStatusURL = `${this.gatewayUrl}/projects/${projectId}/graph/status`;
@@ -74,7 +74,7 @@ class APIClient {
     return this.clientFetch(
       activationStatusURL,
       { headers },
-      RETURN_TYPES.json
+      RETURN_TYPES.json,
     );
   }
 
@@ -89,7 +89,7 @@ class APIClient {
   async clientFetch(
     url: string,
     options = FETCH_DEFAULT.options,
-    returnType = FETCH_DEFAULT.returnType
+    returnType = FETCH_DEFAULT.returnType,
   ): Promise<Response> {
     return this._renkuFetch(url, options)
       .catch((error: unknown) => {

@@ -40,7 +40,7 @@ export function useOAuthProviderConnect(
   options?: {
     includeSource?: boolean;
     onConnected?: () => void;
-  }
+  },
 ) {
   const { pathname, hash } = useLocation();
   const source =
@@ -48,7 +48,7 @@ export function useOAuthProviderConnect(
 
   const authorizeHref = useMemo(
     () => (provider ? buildOAuthAuthorizeUrl(provider, source) : null),
-    [provider, source]
+    [provider, source],
   );
 
   const providerId = provider?.id;
@@ -61,7 +61,7 @@ export function useOAuthProviderConnect(
 
   connectedServicesApi.endpoints.getOauth2Connections.useQuerySubscription(
     isPolling ? undefined : skipToken,
-    { pollingInterval: OAUTH_CONNECT_POLLING_INTERVAL_MS }
+    { pollingInterval: OAUTH_CONNECT_POLLING_INTERVAL_MS },
   );
 
   const { data: connections } =
@@ -71,7 +71,7 @@ export function useOAuthProviderConnect(
     if (!isPolling || !providerId) return;
     const connected = connections?.some(
       ({ provider_id, status }) =>
-        provider_id === providerId && status === "connected"
+        provider_id === providerId && status === "connected",
     );
     if (connected) {
       startTransition(() => {

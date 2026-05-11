@@ -56,7 +56,7 @@ function ExternalLinkButton({
         color ? `btn-${color}` : "btn-primary",
         disabled && disabled,
         size && `btn-${size}`,
-        className
+        className,
       )}
     >
       {title}

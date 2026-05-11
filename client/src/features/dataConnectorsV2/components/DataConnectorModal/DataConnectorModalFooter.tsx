@@ -89,10 +89,10 @@ function DataConnectorCreateFooter({
       dispatch(
         dataConnectorFormSlice.actions.setCloudStorageState({
           cloudStorageState: newState,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   // Mutations
@@ -112,7 +112,7 @@ function DataConnectorCreateFooter({
       dataConnectorFormSlice.actions.reset({
         flatDataConnector: resetStatus,
         hasDataConnector: dataConnector != null,
-      })
+      }),
     );
   }, [
     createResult,
@@ -133,7 +133,7 @@ function DataConnectorCreateFooter({
     const dataConnectorPost = dataConnectorPostFromFlattened(
       flatDataConnector,
       schemata ?? [],
-      dataConnector
+      dataConnector,
     );
 
     createDataConnector({
@@ -143,7 +143,7 @@ function DataConnectorCreateFooter({
 
   const currentSchema = useMemo(
     () => schemata?.find((s) => s.prefix === flatDataConnector.schema),
-    [schemata, flatDataConnector]
+    [schemata, flatDataConnector],
   );
   const schemaHasAccessModes = currentSchema
     ? hasSchemaAccessMode(currentSchema)
@@ -152,7 +152,7 @@ function DataConnectorCreateFooter({
   const schemaRequiresProvider = useMemo(
     () =>
       hasProviderShortlist(flatDataConnector.schema) || schemaHasAccessModes,
-    [flatDataConnector.schema, schemaHasAccessModes]
+    [flatDataConnector.schema, schemaHasAccessModes],
   );
 
   useEffect(() => {
@@ -169,7 +169,7 @@ function DataConnectorCreateFooter({
           success: true,
           dataConnectorResultId: createResult.data.id,
           dataConnectorResultName,
-        })
+        }),
       );
       createResult.reset();
     }
@@ -180,7 +180,7 @@ function DataConnectorCreateFooter({
     if (dataConnectorId == null) return;
     if (!schemata) return;
     const sensitiveFieldNames = findSensitive(
-      schemata.find((s) => s.prefix === flatDataConnector.schema)
+      schemata.find((s) => s.prefix === flatDataConnector.schema),
     );
     const options = flatDataConnector.options as CloudStorageDetailsOptions;
     if (!options) return;
@@ -198,7 +198,7 @@ function DataConnectorCreateFooter({
       shouldSaveDataConnectorCredentials(
         dataConnectorSecretPatchList,
         cloudStorageState.saveCredentials,
-        validationResult?.isSuccess ?? false
+        validationResult?.isSuccess ?? false,
       ) && credentialSaveStatus === "none";
     if (!shouldSaveCredentials) return;
 
@@ -228,18 +228,18 @@ function DataConnectorCreateFooter({
       validationResult?.isSuccess != true
         ? "none"
         : dataConnectorResultId == null || saveCredentialsResult.isUninitialized
-        ? "none"
-        : saveCredentialsResult.isLoading
-        ? "trying"
-        : saveCredentialsResult.isSuccess
-        ? "success"
-        : saveCredentialsResult.isError
-        ? "failure"
-        : "none";
+          ? "none"
+          : saveCredentialsResult.isLoading
+            ? "trying"
+            : saveCredentialsResult.isSuccess
+              ? "success"
+              : saveCredentialsResult.isError
+                ? "failure"
+                : "none";
     dispatch(
       dataConnectorFormSlice.actions.setCredentialSaveStatus({
         credentialSaveStatus: status,
-      })
+      }),
     );
   }, [
     credentialSaveStatus,
@@ -280,19 +280,19 @@ function DataConnectorCreateFooter({
       project?.id == null
         ? "none"
         : dataConnectorResultId == null ||
-          createProjectLinkResult.isUninitialized
-        ? "none"
-        : createProjectLinkResult.isLoading
-        ? "trying"
-        : createProjectLinkResult.isSuccess
-        ? "success"
-        : createProjectLinkResult.isError
-        ? "failure"
-        : "none";
+            createProjectLinkResult.isUninitialized
+          ? "none"
+          : createProjectLinkResult.isLoading
+            ? "trying"
+            : createProjectLinkResult.isSuccess
+              ? "success"
+              : createProjectLinkResult.isError
+                ? "failure"
+                : "none";
     dispatch(
       dataConnectorFormSlice.actions.setProjectLinkStatus({
         projectLinkStatus: status,
-      })
+      }),
     );
   }, [
     createProjectLinkResult,
@@ -313,7 +313,7 @@ function DataConnectorCreateFooter({
           schemata,
           true,
           flatDataConnector.schema,
-          flatDataConnector.provider
+          flatDataConnector.provider,
         )?.every((o) => {
           return (
             !o.required ||
@@ -343,16 +343,16 @@ function DataConnectorCreateFooter({
   const addButtonDisableReason = isAddResultLoading
     ? "Please wait, the storage is being added"
     : !flatDataConnector.name
-    ? "Please provide a name"
-    : !flatDataConnector.mountPoint
-    ? "Please provide a mount point"
-    : !flatDataConnector.schema
-    ? "Please go back and select a storage type"
-    : schemaHasAccessModes
-    ? "Please go back and select a mode"
-    : disableContinueButton
-    ? "Please go back and select a provider"
-    : "";
+      ? "Please provide a name"
+      : !flatDataConnector.mountPoint
+        ? "Please provide a mount point"
+        : !flatDataConnector.schema
+          ? "Please go back and select a storage type"
+          : schemaHasAccessModes
+            ? "Please go back and select a mode"
+            : disableContinueButton
+              ? "Please go back and select a provider"
+              : "";
   const isResultLoading = isAddResultLoading;
 
   return (
@@ -403,8 +403,10 @@ function DataConnectorCreateFooter({
   );
 }
 
-interface DataConnectorEditFooterProps
-  extends Omit<DataConnectorModalFooterProps, "dataConnector"> {
+interface DataConnectorEditFooterProps extends Omit<
+  DataConnectorModalFooterProps,
+  "dataConnector"
+> {
   dataConnector: DataConnectorRead;
 }
 
@@ -418,7 +420,7 @@ function DataConnectorEditFooter({
   const dispatch = useAppDispatch();
   const { data: connectorSecrets } =
     useGetDataConnectorsByDataConnectorIdSecretsQuery(
-      dataConnectorId ? { dataConnectorId } : skipToken
+      dataConnectorId ? { dataConnectorId } : skipToken,
     );
   const {
     cloudStorageState,
@@ -440,7 +442,7 @@ function DataConnectorEditFooter({
       dataConnectorFormSlice.actions.reset({
         flatDataConnector: resetStatus,
         hasDataConnector: dataConnector != null,
-      })
+      }),
     );
   }, [dataConnector, dispatch, updateResult]);
 
@@ -455,7 +457,7 @@ function DataConnectorEditFooter({
     const dataConnectorPost = dataConnectorPostFromFlattened(
       flatDataConnector,
       schemata ?? [],
-      dataConnector
+      dataConnector,
     );
 
     // We manually set success only when we get an ID back. That's just to show a success message
@@ -475,7 +477,7 @@ function DataConnectorEditFooter({
 
   const currentSchema = useMemo(
     () => schemata?.find((s) => s.prefix === flatDataConnector.schema),
-    [schemata, flatDataConnector]
+    [schemata, flatDataConnector],
   );
   const schemaHasAccessModes = currentSchema
     ? hasSchemaAccessMode(currentSchema)
@@ -484,7 +486,7 @@ function DataConnectorEditFooter({
   const schemaRequiresProvider = useMemo(
     () =>
       hasProviderShortlist(flatDataConnector.schema) || schemaHasAccessModes,
-    [flatDataConnector.schema, schemaHasAccessModes]
+    [flatDataConnector.schema, schemaHasAccessModes],
   );
 
   useEffect(() => {
@@ -501,7 +503,7 @@ function DataConnectorEditFooter({
           success: true,
           dataConnectorResultId: updateResult.data.id,
           dataConnectorResultName,
-        })
+        }),
       );
       updateResult.reset();
     }
@@ -518,7 +520,7 @@ function DataConnectorEditFooter({
           schemata,
           true,
           flatDataConnector.schema,
-          flatDataConnector.provider
+          flatDataConnector.provider,
         )?.every((o) => {
           return (
             !o.required ||
@@ -548,14 +550,14 @@ function DataConnectorEditFooter({
   const addButtonDisableReason = updateResult.isLoading
     ? "Please wait, the storage is being modified"
     : !flatDataConnector.name
-    ? "Please provide a name"
-    : !flatDataConnector.mountPoint
-    ? "Please provide a mount point"
-    : !flatDataConnector.schema
-    ? "Please go back and select a storage type"
-    : schemaHasAccessModes
-    ? "Please go back and select a mode"
-    : "Please go back and select a provider";
+      ? "Please provide a name"
+      : !flatDataConnector.mountPoint
+        ? "Please provide a mount point"
+        : !flatDataConnector.schema
+          ? "Please go back and select a storage type"
+          : schemaHasAccessModes
+            ? "Please go back and select a mode"
+            : "Please go back and select a provider";
   const isResultLoading = isModifyResultLoading;
 
   const hasStoredCredentialsInConfig =
@@ -636,7 +638,7 @@ export default function DataConnectorModalFooter({
 function shouldSaveDataConnectorCredentials(
   dataConnectorSecretPatchList: { name: string; value: string }[],
   stateSaveCredentials: boolean,
-  validationSucceeded: boolean
+  validationSucceeded: boolean,
 ) {
   return !!(
     dataConnectorSecretPatchList.length > 0 &&

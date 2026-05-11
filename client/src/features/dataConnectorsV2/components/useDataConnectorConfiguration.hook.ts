@@ -24,8 +24,10 @@ import { RCloneOption } from "../api/data-connectors.api";
 import type { DataConnectorRead } from "../api/data-connectors.api";
 import { useGetDataConnectorsListSecretsQuery } from "../api/data-connectors.enhanced-api";
 
-export interface DataConnectorConfiguration
-  extends Omit<SessionStartDataConnectorConfiguration, "cloudStorage"> {
+export interface DataConnectorConfiguration extends Omit<
+  SessionStartDataConnectorConfiguration,
+  "cloudStorage"
+> {
   dataConnector: DataConnectorRead;
 }
 
@@ -54,7 +56,7 @@ export default function useDataConnectorConfiguration({
           });
         }
         const configSensitiveFields = Object.keys(
-          storageDefinition.configuration
+          storageDefinition.configuration,
         ).filter((key) => defSensitiveFieldsMap[key] != null);
 
         const overrides =
@@ -96,7 +98,7 @@ export default function useDataConnectorConfiguration({
         };
         return result;
       }),
-    [dataConnectors, dataConnectorSecrets]
+    [dataConnectors, dataConnectorSecrets],
   );
 
   return {

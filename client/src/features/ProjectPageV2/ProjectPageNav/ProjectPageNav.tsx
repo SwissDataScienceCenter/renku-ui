@@ -36,7 +36,7 @@ export default function ProjectPageNav({ project }: { project: Project }) {
     {
       namespace,
       slug,
-    }
+    },
   );
 
   return (

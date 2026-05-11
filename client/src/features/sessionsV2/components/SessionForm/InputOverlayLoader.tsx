@@ -29,7 +29,7 @@ export default function InputOverlayLoader() {
         "pe-none",
         "position-absolute",
         "top-50",
-        "translate-middle-y"
+        "translate-middle-y",
       )}
     >
       <Loader size={16} inline />

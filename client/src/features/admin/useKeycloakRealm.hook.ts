@@ -26,7 +26,7 @@ export default function useKeycloakRealm() {
 
   const keycloakRealm = useMemo(
     () => params?.KEYCLOAK_REALM ?? DEFAULT_APP_PARAMS.KEYCLOAK_REALM,
-    [params]
+    [params],
   );
 
   return keycloakRealm;

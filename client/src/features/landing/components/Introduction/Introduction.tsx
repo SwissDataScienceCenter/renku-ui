@@ -42,7 +42,7 @@ export function Introduction() {
             "flex-column",
             "gap-4",
             "px-3",
-            "align-items-center"
+            "align-items-center",
           )}
         >
           <h2 className={cx("fs-1", "mb-0", "mt-5", "pt-3", "text-center")}>
@@ -61,7 +61,7 @@ export function Introduction() {
               styles.IntroductionRenku20Sections,
               "text-center",
               "gap-5",
-              "gap-lg-0"
+              "gap-lg-0",
             )}
           >
             <Col
@@ -102,7 +102,7 @@ export function Introduction() {
               "gap-3",
               "flex-sm-row",
               "flex-column",
-              "align-items-center"
+              "align-items-center",
             )}
           >
             <Link

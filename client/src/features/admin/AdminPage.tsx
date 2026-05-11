@@ -189,7 +189,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
             "p-3",
             "bg-transparent",
             "border-0",
-            "fw-bold"
+            "fw-bold",
           )}
           onClick={toggle}
           type="button"
@@ -224,7 +224,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
                   "row-cols-1",
                   "row-cols-sm-4",
                   "row-cols-md-5",
-                  "text-end"
+                  "text-end",
                 )}
               >
                 <div className={cx("col", "col-sm-12", "col-md", "text-start")}>
@@ -259,7 +259,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
                   "align-items-center",
                   "row",
                   "row-cols-1",
-                  "row-cols-sm-2"
+                  "row-cols-sm-2",
                 )}
               >
                 <div className={cx("col", "col-sm-10")}>
@@ -275,7 +275,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
                   "align-items-center",
                   "row",
                   "row-cols-1",
-                  "row-cols-sm-2"
+                  "row-cols-sm-2",
                 )}
               >
                 <div className={cx("col", "col-sm-10")}>
@@ -327,7 +327,7 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
         "row-cols-1",
         "row-cols-sm-3",
         "row-cols-lg-4",
-        "text-end"
+        "text-end",
       )}
     >
       <div className={cx("col", "col-sm-12", "text-start")}>
@@ -339,12 +339,14 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
           {idleThreshold
             ? toFullHumanDuration(idleThreshold)
             : isLoading
-            ? "(Loading...)"
-            : isError
-            ? "unavailable"
-            : data?.defaultCullingThresholds?.registered.idle
-            ? toFullHumanDuration(data.defaultCullingThresholds.registered.idle)
-            : "unknown"}
+              ? "(Loading...)"
+              : isError
+                ? "unavailable"
+                : data?.defaultCullingThresholds?.registered.idle
+                  ? toFullHumanDuration(
+                      data.defaultCullingThresholds.registered.idle,
+                    )
+                  : "unknown"}
         </span>
       </div>
       <div className="col">
@@ -353,14 +355,14 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
           {hibernationThreshold
             ? toFullHumanDuration(hibernationThreshold)
             : isLoading
-            ? "(Loading...)"
-            : isError
-            ? "unavailable"
-            : data?.defaultCullingThresholds?.registered.hibernation
-            ? toFullHumanDuration(
-                data.defaultCullingThresholds.registered.hibernation
-              )
-            : "unknown"}
+              ? "(Loading...)"
+              : isError
+                ? "unavailable"
+                : data?.defaultCullingThresholds?.registered.hibernation
+                  ? toFullHumanDuration(
+                      data.defaultCullingThresholds.registered.hibernation,
+                    )
+                  : "unknown"}
         </span>
       </div>
       <div className={cx("col", "ms-auto")}>
@@ -449,7 +451,7 @@ function ResourceClassItem({
             "flex-column",
             "flex-sm-row",
             "flex-wrap",
-            "justify-content-end"
+            "justify-content-end",
           )}
         >
           {isDefault ? (

@@ -53,13 +53,14 @@ export default function SessionImageBadge({
         isLoading || isLoadingResourcePools
           ? "light"
           : isCompatible === false
-          ? "danger"
-          : data?.accessible
-          ? "success"
-          : data?.provider?.id &&
-            (!data?.connection || data?.connection?.status !== "connected")
-          ? "warning"
-          : "danger"
+            ? "danger"
+            : data?.accessible
+              ? "success"
+              : data?.provider?.id &&
+                  (!data?.connection ||
+                    data?.connection?.status !== "connected")
+                ? "warning"
+                : "danger"
       }
       className="fw-normal"
       pill
@@ -77,14 +78,15 @@ export default function SessionImageBadge({
                 resourcePool?.platform ? ` with ${resourcePool.platform}` : ""
               }`
             : data?.accessible
-            ? "Image accessible"
-            : data?.provider?.id &&
-              (!data?.connection || data?.connection?.status !== "connected")
-            ? "Integration required"
-            : data?.connection?.status === "connected" ||
-              data?.accessible === false
-            ? "Image inaccessible"
-            : "Image status unknown"}
+              ? "Image accessible"
+              : data?.provider?.id &&
+                  (!data?.connection ||
+                    data?.connection?.status !== "connected")
+                ? "Integration required"
+                : data?.connection?.status === "connected" ||
+                    data?.accessible === false
+                  ? "Image inaccessible"
+                  : "Image status unknown"}
         </>
       )}
     </RenkuBadge>

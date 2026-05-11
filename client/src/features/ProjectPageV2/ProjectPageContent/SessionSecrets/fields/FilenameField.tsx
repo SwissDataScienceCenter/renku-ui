@@ -22,8 +22,9 @@ import { FormText, Input, Label } from "reactstrap";
 
 import type { SessionSecretFormFieldProps } from "./fields.types";
 
-interface FilenameFieldProps<T extends FieldValues>
-  extends SessionSecretFormFieldProps<T> {
+interface FilenameFieldProps<
+  T extends FieldValues,
+> extends SessionSecretFormFieldProps<T> {
   secretsMountDirectory: string;
 }
 

@@ -71,7 +71,7 @@ export default function SearchBar({ showLinkToDocs = true }: SearchBarProps) {
       const params = parsedResultToSliceParams(parsed);
       dispatch(applyParsedSearch(params));
     },
-    [dispatch]
+    [dispatch],
   );
 
   return (
@@ -99,7 +99,7 @@ export default function SearchBar({ showLinkToDocs = true }: SearchBarProps) {
               "border-0",
               "border-top",
               "border-bottom",
-              "shadow-none"
+              "shadow-none",
             )}
             data-cy="search-clear-button"
             onClick={onClear}

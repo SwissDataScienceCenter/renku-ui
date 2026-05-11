@@ -79,14 +79,14 @@ export default function GroupMemberRoleSelect({
   const defaultValue = GROUP_MEMBER_ROLE_OPTIONS[0];
   const value = useMemo(
     () => options.find(({ value }) => value === value_) ?? defaultValue,
-    [defaultValue, value_, options]
+    [defaultValue, value_, options],
   );
 
   const onChange = useCallback(
     (newValue: SingleValue<GroupMemberRoleOption>) => {
       onChange_?.(newValue?.value);
     },
-    [onChange_]
+    [onChange_],
   );
 
   // We need to set the default value by hand here
@@ -133,7 +133,7 @@ const selectClassNames: ClassNamesConfig<GroupMemberRoleOption, false> = {
       styles.option,
       isDisabled && styles.optionIsDisabled,
       isFocused && !isDisabled && styles.optionIsFocused,
-      !isFocused && isSelected && !isDisabled && styles.optionIsSelected
+      !isFocused && isSelected && !isDisabled && styles.optionIsSelected,
     ),
   placeholder: () => cx("px-3"),
   loadingMessage: () => cx("p-3"),
@@ -157,7 +157,7 @@ const selectComponents: SelectComponentsConfig<
       GroupMemberRoleOption,
       false,
       GroupBase<GroupMemberRoleOption>
-    >
+    >,
   ) => {
     const { data } = props;
     return (

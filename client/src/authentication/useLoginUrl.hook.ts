@@ -49,14 +49,14 @@ export function useLoginUrl(args?: UseLoginUrlArgs): URL {
   // TODO: fix react-hooks/refs
   /* eslint-disable react-hooks/refs */
   const redirectUrl =
-    redirectUrl_ ?? windowLocationRef.current
+    (redirectUrl_ ?? windowLocationRef.current)
       ? new URL(windowLocationRef.current)
       : null;
   /* eslint-enable react-hooks/refs */
   if (redirectUrl && !redirectUrl.search.includes(RENKU_QUERY_PARAMS.login)) {
     redirectUrl.searchParams.append(
       RENKU_QUERY_PARAMS.login,
-      RENKU_QUERY_PARAMS.loginValue
+      RENKU_QUERY_PARAMS.loginValue,
     );
   }
 
