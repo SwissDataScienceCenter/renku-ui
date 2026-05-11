@@ -114,3 +114,6 @@ client/storybook-static
 
 # react-router files
 .react-router/
+
+# Istambul plugin
+instrumented/

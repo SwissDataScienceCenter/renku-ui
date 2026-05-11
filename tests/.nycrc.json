@@ -1,0 +1,16 @@
+{
+  "all": true,
+  "extension": [".js", ".jsx", ".ts", ".tsx"],
+  "include": ["client/src/**/*.{js,jsx,ts,tsx}"],
+  "exclude": [
+    "**/*.d.ts",
+    "client/src/**/*.stories.*",
+    "client/src/**/*.test.*",
+    "client/src/**/*.spec.*",
+    "client/src/**/__tests__/**",
+    "client/testSetup.ts",
+    "tests/**/*"
+  ],
+  "excludeAfterRemap": false,
+  "reporter": ["html", "lcov", "text-summary"]
+}

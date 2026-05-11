@@ -3,6 +3,7 @@ import eslintPlugin from "@nabla/vite-plugin-eslint";
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import { envOnlyMacros } from "vite-env-only";
+import istanbulPlugin from "vite-plugin-istanbul";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 // import { sentryReactRouter } from "@sentry/react-router";
@@ -17,7 +18,24 @@ export default defineConfig(({ isSsrBuild }) => ({
   server: {
     allowedHosts: [".dev.renku.ch"],
   },
-  plugins: [reactRouter(), eslintPlugin(), tsconfigPaths(), envOnlyMacros()],
+  plugins: [
+    reactRouter(),
+    eslintPlugin(),
+    tsconfigPaths(),
+    envOnlyMacros(),
+    istanbulPlugin({
+      cypress: true,
+      requireEnv: true,
+      forceBuildInstrument: true,
+      include: ["src/**/*.{js,jsx,ts,tsx}"],
+      exclude: [
+        "node_modules",
+        "testSetup.ts",
+        "src/**/*.stories.*",
+        "src/**/*.test.*",
+      ],
+    }),
+  ],
 
   // TODO: configure Sentry integration for source maps
   // TODO: Reference: https://docs.sentry.io/platforms/javascript/guides/react-router/manual-setup/#step-3-add-readable-stack-traces-with-source-maps-optional

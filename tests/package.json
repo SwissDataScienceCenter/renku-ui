@@ -16,10 +16,18 @@
     "start": "CYPRESS=1 BASE_URL=http://localhost:3000/ GATEWAY_URL=http://localhost:3000/api UISERVER_URL=http://localhost:3000/ui-server npm --prefix ../client run start:strict-port",
     "client:install": "npm --prefix ../client clean-install",
     "client:build": "npm --prefix ../client run build",
-    "client:preview": "CYPRESS=1 BASE_URL=http://localhost:3000/ GATEWAY_URL=http://localhost:3000/api UISERVER_URL=http://localhost:3000/ui-server npm --prefix ../client run preview"
+    "client:preview": "CYPRESS=1 BASE_URL=http://localhost:3000/ GATEWAY_URL=http://localhost:3000/api UISERVER_URL=http://localhost:3000/ui-server npm --prefix ../client run preview",
+    "coverage:clean": "rm -rf .nyc_output coverage",
+    "coverage:report": "nyc --cwd .. --temp-dir ./tests/.nyc_output --report-dir ./tests/coverage report",
+    "start:coverage": "CYPRESS=1 CYPRESS_COVERAGE=true BASE_URL=http://localhost:3000/ GATEWAY_URL=http://localhost:3000/api UISERVER_URL=http://localhost:3000/ui-server npm --prefix ../client run start:strict-port",
+    "client:build:coverage": "CYPRESS_COVERAGE=true npm --prefix ../client run build",
+    "client:preview:coverage": "CYPRESS=1 CYPRESS_COVERAGE=true BASE_URL=http://localhost:3000/ GATEWAY_URL=http://localhost:3000/api UISERVER_URL=http://localhost:3000/ui-server npm --prefix ../client run preview",
+    "e2e:coverage": "npm run coverage:clean && npm run client:build:coverage && start-server-and-test client:preview:coverage http://localhost:3000 cypress:headless",
+    "e2e:coverage:open": "npm run coverage:clean && start-server-and-test start:coverage http://localhost:3000 cypress"
   },
   "author": "Swiss Data Science Center",
   "devDependencies": {
+    "@cypress/code-coverage": "^4.0.1",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
     "cypress": "^15.11.0",
@@ -31,6 +39,6 @@
     "prettier": "^2.8.8",
     "pretty-quick": "^3.3.1",
     "start-server-and-test": "^2.0.3",
-    "typescript": "^4.5.2"
+    "typescript": "^5.6.3"
   }
 }

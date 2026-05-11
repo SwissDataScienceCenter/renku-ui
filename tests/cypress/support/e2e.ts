@@ -15,9 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import "@cypress/code-coverage/support";
 import "cypress-file-upload";
-
 import registerDatasetsCommands from "./commands/datasets";
 import registerGeneralCommands from "./commands/general";
 import registerProjectsCommands from "./commands/projects";
