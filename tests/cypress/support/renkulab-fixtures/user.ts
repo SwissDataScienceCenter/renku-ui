@@ -88,10 +88,10 @@ export function User<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    getUsersUser(args?: GetUserArgs) {
+    getAnyUser(args?: GetUserArgs) {
       const {
         fixture = "users/user1-uuid.json",
-        name = "getUsersUser",
+        name = "getAnyUser",
         userName = "user1-uuid",
       } = args ?? {};
 
