@@ -10,7 +10,10 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getSessions: build.query<GetSessionsApiResponse, GetSessionsApiArg>({
-      query: () => ({ url: `/sessions` }),
+      query: (queryArg) => ({
+        url: `/sessions`,
+        params: { session_type: queryArg.sessionType },
+      }),
     }),
     getSessionsBySessionId: build.query<
       GetSessionsBySessionIdApiResponse,
@@ -67,7 +70,10 @@ export type PostSessionsApiArg = {
 };
 export type GetSessionsApiResponse =
   /** status 200 Information about the sessions */ SessionListResponse;
-export type GetSessionsApiArg = void;
+export type GetSessionsApiArg = {
+  /** Filter by session mode. */
+  sessionType?: SessionType;
+};
 export type GetSessionsBySessionIdApiResponse =
   /** status 200 Information about the session */ SessionResponse;
 export type GetSessionsBySessionIdApiArg = {
@@ -117,7 +123,13 @@ export type SessionResources = {
 };
 export type SessionStatus = {
   message?: string;
-  state: "running" | "starting" | "stopping" | "failed" | "hibernated";
+  state:
+    | "running"
+    | "starting"
+    | "stopping"
+    | "failed"
+    | "hibernated"
+    | "succeeded";
   will_hibernate_at?: string | null;
   will_delete_at?: string | null;
   ready_containers: number;
@@ -166,6 +178,7 @@ export type EnvVarOverride = {
   value: string;
 };
 export type EnvVariableOverrides = EnvVarOverride[];
+export type SessionType = "interactive" | "non-interactive";
 export type SessionPostRequest = {
   launcher_id: Ulid;
   /** The size of disk storage for the session, in gigabytes */
@@ -173,6 +186,7 @@ export type SessionPostRequest = {
   resource_class_id?: number | null;
   data_connectors_overrides?: SessionDataConnectorsOverrideList;
   env_variable_overrides?: EnvVariableOverrides;
+  session_type?: SessionType;
 };
 export type SessionListResponse = SessionResponse[];
 export type CurrentTime = "now";
