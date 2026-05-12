@@ -64,7 +64,7 @@ const dataConnectorFormSlice = createSlice({
         cloudStorageState: AddCloudStorageState;
         flatDataConnector: DataConnectorFlat;
         schemata: CloudStorageSchema[];
-      }>
+      }>,
     ) => {
       state.cloudStorageState = action.payload.cloudStorageState;
       state.flatDataConnector = action.payload.flatDataConnector;
@@ -75,7 +75,7 @@ const dataConnectorFormSlice = createSlice({
       action: PayloadAction<{
         flatDataConnector: DataConnectorFlat;
         hasDataConnector: boolean;
-      }>
+      }>,
     ) => {
       // flatDataConnector is the same as the one in the initial state in this case
       if (!action.payload.hasDataConnector) {
@@ -105,7 +105,7 @@ const dataConnectorFormSlice = createSlice({
     },
     setActionOngoing: (
       state,
-      action: PayloadAction<{ isActionOngoing: boolean }>
+      action: PayloadAction<{ isActionOngoing: boolean }>,
     ) => {
       state.isActionOngoing = action.payload.isActionOngoing;
     },
@@ -114,7 +114,7 @@ const dataConnectorFormSlice = createSlice({
       action: PayloadAction<{
         cloudStorageState: Partial<AddCloudStorageState>;
         validationResult?: null | undefined;
-      }>
+      }>,
     ) => {
       const schemata = state.schemata;
       const fullNewState = {
@@ -134,14 +134,14 @@ const dataConnectorFormSlice = createSlice({
             // schema and provider (where necessary) must also exist in the list
             !state.flatDataConnector.schema ||
             !schemata?.find(
-              (s) => s.prefix === state.flatDataConnector.schema
+              (s) => s.prefix === state.flatDataConnector.schema,
             ) ||
             (hasProviderShortlist(state.flatDataConnector.schema) &&
               (!state.flatDataConnector.provider ||
                 !getSchemaProviders(
                   schemata,
                   false,
-                  state.flatDataConnector.schema
+                  state.flatDataConnector.schema,
                 )?.find((p) => p.name === state.flatDataConnector.provider)))
           ) {
             fullNewState.step = 1;
@@ -157,7 +157,7 @@ const dataConnectorFormSlice = createSlice({
     },
     setCredentialSaveStatus: (
       state,
-      action: PayloadAction<{ credentialSaveStatus: AuxiliaryCommandStatus }>
+      action: PayloadAction<{ credentialSaveStatus: AuxiliaryCommandStatus }>,
     ) => {
       state.credentialSaveStatus = action.payload.credentialSaveStatus;
     },
@@ -166,7 +166,7 @@ const dataConnectorFormSlice = createSlice({
       action: PayloadAction<{
         flatDataConnector: Partial<DataConnectorFlat>;
         validationSucceeded?: boolean | null;
-      }>
+      }>,
     ) => {
       const fullNewDetails = {
         ...state.flatDataConnector,
@@ -194,7 +194,7 @@ const dataConnectorFormSlice = createSlice({
     },
     setProjectLinkStatus: (
       state,
-      action: PayloadAction<{ projectLinkStatus: AuxiliaryCommandStatus }>
+      action: PayloadAction<{ projectLinkStatus: AuxiliaryCommandStatus }>,
     ) => {
       state.projectLinkStatus = action.payload.projectLinkStatus;
     },
@@ -204,7 +204,7 @@ const dataConnectorFormSlice = createSlice({
         success: boolean;
         dataConnectorResultId: string | undefined;
         dataConnectorResultName: string | undefined;
-      }>
+      }>,
     ) => {
       state.success = action.payload.success;
       state.dataConnectorResultName = action.payload.dataConnectorResultName;
@@ -215,7 +215,7 @@ const dataConnectorFormSlice = createSlice({
       action: PayloadAction<{
         validationResult: BackendResult | null;
         isActionOngoing?: boolean;
-      }>
+      }>,
     ) => {
       state.validationResult = action.payload.validationResult;
       state.validationResultIsCurrent = true;

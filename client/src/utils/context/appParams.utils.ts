@@ -46,7 +46,7 @@ export function validatedAppParams(params: unknown): AppParams {
   const MAINTENANCE = validateString(params_, "MAINTENANCE");
   const PRIVACY_BANNER_CONTENT = validateString(
     params_,
-    "PRIVACY_BANNER_CONTENT"
+    "PRIVACY_BANNER_CONTENT",
   );
   const RENKU_CHART_VERSION = validateString(params_, "RENKU_CHART_VERSION");
   const SENTRY_NAMESPACE = validateString(params_, "SENTRY_NAMESPACE");
@@ -62,18 +62,18 @@ export function validatedAppParams(params: unknown): AppParams {
   const ANONYMOUS_SESSIONS = validateBoolean(params_, "ANONYMOUS_SESSIONS");
   const PRIVACY_BANNER_ENABLED = validateBoolean(
     params_,
-    "PRIVACY_BANNER_ENABLED"
+    "PRIVACY_BANNER_ENABLED",
   );
   const TERMS_PAGES_ENABLED = validateBoolean(params_, "TERMS_PAGES_ENABLED");
   const IMAGE_BUILDERS_ENABLED = validateBoolean(
     params_,
-    "IMAGE_BUILDERS_ENABLED"
+    "IMAGE_BUILDERS_ENABLED",
   );
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
     params_,
-    "USER_PREFERENCES_MAX_PINNED_PROJECTS"
+    "USER_PREFERENCES_MAX_PINNED_PROJECTS",
   );
 
   // Object params
@@ -119,7 +119,7 @@ interface RawAppParams {
 
 function validateString(
   params: RawAppParams,
-  key: keyof AppParamsStrings
+  key: keyof AppParamsStrings,
 ): string {
   const value = params[key];
   if (typeof value !== "string") {
@@ -130,7 +130,7 @@ function validateString(
 
 function validateBoolean(
   params: RawAppParams,
-  key: keyof AppParamsBooleans
+  key: keyof AppParamsBooleans,
 ): boolean {
   const value = params[key];
 
@@ -158,7 +158,7 @@ interface ValidateIntegerOptions {
 function validateInteger(
   params: RawAppParams,
   key: keyof AppParamsNumbers,
-  options?: ValidateIntegerOptions
+  options?: ValidateIntegerOptions,
 ): number {
   const min = options?.min ?? Number.MIN_SAFE_INTEGER;
   const max = options?.max ?? Number.MAX_SAFE_INTEGER;
@@ -189,7 +189,7 @@ function validateHomepage(params: RawAppParams): HomepageParams {
 }
 
 function validatePreviewThreshold(
-  params: RawAppParams
+  params: RawAppParams,
 ): PreviewThresholdParams {
   const value = params["PREVIEW_THRESHOLD"];
   if (typeof value !== "object" || value == null) {
@@ -210,7 +210,7 @@ function validatePreviewThreshold(
 }
 
 function validatePrivacyBannerLayout(
-  params: RawAppParams
+  params: RawAppParams,
 ): PrivacyBannerLayoutParams | null {
   const value = params["PRIVACY_BANNER_LAYOUT"];
   if (typeof value !== "object" || value == null) {
@@ -245,7 +245,7 @@ function validateUploadThreshold(params: RawAppParams): UploadThresholdParams {
 }
 
 function validateSessionClassEmailUs(
-  params: RawAppParams
+  params: RawAppParams,
 ): SessionClassEmailUsParams {
   const value = params["SESSION_CLASS_EMAIL_US"];
   if (typeof value !== "object" || value == null) {

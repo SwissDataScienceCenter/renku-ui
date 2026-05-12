@@ -38,7 +38,7 @@ export default function CollapseBody({
         "border-start",
         !customMarginStart && "ms-1",
         !customPaddingStart && "ps-2",
-        className
+        className,
       )}
     >
       {children}

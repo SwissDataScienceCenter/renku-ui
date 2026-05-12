@@ -27,8 +27,9 @@ import { Button } from "reactstrap";
 import type { GenericProjectFormFieldProps } from "./formField.types";
 import SlugFormField from "./SlugFormField";
 
-interface ProjectOwnerSlugFormFieldProps<T extends FieldValues>
-  extends GenericProjectFormFieldProps<T> {
+interface ProjectOwnerSlugFormFieldProps<
+  T extends FieldValues,
+> extends GenericProjectFormFieldProps<T> {
   getValues: UseFormGetValues<T>;
   namespaceName: GenericProjectFormFieldProps<T>["name"];
   watch: UseFormWatch<T>;

@@ -34,7 +34,7 @@ export default function DataConnectorSaveCredentialsInfo({
   onFieldValueChange,
 }: DataConnectorSaveCredentialsInfoProps) {
   const { cloudStorageState } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   return (
     <div className="mt-3">

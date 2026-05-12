@@ -57,7 +57,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
         .find((c) => c.default) ??
       resourcePools?.find(() => true)?.classes[0] ??
       undefined,
-    [resourcePools]
+    [resourcePools],
   );
 
   const watchCurrentSessionClass = useWatch({

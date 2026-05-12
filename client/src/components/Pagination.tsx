@@ -109,7 +109,7 @@ const PaginationNav = memo(function PaginationNav({
       };
       return to;
     },
-    [hash, pageQueryParam, pathname, search]
+    [hash, pageQueryParam, pathname, search],
   );
 
   if (itemsCountPerPage === 0 || totalItemsCount === 0 || maxPages <= 0) {
@@ -138,7 +138,7 @@ const PaginationNav = memo(function PaginationNav({
         key="first"
       >
         <ChevronDoubleLeft className="bi" />
-      </PaginationElement>
+      </PaginationElement>,
     );
   }
 
@@ -152,7 +152,7 @@ const PaginationNav = memo(function PaginationNav({
         key="prev"
       >
         <ChevronLeft className="bi" />
-      </PaginationElement>
+      </PaginationElement>,
     );
   }
 
@@ -166,7 +166,7 @@ const PaginationNav = memo(function PaginationNav({
         key={`page-${pageNumber}`}
       >
         {pageNumber}
-      </PaginationElement>
+      </PaginationElement>,
     );
   }
 
@@ -180,7 +180,7 @@ const PaginationNav = memo(function PaginationNav({
         key="next"
       >
         <ChevronRight className="bi" />
-      </PaginationElement>
+      </PaginationElement>,
     );
   }
 
@@ -194,7 +194,7 @@ const PaginationNav = memo(function PaginationNav({
         key="last"
       >
         <ChevronDoubleRight className="bi" />
-      </PaginationElement>
+      </PaginationElement>,
     );
   }
 

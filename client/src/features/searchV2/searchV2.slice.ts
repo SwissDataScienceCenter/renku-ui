@@ -115,7 +115,7 @@ export const searchV2Slice = createSlice({
     },
     applyParsedSearch: (
       state,
-      action: PayloadAction<ApplyParsedSearchParams>
+      action: PayloadAction<ApplyParsedSearchParams>,
     ) => {
       const { query, contentType, visibility, role, created } = action.payload;
       state.query = query;
@@ -158,7 +158,7 @@ export const selectSearchApiQuery = createSelector(
     const { searchBarFilterKeys, ...searchState } = state.searchV2;
     return searchState;
   },
-  (searchState) => buildApiQuery(searchState)
+  (searchState) => buildApiQuery(searchState),
 );
 
 /**
@@ -173,5 +173,5 @@ export const selectApiQueryWithoutType = createSelector(
   (searchState) => {
     const stateWithoutType = { ...searchState, contentType: "" };
     return buildApiQuery(stateWithoutType);
-  }
+  },
 );

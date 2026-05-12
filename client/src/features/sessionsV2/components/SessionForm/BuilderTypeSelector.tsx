@@ -40,7 +40,7 @@ export default function BuilderTypeSelector<T extends FieldValues>({
       controllerProps.defaultValue
         ? controllerProps.defaultValue
         : BUILDER_TYPES[0],
-    [controllerProps.defaultValue]
+    [controllerProps.defaultValue],
   );
 
   return (

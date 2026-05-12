@@ -42,7 +42,7 @@ interface FileUploadResult {
 const uploadFileMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const [oldWrite, oldEnd] = [res.write, res.end];
   const chunks: Buffer[] = [];

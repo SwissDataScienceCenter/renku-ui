@@ -31,7 +31,8 @@ import type {
 } from "./api/sessionLaunchersV2.api";
 
 export interface SessionLauncherForm
-  extends Pick<
+  extends
+    Pick<
       SessionLauncherPost,
       "name" | "description" | "disk_storage" | "project_id"
     >,

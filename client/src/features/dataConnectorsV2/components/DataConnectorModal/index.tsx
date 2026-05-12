@@ -60,13 +60,13 @@ export function DataConnectorModalBodyAndFooter({
   const dataConnectorId = dataConnector?.id ?? null;
   // Fetch available schema when users open the modal
   const schemaQueryResult = useGetStorageSchemaQuery(
-    isOpen ? undefined : skipToken
+    isOpen ? undefined : skipToken,
   );
   const dispatch = useAppDispatch();
   const { data: schemata } = schemaQueryResult;
   const { data: connectorSecrets } =
     useGetDataConnectorsByDataConnectorIdSecretsQuery(
-      dataConnectorId ? { dataConnectorId } : skipToken
+      dataConnectorId ? { dataConnectorId } : skipToken,
     );
 
   // Reset state on props change
@@ -96,7 +96,7 @@ export function DataConnectorModalBodyAndFooter({
         cloudStorageState,
         flatDataConnector: flattened,
         schemata: schemata ?? [],
-      })
+      }),
     );
   }, [
     dataConnector,

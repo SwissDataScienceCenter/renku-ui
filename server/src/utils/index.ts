@@ -29,7 +29,7 @@ import urlJoin from "./url-join";
 function convertType(
   value: string,
   booleans = true,
-  numbers = true
+  numbers = true,
 ): boolean | number | string {
   if (value == null) return value;
   if (booleans) {
@@ -154,13 +154,13 @@ function simpleHash(str: string, seed = 0): number {
  * @returns A new object with the same properties as the input object but with the keys sorted in ascending order.
  */
 function sortObjectProperties(
-  unsortedObject: Record<string, unknown>
+  unsortedObject: Record<string, unknown>,
 ): Record<string, unknown> {
   return Object.keys(unsortedObject)
     .sort()
     .reduce(
       (obj, key) => ({ ...obj, [key]: unsortedObject[key] }),
-      {} as Record<string, unknown>
+      {} as Record<string, unknown>,
     );
 }
 
@@ -177,7 +177,7 @@ function sortObjectProperties(
 function flattenNestedObject(
   obj: Record<string, unknown>,
   parentKey = "",
-  flatResult: Record<string, unknown> = {}
+  flatResult: Record<string, unknown> = {},
 ): Record<string, unknown> {
   Object.entries(obj).forEach(([key, value]) => {
     const newKey = parentKey ? `${parentKey}.${key}` : key;

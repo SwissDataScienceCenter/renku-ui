@@ -23,23 +23,23 @@ interface CookieStore extends EventTarget {
     type: K,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     listener: (this: CookieStore, ev: CookieStoreEventMap[K]) => any,
-    options?: boolean | AddEventListenerOptions
+    options?: boolean | AddEventListenerOptions,
   ): void;
   addEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
+    options?: boolean | AddEventListenerOptions,
   ): void;
   removeEventListener<K extends keyof CookieStoreEventMap>(
     type: K,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     listener: (this: CookieStore, ev: CookieStoreEventMap[K]) => any,
-    options?: boolean | EventListenerOptions
+    options?: boolean | EventListenerOptions,
   ): void;
   removeEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
-    options?: boolean | EventListenerOptions
+    options?: boolean | EventListenerOptions,
   ): void;
 }
 

@@ -43,7 +43,7 @@ export default function BuildLogsModal({
   const lastBuild = builds?.at(0);
   const inProgressBuild = useMemo(
     () => builds?.find(({ status }) => status === "in_progress"),
-    [builds]
+    [builds],
   );
   const hasInProgressBuild = !!inProgressBuild;
 
@@ -80,14 +80,14 @@ function BuildLogsModalInner({
           buildId: build.id,
           maxLines: BUILD_LOGS_MAX_LINES,
         }
-      : skipToken
+      : skipToken,
   );
 
   const [trigger] =
     sessionLaunchersV2Api.endpoints.getBuildsByBuildIdLogs.useLazyQuery();
   const downloadQueryTrigger = useCallback(
     () => trigger({ buildId: build.id }),
-    [build.id, trigger]
+    [build.id, trigger],
   );
 
   return (

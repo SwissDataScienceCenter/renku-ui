@@ -49,7 +49,7 @@ export default function BuilderAdvancedSettings({
   const [isOpen, setIsOpen] = useState(!isDefaultPlatform);
   const toggleIsOpen = useCallback(
     () => setIsOpen((isAdvancedSettingOpen) => !isAdvancedSettingOpen),
-    []
+    [],
   );
   return (
     <div className={cx("d-flex", "flex-column", "gap-1")}>
@@ -61,7 +61,7 @@ export default function BuilderAdvancedSettings({
           "bg-transparent",
           "border-0",
           "p-0",
-          "h4"
+          "h4",
         )}
         type="button"
         onClick={toggleIsOpen}
@@ -89,7 +89,7 @@ function BuilderPlatformSelector<T extends FieldValues>({
       controllerProps.defaultValue
         ? controllerProps.defaultValue
         : BUILDER_PLATFORMS[0],
-    [controllerProps.defaultValue]
+    [controllerProps.defaultValue],
   );
 
   return (

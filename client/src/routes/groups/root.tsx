@@ -52,7 +52,7 @@ export async function loader({ context, params }: Route.LoaderArgs) {
   await Promise.all(store.dispatch(projectV2Api.util.getRunningQueriesThunk()));
   const namespaceSelector = namespaceEndpoint.select(namespaceApiArgs);
   const { data: namespace, error: namespaceError } = namespaceSelector(
-    store.getState()
+    store.getState(),
   );
   const groupSelector = groupEndpoint.select(groupApiArgs);
   const { data: group, error: groupError } = groupSelector(store.getState());
@@ -71,7 +71,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const namespaceEndpoint = projectV2Api.endpoints.getNamespacesByNamespaceSlug;
   const namespaceApiArgs = { namespaceSlug: slug };
   const namespacePromise = store.dispatch(
-    namespaceEndpoint.initiate(namespaceApiArgs)
+    namespaceEndpoint.initiate(namespaceApiArgs),
   );
   const groupEndpoint = projectV2Api.endpoints.getGroupsByGroupSlug;
   const groupApiArgs = {
@@ -81,7 +81,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   await Promise.all(store.dispatch(projectV2Api.util.getRunningQueriesThunk()));
   const namespaceSelector = namespaceEndpoint.select(namespaceApiArgs);
   const { data: namespace, error: namespaceError } = namespaceSelector(
-    store.getState()
+    store.getState(),
   );
   const groupSelector = groupEndpoint.select(groupApiArgs);
   const { data: group, error: groupError } = groupSelector(store.getState());
@@ -123,11 +123,11 @@ export function meta({
   }
   const matchSearch = matchPath(
     ABSOLUTE_ROUTES.v2.groups.show.search,
-    location.pathname
+    location.pathname,
   );
   const matchSettings = matchPath(
     ABSOLUTE_ROUTES.v2.groups.show.settings,
-    location.pathname
+    location.pathname,
   );
   const title = makeMetaTitle([
     ...(matchSearch ? ["Search"] : matchSettings ? ["Settings"] : []),
@@ -166,8 +166,8 @@ export default function GroupPagesRoot({
         projectV2Api.util.upsertQueryData(
           "getNamespacesByNamespaceSlug",
           namespaceApiArgs,
-          loaderData.namespace
-        )
+          loaderData.namespace,
+        ),
       );
       namespacePromise.then(() => {
         if (!ignore) {
@@ -187,8 +187,8 @@ export default function GroupPagesRoot({
         projectV2Api.util.upsertQueryData(
           "getGroupsByGroupSlug",
           groupApiArgs,
-          loaderData.group
-        )
+          loaderData.group,
+        ),
       );
       groupPromise.then(() => {
         if (!ignore) {
@@ -211,7 +211,7 @@ export default function GroupPagesRoot({
   } = useGetNamespacesByNamespaceSlugQuery(
     loaderData.clientSideFetch || isNamespaceCacheReady
       ? { namespaceSlug: slug }
-      : skipToken
+      : skipToken,
   );
   const {
     currentData: group,
@@ -220,7 +220,7 @@ export default function GroupPagesRoot({
   } = useGetGroupsByGroupSlugQuery(
     loaderData.clientSideFetch || isGroupCacheReady
       ? { groupSlug: slug }
-      : skipToken
+      : skipToken,
   );
   const isLoading = isLoadingNamespace || isLoadingGroup;
   const error = namespaceError ?? groupError;
@@ -231,7 +231,7 @@ export default function GroupPagesRoot({
         generatePath(ABSOLUTE_ROUTES.v2.users.show.root, { username: slug }),
         {
           replace: true,
-        }
+        },
       );
     } else if (
       slug &&
@@ -242,7 +242,7 @@ export default function GroupPagesRoot({
         generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
           slug: namespace.slug,
         }),
-        { replace: true }
+        { replace: true },
       );
     }
   }, [namespace?.namespace_kind, namespace?.slug, navigate, slug]);

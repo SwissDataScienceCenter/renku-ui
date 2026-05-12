@@ -21,7 +21,7 @@ import { lazy, Suspense } from "react";
 import PageLoader from "../../components/PageLoader";
 
 const ProjectV2ShowByProjectId = lazy(
-  () => import("./show/ProjectV2ShowByProjectId")
+  () => import("./show/ProjectV2ShowByProjectId"),
 );
 
 export default function LazyProjectV2ShowByProjectId() {

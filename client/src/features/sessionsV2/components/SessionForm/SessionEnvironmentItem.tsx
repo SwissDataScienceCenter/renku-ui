@@ -46,7 +46,7 @@ interface SessionEnvironmentItemProps {
   resourcePools?: ResourcePoolWithId[];
   isLoadingResourcesPools?: boolean;
   onChangeResourceClass?: (
-    resourceClass: SingleValue<ResourceClassWithId>
+    resourceClass: SingleValue<ResourceClassWithId>,
   ) => void;
   errors: FieldErrors<SessionLauncherForm>;
   control: Control<SessionLauncherForm, unknown>;

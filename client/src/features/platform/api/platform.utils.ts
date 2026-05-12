@@ -55,12 +55,12 @@ const subRoutes = {
 
 const srMap = groupBy(Object.values(subRoutes), (v) => v.split("/").length);
 const maxSrMapDepth = Math.max(
-  ...Object.keys(srMap).map((k) => Number.parseInt(k))
+  ...Object.keys(srMap).map((k) => Number.parseInt(k)),
 );
 
 function accumulateIntoProjectPath(
   projectPathWithNamespace: string,
-  comps: string[]
+  comps: string[],
 ) {
   if (comps.length === 0) return projectPathWithNamespace;
 
@@ -78,7 +78,7 @@ function accumulateIntoProjectPath(
   // Add one level to the projectPathWithNamespace
   return accumulateIntoProjectPath(
     `${projectPathWithNamespace}/${comps[0]}`,
-    comps.slice(1)
+    comps.slice(1),
   );
 }
 
@@ -114,7 +114,7 @@ function splitProjectSubRoute(subUrl: string): SplitProjectSubRouteResult {
     // We need to check if we need to accumulate more components into the projectPathWithNamespace
     result.projectPathWithNamespace = accumulateIntoProjectPath(
       result.projectPathWithNamespace,
-      comps.slice(2)
+      comps.slice(2),
     );
   }
 
@@ -124,7 +124,7 @@ function splitProjectSubRoute(subUrl: string): SplitProjectSubRouteResult {
     result.baseUrl = `/projects/${result.projectPathWithNamespace}`;
     result.namespace = result.projectPathWithNamespace.slice(
       0,
-      result.projectPathWithNamespace.lastIndexOf("/")
+      result.projectPathWithNamespace.lastIndexOf("/"),
     );
   }
 
@@ -133,7 +133,7 @@ function splitProjectSubRoute(subUrl: string): SplitProjectSubRouteResult {
 
 /** Helper function to convert renkulab URLs into source URLs */
 export function locationPathnameToSourceUrl(
-  pathname: string
+  pathname: string,
 ): string | undefined {
   const urlInfo = splitProjectSubRoute(pathname);
   if (urlInfo.baseUrl == null) return undefined;

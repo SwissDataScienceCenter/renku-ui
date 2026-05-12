@@ -116,7 +116,7 @@ function EditGroupMemberRoleForm({
         ],
       });
     },
-    [groupSlug, patchGroupMembers]
+    [groupSlug, patchGroupMembers],
   );
 
   return (

@@ -42,19 +42,20 @@ import type {
 import ResourcePoolRemoteSection from "./forms/ResourcePoolRemoteSection";
 
 function remoteDefaultValues(
-  remote: ResourcePoolWithId["remote"]
+  remote: ResourcePoolWithId["remote"],
 ): RemoteConfiguration {
   return {
     enabled: remote?.kind != null,
     kind: remote?.kind ?? null,
     firecrestConfiguration: {
       providerId: remote?.provider_id ?? "",
-      apiUrl: remote?.kind === "firecrest" ? remote?.api_url ?? "" : "",
-      systemName: remote?.kind === "firecrest" ? remote?.system_name ?? "" : "",
-      partition: remote?.kind === "firecrest" ? remote?.partition ?? "" : "",
+      apiUrl: remote?.kind === "firecrest" ? (remote?.api_url ?? "") : "",
+      systemName:
+        remote?.kind === "firecrest" ? (remote?.system_name ?? "") : "",
+      partition: remote?.kind === "firecrest" ? (remote?.partition ?? "") : "",
     },
     runaiConfiguration: {
-      baseUrl: remote?.kind === "runai" ? remote?.base_url ?? "" : "",
+      baseUrl: remote?.kind === "runai" ? (remote?.base_url ?? "") : "",
     },
   };
 }
@@ -116,24 +117,24 @@ function UpdateResourcePoolRemoteModal({
       const remote = !data.remote.enabled
         ? {}
         : data.remote.kind === "runai"
-        ? {
-            kind: data.remote.kind,
-            base_url: data.remote.runaiConfiguration.baseUrl.trim(),
-          }
-        : {
-            kind: data.remote.kind,
-            provider_id: data.remote.firecrestConfiguration.providerId?.trim()
-              ? data.remote.firecrestConfiguration.providerId.trim()
-              : undefined,
-            api_url: data.remote.firecrestConfiguration.apiUrl.trim(),
-            system_name: data.remote.firecrestConfiguration.systemName.trim(),
-            partition: data.remote.firecrestConfiguration.partition?.trim()
-              ? data.remote.firecrestConfiguration.partition.trim()
-              : undefined,
-          };
+          ? {
+              kind: data.remote.kind,
+              base_url: data.remote.runaiConfiguration.baseUrl.trim(),
+            }
+          : {
+              kind: data.remote.kind,
+              provider_id: data.remote.firecrestConfiguration.providerId?.trim()
+                ? data.remote.firecrestConfiguration.providerId.trim()
+                : undefined,
+              api_url: data.remote.firecrestConfiguration.apiUrl.trim(),
+              system_name: data.remote.firecrestConfiguration.systemName.trim(),
+              partition: data.remote.firecrestConfiguration.partition?.trim()
+                ? data.remote.firecrestConfiguration.partition.trim()
+                : undefined,
+            };
       updateResourcePool({ resourcePoolId: id, resourcePoolPatch: { remote } });
     },
-    [id, updateResourcePool]
+    [id, updateResourcePool],
   );
 
   useEffect(() => {

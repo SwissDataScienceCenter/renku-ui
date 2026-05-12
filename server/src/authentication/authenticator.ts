@@ -46,7 +46,7 @@ export class Authenticator {
     } catch (error) {
       logger.error(
         "Cannot initialize the auth client. The authentication server may be down or some paramaters may be wrong. " +
-          "Please check the next log entry for further details."
+          "Please check the next log entry for further details.",
       );
       logger.error(error);
       throw error;
@@ -101,14 +101,14 @@ export class Authenticator {
   middleware(): (
     req: RequestWithUser,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ) => Promise<void> {
     const authenticate: typeof this.authenticate = this.authenticate.bind(this);
 
     async function authenticationMiddleware(
       req: RequestWithUser,
       res: express.Response,
-      next: express.NextFunction
+      next: express.NextFunction,
     ) {
       // Do not re-authenticate the request
       if (req.user != null) {

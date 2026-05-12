@@ -137,7 +137,7 @@ function GroupSettingsMembersList({
   const [memberToEdit, setMemberToEdit] = useState<GroupMemberResponse>();
   const numberOfOwners = useMemo(
     () => members.filter((m) => m.role === "owner").length,
-    [members]
+    [members],
   );
 
   const toggleEditMemberModal = useCallback(() => {
@@ -223,7 +223,7 @@ function GroupMemberItem({
           "align-items-center",
           "d-flex",
           "gap-2",
-          "justify-content-between"
+          "justify-content-between",
         )}
       >
         <p className={cx("d-flex", "mb-0", "gap-2")}>

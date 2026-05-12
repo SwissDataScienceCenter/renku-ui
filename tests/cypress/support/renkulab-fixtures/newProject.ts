@@ -34,7 +34,7 @@ export function NewProject<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "POST",
         "/ui-server/api/renku/templates.create_project",
-        response
+        response,
       ).as(name);
       return this;
     }

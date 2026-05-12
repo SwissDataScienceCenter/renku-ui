@@ -67,7 +67,7 @@ export default function DepositCreationModal({
 
   const targetProvider = useMemo(() => {
     return providers?.find(
-      (provider) => provider.kind === targetProviderString
+      (provider) => provider.kind === targetProviderString,
     );
   }, [providers, targetProviderString]);
 
@@ -78,7 +78,7 @@ export default function DepositCreationModal({
   } = useGetOauth2ConnectionsQuery(targetProvider ? undefined : skipToken);
   const targetConnection = useMemo(() => {
     return connections?.find(
-      (connection) => connection.provider_id === targetProvider?.id
+      (connection) => connection.provider_id === targetProvider?.id,
     );
   }, [connections, targetProvider]);
 
@@ -96,7 +96,7 @@ export default function DepositCreationModal({
         },
       });
     },
-    [dataConnector.id, postDeposit]
+    [dataConnector.id, postDeposit],
   );
 
   useEffect(() => {

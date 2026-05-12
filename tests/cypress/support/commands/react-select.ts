@@ -18,7 +18,7 @@
 
 function findReactSelectOptions(
   selectDataCy: string,
-  reactSelectClassPrefix: string
+  reactSelectClassPrefix: string,
 ) {
   return (
     cy
@@ -33,7 +33,7 @@ function findReactSelectOptions(
 
 function findReactSelectSelectedValue(
   selectDataCy: string,
-  reactSelectClassPrefix: string
+  reactSelectClassPrefix: string,
 ) {
   return cy
     .getDataCy(selectDataCy)
@@ -46,7 +46,7 @@ export default function registerReactSelectCommands() {
   Cypress.Commands.add("findReactSelectOptions", findReactSelectOptions);
   Cypress.Commands.add(
     "findReactSelectSelectedValue",
-    findReactSelectSelectedValue
+    findReactSelectSelectedValue,
   );
 }
 

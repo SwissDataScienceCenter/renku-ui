@@ -59,7 +59,7 @@ export default function SessionImageModal({
 
   const containerImage = launcher.environment?.container_image ?? "";
   const { data, isLoading } = useGetSessionsImagesQuery(
-    containerImage ? { imageUrl: containerImage } : skipToken
+    containerImage ? { imageUrl: containerImage } : skipToken,
   );
 
   const { pathname, hash } = useLocation();

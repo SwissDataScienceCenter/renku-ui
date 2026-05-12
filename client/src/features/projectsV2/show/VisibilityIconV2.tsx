@@ -57,7 +57,7 @@ export default function VisibilityIconV2({
           "card-visibility-icon",
           "d-flex",
           "gap-2",
-          className
+          className,
         )}
         data-cy="project-visibility"
       >

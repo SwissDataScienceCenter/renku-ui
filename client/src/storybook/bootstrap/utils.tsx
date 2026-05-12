@@ -2,7 +2,7 @@ import React from "react";
 
 export async function Copy(
   text: string,
-  set: React.Dispatch<React.SetStateAction<string>>
+  set: React.Dispatch<React.SetStateAction<string>>,
 ) {
   await navigator.clipboard.writeText(text);
   set(text);

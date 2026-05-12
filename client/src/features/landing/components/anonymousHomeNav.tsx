@@ -203,7 +203,7 @@ function TopNav() {
             "justify-content-center",
             "icons-menu",
             "align-items-center",
-            "gap-3"
+            "gap-3",
           )}
         >
           <div className="d-none d-md-inline-block">

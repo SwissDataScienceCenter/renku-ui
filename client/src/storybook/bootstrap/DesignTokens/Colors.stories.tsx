@@ -120,8 +120,8 @@ function ColorCard({ token }: ColorCardProps) {
     styles.backgroundColor !== "rgba(0, 0, 0, 0)"
       ? styles.backgroundColor
       : styles.color !== "rgba(0, 0, 0, 0)"
-      ? styles.color
-      : styles.borderTopColor
+        ? styles.color
+        : styles.borderTopColor,
   );
 
   const bg = rgb || "#fff";
@@ -144,7 +144,7 @@ function ColorCard({ token }: ColorCardProps) {
           "shadow-sm",
           "border",
           "overflow-hidden",
-          "font-sans"
+          "font-sans",
         )}
         style={{ width: 300, height: 280 }}
       >
@@ -196,8 +196,8 @@ function TextColorCard({ token }: { token: string }) {
     styles.backgroundColor !== "rgba(0, 0, 0, 0)"
       ? styles.backgroundColor
       : styles.color !== "rgba(0, 0, 0, 0)"
-      ? styles.color
-      : styles.borderTopColor
+        ? styles.color
+        : styles.borderTopColor,
   );
 
   const textColor = rgb || "#000";
@@ -226,7 +226,7 @@ function TextColorCard({ token }: { token: string }) {
           "font-sans",
           "d-flex",
           "flex-column",
-          "justify-content-between"
+          "justify-content-between",
         )}
         style={{
           width: 400,
@@ -288,8 +288,8 @@ function BorderColorCard({ token, borderSize }: BorderColorCardProps) {
     styles.backgroundColor !== "rgba(0, 0, 0, 0)"
       ? styles.backgroundColor
       : styles.color !== "rgba(0, 0, 0, 0)"
-      ? styles.color
-      : styles.borderTopColor
+        ? styles.color
+        : styles.borderTopColor,
   );
 
   return (
@@ -311,7 +311,7 @@ function BorderColorCard({ token, borderSize }: BorderColorCardProps) {
           "font-sans",
           "border",
           borderSize,
-          token
+          token,
         )}
         style={{
           width: 400,
@@ -399,7 +399,7 @@ export const ColorPalette: Story = {
               {tokens.map((t) =>
                 type === "border"
                   ? CARD_MAP.border(t, args.borderSize)
-                  : CARD_MAP[type](t)
+                  : CARD_MAP[type](t),
               )}
             </div>
           </section>

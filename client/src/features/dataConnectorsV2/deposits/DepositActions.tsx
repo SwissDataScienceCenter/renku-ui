@@ -204,7 +204,7 @@ function DepositRemovalModal({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTypedName(e.target.value);
     },
-    [setTypedName]
+    [setTypedName],
   );
 
   useEffect(() => {
@@ -290,7 +290,7 @@ function DepositLogsModal({
   isOpen,
 }: DepositLogsModalProps) {
   const query = useGetDepositsByDepositIdLogsQuery(
-    deposit.id ? { depositId: deposit.id } : skipToken
+    deposit.id ? { depositId: deposit.id } : skipToken,
   );
 
   return (

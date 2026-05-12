@@ -38,7 +38,7 @@ export function useConnectedServiceProviderLists({
 }: UseConnectedServiceProviderListsArgs) {
   const targetProvider = useMemo(
     () => providers?.find((provider) => provider.id === targetProviderId),
-    [providers, targetProviderId]
+    [providers, targetProviderId],
   );
   const sortedProviders = useMemo(() => {
     if (!providers) return [];
@@ -50,23 +50,24 @@ export function useConnectedServiceProviderLists({
       sortedProviders.map((provider) => ({
         provider,
         connection: connections?.find(
-          ({ provider_id }) => provider_id === provider.id
+          ({ provider_id }) => provider_id === provider.id,
         ),
       })),
-    [connections, sortedProviders]
+    [connections, sortedProviders],
   );
   const mainListProviders = useMemo(
     () =>
       providersWithConnection.filter(
         ({ connection }) =>
-          connection?.status === "connected" || connection?.status === "pending"
+          connection?.status === "connected" ||
+          connection?.status === "pending",
       ),
-    [providersWithConnection]
+    [providersWithConnection],
   );
   const modalProviders = useMemo(
     () =>
       providersWithConnection.filter(({ connection }) => connection == null),
-    [providersWithConnection]
+    [providersWithConnection],
   );
 
   return { mainListProviders, modalProviders };

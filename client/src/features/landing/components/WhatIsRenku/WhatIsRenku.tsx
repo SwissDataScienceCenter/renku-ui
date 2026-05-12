@@ -49,7 +49,7 @@ function ResearchFeatSection() {
           "gap-3",
           "gap-lg-4",
           "order-1",
-          "order-lg-2"
+          "order-lg-2",
         )}
       >
         <h3 className={cx("fs-2", "fw-bold", "my-0")}>
@@ -77,7 +77,7 @@ function ResearcherFeatSection() {
           "gap-3",
           "gap-lg-4",
           "order-1",
-          "order-lg-1"
+          "order-lg-1",
         )}
       >
         <h3 className={cx("fs-2", "fw-bold", "my-0")}>
@@ -121,7 +121,7 @@ function CollaborationFeatSection() {
           "gap-3",
           "gap-lg-4",
           "order-1",
-          "order-lg-2"
+          "order-lg-2",
         )}
       >
         <h3 className={cx("fs-2", "fw-bold", "my-0")}>
@@ -151,7 +151,7 @@ function ComputingFeatSection() {
           "gap-3",
           "gap-lg-4",
           "order-1",
-          "order-lg-1"
+          "order-lg-1",
         )}
       >
         <h3 className={cx("fs-2", "fw-bold", "my-0")}>Flexible Computing</h3>
@@ -201,7 +201,7 @@ function ConnectionFeatSection() {
           "gap-3",
           "gap-lg-4",
           "order-1",
-          "order-lg-2"
+          "order-lg-2",
         )}
       >
         <h3 className={cx("fs-2", "fw-bold", "my-0")}>
@@ -226,7 +226,7 @@ export default function WhatIsRenku() {
           "flex-column",
           "gap-5",
           "gap-lg-4",
-          "my-5"
+          "my-5",
         )}
       >
         <div className={cx("text-center", "mt-0", "mt-lg-4")}>

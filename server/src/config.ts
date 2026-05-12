@@ -37,14 +37,14 @@ const DEPLOYMENT = {
 
 const SENTRY = {
   enabled: ["true", "1"].includes(
-    (process.env.SENTRY_ENABLED ?? "").toLowerCase()
+    (process.env.SENTRY_ENABLED ?? "").toLowerCase(),
   ),
   url: process.env.SENTRY_URL || undefined,
   namespace: process.env.SENTRY_NAMESPACE || undefined,
   telepresence: !!process.env.TELEPRESENCE,
   sampleRate: parseFloat(process.env.SENTRY_TRACE_RATE) || 0,
   debugMode: ["true", "1"].includes(
-    (process.env.SENTRY_DEBUG ?? "").toLowerCase()
+    (process.env.SENTRY_DEBUG ?? "").toLowerCase(),
   ),
 };
 
@@ -62,7 +62,7 @@ const ROUTES = {
 
 const WEBSOCKET = {
   enabled: ["true", "1"].includes(
-    (process.env.WEBSOCKET_ENABLED ?? "").toLowerCase()
+    (process.env.WEBSOCKET_ENABLED ?? "").toLowerCase(),
   ),
   shortIntervalSec: 5, // ? in seconds
   longIntervalSec: 180, // ? in seconds
@@ -72,7 +72,7 @@ const WEBSOCKET = {
 
 const PROMETHEUS = {
   enabled: ["true", "1"].includes(
-    (process.env.PROMETHEUS_ENABLED ?? "").toLowerCase()
+    (process.env.PROMETHEUS_ENABLED ?? "").toLowerCase(),
   ),
   path: "/metrics",
 };

@@ -62,11 +62,11 @@ export default function ProjectListDisplay({
 }: ProjectListDisplayProps) {
   const pageParam = useMemo(
     () => (pageParam_ ? pageParam_ : DEFAULT_PAGE_PARAM),
-    [pageParam_]
+    [pageParam_],
   );
   const perPage = useMemo(
     () => (limit ? limit : perPage_ ? perPage_ : DEFAULT_PER_PAGE),
-    [limit, perPage_]
+    [limit, perPage_],
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -104,7 +104,7 @@ export default function ProjectListDisplay({
           }
           return prevParams;
         },
-        { replace: true }
+        { replace: true },
       );
     }
   }, [data?.totalPages, page, pageParam, setSearchParams]);
@@ -189,7 +189,7 @@ function ProjectBoxHeader({
         className={cx(
           "align-items-center",
           "d-flex",
-          "justify-content-between"
+          "justify-content-between",
         )}
       >
         <div className={cx("align-items-center", "d-flex")}>
@@ -224,7 +224,7 @@ function AddButtonForGroupNamespace({ namespace }: { namespace: string }) {
             "btn-outline-primary",
             "btn-sm",
             "ms-auto",
-            "my-auto"
+            "my-auto",
           )}
           data-cy="group-create-project-button"
           to={{ hash: PROJECT_CREATION_HASH, search: location.search }}
@@ -250,7 +250,7 @@ function AddButtonForUserNamespace({ namespace }: { namespace: string }) {
           "btn-outline-primary",
           "btn-sm",
           "ms-auto",
-          "my-auto"
+          "my-auto",
         )}
         to={{ hash: PROJECT_CREATION_HASH, search: location.search }}
       >

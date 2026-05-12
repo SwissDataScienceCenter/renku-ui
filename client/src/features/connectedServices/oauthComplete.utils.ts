@@ -27,11 +27,11 @@ export const OAUTH_DATA_API_AUTHORIZE_PREFIX = "/api/data/oauth2/providers";
 
 export function buildOAuthCompleteUrl(
   provider: Provider,
-  source?: string
+  source?: string,
 ): string {
   const url = new URL(
     ABSOLUTE_ROUTES.v2.integrations.complete,
-    window.location.origin
+    window.location.origin,
   );
   if (source) {
     url.searchParams.set(SEARCH_PARAM_SOURCE, source);
@@ -44,7 +44,7 @@ export function buildOAuthCompleteUrl(
 
 export function buildOAuthAuthorizeUrl(
   provider: Provider,
-  source?: string
+  source?: string,
 ): string {
   const nextUrl = buildOAuthCompleteUrl(provider, source);
   return `${OAUTH_DATA_API_AUTHORIZE_PREFIX}/${

@@ -31,14 +31,14 @@ import { useGetDataServicesVersionQuery } from "../versions/versions.api";
 function componentDocsUrl(
   componentUrl: string,
   taggedVersion: string | undefined,
-  devHash: string | undefined | null
+  devHash: string | undefined | null,
 ) {
   const releasesUrl = `${componentUrl}/releases/`;
   return taggedVersion == null
     ? releasesUrl
     : devHash == null
-    ? `${componentUrl}/releases/tag/${taggedVersion}`
-    : releasesUrl;
+      ? `${componentUrl}/releases/tag/${taggedVersion}`
+      : releasesUrl;
 }
 
 type ComponentAndDevVersionProps = {

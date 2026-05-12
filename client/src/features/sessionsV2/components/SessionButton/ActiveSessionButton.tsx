@@ -208,7 +208,7 @@ export default function ActiveSessionButton({
   const [showModalStopSession, setShowModalStopSession] = useState(false);
   const toggleStopSession = useCallback(
     () => setShowModalStopSession((show) => !show),
-    []
+    [],
   );
 
   // Handle modifying session
@@ -227,7 +227,7 @@ export default function ActiveSessionButton({
         });
       }
     },
-    [modifySession, onResumeSession, session.name, session.status.state]
+    [modifySession, onResumeSession, session.name, session.status.state],
   );
   useEffect(() => {
     if (errorModifySession) {
@@ -241,19 +241,19 @@ export default function ActiveSessionButton({
   const [showModalModifySession, setShowModalModifySession] = useState(false);
   const toggleModifySession = useCallback(
     () => setShowModalModifySession((show) => !show),
-    []
+    [],
   );
 
   const status = session.status.state;
   const failedScheduling =
     status === "failed" &&
     (!!session.status.message?.includes(
-      "The resource quota has been exceeded."
+      "The resource quota has been exceeded.",
     ) ||
       !!session.status.message?.includes(
         // TODO: fix spelling in notebooks
         // eslint-disable-next-line spellcheck/spell-checker
-        "Your session cannot be scheduled due to insufficent resources."
+        "Your session cannot be scheduled due to insufficent resources.",
       ));
 
   const buttonClassName = cx(
@@ -263,7 +263,7 @@ export default function ActiveSessionButton({
     "start-session-button",
     "py-1",
     "px-2",
-    "btn-outline-primary"
+    "btn-outline-primary",
   );
 
   const defaultAction =
@@ -617,7 +617,7 @@ function ModifySessionModalContent({
         toggleModal();
       };
     },
-    [currentSessionClass, onModifySession, toggleModal]
+    [currentSessionClass, onModifySession, toggleModal],
   );
 
   useEffect(() => {

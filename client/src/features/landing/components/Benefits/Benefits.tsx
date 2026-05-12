@@ -42,7 +42,7 @@ function BenefitsCard({ icon, title, description }: BenefitsProps) {
         "bg-white",
         "align-items-center",
         "gap-2",
-        "p-4"
+        "p-4",
       )}
     >
       <div
@@ -51,7 +51,7 @@ function BenefitsCard({ icon, title, description }: BenefitsProps) {
           "flex-column",
           "gap-2",
           "align-items-center",
-          styles.BenefitsIconGap
+          styles.BenefitsIconGap,
         )}
       >
         {icon}

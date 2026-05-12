@@ -19,7 +19,7 @@
 /** Returns a new URL instance or null if `url` is not a valid URL string. */
 export function safeNewUrl(
   url: URL | string | undefined | null,
-  base?: URL | string | undefined
+  base?: URL | string | undefined,
 ): URL | null {
   if (url == null) {
     return null;

@@ -60,7 +60,7 @@ export default function EnvironmentKindField({
                 "p-2",
                 "p-md-4",
                 "d-flex",
-                "justify-content-center"
+                "justify-content-center",
               )}
               data-cy="environment-kind-global"
               htmlFor="environment-kind-global-radio"
@@ -74,7 +74,7 @@ export default function EnvironmentKindField({
                     "gap-3",
                     "text-center",
                     "text-md-start",
-                    "align-items-center"
+                    "align-items-center",
                   )}
                 >
                   <EnvironmentIcon
@@ -109,7 +109,7 @@ export default function EnvironmentKindField({
                     "p-2",
                     "p-md-4",
                     "d-flex",
-                    "justify-content-center"
+                    "justify-content-center",
                   )}
                   htmlFor="environment-kind-builder-radio"
                   style={{ width: "33.3%" }}
@@ -122,7 +122,7 @@ export default function EnvironmentKindField({
                         "gap-3",
                         "text-center",
                         "text-md-start",
-                        "align-items-center"
+                        "align-items-center",
                       )}
                     >
                       <EnvironmentIcon
@@ -137,7 +137,7 @@ export default function EnvironmentKindField({
                         "mb-0",
                         "text-start",
                         "d-none",
-                        "d-md-block"
+                        "d-md-block",
                       )}
                     >
                       Customize your session with a requirements.txt or similar
@@ -165,7 +165,7 @@ export default function EnvironmentKindField({
                 "p-2",
                 "p-md-4",
                 "d-flex",
-                "justify-content-center"
+                "justify-content-center",
               )}
               data-cy="environment-kind-custom"
               htmlFor="environment-kind-custom-radio"
@@ -179,7 +179,7 @@ export default function EnvironmentKindField({
                     "gap-3",
                     "text-center",
                     "text-md-start",
-                    "align-items-center"
+                    "align-items-center",
                   )}
                 >
                   <EnvironmentIcon

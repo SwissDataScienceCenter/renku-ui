@@ -63,7 +63,7 @@ function BetaV2Redirect() {
           namespace: betaProjectsMatch.params.namespace,
           slug: betaProjectsMatch.params.slug,
         }),
-        { replace: true }
+        { replace: true },
       );
     }
   }, [navigate, betaProjectsMatch?.params]);
@@ -74,7 +74,7 @@ function BetaV2Redirect() {
         generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
           slug: betaGroupsMatch.params.slug,
         }),
-        { replace: true }
+        { replace: true },
       );
     }
   }, [navigate, betaGroupsMatch?.params]);
@@ -183,7 +183,7 @@ function RedirectToSearch({
         pathname: ABSOLUTE_ROUTES.v2.search,
         search: `type=${entityType}`,
       },
-      { replace: true }
+      { replace: true },
     );
   }, [entityType, navigate]);
 

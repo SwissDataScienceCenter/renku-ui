@@ -116,9 +116,9 @@ function CustomizeLaunchLink(props: CustomizeLaunchLinkFormProps) {
   const toggleIsOpen = useCallback(
     () =>
       setCustomizationFormOpen(
-        (isCustomizationFormOpen) => !isCustomizationFormOpen
+        (isCustomizationFormOpen) => !isCustomizationFormOpen,
       ),
-    []
+    [],
   );
   return (
     <div className="w-100">
@@ -131,7 +131,7 @@ function CustomizeLaunchLink(props: CustomizeLaunchLinkFormProps) {
             "bg-transparent",
             "border-0",
             "fw-bold",
-            "ps-0"
+            "ps-0",
           )}
           type="button"
           data-cy="customize-launch-link-expand"
@@ -165,7 +165,7 @@ interface EnvVariablesCustomizationForm {
 }
 
 function getLauncherDefaultValues(
-  launcher: SessionLauncher
+  launcher: SessionLauncher,
 ): EnvVariablesCustomizationForm {
   if (launcher.env_variables == null) return { envVariables: [] };
   const envVariables = launcher.env_variables.map((env) => ({
@@ -176,11 +176,10 @@ function getLauncherDefaultValues(
   return { envVariables };
 }
 
-interface EnvVariablesCustomizationFormContentProps
-  extends Pick<
-    CustomizeLaunchLinkFormProps,
-    "control" | "errors" | "register" | "resetField" | "watch"
-  > {
+interface EnvVariablesCustomizationFormContentProps extends Pick<
+  CustomizeLaunchLinkFormProps,
+  "control" | "errors" | "register" | "resetField" | "watch"
+> {
   index: number;
 }
 
@@ -292,15 +291,15 @@ function SessionLaunchLink({
       launcherId: launcher.id,
       namespace: project.namespace,
       slug: project.slug,
-    }
+    },
   );
   const { params } = useContext(AppContext);
   const baseUrl = params?.BASE_URL ?? window.location.href;
   const customized = fields.map(
-    (_f, i) => `envVariables.${i}.isCustomized`
+    (_f, i) => `envVariables.${i}.isCustomized`,
   ) as `envVariables.${number}.isCustomized`[];
   const values = fields.map(
-    (_f, i) => `envVariables.${i}.value`
+    (_f, i) => `envVariables.${i}.value`,
   ) as `envVariables.${number}.value`[];
   const isCustomizedValues = watch(customized);
   const fieldValues = watch(values);
@@ -333,7 +332,7 @@ function SessionLaunchLink({
               "btn",
               "btn-primary",
               "d-inline-block",
-              "cursor-pointer"
+              "cursor-pointer",
             )}
             clipboardText={urlWithParams.toString()}
           >
@@ -374,7 +373,7 @@ function SessionLaunchLinkCustomizationInfo({
   watch,
 }: SessionLaunchLinkCustomizationInfoProps) {
   const customized = fields.map(
-    (_f, i) => `envVariables.${i}.isCustomized`
+    (_f, i) => `envVariables.${i}.isCustomized`,
   ) as `envVariables.${number}.isCustomized`[];
   const isCustomizedValues = watch(customized);
   const shownFields = fields.filter((_f, i) => isCustomizedValues[i]);
@@ -409,7 +408,7 @@ export default function SessionLaunchLinkModal({
 }: SessionLaunchLinkModalProps) {
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
-    [launcher]
+    [launcher],
   );
 
   const {

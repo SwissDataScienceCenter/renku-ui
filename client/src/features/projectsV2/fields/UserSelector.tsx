@@ -113,7 +113,7 @@ const selectClassNames: ClassNamesConfig<User, false> = {
       "py-2",
       styles.option,
       isFocused && styles.optionIsFocused,
-      !isFocused && isSelected && styles.optionIsSelected
+      !isFocused && isSelected && styles.optionIsSelected,
     ),
   placeholder: () => cx("px-3"),
   loadingMessage: () => cx("p-3"),
@@ -168,7 +168,7 @@ function UserSelector({
 }: UserSelectorProps) {
   const currentValue = useMemo(
     () => users?.find(({ id }) => currentUser === id),
-    [users, currentUser]
+    [users, currentUser],
   );
 
   const components = useMemo(
@@ -176,7 +176,7 @@ function UserSelector({
       ...selectComponents,
       NoOptionsMessage: CustomNoOptionsMessage({ query }),
     }),
-    [query]
+    [query],
   );
 
   return (
@@ -226,12 +226,12 @@ export function UserControl(props: UserControlProps) {
         q: `type:User ${lookupQuery}`,
       },
     },
-    { skip: !lookupQuery || lookupQuery == null || lookupQuery.length < 2 }
+    { skip: !lookupQuery || lookupQuery == null || lookupQuery.length < 2 },
   );
 
   const allUsers = useMemo(
     () => users?.items?.filter((u) => u.type === "User"),
-    [users]
+    [users],
   );
 
   return (

@@ -34,7 +34,7 @@ export function EntityWatermark({ type }: EntityWatermarkProps) {
           "position-absolute",
           "top-0",
           "end-0",
-          styles.EntityWatermark
+          styles.EntityWatermark,
         )}
       >
         {type === "group" && <People />}

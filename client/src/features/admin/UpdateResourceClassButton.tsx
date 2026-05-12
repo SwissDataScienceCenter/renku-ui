@@ -136,7 +136,7 @@ function UpdateResourceClassModal({
         },
       });
     },
-    [resourceClass.id, resourcePool.id, updateResourceClass]
+    [resourceClass.id, resourcePool.id, updateResourceClass],
   );
 
   const onAddTolerationLabel = useCallback(() => {
@@ -345,7 +345,7 @@ function UpdateResourceClassModal({
                         "form-control",
                         "rounded-0",
                         "rounded-start",
-                        errors.tolerations?.at?.(index) && "is-invalid"
+                        errors.tolerations?.at?.(index) && "is-invalid",
                       )}
                       id={`updateResourceClassTolerations-${item.id}-${id}`}
                       type="text"
@@ -384,7 +384,7 @@ function UpdateResourceClassModal({
                   "flew-row",
                   "flex-wrap",
                   "align-items-center",
-                  "my-3"
+                  "my-3",
                 )}
                 key={item.id}
               >
@@ -401,7 +401,7 @@ function UpdateResourceClassModal({
                           className={cx(
                             "form-control",
                             "rounded-0",
-                            errors.node_affinities?.at?.(index) && "is-invalid"
+                            errors.node_affinities?.at?.(index) && "is-invalid",
                           )}
                           id={`updateResourceClassNodeAffinitiesKey-${item.id}-${id}`}
                           type="text"

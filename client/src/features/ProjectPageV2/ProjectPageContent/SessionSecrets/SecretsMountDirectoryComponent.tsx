@@ -116,11 +116,11 @@ function UpdateSecretsMountDirectoryModal({
         },
       });
     },
-    [patchProject, project.etag, projectId]
+    [patchProject, project.etag, projectId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   const onReset = useCallback(() => {

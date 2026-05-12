@@ -24,11 +24,11 @@ import { SearchEntity } from "~/features/searchV2/api/searchV2Api.generated-api"
 
 export function useSearchResultMembers(item: SearchEntity) {
   const projectMembers = useGetProjectsByProjectIdMembersQuery(
-    item.type === "Project" ? { projectId: item.id } : skipToken
+    item.type === "Project" ? { projectId: item.id } : skipToken,
   );
 
   const groupMembers = useGetGroupsByGroupSlugMembersQuery(
-    item.type === "Group" ? { groupSlug: item.slug } : skipToken
+    item.type === "Group" ? { groupSlug: item.slug } : skipToken,
   );
 
   if (item.type === "Project") {

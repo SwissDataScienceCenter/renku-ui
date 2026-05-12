@@ -93,7 +93,7 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
       handler: (
         data: Record<string, unknown>,
         channel: Channel,
-        socket: ws
+        socket: ws,
       ) => {
         return socket.send(new WsMessage("ping", "user", "ack").toString());
       },
@@ -143,7 +143,7 @@ async function channelLongLoop(sessionId: string, apiClient: APIClient) {
       const info = `Unexpected error while executing the function '${longLoopFunction.name}'.`;
       logger.error(`${infoPrefix} ${info}`);
       channel.sockets.forEach((socket) =>
-        socket.send(new WsMessage(info, "user", "error").toString())
+        socket.send(new WsMessage(info, "user", "error").toString()),
       );
     }
   }
@@ -184,7 +184,7 @@ async function channelShortLoop(sessionId: string, apiClient: APIClient) {
       const info = `Unexpected error while executing the function '${shortLoopFunction.name}'.`;
       logger.error(`${infoPrefix} ${info}`);
       channel.sockets.forEach((socket) =>
-        socket.send(new WsMessage(info, "user", "error").toString())
+        socket.send(new WsMessage(info, "user", "error").toString()),
       );
     }
   }
@@ -225,7 +225,7 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
     // get the session id
     const sessionId = getCookieValueByName(
       request.headers.cookie,
-      config.auth.cookiesKey
+      config.auth.cookiesKey,
     );
     if (!sessionId) {
       logger.error("No session ID, session won't be saved.");
@@ -236,8 +236,8 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
         new WsMessage(
           { message: info, missingAuth: true },
           "user",
-          "error"
-        ).toString()
+          "error",
+        ).toString(),
       );
       socket.close(4000);
       return false;
@@ -250,7 +250,7 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
       logger.debug(
         `Adding a new socket to the channel for the session ${sessionId}. Total of ${
           channel.sockets.length + 1
-        }`
+        }`,
       );
       channels.set(sessionId, {
         ...channel,
@@ -283,7 +283,7 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
       const channel = channels.get(sessionId);
       if (!channel) {
         logger.warn(
-          `No channel for the session ${sessionId}. That is unexpected...`
+          `No channel for the session ${sessionId}. That is unexpected...`,
         );
         return false;
       }
@@ -305,7 +305,7 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
         else logger.error("Socket not found.");
       } else {
         logger.info(
-          `Last socket for the session ${sessionId}. Deleting the channel...`
+          `Last socket for the session ${sessionId}. Deleting the channel...`,
         );
         channels.delete(sessionId);
       }
@@ -320,7 +320,7 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
         const res = checkWsClientMessage(clientMessage);
         if (!res)
           throw new Error(
-            "WebSocket message is a valid JSON object but not a WsClientMessage"
+            "WebSocket message is a valid JSON object but not a WsClientMessage",
           );
       } catch (error) {
         const info = "Incoming message is bad formed: " + error.toString();
@@ -332,7 +332,7 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
       // Validate the message and find the instructions
       const handler = getWsClientMessageHandler(
         acceptedMessages,
-        clientMessage
+        clientMessage,
       );
 
       if (typeof handler === "string") {
@@ -354,7 +354,7 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
     });
 
     socket.send(
-      new WsMessage("Connection established.", "user", "init").toString()
+      new WsMessage("Connection established.", "user", "init").toString(),
     );
   });
 }
@@ -369,7 +369,7 @@ function configureWebsocket(server: ws.Server, apiClient: APIClient): void {
  */
 function getWsClientMessageHandler(
   acceptedMessages: Record<string, Array<MessageData>>,
-  clientMessage: WsClientMessage
+  clientMessage: WsClientMessage,
   // eslint-disable-next-line @typescript-eslint/ban-types
 ): Function | string {
   if (!acceptedMessages[clientMessage.type])

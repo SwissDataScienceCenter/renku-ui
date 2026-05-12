@@ -63,7 +63,7 @@ const selectComponents: SelectComponentsConfig<
     );
   },
   Option: (
-    props: OptionProps<ResponseNamespace, false, GroupBase<ResponseNamespace>>
+    props: OptionProps<ResponseNamespace, false, GroupBase<ResponseNamespace>>,
   ) => {
     const { data: namespace } = props;
     return (
@@ -77,7 +77,7 @@ const selectComponents: SelectComponentsConfig<
       ResponseNamespace,
       false,
       GroupBase<ResponseNamespace>
-    >
+    >,
   ) => {
     const { data: namespace } = props;
     return (
@@ -100,7 +100,7 @@ function CustomMenuList({
   onFetchMore,
 }: CustomMenuListProps) {
   return function CustomMenuListInner(
-    props: MenuListProps<ResponseNamespace, false>
+    props: MenuListProps<ResponseNamespace, false>,
   ) {
     return (
       <components.MenuList {...props}>
@@ -149,7 +149,7 @@ function NamespaceSelector({
 }: NamespaceSelectorProps) {
   const currentValue = useMemo(
     () => namespaces.find(({ path }) => path === currentNamespace),
-    [namespaces, currentNamespace]
+    [namespaces, currentNamespace],
   );
 
   const components = useMemo(
@@ -157,7 +157,7 @@ function NamespaceSelector({
       ...selectComponents,
       MenuList: CustomMenuList({ hasMore, isFetchingMore, onFetchMore }),
     }),
-    [hasMore, isFetchingMore, onFetchMore]
+    [hasMore, isFetchingMore, onFetchMore],
   );
 
   return (
@@ -186,7 +186,7 @@ const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
       menuIsOpen ? "rounded-top" : "rounded",
       "border",
       isFocused && "border-primary-subtle",
-      styles.control
+      styles.control,
     ),
   dropdownIndicator: () => cx("pe-3"),
   menu: () =>
@@ -196,7 +196,7 @@ const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
       "border",
       "border-top-0",
       "z-2",
-      styles.zDropdown
+      styles.zDropdown,
     ),
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
@@ -209,15 +209,16 @@ const selectClassNames: ClassNamesConfig<ResponseNamespace, false> = {
       "py-2",
       styles.option,
       isFocused && styles.optionIsFocused,
-      !isFocused && isSelected && styles.optionIsSelected
+      !isFocused && isSelected && styles.optionIsSelected,
     ),
   placeholder: () => cx("px-3"),
   singleValue: () =>
     cx("d-flex", "flex-column", "flex-sm-row", "column-gap-3", "px-3"),
 };
 
-interface ProjectNamespaceFormFieldProps<T extends FieldValues>
-  extends GenericFormFieldProps<T> {
+interface ProjectNamespaceFormFieldProps<
+  T extends FieldValues,
+> extends GenericFormFieldProps<T> {
   ensureNamespace?: string;
 }
 
@@ -303,7 +304,7 @@ export function ProjectNamespaceControl({
     isError: specificNamespaceIsError,
     requestId: specificNamespaceRequestId,
   } = useGetNamespacesByNamespaceSlugQuery(
-    ensureNamespace ? { namespaceSlug: ensureNamespace } : skipToken
+    ensureNamespace ? { namespaceSlug: ensureNamespace } : skipToken,
   );
 
   const [
@@ -343,7 +344,7 @@ export function ProjectNamespaceControl({
       return;
     }
     const userNamespace = namespacesFirstPage.namespaces.find(
-      (namespace) => namespace.namespace_kind === "user"
+      (namespace) => namespace.namespace_kind === "user",
     );
     if (userNamespace != null && !value) {
       onChange(userNamespace);
@@ -406,7 +407,7 @@ export function ProjectNamespaceControl({
       return;
     }
     const hasNamespace = allNamespaces.find(
-      ({ path }) => path === specificNamespace.path
+      ({ path }) => path === specificNamespace.path,
     );
     if (hasNamespace) {
       return;

@@ -117,7 +117,7 @@ function ItsYouBadge({ username }: ItsYouBadgeProps) {
           "border",
           "border-warning",
           "bg-warning-subtle",
-          "text-warning-emphasis"
+          "text-warning-emphasis",
         )}
         pill
       >

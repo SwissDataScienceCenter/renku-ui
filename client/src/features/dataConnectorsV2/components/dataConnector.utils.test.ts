@@ -33,7 +33,7 @@ describe("Test data connectors DOI parser", () => {
       "Returns empty string for invalid input %p",
       (input) => {
         expect(normalizeAsDoi(input)).toBe("");
-      }
+      },
     );
   });
 });

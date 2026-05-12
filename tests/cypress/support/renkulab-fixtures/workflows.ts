@@ -34,7 +34,7 @@ export function Workflows<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/renku/*/workflow_plans.list?*",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -48,7 +48,7 @@ export function Workflows<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/renku/*/workflow_plans.show?*",
-        response
+        response,
       ).as(name);
       return this;
     }

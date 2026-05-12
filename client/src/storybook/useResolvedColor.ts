@@ -7,7 +7,7 @@ type Resolver = (styles: CSSStyleDeclaration) => string;
 export function useResolvedColor(
   ref: React.RefObject<HTMLElement>,
   token: string,
-  resolver: Resolver
+  resolver: Resolver,
 ) {
   const [rgb, setRgb] = useState("");
   const [hex, setHex] = useState("");

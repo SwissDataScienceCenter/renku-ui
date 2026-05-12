@@ -55,7 +55,7 @@ const webSocketSlice = createSlice({
     },
     setUiVersion: (
       state,
-      action: PayloadAction<{ version: string; lastReceived: DateTime<true> }>
+      action: PayloadAction<{ version: string; lastReceived: DateTime<true> }>,
     ) => {
       state.uiVersion.lastValue = action.payload.version;
       state.uiVersion.lastReceived = action.payload.lastReceived;
@@ -65,7 +65,7 @@ const webSocketSlice = createSlice({
     },
     setReconnect: (
       state,
-      action: PayloadAction<WebSocketState["reconnect"]>
+      action: PayloadAction<WebSocketState["reconnect"]>,
     ) => {
       state.reconnect.attempts = action.payload.attempts;
       state.reconnect.retrying = action.payload.retrying;

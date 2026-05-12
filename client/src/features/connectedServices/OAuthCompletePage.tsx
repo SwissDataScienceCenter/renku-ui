@@ -35,7 +35,7 @@ const SECONDS_TO_AUTO_CLOSE_TAB = 5;
 
 function SuccessAutoCloseMessage({ onAutoClose }: { onAutoClose: () => void }) {
   const [secondsRemaining, setSecondsRemaining] = useState(
-    SECONDS_TO_AUTO_CLOSE_TAB
+    SECONDS_TO_AUTO_CLOSE_TAB,
   );
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function OAuthCompletePage() {
   const githubFollowUpData = useGithubOAuthCompleteFollowUpData();
   const allowSuccessAutoClose = shouldAutoCloseAfterOAuth(
     hasError,
-    githubFollowUpData
+    githubFollowUpData,
   );
 
   const onCloseTab = useCallback(() => {

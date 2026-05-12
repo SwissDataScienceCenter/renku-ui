@@ -44,7 +44,7 @@ function FontPropertyCard({ token, notes }: FontPropertyCardProps) {
         "border",
         "d-flex",
         "flex-column",
-        "justify-content-between"
+        "justify-content-between",
       )}
     >
       <div>
@@ -100,7 +100,7 @@ function FontSizeExampleCard({ token }: FontSizeExampleCardProps) {
           "flex-column",
           "justify-content-center",
           "align-items-start",
-          "w-100"
+          "w-100",
         )}
       >
         <div className={cx("text-dark", token)}>
@@ -169,7 +169,7 @@ function LineHeightExampleCard({ token }: LineHeightExampleCardProps) {
           "flex-column",
           "justify-content-center",
           "align-items-start",
-          "w-100"
+          "w-100",
         )}
       >
         <div className="text-dark">
@@ -208,7 +208,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
         "border-primary",
         "border-2",
         "pb-2",
-        "mb-3"
+        "mb-3",
       )}
     >
       {children}

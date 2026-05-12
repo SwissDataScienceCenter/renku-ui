@@ -142,7 +142,7 @@ function GroupV2CreationDetails() {
     (groupPostRequest: GroupPostRequest) => {
       createGroup({ groupPostRequest });
     },
-    [createGroup]
+    [createGroup],
   );
 
   useEffect(() => {
