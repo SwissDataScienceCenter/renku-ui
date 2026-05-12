@@ -484,7 +484,7 @@ export type GetResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   userId: string;
 };
 export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiResponse =
-  /** status 204 The user was removed or it was not part of the pool */ void;
+  /** status 204 The user was removed, or it was not part of the pool */ void;
 export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   resourcePoolId: number;
   userId: string;
@@ -532,12 +532,11 @@ export type PutUsersByUserIdResourcePoolsApiArg = {
 export type GetVersionApiResponse = /** status 200 The error */ Version;
 export type GetVersionApiArg = void;
 export type Name = string;
+export type DefaultFlag = boolean;
 export type Cpu = number;
 export type Memory = number;
 export type Gpu = number;
 export type Storage = number;
-export type IntegerId = number;
-export type DefaultFlag = boolean;
 export type K8SLabel = string;
 export type K8SLabelList = K8SLabel[];
 export type NodeAffinity = {
@@ -545,17 +544,18 @@ export type NodeAffinity = {
   required_during_scheduling?: boolean;
 };
 export type NodeAffinityList = NodeAffinity[];
+export type IntegerId = number;
 export type ResourceClassWithId = {
   name: Name;
+  default: DefaultFlag;
   cpu: Cpu;
   memory: Memory;
   gpu: Gpu;
   max_storage: Storage;
   default_storage: Storage;
-  id: IntegerId;
-  default: DefaultFlag;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
+  id: IntegerId;
 };
 export type ErrorResponse = {
   error: {
@@ -629,18 +629,12 @@ export type QuotaWithId = {
   gpu: Gpu;
   id: Name;
 };
-export type ResourceClassWithIdFiltered = {
-  name: Name;
-  cpu: Cpu;
-  memory: Memory;
-  gpu: Gpu;
-  max_storage: Storage;
-  default_storage: Storage;
-  id: IntegerId;
-  default: DefaultFlag;
+export type UsageHoursRemaining = number;
+export type UsageHoursTotal = number;
+export type ResourceClassWithIdFiltered = ResourceClassWithId & {
   matching?: boolean;
-  tolerations?: K8SLabelList;
-  node_affinities?: NodeAffinityList;
+  usage_hours_remaining?: UsageHoursRemaining;
+  usage_hours_total?: UsageHoursTotal;
 };
 export type PublicFlag = boolean;
 export type RemoteConfigurationFirecrestProviderId = string;
@@ -669,6 +663,7 @@ export type IdleThreshold = number;
 export type HibernationThreshold = number;
 export type HibernationWarningPeriod = number;
 export type RuntimePlatform = "linux/amd64" | "linux/arm64";
+export type CreditsUsed = number;
 export type ResourcePoolWithIdFiltered = {
   quota?: QuotaWithId;
   classes: ResourceClassWithIdFiltered[];
@@ -682,6 +677,7 @@ export type ResourcePoolWithIdFiltered = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform: RuntimePlatform;
+  credits_used?: CreditsUsed;
 };
 export type ResourcePoolsWithIdFiltered = ResourcePoolWithIdFiltered[];
 export type CpuFilter = number;
@@ -711,12 +707,12 @@ export type QuotaWithOptionalId = {
 };
 export type ResourceClass = {
   name: Name;
+  default: DefaultFlag;
   cpu: Cpu;
   memory: Memory;
   gpu: Gpu;
   max_storage: Storage;
   default_storage: Storage;
-  default: DefaultFlag;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
 };
@@ -753,21 +749,21 @@ export type QuotaPatch = {
   memory?: Memory;
   gpu?: Gpu;
 };
-export type DefaultFlagPatch = boolean;
-export type ResourceClassPatchWithId = {
+export type ResourceClassProperties = {
   name?: Name;
+  default?: DefaultFlag;
   cpu?: Cpu;
   memory?: Memory;
   gpu?: Gpu;
   max_storage?: Storage;
   default_storage?: Storage;
-  id: IntegerId;
-  default?: DefaultFlagPatch;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
 };
+export type ResourceClassPatchWithId = ResourceClassProperties & {
+  id?: IntegerId;
+};
 export type ResourceClassesPatchWithId = ResourceClassPatchWithId[];
-export type PublicFlagPatch = boolean;
 export type RemoteConfigurationPatchReset = object;
 export type RemoteConfigurationFirecrestPatch = {
   /** Kind of remote resource pool */
@@ -791,8 +787,8 @@ export type ResourcePoolPatch = {
   quota?: QuotaPatch;
   classes?: ResourceClassesPatchWithId;
   name?: Name;
-  public?: PublicFlagPatch;
-  default?: DefaultFlagPatch;
+  public?: PublicFlag;
+  default?: DefaultFlag;
   remote?: RemoteConfigurationPatch;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
@@ -801,17 +797,7 @@ export type ResourcePoolPatch = {
   platform?: RuntimePlatform;
 };
 export type ResourceClassesWithIdResponse = ResourceClassWithId[];
-export type ResourceClassPatch = {
-  name?: Name;
-  cpu?: Cpu;
-  memory?: Memory;
-  gpu?: Gpu;
-  max_storage?: Storage;
-  default_storage?: Storage;
-  default?: DefaultFlagPatch;
-  tolerations?: K8SLabelList;
-  node_affinities?: NodeAffinityList;
-};
+export type ResourceClassPatch = ResourceClassProperties;
 export type NodeAffinityListResponse = NodeAffinity[];
 export type UserId = string;
 export type PoolUserWithId = {

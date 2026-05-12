@@ -295,19 +295,35 @@
               "additionalProperties": false,
               "properties": {
                 "cpu": {
-                  "$ref": "#/components/schemas/CpuFilter",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/CpuFilter"
+                    }
+                  ],
                   "default": 0
                 },
                 "gpu": {
-                  "$ref": "#/components/schemas/Gpu",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Gpu"
+                    }
+                  ],
                   "default": 0
                 },
                 "memory": {
-                  "$ref": "#/components/schemas/MemoryFilter",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/MemoryFilter"
+                    }
+                  ],
                   "default": 0
                 },
                 "max_storage": {
-                  "$ref": "#/components/schemas/StorageFilter",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StorageFilter"
+                    }
+                  ],
                   "default": 0
                 }
               }
@@ -1189,7 +1205,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The user was removed or it was not part of the pool"
+            "description": "The user was removed, or it was not part of the pool"
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -1677,12 +1693,15 @@
           "$ref": "#/components/schemas/ClusterWithId"
         }
       },
-      "ResourceClass": {
+      "ResourceClassProperties": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "name": {
             "$ref": "#/components/schemas/Name"
+          },
+          "default": {
+            "$ref": "#/components/schemas/DefaultFlag"
           },
           "cpu": {
             "$ref": "#/components/schemas/Cpu"
@@ -1699,8 +1718,38 @@
           "default_storage": {
             "$ref": "#/components/schemas/Storage"
           },
+          "tolerations": {
+            "$ref": "#/components/schemas/K8sLabelList"
+          },
+          "node_affinities": {
+            "$ref": "#/components/schemas/NodeAffinityList"
+          }
+        }
+      },
+      "ResourceClass": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
           "default": {
             "$ref": "#/components/schemas/DefaultFlag"
+          },
+          "cpu": {
+            "$ref": "#/components/schemas/Cpu"
+          },
+          "memory": {
+            "$ref": "#/components/schemas/Memory"
+          },
+          "gpu": {
+            "$ref": "#/components/schemas/Gpu"
+          },
+          "max_storage": {
+            "$ref": "#/components/schemas/Storage"
+          },
+          "default_storage": {
+            "$ref": "#/components/schemas/Storage"
           },
           "tolerations": {
             "$ref": "#/components/schemas/K8sLabelList"
@@ -1710,96 +1759,49 @@
           }
         },
         "required": [
+          "name",
+          "default",
           "cpu",
           "memory",
           "gpu",
           "max_storage",
-          "name",
-          "default",
           "default_storage"
         ],
         "example": {
           "name": "resource class",
+          "default": false,
           "cpu": 1.5,
           "memory": 2,
           "gpu": 0,
           "max_storage": 100,
-          "default": false,
           "default_storage": 10
         }
       },
       "ResourceClassPatch": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "$ref": "#/components/schemas/Name"
-          },
-          "cpu": {
-            "$ref": "#/components/schemas/Cpu"
-          },
-          "memory": {
-            "$ref": "#/components/schemas/Memory"
-          },
-          "gpu": {
-            "$ref": "#/components/schemas/Gpu"
-          },
-          "max_storage": {
-            "$ref": "#/components/schemas/Storage"
-          },
-          "default_storage": {
-            "$ref": "#/components/schemas/Storage"
-          },
-          "default": {
-            "$ref": "#/components/schemas/DefaultFlagPatch"
-          },
-          "tolerations": {
-            "$ref": "#/components/schemas/K8sLabelList"
-          },
-          "node_affinities": {
-            "$ref": "#/components/schemas/NodeAffinityList"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResourceClassProperties"
           }
-        },
+        ],
         "example": {
           "name": "resource class",
           "cpu": 1.5
         }
       },
       "ResourceClassPatchWithId": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "$ref": "#/components/schemas/Name"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResourceClassProperties"
           },
-          "cpu": {
-            "$ref": "#/components/schemas/Cpu"
-          },
-          "memory": {
-            "$ref": "#/components/schemas/Memory"
-          },
-          "gpu": {
-            "$ref": "#/components/schemas/Gpu"
-          },
-          "max_storage": {
-            "$ref": "#/components/schemas/Storage"
-          },
-          "default_storage": {
-            "$ref": "#/components/schemas/Storage"
-          },
-          "id": {
-            "$ref": "#/components/schemas/IntegerId"
-          },
-          "default": {
-            "$ref": "#/components/schemas/DefaultFlagPatch"
-          },
-          "tolerations": {
-            "$ref": "#/components/schemas/K8sLabelList"
-          },
-          "node_affinities": {
-            "$ref": "#/components/schemas/NodeAffinityList"
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/components/schemas/IntegerId"
+              }
+            }
           }
-        },
+        ],
         "required": ["id"],
         "example": {
           "id": 1,
@@ -1813,6 +1815,9 @@
           "name": {
             "$ref": "#/components/schemas/Name"
           },
+          "default": {
+            "$ref": "#/components/schemas/DefaultFlag"
+          },
           "cpu": {
             "$ref": "#/components/schemas/Cpu"
           },
@@ -1828,97 +1833,66 @@
           "default_storage": {
             "$ref": "#/components/schemas/Storage"
           },
-          "id": {
-            "$ref": "#/components/schemas/IntegerId"
-          },
-          "default": {
-            "$ref": "#/components/schemas/DefaultFlag"
-          },
           "tolerations": {
             "$ref": "#/components/schemas/K8sLabelList"
           },
           "node_affinities": {
             "$ref": "#/components/schemas/NodeAffinityList"
+          },
+          "id": {
+            "$ref": "#/components/schemas/IntegerId"
           }
         },
         "required": [
+          "name",
+          "default",
           "cpu",
           "memory",
           "gpu",
           "max_storage",
-          "name",
-          "id",
-          "default",
-          "default_storage"
+          "default_storage",
+          "id"
         ],
         "example": {
           "name": "resource class",
+          "default": true,
           "cpu": 1.5,
           "memory": 2,
           "gpu": 0,
           "max_storage": 100,
           "default_storage": 10,
-          "id": 1,
-          "default": true
+          "id": 1
         }
       },
       "ResourceClassWithIdFiltered": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "$ref": "#/components/schemas/Name"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResourceClassWithId"
           },
-          "cpu": {
-            "$ref": "#/components/schemas/Cpu"
-          },
-          "memory": {
-            "$ref": "#/components/schemas/Memory"
-          },
-          "gpu": {
-            "$ref": "#/components/schemas/Gpu"
-          },
-          "max_storage": {
-            "$ref": "#/components/schemas/Storage"
-          },
-          "default_storage": {
-            "$ref": "#/components/schemas/Storage"
-          },
-          "id": {
-            "$ref": "#/components/schemas/IntegerId"
-          },
-          "default": {
-            "$ref": "#/components/schemas/DefaultFlag"
-          },
-          "matching": {
-            "type": "boolean"
-          },
-          "tolerations": {
-            "$ref": "#/components/schemas/K8sLabelList"
-          },
-          "node_affinities": {
-            "$ref": "#/components/schemas/NodeAffinityList"
+          {
+            "type": "object",
+            "properties": {
+              "matching": {
+                "type": "boolean"
+              },
+              "usage_hours_remaining": {
+                "$ref": "#/components/schemas/UsageHoursRemaining"
+              },
+              "usage_hours_total": {
+                "$ref": "#/components/schemas/UsageHoursTotal"
+              }
+            }
           }
-        },
-        "required": [
-          "cpu",
-          "memory",
-          "gpu",
-          "max_storage",
-          "name",
-          "id",
-          "default",
-          "default_storage"
         ],
         "example": {
           "name": "resource class",
+          "default": true,
           "cpu": 1.5,
           "memory": 2,
           "gpu": 0,
           "max_storage": 100,
           "default_storage": 10,
           "id": 1,
-          "default": true,
           "matching": true
         }
       },
@@ -1937,23 +1911,23 @@
         "example": [
           {
             "name": "resource class 1",
+            "default": true,
             "cpu": 1.5,
             "memory": 2,
             "gpu": 0,
             "max_storage": 100,
-            "id": 1,
-            "default": true,
-            "default_storage": 10
+            "default_storage": 10,
+            "id": 1
           },
           {
             "name": "resource class 2",
+            "default": false,
             "cpu": 4.5,
             "memory": 10,
             "gpu": 2,
-            "default_storage": 10,
             "max_storage": 10000,
-            "id": 2,
-            "default": false
+            "default_storage": 10,
+            "id": 2
           }
         ]
       },
@@ -1966,23 +1940,23 @@
         "example": [
           {
             "name": "resource class 1",
+            "default": true,
             "cpu": 1.5,
             "memory": 2,
             "gpu": 0,
             "max_storage": 100,
-            "id": 1,
-            "default": true,
-            "default_storage": 10
+            "default_storage": 10,
+            "id": 1
           },
           {
             "name": "resource class 2",
+            "default": false,
             "cpu": 4.5,
             "memory": 10,
             "gpu": 2,
-            "default_storage": 10,
             "max_storage": 10000,
-            "id": 2,
-            "default": false
+            "default_storage": 10,
+            "id": 2
           }
         ]
       },
@@ -2091,10 +2065,10 @@
             "$ref": "#/components/schemas/Name"
           },
           "public": {
-            "$ref": "#/components/schemas/PublicFlagPatch"
+            "$ref": "#/components/schemas/PublicFlag"
           },
           "default": {
-            "$ref": "#/components/schemas/DefaultFlagPatch"
+            "$ref": "#/components/schemas/DefaultFlag"
           },
           "remote": {
             "$ref": "#/components/schemas/RemoteConfigurationPatch"
@@ -2328,6 +2302,9 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "credits_used": {
+            "$ref": "#/components/schemas/CreditsUsed"
           }
         },
         "required": ["classes", "name", "id", "public", "default", "platform"],
@@ -2377,33 +2354,6 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/ResourcePoolWithIdFiltered"
-        }
-      },
-      "UserPatch": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "no_default_access": {
-            "type": "boolean",
-            "description": "If set to true the user will not be able to use the default resource pool"
-          }
-        },
-        "example": {
-          "no_default_access": true
-        }
-      },
-      "UserPut": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "no_default_access": {
-            "type": "boolean",
-            "description": "If set to true the user will not be able to use the default resource pool"
-          }
-        },
-        "required": ["no_default_access"],
-        "example": {
-          "no_default_access": true
         }
       },
       "PoolUserWithId": {
@@ -2546,6 +2496,27 @@
         "minimum": 0,
         "maximum": 9223372036854776000
       },
+      "UsageHoursRemaining": {
+        "type": "number",
+        "format": "double",
+        "description": "Number of resource hours remaining for the user",
+        "example": 3.141,
+        "minimum": 0
+      },
+      "UsageHoursTotal": {
+        "type": "number",
+        "format": "double",
+        "description": "Total number of resource hours available to the user",
+        "example": 10,
+        "minimum": 0,
+        "default": null
+      },
+      "CreditsUsed": {
+        "type": "integer",
+        "description": "Amount of the resource credits used so far",
+        "example": 300,
+        "minimum": 0
+      },
       "Storage": {
         "type": "integer",
         "description": "Number of gigabytes of storage",
@@ -2597,21 +2568,9 @@
       "DefaultFlag": {
         "type": "boolean",
         "description": "A default selection for resource classes or resource pools",
-        "default": false,
-        "example": false
-      },
-      "DefaultFlagPatch": {
-        "type": "boolean",
-        "description": "A default selection for resource classes or resource pools",
         "example": false
       },
       "PublicFlag": {
-        "type": "boolean",
-        "description": "A resource pool whose classes can be accessed by anyone",
-        "default": false,
-        "example": false
-      },
-      "PublicFlagPatch": {
         "type": "boolean",
         "description": "A resource pool whose classes can be accessed by anyone",
         "example": false
