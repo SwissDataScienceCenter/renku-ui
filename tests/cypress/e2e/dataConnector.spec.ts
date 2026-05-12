@@ -350,7 +350,7 @@ describe("Data connector page", () => {
           fixture: "dataConnector/data-connector-user.json",
         },
       })
-      .getUsersUser({ userName: username })
+      .getAnyUser({ userName: username })
       .listProjectDataConnectors({
         fixture: "dataConnector/empty-list.json",
       })
