@@ -49,12 +49,12 @@ export async function loader({ context, params }: Route.LoaderArgs) {
   await store.dispatch(namespaceEndpoint.initiate(namespaceApiArgs));
   const namespaceSelector = namespaceEndpoint.select(namespaceApiArgs);
   const { data: namespace, error: namespaceError } = namespaceSelector(
-    store.getState()
+    store.getState(),
   );
   // Early return if the namespace is not a user
   if (namespace?.namespace_kind !== "user" || !namespace.created_by) {
     await Promise.all(
-      store.dispatch(projectV2Api.util.getRunningQueriesThunk())
+      store.dispatch(projectV2Api.util.getRunningQueriesThunk()),
     );
     store.dispatch(projectV2Api.util.resetApiState());
     if (
@@ -64,7 +64,7 @@ export async function loader({ context, params }: Route.LoaderArgs) {
     ) {
       return data(
         { clientSideFetch, namespace, user: undefined, error: namespaceError },
-        namespaceError.status
+        namespaceError.status,
       );
     }
     return data({
@@ -97,17 +97,17 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const namespaceEndpoint = projectV2Api.endpoints.getNamespacesByNamespaceSlug;
   const namespaceApiArgs = { namespaceSlug: username };
   const namespacePromise = store.dispatch(
-    namespaceEndpoint.initiate(namespaceApiArgs)
+    namespaceEndpoint.initiate(namespaceApiArgs),
   );
   await namespacePromise;
   const namespaceSelector = namespaceEndpoint.select(namespaceApiArgs);
   const { data: namespace, error: namespaceError } = namespaceSelector(
-    store.getState()
+    store.getState(),
   );
   // Early return if the namespace is not a user
   if (namespace?.namespace_kind !== "user" || !namespace.created_by) {
     await Promise.all(
-      store.dispatch(projectV2Api.util.getRunningQueriesThunk())
+      store.dispatch(projectV2Api.util.getRunningQueriesThunk()),
     );
     //? Unsubscribe to let the cache expire when navigating to other pages
     namespacePromise.unsubscribe();
@@ -128,7 +128,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: user, error: userError } = userSelector(
     store.getState() as RootState & {
       [usersApi.reducerPath]: ReturnType<typeof usersApi.reducer>;
-    }
+    },
   );
   //? Unsubscribe to let the cache expire when navigating to other pages
   namespacePromise.unsubscribe();
@@ -168,7 +168,7 @@ export function meta({
   }
   const matchSearch = matchPath(
     ABSOLUTE_ROUTES.v2.users.show.search,
-    location.pathname
+    location.pathname,
   );
   const name =
     user?.first_name && user?.last_name
@@ -211,8 +211,8 @@ export default function UserPagesRoot({
         projectV2Api.util.upsertQueryData(
           "getNamespacesByNamespaceSlug",
           namespaceApiArgs,
-          loaderData.namespace
-        )
+          loaderData.namespace,
+        ),
       );
       namespacePromise.then(() => {
         if (!ignore) {
@@ -232,8 +232,8 @@ export default function UserPagesRoot({
         usersApi.util.upsertQueryData(
           "getUsersByUserId",
           userApiArgs,
-          loaderData.user
-        )
+          loaderData.user,
+        ),
       );
       userPromise.then(() => {
         if (!ignore) {
@@ -256,7 +256,7 @@ export default function UserPagesRoot({
   } = useGetNamespacesByNamespaceSlugQuery(
     loaderData.clientSideFetch || isNamespaceCacheReady
       ? { namespaceSlug: username }
-      : skipToken
+      : skipToken,
   );
   const {
     currentData: user,
@@ -267,7 +267,7 @@ export default function UserPagesRoot({
       namespace?.namespace_kind === "user" &&
       namespace.created_by
       ? { userId: namespace.created_by }
-      : skipToken
+      : skipToken,
   );
   const isLoading = isLoadingNamespace || isLoadingUser;
   const error = namespaceError ?? userError;
@@ -276,7 +276,7 @@ export default function UserPagesRoot({
     if (username && namespace?.namespace_kind === "group") {
       navigate(
         generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, { slug: username }),
-        { replace: true }
+        { replace: true },
       );
     } else if (
       username &&
@@ -287,7 +287,7 @@ export default function UserPagesRoot({
         generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
           username: namespace.slug,
         }),
-        { replace: true }
+        { replace: true },
       );
     }
   }, [namespace?.namespace_kind, namespace?.slug, navigate, username]);

@@ -156,7 +156,7 @@ export default function NavbarV2() {
   }, []);
 
   const matchesShowSessionPage = useMatch(
-    ABSOLUTE_ROUTES.v2.projects.show.sessions.show
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.show,
   );
 
   if (
@@ -179,7 +179,7 @@ export default function NavbarV2() {
               "d-flex",
               "flex-wrap",
               "gap-3",
-              "text-white"
+              "text-white",
             )}
           >
             <RenkuNavLinkV2
@@ -205,7 +205,7 @@ export default function NavbarV2() {
                 "justify-content-end",
                 "ms-lg-auto",
                 "pe-2",
-                "pe-lg-0"
+                "pe-lg-0",
               )}
               navbar
             >

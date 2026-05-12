@@ -88,7 +88,7 @@ export default function EnvironmentCard({
                 "align-items-start",
                 "justify-content-between",
                 "pb-2",
-                "gap-2"
+                "gap-2",
               )}
             >
               <h5 className={cx("fw-bold", "mb-0", "text-break")}>
@@ -161,7 +161,7 @@ function GlobalEnvironmentSessionImageBadge({
   const { data, isLoading } = useGetSessionsImagesQuery(
     environment && environment.container_image
       ? { imageUrl: environment.container_image }
-      : skipToken
+      : skipToken,
   );
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
@@ -170,7 +170,7 @@ function GlobalEnvironmentSessionImageBadge({
       return undefined;
     }
     return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id)
+      classes.some(({ id }) => id === launcher.resource_class_id),
     );
   }, [launcher.resource_class_id, resourcePools]);
 
@@ -215,7 +215,7 @@ function CustomImageEnvironmentValues({
       environment.environment_kind === "CUSTOM" &&
       environment.container_image
       ? { imageUrl: environment.container_image }
-      : skipToken
+      : skipToken,
   );
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
@@ -224,7 +224,7 @@ function CustomImageEnvironmentValues({
       return undefined;
     }
     return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id)
+      classes.some(({ id }) => id === launcher.resource_class_id),
     );
   }, [launcher.resource_class_id, resourcePools]);
   const search = useMemo(() => {
@@ -372,7 +372,7 @@ function CustomImageEnvironmentValues({
       />
       <EnvironmentRowWithLabel
         label="Strip session URL path prefix"
-        value={environment.strip_path_prefix ?? false ? "Yes" : "No"}
+        value={(environment.strip_path_prefix ?? false) ? "Yes" : "No"}
       />
     </>
   );
@@ -396,12 +396,12 @@ function CustomBuildEnvironmentValues({
   } = useGetBuildsQuery(
     imageBuildersEnabled && environment.environment_image_source === "build"
       ? { environmentId: environment.id }
-      : skipToken
+      : skipToken,
   );
 
   const lastBuild = builds?.at(0);
   const lastSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded" && build.id !== lastBuild?.id
+    (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
   );
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
@@ -410,14 +410,14 @@ function CustomBuildEnvironmentValues({
       : skipToken,
     {
       pollingInterval: 1_000,
-    }
+    },
   );
 
   const { data: imageCheck, isLoading: isLoadingContainerImage } =
     useGetSessionsImagesQuery(
       environment.container_image != null
         ? { imageUrl: environment.container_image }
-        : skipToken
+        : skipToken,
     );
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
@@ -426,7 +426,7 @@ function CustomBuildEnvironmentValues({
       return undefined;
     }
     return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id)
+      classes.some(({ id }) => id === launcher.resource_class_id),
     );
   }, [launcher.resource_class_id, resourcePools]);
 
@@ -619,7 +619,7 @@ function NotReadyStatusBadge() {
         "border-danger",
         "text-danger-emphasis",
         "fs-small",
-        "fw-normal"
+        "fw-normal",
       )}
       pill
     >

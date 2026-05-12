@@ -52,7 +52,7 @@ class Sentry {
 
   init(
     options: SentryConfiguration,
-    app: express.Application
+    app: express.Application,
   ): typeof SentryLib {
     // Prevent re-initializing
     if (this.sentryInitialized)
@@ -66,7 +66,7 @@ class Sentry {
     if (options.namespace != null) {
       if (typeof options.namespace !== "string" || !options.namespace.length)
         throw new Error(
-          "The optional <namespace> must be a valid string identifying the current namespace."
+          "The optional <namespace> must be a valid string identifying the current namespace.",
         );
       this.sentryNamespace = options.namespace;
     }
@@ -75,7 +75,7 @@ class Sentry {
     if (options.version != null) {
       if (typeof options.version !== "string" || !options.version.length)
         throw new Error(
-          "The optional <version> must be a valid string identifying the UI version."
+          "The optional <version> must be a valid string identifying the UI version.",
         );
       this.uiVersion = options.version;
     }
@@ -156,11 +156,11 @@ export function addWebSocketServerContext(wss: Server): void {
       .filter(
         ([, value]) =>
           (typeof value !== "object" && typeof value !== "function") ||
-          value == null
+          value == null,
       )
       .reduce(
         (obj, [key, value]) => ({ ...obj, [key]: value }),
-        {} as Record<string, unknown>
+        {} as Record<string, unknown>,
       ),
     path: wss.path,
   };

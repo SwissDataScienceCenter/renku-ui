@@ -47,7 +47,7 @@ interface Session {
 
 function handlerRequestSessionStatus(
   _data: Record<string, unknown>,
-  channel: Channel
+  channel: Channel,
 ): void {
   channel.data.set("sessionStatus", null);
 }
@@ -87,16 +87,16 @@ function heartbeatRequestSessionStatus({
             totalNumContainers: totalNumContainers ?? -1,
           };
           return [key, { status: cleanedStatus }] as const;
-        }
+        },
       );
       const cleanedServers = cleanedServerEntries.reduce(
         (obj, [key, value]) => ({ ...obj, [key]: value }),
-        {} as Record<string, Session>
+        {} as Record<string, Session>,
       );
 
       const sortedObject = sortObjectProperties(cleanedServers);
       const currentHashedSessions = simpleHash(
-        JSON.stringify(sortedObject)
+        JSON.stringify(sortedObject),
       ).toString();
       // only send message when something change
       if (!util.isDeepStrictEqual(previousStatuses, currentHashedSessions)) {

@@ -57,7 +57,7 @@ export const versionsApi = createApi({
         if (content.versions?.length >= 1) {
           for (const coreVersionObject of content.versions) {
             const metadataVersion = parseInt(
-              coreVersionObject.data.metadata_version
+              coreVersionObject.data.metadata_version,
             );
             if (metadataVersion) {
               const coreVersionString = coreVersionObject.version;

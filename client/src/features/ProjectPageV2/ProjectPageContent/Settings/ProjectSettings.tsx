@@ -210,7 +210,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
   const currentNamespace = watch("namespace");
   const currentName = watch("name");
   const isDirtyExceptKeyword = Object.keys(dirtyFields).some(
-    (f) => f !== "keyword"
+    (f) => f !== "keyword",
   );
 
   const navigate = useNavigate();
@@ -235,7 +235,7 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
         projectPatch: editedData as ProjectV2Metadata,
       });
     },
-    [project, updateProject]
+    [project, updateProject],
   );
 
   const { params } = useContext(AppContext);

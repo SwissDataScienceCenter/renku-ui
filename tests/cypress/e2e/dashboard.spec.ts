@@ -24,7 +24,7 @@ import {
 
 const findProject = (path, projects) => {
   return projects.find(
-    (result) => result.response.body.path_with_namespace === path
+    (result) => result.response.body.path_with_namespace === path,
   );
 };
 
@@ -51,15 +51,15 @@ describe.skip("dashboard", () => {
 
     cy.getDataCy("dashboard-title").should(
       "have.text",
-      "Renku Dashboard - E2E User"
+      "Renku Dashboard - E2E User",
     );
     cy.getDataCy("project-alert").should(
       "contain.text",
-      "You do not have any projects yet"
+      "You do not have any projects yet",
     );
     cy.getDataCy("projects-container").should(
       "contain.text",
-      "You do not have any recently-visited projects"
+      "You do not have any recently-visited projects",
     );
     cy.getDataCy("explore-other-projects-btn").should("be.visible");
     cy.getDataCy("inactive-kg-project-alert").should("exist");
@@ -91,10 +91,10 @@ describe.skip("dashboard", () => {
     let projects;
     cy.wait("@getUser");
     cy.wait("@getLastVisitedProjects").then(
-      (result) => (projects = result.response.body.projects)
+      (result) => (projects = result.response.body.projects),
     );
     cy.wait(
-      Object.keys(files).map((filesKey) => `@projectLanding-${filesKey}`)
+      Object.keys(files).map((filesKey) => `@projectLanding-${filesKey}`),
     ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
@@ -105,7 +105,7 @@ describe.skip("dashboard", () => {
       cy.getDataCy("explore-other-projects-btn").should("be.visible");
       cy.getDataCy("project-alert").should(
         "contain.text",
-        "You do not have any projects yet"
+        "You do not have any projects yet",
       );
       cy.getDataCy("inactive-kg-project-alert").should("not.exist");
     });
@@ -140,10 +140,10 @@ describe.skip("dashboard", () => {
     let projects;
     cy.wait("@getUser");
     cy.wait("@getLastVisitedProjects").then(
-      (result) => (projects = result.response.body.projects)
+      (result) => (projects = result.response.body.projects),
     );
     cy.wait(
-      Object.keys(files).map((filesKey) => `@getProject-${filesKey}`)
+      Object.keys(files).map((filesKey) => `@getProject-${filesKey}`),
     ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
@@ -537,7 +537,7 @@ describe.skip("Dashboard pins", () => {
       .should("be.visible")
       .and("be.disabled")
       .contains(
-        "There are already 3 pinned projects. Unpin one if you want to pin this project."
+        "There are already 3 pinned projects. Unpin one if you want to pin this project.",
       );
   });
 });
@@ -608,7 +608,7 @@ describe("No legacy support", () => {
   it("displays warning when dataset doesn't exist", () => {
     cy.visit("/v1");
     cy.contains("This version of Renku is no longer supported").should(
-      "be.visible"
+      "be.visible",
     );
   });
 });

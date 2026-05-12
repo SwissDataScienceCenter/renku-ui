@@ -24,21 +24,21 @@ import {
 export function processPaginationHeaders(
   headers: Headers | undefined | null,
   queryArg: AbstractKgPaginatedQueryArgs,
-  results: unknown[]
+  results: unknown[],
 ): AbstractKgPaginatedResponse {
   const headerPage = headers?.get("page");
   const headerPerPage = headers?.get("per-page");
   const headerTotal = headers?.get("total");
   const headerTotalPages = headers?.get("total-pages");
-  const page = headerPage ? parseInt(headerPage) : queryArg.page ?? 1;
+  const page = headerPage ? parseInt(headerPage) : (queryArg.page ?? 1);
   const perPage = headerPerPage
     ? parseInt(headerPerPage)
-    : queryArg.perPage ?? 20;
+    : (queryArg.perPage ?? 20);
   const total = headerTotal
     ? parseInt(headerTotal)
     : results
-    ? results.length
-    : 0;
+      ? results.length
+      : 0;
   const totalPages = headerTotalPages
     ? parseInt(headerTotalPages)
     : total / perPage;

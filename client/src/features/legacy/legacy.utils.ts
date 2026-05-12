@@ -37,11 +37,11 @@ export function doesUrlHostMatchHost(url: string, host: string) {
 
 export function doesProjectReferenceRenkulabGitLab(
   allRepositories: Project["repositories"],
-  allLaunchers: SessionLaunchersList
+  allLaunchers: SessionLaunchersList,
 ) {
   const { repositories, launchers } = projectReferencesToRenkulabGitLab(
     allRepositories,
-    allLaunchers
+    allLaunchers,
   );
   return repositories.length > 0 || launchers.length > 0;
 }
@@ -56,16 +56,16 @@ function doesImageReferenceRenkulabGitLab(imageRef: string) {
 
 function projectReferencesToRenkulabGitLab(
   allRepositories: Project["repositories"],
-  allLaunchers: SessionLaunchersList
+  allLaunchers: SessionLaunchersList,
 ) {
   const repositories =
     allRepositories?.filter((repo) =>
-      doesRepositoryReferenceRenkulabGitLab(repo)
+      doesRepositoryReferenceRenkulabGitLab(repo),
     ) ?? [];
   const launchers = allLaunchers.filter(
     (launcher) =>
       launcher.environment.container_image != null &&
-      doesImageReferenceRenkulabGitLab(launcher.environment.container_image)
+      doesImageReferenceRenkulabGitLab(launcher.environment.container_image),
   );
   return { repositories, launchers };
 }

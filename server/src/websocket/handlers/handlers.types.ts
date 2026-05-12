@@ -21,7 +21,7 @@ import type { WebSocket } from "ws";
 import APIClient from "../../api-client";
 
 export type WebSocketHandler = (
-  args: WebSocketHandlerArgs
+  args: WebSocketHandlerArgs,
 ) => void | Promise<void>;
 
 export interface WebSocketHandlerArgs {

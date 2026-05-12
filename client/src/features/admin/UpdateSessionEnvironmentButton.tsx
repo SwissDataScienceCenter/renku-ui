@@ -113,7 +113,7 @@ function UpdateSessionEnvironmentModal({
           },
         });
     },
-    [environment.id, updateSessionEnvironment]
+    [environment.id, updateSessionEnvironment],
   );
 
   useEffect(() => {

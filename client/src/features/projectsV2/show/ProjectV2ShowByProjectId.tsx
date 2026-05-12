@@ -56,7 +56,7 @@ export default function ProjectV2ShowByProjectId() {
           }),
           search,
         },
-        { replace: true }
+        { replace: true },
       );
     }
   }, [location, navigate, project]);

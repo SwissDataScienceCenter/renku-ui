@@ -81,7 +81,7 @@ const withFixedEndpoints = usersGeneratedApi.injectEndpoints({
           | GetUserPreferencesApiResponse
           | DataServicesError
           | null
-          | undefined
+          | undefined,
       ) => {
         if (result == null || "error" in result) {
           return null;

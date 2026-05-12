@@ -62,7 +62,7 @@ export default function useGetRelatedProjects({
       projectsRecord
         ? Object.values(projectsRecord).sort((a, b) => b.id.localeCompare(a.id))
         : undefined,
-    [projectsRecord]
+    [projectsRecord],
   );
 
   return {

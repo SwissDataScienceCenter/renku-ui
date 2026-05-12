@@ -48,7 +48,7 @@ export function CustomEnvironmentFields({
   const [debouncedContainerImage, setDebouncedContainerImage] =
     useDebouncedState<string>(
       watchContainerImage ?? "",
-      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE
+      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE,
     );
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export function CustomEnvironmentFields({
       debouncedContainerImage &&
       !errors.container_image
       ? { imageUrl: debouncedContainerImage }
-      : skipToken
+      : skipToken,
   );
 
   return (
@@ -89,7 +89,7 @@ export function CustomEnvironmentFields({
                     data?.accessible === true &&
                     !isFetching &&
                     !inputModified &&
-                    "is-valid"
+                    "is-valid",
                 )}
                 data-cy="custom-image-input"
                 id="addSessionLauncherContainerImage"

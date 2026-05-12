@@ -41,12 +41,12 @@ export function validateCodeRepository(repositoryURL: string): true | string {
  * Checks that there is no duplicate in the list of repositories in a project.
  */
 export function validateNoDuplicatesInCodeRepositories(
-  repositories: string[]
+  repositories: string[],
 ): true | string {
   const cleaned = repositories.map((repo) => repo.trim());
   const uniqueRepos = cleaned.reduce(
     (repos, current) => repos.add(current),
-    new Set<string>()
+    new Set<string>(),
   );
   if (uniqueRepos.size === repositories.length) {
     return true;
@@ -73,7 +73,7 @@ export function detectSSHRepository(repositoryURL: string): boolean {
 
 export function shouldInterrupt(
   repositoryData: GetRepositoryApiResponse,
-  hasProjectWritePermission: boolean
+  hasProjectWritePermission: boolean,
 ): boolean {
   if (hasProjectWritePermission)
     return !!(

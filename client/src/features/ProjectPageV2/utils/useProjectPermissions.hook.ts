@@ -32,7 +32,7 @@ export default function useProjectPermissions({
 }: UseProjectPermissionsArgs): Permissions {
   const { currentData, isLoading, isError, isUninitialized } =
     projectV2Api.endpoints.getProjectsByProjectIdPermissions.useQueryState(
-      projectId ? { projectId } : skipToken
+      projectId ? { projectId } : skipToken,
     );
   const [fetchPermissions] =
     projectV2Api.endpoints.getProjectsByProjectIdPermissions.useLazyQuery();

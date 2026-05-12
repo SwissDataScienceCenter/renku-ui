@@ -91,12 +91,12 @@ export default function ProjectKeywordsFormField({
                       key={index}
                       highlighted={
                         !(formState.defaultValues?.keywords ?? []).includes(
-                          keyword
+                          keyword,
                         )
                       }
                       remove={() => {
                         const newKeywords = field.value.filter(
-                          (k) => k !== keyword
+                          (k) => k !== keyword,
                         );
                         setValue("keywords", newKeywords, {
                           shouldDirty: true,

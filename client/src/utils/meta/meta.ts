@@ -27,7 +27,7 @@ import type { MetaDescriptor } from "./meta.types";
 
 export function makeMetaTitle(
   elems: string[],
-  sep: string = DEFAULT_META_TITLE_SEPARATOR
+  sep: string = DEFAULT_META_TITLE_SEPARATOR,
 ): string {
   return elems.join(sep);
 }

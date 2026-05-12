@@ -38,7 +38,7 @@ export default function LearnAboutV2Button({
           "btn-sm",
           `btn-outline-${color}`,
           "text-decoration-none",
-        ]
+        ],
       )}
       role={outline ? "button" : "link"}
       url="https://blog.renkulab.io/launch-renku-2"

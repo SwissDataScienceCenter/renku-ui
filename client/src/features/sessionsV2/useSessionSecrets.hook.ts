@@ -48,7 +48,7 @@ export default function useSessionSecrets({
     isFetching: isFetchingSessionSecrets,
     error: sessionSecretsError,
   } = useGetProjectsByProjectIdSessionSecretsQuery(
-    isUserLoggedIn ? { projectId } : skipToken
+    isUserLoggedIn ? { projectId } : skipToken,
   );
 
   const isFetching = isFetchingSessionSecretSlots || isFetchingSessionSecrets;

@@ -150,7 +150,7 @@ function HelpCardBodyContent({ children, url }: HelpCardBodyContentProps) {
         "link-primary",
         "stretched-link",
         "text-body",
-        "text-decoration-none"
+        "text-decoration-none",
       )}
       href={url}
       target="_blank"

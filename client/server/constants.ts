@@ -70,7 +70,7 @@ export const CONFIG_JSON = {
   STATUSPAGE_ID: process.env.STATUSPAGE_ID,
   HOMEPAGE: safeJsonToObject(process.env.HOMEPAGE),
   CORE_API_VERSION_CONFIG: safeJsonToObject(
-    process.env.CORE_API_VERSION_CONFIG
+    process.env.CORE_API_VERSION_CONFIG,
   ),
   USER_PREFERENCES_MAX_PINNED_PROJECTS:
     process.env.USER_PREFERENCES_MAX_PINNED_PROJECTS,

@@ -54,7 +54,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
     const redirectUrl = makeRedirectUrl(
       redirectPlan.target_url,
       autostart,
-      request.url
+      request.url,
     );
     throw redirect(redirectUrl, 301);
   }
@@ -78,7 +78,7 @@ export default function LegacyProjectPage({
 function makeRedirectUrl(
   targetUrl: string,
   autostart: boolean,
-  requestUrl: string
+  requestUrl: string,
 ) {
   // Local redirect to a Renku v2 project
   if (targetUrl.startsWith("/") && autostart) {

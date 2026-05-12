@@ -51,7 +51,7 @@ export default function ProjectShortHandDisplay({
           "flex-row",
           "text-truncate",
           "gap-2",
-          "align-items-center"
+          "align-items-center",
         )}
       >
         <UserAvatar namespace={project.namespace} size="sm" />
@@ -93,7 +93,7 @@ export default function ProjectShortHandDisplay({
         "text-decoration-none",
         className,
         "list-group-item",
-        "list-group-item-action"
+        "list-group-item-action",
       )}
       to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: project.namespace,

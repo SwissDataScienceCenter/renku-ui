@@ -223,7 +223,7 @@ export function SessionStatusV2Label({
 
   const getStatusMessage = (
     state: "running" | "starting" | "stopping" | "failed" | "hibernated",
-    variant?: "card" | "list"
+    variant?: "card" | "list",
   ) => {
     return variant === "list"
       ? SESSION_TITLE_DASHBOARD[state]
@@ -257,7 +257,7 @@ export function SessionStatusV2Description({
         "d-flex",
         "flex-row",
         "gap-2",
-        "align-items-center"
+        "align-items-center",
       )}
     >
       {started && (
@@ -333,16 +333,16 @@ export function SessionStatusV2Title({
     state === "running" && !launcher
       ? "You are currently running a orphan session"
       : state === "running"
-      ? "You are currently running a session from this launcher"
-      : state === "starting"
-      ? "You are currently starting a session from this launcher"
-      : state === "stopping"
-      ? "You are currently deleting a session from this launcher"
-      : state === "hibernated"
-      ? "You have a paused session from this launcher"
-      : state === "failed"
-      ? "An error was encountered while attempting to launch this session."
-      : null;
+        ? "You are currently running a session from this launcher"
+        : state === "starting"
+          ? "You are currently starting a session from this launcher"
+          : state === "stopping"
+            ? "You are currently deleting a session from this launcher"
+            : state === "hibernated"
+              ? "You have a paused session from this launcher"
+              : state === "failed"
+                ? "An error was encountered while attempting to launch this session."
+                : null;
 
   return text ? <p className={cx("fst-italic", "mb-2")}>{text}</p> : null;
 }
@@ -359,7 +359,7 @@ function SessionStatusV2Text({
     <TimeCaption datetime={startTimestamp} enableTooltip noCaption />
   );
   const hibernationTimestamp =
-    state === "hibernated" ? will_hibernate_at ?? "" : null;
+    state === "hibernated" ? (will_hibernate_at ?? "") : null;
 
   return state === "running" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>

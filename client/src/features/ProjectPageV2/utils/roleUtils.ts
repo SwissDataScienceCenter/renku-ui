@@ -63,6 +63,6 @@ export function getMemberNameToDisplay(member: ProjectMemberResponse): string {
   return member.first_name || member.last_name
     ? `${member.first_name ?? ""} ${member.last_name ?? ""}`
     : member.namespace
-    ? `@${member.namespace}`
-    : "(unknown)";
+      ? `@${member.namespace}`
+      : "(unknown)";
 }

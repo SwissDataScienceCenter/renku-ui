@@ -59,7 +59,7 @@ export default function ProjectPageDelete({ project }: ProjectDeleteProps) {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTypedName(e.target.value.trim());
     },
-    [setTypedName]
+    [setTypedName],
   );
 
   return (

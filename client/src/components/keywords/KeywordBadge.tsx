@@ -69,7 +69,7 @@ export default function KeywordBadge({
         "text-start",
         "text-wrap",
         highlighted && "bg-success-subtle",
-        className
+        className,
       )}
       data-cy={dataCy}
     >

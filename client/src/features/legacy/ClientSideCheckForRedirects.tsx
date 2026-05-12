@@ -37,13 +37,13 @@ export default function ClientSideCheckForRedirects({
   const location = useLocation();
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
-    [location.search]
+    [location.search],
   );
 
   const sourceUrl = locationPathnameToSourceUrl(projectSlug);
   const { data: redirectPlan, isFetching: isFetchingRedirects } =
     useGetPlatformRedirectsBySourceUrlQuery(
-      sourceUrl ? { sourceUrl } : skipToken
+      sourceUrl ? { sourceUrl } : skipToken,
     );
   const autostart = !!searchParams.get("autostart");
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ export default function ClientSideCheckForRedirects({
         },
         {
           replace: true,
-        }
+        },
       );
     }
   }, [autostart, navigate, redirectPlan]);

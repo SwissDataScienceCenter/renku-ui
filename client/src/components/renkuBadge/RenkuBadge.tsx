@@ -37,12 +37,12 @@ export default function RenkuBadge({
     color === "success"
       ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
       : color === "danger"
-      ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
-      : color === "warning"
-      ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
-      : color === "info"
-      ? ["border-info", "bg-info-subtle", "text-info-emphasis"]
-      : ["border-dark-subtle", "bg-light", "text-dark-emphasis"];
+        ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
+        : color === "warning"
+          ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
+          : color === "info"
+            ? ["border-info", "bg-info-subtle", "text-info-emphasis"]
+            : ["border-dark-subtle", "bg-light", "text-dark-emphasis"];
 
   const baseClasses = [
     "border",

@@ -49,7 +49,7 @@ export function CodeRepositoriesDisplay({ project }: { project: Project }) {
           className={cx(
             "align-items-center",
             "d-flex",
-            "justify-content-between"
+            "justify-content-between",
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>

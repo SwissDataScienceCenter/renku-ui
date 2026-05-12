@@ -13,13 +13,11 @@ import type {
 } from "./data-connectors.api";
 import { dataConnectorsApi as api } from "./data-connectors.api";
 
-export interface GetDataConnectorsApiResponse
-  extends AbstractKgPaginatedResponse {
+export interface GetDataConnectorsApiResponse extends AbstractKgPaginatedResponse {
   dataConnectors: GetDataConnectorsApiResponseOrig;
 }
 
-export interface GetDataConnectorsByDataConnectorIdDepositsApiResponse
-  extends AbstractKgPaginatedResponse {
+export interface GetDataConnectorsByDataConnectorIdDepositsApiResponse extends AbstractKgPaginatedResponse {
   deposits: GetDataConnectorsByDataConnectorIdDepositsApiResponseOrig;
 }
 
@@ -64,7 +62,7 @@ const injectedApi = api.injectEndpoints({
           queryArg.params == null
             ? {}
             : { page: queryArg.params.page, perPage: queryArg.params.per_page },
-          dataConnectors
+          dataConnectors,
         );
 
         return {
@@ -97,7 +95,7 @@ const injectedApi = api.injectEndpoints({
           queryArg.params == null
             ? {}
             : { page: queryArg.params.page, perPage: queryArg.params.per_page },
-          deposits
+          deposits,
         );
 
         return {
@@ -117,7 +115,7 @@ const injectedApi = api.injectEndpoints({
         const { dataConnectorIds } = queryArg;
         const result: GetDataConnectorsListByDataConnectorIdsApiResponse = {};
         const promises = dataConnectorIds.map((dataConnectorId) =>
-          fetchWithBQ(`/data_connectors/${dataConnectorId}`)
+          fetchWithBQ(`/data_connectors/${dataConnectorId}`),
         );
         const responses = await Promise.all(promises);
         for (let i = 0; i < dataConnectorIds.length; i++) {
@@ -138,7 +136,7 @@ const injectedApi = api.injectEndpoints({
         const { dataConnectorIds } = queryArg;
         const result: GetDataConnectorListSecretsApiResponse = {};
         const promises = dataConnectorIds.map((dataConnectorId) =>
-          fetchWithBQ(`/data_connectors/${dataConnectorId}/secrets`)
+          fetchWithBQ(`/data_connectors/${dataConnectorId}/secrets`),
         );
         const responses = await Promise.all(promises);
         for (let i = 0; i < dataConnectorIds.length; i++) {

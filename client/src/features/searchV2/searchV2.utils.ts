@@ -67,17 +67,17 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
 
   // Retain the last filter option only
   const roleFilter = reversedTerms.find(
-    isRoleFilterInterpretation
+    isRoleFilterInterpretation,
   )?.interpretation;
 
   // Retain the last filter option only
   const typeFilter = reversedTerms.find(
-    isTypeFilterInterpretation
+    isTypeFilterInterpretation,
   )?.interpretation;
 
   // Retain the last filter option only
   const visibilityFilter = reversedTerms.find(
-    isVisibilityFilterInterpretation
+    isVisibilityFilterInterpretation,
   )?.interpretation;
 
   const filters: SearchFilters = {
@@ -98,7 +98,7 @@ export function parseSearchQuery(query: string): ParseSearchQueryResult {
     key: "created",
     value: mergeDateFilterValues(
       createdAfterFilterValue,
-      createdBeforeFilterValue
+      createdBeforeFilterValue,
     ),
   };
 
@@ -137,16 +137,16 @@ function parseTerm(term: string): InterpretedTerm {
 
   if (termLower.startsWith(`${ROLE_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
     const filterValues = termLower.slice(
-      ROLE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+      ROLE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length,
     );
     const values = filterValues.split(`${VALUES_SEPARATOR}`);
     const [allowedValues, hasDisallowedValue] = filterAllowedValues(
       values,
-      ROLE_FILTER_ALLOWED_VALUES
+      ROLE_FILTER_ALLOWED_VALUES,
     );
     const matchedValues = makeValuesSetAsArray(
       allowedValues,
-      (a, b) => toNumericRole(b) - toNumericRole(a)
+      (a, b) => toNumericRole(b) - toNumericRole(a),
     );
     if (!hasDisallowedValue) {
       return {
@@ -161,12 +161,12 @@ function parseTerm(term: string): InterpretedTerm {
 
   if (termLower.startsWith(`${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
     const filterValues = termLower.slice(
-      TYPE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+      TYPE_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length,
     );
     const values = filterValues.split(`${VALUES_SEPARATOR}`);
     const [allowedValues, hasDisallowedValue] = filterAllowedValues(
       values,
-      TYPE_FILTER_ALLOWED_VALUES
+      TYPE_FILTER_ALLOWED_VALUES,
     );
     const matchedValues = makeValuesSetAsArray(allowedValues);
     if (!hasDisallowedValue) {
@@ -182,12 +182,12 @@ function parseTerm(term: string): InterpretedTerm {
 
   if (termLower.startsWith(`${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}`)) {
     const filterValues = termLower.slice(
-      VISIBILITY_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length
+      VISIBILITY_FILTER_KEY.length + KEY_VALUE_SEPARATOR.length,
     );
     const values = filterValues.split(`${VALUES_SEPARATOR}`);
     const [allowedValues, hasDisallowedValue] = filterAllowedValues(
       values,
-      VISIBILITY_FILTER_ALLOWED_VALUES
+      VISIBILITY_FILTER_ALLOWED_VALUES,
     );
     const matchedValues = makeValuesSetAsArray(allowedValues);
     if (!hasDisallowedValue) {
@@ -205,10 +205,10 @@ function parseTerm(term: string): InterpretedTerm {
     termLower.startsWith(`${CREATION_DATE_FILTER_KEY}${KEY_GREATER_THAN_VALUE}`)
   ) {
     const filterValue = termLower.slice(
-      CREATION_DATE_FILTER_KEY.length + KEY_GREATER_THAN_VALUE.length
+      CREATION_DATE_FILTER_KEY.length + KEY_GREATER_THAN_VALUE.length,
     );
     const matchedKnownValue = DATE_FILTER_AFTER_KNOWN_VALUES.find(
-      (value) => value === filterValue
+      (value) => value === filterValue,
     );
     if (matchedKnownValue) {
       return {
@@ -241,10 +241,10 @@ function parseTerm(term: string): InterpretedTerm {
     termLower.startsWith(`${CREATION_DATE_FILTER_KEY}${KEY_LESS_THAN_VALUE}`)
   ) {
     const filterValue = termLower.slice(
-      CREATION_DATE_FILTER_KEY.length + KEY_LESS_THAN_VALUE.length
+      CREATION_DATE_FILTER_KEY.length + KEY_LESS_THAN_VALUE.length,
     );
     const matchedKnownValue = DATE_FILTER_BEFORE_KNOWN_VALUES.find(
-      (value) => value === filterValue
+      (value) => value === filterValue,
     );
     if (matchedKnownValue) {
       return {
@@ -286,14 +286,14 @@ function valuesAsSet<T>(values: T[]): Set<T> {
 
 function makeValuesSetAsArray<T extends string>(
   values: T[],
-  compareFn?: ((a: T, b: T) => number) | undefined
+  compareFn?: ((a: T, b: T) => number) | undefined,
 ): T[] {
   return Array.from(valuesAsSet(values)).sort(compareFn);
 }
 
 function filterAllowedValues<T extends string>(
   values: string[],
-  allowedValues: T[]
+  allowedValues: T[],
 ): [T[], boolean] {
   function isAllowed(value: string): value is T {
     return !!allowedValues.find((allowedValue) => value === allowedValue);
@@ -305,25 +305,25 @@ function filterAllowedValues<T extends string>(
 }
 
 function isRoleFilterInterpretation(
-  term: InterpretedTerm
+  term: InterpretedTerm,
 ): term is InterpretedTerm & { interpretation: RoleFilter } {
   return term.interpretation?.key === "role";
 }
 
 function isTypeFilterInterpretation(
-  term: InterpretedTerm
+  term: InterpretedTerm,
 ): term is InterpretedTerm & { interpretation: TypeFilter } {
   return term.interpretation?.key === "type";
 }
 
 function isVisibilityFilterInterpretation(
-  term: InterpretedTerm
+  term: InterpretedTerm,
 ): term is InterpretedTerm & { interpretation: VisibilityFilter } {
   return term.interpretation?.key === "visibility";
 }
 
 function isCreationDateFilterInterpretation(
-  term: InterpretedTerm
+  term: InterpretedTerm,
 ): term is InterpretedTerm & { interpretation: CreationDateFilter } {
   return term.interpretation?.key === "created";
 }
@@ -369,8 +369,8 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
       typeof option.value.after === "string"
         ? option.value.after
         : option.value.after?.date != null
-        ? `${option.value.after.date.toISODate()}${DATE_AFTER_LEEWAY}`
-        : "";
+          ? `${option.value.after.date.toISODate()}${DATE_AFTER_LEEWAY}`
+          : "";
     const afterStr = afterValueStr
       ? `${CREATION_DATE_FILTER_KEY}${KEY_GREATER_THAN_VALUE}${afterValueStr}`
       : "";
@@ -378,8 +378,8 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
       typeof option.value.before === "string"
         ? option.value.before
         : option.value.before?.date != null
-        ? `${option.value.before.date.toISODate()}${DATE_BEFORE_LEEWAY}`
-        : "";
+          ? `${option.value.before.date.toISODate()}${DATE_BEFORE_LEEWAY}`
+          : "";
     const beforeStr = beforeValueStr
       ? `${CREATION_DATE_FILTER_KEY}${KEY_LESS_THAN_VALUE}${beforeValueStr}`
       : "";
@@ -393,7 +393,7 @@ function asQueryTerm(option: SearchOption | null | undefined): string {
 
 function mergeDateFilterValues(
   after: AfterDateValue | undefined,
-  before: BeforeDateValue | undefined
+  before: BeforeDateValue | undefined,
 ): {
   after?: AfterDateValue;
   before?: BeforeDateValue;
@@ -414,8 +414,8 @@ function mergeDateFilterValues(
       merged.after === "today-7d"
         ? { date: today.minus({ days: 7 }) }
         : merged.after === "today-31d"
-        ? { date: today.minus({ days: 31 }) }
-        : { date: today.minus({ days: 90 }) };
+          ? { date: today.minus({ days: 31 }) }
+          : { date: today.minus({ days: 90 }) };
     merged.after = adjusted;
   }
   if (typeof merged.before === "string") {
@@ -469,13 +469,13 @@ export function buildSearchBarDisplay(state: SearchV2State): string {
 
   if (keys.includes("contentType") && state.contentType) {
     filterTerms.push(
-      `${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.contentType}`
+      `${TYPE_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.contentType}`,
     );
   }
 
   if (keys.includes("visibility") && state.visibility) {
     filterTerms.push(
-      `${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.visibility}`
+      `${VISIBILITY_FILTER_KEY}${KEY_VALUE_SEPARATOR}${state.visibility}`,
     );
   }
 
@@ -500,7 +500,7 @@ export function buildSearchBarDisplay(state: SearchV2State): string {
  * into ApplyParsedSearchParams suitable for the Redux slice.
  */
 export function parsedResultToSliceParams(
-  result: ParseSearchQueryResult
+  result: ParseSearchQueryResult,
 ): ApplyParsedSearchParams {
   const params: ApplyParsedSearchParams = {
     query: result.searchBarQuery,
@@ -550,7 +550,7 @@ export function parsedResultToSliceParams(
 }
 
 export function buildApiQuery(
-  state: Omit<SearchV2State, "searchBarFilterKeys">
+  state: Omit<SearchV2State, "searchBarFilterKeys">,
 ): SearchQuery {
   const terms: string[] = [];
 

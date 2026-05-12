@@ -59,7 +59,7 @@ export default function GroupInformation({
           className={cx(
             "align-items-center",
             "d-flex",
-            "justify-content-between"
+            "justify-content-between",
           )}
         >
           <h2 className="m-0">

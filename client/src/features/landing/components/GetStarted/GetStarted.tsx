@@ -44,7 +44,7 @@ export function GetStarted() {
             "align-items-center",
             "gap-4",
             "mt-0",
-            "my-5"
+            "my-5",
           )}
         >
           <h2 className={cx("fs-1", "fw-bold", "m-0", "text-center")}>
@@ -62,7 +62,7 @@ export function GetStarted() {
                 "flex-column",
                 "gap-4",
                 "align-items-center",
-                "align-items-lg-start"
+                "align-items-lg-start",
               )}
             >
               <p className={cx("mb-0", "fs-3")}>
@@ -90,7 +90,7 @@ export function GetStarted() {
                     "btn",
                     "btn-outline-primary",
                     "text-decoration-none",
-                    "btn-lg"
+                    "btn-lg",
                   )}
                   role="link"
                   url={`mailto:${renkuContactEmail}?subject=Requesting%20Pricing%20Details `}

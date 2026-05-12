@@ -40,7 +40,7 @@ export default function SessionLogsModal({
   toggle,
 }: SessionLogsModalProps) {
   const { data: session } = useGetSessionsBySessionIdQuery(
-    sessionName ? { sessionId: sessionName } : skipToken
+    sessionName ? { sessionId: sessionName } : skipToken,
   );
 
   const query = useGetSessionsBySessionIdLogsQuery(
@@ -49,14 +49,14 @@ export default function SessionLogsModal({
           sessionId: sessionName,
           maxLines: SESSION_LOGS_MAX_LINES,
         }
-      : skipToken
+      : skipToken,
   );
 
   const [trigger] =
     sessionsV2Api.endpoints.getSessionsBySessionIdLogs.useLazyQuery();
   const downloadQueryTrigger = useCallback(
     () => trigger({ sessionId: sessionName }),
-    [sessionName, trigger]
+    [sessionName, trigger],
   );
 
   return (

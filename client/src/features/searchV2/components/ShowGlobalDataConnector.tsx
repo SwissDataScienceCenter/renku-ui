@@ -31,12 +31,12 @@ export default function ShowGlobalDataConnector() {
       hash.startsWith("data-connector-")
         ? hash.slice("data-connector-".length)
         : undefined,
-    [hash]
+    [hash],
   );
 
   const { currentData: dataConnector } =
     useGetDataConnectorsByDataConnectorIdQuery(
-      dataConnectorId != null ? { dataConnectorId } : skipToken
+      dataConnectorId != null ? { dataConnectorId } : skipToken,
     );
 
   const toggleView = useCallback(() => {

@@ -84,11 +84,10 @@ import {
   DC_SUCCESS_MESSAGE_TIMEOUT_MS,
 } from "./projectDataConnectors.constants";
 
-interface ProjectConnectDataConnectorsModalProps
-  extends Omit<
-    Parameters<typeof DataConnectorModal>[0],
-    "dataConnector" | "projectId"
-  > {
+interface ProjectConnectDataConnectorsModalProps extends Omit<
+  Parameters<typeof DataConnectorModal>[0],
+  "dataConnector" | "projectId"
+> {
   project: Project;
   switchMode?: () => void;
 }
@@ -156,7 +155,7 @@ export default function ProjectConnectDataConnectorsModal({
 
 function ProjectConnectDataConnectorModalTitle() {
   const { flatDataConnector, cloudStorageState } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
 
   const title =
@@ -218,7 +217,7 @@ export function ProjectConnectDataConnectorModeSwitch({
           "align-items-center",
           "btn-outline-primary",
           "btn",
-          "d-flex"
+          "d-flex",
         )}
       >
         <NodePlus className={cx("fs-3", "me-1")} />
@@ -240,7 +239,7 @@ export function ProjectConnectDataConnectorModeSwitch({
           "align-items-center",
           "btn-outline-primary",
           "btn",
-          "d-flex"
+          "d-flex",
         )}
       >
         <PlusLg className={cx("fs-3", "me-1")} />
@@ -293,7 +292,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
     return new Set(
       projectDataConnectorLinks.data
         .map((link) => link.data_connector_id)
-        .filter((id) => id !== selectedItemId)
+        .filter((id) => id !== selectedItemId),
     );
   }, [projectDataConnectorLinks.data, selectedItemId]);
 
@@ -318,7 +317,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
             q: `${DC_SEARCH_TYPE} ${DC_SEARCH_DOI_PREFIX}${normalizedDOI}`,
           },
         }
-      : skipToken
+      : skipToken,
   );
 
   const searchIdentifier = useGetSearchQueryQuery(
@@ -328,15 +327,15 @@ function ProjectSearchDataConnectorBodyAndFooter({
             q: querySearchInput.includes("/")
               ? `${DC_SEARCH_TYPE} ${DC_SEARCH_NAMESPACE_PREFIX}${querySearchInput.slice(
                   0,
-                  querySearchInput.lastIndexOf("/")
+                  querySearchInput.lastIndexOf("/"),
                 )} ${DC_SEARCH_SLUG_PREFIX}${querySearchInput.slice(
-                  querySearchInput.lastIndexOf("/") + 1
+                  querySearchInput.lastIndexOf("/") + 1,
                 )}
                 `
               : `${DC_SEARCH_TYPE} ${DC_SEARCH_SLUG_PREFIX}${querySearchInput}`,
           },
         }
-      : skipToken
+      : skipToken,
   );
   const searchMembership = useGetSearchQueryQuery({
     params: {
@@ -355,17 +354,17 @@ function ProjectSearchDataConnectorBodyAndFooter({
   const searchImportedDoiResult = useMemo(
     () =>
       (searchImportedDoi.data?.items ?? []).find(
-        (dc) => !projectDataConnectorIds.has(dc.id)
+        (dc) => !projectDataConnectorIds.has(dc.id),
       ) as SearchDataConnector | undefined,
-    [searchImportedDoi.data?.items, projectDataConnectorIds]
+    [searchImportedDoi.data?.items, projectDataConnectorIds],
   );
 
   const searchIdentifierResult = useMemo(
     () =>
       (searchIdentifier.data?.items ?? []).find(
-        (dc) => !projectDataConnectorIds.has(dc.id)
+        (dc) => !projectDataConnectorIds.has(dc.id),
       ) as SearchDataConnector | undefined,
-    [searchIdentifier.data?.items, projectDataConnectorIds]
+    [searchIdentifier.data?.items, projectDataConnectorIds],
   );
   const searchIdentifierId = useMemo(() => {
     return searchIdentifierResult?.id;
@@ -375,9 +374,9 @@ function ProjectSearchDataConnectorBodyAndFooter({
     () =>
       (searchMembership.data?.items ?? []).filter(
         (dc) =>
-          dc.id !== searchIdentifierId && !projectDataConnectorIds.has(dc.id)
+          dc.id !== searchIdentifierId && !projectDataConnectorIds.has(dc.id),
       ) as SearchDataConnector[],
-    [projectDataConnectorIds, searchIdentifierId, searchMembership.data?.items]
+    [projectDataConnectorIds, searchIdentifierId, searchMembership.data?.items],
   );
   const membershipIds = useMemo(() => {
     const ids = new Set(searchIdentifierId ? [searchIdentifierId] : []);
@@ -413,7 +412,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
   const onImportAndLinkGlobalDataConnector = useCallback(
     async (dataConnectorId: string) => {
       setSelectedItemId(
-        dataConnectorId === selectedItemId ? null : dataConnectorId
+        dataConnectorId === selectedItemId ? null : dataConnectorId,
       );
 
       const doiParsed = doiFromUrl(querySearchInput);
@@ -446,12 +445,12 @@ function ProjectSearchDataConnectorBodyAndFooter({
       project.id,
       selectedItemId,
       querySearchInput,
-    ]
+    ],
   );
   const onLinkDataConnector = useCallback(
     (dataConnectorId: string) => {
       setSelectedItemId(
-        dataConnectorId === selectedItemId ? null : dataConnectorId
+        dataConnectorId === selectedItemId ? null : dataConnectorId,
       );
       postLinkDataConnectorMutation({
         dataConnectorId,
@@ -460,7 +459,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
         },
       });
     },
-    [selectedItemId, project.id, postLinkDataConnectorMutation]
+    [selectedItemId, project.id, postLinkDataConnectorMutation],
   );
 
   // Variables to adjust the UI interactions
@@ -683,7 +682,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
         <p
           className={cx(
             "mb-0",
-            (anythingMatched || alreadyImportedDataConnector) && "mt-2"
+            (anythingMatched || alreadyImportedDataConnector) && "mt-2",
           )}
         >
           {anythingMatched || alreadyImportedDataConnector ? (
@@ -760,7 +759,7 @@ function SearchResultListItem({
         "text-body",
         "list-group-item-action",
         "py-1",
-        highlight && ["bg-opacity-10", "bg-primary", "border-primary-subtle"]
+        highlight && ["bg-opacity-10", "bg-primary", "border-primary-subtle"],
       )}
       data-cy="link-data-connector-list-item"
     >

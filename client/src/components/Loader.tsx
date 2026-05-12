@@ -74,7 +74,7 @@ function LoaderSpinner({ className, inline, size }: LoaderSpinnerProps) {
     const baseSpinner = existingSpinners.find(
       (spinner) =>
         spinner !== ref.current &&
-        spinner.getAnimations?.().at(0)?.startTime != null
+        spinner.getAnimations?.().at(0)?.startTime != null,
     );
     if (!baseSpinner) {
       return;
@@ -106,7 +106,7 @@ function LoaderSpinner({ className, inline, size }: LoaderSpinnerProps) {
             "top-0",
             "start-0",
             "opacity-25",
-            inline && "d-inline-block"
+            inline && "d-inline-block",
           )}
           style={trackStyle}
         ></Tag>
@@ -117,7 +117,7 @@ function LoaderSpinner({ className, inline, size }: LoaderSpinnerProps) {
             "top-0",
             "start-0",
             "opacity-100",
-            inline && "d-inline-block"
+            inline && "d-inline-block",
           )}
           ref={ref}
           style={spinnerStyle}

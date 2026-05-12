@@ -37,7 +37,7 @@ export default function KeywordContainer({
         "flex-wrap",
         "fs-5",
         "gap-1",
-        className
+        className,
       )}
       data-cy={dataCy}
     >

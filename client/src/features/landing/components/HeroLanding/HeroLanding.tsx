@@ -38,7 +38,7 @@ export default function HeroLanding() {
                   "mt-3",
                   "mt-md-4",
                   "flex-sm-row",
-                  "flex-column"
+                  "flex-column",
                 )}
               >
                 <a

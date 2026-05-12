@@ -57,14 +57,14 @@ export default function BuilderSelectorCommon({
 }: BuilderSelectorCommonProps) {
   const value = useMemo(
     () => options.find(({ value }) => value === value_) ?? defaultValue,
-    [defaultValue, value_, options]
+    [defaultValue, value_, options],
   );
 
   const onChange = useCallback(
     (newValue: SingleValue<BuilderSelectorOption>) => {
       onChange_?.(newValue?.value);
     },
-    [onChange_]
+    [onChange_],
   );
 
   // We need to set the default value by hand here
@@ -111,7 +111,7 @@ const selectClassNames: ClassNamesConfig<BuilderSelectorOption, false> = {
       styles.option,
       isDisabled && styles.optionIsDisabled,
       isFocused && !isDisabled && styles.optionIsFocused,
-      !isFocused && isSelected && !isDisabled && styles.optionIsSelected
+      !isFocused && isSelected && !isDisabled && styles.optionIsSelected,
     ),
   placeholder: () => cx("px-3"),
   loadingMessage: () => cx("p-3"),
@@ -135,7 +135,7 @@ const selectComponents: SelectComponentsConfig<
       BuilderSelectorOption,
       false,
       GroupBase<BuilderSelectorOption>
-    >
+    >,
   ) => {
     const { data } = props;
     return (

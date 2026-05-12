@@ -30,7 +30,7 @@ describe("Interact with Connected services", () => {
     cy.visit("/integrations");
     cy.getDataCy("connected-services-page").should(
       "contain.text",
-      "There are currently no external services"
+      "There are currently no external services",
     );
   });
 
