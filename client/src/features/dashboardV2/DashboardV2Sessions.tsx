@@ -141,7 +141,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
   const sessionStyles = getSessionStatusStyles(session);
   const state = session.status.state;
   const { data: resourcePools } = useGetResourcePoolsQuery(
-    session ? {} : skipToken
+    session ? {} : skipToken,
   );
   const currentSessionClassId = session?.resource_class_id;
   const userLauncherClass = useMemo(
@@ -149,7 +149,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == currentSessionClassId),
-    [currentSessionClassId, resourcePools]
+    [currentSessionClassId, resourcePools],
   );
 
   return (

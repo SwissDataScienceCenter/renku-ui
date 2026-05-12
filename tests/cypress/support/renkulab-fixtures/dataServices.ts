@@ -43,8 +43,10 @@ interface ResourcePoolIdFixture extends SimpleFixture {
   resourcePoolId: number;
 }
 
-interface PutResourcePoolLimitsFixture
-  extends Omit<ResourcePoolIdFixture, "fixture"> {
+interface PutResourcePoolLimitsFixture extends Omit<
+  ResourcePoolIdFixture,
+  "fixture"
+> {
   resourcePoolId: number;
   totalLimit: number;
   userLimit: number;
@@ -123,7 +125,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
         cy.intercept(
           "GET",
           `/api/data/resource_pools/${resourcePoolId}/limits`,
-          { body: limits }
+          { body: limits },
         ).as(name);
       });
       return this;
@@ -144,7 +146,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
           expect(req.body.total_limit).to.equal(totalLimit);
           expect(req.body.user_limit).to.equal(userLimit);
           req.reply({ body: limits });
-        }
+        },
       ).as(name);
       return this;
     }

@@ -141,7 +141,7 @@ export function SelectResourceClassModal({
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == launcherClass?.id),
-    [launcherClass, resourcePools]
+    [launcherClass, resourcePools],
   );
 
   const resourceDetails =

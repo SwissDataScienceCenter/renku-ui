@@ -1222,13 +1222,13 @@ describe("launch sessions with resource quotas", () => {
         cy.getDataCy("session-name").should("contain.text", "Session-custom");
         cy.getDataCy("start-session-button").should(
           "contain.text",
-          "Quota Reached"
+          "Quota Reached",
         );
       })
       .click();
     cy.getDataCy("session-view-resource-class-availability").should(
       "contain.text",
-      "Usage quota for this resource pool has been reached"
+      "Usage quota for this resource pool has been reached",
     );
     cy.getDataCy("get-back-session-view").click();
 
@@ -1251,7 +1251,7 @@ describe("launch sessions with resource quotas", () => {
     cy.get(".modal-body").within(() => {
       cy.get("p").should(
         "contain.text",
-        "Please select one of your available resource classes to continue."
+        "Please select one of your available resource classes to continue.",
       );
       // cy.get("#react-select-5-placeholder").click();
       cy.contains("Select...").should("be.visible").click();
@@ -1260,7 +1260,7 @@ describe("launch sessions with resource quotas", () => {
     });
     cy.get("button").contains("Continue").click();
     cy.contains("200h of compute time until quota is used").should(
-      "be.visible"
+      "be.visible",
     );
   });
 

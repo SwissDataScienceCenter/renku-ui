@@ -53,7 +53,7 @@ interface UpdateResourceClassCostButtonProps {
 
 function resourceClassUsageLimitText(
   cost: number | undefined,
-  poolLimits: ResourcePoolLimits | undefined
+  poolLimits: ResourcePoolLimits | undefined,
 ) {
   if (cost == null || cost <= 0 || poolLimits == null) {
     return "Users can use this resource class without limit";
@@ -92,8 +92,8 @@ export default function UpdateResourceClassCostButton({
         {classCost?.cost == null
           ? "None"
           : classCost.cost <= 0
-          ? "None"
-          : classCost.cost}
+            ? "None"
+            : classCost.cost}
       </Button>
       <UpdateResourceClassCostModal
         isOpen={isOpen}
@@ -138,7 +138,7 @@ function UpdateResourceClassCostModal({
       defaultValues: {
         cost: classCost,
       },
-    }
+    },
   );
   const formCost = useWatch({ control, name: "cost" });
 
@@ -166,7 +166,7 @@ function UpdateResourceClassCostModal({
         },
       });
     },
-    [id, resourceClassId, updateResourceClassCost, deleteResourceClassCost]
+    [id, resourceClassId, updateResourceClassCost, deleteResourceClassCost],
   );
 
   useEffect(() => {

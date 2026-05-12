@@ -67,13 +67,13 @@ function SessionClassThresholds({
         idleThreshold: pool.idle_threshold ?? defaultIdle ?? 0,
         hibernationThreshold:
           pool.hibernation_threshold ?? defaultHibernation ?? 0,
-      }))
+      })),
     );
   }, [defaultHibernation, defaultIdle, resourcePools]);
 
   const currentClassThresholds = useMemo(
     () => classesThresholds.find((c) => c.classId === currentSessionClass?.id),
-    [classesThresholds, currentSessionClass]
+    [classesThresholds, currentSessionClass],
   );
 
   if (
@@ -118,7 +118,7 @@ interface OptionGroup extends GroupBase<ResourceClassWithIdFiltered> {
 
 const makeGroupedOptions = (
   resourcePools: ResourcePoolWithIdFiltered[],
-  defaultIdleThreshold?: number
+  defaultIdleThreshold?: number,
 ): OptionGroup[] =>
   resourcePools.map((pool) => ({
     label: pool.name,
@@ -145,9 +145,9 @@ const SessionClassSelector = ({
     () =>
       makeGroupedOptions(
         resourcePools,
-        nbVersion?.defaultCullingThresholds?.registered.idle
+        nbVersion?.defaultCullingThresholds?.registered.idle,
       ),
-    [resourcePools, nbVersion]
+    [resourcePools, nbVersion],
   );
 
   return (
@@ -192,7 +192,7 @@ const selectComponentsV2: SelectComponentsConfig<
     );
   },
   Option: (
-    props: OptionProps<ResourceClassWithIdFiltered, false, OptionGroup>
+    props: OptionProps<ResourceClassWithIdFiltered, false, OptionGroup>,
   ) => {
     const { data: sessionClass } = props;
     return (
@@ -202,7 +202,7 @@ const selectComponentsV2: SelectComponentsConfig<
     );
   },
   SingleValue: (
-    props: SingleValueProps<ResourceClassWithIdFiltered, false, OptionGroup>
+    props: SingleValueProps<ResourceClassWithIdFiltered, false, OptionGroup>,
   ) => {
     const { data: sessionClass } = props;
     return (
@@ -212,7 +212,7 @@ const selectComponentsV2: SelectComponentsConfig<
     );
   },
   GroupHeading: (
-    props: GroupHeadingProps<ResourceClassWithIdFiltered, false, OptionGroup>
+    props: GroupHeadingProps<ResourceClassWithIdFiltered, false, OptionGroup>,
   ) => {
     return (
       <components.GroupHeading {...props}>
@@ -224,7 +224,7 @@ const selectComponentsV2: SelectComponentsConfig<
     );
   },
   MenuList: (
-    props: MenuListProps<ResourceClassWithIdFiltered, false, OptionGroup>
+    props: MenuListProps<ResourceClassWithIdFiltered, false, OptionGroup>,
   ) => {
     return (
       <components.MenuList
@@ -251,7 +251,7 @@ const selectClassNamesV2: ClassNamesConfig<
       "bg-white",
       "border",
       "cursor-pointer",
-      styles.control2
+      styles.control2,
     ),
   dropdownIndicator: () => cx("pe-2"),
   groupHeading: () => cx("px-2", styles.groupHeading),
@@ -264,7 +264,7 @@ const selectClassNamesV2: ClassNamesConfig<
       "p-2",
       styles.option,
       isFocused && styles.optionIsFocused,
-      !isFocused && isSelected && styles.optionIsSelected
+      !isFocused && isSelected && styles.optionIsSelected,
     ),
   placeholder: () => cx("px-2"),
   singleValue: () => cx("d-grid", "gap-1", "px-2", styles.singleValue),
@@ -285,7 +285,7 @@ const OptionOrSingleValueContent = ({
     "text-wrap",
     "text-break",
     styles.label,
-    canBeUsed && styles.labelMatches
+    canBeUsed && styles.labelMatches,
   );
   const detailValueClassName = cx(styles.detail, styles.detailValue);
   const detailLabelClassName = cx(styles.detail, styles.detailLabel);

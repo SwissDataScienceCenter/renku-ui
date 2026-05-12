@@ -259,7 +259,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
                 "row-cols-1",
                 "row-cols-sm-4",
                 "row-cols-md-5",
-                "text-end"
+                "text-end",
               )}
             >
               <div className={cx("col", "col-sm-12", "col-md", "text-start")}>
@@ -488,7 +488,7 @@ function ResourceClassItem({
             "flex-column",
             "flex-sm-row",
             "flex-wrap",
-            "justify-content-end"
+            "justify-content-end",
           )}
         >
           <UpdateResourceClassCostButton

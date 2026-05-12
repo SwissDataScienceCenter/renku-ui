@@ -125,7 +125,7 @@ function SessionCard({
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == currentSessionClassId),
-    [currentSessionClassId, resourcePools]
+    [currentSessionClassId, resourcePools],
   );
   const quotaEnforced = false; // TODO: Pass the actual value when available from the API
   return (

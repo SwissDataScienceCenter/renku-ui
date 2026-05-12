@@ -64,11 +64,10 @@ export function UsageQuotaReachedLaunchButton() {
   );
 }
 
-interface SessionLauncherDefaultAction
-  extends Pick<
-    SessionLauncherButtonsProps,
-    "hasSession" | "launcher" | "namespace" | "slug"
-  > {
+interface SessionLauncherDefaultAction extends Pick<
+  SessionLauncherButtonsProps,
+  "hasSession" | "launcher" | "namespace" | "slug"
+> {
   displayBuildActions: boolean;
   displayLaunchSession: boolean;
   imageCheckData: ImageCheckResponse | undefined;
@@ -108,7 +107,7 @@ function SessionLauncherDefaultAction({
       launcherId: launcher.id,
       namespace,
       slug,
-    }
+    },
   );
 
   if (imageCheckLoading)
@@ -135,7 +134,7 @@ function SessionLauncherDefaultAction({
           "btn-sm",
           hasSession ? "btn-outline-primary" : "btn-primary",
           hasSession && "disabled",
-          displayBuildActions ? "rounded-0" : "rounded-end-0"
+          displayBuildActions ? "rounded-0" : "rounded-end-0",
         )}
         to={startUrl}
         data-cy="start-session-button"
@@ -214,12 +213,12 @@ export function SessionLauncherButtons({
       launcherId: launcher.id,
       namespace,
       slug,
-    }
+    },
   );
   const { data, isLoading } = useGetSessionsImagesQuery(
     environment.environment_kind === "CUSTOM" && environment.container_image
       ? { imageUrl: environment.container_image }
-      : skipToken
+      : skipToken,
   );
   const displayLaunchSession =
     !isCodeEnvironment ||

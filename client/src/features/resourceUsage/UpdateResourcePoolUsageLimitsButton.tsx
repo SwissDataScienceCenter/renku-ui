@@ -90,7 +90,7 @@ function UpdateResourcePoolUsageLimitsModal({
       ? {
           resourcePoolId: id,
         }
-      : skipToken
+      : skipToken,
   );
 
   const [updateResourcePoolLimits, result] =
@@ -122,7 +122,7 @@ function UpdateResourcePoolUsageLimitsModal({
         },
       });
     },
-    [id, updateResourcePoolLimits]
+    [id, updateResourcePoolLimits],
   );
 
   useEffect(() => {

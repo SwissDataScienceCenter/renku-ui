@@ -40,7 +40,7 @@ interface SessionCardProps {
 }
 export default function SessionCard({ project, session }: SessionCardProps) {
   const { data: resourcePools } = useGetResourcePoolsQuery(
-    session ? {} : skipToken
+    session ? {} : skipToken,
   );
   const currentSessionClassId = session?.resource_class_id;
   const userLauncherClass = useMemo(
@@ -48,7 +48,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == currentSessionClassId),
-    [currentSessionClassId, resourcePools]
+    [currentSessionClassId, resourcePools],
   );
   if (!session) return null;
 

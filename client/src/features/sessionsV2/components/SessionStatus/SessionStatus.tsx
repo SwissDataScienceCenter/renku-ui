@@ -446,7 +446,7 @@ function SessionStatusV2TextQuotaInformation({
   const pollingInterval = 60 * 1000; // 1 minute
   const { data: resourcePools } = useGetResourcePoolsQuery(
     {},
-    { pollingInterval }
+    { pollingInterval },
   );
   const resourceClass = resourcePools
     ?.flatMap((pool) => pool.classes)

@@ -425,7 +425,7 @@ export function isImageCompatibleWith(
 
 export function usageAvailableString(
   usageAvailableHours: number | undefined,
-  short = false
+  short = false,
 ): string | null {
   if (usageAvailableHours == null) return null;
   if (short) return `${usageAvailableHours}h available`;
