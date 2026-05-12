@@ -28,6 +28,7 @@ import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import type { ResourceClassWithIdFiltered } from "../api/computeResources.api";
 import {
   Build,
   SessionLauncher,
@@ -41,6 +42,28 @@ import BuildLauncherButtons, {
   RebuildLauncherDropdownItem,
 } from "./BuildLauncherButtons";
 
+export function UsageQuotaReachedLaunchButton() {
+  return (
+    <>
+      <UncontrolledTooltip target="launch-btn-quota-exceeded">
+        Please launch using a different resource class. The quota for this
+        resource pool has been fully used.
+      </UncontrolledTooltip>
+      <span id="launch-btn-quota-exceeded">
+        <Button
+          color="outline-primary"
+          className={cx("disabled", "border-end-0", "rounded-end-0")}
+          disabled={true}
+          data-cy="start-session-button"
+          size="sm"
+        >
+          Quota Reached
+        </Button>
+      </span>
+    </>
+  );
+}
+
 interface SessionLauncherDefaultAction extends Pick<
   SessionLauncherButtonsProps,
   "hasSession" | "launcher" | "namespace" | "slug"
@@ -49,6 +72,8 @@ interface SessionLauncherDefaultAction extends Pick<
   displayLaunchSession: boolean;
   imageCheckData: ImageCheckResponse | undefined;
   imageCheckLoading: boolean;
+  resourceClass?: ResourceClassWithIdFiltered;
+  resourcePoolQuotasLoading?: boolean;
 }
 
 function SessionLauncherDefaultAction({
@@ -59,6 +84,7 @@ function SessionLauncherDefaultAction({
   imageCheckLoading,
   launcher,
   namespace,
+  resourceClass,
   slug,
 }: SessionLauncherDefaultAction) {
   const { environment } = launcher;
@@ -90,6 +116,15 @@ function SessionLauncherDefaultAction({
         <Loader size={12} inline /> Checking launcher
       </Button>
     );
+
+  if (resourceClass) {
+    if (
+      resourceClass.usage_hours_remaining != null &&
+      resourceClass.usage_hours_remaining <= 0
+    ) {
+      return <UsageQuotaReachedLaunchButton />;
+    }
+  }
 
   const launchAction = displayLaunchSession && (
     <span id={`launch-btn-${launcher.id}`}>
@@ -151,6 +186,7 @@ interface SessionLauncherButtonsProps {
   launcher: SessionLauncher;
   namespace: string;
   otherActions?: ReactNode;
+  resourceClass?: ResourceClassWithIdFiltered;
   slug: string;
   useOldImage?: boolean;
 }
@@ -160,6 +196,7 @@ export function SessionLauncherButtons({
   launcher,
   namespace,
   otherActions,
+  resourceClass,
   slug,
   useOldImage,
 }: SessionLauncherButtonsProps) {
@@ -203,6 +240,7 @@ export function SessionLauncherButtons({
       hasSession={hasSession}
       launcher={launcher}
       namespace={namespace}
+      resourceClass={resourceClass}
       slug={slug}
     />
   );

@@ -1,0 +1,500 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Renku Data Services API",
+    "description": "This service is the main backend for Renku. It provides information about users, projects,\ncloud storage, access to compute resources and many other things.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api/data"
+    }
+  ],
+  "paths": {
+    "/resource_pools/{resource_pool_id}/usage": {
+      "get": {
+        "summary": "Get usage and limits of the supplied pool. If a `start_date` is not given, the usage of the current week is returned.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_pool_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the pool limits and current usage.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourcePoolUsage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource pool doesn't exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource-usage"]
+      }
+    },
+    "/resource_pools/{resource_pool_id}/limits": {
+      "get": {
+        "summary": "Get resource pool limits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_pool_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the resource pool limits.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourcePoolLimits"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The pool does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource-usage"]
+      },
+      "put": {
+        "summary": "Update resource pool limits.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_pool_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourcePoolLimitPut"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The input limits have been updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourcePoolLimitPut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The pool does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource-usage"]
+      },
+      "delete": {
+        "summary": "Delete resource pool limits.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_pool_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content on success."
+          },
+          "500": {
+            "description": "There was an internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource-usage"]
+      }
+    },
+    "/resource_pools/{resource_pool_id}/classes/{class_id}/cost": {
+      "get": {
+        "summary": "Get resource class costs.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_pool_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "class_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the resource class costs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceClassCost"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The pool/class does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource-usage"]
+      },
+      "put": {
+        "summary": "Update resource class costs.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_pool_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "class_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceClassCostPut"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The input cost that has been set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceClassCostPut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The class does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource-usage"]
+      },
+      "delete": {
+        "summary": "Delete resource class costs.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_pool_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "class_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content on success."
+          },
+          "404": {
+            "description": "The pool/class does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource-usage"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ResourcePoolUsage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "total_usage": {
+            "$ref": "#/components/schemas/ResourceUsageSummary"
+          },
+          "user_usage": {
+            "$ref": "#/components/schemas/ResourceUsageSummary"
+          },
+          "pool_limits": {
+            "$ref": "#/components/schemas/ResourcePoolLimits"
+          }
+        },
+        "required": ["total_usage", "user_usage", "pool_limits"]
+      },
+      "ResourceUsageSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "runtime": {
+            "type": "number",
+            "format": "double"
+          },
+          "cost": {
+            "type": "integer"
+          }
+        },
+        "required": ["runtime", "cost"]
+      },
+      "ResourcePoolLimitPut": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "total_limit": {
+            "type": "integer"
+          },
+          "user_limit": {
+            "type": "integer"
+          }
+        },
+        "required": ["total_limit", "user_limit"]
+      },
+      "ResourceClassCostPut": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cost": {
+            "type": "integer",
+            "description": "The cost of a resource class is an integer that specifies\nthe effective cost of a session using this class running\nfor one hour.\n"
+          }
+        },
+        "required": ["cost"]
+      },
+      "ResourceClassCost": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_pool_id": {
+            "type": "integer"
+          },
+          "resource_class_id": {
+            "type": "integer"
+          },
+          "cost": {
+            "type": "integer"
+          }
+        },
+        "required": ["resource_pool_id", "resource_class_id", "cost"]
+      },
+      "ResourcePoolLimits": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pool_id": {
+            "type": "integer"
+          },
+          "total_limit": {
+            "type": "integer"
+          },
+          "user_limit": {
+            "type": "integer"
+          }
+        },
+        "required": ["pool_id", "total_limit", "user_limit"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              },
+              "trace_id": {
+                "type": "string",
+                "example": "ac93950e9e114a55c67fb8e5ef519bbe",
+                "description": "Sentry trace ID for linking to corresponding log entries"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      },
+      "Ulid": {
+        "description": "ULID identifier",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "type": "http"
+      },
+      "oidc": {
+        "type": "openIdConnect",
+        "openIdConnectUrl": "/auth/realms/Renku/.well-known/openid-configuration"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer": []
+    },
+    {
+      "oidc": ["openid"]
+    }
+  ]
+}
