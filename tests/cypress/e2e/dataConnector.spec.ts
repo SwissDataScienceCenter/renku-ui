@@ -7,13 +7,6 @@ describe("Set up data connectors from a project page", () => {
       .versions()
       .userTest()
       .listNamespaceV2()
-      .dataServicesUser({
-        response: {
-          id: "0945f006-e117-49b7-8966-4c0842146313",
-          username: "user-1",
-          email: "user1@email.com",
-        },
-      })
       .getGroupV2Permissions()
       .getProjectV2Permissions()
       .listProjectV2Members();
@@ -352,11 +345,9 @@ describe("Data connector page", () => {
     fixtures
       .readGenericNamespace()
       .listNamespaceV2()
-      .dataServicesUser({
-        response: {
-          id: "0945f006-e117-49b7-8966-4c0842146313",
-          username,
-          email: "user1@email.com",
+      .userTest({
+        dataServiceUser: {
+          fixture: "dataConnector/data-connector-user.json",
         },
       })
       .getUsersUser({ userName: username })
@@ -472,13 +463,6 @@ describe("Set up data connectors with credentials in project pages", () => {
       .config()
       .versions()
       .userTest()
-      .dataServicesUser({
-        response: {
-          id: "0945f006-e117-49b7-8966-4c0842146313",
-          username: "user-1",
-          email: "user1@email.com",
-        },
-      })
       .projects()
       .landingUserProjects()
       .listNamespaceV2()
@@ -664,13 +648,6 @@ describe("Set up data connectors with credentials in group pages", () => {
       .config()
       .versions()
       .userTest()
-      .dataServicesUser({
-        response: {
-          id: "0945f006-e117-49b7-8966-4c0842146313",
-          username: "user-1",
-          email: "user1@email.com",
-        },
-      })
       .listNamespaceV2()
       .landingUserProjects()
       .listGroupV2()
@@ -1045,128 +1022,102 @@ describe("Set up data connectors with credentials in group pages", () => {
     );
   });
 
-  describe("Set up multiple data connectors", () => {
-    beforeEach(() => {
-      fixtures
-        .config()
-        .versions()
-        .userTest()
-        .dataServicesUser({
-          response: {
-            id: "0945f006-e117-49b7-8966-4c0842146313",
-            username: "user-1",
-            email: "user1@email.com",
+  it("set up one data connector that succeeds, another with failed credentials", () => {
+    fixtures
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .listDataConnectors({ namespace: "test-2-group-v2" })
+      .testCloudStorage({ success: true })
+      .postDataConnector({ namespace: "test-2-group-v2" })
+      .patchDataConnectorSecrets({
+        dataConnectorId: "ULID-5",
+        content: [
+          {
+            name: "access_key_id",
+            value: "access key",
           },
-        })
-        .listNamespaceV2()
-        .landingUserProjects()
-        .listGroupV2()
-        .listGroupV2Members()
-        .listProjectV2ByNamespace()
-        .projects()
-        .readGroupV2()
-        .readGroupV2Namespace();
+          {
+            name: "secret_access_key",
+            value: "secret key",
+          },
+        ],
+      });
+    cy.visit("/g/test-2-group-v2");
+    cy.wait("@readGroupV2");
+    // add data connector
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.wait("@getStorageSchema");
+
+    // Pick a provider
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Fill out the details
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button")
+      .contains("Continue")
+      .click();
+
+    cy.wait("@listNamespaceV2");
+    // eslint-disable-next-line max-nested-callbacks
+    cy.getDataCy("data-connector-edit-mount").within(() => {
+      cy.get("#name").type("example storage");
+      cy.get("#saveCredentials").should("be.checked");
     });
-
-    it("set up one data connector that succeeds, another with failed credentials", () => {
-      fixtures
-        .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-        .listDataConnectors({ namespace: "test-2-group-v2" })
-        .testCloudStorage({ success: true })
-        .postDataConnector({ namespace: "test-2-group-v2" })
-        .patchDataConnectorSecrets({
-          dataConnectorId: "ULID-5",
-          content: [
-            {
-              name: "access_key_id",
-              value: "access key",
-            },
-            {
-              name: "secret_access_key",
-              value: "secret key",
-            },
-          ],
-        });
-      cy.visit("/g/test-2-group-v2");
-      cy.wait("@readGroupV2");
-      // add data connector
-      cy.getDataCy("add-data-connector").should("be.visible").click();
-      cy.wait("@getStorageSchema");
-
-      // Pick a provider
-      cy.getDataCy("data-storage-s3").click();
-      cy.getDataCy("data-provider-AWS").click();
-      cy.getDataCy("data-connector-edit-next-button").click();
-
-      // Fill out the details
-      cy.get("#sourcePath").type("bucket/my-source");
-      cy.get("#access_key_id").type("access key");
-      cy.get("#secret_access_key").type("secret key");
-      cy.getDataCy("test-data-connector-button").click();
-      cy.getDataCy("add-data-connector-continue-button")
-        .contains("Continue")
-        .click();
-
-      cy.wait("@listNamespaceV2");
-      // eslint-disable-next-line max-nested-callbacks
-      cy.getDataCy("data-connector-edit-mount").within(() => {
-        cy.get("#name").type("example storage");
-        cy.get("#saveCredentials").should("be.checked");
-      });
-      cy.getDataCy("data-connector-edit-update-button").click();
-      fixtures.dataConnectorSecrets({
-        fixture: "dataConnector/data-connector-secrets.json",
-        name: "getDataConnectorSecrets",
-      });
-      cy.wait("@postDataConnector");
-      cy.wait("@patchDataConnectorSecrets");
-      cy.getDataCy("data-connector-edit-body").should(
-        "contain.text",
-        "The data connector test-2-group-v2/example-storage has been successfully added"
-      );
-      cy.getDataCy("data-connector-edit-body").should(
-        "contain.text",
-        "credentials were saved"
-      );
-      cy.getDataCy("data-connector-edit-close-button").click();
-      cy.wait("@listDataConnectors");
-
-      fixtures.testCloudStorage({ success: false }).patchDataConnectorSecrets({
-        content: [],
-        // No call to postCloudStorageSecrets is expected
-        shouldNotBeCalled: true,
-      });
-      cy.visit("/g/test-2-group-v2");
-      cy.wait("@readGroupV2");
-      // add data connector
-      cy.getDataCy("add-data-connector").should("be.visible").click();
-      cy.wait("@getStorageSchema");
-
-      // Pick a provider
-      cy.getDataCy("data-storage-s3").click();
-      cy.getDataCy("data-provider-AWS").click();
-      cy.getDataCy("data-connector-edit-next-button").click();
-
-      // Fill out the details
-      cy.get("#sourcePath").type("bucket/my-source");
-      cy.get("#access_key_id").type("access key");
-      cy.get("#secret_access_key").type("secret key");
-      cy.getDataCy("test-data-connector-button").click();
-      cy.getDataCy("add-data-connector-continue-button")
-        .contains("Skip")
-        .click();
-      // eslint-disable-next-line max-nested-callbacks
-      cy.getDataCy("data-connector-edit-mount").within(() => {
-        cy.get("#name").type("example storage without credentials");
-      });
-      cy.getDataCy("data-connector-edit-update-button").click();
-      cy.wait("@postDataConnector");
-      cy.getDataCy("data-connector-edit-body").should(
-        "contain.text",
-        "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
-      );
-      cy.getDataCy("data-connector-edit-close-button").click();
-      cy.wait("@listDataConnectors");
+    cy.getDataCy("data-connector-edit-update-button").click();
+    fixtures.dataConnectorSecrets({
+      fixture: "dataConnector/data-connector-secrets.json",
+      name: "getDataConnectorSecrets",
     });
+    cy.wait("@postDataConnector");
+    cy.wait("@patchDataConnectorSecrets");
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "The data connector test-2-group-v2/example-storage has been successfully added"
+    );
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "credentials were saved"
+    );
+    cy.getDataCy("data-connector-edit-close-button").click();
+    cy.wait("@listDataConnectors");
+
+    fixtures.testCloudStorage({ success: false }).patchDataConnectorSecrets({
+      content: [],
+      // No call to postCloudStorageSecrets is expected
+      shouldNotBeCalled: true,
+    });
+    cy.visit("/g/test-2-group-v2");
+    cy.wait("@readGroupV2");
+    // add data connector
+    cy.getDataCy("add-data-connector").should("be.visible").click();
+    cy.wait("@getStorageSchema");
+
+    // Pick a provider
+    cy.getDataCy("data-storage-s3").click();
+    cy.getDataCy("data-provider-AWS").click();
+    cy.getDataCy("data-connector-edit-next-button").click();
+
+    // Fill out the details
+    cy.get("#sourcePath").type("bucket/my-source");
+    cy.get("#access_key_id").type("access key");
+    cy.get("#secret_access_key").type("secret key");
+    cy.getDataCy("test-data-connector-button").click();
+    cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
+    // eslint-disable-next-line max-nested-callbacks
+    cy.getDataCy("data-connector-edit-mount").within(() => {
+      cy.get("#name").type("example storage without credentials");
+    });
+    cy.getDataCy("data-connector-edit-update-button").click();
+    cy.wait("@postDataConnector");
+    cy.getDataCy("data-connector-edit-body").should(
+      "contain.text",
+      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
+    );
+    cy.getDataCy("data-connector-edit-close-button").click();
+    cy.wait("@listDataConnectors");
   });
 });
