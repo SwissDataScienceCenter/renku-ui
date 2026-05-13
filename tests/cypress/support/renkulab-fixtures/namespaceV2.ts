@@ -58,8 +58,8 @@ interface ProjectV2Args extends SimpleFixture {
   projectSlug?: string;
 }
 
-interface GenericNamespaceArgs extends SimpleFixture {
-  slug?: string;
+interface UserNamespaceV2Args extends SimpleFixture {
+  username?: string;
 }
 
 function generateGroups(numberOfGroups: number, start: number) {
@@ -338,14 +338,16 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    readGenericNamespace(args?: GenericNamespaceArgs) {
+    readUserV2Namespace(args?: UserNamespaceV2Args) {
       const {
         fixture = "namespaceV2/namespaceV2-user1.json",
-        name = "readGenericNamespace",
-        slug = "user1-uuid",
+        name = "readUserV2Namespace",
+        username = "user1-uuid",
       } = args ?? {};
       const response = { fixture };
-      cy.intercept("GET", `/api/data/namespaces/${slug}`, response).as(name);
+      cy.intercept("GET", `/api/data/namespaces/${username}`, response).as(
+        name
+      );
       return this;
     }
 
