@@ -454,8 +454,9 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
                     }}
                   />
                   <Label
-                    for="data-controller-visibility-public"
                     className={cx("btn", "btn-outline-primary")}
+                    data-cy="data-controller-visibility-public-html"
+                    for="data-controller-visibility-public"
                   >
                     <Globe className={cx("bi", "me-1")} />
                     Public
@@ -474,8 +475,9 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
                     }}
                   />
                   <Label
-                    for="data-controller-visibility-private"
                     className={cx("btn", "btn-outline-primary")}
+                    data-cy="data-controller-visibility-private-html"
+                    for="data-controller-visibility-private"
                   >
                     <Lock className={cx("bi", "me-1")} />
                     Private
