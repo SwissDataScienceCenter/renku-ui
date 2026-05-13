@@ -343,7 +343,7 @@ describe("Data connector page", () => {
 
   beforeEach(() => {
     fixtures
-      .readGenericNamespace()
+      .readUserV2Namespace()
       .listNamespaceV2()
       .userTest({
         dataServiceUser: {
@@ -401,10 +401,11 @@ describe("Data connector page", () => {
     cy.getDataCy("data-connector-edit-close-button").click();
 
     // Open the data connector page
-    fixtures.readGenericNamespace({
+    fixtures.getDataConnectorByNamespaceAndSlug({
       name: "data-connector-no-credentials-namespace",
       fixture: "dataConnector/data-connector-user1-example-no-credentials.json",
-      slug: `${username}/data_connectors/${dataConnectorSlug}`,
+      namespace: username,
+      slug: dataConnectorSlug,
     });
     cy.getDataCy("data-connector-item")
       .should("have.length", 1)
@@ -422,11 +423,12 @@ describe("Data connector page", () => {
 
   it("Use the settings page", () => {
     fixtures
-      .readGenericNamespace({
+      .getDataConnectorByNamespaceAndSlug({
         name: "data-connector-no-credentials-namespace",
         fixture:
           "dataConnector/data-connector-user1-example-no-credentials.json",
-        slug: `${username}/data_connectors/${dataConnectorSlug}`,
+        namespace: username,
+        slug: dataConnectorSlug,
       })
       .getDataConnectorPermissions({
         dataConnectorId: "0945f006-e117-49b7-8966-4c0842146313",
