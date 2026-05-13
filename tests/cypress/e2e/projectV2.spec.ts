@@ -312,7 +312,7 @@ describe("Edit v2 project", () => {
     cy.get("a[title='Settings']").should("be.visible").click();
     // Fetch the second page of namespaces
     cy.wait("@listNamespaceV2");
-    cy.wait("@readGenericNamespace");
+    cy.wait("@readUserV2Namespace");
     cy.findReactSelectOptions(
       "project-settings-form-project-namespace-input",
       "namespace-select"
