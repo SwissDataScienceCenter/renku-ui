@@ -19,7 +19,14 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { CircleFill, Link45deg, Pencil, Trash } from "react-bootstrap-icons";
+import {
+  CircleFill,
+  Gear,
+  Link45deg,
+  Pencil,
+  PlayCircle,
+  Trash,
+} from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
@@ -40,6 +47,8 @@ import {
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
+import JobLauncherButtons from "../components/JobLauncherButtons";
+import JobLauncherDropdownActions from "../components/JobLauncherDropdownActions";
 import {
   EnvironmentIcon,
   LauncherEnvironmentIcon,
@@ -47,6 +56,7 @@ import {
 import { SessionLauncherButtons } from "../components/SessionLauncherButtons";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
+import { isJobLauncher } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionCard from "./SessionCard";
 
@@ -86,14 +96,17 @@ export default function SessionLauncherCard({
   const { data: builds, isLoading } = useGetBuildsQuery(
     imageBuildersEnabled && isCodeEnvironment
       ? { environmentId: environment.id }
-      : skipToken,
+      : skipToken
   );
 
   const lastBuild = builds?.at(0);
   const lastSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
+    (build) => build.status === "succeeded" && build.id !== lastBuild?.id
   );
   const hasSession = !!sessions?.length;
+  const isJob = launcher != null && isJobLauncher(launcher);
+  const LauncherTypeIcon = isJob ? Gear : PlayCircle;
+  const launcherTypeLabel = isJob ? "Job Launcher" : "Session Launcher";
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
     isCodeEnvironment && lastBuild?.status === "in_progress"
@@ -101,23 +114,28 @@ export default function SessionLauncherCard({
       : skipToken,
     {
       pollingInterval: 1_000,
-    },
+    }
   );
 
-  const otherLauncherActions = launcher &&
-    toggleUpdate &&
-    toggleDelete &&
-    toggleShareLink &&
-    toggleUpdateEnvironment && (
-      <SessionLauncherDropdownActions
-        project={project}
-        launcher={launcher}
-        toggleDelete={toggleDelete}
-        toggleUpdate={toggleUpdate}
-        toggleUpdateEnvironment={toggleUpdateEnvironment}
-        toggleShareLink={toggleShareLink}
-      />
-    );
+  const otherLauncherActions =
+    launcher &&
+    (isJob ? (
+      <JobLauncherDropdownActions launcher={launcher} />
+    ) : (
+      toggleUpdate &&
+      toggleDelete &&
+      toggleShareLink &&
+      toggleUpdateEnvironment && (
+        <SessionLauncherDropdownActions
+          project={project}
+          launcher={launcher}
+          toggleDelete={toggleDelete}
+          toggleUpdate={toggleUpdate}
+          toggleUpdateEnvironment={toggleUpdateEnvironment}
+          toggleShareLink={toggleShareLink}
+        />
+      )
+    ));
 
   const ENVIRONMENT_KIND_CLASSES = [
     "align-items-center",
@@ -132,7 +150,7 @@ export default function SessionLauncherCard({
     useGetSessionsImagesQuery(
       environment?.container_image != null
         ? { imageUrl: environment.container_image }
-        : skipToken,
+        : skipToken
     );
 
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
@@ -144,7 +162,7 @@ export default function SessionLauncherCard({
       return undefined;
     }
     return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id),
+      classes.some(({ id }) => id === launcher.resource_class_id)
     );
   }, [launcher?.resource_class_id, resourcePools]);
 
@@ -154,7 +172,7 @@ export default function SessionLauncherCard({
         styles.SessionLauncherCard,
         "cursor-pointer",
         "shadow-none",
-        "rounded-0",
+        "rounded-0"
       )}
       data-cy="session-launcher-item"
       onClick={toggleSessionView}
@@ -170,8 +188,18 @@ export default function SessionLauncherCard({
                   xl={4}
                   className={cx("d-inline-block", "link-primary", "text-body")}
                 >
-                  <span className={cx("small", "text-muted", "me-3")}>
-                    Session Launcher
+                  <span
+                    className={cx(
+                      "small",
+                      "text-muted",
+                      "me-3",
+                      "d-inline-flex",
+                      "align-items-center",
+                      "gap-1"
+                    )}
+                  >
+                    <LauncherTypeIcon className={cx("bi")} size={14} />
+                    {launcherTypeLabel}
                   </span>
                 </Col>
                 <Col xs={12} xl="auto">
@@ -266,8 +294,8 @@ export default function SessionLauncherCard({
                         lastBuild?.status === "succeeded"
                           ? lastBuild?.result?.completed_at
                           : lastSuccessfulBuild?.status === "succeeded"
-                            ? lastSuccessfulBuild?.result?.completed_at
-                            : undefined
+                          ? lastSuccessfulBuild?.result?.completed_at
+                          : undefined
                       }
                     />
                   </Col>
@@ -292,22 +320,29 @@ export default function SessionLauncherCard({
                     "d-flex",
                     "flex-column",
                     "align-items-end",
-                    "gap-2",
+                    "gap-2"
                   )}
                 >
-                  <SessionLauncherButtons
-                    hasSession={hasSession}
-                    lastBuild={lastBuild}
-                    launcher={launcher}
-                    namespace={project.namespace}
-                    otherActions={otherLauncherActions}
-                    slug={project.slug}
-                    useOldImage={
-                      isCodeEnvironment &&
-                      lastBuild?.status !== "succeeded" &&
-                      !!lastSuccessfulBuild
-                    }
-                  />
+                  {isJob ? (
+                    <JobLauncherButtons
+                      launcher={launcher}
+                      otherActions={otherLauncherActions}
+                    />
+                  ) : (
+                    <SessionLauncherButtons
+                      hasSession={hasSession}
+                      lastBuild={lastBuild}
+                      launcher={launcher}
+                      namespace={project.namespace}
+                      otherActions={otherLauncherActions}
+                      slug={project.slug}
+                      useOldImage={
+                        isCodeEnvironment &&
+                        lastBuild?.status !== "succeeded" &&
+                        !!lastSuccessfulBuild
+                      }
+                    />
+                  )}
                   {isCodeEnvironment &&
                     lastBuild?.status !== "succeeded" &&
                     lastSuccessfulBuild && (

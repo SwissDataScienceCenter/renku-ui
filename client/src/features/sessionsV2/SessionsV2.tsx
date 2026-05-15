@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
+import { Pencil, RocketTakeoff, Trash } from "react-bootstrap-icons";
 import { generatePath } from "react-router";
 import {
   Badge,
@@ -49,7 +49,7 @@ import { SessionView } from "./SessionView/SessionView";
 
 export function getShowSessionUrlByProject(
   project: Project,
-  sessionName: string,
+  sessionName: string
 ) {
   return generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
     namespace: project.namespace,
@@ -87,10 +87,10 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         ? sessions.filter(
             (session) =>
               launchers.every(({ id }) => session.launcher_id !== id) &&
-              session.project_id === projectId,
+              session.project_id === projectId
           )
         : [],
-    [launchers, sessions, projectId],
+    [launchers, sessions, projectId]
   );
 
   const loading = isLoading && (
@@ -140,13 +140,13 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         className={cx(
           "align-items-center",
           "d-flex",
-          "justify-content-between",
+          "justify-content-between"
         )}
       >
         <div className={cx("align-items-center", "d-flex")}>
           <h2 className={cx("mb-0", "me-2")}>
-            <PlayCircle className={cx("me-1", "bi")} />
-            Sessions
+            <RocketTakeoff className={cx("me-1", "bi")} />
+            Launchers
           </h2>
           <Badge>{totalSessions}</Badge>
         </div>
@@ -246,11 +246,11 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
   const [hash, setHash] = useLocationHash();
   const sessionHash = useMemo(
     () => `orphan-session-${session.name}`,
-    [session.name],
+    [session.name]
   );
   const isSessionViewOpen = useMemo(
     () => hash === sessionHash,
-    [hash, sessionHash],
+    [hash, sessionHash]
   );
   const toggleSessionView = useCallback(() => {
     setHash((prev) => {

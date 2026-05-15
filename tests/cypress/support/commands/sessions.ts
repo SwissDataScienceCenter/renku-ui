@@ -32,9 +32,19 @@ function openSession() {
     .click();
 }
 
+function openSessionLauncherCreateFlow() {
+  cy.getDataCy("add-session-launcher").click();
+  cy.getDataCy("launcher-type-selector-modal").should("be.visible");
+  cy.getDataCy("launcher-option-session").click();
+}
+
 export default function registerSessionsCommands() {
   Cypress.Commands.add("openLogs", openLogs);
   Cypress.Commands.add("openSession", openSession);
+  Cypress.Commands.add(
+    "openSessionLauncherCreateFlow",
+    openSessionLauncherCreateFlow
+  );
 }
 
 declare global {
@@ -43,6 +53,7 @@ declare global {
     interface Chainable {
       openLogs: typeof openLogs;
       openSession: typeof openSession;
+      openSessionLauncherCreateFlow: typeof openSessionLauncherCreateFlow;
     }
   }
 }

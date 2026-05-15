@@ -23,18 +23,31 @@ import { ButtonGroup } from "reactstrap";
 
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
+import { getLauncherCategoryDefinition } from "../../session.utils";
+import type { LauncherCategory } from "../../sessionsV2.types";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentIcon } from "./LauncherEnvironmentIcon";
 
 interface EnvironmentKindFieldProps {
   control: Control<SessionLauncherForm>;
+  launcherCategory: LauncherCategory;
 }
+
 export default function EnvironmentKindField({
   control,
+  launcherCategory,
 }: EnvironmentKindFieldProps) {
   const { params } = useContext(AppContext);
+  const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
   const imageBuildersEnabled =
     params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+  const showBuildOption =
+    imageBuildersEnabled &&
+    categoryDefinition.allowedEnvironmentSelects.includes("custom + build");
+  const showImageOption =
+    categoryDefinition.allowedEnvironmentSelects.includes("custom + image");
+  const showGlobalOption =
+    categoryDefinition.allowedEnvironmentSelects.includes("global");
 
   return (
     <Controller
@@ -43,54 +56,64 @@ export default function EnvironmentKindField({
       render={({ field }) => (
         <div className={cx("d-flex", "gap-4")}>
           <ButtonGroup size="sm">
-            <input
-              type="radio"
-              className="btn-check"
-              name={field.name}
-              autoComplete="off"
-              checked={field.value === "global"}
-              id="environment-kind-global-radio"
-              onChange={() => field.onChange("global")}
-              onBlur={field.onBlur}
-            />
-            <label
-              className={cx(
-                "btn",
-                "btn-outline-primary",
-                "p-2",
-                "p-md-4",
-                "d-flex",
-                "justify-content-center",
-              )}
-              data-cy="environment-kind-global"
-              htmlFor="environment-kind-global-radio"
-              style={{ width: "33.3%" }}
-            >
-              <div className={cx("d-flex", "flex-column", "gap-2")}>
-                <div
+            {showGlobalOption && (
+              <>
+                <input
+                  type="radio"
+                  className="btn-check"
+                  name={field.name}
+                  autoComplete="off"
+                  checked={field.value === "global"}
+                  id="environment-kind-global-radio"
+                  onChange={() => field.onChange("global")}
+                  onBlur={field.onBlur}
+                />
+                <label
                   className={cx(
+                    "btn",
+                    "btn-outline-primary",
+                    "p-2",
+                    "p-md-4",
                     "d-flex",
-                    "flex-row",
-                    "gap-3",
-                    "text-center",
-                    "text-md-start",
-                    "align-items-center",
+                    "justify-content-center"
                   )}
+                  data-cy="environment-kind-global"
+                  htmlFor="environment-kind-global-radio"
                 >
-                  <EnvironmentIcon
-                    type="global"
-                    size={30}
-                    className={cx("d-none", "d-md-block")}
-                  />
-                  <span className="fw-bold">Global environment</span>
-                </div>
-                <p className={cx("mb-0", "text-start", "d-none", "d-md-block")}>
-                  Get started quickly with a pre-built environment.
-                </p>
-              </div>
-            </label>
+                  <div className={cx("d-flex", "flex-column", "gap-2")}>
+                    <div
+                      className={cx(
+                        "d-flex",
+                        "flex-row",
+                        "gap-3",
+                        "text-center",
+                        "text-md-start",
+                        "align-items-center"
+                      )}
+                    >
+                      <EnvironmentIcon
+                        type="global"
+                        size={30}
+                        className={cx("d-none", "d-md-block")}
+                      />
+                      <span className="fw-bold">Global environment</span>
+                    </div>
+                    <p
+                      className={cx(
+                        "mb-0",
+                        "text-start",
+                        "d-none",
+                        "d-md-block"
+                      )}
+                    >
+                      Get started quickly with a pre-built environment.
+                    </p>
+                  </div>
+                </label>
+              </>
+            )}
 
-            {imageBuildersEnabled && (
+            {showBuildOption && (
               <>
                 <input
                   type="radio"
@@ -109,10 +132,10 @@ export default function EnvironmentKindField({
                     "p-2",
                     "p-md-4",
                     "d-flex",
-                    "justify-content-center",
+                    "justify-content-center"
                   )}
+                  data-cy="environment-kind-builder"
                   htmlFor="environment-kind-builder-radio"
-                  style={{ width: "33.3%" }}
                 >
                   <div className={cx("d-flex", "flex-column", "gap-2")}>
                     <div
@@ -122,7 +145,7 @@ export default function EnvironmentKindField({
                         "gap-3",
                         "text-center",
                         "text-md-start",
-                        "align-items-center",
+                        "align-items-center"
                       )}
                     >
                       <EnvironmentIcon
@@ -137,63 +160,76 @@ export default function EnvironmentKindField({
                         "mb-0",
                         "text-start",
                         "d-none",
-                        "d-md-block",
+                        "d-md-block"
                       )}
                     >
-                      Customize your session with a requirements.txt or similar
-                      file.
+                      {launcherCategory === "job"
+                        ? "Build a container image from your code repository."
+                        : "Customize your session with a requirements.txt or similar file."}
                     </p>
                   </div>
                 </label>
               </>
             )}
 
-            <input
-              type="radio"
-              className="btn-check"
-              name={field.name}
-              autoComplete="off"
-              checked={field.value === "custom + image"}
-              id="environment-kind-custom-radio"
-              onChange={() => field.onChange("custom + image")}
-              onBlur={field.onBlur}
-            />
-            <label
-              className={cx(
-                "btn",
-                "btn-outline-primary",
-                "p-2",
-                "p-md-4",
-                "d-flex",
-                "justify-content-center",
-              )}
-              data-cy="environment-kind-custom"
-              htmlFor="environment-kind-custom-radio"
-              style={{ width: "33.3%" }}
-            >
-              <div className={cx("d-flex", "flex-column", "gap-2")}>
-                <div
+            {showImageOption && (
+              <>
+                <input
+                  type="radio"
+                  className="btn-check"
+                  name={field.name}
+                  autoComplete="off"
+                  checked={field.value === "custom + image"}
+                  id="environment-kind-custom-radio"
+                  onChange={() => field.onChange("custom + image")}
+                  onBlur={field.onBlur}
+                />
+                <label
                   className={cx(
+                    "btn",
+                    "btn-outline-primary",
+                    "p-2",
+                    "p-md-4",
                     "d-flex",
-                    "flex-row",
-                    "gap-3",
-                    "text-center",
-                    "text-md-start",
-                    "align-items-center",
+                    "justify-content-center"
                   )}
+                  data-cy="environment-kind-custom"
+                  htmlFor="environment-kind-custom-radio"
                 >
-                  <EnvironmentIcon
-                    type="custom"
-                    size={30}
-                    className={cx("d-none", "d-md-block")}
-                  />
-                  <span className="fw-bold">External environment</span>
-                </div>
-                <p className={cx("mb-0", "text-start", "d-none", "d-md-block")}>
-                  Run a session from a preexisting docker image.
-                </p>
-              </div>
-            </label>
+                  <div className={cx("d-flex", "flex-column", "gap-2")}>
+                    <div
+                      className={cx(
+                        "d-flex",
+                        "flex-row",
+                        "gap-3",
+                        "text-center",
+                        "text-md-start",
+                        "align-items-center"
+                      )}
+                    >
+                      <EnvironmentIcon
+                        type="custom"
+                        size={30}
+                        className={cx("d-none", "d-md-block")}
+                      />
+                      <span className="fw-bold">External environment</span>
+                    </div>
+                    <p
+                      className={cx(
+                        "mb-0",
+                        "text-start",
+                        "d-none",
+                        "d-md-block"
+                      )}
+                    >
+                      {launcherCategory === "job"
+                        ? "Run a job from a preexisting container image."
+                        : "Run a session from a preexisting docker image."}
+                    </p>
+                  </div>
+                </label>
+              </>
+            )}
           </ButtonGroup>
         </div>
       )}

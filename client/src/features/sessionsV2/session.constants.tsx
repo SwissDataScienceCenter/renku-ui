@@ -37,7 +37,12 @@ import faviconWaitingICO from "../../styles/assets/favicon/FaviconWaiting.ico";
 import faviconWaitingSVG from "../../styles/assets/favicon/FaviconWaiting.svg";
 import faviconWaiting16px from "../../styles/assets/favicon/FaviconWaiting16px.png";
 import faviconWaiting32px from "../../styles/assets/favicon/FaviconWaiting32px.png";
-import { BuilderSelectorOption } from "./sessionsV2.types";
+import type {
+  BuilderSelectorOption,
+  LauncherCategory,
+  LauncherCategoryDefinition,
+  LauncherOptionIcon,
+} from "./sessionsV2.types";
 
 export const DEFAULT_URL = "/";
 export const DEFAULT_PORT = 8888;
@@ -197,3 +202,52 @@ export const DEFAULT_POLLING_INTERVAL_MS = 5_000;
 export const MIN_SESSION_STORAGE_GB = 1;
 
 export const STEP_SESSION_STORAGE_GB = 1;
+
+export interface LauncherOption {
+  category: LauncherCategory;
+  icon: LauncherOptionIcon;
+  title: string;
+  description: string;
+}
+
+/* eslint-disable spellcheck/spell-checker -- product copy */
+export const LAUNCHER_OPTIONS: LauncherOption[] = [
+  {
+    category: "session",
+    icon: "play-circle",
+    title: "Session",
+    description:
+      "Launch interactive development sessions with repositories, environments, and live workspace access.",
+  },
+  {
+    category: "job",
+    icon: "gear",
+    title: "Job",
+    description:
+      "Run non-interactive workloads such as builds, automation, and scheduled tasks.",
+  },
+];
+
+export const LAUNCHER_CATEGORY_BY_CATEGORY: Record<
+  LauncherCategory,
+  LauncherCategoryDefinition
+> = {
+  session: {
+    apiType: "interactive",
+    title: "Session",
+    chooserDescription:
+      "Launch interactive development sessions with repositories, environments, and live workspace access.",
+    createIntro:
+      "Define an interactive environment in which to do your work and share it with others.",
+    allowedEnvironmentSelects: ["global", "custom + build", "custom + image"],
+  },
+  job: {
+    apiType: "non-interactive",
+    title: "Job",
+    chooserDescription:
+      "Run non-interactive workloads such as builds, automation, and scheduled tasks.",
+    createIntro:
+      "Define a non-interactive environment for running jobs such as builds, automation, and scheduled tasks.",
+    allowedEnvironmentSelects: ["custom + build", "custom + image"],
+  },
+};

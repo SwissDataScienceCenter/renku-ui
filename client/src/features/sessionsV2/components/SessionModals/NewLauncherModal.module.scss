@@ -1,0 +1,6 @@
+.LauncherOptionCard {
+  &:hover {
+    background-color: rgba(var(--bs-primary-rgb)) !important;
+    color: #fff;
+  }
+}

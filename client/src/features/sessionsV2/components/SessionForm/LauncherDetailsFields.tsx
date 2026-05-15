@@ -36,13 +36,21 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../session.constants";
+import { getLauncherCategoryDefinition } from "../../session.utils";
+import type { LauncherCategory } from "../../sessionsV2.types";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import SessionClassSelector from "../SessionClassSelector";
 
 interface LauncherDetailsFieldsProps {
   control: Control<SessionLauncherForm>;
+  launcherCategory: LauncherCategory;
 }
-export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
+
+export function LauncherDetailsFields({
+  control,
+  launcherCategory,
+}: LauncherDetailsFieldsProps) {
+  const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
   const {
     data: resourcePools,
     isLoading: isLoadingResourcesPools,
@@ -57,7 +65,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
         .find((c) => c.default) ??
       resourcePools?.find(() => true)?.classes[0] ??
       undefined,
-    [resourcePools],
+    [resourcePools]
   );
 
   const watchCurrentSessionClass = useWatch({
@@ -72,7 +80,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
       <h3 className="mb-0">2 of 2. Define launcher details</h3>
       <div>
         <Label className="form-label" for="addSessionLauncherName">
-          Session launcher name
+          {categoryDefinition.title} launcher name
         </Label>
         <Controller
           control={control}
@@ -81,7 +89,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
             <Input
               className={cx(error && "is-invalid")}
               id="addSessionLauncherName"
-              placeholder="session name"
+              placeholder={`${categoryDefinition.title} name`}
               type="text"
               data-cy="launcher-name-input"
               autoFocus={true}
@@ -94,7 +102,7 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
       </div>
       <div>
         <Label className="form-label" for="addSessionResourceClass">
-          Session launcher compute resources
+          {categoryDefinition.title} launcher compute resources
         </Label>
         {resourcePoolsError && (
           <RtkOrDataServicesError
@@ -140,7 +148,8 @@ export function LauncherDetailsFields({ control }: LauncherDetailsFieldsProps) {
           </>
         ) : (
           <WarnAlert>
-            There are no one resource pool available to create a session
+            There are no one resource pool available to create a{" "}
+            {launcherCategory} launcher
           </WarnAlert>
         )}
 

@@ -24,7 +24,7 @@ import { parseDocument } from "yaml";
 
 const GH_BASE_URL = "https://raw.githubusercontent.com";
 const DATA_SERVICES_REPO = "SwissDataScienceCenter/renku-data-services";
-const DATA_SERVICES_RELEASE = "main";
+const DATA_SERVICES_RELEASE = "eikek/session-launcher-type";
 
 async function main() {
   argv.forEach((arg) => {
@@ -155,12 +155,12 @@ async function updateApiFiles({ specFile, destFile }) {
   const DEST_FILE = destFile;
 
   console.log(
-    `Updating "${DEST_FILE}" with spec file from release ${DATA_SERVICES_RELEASE}...`,
+    `Updating "${DEST_FILE}" with spec file from release ${DATA_SERVICES_RELEASE}...`
   );
 
   const fileUrl = new URL(
     join(DATA_SERVICES_REPO, DATA_SERVICES_RELEASE, API_SPEC_FILE),
-    GH_BASE_URL,
+    GH_BASE_URL
   );
   const res = await fetch(fileUrl);
   if (res.status >= 400) {
@@ -179,7 +179,7 @@ async function updateApiFiles({ specFile, destFile }) {
   await new Promise((resolve, reject) => {
     const cp = exec(["npx", "prettier", "-w", DEST_FILE].join(" "));
     cp.on("error", (error) =>
-      reject(new Error("failed to run prettier", { cause: error })),
+      reject(new Error("failed to run prettier", { cause: error }))
     );
     cp.on("exit", (code) => {
       code == 0 ? resolve() : reject(new Error("failed to run prettier"));

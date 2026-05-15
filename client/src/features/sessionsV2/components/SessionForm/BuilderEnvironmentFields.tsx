@@ -19,7 +19,8 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { type Control } from "react-hook-form";
+import { Controller, type Control } from "react-hook-form";
+import { FormText, Label } from "reactstrap";
 
 import { useProject } from "~/routes/projects/root";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
@@ -28,7 +29,11 @@ import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useGetRepositoriesQuery } from "../../../repositories/api/repositories.api";
-import type { SessionLauncherForm } from "../../sessionsV2.types";
+import { isValidJSONStringArray } from "../../session.utils";
+import type {
+  LauncherCategory,
+  SessionLauncherForm,
+} from "../../sessionsV2.types";
 import BuilderAdvancedSettings from "./BuilderAdvancedSettings";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
@@ -38,11 +43,13 @@ import CodeRepositorySelector from "./CodeRepositorySelector";
 interface BuilderEnvironmentFieldsProps {
   control: Control<SessionLauncherForm>;
   isEdit?: boolean;
+  launcherCategory?: LauncherCategory;
 }
 
 export default function BuilderEnvironmentFields({
   control,
   isEdit,
+  launcherCategory = "session",
 }: BuilderEnvironmentFieldsProps) {
   const { params } = useContext(AppContext);
   const imageBuildersEnabled =
@@ -52,7 +59,7 @@ export default function BuilderEnvironmentFields({
   const repositories = project.repositories ?? [];
 
   const { data, isLoading, error } = useGetRepositoriesQuery(
-    repositories.length > 0 ? repositories : skipToken,
+    repositories.length > 0 ? repositories : skipToken
   );
 
   const firstEligibleRepository = useMemo(
@@ -60,9 +67,9 @@ export default function BuilderEnvironmentFields({
       data?.findIndex(
         (repo) =>
           repo.data?.status === "valid" &&
-          repo.data.metadata?.visibility === "public",
+          repo.data.metadata?.visibility === "public"
       ),
-    [data],
+    [data]
   );
 
   if (!imageBuildersEnabled) {
@@ -105,8 +112,46 @@ export default function BuilderEnvironmentFields({
         <CodeRepositoryAdvancedSettings control={control} />
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
-      <BuilderFrontendSelector name="frontend_variant" control={control} />
-      <BuilderAdvancedSettings control={control} />
+      {launcherCategory === "session" && (
+        <BuilderFrontendSelector name="frontend_variant" control={control} />
+      )}
+      {launcherCategory === "job" && (
+        <div>
+          <Label className="form-label" for="addSessionLauncherJobCommand">
+            Job command
+          </Label>
+          <Controller
+            control={control}
+            name="command"
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <textarea
+                  className={cx("w-100 form-control", error && "is-invalid")}
+                  data-cy="job-command-input"
+                  id="addSessionLauncherJobCommand"
+                  placeholder='["npm", "run", "build"]'
+                  rows={2}
+                  {...field}
+                />
+                {error && (
+                  <div className="invalid-feedback mt-0 d-block">
+                    {error.message}
+                  </div>
+                )}
+              </>
+            )}
+            rules={{
+              validate: (value) => isValidJSONStringArray(value?.toString()),
+            }}
+          />
+          <FormText>
+            Command to run when submitting a job (JSON array format).
+          </FormText>
+        </div>
+      )}
+      {launcherCategory === "session" && (
+        <BuilderAdvancedSettings control={control} />
+      )}
     </div>
   );
 
