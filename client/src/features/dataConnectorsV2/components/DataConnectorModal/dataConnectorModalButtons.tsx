@@ -351,7 +351,9 @@ function TestConnectionAndContinueButtons({
       });
     }
     dispatch(
-      dataConnectorFormSlice.actions.setActionOngoing({ isActionOngoing: true })
+      dataConnectorFormSlice.actions.setActionOngoing({
+        isActionOngoing: true,
+      })
     );
     validateCloudStorageConnection({ body: validateParameters }).then(
       (result) => {

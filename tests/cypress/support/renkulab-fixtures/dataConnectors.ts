@@ -83,7 +83,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/api/data/data_connectors/${dataConnectorId}/secrets`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -105,13 +105,13 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "DELETE",
         `/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
-        response
+        response,
       ).as(name);
       return this;
     }
 
     deleteDataConnectorProjectLinkNotAllowed(
-      args?: DeleteDataConnectorProjectLinkArgs
+      args?: DeleteDataConnectorProjectLinkArgs,
     ) {
       const {
         name = "deleteDataConnectorProjectLinkNotAllowed",
@@ -131,7 +131,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "DELETE",
         `/api/data/data_connectors/${dataConnectorId}/project_links/${linkId}`,
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -145,7 +145,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "DELETE",
         `/api/data/data_connectors/${dataConnectorId}/secrets`,
-        { body: null, delay: 1000 }
+        { body: null, delay: 1000 },
       ).as(name);
       return this;
     }
@@ -169,7 +169,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
               };
             })[0];
             req.reply({ body: response });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -186,7 +186,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/api/data/namespaces/${namespace}/data_connectors/${slug}`,
-        { fixture }
+        { fixture },
       ).as(name);
       return this;
     }
@@ -204,7 +204,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
           `/api/data/data_connectors/global/${slug}`,
           (req) => {
             req.reply({ body });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -223,7 +223,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
           `/api/data/data_connectors/${dataConnectorId}/permissions`,
           (req) => {
             req.reply({ body: permissions });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -248,7 +248,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
               };
             });
             req.reply({ body: response });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -273,7 +273,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
               };
             });
             req.reply({ body: response });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -298,7 +298,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
               };
             });
             req.reply({ body: response, delay: 1000 });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -353,7 +353,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
               expect(secret.value).equal(content[index].value);
             });
             req.reply({ body: secrets, delay: 1000 });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -418,7 +418,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
               statusCode: 201,
               delay: 1000,
             });
-          }
+          },
         ).as(name);
       });
       return this;
@@ -437,7 +437,7 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
           }
           if (req.body.storage.configuration.doi != doi) {
             throw new Error(
-              `storage.configuration.doi ${req.body.storage.configuration.doi} must equal ${doi}`
+              `storage.configuration.doi ${req.body.storage.configuration.doi} must equal ${doi}`,
             );
           }
           req.reply({ body: dataConnector, statusCode: 201, delay: 1000 });

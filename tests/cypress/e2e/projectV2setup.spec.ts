@@ -57,7 +57,7 @@ describe("Set up project components", () => {
     cy.getDataCy("add-code-repository").click();
 
     cy.getDataCy("project-add-repository-url").type(
-      "https://gitlab.dev.renku.ch/url-repo.git"
+      "https://gitlab.dev.renku.ch/url-repo.git",
     );
     cy.getDataCy("add-code-repository-modal-button").click();
 
@@ -238,7 +238,7 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "A variable name is made up of letters, numbers and '_'."
+      "A variable name is made up of letters, numbers and '_'.",
     );
     cy.getDataCy("env-variables-input_0-name").clear().type("TEST");
     cy.getDataCy("env-variables-input_0-value").clear().type("1");
@@ -325,13 +325,13 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "A variable name is made up of letters, numbers and '_'."
+      "A variable name is made up of letters, numbers and '_'.",
     );
     cy.getDataCy("env-variables-input_0-name").clear().type("RENKU_VALUE");
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Variable names cannot start with 'RENKU'."
+      "Variable names cannot start with 'RENKU'.",
     );
 
     const longName = "a".repeat(257);
@@ -341,11 +341,11 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Name can be at most 256 characters."
+      "Name can be at most 256 characters.",
     );
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Value can be at most 500 characters."
+      "Value can be at most 500 characters.",
     );
   });
 
@@ -419,7 +419,7 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("session-launcher-menu-share-link").click();
     cy.getDataCy("customize-launch-link-expand").click();
     cy.contains(
-      "To customize your launch link, first add environment variables"
+      "To customize your launch link, first add environment variables",
     ).should("be.visible");
   });
 });
@@ -762,7 +762,7 @@ describe("Repository connection cases", () => {
       .invoke("text")
       .should(
         "include",
-        "You need to be logged in to activate integrations and access private repositories."
+        "You need to be logged in to activate integrations and access private repositories.",
       );
     cy.getDataCy("code-repository-alert")
       .invoke("text")

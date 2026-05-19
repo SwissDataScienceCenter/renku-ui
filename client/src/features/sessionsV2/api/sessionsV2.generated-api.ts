@@ -43,7 +43,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/sessions/${queryArg.sessionId}/logs`,
-        params: { max_lines: queryArg.maxLines },
+        params: {
+          max_lines: queryArg.maxLines,
+        },
       }),
     }),
     getSessionsImages: build.query<
@@ -52,7 +54,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/sessions/images`,
-        params: { image_url: queryArg.imageUrl },
+        params: {
+          image_url: queryArg.imageUrl,
+        },
       }),
     }),
   }),
@@ -74,8 +78,7 @@ export type GetSessionsBySessionIdApiArg = {
   /** The id of the session */
   sessionId: string;
 };
-export type DeleteSessionsBySessionIdApiResponse =
-  /** status 204 The session was deleted or it never existed in the first place */ void;
+export type DeleteSessionsBySessionIdApiResponse = unknown;
 export type DeleteSessionsBySessionIdApiArg = {
   /** The id of the session that should be deleted */
   sessionId: string;

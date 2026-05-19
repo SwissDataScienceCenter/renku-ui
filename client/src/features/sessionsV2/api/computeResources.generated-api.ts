@@ -62,7 +62,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/resource_pools`,
-        params: { resource_pools_params: queryArg.resourcePoolsParams },
+        params: {
+          resource_pools_params: queryArg.resourcePoolsParams,
+        },
       }),
     }),
     postResourcePools: build.mutation<
@@ -118,7 +120,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/resource_pools/${queryArg.resourcePoolId}/classes`,
-        params: { resource_class_params: queryArg.resourceClassParams },
+        params: {
+          resource_class_params: queryArg.resourceClassParams,
+        },
       }),
     }),
     postResourcePoolsByResourcePoolIdClasses: build.mutation<
@@ -284,7 +288,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/users/${queryArg.userId}/resource_pools`,
-        params: { user_resource_params: queryArg.userResourceParams },
+        params: {
+          user_resource_params: queryArg.userResourceParams,
+        },
       }),
     }),
     postUsersByUserIdResourcePools: build.mutation<
@@ -344,8 +350,7 @@ export type PatchClustersByClusterIdApiArg = {
   clusterId: Ulid;
   clusterPatch: ClusterPatch;
 };
-export type DeleteClustersByClusterIdApiResponse =
-  /** status 204 The cluster configuration was removed or did not exist in the first place */ void;
+export type DeleteClustersByClusterIdApiResponse = unknown;
 export type DeleteClustersByClusterIdApiArg = {
   clusterId: Ulid;
 };
@@ -384,8 +389,7 @@ export type PatchResourcePoolsByResourcePoolIdApiArg = {
   resourcePoolId: number;
   resourcePoolPatch: ResourcePoolPatch;
 };
-export type DeleteResourcePoolsByResourcePoolIdApiResponse =
-  /** status 204 The resource pool was removed or did not exist in the first place */ void;
+export type DeleteResourcePoolsByResourcePoolIdApiResponse = unknown;
 export type DeleteResourcePoolsByResourcePoolIdApiArg = {
   resourcePoolId: number;
 };
@@ -425,7 +429,7 @@ export type PatchResourcePoolsByResourcePoolIdClassesAndClassIdApiArg = {
   resourceClassPatch: ResourceClassPatch;
 };
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdApiResponse =
-  /** status 204 The resource class was removed or did not exist in the first place */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdApiArg = {
   resourcePoolId: number;
   classId: string;
@@ -438,7 +442,7 @@ export type GetResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiArg =
     classId: string;
   };
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiResponse =
-  /** status 204 The tolerations have been removed */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiArg =
   {
     resourcePoolId: number;
@@ -452,7 +456,7 @@ export type GetResourcePoolsByResourcePoolIdClassesAndClassIdNodeAffinitiesApiAr
     classId: string;
   };
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdNodeAffinitiesApiResponse =
-  /** status 204 The node affinities have been removed */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdNodeAffinitiesApiArg =
   {
     resourcePoolId: number;
@@ -484,7 +488,7 @@ export type GetResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   userId: string;
 };
 export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiResponse =
-  /** status 204 The user was removed or it was not part of the pool */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   resourcePoolId: number;
   userId: string;

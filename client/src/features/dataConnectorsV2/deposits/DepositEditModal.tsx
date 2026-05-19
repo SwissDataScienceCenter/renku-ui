@@ -160,7 +160,7 @@ export default function DepositEditModal({
                     <Input
                       id="name"
                       type="text"
-                      placeholder="Name (local)"
+                      placeholder="Name"
                       invalid={!!fieldState.error}
                       {...field}
                     />
