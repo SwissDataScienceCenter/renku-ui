@@ -1,9 +1,0 @@
-{
-  "DASHBOARD_MESSAGE": {
-    "enabled": true,
-    "text": "# Welcome to Renku! 🐸\nThis is an example welcome message ✨.\n",
-    "additionalText": "This is some more text",
-    "style": "success",
-    "dismissible": false
-  }
-}
