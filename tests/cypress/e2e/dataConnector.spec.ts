@@ -53,7 +53,7 @@ describe("Set up data connectors from a project page", () => {
       .parent() // Go one node above (to the parent div)
       .should(
         "contain.text",
-        "If using KMS ID you must provide the ARN of Key"
+        "If using KMS ID you must provide the ARN of Key",
       );
 
     // Fill out the details
@@ -75,11 +75,11 @@ describe("Set up data connectors from a project page", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "project was linked"
+      "project was linked",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listProjectDataConnectors");
@@ -113,7 +113,7 @@ describe("Set up data connectors from a project page", () => {
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
     cy.getDataCy("data-connector-search-input").type(
-      "user1-uuid/example-storage"
+      "user1-uuid/example-storage",
     );
     cy.getDataCy("data-connector-link-button").click();
 
@@ -172,7 +172,7 @@ describe("Set up data connectors from a project page", () => {
     // add data connector
     cy.getDataCy("add-data-connector").should("be.visible").click();
     cy.getDataCy("data-connector-search-input").type(
-      "https://zenodo.org/records/123456"
+      "https://zenodo.org/records/123456",
     );
     cy.getDataCy("data-connector-link-button").click();
     cy.wait("@postDataConnectorProjectLink");
@@ -206,7 +206,7 @@ describe("Set up data connectors from a project page", () => {
 
     cy.wait("@getProjectV2Permissions");
     cy.contains("Are you sure you want to unlink the data connector").should(
-      "be.visible"
+      "be.visible",
     );
     cy.getDataCy("delete-data-connector-modal-button")
       .should("be.enabled")
@@ -276,11 +276,11 @@ describe("Set up data connectors from a project page", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "project was linked"
+      "project was linked",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listProjectDataConnectors");
@@ -332,7 +332,7 @@ describe("Set up data connectors from a project page", () => {
     cy.wait("@patchDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/example-storage has been successfully updated."
+      "The data connector user1-uuid/example-storage has been successfully updated.",
     );
   });
 });
@@ -396,7 +396,7 @@ describe("Data connector page", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      `The data connector ${username}/${dataConnectorSlug} has been successfully added`
+      `The data connector ${username}/${dataConnectorSlug} has been successfully added`,
     );
     cy.getDataCy("data-connector-edit-close-button").click();
 
@@ -417,7 +417,7 @@ describe("Data connector page", () => {
     cy.url().should("include", `/d/${username}/${dataConnectorSlug}`);
     cy.getDataCy("data-connector-identifier").should(
       "contain.text",
-      `${username}/${dataConnectorSlug}`
+      `${username}/${dataConnectorSlug}`,
     );
   });
 
@@ -522,11 +522,11 @@ describe("Set up data connectors with credentials in project pages", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "project was linked"
+      "project was linked",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listProjectDataConnectors");
@@ -535,11 +535,11 @@ describe("Set up data connectors with credentials in project pages", () => {
     cy.wait("@getDataConnectorSecrets");
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Requires credentials"
+      "Requires credentials",
     );
   });
 
@@ -587,7 +587,7 @@ describe("Set up data connectors with credentials in project pages", () => {
     cy.getDataCy("test-data-connector-button").click();
     cy.wait("@testCloudStorage");
     cy.contains("The connection to the storage works correctly.").should(
-      "be.visible"
+      "be.visible",
     );
     cy.getDataCy("add-data-connector-continue-button")
       .contains("Continue")
@@ -601,15 +601,15 @@ describe("Set up data connectors with credentials in project pages", () => {
     cy.wait("@patchDataConnectorSecrets");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-with-credentials has been successfully added"
+      "The data connector user1-uuid/test-2-v2-project/example-storage-with-credentials has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "credentials were saved"
+      "credentials were saved",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "project was linked"
+      "project was linked",
     );
 
     cy.getDataCy("data-connector-edit-close-button").click();
@@ -619,11 +619,11 @@ describe("Set up data connectors with credentials in project pages", () => {
     cy.wait("@getDataConnectorSecrets");
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Credentials saved"
+      "Credentials saved",
     );
     cy.getDataCy("data-connector-view-back-button").click();
 
@@ -674,11 +674,11 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.getDataCy("data-connector-name").contains("private-storage-1").click();
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "private-storage-1"
+      "private-storage-1",
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Requires credentials"
+      "Requires credentials",
     );
     cy.getDataCy("data-connector-view-back-button").click();
   });
@@ -720,7 +720,7 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
+      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added.",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
@@ -764,7 +764,7 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
+      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added.",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
@@ -851,11 +851,11 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.wait("@patchDataConnectorSecrets");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage has been successfully added"
+      "The data connector test-2-group-v2/example-storage has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "credentials were saved"
+      "credentials were saved",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
@@ -900,7 +900,7 @@ describe("Set up data connectors with credentials in group pages", () => {
 
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Requires credentials"
+      "Requires credentials",
     );
 
     // set credentials
@@ -945,11 +945,11 @@ describe("Set up data connectors with credentials in group pages", () => {
     // Credentials should be stored
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Credentials saved"
+      "Credentials saved",
     );
 
     // edit data connector, without touching the credentials
@@ -990,11 +990,11 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.wait("@getDataConnectorSecrets");
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Credentials saved"
+      "Credentials saved",
     );
 
     // clear credentials
@@ -1016,11 +1016,11 @@ describe("Set up data connectors with credentials in group pages", () => {
     // Credentials should be changed
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("access_key_id-value").should(
       "contain.text",
-      "Requires credentials"
+      "Requires credentials",
     );
   });
 
@@ -1078,11 +1078,11 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.wait("@patchDataConnectorSecrets");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage has been successfully added"
+      "The data connector test-2-group-v2/example-storage has been successfully added",
     );
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "credentials were saved"
+      "credentials were saved",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
@@ -1117,7 +1117,7 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added."
+      "The data connector test-2-group-v2/example-storage-without-credentials has been successfully added.",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
