@@ -50,8 +50,10 @@ interface AddProjectMemberModalProps {
 
 type ProjectMemberForAdd = ProjectMemberResponse;
 
-interface AddProjectMemberAccessFormProps
-  extends Pick<AddProjectMemberModalProps, "members" | "projectId" | "toggle"> {
+interface AddProjectMemberAccessFormProps extends Pick<
+  AddProjectMemberModalProps,
+  "members" | "projectId" | "toggle"
+> {
   user?: User;
 }
 function AddProjectMemberAccessForm({
@@ -92,7 +94,7 @@ function AddProjectMemberAccessForm({
         projectMemberListPatchRequest: projectMembers,
       });
     },
-    [patchProjectMembers, projectId, members]
+    [patchProjectMembers, projectId, members],
   );
 
   return (

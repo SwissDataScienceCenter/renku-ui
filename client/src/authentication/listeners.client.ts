@@ -77,7 +77,7 @@ export function setupListener(): () => void {
       setTimeout(() => {
         sessionStorage.setItem(
           RENKU_QUERY_PARAMS.logout,
-          Date.now().toString()
+          Date.now().toString(),
         );
         window.location.reload();
       }, LOGOUT_EVENT_TIMEOUT);

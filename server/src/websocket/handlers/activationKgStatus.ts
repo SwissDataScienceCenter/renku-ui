@@ -48,14 +48,14 @@ function getActivationStatus(
   id: number,
   channel: Channel,
   apiClient: APIClient,
-  authHeaders: HeadersInit
+  authHeaders: HeadersInit,
 ) {
   return apiClient
     .kgActivationStatus(id, authHeaders)
     .then(async (response) => {
       const status = response as unknown as ActivationResult;
       const previousStatuses = channel.data.get(
-        "activationProjects"
+        "activationProjects",
       ) as ActivationStatus;
       const currentProgress = status?.progress.percentage ?? -1;
       const previousProgress = previousStatuses
@@ -66,7 +66,7 @@ function getActivationStatus(
           previousStatuses,
           id,
           currentProgress,
-          channel
+          channel,
         );
         sendMessage(JSON.stringify(currentStatuses), channel);
       }
@@ -75,14 +75,14 @@ function getActivationStatus(
       if (err.status != 404) {
         // remove id from project ids list
         const projectIds = channel.data.get(
-          "projectsIds"
+          "projectsIds",
         ) as ActivationMetadata;
         delete projectIds[id];
         channel.data.set("projectsIds", projectIds);
 
         // inform client that there is an error getting activation status
         const previousStatuses = channel.data.get(
-          "activationProjects"
+          "activationProjects",
         ) as ActivationStatus;
         const currentStatuses: ActivationStatus = {
           ...previousStatuses,
@@ -98,7 +98,7 @@ function updateActivationProgress(
   previousStatuses: ActivationStatus,
   id: number,
   currentProgress: number,
-  channel: Channel
+  channel: Channel,
 ) {
   const currentStatuses: ActivationStatus = {
     ...previousStatuses,
@@ -117,14 +117,14 @@ async function getAllActivationStatus(
   projectIds: ActivationMetadata,
   channel: Channel,
   apiClient: APIClient,
-  authHeaders: HeadersInit
+  authHeaders: HeadersInit,
 ): Promise<void> {
   const semaphore = new AsyncSemaphore(5);
   const ids = Object.keys(projectIds);
   for (let i = 0; i < ids.length; i++) {
     const id = parseInt(ids[i]);
     await semaphore.withLockRunAndForget(() =>
-      getActivationStatus(id, channel, apiClient, authHeaders)
+      getActivationStatus(id, channel, apiClient, authHeaders),
     );
   }
 
@@ -133,7 +133,7 @@ async function getAllActivationStatus(
 
 async function handlerRequestActivationKgStatus(
   data: Record<string, unknown>,
-  channel: Channel
+  channel: Channel,
 ): Promise<void> {
   // save the request enabler
   if (data.projects) {
@@ -155,12 +155,12 @@ async function heartbeatRequestActivationKgStatus({
   const projectsIds = channel.data.get("projectsIds") as ActivationMetadata;
   if (projectsIds) {
     const previousStatuses = channel.data.get(
-      "activationProjects"
+      "activationProjects",
     ) as ActivationStatus;
     const { ids } = cleanCompletedStatuses(
       previousStatuses,
       projectsIds,
-      channel
+      channel,
     );
     getAllActivationStatus(ids, channel, apiClient, headers);
   }
@@ -169,7 +169,7 @@ async function heartbeatRequestActivationKgStatus({
 function cleanCompletedStatuses(
   statuses: ActivationStatus,
   projectIds: ActivationMetadata,
-  channel: Channel
+  channel: Channel,
 ) {
   const validIds = projectIds ?? {};
   // clean status when are completed
@@ -193,11 +193,11 @@ function cleanCompletedStatuses(
     if (exceedTime) {
       delete validIds[id];
       logger.info(
-        `Removed id ${id} due timeout, starting fetching at ${projectIds[id]}`
+        `Removed id ${id} due timeout, starting fetching at ${projectIds[id]}`,
       );
       sendMessage(
         JSON.stringify({ [id]: ActivationStatusProgressError.TIMEOUT }),
-        channel
+        channel,
       );
     }
   });

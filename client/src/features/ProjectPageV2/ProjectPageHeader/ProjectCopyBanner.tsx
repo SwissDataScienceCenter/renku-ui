@@ -48,8 +48,10 @@ interface ProjectCopyBannerComponentProps {
   toggleModalOpen: () => void;
 }
 
-interface ProjectCopyButtonProps
-  extends Omit<ProjectCopyBannerComponentProps, "currentUser"> {
+interface ProjectCopyButtonProps extends Omit<
+  ProjectCopyBannerComponentProps,
+  "currentUser"
+> {
   color: string;
 }
 function ProjectCopyButton({ color, toggleModalOpen }: ProjectCopyButtonProps) {
@@ -84,7 +86,7 @@ function ProjectViewerMakeCopyBanner({
           "align-items-center",
           "justify-content-between",
           "flex-wrap",
-          "w-100"
+          "w-100",
         )}
       >
         <div>
@@ -119,11 +121,10 @@ function ProjectViewerMakeCopyBanner({
   );
 }
 
-interface ProjectGoToCopyBannerProps
-  extends Omit<
-    ProjectCopyBannerComponentProps,
-    "currentUser" | "toggleModalOpen"
-  > {
+interface ProjectGoToCopyBannerProps extends Omit<
+  ProjectCopyBannerComponentProps,
+  "currentUser" | "toggleModalOpen"
+> {
   writableCopies: ReturnType<
     typeof useGetProjectsByProjectIdCopiesQuery
   >["data"];
@@ -151,7 +152,7 @@ function ProjectViewerGoToCopyBanner({
             "align-items-center",
             "justify-content-between",
             "flex-wrap",
-            "w-100"
+            "w-100",
           )}
         >
           <div>
@@ -238,7 +239,7 @@ function ProjectViewerCopyBanner({
             "align-items-center",
             "justify-content-between",
             "flex-wrap",
-            "w-100"
+            "w-100",
           )}
         >
           <div>

@@ -85,7 +85,7 @@ export default function AddCodeRepositoryModal({
         projectPatch: { repositories },
       });
     },
-    [project.etag, project.id, project.repositories, setError, updateProject]
+    [project.etag, project.id, project.repositories, setError, updateProject],
   );
 
   useEffect(() => {
@@ -189,7 +189,7 @@ export function SshRepositoryUrlWarning({
 }: SshRepositoryUrlWarningProps) {
   const isSsh = useMemo(
     () => detectSSHRepository(repositoryUrl),
-    [repositoryUrl]
+    [repositoryUrl],
   );
 
   if (!isSsh) {

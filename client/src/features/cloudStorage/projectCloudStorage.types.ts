@@ -22,15 +22,16 @@ import type {
   RCloneOption,
 } from "./api/projectCloudStorage.api";
 
-export interface CloudStorage
-  extends Omit<CloudStorageGet, "sensitive_fields"> {
+export interface CloudStorage extends Omit<
+  CloudStorageGet,
+  "sensitive_fields"
+> {
   sensitive_fields?: { name: string; help: string }[];
 }
 
 type CloudStorageSensitiveFieldDefinition = Pick<RCloneOption, "name" | "help">;
 
-export interface CloudStorageCredential
-  extends CloudStorageSensitiveFieldDefinition {
+export interface CloudStorageCredential extends CloudStorageSensitiveFieldDefinition {
   requiredCredential: boolean;
 }
 
@@ -69,8 +70,10 @@ export interface CloudStorageOverride extends CloudStorageSchema {
   providers: Record<string, Partial<CloudStorageProvider>>;
 }
 
-export interface CloudStorageProvider
-  extends Pick<RCloneOption, "name" | "help"> {
+export interface CloudStorageProvider extends Pick<
+  RCloneOption,
+  "name" | "help"
+> {
   position?: number;
   friendlyName?: string;
 }

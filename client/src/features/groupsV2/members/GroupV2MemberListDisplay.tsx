@@ -46,7 +46,7 @@ export default function GroupV2MemberListDisplay({
 
   const sortedMembers = useMemo(
     () => (members ? toSortedMembers(members) : null),
-    [members]
+    [members],
   );
 
   if (error || sortedMembers == null) {
@@ -108,7 +108,7 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
               "d-flex",
               "flex-column",
               "justify-content-center",
-              "text-truncate"
+              "text-truncate",
             )}
           >
             <p className={cx("m-0", "text-truncate")}>

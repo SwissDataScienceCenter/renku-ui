@@ -80,7 +80,7 @@ function AddSessionSecretModal({ isOpen, toggle }: AddSessionSecretModalProps) {
   const onFirstStepSuccess = useCallback(
     (secretSlot: SessionSecretSlot) =>
       setState({ step: "provide-secret", secretSlot }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -131,8 +131,7 @@ type AddSessionSecretModalState =
   | { step: "add-secret-slot" }
   | { step: "provide-secret"; secretSlot: SessionSecretSlot };
 
-interface AddSessionSecretModalContentStep1Props
-  extends AddSessionSecretModalProps {
+interface AddSessionSecretModalContentStep1Props extends AddSessionSecretModalProps {
   onSuccess: (secretSlot: SessionSecretSlot) => void;
 }
 
@@ -173,11 +172,11 @@ function AddSessionSecretModalContentStep1({
         },
       });
     },
-    [postSessionSecretSlot, projectId]
+    [postSessionSecretSlot, projectId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   useEffect(() => {

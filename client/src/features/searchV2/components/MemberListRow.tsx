@@ -110,7 +110,7 @@ export default function MemberListRow({ members }: MemberListRowProps) {
         "gap-2",
         "mb-0",
         "overflow-hidden",
-        "position-relative"
+        "position-relative",
       )}
     >
       {members.map((member, index) => {
@@ -125,7 +125,7 @@ export default function MemberListRow({ members }: MemberListRowProps) {
               "align-items-center",
               "d-flex",
               "gap-1",
-              isHidden ? "flex-shrink-0" : "overflow-hidden"
+              isHidden ? "flex-shrink-0" : "overflow-hidden",
             )}
             style={
               isHidden

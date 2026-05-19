@@ -292,7 +292,7 @@ describe("storageDefinitionFromConfig", () => {
     const result = getSchemaOptions(schema, false, "polybox", "shared");
     const passOption = result?.find((o) => o.name === "pass");
     expect(passOption?.help).toEqual(
-      "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank"
+      "If there is a password for the folder, enter that in the password field. Otherwise, leave it blank",
     );
     expect(passOption?.friendlyName).toEqual("Password");
 
@@ -300,7 +300,7 @@ describe("storageDefinitionFromConfig", () => {
       schema,
       false,
       "polybox",
-      "personal"
+      "personal",
     );
     const passOptionPersonal = resultPersonal?.find((o) => o.name === "pass");
     expect(passOptionPersonal?.friendlyName).toEqual("Token (or password)");

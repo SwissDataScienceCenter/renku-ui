@@ -47,7 +47,7 @@ type DataConnectorLookup =
     };
 
 function getDataConnectorLookup(
-  params: Route.LoaderArgs["params"]
+  params: Route.LoaderArgs["params"],
 ): DataConnectorLookup {
   const { projectNamespace, dataConnectorNamespace, slug } = params;
 
@@ -101,11 +101,11 @@ export async function loader({ context, params }: Route.LoaderArgs) {
 
     store.dispatch(endpoint.initiate(apiArgs));
     await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk())
+      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
     );
 
     ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState()
+      store.getState(),
     ));
   } else if (lookup.kind === "namespace") {
     const endpoint =
@@ -117,11 +117,11 @@ export async function loader({ context, params }: Route.LoaderArgs) {
 
     store.dispatch(endpoint.initiate(apiArgs));
     await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk())
+      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
     );
 
     ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState()
+      store.getState(),
     ));
   } else {
     const endpoint = dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug;
@@ -131,11 +131,11 @@ export async function loader({ context, params }: Route.LoaderArgs) {
 
     store.dispatch(endpoint.initiate(apiArgs));
     await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk())
+      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
     );
 
     ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState()
+      store.getState(),
     ));
   }
 
@@ -165,11 +165,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
     const promise = store.dispatch(endpoint.initiate(apiArgs));
     await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk())
+      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
     );
 
     ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState()
+      store.getState(),
     ));
     promise.unsubscribe();
   } else if (lookup.kind === "namespace") {
@@ -182,11 +182,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
     const promise = store.dispatch(endpoint.initiate(apiArgs));
     await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk())
+      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
     );
 
     ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState()
+      store.getState(),
     ));
     promise.unsubscribe();
   } else {
@@ -197,11 +197,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
     const promise = store.dispatch(endpoint.initiate(apiArgs));
     await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk())
+      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
     );
 
     ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState()
+      store.getState(),
     ));
     promise.unsubscribe();
   }
@@ -239,7 +239,7 @@ export function meta({
   }
   const matchSettings = matchPath(
     ABSOLUTE_ROUTES.v2.dataConnectors.show.settings,
-    location.pathname
+    location.pathname,
   );
   const title = makeMetaTitle([
     ...(matchSettings ? ["Settings"] : []),
@@ -288,29 +288,29 @@ export default function DataConnectorPagesRoot({
                 project: dataConnectorNamespace,
                 slug,
               },
-              loaderData.dataConnector
-            )
+              loaderData.dataConnector,
+            ),
           )
         : projectNamespace
-        ? dispatch(
-            dataConnectorsApi.util.upsertQueryData(
-              "getNamespacesByNamespaceDataConnectorsAndSlug",
-              {
-                namespace: projectNamespace,
-                slug,
-              },
-              loaderData.dataConnector
+          ? dispatch(
+              dataConnectorsApi.util.upsertQueryData(
+                "getNamespacesByNamespaceDataConnectorsAndSlug",
+                {
+                  namespace: projectNamespace,
+                  slug,
+                },
+                loaderData.dataConnector,
+              ),
             )
-          )
-        : dispatch(
-            dataConnectorsApi.util.upsertQueryData(
-              "getDataConnectorsGlobalBySlug",
-              {
-                slug,
-              },
-              loaderData.dataConnector
-            )
-          );
+          : dispatch(
+              dataConnectorsApi.util.upsertQueryData(
+                "getDataConnectorsGlobalBySlug",
+                {
+                  slug,
+                },
+                loaderData.dataConnector,
+              ),
+            );
 
     promise.then(() => {
       if (!ignore) {
@@ -334,7 +334,7 @@ export default function DataConnectorPagesRoot({
   //? * once the cache is ready (will use cache data)
   const globalQuery =
     dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug.useQuery(
-      !projectNamespace && shouldQuery ? { slug } : skipToken
+      !projectNamespace && shouldQuery ? { slug } : skipToken,
     );
 
   const namespaceQuery = useGetNamespacesByNamespaceDataConnectorsAndSlugQuery(
@@ -343,7 +343,7 @@ export default function DataConnectorPagesRoot({
           namespace: projectNamespace,
           slug,
         }
-      : skipToken
+      : skipToken,
   );
 
   const projectQuery =
@@ -354,15 +354,15 @@ export default function DataConnectorPagesRoot({
             project: dataConnectorNamespace,
             slug,
           }
-        : skipToken
+        : skipToken,
     );
 
   const queryResult =
     projectNamespace && dataConnectorNamespace
       ? projectQuery
       : projectNamespace
-      ? namespaceQuery
-      : globalQuery;
+        ? namespaceQuery
+        : globalQuery;
 
   const dataConnector = queryResult.currentData ?? loaderData.dataConnector;
   const error =
@@ -378,7 +378,7 @@ export default function DataConnectorPagesRoot({
         projectNamespace: projectNamespace ?? null,
         dataConnectorNamespace: dataConnectorNamespace ?? null,
         slug,
-      }
+      },
     );
 
     let nextProjectNamespace: string | null = null;
@@ -401,7 +401,7 @@ export default function DataConnectorPagesRoot({
         projectNamespace: nextProjectNamespace,
         dataConnectorNamespace: nextDataConnectorNamespace,
         slug: dataConnector.slug,
-      }
+      },
     );
 
     if (previousBasePath !== nextBasePath) {

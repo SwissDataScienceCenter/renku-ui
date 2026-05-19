@@ -60,7 +60,7 @@ export function toHumanDuration({
  */
 export function toFullHumanDuration(
   duration: Duration | number,
-  units: (keyof DurationLikeObject)[] = ["days", "hours", "minutes", "seconds"]
+  units: (keyof DurationLikeObject)[] = ["days", "hours", "minutes", "seconds"],
 ): string {
   const duration_ = ensureDuration(duration);
 
@@ -70,8 +70,8 @@ export function toFullHumanDuration(
   const shiftedDuration = duration_.shiftTo(...units);
   const filteredDuration = Object.fromEntries(
     Object.entries(shiftedDuration.toObject()).filter(
-      ([, value]) => value !== 0
-    )
+      ([, value]) => value !== 0,
+    ),
   );
   return Duration.fromObject(filteredDuration)
     .toHuman({
@@ -89,8 +89,8 @@ export function ensureDuration(duration: Duration | number): Duration {
   return duration instanceof Duration
     ? duration
     : isFinite(duration)
-    ? Duration.fromObject({ seconds: duration })
-    : Duration.fromISO("");
+      ? Duration.fromObject({ seconds: duration })
+      : Duration.fromISO("");
 }
 
 type DurationUnit = keyof DurationObjectUnits;
@@ -114,7 +114,7 @@ export function getMostSignificantUnit(duration: Duration): DurationUnit {
   }
 
   const unit = DURATION_ORDERED_DISPLAY_UNITS.find(
-    (unit) => Math.abs(duration.as(unit)) >= 1
+    (unit) => Math.abs(duration.as(unit)) >= 1,
   );
   return unit ?? "seconds";
 }

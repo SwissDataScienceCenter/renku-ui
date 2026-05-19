@@ -37,16 +37,16 @@ export function useReduxFilterParam(filterName: string) {
     filterName === "type"
       ? state.contentType
       : filterName === "visibility"
-      ? state.visibility
-      : filterName === "role"
-      ? state.role
-      : filterName === "keyword"
-      ? state.keywords
-      : filterName === "direct_member"
-      ? state.directMember
-      : filterName === "created"
-      ? state.created
-      : "";
+        ? state.visibility
+        : filterName === "role"
+          ? state.role
+          : filterName === "keyword"
+            ? state.keywords
+            : filterName === "direct_member"
+              ? state.directMember
+              : filterName === "created"
+                ? state.created
+                : "";
 
   const updateParam = useCallback(
     (newValue: string) => {
@@ -71,7 +71,7 @@ export function useReduxFilterParam(filterName: string) {
           break;
       }
     },
-    [dispatch, filterName]
+    [dispatch, filterName],
   );
 
   return { currentValue, updateParam };

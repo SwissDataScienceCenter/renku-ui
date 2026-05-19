@@ -27,7 +27,7 @@ export default function DataConnectorModalResult({
   alreadyExisted,
 }: DataConnectorModalResultProps) {
   const { dataConnectorResultName } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   const dataConnectorFragment = (
     <>
@@ -55,7 +55,7 @@ function DataConnectorResultAlertContent({
   dataConnectorFragment,
 }: DataConnectorResultAlertContentProps) {
   const { credentialSaveStatus, projectLinkStatus } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   if (credentialSaveStatus == "none" && projectLinkStatus == "none") {
     return <p className="mb-0">{dataConnectorFragment}.</p>;

@@ -66,7 +66,7 @@ function ProjectAutostartRedirectInfoBanner({ isOwner }: { isOwner: boolean }) {
           "align-items-center",
           "justify-content-between",
           "flex-wrap",
-          "w-100"
+          "w-100",
         )}
       >
         <div>

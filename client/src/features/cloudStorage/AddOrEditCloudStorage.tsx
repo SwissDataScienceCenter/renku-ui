@@ -171,14 +171,14 @@ export function AddStorageAdvanced({
         options,
       });
     },
-    [setStorage]
+    [setStorage],
   );
 
   const onSourcePathChange = useCallback(
     (value: string) => {
       setStorage({ sourcePath: value });
     },
-    [setStorage]
+    [setStorage],
   );
 
   const sourcePathHelp = useMemo(() => {
@@ -241,7 +241,7 @@ export function AddStorageAdvanced({
               aria-describedby="addCloudStorageConfigHelp"
               className={cx(
                 "form-control",
-                errors.configuration && "is-invalid"
+                errors.configuration && "is-invalid",
               )}
               id="addCloudStorageConfig"
               placeholder={CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER}
@@ -547,7 +547,7 @@ function InputOptionItem({
     option.filteredExamples.length > 0 &&
     option.filteredExamples[0].friendlyName
       ? option.filteredExamples[0].friendlyName
-      : option.friendlyName ?? option.name;
+      : (option.friendlyName ?? option.name);
   return (
     <>
       <label className="form-label" htmlFor={option.name}>
@@ -571,8 +571,8 @@ function InputOptionItem({
                   option.convertedDefault?.toString() !== "[object Object]"
                     ? option.convertedDefault?.toString()
                     : inputType === "dropdown" && option.filteredExamples
-                    ? option.filteredExamples[0].value
-                    : ""
+                      ? option.filteredExamples[0].value
+                      : ""
                 }
                 onChange={(e) => {
                   field.onChange(e);
@@ -580,7 +580,7 @@ function InputOptionItem({
                     option.name,
                     inputType === "number"
                       ? parseFloat(e.target.value)
-                      : e.target.value
+                      : e.target.value,
                   );
                 }}
                 {...additionalProps}
@@ -623,7 +623,7 @@ export function AddStorageType({
 
   const availableSchema = useMemo(
     () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
-    [schema, state.showAllSchema, storage.schema]
+    [schema, state.showAllSchema, storage.schema],
   );
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
@@ -713,17 +713,17 @@ export function AddStorageType({
         schema,
         !state.showAllProviders,
         storage.schema,
-        storage.provider
+        storage.provider,
       ),
-    [schema, state.showAllProviders, storage.schema, storage.provider]
+    [schema, state.showAllProviders, storage.schema, storage.provider],
   );
   const providerHasShortlist = useMemo(
     () => hasProviderShortlist(storage.schema),
-    [storage.schema]
+    [storage.schema],
   );
   const hasAccessMode = useMemo(() => {
     const selectedSchema = availableSchema.find(
-      (s) => s.prefix === storage?.schema
+      (s) => s.prefix === storage?.schema,
     );
     return selectedSchema ? hasSchemaAccessMode(selectedSchema) : false;
   }, [storage.schema, availableSchema]);
@@ -744,7 +744,7 @@ export function AddStorageType({
               "cursor-pointer",
               topBorder,
               bottomBorder,
-              itemActive
+              itemActive,
             )}
             key={p.name}
             tag="div"
@@ -845,16 +845,16 @@ export function AddStorageOptions({
     schema,
     !state.showAllOptions,
     storage.schema,
-    storage.provider
+    storage.provider,
   );
   const { control, setValue, getValues } = useForm();
   const { flatDataConnector } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   const dataConnectorId = flatDataConnector.dataConnectorId;
   const onFieldValueChange = (
     option: string,
-    value: string | number | boolean
+    value: string | number | boolean,
   ) => {
     setValue(option, value);
 
@@ -867,14 +867,14 @@ export function AddStorageOptions({
       const inputType = !o.convertedType
         ? "text"
         : o.convertedType === "secret"
-        ? "password"
-        : o.convertedType === "boolean"
-        ? "checkbox"
-        : o.convertedType === "number"
-        ? "number"
-        : o.filteredExamples && o.filteredExamples.length >= 1
-        ? "dropdown"
-        : "text";
+          ? "password"
+          : o.convertedType === "boolean"
+            ? "checkbox"
+            : o.convertedType === "number"
+              ? "number"
+              : o.filteredExamples && o.filteredExamples.length >= 1
+                ? "dropdown"
+                : "text";
 
       return (
         <div className="mb-3" key={o.name}>
@@ -884,7 +884,7 @@ export function AddStorageOptions({
               defaultValue={
                 storage.options && storage.options[o.name]
                   ? (storage.options[o.name] as boolean)
-                  : (o.convertedDefault as boolean) ?? undefined
+                  : ((o.convertedDefault as boolean) ?? undefined)
               }
               onFieldValueChange={onFieldValueChange}
               option={o}
@@ -982,7 +982,7 @@ export function AddStorageOptions({
   );
 
   const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
-    storage.schema ?? ""
+    storage.schema ?? "",
   );
 
   const moreOptionsThanInTheShortList = useMemo(() => {
@@ -990,13 +990,13 @@ export function AddStorageOptions({
       schema,
       false,
       storage.schema,
-      storage.provider
+      storage.provider,
     );
     const shortListOptions = getSchemaOptions(
       schema,
       true,
       storage.schema,
-      storage.provider
+      storage.provider,
     );
     return (
       allOptions &&
@@ -1007,7 +1007,7 @@ export function AddStorageOptions({
 
   const selectedSchema = useMemo(
     () => getSchema(schema, storage.schema),
-    [schema, storage.schema]
+    [schema, storage.schema],
   );
 
   return (
@@ -1051,12 +1051,12 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
 
   const providerKind = useMemo(
     () => CLOUD_STORAGE_INTEGRATION_KIND_MAP[schema.name],
-    [schema.name]
+    [schema.name],
   );
 
   const providersForSchema = useMemo(
     () => providers?.filter(({ kind }) => kind === providerKind),
-    [providerKind, providers]
+    [providerKind, providers],
   );
 
   const connectionsForSchema = useMemo(
@@ -1064,9 +1064,9 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
       connections?.filter(
         ({ provider_id, status }) =>
           status === "connected" &&
-          providersForSchema?.some(({ id }) => id === provider_id)
+          providersForSchema?.some(({ id }) => id === provider_id),
       ),
-    [connections, providersForSchema]
+    [connections, providersForSchema],
   );
 
   if (isLoading) {
@@ -1121,7 +1121,7 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
   if (providersForSchema && providersForSchema.length > 0) {
     const provider = providersForSchema[0];
     const connection = connections?.find(
-      ({ provider_id }) => provider_id === provider.id
+      ({ provider_id }) => provider_id === provider.id,
     );
 
     return (

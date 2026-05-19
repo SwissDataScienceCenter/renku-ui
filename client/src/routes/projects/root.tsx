@@ -110,7 +110,7 @@ export function meta({
 
   const matchSettings = matchPath(
     ABSOLUTE_ROUTES.v2.projects.show.settings,
-    location.pathname
+    location.pathname,
   );
   const title = makeMetaTitle([
     ...(matchSettings ? ["Settings"] : []),
@@ -151,8 +151,8 @@ export default function ProjectPagesRoot({
         projectV2Api.util.upsertQueryData(
           "getNamespacesByNamespaceProjectsAndSlug",
           apiArgs,
-          loaderData.project
-        )
+          loaderData.project,
+        ),
       );
       promise.then(() => {
         if (!ignore) {
@@ -175,7 +175,7 @@ export default function ProjectPagesRoot({
   } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
     loaderData.clientSideFetch || isCacheReady
       ? { namespace, slug, withDocumentation: true }
-      : skipToken
+      : skipToken,
   );
 
   useEffect(() => {
@@ -185,7 +185,7 @@ export default function ProjectPagesRoot({
         {
           namespace: namespace,
           slug: project.slug,
-        }
+        },
       );
       const deltaUrl = pathname.slice(previousBasePath.length);
       const newUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
@@ -199,7 +199,7 @@ export default function ProjectPagesRoot({
         {
           namespace: project.namespace,
           slug: slug,
-        }
+        },
       );
       const deltaUrl = pathname.slice(previousBasePath.length);
       const newUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {

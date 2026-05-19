@@ -86,7 +86,7 @@ export const EMPTY_DATA_CONNECTOR_FLAT: DataConnectorFlat = {
 export function dataConnectorPostFromFlattened(
   flatDataConnector: DataConnectorFlat,
   schemata: CloudStorageSchema[],
-  dataConnector: DataConnectorRead | null
+  dataConnector: DataConnectorRead | null,
 ): DataConnectorPost {
   const meta = {
     name: flatDataConnector.name as string,
@@ -115,13 +115,13 @@ export function dataConnectorPostFromFlattened(
     const allOptions = flatDataConnector.options as DataConnectorOptions;
     const sensitiveFields = schemata
       ? findSensitive(
-          schemata.find((s) => s.prefix === flatDataConnector.schema)
+          schemata.find((s) => s.prefix === flatDataConnector.schema),
         )
       : dataConnector?.storage?.sensitive_fields
-      ? dataConnector.storage.sensitive_fields.map((field) => field.name)
-      : [];
+        ? dataConnector.storage.sensitive_fields.map((field) => field.name)
+        : [];
     const validOptions = Object.keys(
-      flatDataConnector.options
+      flatDataConnector.options,
     ).reduce<DataConnectorOptions>((options, key) => {
       const value = allOptions[key];
       if (value != undefined && value !== "") {
@@ -141,7 +141,7 @@ export function dataConnectorPostFromFlattened(
 }
 
 export function dataConnectorToFlattened(
-  dataConnector: DataConnectorRead | null
+  dataConnector: DataConnectorRead | null,
 ): DataConnectorFlat {
   if (!dataConnector) {
     return EMPTY_DATA_CONNECTOR_FLAT;
@@ -171,7 +171,7 @@ export function dataConnectorToFlattened(
 }
 
 export function validationParametersFromDataConnectorConfiguration(
-  config: DataConnectorConfiguration
+  config: DataConnectorConfiguration,
 ): PostStorageSchemaTestConnectionApiArg["body"] {
   const dataConnector = _dataConnectorFromConfig(config);
   const validateParameters: PostStorageSchemaTestConnectionApiArg["body"] = {
@@ -211,18 +211,18 @@ export function getDataConnectorScope(namespace?: string): DataConnectorScope {
 }
 
 export function useGetDataConnectorSource(
-  dataConnector: DataConnector | undefined
+  dataConnector: DataConnector | undefined,
 ) {
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector?.namespace),
-    [dataConnector?.namespace]
+    [dataConnector?.namespace],
   );
 
   const { currentData: resolverResponse, isSuccess } = useGetHandlesByDoiQuery(
     scope === "global" &&
       typeof dataConnector?.storage.configuration["doi"] === "string"
       ? { doi: parseDoi(dataConnector.storage.configuration["doi"]), index: 1 }
-      : skipToken
+      : skipToken,
   );
   const source = useMemo(() => {
     if (dataConnector?.publisher_name != null) {
@@ -248,7 +248,7 @@ export function useGetDataConnectorSource(
         index === 1 &&
         type_ === "URL" &&
         data?.format === "string" &&
-        typeof data.value === "string"
+        typeof data.value === "string",
     );
     if (!value) {
       return dataConnector.storage.configuration["doi"];

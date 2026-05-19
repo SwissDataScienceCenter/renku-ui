@@ -85,7 +85,7 @@ type DispatcherReturn =
 
 /** Returns a message dispatcher which uses the rules defined in `acceptedMessages` */
 export function makeDispatcher(
-  acceptedMessages: MessageHandlersType = MESSAGE_HANDLERS
+  acceptedMessages: MessageHandlersType = MESSAGE_HANDLERS,
 ): (message: WsServerMessage) => DispatcherReturn {
   /**
    * Either get the handler function for the specific client message, or a sentence explaining the error.
@@ -106,7 +106,7 @@ export function makeDispatcher(
       return {
         ok: false,
         error: new Error(
-          `Type '${message.type}' is not supported for the scope '${message.scope}'`
+          `Type '${message.type}' is not supported for the scope '${message.scope}'`,
         ),
       };
     }
@@ -146,7 +146,7 @@ export function makeDispatcher(
     return {
       ok: false,
       error: new Error(
-        `Could not find a proper handler; data is wrong for a '${message.type}' instruction`
+        `Could not find a proper handler; data is wrong for a '${message.type}' instruction`,
       ),
     };
   };

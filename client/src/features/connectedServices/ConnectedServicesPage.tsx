@@ -139,10 +139,10 @@ export default function ConnectedServicesPage() {
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
   const targetedProvider = providers?.find(
-    (provider) => provider.id === targetProviderId
+    (provider) => provider.id === targetProviderId,
   );
   const IsTargetedProviderVisible = mainListProviders.some(
-    (provider) => provider.provider.id === targetProviderId
+    (provider) => provider.provider.id === targetProviderId,
   );
 
   const toggleAddIntegrationModal = useCallback(() => {
@@ -178,7 +178,7 @@ export default function ConnectedServicesPage() {
           color={actionRequired ? "warning" : "info"}
           className={cx(
             actionRequired ? "border-warning" : "border-info",
-            "shadow-sm"
+            "shadow-sm",
           )}
         >
           <p className="mb-0">
@@ -325,22 +325,22 @@ function ConnectedServiceStatus({ connection }: ConnectedServiceStatusProps) {
           ],
         }
       : connection.status === "connected"
-      ? {
-          text: "Connected",
-          classes: [
-            "bg-success-subtle",
-            "border-success",
-            "text-success-emphasis",
-          ],
-        }
-      : {
-          text: "Pending",
-          classes: [
-            "bg-warning-subtle",
-            "border-warning",
-            "text-warning-emphasis",
-          ],
-        };
+        ? {
+            text: "Connected",
+            classes: [
+              "bg-success-subtle",
+              "border-success",
+              "text-success-emphasis",
+            ],
+          }
+        : {
+            text: "Pending",
+            classes: [
+              "bg-warning-subtle",
+              "border-warning",
+              "text-warning-emphasis",
+            ],
+          };
 
   return (
     <Badge className={cx("border", ...status.classes)} color="info">
@@ -375,7 +375,7 @@ function ProviderRowHeader({ provider, statusSlot }: ProviderRowHeaderProps) {
           "flex-wrap",
           "align-items-center",
           "gap-2",
-          "mb-2"
+          "mb-2",
         )}
       >
         <ExternalLink href={provider.url}>{provider.url}</ExternalLink>
@@ -407,7 +407,7 @@ function ConnectedServiceListItem({
           color={actionRequired ? "warning" : "info"}
           className={cx(
             actionRequired ? "border-warning" : "border-info",
-            "shadow-sm"
+            "shadow-sm",
           )}
         >
           <p className="mb-0">
@@ -465,7 +465,7 @@ function AddIntegrationModal({
 
   const normalizedSearchInput = useMemo(
     () => userSearchInput.trim().toLowerCase(),
-    [userSearchInput]
+    [userSearchInput],
   );
 
   const filteredProviders = useMemo(() => {
@@ -473,8 +473,8 @@ function AddIntegrationModal({
 
     return providers.filter(({ provider }) =>
       [provider.display_name, provider.url].some((value) =>
-        value.toLowerCase().includes(normalizedSearchInput)
-      )
+        value.toLowerCase().includes(normalizedSearchInput),
+      ),
     );
   }, [normalizedSearchInput, providers]);
 
@@ -573,7 +573,7 @@ function AddIntegrationModal({
                       "text-primary",
                       "list-group-item",
                       "text-start",
-                      "text-decoration-underline"
+                      "text-decoration-underline",
                     )}
                   >
                     {!showAllIntegrations
@@ -748,7 +748,7 @@ function GitHubAppInstallations({
       ? skipToken
       : {
           connectionId: connection.id,
-        }
+        },
   );
 
   const {
@@ -762,7 +762,7 @@ function GitHubAppInstallations({
       : {
           connectionId: connection.id,
           params: { per_page: 100 },
-        }
+        },
   );
 
   const isLoading = isLoadingAccount || isFetchingInstallations;
@@ -834,7 +834,7 @@ function GitHubAppInstallations({
             )}
           </ul>
           {installations.data.every(
-            (installation) => !!installation.suspended_at
+            (installation) => !!installation.suspended_at,
           ) && (
             <WarnAlert dismissible={false}>
               <p className="mb-2">
@@ -900,8 +900,8 @@ function GitHubAppInstallationItem({
       {isSuspended
         ? " (suspended)"
         : restrictedSelection
-        ? " (only selected repositories)"
-        : null}
+          ? " (only selected repositories)"
+          : null}
     </li>
   );
 }
@@ -923,12 +923,12 @@ export function GitHubStatusCheck({
 
   const isEnabled = useMemo(
     () => search.get(CHECK_STATUS_QUERY_PARAM) === provider.id,
-    [provider.id, search]
+    [provider.id, search],
   );
 
   const isInstalledForUser = useMemo(() => {
     const userInstallation = installations.data.find(
-      ({ account_login }) => account_login === account.username
+      ({ account_login }) => account_login === account.username,
     );
     return !!userInstallation && !userInstallation.suspended_at;
   }, [account.username, installations.data]);
@@ -943,7 +943,7 @@ export function GitHubStatusCheck({
           prevSearch.delete(CHECK_STATUS_QUERY_PARAM);
           return prevSearch;
         },
-        { replace: true }
+        { replace: true },
       );
     }
   }, [
@@ -994,7 +994,7 @@ export function GitHubStatusCheckModal({
           prevSearch.delete(CHECK_STATUS_QUERY_PARAM);
           return prevSearch;
         },
-        { replace: true }
+        { replace: true },
       );
     }
   }, [isOpen, setSearch]);
@@ -1002,7 +1002,7 @@ export function GitHubStatusCheckModal({
   const settingsUrl = provider.app_slug
     ? safeNewUrl(
         `apps/${provider.app_slug}/installations/select_target`,
-        provider.url
+        provider.url,
       )
     : null;
 
@@ -1061,7 +1061,7 @@ export function GitHubOAuthCompleteFollowUp({
   provider,
 }: GitHubOAuthCompleteFollowUpProps) {
   const { data: account } = useGetOauth2ConnectionsByConnectionIdAccountQuery(
-    skipData || !connection ? skipToken : { connectionId: connection.id }
+    skipData || !connection ? skipToken : { connectionId: connection.id },
   );
 
   const { data: installations, refetch: refetchInstallations } =
@@ -1071,7 +1071,7 @@ export function GitHubOAuthCompleteFollowUp({
         : {
             connectionId: connection.id,
             params: { per_page: 100 },
-          }
+          },
     );
 
   if (skipData || account == null || installations == null || !provider) {

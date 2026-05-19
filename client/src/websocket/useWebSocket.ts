@@ -45,7 +45,7 @@ interface UseWebSocketArgs {
 export default function useWebSocket({ params, store }: UseWebSocketArgs) {
   // TODO: refactor to use store hooks
   const { reconnect: reconnectState } = useAppSelector(
-    ({ webSocket }) => webSocket
+    ({ webSocket }) => webSocket,
   );
   const dispatch = useAppDispatch();
 
@@ -68,7 +68,7 @@ export default function useWebSocket({ params, store }: UseWebSocketArgs) {
     }
     attempts++;
     dispatch(
-      setReconnect({ attempts, retrying: true, lastTime: DateTime.utc() })
+      setReconnect({ attempts, retrying: true, lastTime: DateTime.utc() }),
     );
     const delay =
       RECONNECT_PENALTY_FACTOR ** attempts * RECONNECT_INTERVAL_MILLIS;

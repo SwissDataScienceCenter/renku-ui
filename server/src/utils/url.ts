@@ -94,7 +94,8 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
     // subdomain case
     const specialCases = ["https://*", "http://*", "*"];
     const subdomainsAllowed = allowedSources.filter(
-      (source: string) => !specialCases.includes(source) && source.includes("*")
+      (source: string) =>
+        !specialCases.includes(source) && source.includes("*"),
     );
     for (const subdomainAllowed of subdomainsAllowed) {
       const cleanAllowedSourceUrl = subdomainAllowed
@@ -119,7 +120,7 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
       if (
         cleanAllowedSourceUrl ===
           cleanEntryUrl.substr(
-            cleanEntryUrl.length - cleanAllowedSourceUrl.length
+            cleanEntryUrl.length - cleanAllowedSourceUrl.length,
           ) &&
         isValidProtocol
       ) {

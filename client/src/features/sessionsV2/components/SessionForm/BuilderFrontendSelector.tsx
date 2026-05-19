@@ -35,8 +35,9 @@ import {
 } from "../../session.constants";
 import BuilderSelectorCommon from "./BuilderSelectorCommon";
 
-interface BuilderFrontendSelectorProps<T extends FieldValues>
-  extends UseControllerProps<T> {
+interface BuilderFrontendSelectorProps<
+  T extends FieldValues,
+> extends UseControllerProps<T> {
   control: Control<T>;
 }
 
@@ -77,7 +78,7 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
 
   const defaultOption = useMemo(
     () => compatibleFrontends[0] ?? BUILDER_FRONTENDS[0],
-    [compatibleFrontends]
+    [compatibleFrontends],
   );
 
   return (

@@ -50,7 +50,7 @@ function PropertyCard({ token, notes }: PropertyCardProps) {
         "shadow-sm",
         "d-flex",
         "flex-column",
-        "justify-content-between"
+        "justify-content-between",
       )}
     >
       <div>
@@ -106,7 +106,7 @@ function BorderRadiusExampleCard({ token }: BorderRadiusExampleCardProps) {
 
     const pxNumber = parseFloat(radiusPx);
     const rootFontSize = parseFloat(
-      getComputedStyle(document.documentElement).fontSize
+      getComputedStyle(document.documentElement).fontSize,
     );
 
     const remValue = pxNumber / rootFontSize;
@@ -131,7 +131,7 @@ function BorderRadiusExampleCard({ token }: BorderRadiusExampleCardProps) {
           "text-center",
           "flex-column",
           "shadow-sm",
-          token
+          token,
         )}
         style={{
           width: "200px",
@@ -198,7 +198,7 @@ function ShadowExampleCard({ token }: ShadowExampleCardProps) {
           "justify-content-center",
           "text-center",
           "p-3",
-          token
+          token,
         )}
         style={{
           width: "250px",
@@ -239,7 +239,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
         "border-primary",
         "border-2",
         "pb-2",
-        "mb-3"
+        "mb-3",
       )}
     >
       {children}
@@ -302,7 +302,7 @@ export const BordersAndShadows: Story = {
             "d-flex",
             "flex-wrap",
             "gap-4",
-            "justify-content-center"
+            "justify-content-center",
           )}
         >
           {tokenData.borderRadius.map((key) => (
@@ -322,7 +322,7 @@ export const BordersAndShadows: Story = {
             "d-flex",
             "flex-wrap",
             "gap-4",
-            "justify-content-center"
+            "justify-content-center",
           )}
         >
           {tokenData.shadow.map((key) => (

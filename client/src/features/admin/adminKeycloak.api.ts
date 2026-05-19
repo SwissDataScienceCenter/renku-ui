@@ -56,7 +56,7 @@ const adminKeycloakApi = createApi({
                   ({
                     id,
                     type: "KeycloakUser",
-                  } as const)
+                  }) as const,
               ),
               { id: `LIST-${search}`, type: "KeycloakUser" },
             ]

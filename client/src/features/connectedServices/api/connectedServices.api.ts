@@ -94,7 +94,7 @@ export const connectedServicesApi = enhanced.injectEndpoints({
       }),
       transformResponse: (
         data: GetOauth2ConnectionsByConnectionIdInstallationsApiResponse,
-        meta
+        meta,
       ) => {
         const headers = meta?.response?.headers;
         const pagination_ = processPaginationHeaders(headers);

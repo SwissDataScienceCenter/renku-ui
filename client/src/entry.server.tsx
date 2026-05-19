@@ -23,7 +23,7 @@ function handleRequest(
   responseHeaders: Headers,
   routerContext: EntryContext,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _loadContext: RouterContextProvider
+  _loadContext: RouterContextProvider,
   // If you have middleware enabled:
   // loadContext: RouterContextProvider
 ): Promise<Response> {
@@ -33,7 +33,7 @@ function handleRequest(
       new Response(null, {
         status: responseStatusCode,
         headers: responseHeaders,
-      })
+      }),
     );
   }
 
@@ -52,7 +52,7 @@ function handleRequest(
     // flush down the rejected boundaries
     let timeoutId: ReturnType<typeof setTimeout> | undefined = setTimeout(
       () => abort(),
-      streamTimeout + 1000
+      streamTimeout + 1000,
     );
 
     const { pipe, abort } = renderToPipeableStream(
@@ -79,7 +79,7 @@ function handleRequest(
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
-            })
+            }),
           );
         },
         onShellError(error: unknown) {
@@ -95,7 +95,7 @@ function handleRequest(
             console.error(error);
           }
         },
-      }
+      },
     );
   });
 }

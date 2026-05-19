@@ -61,7 +61,7 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
         ? {
             projectId: project.template_id,
           }
-        : skipToken
+        : skipToken,
     );
   const { data: templateProjectNamespace } =
     useGetNamespacesByNamespaceSlugQuery(
@@ -69,7 +69,7 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
         ? {
             namespaceSlug: templateProject.namespace,
           }
-        : skipToken
+        : skipToken,
     );
 
   if (!project.template_id) return null;
@@ -130,7 +130,7 @@ export default function ProjectInformation({
   });
   const namespaceName = useMemo(
     () => namespace?.name ?? project.namespace,
-    [namespace?.name, project.namespace]
+    [namespace?.name, project.namespace],
   );
   const namespaceUrl = useMemo(
     () =>
@@ -141,7 +141,7 @@ export default function ProjectInformation({
         : generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
             username: project.namespace,
           }),
-    [namespace?.namespace_kind, project.namespace]
+    [namespace?.namespace_kind, project.namespace],
   );
   const keywordsSorted = useMemo(() => {
     if (!project.keywords) return [];
@@ -217,7 +217,7 @@ export default function ProjectInformation({
           className={cx(
             "align-items-center",
             "d-flex",
-            "justify-content-between"
+            "justify-content-between",
           )}
         >
           <h2 className="m-0">

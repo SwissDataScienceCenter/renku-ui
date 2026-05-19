@@ -34,7 +34,7 @@ export function initializePrometheus(app: express.Application): void {
     metricsPath: config.prometheus.path,
   });
   logger.info(
-    `Setting up Prometheus metrics, reachable at "${config.prometheus.path}"`
+    `Setting up Prometheus metrics, reachable at "${config.prometheus.path}"`,
   );
   app.use(metricsMiddleware);
 }

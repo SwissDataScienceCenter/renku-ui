@@ -33,7 +33,7 @@ export function EntityWatermark({ className, type }: EntityWatermarkProps) {
           className,
           type === "dataConnector"
             ? styles.EntityWatermarkDatabasePlaceholder
-            : styles.EntityWatermarkPlaceholder
+            : styles.EntityWatermarkPlaceholder,
         )}
       />
       <div
@@ -47,7 +47,7 @@ export function EntityWatermark({ className, type }: EntityWatermarkProps) {
           className,
           type === "dataConnector"
             ? styles.EntityWatermarkDatabase
-            : styles.EntityWatermark
+            : styles.EntityWatermark,
         )}
       >
         {type === "group" ? (

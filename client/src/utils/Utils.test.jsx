@@ -69,7 +69,7 @@ describe("title related functions", () => {
   });
   it("function slugFromTitle lowercase with custom separator", () => {
     expect(slugFromTitle("This is my Project", true, false, "+")).toEqual(
-      "this+is+my+project"
+      "this+is+my+project",
     );
   });
   it("function slugFromTitle ascii", () => {

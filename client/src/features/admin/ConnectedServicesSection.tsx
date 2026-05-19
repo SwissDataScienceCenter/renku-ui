@@ -113,7 +113,7 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
               "fw-bold",
               "gap-3",
               "p-3",
-              "w-100"
+              "w-100",
             )}
             onClick={toggle}
             type="button"
@@ -162,7 +162,7 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
               "flex-row",
               "gap-2",
               "justify-content-end",
-              "pt-0"
+              "pt-0",
             )}
           >
             <UpdateConnectedServiceButton provider={provider} />

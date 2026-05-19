@@ -64,7 +64,7 @@ const injectedApi = api.injectEndpoints({
         const headerResponse = processPaginationHeaders(
           headers,
           { page: params?.page, perPage: params?.perPage },
-          groups
+          groups,
         );
 
         return {
@@ -95,7 +95,7 @@ const injectedApi = api.injectEndpoints({
         const headerResponse = processPaginationHeaders(
           headers,
           { page: params?.page, perPage: params?.perPage },
-          namespaces
+          namespaces,
         );
 
         return {
@@ -118,7 +118,7 @@ const injectedApi = api.injectEndpoints({
         const headerResponse = processPaginationHeaders(
           headers,
           { page: params?.page, perPage: params?.per_page },
-          projects
+          projects,
         );
 
         return {
@@ -138,7 +138,7 @@ const injectedApi = api.injectEndpoints({
         const { projectIds } = queryArg;
         const result: GetProjectsByProjectIdsApiResponse = {};
         const promises = projectIds.map((projectId) =>
-          fetchWithBQ(`/projects/${projectId}`)
+          fetchWithBQ(`/projects/${projectId}`),
         );
         const responses = await Promise.all(promises);
         for (let i = 0; i < projectIds.length; i++) {
@@ -159,11 +159,11 @@ const injectedApi = api.injectEndpoints({
         { sessionSecretSlotIds },
         _api,
         _options,
-        fetchWithBQ
+        fetchWithBQ,
       ) => {
         const result: GetSessionSecretSlotsByIdsApiResponse = [];
         const promises = sessionSecretSlotIds.map((slotId) =>
-          fetchWithBQ(`/session_secret_slots/${slotId}`)
+          fetchWithBQ(`/session_secret_slots/${slotId}`),
         );
         const responses = await Promise.all(promises);
         for (let i = 0; i < sessionSecretSlotIds.length; i++) {
@@ -319,7 +319,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       invalidatesTags: (
         result,
         _,
-        { sessionSecretSlotPost: { project_id: projectId } }
+        { sessionSecretSlotPost: { project_id: projectId } },
       ) =>
         result
           ? [{ type: "SessionSecretSlot", id: `LIST-${projectId}` }]

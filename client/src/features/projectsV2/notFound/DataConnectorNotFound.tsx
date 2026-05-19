@@ -49,7 +49,7 @@ export default function DataConnectorNotFound({
               "my-0",
               "d-flex",
               "align-items-center",
-              "gap-3"
+              "gap-3",
             )}
           >
             <img src={rkNotFoundImgV2} />

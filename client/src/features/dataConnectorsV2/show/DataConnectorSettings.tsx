@@ -43,7 +43,7 @@ export default function DataConnectorSettings() {
 
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector?.namespace),
-    [dataConnector?.namespace]
+    [dataConnector?.namespace],
   );
 
   const { permissions } = useDataConnectorPermissions({
@@ -76,7 +76,7 @@ export default function DataConnectorSettings() {
     ? dataConnector.storage.sensitive_fields.map((f) => f.name)
     : [];
   const anySensitiveField = Object.keys(
-    dataConnector?.storage.configuration ?? {}
+    dataConnector?.storage.configuration ?? {},
   ).some((key) => sensitiveFields.includes(key));
 
   // Deposits
@@ -110,7 +110,7 @@ export default function DataConnectorSettings() {
           params: LAST_DEPOSIT_QUERY_PARAMS,
         }
       : skipToken,
-    { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS }
+    { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS },
   );
   const lastDeposit = useMemo(() => {
     if (!deposits.data || deposits.data.deposits.length === 0) return undefined;

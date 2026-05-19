@@ -119,7 +119,7 @@ function LegacyNotSupportedHeader() {
         "flex-column",
         "align-items-center",
         "mt-2",
-        "mb-5"
+        "mb-5",
       )}
     >
       <h2 className="fw-bold">Renku Legacy is no longer supported.</h2>
@@ -135,7 +135,7 @@ function LegacyNotSupportedHeader() {
             "fw-bold",
             "d-flex",
             "flex-column",
-            "align-items-center"
+            "align-items-center",
           )}
         >
           <div>
@@ -152,7 +152,7 @@ function LegacyNotSupportedHeader() {
             "fw-bold",
             "d-flex",
             "flex-column",
-            "align-items-center"
+            "align-items-center",
           )}
         >
           <div>
@@ -219,7 +219,7 @@ function ProjectNoLegacyMigrateStep1() {
         "border-2",
         "border-take-action",
         "rounded-2",
-        "p-0"
+        "p-0",
       )}
     >
       <h4
@@ -234,7 +234,7 @@ function ProjectNoLegacyMigrateStep1() {
           "d-flex",
           "flex-row",
           "align-items-center",
-          "gap-5"
+          "gap-5",
         )}
       >
         <div className="my-3 pe-2">
@@ -280,7 +280,7 @@ function ProjectNoLegacyMigrateStep2() {
         "border-2",
         "border-gray-300",
         "rounded-2",
-        "p-0"
+        "p-0",
       )}
     >
       <div
@@ -290,7 +290,7 @@ function ProjectNoLegacyMigrateStep2() {
           "flex-row",
           "align-items-center",
           "justify-content-between",
-          "gap-5"
+          "gap-5",
         )}
       >
         <div className="my-3 pe-2">
@@ -328,7 +328,7 @@ function ProjectNoLegacyMigrateStep3() {
         "border-2",
         "border-gray-300",
         "rounded-2",
-        "p-0"
+        "p-0",
       )}
     >
       <div
@@ -338,7 +338,7 @@ function ProjectNoLegacyMigrateStep3() {
           "flex-row",
           "align-items-center",
           "justify-content-between",
-          "gap-5"
+          "gap-5",
         )}
       >
         <div className="my-3 pe-2">
@@ -398,7 +398,7 @@ export default function NoLegacySupportForProjectsRenkulabIo() {
         "flex-column",
         "justify-content-center",
         "bg-navy",
-        styles.background
+        styles.background,
       )}
       style={backgroundImage}
     >

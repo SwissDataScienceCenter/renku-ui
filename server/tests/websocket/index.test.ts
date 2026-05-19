@@ -94,7 +94,7 @@ describe("Test Websocket functions", () => {
     for (const action of actions) {
       const result = getWsClientMessageHandler(
         acceptedMessages,
-        action.message
+        action.message,
       );
       typeof result === "string"
         ? expect(result).toBe(action.result)

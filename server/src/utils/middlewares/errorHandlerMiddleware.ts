@@ -33,7 +33,7 @@ const errorHandlerMiddleware: ErrorRequestHandler = (
   req: express.Request,
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: express.NextFunction
+  next: express.NextFunction,
 ): void => {
   logger.info("Error handled in the errorHandler middleware 😉");
   errorHandler.handleError(err);

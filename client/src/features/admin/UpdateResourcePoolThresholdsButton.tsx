@@ -123,7 +123,7 @@ function UpdateResourcePoolThresholdsModal({
         },
       });
     },
-    [id, updateResourcePool]
+    [id, updateResourcePool],
   );
 
   // Reset form and close modal on successful submissions
@@ -176,7 +176,7 @@ function UpdateResourcePoolThresholdsModal({
                 <Input
                   className={cx(
                     "form-control",
-                    errors.idleThresholdMinutes && "is-invalid"
+                    errors.idleThresholdMinutes && "is-invalid",
                   )}
                   id="updateResourcePoolIdleThreshold"
                   placeholder="idle threshold"
@@ -219,7 +219,7 @@ function UpdateResourcePoolThresholdsModal({
                 <Input
                   className={cx(
                     "form-control",
-                    errors.hibernationThresholdMinutes && "is-invalid"
+                    errors.hibernationThresholdMinutes && "is-invalid",
                   )}
                   id="updateResourcePoolHibernationThreshold"
                   placeholder="hibernation threshold"

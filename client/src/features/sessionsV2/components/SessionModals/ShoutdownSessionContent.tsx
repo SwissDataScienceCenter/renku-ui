@@ -44,7 +44,7 @@ export default function ShutdownSessionContent({
       ? {
           projectId: sessionProjectId,
         }
-      : skipToken
+      : skipToken,
   );
 
   const dataConnectorLinksMetadata =
@@ -53,24 +53,24 @@ export default function ShutdownSessionContent({
         ? {
             projectId: sessionProjectId,
           }
-        : skipToken
+        : skipToken,
     );
   const dataConnectorIds = useMemo(
     () =>
       dataConnectorLinksMetadata.data?.map((link) => link.data_connector_id),
-    [dataConnectorLinksMetadata.data]
+    [dataConnectorLinksMetadata.data],
   );
 
   const dataConnectorMetadata = useGetDataConnectorsListByDataConnectorIdsQuery(
-    dataConnectorIds ? { dataConnectorIds } : skipToken
+    dataConnectorIds ? { dataConnectorIds } : skipToken,
   );
   const dataConnectorsObjects = useMemo(
     () => Object.values(dataConnectorMetadata.data ?? {}),
-    [dataConnectorMetadata.data]
+    [dataConnectorMetadata.data],
   );
 
   const { data } = useGetSessionLaunchersByLauncherIdQuery(
-    sessionLauncherId ? { launcherId: sessionLauncherId } : skipToken
+    sessionLauncherId ? { launcherId: sessionLauncherId } : skipToken,
   );
   const launcherMountDirectory = useMemo(() => {
     return data?.environment.mount_directory;
@@ -80,7 +80,7 @@ export default function ShutdownSessionContent({
   const codeRepositories = useMemo(() => {
     return projectMetadata.data?.repositories
       ? projectMetadata.data?.repositories?.map((repoUrl) =>
-          getRepositoryName(repoUrl)
+          getRepositoryName(repoUrl),
         )
       : [];
   }, [projectMetadata.data]);
@@ -94,7 +94,7 @@ export default function ShutdownSessionContent({
   const [showDetails, setShowDetails] = useState(false);
   const toggleShowDetails = useCallback(
     () => setShowDetails((isAdvancedSettingOpen) => !isAdvancedSettingOpen),
-    []
+    [],
   );
 
   // Render content
@@ -166,7 +166,7 @@ export default function ShutdownSessionContent({
                 "d-flex",
                 "fw-bold",
                 "p-0",
-                "w-100"
+                "w-100",
               )}
               type="button"
               onClick={toggleShowDetails}

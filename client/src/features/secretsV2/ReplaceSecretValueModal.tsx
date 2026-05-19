@@ -79,11 +79,11 @@ export default function ReplaceSecretValueModal({
         },
       });
     },
-    [patchUserSecret, secretId]
+    [patchUserSecret, secretId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   useEffect(() => {

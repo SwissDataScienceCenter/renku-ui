@@ -104,7 +104,7 @@ export default function ProjectCopyModal({
         },
       });
     },
-    [copyProject, project.id]
+    [copyProject, project.id],
   );
 
   const formId = "project-copy-form";
@@ -194,8 +194,10 @@ export default function ProjectCopyModal({
   );
 }
 
-interface ProjectCopySuccessAlertProps
-  extends Pick<ProjectCopyModalProps, "toggle"> {
+interface ProjectCopySuccessAlertProps extends Pick<
+  ProjectCopyModalProps,
+  "toggle"
+> {
   project: Project;
   hasError: boolean;
 }

@@ -43,42 +43,42 @@ export default function SearchResultRecap() {
       parts.push(
         <span key="type">
           {FILTER_CONTENT.label}: {state.contentType}
-        </span>
+        </span>,
       );
     }
     if (state.visibility) {
       parts.push(
         <span key="visibility">
           {FILTER_VISIBILITY.label}: {state.visibility}
-        </span>
+        </span>,
       );
     }
     if (state.role) {
       parts.push(
         <span key="role">
           {FILTER_MY_ROLE.label}: {state.role}
-        </span>
+        </span>,
       );
     }
     if (state.keywords) {
       parts.push(
         <span key="keywords">
           {FILTER_KEYWORD.label}: {state.keywords}
-        </span>
+        </span>,
       );
     }
     if (state.directMember) {
       parts.push(
         <span key="member">
           {FILTER_MEMBER.label}: {state.directMember}
-        </span>
+        </span>,
       );
     }
     if (state.created) {
       parts.push(
         <span key="created">
           {FILTER_DATE.label}: {state.created}
-        </span>
+        </span>,
       );
     }
     return parts.length > 0 ? (

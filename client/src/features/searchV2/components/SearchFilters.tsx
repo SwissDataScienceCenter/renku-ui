@@ -76,7 +76,7 @@ export default function SearchFilters() {
     {
       groupSlug: namespace ?? "",
     },
-    { skip: kind !== "group" || !namespace }
+    { skip: kind !== "group" || !namespace },
   );
   const isNamespace = kind == "group" || kind == "user";
 
@@ -127,7 +127,7 @@ export default function SearchFilters() {
     existingKeywords.forEach((keyword) => {
       if (
         !hydratedFilterKeywordAllowedValues.some(
-          (v) => v._label === keyword.trim()
+          (v) => v._label === keyword.trim(),
         )
       ) {
         hydratedFilterKeywordAllowedValues.unshift({
@@ -222,7 +222,7 @@ function FilterKeywordRendering({
             "d-flex",
             "gap-1",
             "text-break",
-            "text-wrap"
+            "text-wrap",
           )}
           highlighted={selected}
         >
@@ -360,7 +360,7 @@ function SearchFilterContent({
 }: SearchFilterContentProps) {
   const [showAll, setShowAll] = useState(false);
   const { currentValue: current, updateParam } = useReduxFilterParam(
-    filter.name
+    filter.name,
   );
   const allowSelectMany = filter.type === "enum" && filter.allowSelectMany;
 
@@ -381,7 +381,7 @@ function SearchFilterContent({
         updateParam(value);
       }
     },
-    [allowSelectMany, current, filter, updateParam]
+    [allowSelectMany, current, filter, updateParam],
   );
 
   if (filter.type === "enum") {
@@ -465,7 +465,7 @@ function SearchFilterRadioOrCheckboxElement({
         visualization === "accordion" ? "w-100" : "d-flex",
         "p-1",
         "rounded-2",
-        isChecked && !hiddenDecoration && "bg-body-secondary"
+        isChecked && !hiddenDecoration && "bg-body-secondary",
       )}
     >
       <input
@@ -474,8 +474,8 @@ function SearchFilterRadioOrCheckboxElement({
           hiddenDecoration
             ? "d-none"
             : visualization === "accordion"
-            ? "btn-check"
-            : ["cursor-pointer", "form-check-input", "my-auto"]
+              ? "btn-check"
+              : ["cursor-pointer", "form-check-input", "my-auto"],
         )}
         data-cy={identifier}
         id={identifier}
@@ -487,8 +487,8 @@ function SearchFilterRadioOrCheckboxElement({
           hiddenDecoration
             ? "cursor-pointer"
             : visualization === "accordion"
-            ? ["btn", "btn-outline-primary", "w-100"]
-            : ["cursor-pointer", "form-check-label", "ps-2"]
+              ? ["btn", "btn-outline-primary", "w-100"]
+              : ["cursor-pointer", "form-check-label", "ps-2"],
         )}
         htmlFor={identifier}
       >
@@ -548,7 +548,7 @@ function SearchDateFilterCustomOption({
   const predefinedValues = useMemo(
     () =>
       filter.type === "enum" ? filter.allowedValues.map((v) => v.value) : [],
-    [filter]
+    [filter],
   );
 
   const isCustom =
@@ -559,7 +559,7 @@ function SearchDateFilterCustomOption({
       isCustom
         ? parseCustomDateFilter(currentValue)
         : { afterDate: "", beforeDate: "" },
-    [currentValue, isCustom]
+    [currentValue, isCustom],
   );
 
   const today = useMemo(() => DateTime.utc().toISODate() ?? "", []);
@@ -574,14 +574,14 @@ function SearchDateFilterCustomOption({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       updateParam(buildCustomDateFilterValue(e.target.value, beforeDate));
     },
-    [beforeDate, updateParam]
+    [beforeDate, updateParam],
   );
 
   const onChangeBefore = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       updateParam(buildCustomDateFilterValue(afterDate, e.target.value));
     },
-    [afterDate, updateParam]
+    [afterDate, updateParam],
   );
 
   const id = `search-filter-${filter.name}-custom`;

@@ -94,7 +94,7 @@ export default function NoLegacySupport() {
         "flex-column",
         "justify-content-center",
         "bg-navy",
-        styles.background
+        styles.background,
       )}
       style={backgroundImage}
     >
@@ -109,7 +109,7 @@ export default function NoLegacySupport() {
               "d-flex",
               "flex-column",
               "align-items-center",
-              "p-5"
+              "p-5",
             )}
           >
             <h2

@@ -63,7 +63,7 @@ export default function SessionAlerts({ sessionName }: SessionAlertsProps) {
     {
       pollingInterval: ONE_SECOND,
       refetchOnMountOrArgChange: true,
-    }
+    },
   );
 
   return <Alerts alerts={alerts ?? []} />;
@@ -90,7 +90,7 @@ function Alerts({ alerts }: AlertsProps) {
     const currentAlertIds = new Set(alerts.map((alert) => alert.id));
 
     const hasNewAlerts = alerts.some(
-      (alert) => !prevAlertIdsRef.current.has(alert.id)
+      (alert) => !prevAlertIdsRef.current.has(alert.id),
     );
 
     if (hasNewAlerts) {
@@ -114,7 +114,7 @@ function Alerts({ alerts }: AlertsProps) {
             "no-focus",
             "p-0",
             "shadow-none",
-            "text-dark"
+            "text-dark",
           )}
           data-cy="session-alerts"
           innerRef={ref}
@@ -137,7 +137,7 @@ function Alerts({ alerts }: AlertsProps) {
             "no-focus",
             "p-0",
             "shadow-none",
-            "text-danger"
+            "text-danger",
           )}
           data-cy="session-alerts"
         >

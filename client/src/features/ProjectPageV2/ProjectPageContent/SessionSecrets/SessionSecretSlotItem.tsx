@@ -55,7 +55,7 @@ export default function SessionSecretSlotItem({
                     "border",
                     "border-success",
                     "bg-success-subtle",
-                    "text-success-emphasis"
+                    "text-success-emphasis",
                   )}
                   pill
                 >
@@ -78,7 +78,7 @@ export default function SessionSecretSlotItem({
                   "border",
                   "border-dark-subtle",
                   "bg-light",
-                  "text-dark-emphasis"
+                  "text-dark-emphasis",
                 )}
                 pill
               >

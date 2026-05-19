@@ -103,7 +103,7 @@ export function DataConnectorRemoveDeleteModal({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTypedName(e.target.value.trim());
     },
-    [setTypedName]
+    [setTypedName],
   );
 
   const navigate = useNavigate();
@@ -258,8 +258,10 @@ export function DataConnectorRemoveDeleteModal({
   );
 }
 
-interface DataConnectorRemoveUnlinkModalProps
-  extends Omit<DataConnectorRemoveModalProps, "dataConnectorLink"> {
+interface DataConnectorRemoveUnlinkModalProps extends Omit<
+  DataConnectorRemoveModalProps,
+  "dataConnectorLink"
+> {
   dataConnectorLink: DataConnectorToProjectLink;
   projectNamespace: string;
   projectSlug: string;
@@ -446,7 +448,7 @@ function DataConnectorActionsInner({
       dataConnectorId: dataConnector.id,
       params: LAST_DEPOSIT_QUERY_PARAMS,
     },
-    { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS }
+    { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS },
   );
 
   const { project_id: projectId } = dataConnectorLink ?? {};
@@ -456,7 +458,7 @@ function DataConnectorActionsInner({
   const location = useLocation();
   const pathMatch = matchPath(
     ABSOLUTE_ROUTES.v2.projects.show.root,
-    location.pathname
+    location.pathname,
   );
   const namespace = pathMatch?.params?.namespace;
   const slug = pathMatch?.params?.slug;
@@ -514,26 +516,26 @@ function DataConnectorActionsInner({
                 ),
               }
             : lastDeposit.status === "upload_complete"
-            ? {
-                key: "data-connector-deposit-finalize",
-                onClick: toggleFinalizationDepositOpen,
-                content: (
-                  <>
-                    <Check2 className={cx("bi", "me-1")} />
-                    Finalize deposit
-                  </>
-                ),
-              }
-            : {
-                key: "data-connector-deposit-edit",
-                onClick: toggleEditDeposit,
-                content: (
-                  <>
-                    <Pencil className={cx("bi", "me-1")} />
-                    Edit or rerun data export
-                  </>
-                ),
-              },
+              ? {
+                  key: "data-connector-deposit-finalize",
+                  onClick: toggleFinalizationDepositOpen,
+                  content: (
+                    <>
+                      <Check2 className={cx("bi", "me-1")} />
+                      Finalize deposit
+                    </>
+                  ),
+                }
+              : {
+                  key: "data-connector-deposit-edit",
+                  onClick: toggleEditDeposit,
+                  content: (
+                    <>
+                      <Pencil className={cx("bi", "me-1")} />
+                      Edit or rerun data export
+                    </>
+                  ),
+                },
         ]
       : []),
     ...(requiresCredentials

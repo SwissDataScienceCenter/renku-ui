@@ -82,7 +82,7 @@ export default function DataConnectorModalBody({
   switchMode,
 }: DataConnectorModalBodyProps) {
   const { flatDataConnector, schemata, success } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   if (success) {
     return (
@@ -118,10 +118,10 @@ function AddOrEditDataConnector({
       dispatch(
         dataConnectorFormSlice.actions.setCloudStorageState({
           cloudStorageState: newState,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
   const setFlatDataConnector = useCallback(
     (newDetails: Partial<CloudStorageDetails>) => {
@@ -131,10 +131,10 @@ function AddOrEditDataConnector({
             ...newDetails,
           },
           validationSucceeded: null,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
   const CloudStorageContentByStep =
     cloudStorageState.step >= 0 &&
@@ -222,15 +222,15 @@ type DataConnectorMountFormFields =
 function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
   const dispatch = useAppDispatch();
   const { cloudStorageState, flatDataConnector, schemata } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   const [isAdvancedSettingOpen, setIsAdvancedSettingsOpen] = useState(false);
   const toggleIsOpen = useCallback(
     () =>
       setIsAdvancedSettingsOpen(
-        (isAdvancedSettingOpen) => !isAdvancedSettingOpen
+        (isAdvancedSettingOpen) => !isAdvancedSettingOpen,
       ),
-    []
+    [],
   );
   const {
     control,
@@ -281,14 +281,14 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
         dispatch(
           dataConnectorFormSlice.actions.setCloudStorageState({
             cloudStorageState: { saveCredentials: !!value },
-          })
+          }),
         );
         return;
       }
       dispatch(
         dataConnectorFormSlice.actions.setFlatDataConnector({
           flatDataConnector: { ...getValues() },
-        })
+        }),
       );
     },
     [
@@ -298,28 +298,28 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
       setValue,
       touchedFields.mountPoint,
       touchedFields.slug,
-    ]
+    ],
   );
 
   const { validationResult } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   const schema = getSchema(schemata, flatDataConnector.schema);
   const schemaOptions = getSchemaOptions(
     schemata,
     true,
     flatDataConnector.schema,
-    flatDataConnector.provider
+    flatDataConnector.provider,
   );
   const usesIntegration = !!schema?.usesIntegration;
   const secretFields =
     schemaOptions == null
       ? []
       : Object.values(schemaOptions).filter(
-          (o) => o && o.convertedType === "secret"
+          (o) => o && o.convertedType === "secret",
         );
   const hasPasswordFieldWithInput = secretFields.some(
-    (o) => flatDataConnector.options && flatDataConnector.options[o.name]
+    (o) => flatDataConnector.options && flatDataConnector.options[o.name],
   );
 
   const currentName = watch("name");
@@ -328,7 +328,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
     dispatch(
       dataConnectorFormSlice.actions.setFlatDataConnector({
         flatDataConnector: { ...getValues() },
-      })
+      }),
     );
   }, [currentSlug, getValues, dispatch]);
   const resetUrl = useCallback(() => {
@@ -622,7 +622,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
                       {...field}
                       className={cx(
                         "form-control",
-                        errors.keyword && "is-invalid"
+                        errors.keyword && "is-invalid",
                       )}
                       data-cy="data-connector-keyword-input"
                       onChange={(e) => {
@@ -688,7 +688,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
                             highlighted={!oldKeywords?.includes(keyword)}
                             remove={() => {
                               const newKeywords = currentKeywords.filter(
-                                (k) => k !== keyword
+                                (k) => k !== keyword,
                               );
                               setValue("keywords", newKeywords, {
                                 shouldDirty: true,
@@ -735,7 +735,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
             "border-0",
             "fw-medium",
             "fs-3",
-            "px-0"
+            "px-0",
           )}
           type="button"
           onClick={toggleIsOpen}
@@ -764,7 +764,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
                 {...field}
                 className={cx(
                   "form-control",
-                  errors.mountPoint && "is-invalid"
+                  errors.mountPoint && "is-invalid",
                 )}
                 data-cy="data-connector-mount-input"
                 onChange={(e) => {

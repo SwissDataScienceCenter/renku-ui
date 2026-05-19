@@ -100,16 +100,16 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
           slug: item.slug,
         })
       : item.type === "DataConnector"
-      ? `${location.search}#data-connector-${item.id}`
-      : item.type === "User"
-      ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-          username: item.slug ?? "",
-        })
-      : item.type === "Group"
-      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: item.slug,
-        })
-      : "";
+        ? `${location.search}#data-connector-${item.id}`
+        : item.type === "User"
+          ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+              username: item.slug ?? "",
+            })
+          : item.type === "Group"
+            ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+                slug: item.slug,
+              })
+            : "";
 
   return (
     <Link
@@ -118,7 +118,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
         "text-body",
         "text-decoration-none",
         "list-group-item",
-        "list-group-item-action"
+        "list-group-item-action",
       )}
       to={url}
       data-cy="search-list-item"
@@ -143,7 +143,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
                 "d-flex",
                 "flex-wrap",
                 "gap-3",
-                "mb-0"
+                "mb-0",
               )}
             >
               <span>
@@ -174,7 +174,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
               "flex-column",
               "flex-sm-row",
               "gap-2",
-              "justify-content-between"
+              "justify-content-between",
             )}
           >
             {!isNamespaceType && <SearchResultVisibility item={item} />}

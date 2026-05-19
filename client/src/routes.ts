@@ -34,7 +34,7 @@ export default [
       index("routes/projects/index.tsx"),
       route(
         RELATIVE_ROUTES.v2.projects.show.settings,
-        "routes/projects/settings.tsx"
+        "routes/projects/settings.tsx",
       ),
     ]),
   ]),
@@ -46,7 +46,7 @@ export default [
       route(RELATIVE_ROUTES.v2.groups.show.search, "routes/groups/search.tsx"),
       route(
         RELATIVE_ROUTES.v2.groups.show.settings,
-        "routes/groups/settings.tsx"
+        "routes/groups/settings.tsx",
       ),
     ]),
     // Not found page for /g/*
@@ -72,9 +72,9 @@ export default [
         index("routes/dataConnectors/index.tsx"),
         route(
           RELATIVE_ROUTES.v2.dataConnectors.show.settings,
-          "routes/dataConnectors/settings.tsx"
+          "routes/dataConnectors/settings.tsx",
         ),
-      ]
+      ],
     ),
     // Not found page for /d/*
     route("*", "routes/dataConnectors/catchall.tsx"),

@@ -49,7 +49,7 @@ export default function TemplateSlider() {
     (templateSelected: State["templateSelected"]) => () => {
       setState({ templateSelected, lastSelection: DateTime.now() });
     },
-    []
+    [],
   );
 
   const progressRef = useRef<HTMLDivElement>(null);
@@ -64,8 +64,8 @@ export default function TemplateSlider() {
           templateSelected === "python"
             ? "rStudio"
             : templateSelected === "rStudio"
-            ? "vs"
-            : "python",
+              ? "vs"
+              : "python",
         lastSelection: DateTime.now(),
       }));
     }, AUTO_CHANGE_TEMPLATE_DURATION_MS);
@@ -117,7 +117,7 @@ export default function TemplateSlider() {
         "end-0",
         "bg-transparent",
         "opacity-50",
-        "align-items-end"
+        "align-items-end",
       )}
       role="progressbar"
     >
@@ -125,7 +125,7 @@ export default function TemplateSlider() {
         className={cx(
           styles.templateSliderProgressBar,
           "progress-bar",
-          "bg-rk-green"
+          "bg-rk-green",
         )}
         ref={progressRef}
       ></div>

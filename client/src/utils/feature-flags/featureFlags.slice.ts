@@ -59,6 +59,6 @@ function readFlagsFromLocalStorage(): FeatureFlags {
   });
   return keyValuePairs.reduce(
     (featureFlags, [key, value]) => ({ ...featureFlags, [key]: value }),
-    { ...DEFAULT_FEATURE_FLAGS } as FeatureFlags
+    { ...DEFAULT_FEATURE_FLAGS } as FeatureFlags,
   );
 }

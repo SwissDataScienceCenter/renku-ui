@@ -65,7 +65,7 @@ export default function DataConnectorCredentialsModal({
       saveCredentials({
         dataConnectorId: dataConnector?.id ?? "",
         dataConnectorSecretPatchList: Object.entries(
-          config.sensitiveFieldValues
+          config.sensitiveFieldValues,
         ).map(([key, value]) => ({
           name: key,
           value,
@@ -78,7 +78,7 @@ export default function DataConnectorCredentialsModal({
       dataConnector?.id,
       saveCredentials,
       saveCredentialsResult,
-    ]
+    ],
   );
 
   useEffect(() => {

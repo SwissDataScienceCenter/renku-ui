@@ -113,7 +113,7 @@ function DataConnectorSecrets({
         dataConnectorConfig.savedCredentialFields.map((secret) => [
           storageSecretNameToFieldName({ name: secret }),
           secret,
-        ])
+        ]),
       )
     : {};
 
@@ -176,16 +176,16 @@ export default function DataConnectorSecretsModal({
       initialDataConnectorConfigs == null
         ? []
         : initialDataConnectorConfigs.filter(
-            (config) => config.sensitiveFieldDefinitions.length === 0
+            (config) => config.sensitiveFieldDefinitions.length === 0,
           ),
-    [initialDataConnectorConfigs]
+    [initialDataConnectorConfigs],
   );
   const [dataConnectorConfigs, setDataConnectorConfigs] = useState(
     initialDataConnectorConfigs == null
       ? []
       : initialDataConnectorConfigs.filter(
-          (config) => config.sensitiveFieldDefinitions.length > 0
-        )
+          (config) => config.sensitiveFieldDefinitions.length > 0,
+        ),
   );
   const [index, setIndex] = useState(0);
   const { control, handleSubmit, reset: resetForm } = useForm();
@@ -204,7 +204,7 @@ export default function DataConnectorSecretsModal({
         onStart([...noCredentialsConfigs, ...csConfigs]);
       }
     },
-    [index, noCredentialsConfigs, onStart, resetForm, validationResult]
+    [index, noCredentialsConfigs, onStart, resetForm, validationResult],
   );
 
   const onSkip = useCallback(() => {
@@ -256,7 +256,7 @@ export default function DataConnectorSecretsModal({
       newCloudStorageConfigs[index] = config;
       setDataConnectorConfigs(newCloudStorageConfigs);
     },
-    [dataConnectorConfigs, index, validateCloudStorageConnection]
+    [dataConnectorConfigs, index, validateCloudStorageConnection],
   );
 
   useEffect(() => {
@@ -278,7 +278,7 @@ export default function DataConnectorSecretsModal({
   if (dataConnectorConfigs == null) return null;
   if (dataConnectorConfigs.length < 1) return null;
   const hasSavedCredentials = dataConnectorConfigs.some(
-    (csc) => csc.savedCredentialFields?.length > 0
+    (csc) => csc.savedCredentialFields?.length > 0,
   );
 
   return (
@@ -327,8 +327,10 @@ export default function DataConnectorSecretsModal({
   );
 }
 
-interface CredentialsButtonsProps
-  extends Pick<DataConnectorSecretsModalProps, "onCancel"> {
+interface CredentialsButtonsProps extends Pick<
+  DataConnectorSecretsModalProps,
+  "onCancel"
+> {
   context: NonNullable<DataConnectorSecretsModalProps["context"]>;
   hasSavedCredentials: boolean;
   onSkip: () => void;
@@ -362,10 +364,10 @@ function CredentialsButtons({
           validationResult == null
             ? "primary"
             : validationResult.isSuccess
-            ? "primary"
-            : validationResult.isError
-            ? "danger"
-            : "primary"
+              ? "primary"
+              : validationResult.isError
+                ? "danger"
+                : "primary"
         }
         className={cx("ms-2")}
         disabled={validationResult.isLoading}
@@ -429,7 +431,7 @@ function ProgressBreadcrumbs({
                 "btn-link",
                 "p-0",
                 idx === index && ["text-decoration-none", "link-rk-text"],
-                idx > index && "text-decoration-none"
+                idx > index && "text-decoration-none",
               )}
               disabled={idx >= index}
               onClick={() => {
@@ -483,8 +485,7 @@ function SaveCredentialsInput({
   );
 }
 
-interface SensitiveFieldWidgetProps
-  extends DataConnectorConfigurationSecretsProps {
+interface SensitiveFieldWidgetProps extends DataConnectorConfigurationSecretsProps {
   credentialFieldDict: Record<string, string>;
   field: {
     name: string;
@@ -572,7 +573,7 @@ function SensitiveFieldInput({
                   "form-control",
                   "rounded-0",
                   "rounded-start",
-                  fieldState.error && "is-invalid"
+                  fieldState.error && "is-invalid",
                 )}
                 placeholder={""}
                 {...field}

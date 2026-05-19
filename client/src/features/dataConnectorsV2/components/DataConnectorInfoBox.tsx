@@ -46,14 +46,14 @@ export default function DataConnectorInfoBox({
   // Get useful DC info
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector.namespace),
-    [dataConnector.namespace]
+    [dataConnector.namespace],
   );
   const identifier = useMemo(
     () =>
       scope === "global"
         ? `${dataConnector.slug}`
         : `${dataConnector.namespace}/${dataConnector.slug}`,
-    [dataConnector.namespace, dataConnector.slug, scope]
+    [dataConnector.namespace, dataConnector.slug, scope],
   );
   const dataConnectorSource = useGetDataConnectorSource(dataConnector);
 
@@ -89,25 +89,25 @@ export default function DataConnectorInfoBox({
         ? {
             namespaceSlug: dataConnector.namespace,
           }
-        : skipToken
+        : skipToken,
     );
   const namespaceUrl = useMemo(
     () =>
       scope === "global" || !dataConnector.namespace
         ? null
         : scope === "project"
-        ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-            namespace: dataConnector.namespace.split("/")[0],
-            slug: dataConnector.namespace.split("/")[1],
-          })
-        : referenceNamespace?.namespace_kind === "user"
-        ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-            username: dataConnector.namespace,
-          })
-        : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-            slug: dataConnector.namespace,
-          }),
-    [dataConnector.namespace, referenceNamespace, scope]
+          ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+              namespace: dataConnector.namespace.split("/")[0],
+              slug: dataConnector.namespace.split("/")[1],
+            })
+          : referenceNamespace?.namespace_kind === "user"
+            ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+                username: dataConnector.namespace,
+              })
+            : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+                slug: dataConnector.namespace,
+              }),
+    [dataConnector.namespace, referenceNamespace, scope],
   );
 
   return (
@@ -266,8 +266,8 @@ export function InfoEntry({ children, title, dataCy }: InfoEntryProps) {
           dataCy
             ? `data-connector-${dataCy}`
             : typeof title === "string"
-            ? `data-connector-${title.toLocaleLowerCase().replace(/\s/g, "-")}`
-            : undefined
+              ? `data-connector-${title.toLocaleLowerCase().replace(/\s/g, "-")}`
+              : undefined
         }
       >
         {children}
@@ -301,13 +301,13 @@ function DataConnectorAdditionalFields({
     getCredentialFieldDefinitions(dataConnector);
 
   const nonCredentialFields = Object.keys(
-    dataConnector.storage.configuration
+    dataConnector.storage.configuration,
   ).filter((k) => !credentialFieldDefinitions?.some((f) => f.name === k));
 
   const hasAccessMode = useMemo(
     () =>
       STORAGES_WITH_ACCESS_MODE.includes(dataConnector.storage.storage_type),
-    [dataConnector.storage.storage_type]
+    [dataConnector.storage.storage_type],
   );
 
   return (

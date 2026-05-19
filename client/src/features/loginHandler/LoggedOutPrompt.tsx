@@ -70,7 +70,7 @@ export default function LoggedOutPrompt() {
 function useLoggedOutPromptState() {
   const dispatch = useAppDispatch();
   const { isLoggedIn, shouldBeLoggedIn } = useAppSelector(
-    ({ loginState }) => loginState
+    ({ loginState }) => loginState,
   );
 
   const { currentData: user, error } =

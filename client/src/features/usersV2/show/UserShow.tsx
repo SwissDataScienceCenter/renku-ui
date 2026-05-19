@@ -92,7 +92,7 @@ export default function UserShow() {
               className={cx(
                 "align-items-center",
                 "d-flex",
-                "justify-content-between"
+                "justify-content-between",
               )}
             >
               <h2 className="m-0">

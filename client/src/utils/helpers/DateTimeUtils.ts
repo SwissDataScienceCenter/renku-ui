@@ -50,6 +50,6 @@ export function ensureDateTime(datetime: DateTime | Date | string): DateTime {
   return datetime instanceof DateTime
     ? datetime
     : datetime instanceof Date
-    ? DateTime.fromJSDate(datetime)
-    : DateTime.fromISO(datetime);
+      ? DateTime.fromJSDate(datetime)
+      : DateTime.fromISO(datetime);
 }
