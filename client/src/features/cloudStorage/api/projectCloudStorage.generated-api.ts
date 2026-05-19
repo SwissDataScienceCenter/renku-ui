@@ -40,7 +40,9 @@ const injectedRtkApi = api.injectEndpoints({
     getStorage: build.query<GetStorageApiResponse, GetStorageApiArg>({
       query: (queryArg) => ({
         url: `/storage`,
-        params: { storage_params: queryArg.storageParams },
+        params: {
+          storage_params: queryArg.storageParams,
+        },
       }),
     }),
     postStorage: build.mutation<PostStorageApiResponse, PostStorageApiArg>({
@@ -110,8 +112,7 @@ export type PatchStorageByStorageIdApiArg = {
   storageId: Ulid;
   body: CloudStoragePatch;
 };
-export type DeleteStorageByStorageIdApiResponse =
-  /** status 204 The rcloud storage was removed or did not exist in the first place */ void;
+export type DeleteStorageByStorageIdApiResponse = unknown;
 export type DeleteStorageByStorageIdApiArg = {
   /** the id of the storage */
   storageId: Ulid;
@@ -132,13 +133,11 @@ export type PostStorageApiArg = {
 export type GetStorageSchemaApiResponse =
   /** status 200 The cloud storage schema definition */ RCloneSchema;
 export type GetStorageSchemaApiArg = void;
-export type PostStorageSchemaValidateApiResponse =
-  /** status 204 The configuration is valid */ void;
+export type PostStorageSchemaValidateApiResponse = unknown;
 export type PostStorageSchemaValidateApiArg = {
   rCloneConfigValidate: RCloneConfigValidate;
 };
-export type PostStorageSchemaTestConnectionApiResponse =
-  /** status 204 The configuration is valid */ void;
+export type PostStorageSchemaTestConnectionApiResponse = unknown;
 export type PostStorageSchemaTestConnectionApiArg = {
   body: {
     configuration: RCloneConfig;
