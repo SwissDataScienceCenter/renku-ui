@@ -16,7 +16,9 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/platform/config`,
         method: "PATCH",
         body: queryArg.platformConfigPatch,
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     getPlatformRedirects: build.query<
@@ -25,7 +27,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/platform/redirects`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     postPlatformRedirects: build.mutation<
@@ -54,7 +58,9 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/platform/redirects/${queryArg.sourceUrl}`,
         method: "PATCH",
         body: queryArg.urlRedirectPlanPatch,
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     deletePlatformRedirectsBySourceUrl: build.mutation<
@@ -64,7 +70,9 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/platform/redirects/${queryArg.sourceUrl}`,
         method: "DELETE",
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
   }),
@@ -107,8 +115,7 @@ export type PatchPlatformRedirectsBySourceUrlApiArg = {
   "If-Match": ETag;
   urlRedirectPlanPatch: UrlRedirectPlanPatch;
 };
-export type DeletePlatformRedirectsBySourceUrlApiResponse =
-  /** status 204 The redirect plan was removed or did not exist in the first place */ void;
+export type DeletePlatformRedirectsBySourceUrlApiResponse = unknown;
 export type DeletePlatformRedirectsBySourceUrlApiArg = {
   /** The url-encoded (original) source URL */
   sourceUrl: string;

@@ -132,8 +132,7 @@ export type PatchGroupsByGroupSlugApiArg = {
   groupSlug: Slug;
   groupPatchRequest: GroupPatchRequest;
 };
-export type DeleteGroupsByGroupSlugApiResponse =
-  /** status 204 The group was removed or did not exist in the first place */ void;
+export type DeleteGroupsByGroupSlugApiResponse = unknown;
 export type DeleteGroupsByGroupSlugApiArg = {
   groupSlug: Slug;
 };
@@ -148,8 +147,7 @@ export type PatchGroupsByGroupSlugMembersApiArg = {
   groupSlug: Slug;
   groupMemberPatchRequestList: GroupMemberPatchRequestList;
 };
-export type DeleteGroupsByGroupSlugMembersAndUserIdApiResponse =
-  /** status 204 The member was removed or wasn't part of group's members. */ void;
+export type DeleteGroupsByGroupSlugMembersAndUserIdApiResponse = unknown;
 export type DeleteGroupsByGroupSlugMembersAndUserIdApiArg = {
   groupSlug: Slug;
   /** This is user's KeyCloak ID */
