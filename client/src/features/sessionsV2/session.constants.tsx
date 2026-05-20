@@ -16,6 +16,8 @@
  * limitations under the License
  */
 
+import { Gear, PlayCircle } from "react-bootstrap-icons";
+
 import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
 import faviconSVG from "../../styles/assets/favicon/Favicon.svg";
@@ -41,7 +43,6 @@ import type {
   BuilderSelectorOption,
   LauncherCategory,
   LauncherCategoryDefinition,
-  LauncherOptionIcon,
 } from "./sessionsV2.types";
 
 export const DEFAULT_URL = "/";
@@ -203,30 +204,8 @@ export const MIN_SESSION_STORAGE_GB = 1;
 
 export const STEP_SESSION_STORAGE_GB = 1;
 
-export interface LauncherOption {
-  category: LauncherCategory;
-  icon: LauncherOptionIcon;
-  title: string;
-  description: string;
-}
-
 /* eslint-disable spellcheck/spell-checker -- product copy */
-export const LAUNCHER_OPTIONS: LauncherOption[] = [
-  {
-    category: "session",
-    icon: "play-circle",
-    title: "Session",
-    description:
-      "Launch interactive development sessions with repositories, environments, and live workspace access.",
-  },
-  {
-    category: "job",
-    icon: "gear",
-    title: "Job",
-    description:
-      "Run non-interactive workloads such as builds, automation, and scheduled tasks.",
-  },
-];
+export const LAUNCHER_OPTIONS: LauncherCategory[] = ["session", "job"];
 
 export const LAUNCHER_CATEGORY_BY_CATEGORY: Record<
   LauncherCategory,
@@ -235,6 +214,7 @@ export const LAUNCHER_CATEGORY_BY_CATEGORY: Record<
   session: {
     apiType: "interactive",
     title: "Session",
+    icon: PlayCircle,
     chooserDescription:
       "Launch interactive development sessions with repositories, environments, and live workspace access.",
     createIntro:
@@ -244,6 +224,7 @@ export const LAUNCHER_CATEGORY_BY_CATEGORY: Record<
   job: {
     apiType: "non-interactive",
     title: "Job",
+    icon: Gear,
     chooserDescription:
       "Run non-interactive workloads such as builds, automation, and scheduled tasks.",
     createIntro:

@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import type { KeyboardEvent } from "react";
-import { Gear, Icon, PlayCircle, RocketTakeoff } from "react-bootstrap-icons";
+import { RocketTakeoff } from "react-bootstrap-icons";
 import {
   Card,
   CardBody,
@@ -30,19 +30,13 @@ import {
   Row,
 } from "reactstrap";
 
+import { LauncherCategoryIcon } from "~/features/sessionsV2/components/SessionForm/LauncherCategoryIcon.tsx";
+import { getLauncherCategoryDefinition } from "~/features/sessionsV2/session.utils.ts";
 import { LAUNCHER_OPTIONS } from "../../session.constants";
-import type {
-  LauncherCategory,
-  LauncherOptionIcon,
-} from "../../sessionsV2.types";
+import type { LauncherCategory } from "../../sessionsV2.types";
 import NewLauncherCreateModal from "./NewLauncherCreateModal";
 
 import styles from "./NewLauncherModal.module.scss";
-
-const LAUNCHER_OPTION_ICONS: Record<LauncherOptionIcon, Icon> = {
-  "play-circle": PlayCircle,
-  gear: Gear,
-};
 
 interface NewLauncherModalProps {
   isOpen: boolean;
@@ -97,8 +91,9 @@ export default function NewLauncherModal({
         </ModalHeader>
         <ModalBody>
           <Row>
-            {LAUNCHER_OPTIONS.map(({ category, description, icon, title }) => {
-              const OptionIcon = LAUNCHER_OPTION_ICONS[icon];
+            {LAUNCHER_OPTIONS.map((category) => {
+              const definition = getLauncherCategoryDefinition(category);
+              const OptionIcon = definition.icon;
               return (
                 <Col key={category} xs={12} md={6}>
                   <Card
@@ -108,7 +103,8 @@ export default function NewLauncherModal({
                       "border",
                       "border-primary",
                       "shadow-none",
-                      "cursor-pointer"
+                      "cursor-pointer",
+                      "text-primary"
                     )}
                     data-cy={`launcher-option-${category}`}
                     onClick={() => handleSelectCategory(category)}
@@ -125,13 +121,16 @@ export default function NewLauncherModal({
                         )}
                       >
                         <div className="fs-1">
-                          <OptionIcon size={48} />
+                          <LauncherCategoryIcon type={category} />
                         </div>
-                        <div>
-                          <span className="fw-bold">{title}</span> Launcher
+                        <div className={cx("mt-2", "fs-3", "fs-bold")}>
+                          <OptionIcon size={32} className="me-2" />
+                          {definition.title} Launcher
                         </div>
                       </div>
-                      <p className={cx("mb-0")}>{description}</p>
+                      <p className={cx("mb-0")}>
+                        {definition.chooserDescription}
+                      </p>
                     </CardBody>
                   </Card>
                 </Col>

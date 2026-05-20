@@ -17,8 +17,8 @@
  */
 
 import cx from "classnames";
-import { CSSProperties } from "react";
 
+import { SvgIconProps } from "~/features/sessionsV2/sessionsV2.types.ts";
 import { SessionLauncher } from "../../api/sessionLaunchersV2.generated-api";
 
 export function LauncherEnvironmentIcon({
@@ -40,11 +40,6 @@ export function LauncherEnvironmentIcon({
   ) : currentEnvironment?.environment_kind === "CUSTOM" ? (
     <EnvironmentIcon type="custom" size={16} className={className ?? "me-2"} />
   ) : null;
-}
-
-interface SvgIconProps {
-  className?: string;
-  style?: CSSProperties;
 }
 
 function CustomIconSvg({ className, style }: SvgIconProps) {

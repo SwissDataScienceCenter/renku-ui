@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
+import { Icon } from "react-bootstrap-icons";
 
 import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
@@ -31,11 +32,14 @@ import type {
   SessionLauncherPost,
 } from "./api/sessionLaunchersV2.api";
 
+export interface SvgIconProps {
+  className?: string;
+  style?: CSSProperties;
+}
+
 export type LauncherCategory = "session" | "job";
 
 export type LauncherApiType = LauncherType;
-
-export type LauncherOptionIcon = "play-circle" | "gear";
 
 export type EnvironmentSelectOption =
   | "global"
@@ -45,6 +49,7 @@ export type EnvironmentSelectOption =
 export interface LauncherCategoryDefinition {
   apiType: LauncherApiType;
   title: string;
+  icon: Icon;
   chooserDescription: string;
   createIntro: string;
   allowedEnvironmentSelects: EnvironmentSelectOption[];

@@ -19,15 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Icon } from "react-bootstrap-icons";
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckLg,
-  Gear,
-  PlayCircle,
-  XLg,
-} from "react-bootstrap-icons";
+import { ArrowLeft, ArrowRight, CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import {
@@ -47,7 +39,6 @@ import {
   usePostSessionLaunchersMutation as useAddSessionLauncherMutation,
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
 } from "../../api/sessionLaunchersV2.api";
-import { LAUNCHER_OPTIONS } from "../../session.constants";
 import {
   getFormattedEnvironmentValues,
   getLauncherApiType,
@@ -55,20 +46,12 @@ import {
   getNewLauncherFormDefaultValues,
   isGlobalEnvironmentIncluded,
 } from "../../session.utils";
-import type {
-  LauncherCategory,
-  LauncherOptionIcon,
-} from "../../sessionsV2.types";
+import type { LauncherCategory } from "../../sessionsV2.types";
 import { LauncherStep, SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
 
 import scrollableModalStyles from "~/components/modal/ScrollableModal.module.scss";
-
-const LAUNCHER_MODAL_ICONS: Record<LauncherOptionIcon, Icon> = {
-  "play-circle": PlayCircle,
-  gear: Gear,
-};
 
 interface NewLauncherCreateModalProps {
   isOpen: boolean;
@@ -88,11 +71,8 @@ export default function NewLauncherCreateModal({
     [launcherCategory]
   );
   const HeaderIcon = useMemo(() => {
-    const option = LAUNCHER_OPTIONS.find(
-      ({ category }) => category === launcherCategory
-    );
-    return option ? LAUNCHER_MODAL_ICONS[option.icon] : PlayCircle;
-  }, [launcherCategory]);
+    return categoryDefinition.icon;
+  }, [categoryDefinition]);
 
   const [step, setStep] = useState<LauncherStep>(LauncherStep.Environment);
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
@@ -263,7 +243,7 @@ export default function NewLauncherCreateModal({
     >
       <ModalHeader tag="h2" toggle={toggle}>
         <HeaderIcon className={cx("bi", "me-1")} />
-        Create a new launcher - {launcherCategory}
+        Create a new launcher - {categoryDefinition.title}
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
