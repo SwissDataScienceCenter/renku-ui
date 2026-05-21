@@ -27,7 +27,7 @@ import {
 } from "../api/data-connectors.enhanced-api";
 
 interface UseDataConnectorPermissionsArgs {
-  dataConnectorId: string;
+  dataConnectorId?: string;
 }
 type UseQueryStateResult = ReturnType<
   typeof useGetDataConnectorsByDataConnectorIdPermissionsQuery
