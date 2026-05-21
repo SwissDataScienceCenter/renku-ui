@@ -41,7 +41,7 @@ function getDataConnectorApiCall(params: Route.LoaderArgs["params"]) {
     };
     return {
       initiate: () => endpoint.initiate(apiArgs),
-      select: endpoint.select(apiArgs),
+      selector: endpoint.select(apiArgs),
     };
   }
 
@@ -51,7 +51,7 @@ function getDataConnectorApiCall(params: Route.LoaderArgs["params"]) {
     const apiArgs = { namespace: projectNamespace, slug };
     return {
       initiate: () => endpoint.initiate(apiArgs),
-      select: endpoint.select(apiArgs),
+      selector: endpoint.select(apiArgs),
     };
   }
 
@@ -59,7 +59,7 @@ function getDataConnectorApiCall(params: Route.LoaderArgs["params"]) {
   const apiArgs = { slug };
   return {
     initiate: () => endpoint.initiate(apiArgs),
-    select: endpoint.select(apiArgs),
+    selector: endpoint.select(apiArgs),
   };
 }
 
@@ -74,12 +74,12 @@ export async function loader({ context, params }: Route.LoaderArgs) {
     });
   }
 
-  const call = getDataConnectorApiCall(params);
-  store.dispatch(call.initiate());
+  const { initiate, selector } = getDataConnectorApiCall(params);
+  store.dispatch(initiate());
   await Promise.all(
     store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
   );
-  const { data: dataConnector, error } = call.select(store.getState());
+  const { data: dataConnector, error } = selector(store.getState());
 
   store.dispatch(dataConnectorsApi.util.resetApiState());
   if (error && "status" in error && typeof error.status === "number") {
@@ -90,12 +90,12 @@ export async function loader({ context, params }: Route.LoaderArgs) {
 }
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const call = getDataConnectorApiCall(params);
-  const promise = store.dispatch(call.initiate());
+  const { initiate, selector } = getDataConnectorApiCall(params);
+  const promise = store.dispatch(initiate());
   await Promise.all(
     store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
   );
-  const { data: dataConnector, error } = call.select(store.getState());
+  const { data: dataConnector, error } = selector(store.getState());
   promise.unsubscribe();
 
   return {
