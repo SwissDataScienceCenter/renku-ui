@@ -27,50 +27,39 @@ import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 import type { Route } from "./+types/root";
 
-// We have 3 different scopes for API, each one with different APIs.
-// Global, user/group-scoped, project-scoped
-type DataConnectorLookup =
-  | {
-      kind: "project";
-      namespace: string;
-      project: string;
-      slug: string;
-    }
-  | {
-      kind: "namespace";
-      namespace: string;
-      slug: string;
-    }
-  | {
-      kind: "global";
-      slug: string;
-    };
-
-function getDataConnectorLookup(
-  params: Route.LoaderArgs["params"],
-): DataConnectorLookup {
+function getDataConnectorApiCall(params: Route.LoaderArgs["params"]) {
   const { projectNamespace, dataConnectorNamespace, slug } = params;
 
   if (projectNamespace && dataConnectorNamespace) {
-    return {
-      kind: "project",
+    const endpoint =
+      dataConnectorsApi.endpoints
+        .getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug;
+    const apiArgs = {
       namespace: projectNamespace,
       project: dataConnectorNamespace,
       slug,
     };
-  }
-
-  if (projectNamespace) {
     return {
-      kind: "namespace",
-      namespace: projectNamespace,
-      slug,
+      initiate: () => endpoint.initiate(apiArgs),
+      select: endpoint.select(apiArgs),
     };
   }
 
+  if (projectNamespace) {
+    const endpoint =
+      dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug;
+    const apiArgs = { namespace: projectNamespace, slug };
+    return {
+      initiate: () => endpoint.initiate(apiArgs),
+      select: endpoint.select(apiArgs),
+    };
+  }
+
+  const endpoint = dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug;
+  const apiArgs = { slug };
   return {
-    kind: "global",
-    slug,
+    initiate: () => endpoint.initiate(apiArgs),
+    select: endpoint.select(apiArgs),
   };
 }
 
@@ -85,59 +74,12 @@ export async function loader({ context, params }: Route.LoaderArgs) {
     });
   }
 
-  const lookup = getDataConnectorLookup(params);
-  let dataConnector;
-  let error;
-
-  if (lookup.kind === "project") {
-    const endpoint =
-      dataConnectorsApi.endpoints
-        .getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug;
-    const apiArgs = {
-      namespace: lookup.namespace,
-      project: lookup.project,
-      slug: lookup.slug,
-    };
-
-    store.dispatch(endpoint.initiate(apiArgs));
-    await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
-    );
-
-    ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState(),
-    ));
-  } else if (lookup.kind === "namespace") {
-    const endpoint =
-      dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug;
-    const apiArgs = {
-      namespace: lookup.namespace,
-      slug: lookup.slug,
-    };
-
-    store.dispatch(endpoint.initiate(apiArgs));
-    await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
-    );
-
-    ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState(),
-    ));
-  } else {
-    const endpoint = dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug;
-    const apiArgs = {
-      slug: lookup.slug,
-    };
-
-    store.dispatch(endpoint.initiate(apiArgs));
-    await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
-    );
-
-    ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState(),
-    ));
-  }
+  const call = getDataConnectorApiCall(params);
+  store.dispatch(call.initiate());
+  await Promise.all(
+    store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
+  );
+  const { data: dataConnector, error } = call.select(store.getState());
 
   store.dispatch(dataConnectorsApi.util.resetApiState());
   if (error && "status" in error && typeof error.status === "number") {
@@ -148,63 +90,13 @@ export async function loader({ context, params }: Route.LoaderArgs) {
 }
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const lookup = getDataConnectorLookup(params);
-
-  let dataConnector;
-  let error;
-
-  if (lookup.kind === "project") {
-    const endpoint =
-      dataConnectorsApi.endpoints
-        .getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug;
-    const apiArgs = {
-      namespace: lookup.namespace,
-      project: lookup.project,
-      slug: lookup.slug,
-    };
-
-    const promise = store.dispatch(endpoint.initiate(apiArgs));
-    await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
-    );
-
-    ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState(),
-    ));
-    promise.unsubscribe();
-  } else if (lookup.kind === "namespace") {
-    const endpoint =
-      dataConnectorsApi.endpoints.getNamespacesByNamespaceDataConnectorsAndSlug;
-    const apiArgs = {
-      namespace: lookup.namespace,
-      slug: lookup.slug,
-    };
-
-    const promise = store.dispatch(endpoint.initiate(apiArgs));
-    await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
-    );
-
-    ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState(),
-    ));
-    promise.unsubscribe();
-  } else {
-    const endpoint = dataConnectorsApi.endpoints.getDataConnectorsGlobalBySlug;
-    const apiArgs = {
-      slug: lookup.slug,
-    };
-
-    const promise = store.dispatch(endpoint.initiate(apiArgs));
-    await Promise.all(
-      store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
-    );
-
-    ({ data: dataConnector, error } = endpoint.select(apiArgs)(
-      store.getState(),
-    ));
-    promise.unsubscribe();
-  }
+  const call = getDataConnectorApiCall(params);
+  const promise = store.dispatch(call.initiate());
+  await Promise.all(
+    store.dispatch(dataConnectorsApi.util.getRunningQueriesThunk()),
+  );
+  const { data: dataConnector, error } = call.select(store.getState());
+  promise.unsubscribe();
 
   return {
     clientSideFetch: true,
