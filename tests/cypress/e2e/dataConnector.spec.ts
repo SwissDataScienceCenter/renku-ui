@@ -880,6 +880,7 @@ describe("Set up data connectors with credentials in group pages", () => {
 
     cy.visit("/g/test-2-group-v2");
     cy.wait(["@readGroupV2", "@listDataConnectors"]);
+
     // Credentials should not yet be stored
     cy.getDataCy("data-connector-item")
       .should("be.visible")
@@ -890,7 +891,7 @@ describe("Set up data connectors with credentials in group pages", () => {
       .click()
       .then(() => {
         cy.hash().should("include", "data-connector-");
-        cy.getDataCy("data-connector-metadata-section").should("be.visible");
+        cy.getDataCy("data-connector-credentials-box").should("be.visible");
       });
 
     cy.wait("@getDataConnectorSecretsEmpty");
@@ -901,6 +902,10 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.getDataCy("data-connector-requires-credentials").should(
       "contain.text",
       "Yes",
+    );
+    cy.getDataCy("data-connector-access_key_id").should(
+      "contain.text",
+      "Requires credentials",
     );
 
     // set credentials
@@ -950,6 +955,10 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.getDataCy("data-connector-requires-credentials").should(
       "contain.text",
       "Yes",
+    );
+    cy.getDataCy("data-connector-access_key_id").should(
+      "contain.text",
+      "Credentials saved",
     );
 
     // edit data connector, without touching the credentials
