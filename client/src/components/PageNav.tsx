@@ -24,8 +24,9 @@ import RenkuNavLinkV2 from "./RenkuNavLinkV2";
 
 export interface PageNavOptions {
   overviewUrl: string;
-  searchUrl: string;
+  searchUrl?: string;
   settingsUrl?: string;
+  type: "dataConnector" | "group" | "user";
 }
 export default function PageNav({ options }: { options: PageNavOptions }) {
   return (
@@ -36,30 +37,32 @@ export default function PageNav({ options }: { options: PageNavOptions }) {
             end
             to={options.overviewUrl}
             title="Overview"
-            data-cy="group-overview-link"
+            data-cy={`${options.type}-overview-link`}
           >
             <Eye className={cx("bi", "me-1")} />
             Overview
           </RenkuNavLinkV2>
         </NavItem>
-        <NavItem>
-          <RenkuNavLinkV2
-            end
-            to={options.searchUrl}
-            title="Search"
-            data-cy="group-search-link"
-          >
-            <Search className={cx("bi", "me-1")} />
-            Search
-          </RenkuNavLinkV2>
-        </NavItem>
+        {options.searchUrl && (
+          <NavItem>
+            <RenkuNavLinkV2
+              end
+              to={options.searchUrl}
+              title="Search"
+              data-cy={`${options.type}-search-link`}
+            >
+              <Search className={cx("bi", "me-1")} />
+              Search
+            </RenkuNavLinkV2>
+          </NavItem>
+        )}
         {options.settingsUrl && (
           <NavItem>
             <RenkuNavLinkV2
               end
               to={options.settingsUrl}
               title="Settings"
-              data-cy="group-settings-link"
+              data-cy={`${options.type}-settings-link`}
             >
               <Sliders className={cx("bi", "me-1")} />
               Settings

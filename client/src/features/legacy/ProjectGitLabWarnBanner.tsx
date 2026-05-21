@@ -32,7 +32,7 @@ import { doesProjectReferenceRenkulabGitLab } from "./legacy.utils";
 function ProjectEditorWarnBanner() {
   return (
     <>
-      <TakeActionAlert className="p-2" icon={null}>
+      <TakeActionAlert className={cx("mb-0", "p-2")} icon={null}>
         <div className={cx("d-flex", "align-items-start", "px-4", "py-2")}>
           <div>
             <h5>
