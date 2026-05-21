@@ -14,7 +14,9 @@ const injectedRtkApi = api.injectEndpoints({
     getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
       query: (queryArg) => ({
         url: `/users`,
-        params: { user_params: queryArg.userParams },
+        params: {
+          user_params: queryArg.userParams,
+        },
       }),
     }),
     getUsersByUserId: build.query<
@@ -38,7 +40,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/user/secrets`,
-        params: { user_secrets_params: queryArg.userSecretsParams },
+        params: {
+          user_secrets_params: queryArg.userSecretsParams,
+        },
       }),
     }),
     postUserSecrets: build.mutation<
@@ -123,7 +127,9 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/user/preferences/pinned_projects`,
         method: "DELETE",
-        params: { delete_pinned_params: queryArg.deletePinnedParams },
+        params: {
+          delete_pinned_params: queryArg.deletePinnedParams,
+        },
       }),
     }),
   }),
@@ -151,8 +157,7 @@ export type GetUsersByUserIdApiResponse =
 export type GetUsersByUserIdApiArg = {
   userId: string;
 };
-export type DeleteUsersByUserIdApiResponse =
-  /** status 204 The user was successfully deleted or did not exist */ void;
+export type DeleteUsersByUserIdApiResponse = unknown;
 export type DeleteUsersByUserIdApiArg = {
   userId: string;
 };
@@ -180,8 +185,7 @@ export type PatchUserSecretsBySecretIdApiArg = {
   secretId: Ulid;
   secretPatch: SecretPatch;
 };
-export type DeleteUserSecretsBySecretIdApiResponse =
-  /** status 204 The secret was deleted or didn't exist */ void;
+export type DeleteUserSecretsBySecretIdApiResponse = unknown;
 export type DeleteUserSecretsBySecretIdApiArg = {
   secretId: Ulid;
 };
