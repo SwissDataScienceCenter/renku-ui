@@ -10,7 +10,12 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getSessions: build.query<GetSessionsApiResponse, GetSessionsApiArg>({
-      query: () => ({ url: `/sessions` }),
+      query: (queryArg) => ({
+        url: `/sessions`,
+        params: {
+          session_type: queryArg.sessionType,
+        },
+      }),
     }),
     getSessionsBySessionId: build.query<
       GetSessionsBySessionIdApiResponse,
@@ -71,7 +76,10 @@ export type PostSessionsApiArg = {
 };
 export type GetSessionsApiResponse =
   /** status 200 Information about the sessions */ SessionListResponse;
-export type GetSessionsApiArg = void;
+export type GetSessionsApiArg = {
+  /** Filter by session mode. */
+  sessionType?: SessionType;
+};
 export type GetSessionsBySessionIdApiResponse =
   /** status 200 Information about the session */ SessionResponse;
 export type GetSessionsBySessionIdApiArg = {
@@ -120,7 +128,13 @@ export type SessionResources = {
 };
 export type SessionStatus = {
   message?: string;
-  state: "running" | "starting" | "stopping" | "failed" | "hibernated";
+  state:
+    | "running"
+    | "starting"
+    | "stopping"
+    | "failed"
+    | "hibernated"
+    | "succeeded";
   will_hibernate_at?: string | null;
   will_delete_at?: string | null;
   ready_containers: number;
@@ -178,6 +192,7 @@ export type SessionPostRequest = {
   env_variable_overrides?: EnvVariableOverrides;
 };
 export type SessionListResponse = SessionResponse[];
+export type SessionType = "interactive" | "non-interactive";
 export type CurrentTime = "now";
 export type SessionPatchRequest = {
   resource_class_id?: number;
