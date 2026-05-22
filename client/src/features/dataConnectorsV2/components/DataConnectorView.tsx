@@ -21,6 +21,7 @@ import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
+  ArrowsFullscreen,
   CardText,
   Cloud,
   CloudArrowUp,
@@ -33,6 +34,7 @@ import {
   Lock,
   Pencil,
   PersonBadge,
+  XLg,
 } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import {
@@ -132,8 +134,21 @@ export default function DataConnectorView({
 
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector.namespace),
-    [dataConnector.namespace]
+    [dataConnector.namespace],
   );
+
+  const namespaceParts = dataConnector.namespace?.split("/") ?? [];
+  const dataConnectorStandaloneLink = generatePath(
+    ABSOLUTE_ROUTES.v2.dataConnectors.show.root,
+    {
+      projectNamespace: namespaceParts[0] ?? null,
+      dataConnectorNamespace: namespaceParts[1] ?? null,
+      slug: dataConnector.slug,
+    },
+  );
+
+  const refClose = useRef(null);
+  const refExpand = useRef(null);
 
   return (
     <Offcanvas
@@ -143,14 +158,41 @@ export default function DataConnectorView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="data-connector-view">
-        <div className="mb-3">
+        <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
           <button
             aria-label="Close"
-            className="btn-close"
+            className={cx(
+              "border-0",
+              "btn",
+              "d-flex",
+              "fs-2",
+              "link-secondary",
+              "p-0",
+              "shadow-none",
+            )}
             data-cy="data-connector-view-back-button"
             data-bs-dismiss="offcanvas"
+            ref={refClose}
             onClick={toggleView}
-          ></button>
+          >
+            <XLg />
+            <span className="visually-hidden">Close side panel</span>
+          </button>
+          <UncontrolledTooltip target={refClose}>
+            Close side panel
+          </UncontrolledTooltip>
+          <Link
+            className={cx("d-flex", "fs-3", "link-secondary")}
+            data-cy="data-connector-standalone-page-link"
+            ref={refExpand}
+            to={dataConnectorStandaloneLink}
+          >
+            <ArrowsFullscreen />
+            <span className="visually-hidden">Open full page</span>
+          </Link>
+          <UncontrolledTooltip target={refExpand}>
+            Open full page
+          </UncontrolledTooltip>
         </div>
         <DataConnectorViewHeader
           {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
@@ -191,16 +233,64 @@ export default function DataConnectorView({
   );
 }
 
+export function DataConnectorLastDepositBody({
+  deposit,
+}: DataConnectorLastDepositProps) {
+  return (
+    <>
+      <DataConnectorPropertyValue key="name" title="Name">
+        {deposit.name}
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue key="provider" title="Provider">
+        {deposit.provider}
+      </DataConnectorPropertyValue>
+      {deposit.external_url && (
+        <DataConnectorPropertyValue key="external_url" title="URL">
+          <ExternalLink href={deposit.external_url}>
+            {deposit.external_url}
+          </ExternalLink>
+        </DataConnectorPropertyValue>
+      )}
+      <DataConnectorPropertyValue key="status" title="Status">
+        <DepositStatusBadge status={deposit.status} />
+      </DataConnectorPropertyValue>
+      <DataConnectorPropertyValue key="path" title="Path">
+        {deposit.path ?? <span className="fst-italic">N/A</span>}
+      </DataConnectorPropertyValue>
+      {deposit.creation_date && (
+        <DataConnectorPropertyValue key="creation_date" title="Created">
+          <TimeCaption
+            datetime={deposit.creation_date}
+            enableTooltip
+            noCaption
+            prefix=""
+          />
+        </DataConnectorPropertyValue>
+      )}
+      {deposit.updated_at && deposit.updated_at !== deposit.creation_date && (
+        <DataConnectorPropertyValue key="updated_at" title="Last updated">
+          <TimeCaption
+            datetime={deposit.updated_at}
+            enableTooltip
+            noCaption
+            prefix=""
+          />
+        </DataConnectorPropertyValue>
+      )}
+    </>
+  );
+}
+
 interface DataConnectorLastDepositProps {
-  dataConnector: DataConnectorRead;
+  dataConnector?: DataConnectorRead | null;
   deposit: Deposit;
 }
-function DataConnectorLastDeposit({
+export function DataConnectorLastDeposit({
   dataConnector,
   deposit,
 }: DataConnectorLastDepositProps) {
   const { permissions } = useDataConnectorPermissions({
-    dataConnectorId: dataConnector.id,
+    dataConnectorId: dataConnector?.id,
   });
 
   return (
@@ -213,7 +303,7 @@ function DataConnectorLastDeposit({
           "align-items-center",
           "mb-2",
           "d-flex",
-          "justify-content-between"
+          "justify-content-between",
         )}
       >
         <h3 className="mb-0">
@@ -228,45 +318,7 @@ function DataConnectorLastDeposit({
         />
       </div>
       <div>
-        <DataConnectorPropertyValue key="name" title="Name">
-          {deposit.name}
-        </DataConnectorPropertyValue>
-        <DataConnectorPropertyValue key="provider" title="Provider">
-          {deposit.provider}
-        </DataConnectorPropertyValue>
-        {deposit.external_url && (
-          <DataConnectorPropertyValue key="external_url" title="URL">
-            <ExternalLink href={deposit.external_url}>
-              {deposit.external_url}
-            </ExternalLink>
-          </DataConnectorPropertyValue>
-        )}
-        <DataConnectorPropertyValue key="status" title="Status">
-          <DepositStatusBadge status={deposit.status} />
-        </DataConnectorPropertyValue>
-        <DataConnectorPropertyValue key="path" title="Path">
-          {deposit.path ?? <span className="fst-italic">N/A</span>}
-        </DataConnectorPropertyValue>
-        {deposit.creation_date && (
-          <DataConnectorPropertyValue key="creation_date" title="Created">
-            <TimeCaption
-              datetime={deposit.creation_date}
-              enableTooltip
-              noCaption
-              prefix=""
-            />
-          </DataConnectorPropertyValue>
-        )}
-        {deposit.updated_at && deposit.updated_at !== deposit.creation_date && (
-          <DataConnectorPropertyValue key="updated_at" title="Last updated">
-            <TimeCaption
-              datetime={deposit.updated_at}
-              enableTooltip
-              noCaption
-              prefix=""
-            />
-          </DataConnectorPropertyValue>
-        )}
+        <DataConnectorLastDepositBody deposit={deposit} />
       </div>
     </section>
   );
@@ -284,7 +336,7 @@ function DataConnectorViewAccess({
     ? storageDefinition.sensitive_fields?.map((f) => f.name)
     : [];
   const anySensitiveField = Object.keys(storageDefinition.configuration).some(
-    (key) => sensitiveFields.includes(key)
+    (key) => sensitiveFields.includes(key),
   );
   const savedCredentialFields =
     connectorSecrets?.reduce((acc: Record<string, string>, s) => {
@@ -297,12 +349,12 @@ function DataConnectorViewAccess({
         storage: dataConnector.storage,
         sensitive_fields: dataConnector.storage.sensitive_fields,
       }),
-    [dataConnector]
+    [dataConnector],
   );
   const requiredCredentials = useMemo(
     () =>
       credentialFieldDefinitions?.filter((field) => field.requiredCredential),
-    [credentialFieldDefinitions]
+    [credentialFieldDefinitions],
   );
   return (
     <section
@@ -330,7 +382,7 @@ function DataConnectorViewAccess({
                   "mb-0",
                   "table",
                   "table-sm",
-                  "table-borderless"
+                  "table-borderless",
                 )}
               >
                 <tbody>
@@ -344,7 +396,7 @@ function DataConnectorViewAccess({
                             "badge",
                             "bg-opacity-25",
                             "rounded-pill",
-                            "text-bg-success"
+                            "text-bg-success",
                           )}
                         >
                           <Key className={cx("bi", "me-2")} /> Credentials saved
@@ -355,7 +407,7 @@ function DataConnectorViewAccess({
                           className={cx(
                             "badge",
                             "rounded-pill",
-                            "text-bg-secondary"
+                            "text-bg-secondary",
                           )}
                         >
                           <Lock className={cx("bi", "me-2")} /> Requires
@@ -393,7 +445,7 @@ function DataConnectorViewIntegration({
   const { data: schemata } = useGetStorageSchemaQuery();
   const schema = useMemo(
     () => schemata && getSchema(schemata, dataConnector.storage.storage_type),
-    [dataConnector.storage.storage_type, schemata]
+    [dataConnector.storage.storage_type, schemata],
   );
 
   if (!schema || !schema.usesIntegration) {
@@ -428,23 +480,23 @@ function DataConnectorViewConfiguration({
         storage: storageDefinition,
         sensitive_fields: storageDefinition.sensitive_fields,
       }),
-    [storageDefinition]
+    [storageDefinition],
   );
   const requiredCredentials = useMemo(
     () =>
       credentialFieldDefinitions?.filter((field) => field.requiredCredential),
-    [credentialFieldDefinitions]
+    [credentialFieldDefinitions],
   );
   const nonRequiredCredentialConfigurationKeys = Object.keys(
-    storageDefinition.configuration
+    storageDefinition.configuration,
   ).filter((k) => !requiredCredentials?.some((f) => f.name === k));
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector.namespace),
-    [dataConnector.namespace]
+    [dataConnector.namespace],
   );
   const hasAccessMode = useMemo(
     () => STORAGES_WITH_ACCESS_MODE.includes(storageDefinition.storage_type),
-    [storageDefinition.storage_type]
+    [storageDefinition.storage_type],
   );
 
   return (
@@ -457,7 +509,7 @@ function DataConnectorViewConfiguration({
           "align-items-center",
           "mb-2",
           "d-flex",
-          "justify-content-between"
+          "justify-content-between",
         )}
       >
         <h3 className="mb-0">
@@ -558,7 +610,7 @@ function DataConnectorViewProjects({
                 {
                   namespace: project.namespace,
                   slug: project.slug,
-                }
+                },
               );
               return (
                 <tr key={project.id}>
@@ -594,12 +646,12 @@ function DataConnectorViewMetadata({
         ? {
             namespaceSlug: dataConnector.namespace,
           }
-        : skipToken
+        : skipToken,
     );
 
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector.namespace),
-    [dataConnector.namespace]
+    [dataConnector.namespace],
   );
 
   const namespaceUrl = useMemo(
@@ -607,18 +659,18 @@ function DataConnectorViewMetadata({
       scope === "global" || !namespace || !dataConnector.namespace
         ? null
         : scope === "project"
-        ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-            namespace: dataConnector.namespace.split("/")[0],
-            slug: dataConnector.namespace.split("/")[1],
-          })
-        : namespace.namespace_kind === "user"
-        ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-            username: dataConnector.namespace,
-          })
-        : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-            slug: dataConnector.namespace,
-          }),
-    [dataConnector.namespace, namespace, scope]
+          ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+              namespace: dataConnector.namespace.split("/")[0],
+              slug: dataConnector.namespace.split("/")[1],
+            })
+          : namespace.namespace_kind === "user"
+            ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+                username: dataConnector.namespace,
+              })
+            : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+                slug: dataConnector.namespace,
+              }),
+    [dataConnector.namespace, namespace, scope],
   );
 
   const identifier = useMemo(
@@ -626,7 +678,7 @@ function DataConnectorViewMetadata({
       scope === "global"
         ? `${dataConnector.slug}`
         : `${dataConnector.namespace}/${dataConnector.slug}`,
-    [dataConnector.namespace, dataConnector.slug, scope]
+    [dataConnector.namespace, dataConnector.slug, scope],
   );
 
   const doiReference = useMemo(() => {
@@ -693,7 +745,7 @@ function DataConnectorViewMetadata({
                 "align-items-center",
                 "d-flex",
                 "gap-1",
-                "justify-content-between"
+                "justify-content-between",
               )}
             >
               <a
@@ -710,7 +762,7 @@ function DataConnectorViewMetadata({
                     "btn",
                     "ms-1",
                     "p-0",
-                    "shadow-none"
+                    "shadow-none",
                   )}
                   clipboardText={
                     dataConnector.storage.configuration["doi"] as string

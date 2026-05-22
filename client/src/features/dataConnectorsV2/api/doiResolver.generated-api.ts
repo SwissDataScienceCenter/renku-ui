@@ -8,7 +8,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/handles/${queryArg.doi}`,
-        params: { index: queryArg.index },
+        params: {
+          index: queryArg.index,
+        },
       }),
     }),
   }),

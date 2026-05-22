@@ -67,7 +67,7 @@ function getLauncherDefaultValues(launcher: SessionLauncher): EnvVariablesForm {
 }
 
 function getPatchFromForm(
-  form: EnvVariablesForm
+  form: EnvVariablesForm,
 ):
   | { error: string; env_variables: null }
   | { error: null; env_variables: SessionLauncherPatch["env_variables"] } {
@@ -229,7 +229,7 @@ export default function EnvVariablesModal({
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
-    [launcher]
+    [launcher],
   );
 
   const {
@@ -261,7 +261,7 @@ export default function EnvVariablesModal({
           },
         });
     },
-    [launcher.id, updateSessionLauncher]
+    [launcher.id, updateSessionLauncher],
   );
 
   useEffect(() => {

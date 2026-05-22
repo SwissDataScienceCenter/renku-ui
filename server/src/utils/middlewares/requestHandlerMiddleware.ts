@@ -29,7 +29,7 @@ import domain from "domain";
 const requestHandlerMiddleware = (
   req: http.IncomingMessage,
   res: http.ServerResponse,
-  next: (error?: Error) => void
+  next: (error?: Error) => void,
 ): void => {
   const local = domain.create();
   local.add(req);

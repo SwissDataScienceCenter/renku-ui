@@ -55,7 +55,7 @@ export function DataConnectorModalBackButton({
   initialStep,
 }: DataConnectorModalBackButtonProps) {
   const { cloudStorageState, isActionOngoing } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   useAppSelector((state) => state.dataConnectorFormSlice);
   const dispatch = useAppDispatch();
@@ -85,7 +85,7 @@ export function DataConnectorModalBackButton({
                   : cloudStorageState.step - 1,
               },
               validationResult: null,
-            })
+            }),
           );
         }}
       >
@@ -119,7 +119,7 @@ export function DataConnectorModalContinueButton({
   const addButtonId = "add-data-connector-continue";
   const continueButtonId = "add-data-connector-next";
   const { cloudStorageState, flatDataConnector } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   const dispatch = useAppDispatch();
   const setState = useCallback(
@@ -127,10 +127,10 @@ export function DataConnectorModalContinueButton({
       dispatch(
         dataConnectorFormSlice.actions.setCloudStorageState({
           cloudStorageState: newState,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
   if (cloudStorageState.step === 3 && cloudStorageState.completedSteps >= 2) {
     return (
@@ -233,8 +233,8 @@ export function DataConnectorModalContinueButton({
               cloudStorageState.step === 0
                 ? CLOUD_STORAGE_TOTAL_STEPS - 1
                 : cloudStorageState.step > cloudStorageState.completedSteps
-                ? cloudStorageState.step
-                : cloudStorageState.completedSteps,
+                  ? cloudStorageState.step
+                  : cloudStorageState.completedSteps,
             step:
               cloudStorageState.step === 0
                 ? CLOUD_STORAGE_TOTAL_STEPS
@@ -249,8 +249,8 @@ export function DataConnectorModalContinueButton({
           {!flatDataConnector.schema
             ? "Please select a storage type"
             : selectedSchemaHasAccessMode
-            ? "Please select a mode or change storage type"
-            : "Please select a provider or change storage type"}
+              ? "Please select a mode or change storage type"
+              : "Please select a provider or change storage type"}
         </UncontrolledTooltip>
       )}
     </div>
@@ -323,7 +323,7 @@ function TestConnectionAndContinueButtons({
       dispatch(
         dataConnectorFormSlice.actions.setValidationResult({
           validationResult: null,
-        })
+        }),
       );
       validationResult.reset();
     }
@@ -351,7 +351,9 @@ function TestConnectionAndContinueButtons({
       });
     }
     dispatch(
-      dataConnectorFormSlice.actions.setActionOngoing({ isActionOngoing: true })
+      dataConnectorFormSlice.actions.setActionOngoing({
+        isActionOngoing: true,
+      }),
     );
     validateCloudStorageConnection({ body: validateParameters }).then(
       (result) => {
@@ -364,9 +366,9 @@ function TestConnectionAndContinueButtons({
           dataConnectorFormSlice.actions.setValidationResult({
             validationResult,
             isActionOngoing: false,
-          })
+          }),
         );
-      }
+      },
     );
   }, [dispatch, flatDataConnector, validateCloudStorageConnection]);
   const buttonTestId = `${testId}-button`;
@@ -388,8 +390,8 @@ function TestConnectionAndContinueButtons({
   const testConnectionColor = validationResult.isSuccess
     ? "outline-primary"
     : validationResult.isError
-    ? "danger"
-    : "outline-primary";
+      ? "danger"
+      : "outline-primary";
   const testConnectionSection = (
     <div id={divTestId} className="d-inline-block">
       <Button
@@ -432,8 +434,8 @@ function TestConnectionAndContinueButtons({
   const continueColorClass = validationResult.isSuccess
     ? "btn-primary"
     : validationResult.isError
-    ? "btn-outline-danger"
-    : "btn-primary";
+      ? "btn-outline-danger"
+      : "btn-primary";
   const continueSection = dataConnectorId ? null : !validationResult.isError &&
     !validationResult.isSuccess ? null : (
     <div id={divContinueId} className={cx("d-inline-block", "ms-2")}>
@@ -451,7 +453,7 @@ function TestConnectionAndContinueButtons({
                 isError: validationResult.isError,
                 error: validationResult.error,
               },
-            })
+            }),
           );
           if (validationResult.isError || validationResult.isSuccess) {
             validationResult.reset();
@@ -463,7 +465,7 @@ function TestConnectionAndContinueButtons({
                 completedSteps:
                   step === 0 ? CLOUD_STORAGE_TOTAL_STEPS - 1 : step,
               },
-            })
+            }),
           );
         }}
       >

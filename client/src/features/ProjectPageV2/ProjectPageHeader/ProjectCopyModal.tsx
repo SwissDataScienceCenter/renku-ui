@@ -30,7 +30,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { SuccessAlert } from "../../../components/Alert";
+import { InfoAlert, SuccessAlert } from "../../../components/Alert";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import BootstrapCopyIcon from "../../../components/icons/BootstrapCopyIcon";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -104,7 +104,7 @@ export default function ProjectCopyModal({
         },
       });
     },
-    [copyProject, project.id]
+    [copyProject, project.id],
   );
 
   const formId = "project-copy-form";
@@ -118,22 +118,17 @@ export default function ProjectCopyModal({
       centered
     >
       <Form id={formId} noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader toggle={toggle}>
-          <span className="fw-normal">Make a copy of </span>
-          {project.namespace}/{project.slug}
+        <ModalHeader tag="h2" toggle={toggle}>
+          Make a copy of{" "}
+          <span className="fst-italic">
+            {project.namespace}/{project.slug}
+          </span>
         </ModalHeader>
         <ModalBody>
-          <div
-            className={cx("fs-6", "fst-italic", "text-body-secondary", "mb-4")}
-          >
+          <InfoAlert timeout={0}>
             Copying a project will create a new project with the same data
             connectors, repositories, and launchers as the original.
-          </div>
-          {copyProjectResult.error != null && (
-            <div className="w-100">
-              <RtkOrDataServicesError error={copyProjectResult.error} />
-            </div>
-          )}
+          </InfoAlert>
           <ProjectNameFormField
             control={control}
             errors={errors}
@@ -170,6 +165,9 @@ export default function ProjectCopyModal({
               />
             </div>
           )}
+          {copyProjectResult.error != null && (
+            <RtkOrDataServicesError error={copyProjectResult.error} />
+          )}
         </ModalBody>
         <ModalFooter>
           <Button
@@ -196,8 +194,10 @@ export default function ProjectCopyModal({
   );
 }
 
-interface ProjectCopySuccessAlertProps
-  extends Pick<ProjectCopyModalProps, "toggle"> {
+interface ProjectCopySuccessAlertProps extends Pick<
+  ProjectCopyModalProps,
+  "toggle"
+> {
   project: Project;
   hasError: boolean;
 }

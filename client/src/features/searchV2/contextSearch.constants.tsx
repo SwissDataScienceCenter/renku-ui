@@ -22,7 +22,7 @@ import {
   Briefcase,
   Calendar,
   Database,
-  Folder2Open,
+  Folder,
   Globe,
   Lock,
   People,
@@ -53,7 +53,7 @@ export const FILTER_CONTENT: EnumFilter = {
       value: "Project",
       label: (
         <>
-          <Folder2Open className={cx("bi", "me-1")} />
+          <Folder className={cx("bi", "me-1")} />
           Project
         </>
       ),
@@ -104,7 +104,7 @@ export const FILTER_CONTENT_NAMESPACE: EnumFilter = {
       value: "Project",
       label: (
         <>
-          <Folder2Open className={cx("bi", "me-1")} />
+          <Folder className={cx("bi", "me-1")} />
           Project
         </>
       ),

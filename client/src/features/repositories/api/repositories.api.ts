@@ -66,7 +66,7 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
           fetchWithBQ({
             url: "/repository",
             params: { url: repository },
-          })
+          }),
         );
         const responses = await Promise.all(promises);
         for (let i = 0; i < queryArg.length; i++) {

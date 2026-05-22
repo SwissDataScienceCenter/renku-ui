@@ -2,7 +2,9 @@
   font-family: "Inter";
   font-style: normal;
   font-weight: 400;
-  src: local("Inter Regular"), local("Inter-Regular"),
+  src:
+    local("Inter Regular"),
+    local("Inter-Regular"),
     url("./fonts/Inter/static/Inter-Regular.ttf") format("truetype");
   font-display: swap;
 }
@@ -11,7 +13,9 @@
   font-family: "Inter";
   font-style: normal;
   font-weight: 600;
-  src: local("Inter Bold"), local("Inter-Bold"),
+  src:
+    local("Inter Bold"),
+    local("Inter-Bold"),
     url("./fonts/Inter/static/Inter-Bold.ttf") format("truetype");
   font-display: swap;
 }

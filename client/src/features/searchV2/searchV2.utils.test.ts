@@ -95,7 +95,7 @@ describe("Renku 2.0 search utilities", () => {
       });
 
       expect(result).toBe(
-        "role:editor type:group,user visibility:private created<today-90d test"
+        "role:editor type:group,user visibility:private created<today-90d test",
       );
     });
   });

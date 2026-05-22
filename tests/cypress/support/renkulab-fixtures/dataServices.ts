@@ -78,7 +78,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
             }
             if (req.body.remote.base_url != remote.base_url) {
               throw new Error(
-                `remote.base_url ${req.body.remote.base_url} must equal ${remote.base_url}`
+                `remote.base_url ${req.body.remote.base_url} must equal ${remote.base_url}`,
               );
             }
           }
@@ -90,7 +90,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
 
     adminResourcePoolUsers(
       name = "getAdminResourcePoolUsers",
-      fixture = "dataServices/resource-pool-users.json"
+      fixture = "dataServices/resource-pool-users.json",
     ) {
       cy.intercept("/api/data/users", {
         fixture,

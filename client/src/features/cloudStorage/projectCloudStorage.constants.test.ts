@@ -10,7 +10,7 @@ describe("CLOUD_STORAGE_INTEGRATION_KIND_MAP", () => {
     const storageTypes = Object.keys(CLOUD_STORAGE_OVERRIDE["storage"]);
     const storagesWithIntegration = storageTypes.filter(
       (storageType) =>
-        CLOUD_STORAGE_OVERRIDE["storage"][storageType]?.usesIntegration
+        CLOUD_STORAGE_OVERRIDE["storage"][storageType]?.usesIntegration,
     );
     for (const storageType of storagesWithIntegration) {
       it(`${storageType} should have a value`, () => {

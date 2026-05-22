@@ -33,7 +33,7 @@ function OpacityExampleCard({
         "justify-content-between",
         "align-items-center",
         "p-3",
-        "position-relative"
+        "position-relative",
       )}
       style={{
         width: 250,
@@ -47,7 +47,7 @@ function OpacityExampleCard({
           "top-0",
           "start-0",
           "w-100",
-          "h-100"
+          "h-100",
         )}
         style={{
           backgroundImage:
@@ -72,7 +72,7 @@ function OpacityExampleCard({
           "justify-content-center",
           "text-white",
           "fw-bold",
-          "fs-5"
+          "fs-5",
         )}
         style={{
           borderRadius: "inherit",
@@ -93,7 +93,7 @@ function OpacityExampleCard({
           "p-2",
           "mt-auto",
           "text-center",
-          "text-dark"
+          "text-dark",
         )}
       >
         <div
@@ -171,7 +171,7 @@ export const OpacityLevels: Story = {
             "border-2",
             "border-primary",
             "pb-2",
-            "text-primary"
+            "text-primary",
           )}
         >
           Background Opacity (bg-opacity-*)
@@ -189,7 +189,7 @@ export const OpacityLevels: Story = {
             "d-flex",
             "flex-wrap",
             "gap-4",
-            "justify-content-center"
+            "justify-content-center",
           )}
         >
           {Object.entries(opacityTokens).map(([key, data]) => (

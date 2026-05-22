@@ -44,7 +44,7 @@ export async function metrics({
       includeStatusCode: true,
       metricsApp,
       promRegistry: register,
-    })
+    }),
   );
 
   // Collect HTTP requests total (App only)

@@ -4,29 +4,34 @@ import type {
   UseControllerProps,
 } from "react-hook-form";
 
-export interface GenericProjectFormFieldProps<T extends FieldValues>
-  extends UseControllerProps<T> {
+export interface GenericProjectFormFieldProps<
+  T extends FieldValues,
+> extends UseControllerProps<T> {
   errors: FieldErrors<T>;
   formId: string;
   helpText?: React.ReactNode;
 }
 
-export interface GenericFormFieldProps<T extends FieldValues>
-  extends UseControllerProps<T> {
+export interface GenericFormFieldProps<
+  T extends FieldValues,
+> extends UseControllerProps<T> {
   entityName: string;
   errors: FieldErrors<T>;
   helpText?: React.ReactNode;
 }
 
-export interface SlugFormFieldProps<T extends FieldValues>
-  extends GenericFormFieldProps<T> {
+export interface SlugFormFieldProps<
+  T extends FieldValues,
+> extends GenericFormFieldProps<T> {
   compact?: boolean;
   url?: string;
   resetFunction?: () => void;
 }
 
-export interface SlugPreviewFormFieldProps<T extends FieldValues>
-  extends Omit<GenericProjectFormFieldProps<T>, "formId"> {
+export interface SlugPreviewFormFieldProps<T extends FieldValues> extends Omit<
+  GenericProjectFormFieldProps<T>,
+  "formId"
+> {
   compact?: boolean;
   resetFunction?: () => void;
   parentPath: string;

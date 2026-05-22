@@ -60,7 +60,7 @@ export default function SlugPreviewFormField<T extends FieldValues>({
           "btn-link",
           "p-0",
           "text-decoration-none",
-          styles.slugPreviewButton
+          styles.slugPreviewButton,
         )}
         data-cy={`${entityName}-slug-toggle`}
         onClick={toggleCollapse}

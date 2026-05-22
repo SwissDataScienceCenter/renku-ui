@@ -71,7 +71,7 @@ export default function DataConnectorSecretItem({
             "d-flex",
             "flex-column",
             "align-items-end",
-            "gap-1"
+            "gap-1",
           )}
         >
           <SecretItemActions isV2 secret={secret} />
@@ -147,7 +147,7 @@ function DataConnectorSecretUsedForItem({
   } = useGetNamespacesByNamespaceSlugQuery(
     dataConnector?.namespace
       ? { namespaceSlug: dataConnector.namespace }
-      : skipToken
+      : skipToken,
   );
 
   const isLoading =
@@ -157,12 +157,12 @@ function DataConnectorSecretUsedForItem({
   const dcSecret = useMemo(
     () =>
       dataConnectorSecrets?.find(({ secret_id }) => secret_id === secret.id),
-    [dataConnectorSecrets, secret.id]
+    [dataConnectorSecrets, secret.id],
   );
 
   const namespaceName = useMemo(
     () => namespace?.name ?? dataConnector?.namespace,
-    [dataConnector?.namespace, namespace?.name]
+    [dataConnector?.namespace, namespace?.name],
   );
 
   const namespaceUrl = useMemo(
@@ -174,11 +174,11 @@ function DataConnectorSecretUsedForItem({
             slug: namespace.slug,
           })
         : dataConnector && namespace?.namespace_kind === "user"
-        ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-            username: namespace.slug,
-          })
-        : undefined,
-    [dataConnector, namespace?.namespace_kind, namespace?.slug]
+          ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+              username: namespace.slug,
+            })
+          : undefined,
+    [dataConnector, namespace?.namespace_kind, namespace?.slug],
   );
   const dcHash = dataConnector ? `data-connector-${dataConnector.id}` : "";
 

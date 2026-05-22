@@ -34,7 +34,7 @@ export default [
       index("routes/projects/index.tsx"),
       route(
         RELATIVE_ROUTES.v2.projects.show.settings,
-        "routes/projects/settings.tsx"
+        "routes/projects/settings.tsx",
       ),
     ]),
   ]),
@@ -46,7 +46,7 @@ export default [
       route(RELATIVE_ROUTES.v2.groups.show.search, "routes/groups/search.tsx"),
       route(
         RELATIVE_ROUTES.v2.groups.show.settings,
-        "routes/groups/settings.tsx"
+        "routes/groups/settings.tsx",
       ),
     ]),
     // Not found page for /g/*
@@ -61,6 +61,23 @@ export default [
     ]),
     // Not found page for /u/*
     route("*", "routes/users/catchall.tsx"),
+  ]),
+  // Data connector pages
+  ...prefix(RELATIVE_ROUTES.v2.dataConnectors.root, [
+    index("routes/dataConnectors/searchRedirect.tsx"),
+    route(
+      RELATIVE_ROUTES.v2.dataConnectors.show.root,
+      "routes/dataConnectors/root.tsx",
+      [
+        index("routes/dataConnectors/index.tsx"),
+        route(
+          RELATIVE_ROUTES.v2.dataConnectors.show.settings,
+          "routes/dataConnectors/settings.tsx",
+        ),
+      ],
+    ),
+    // Not found page for /d/*
+    route("*", "routes/dataConnectors/catchall.tsx"),
   ]),
   // Admin page
   route(RELATIVE_ROUTES.v2.admin, "routes/admin.tsx"),

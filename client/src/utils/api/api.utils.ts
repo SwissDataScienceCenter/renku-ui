@@ -29,10 +29,10 @@ export const prepareHeaders: FetchBaseQueryArgs["prepareHeaders"] = serverOnly$(
   function (headers, { getState }) {
     // TODO: Setup Sentry trace headers (propagate from incoming query if needed)
     const { renkuSessionCookie } = cookieSlice.selectSlice(
-      getState() as ServerRootState
+      getState() as ServerRootState,
     );
     if (renkuSessionCookie) {
       headers.set("cookie", renkuSessionCookie);
     }
-  }
+  },
 );

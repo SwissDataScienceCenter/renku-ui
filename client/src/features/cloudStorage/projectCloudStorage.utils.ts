@@ -62,7 +62,7 @@ type StorageAndSensitiveFieldsDefinition = {
 };
 
 export function parseCloudStorageConfiguration(
-  formattedConfiguration: string
+  formattedConfiguration: string,
 ): Record<string, string> {
   // Parse lines of rclone configuration
   const configurationLineRegex = /^(?<key>[^=]+)=(?<value>.*)$/;
@@ -83,12 +83,12 @@ export function parseCloudStorageConfiguration(
 
   return entries.reduce(
     (obj, { key, value }) => ({ ...obj, [key]: value }),
-    {}
+    {},
   );
 }
 
 export function convertFromAdvancedConfig(
-  storage: CloudStorageDetails
+  storage: CloudStorageDetails,
 ): string {
   const values: string[] = [];
   if (storage.schema) {
@@ -107,9 +107,9 @@ export function convertFromAdvancedConfig(
 }
 
 export function getCredentialFieldDefinitions<
-  T extends StorageAndSensitiveFieldsDefinition
+  T extends StorageAndSensitiveFieldsDefinition,
 >(
-  storageDefinition: T
+  storageDefinition: T,
 ):
   | (T extends CloudStorageGet ? CloudStorageOptions : CloudStorageCredential)[]
   | undefined {
@@ -135,7 +135,7 @@ function getProvidedSensitiveFields(configuration: RCloneConfig): string[] {
 export function getSchemaStorage(
   schema: CloudStorageSchema[],
   shortList = false,
-  currentSchema?: string
+  currentSchema?: string,
 ): CloudStorageSchema[] {
   const finalStorage = schema.reduce<CloudStorageSchema[]>(
     (current, element) => {
@@ -160,10 +160,10 @@ export function getSchemaStorage(
       }
       return current;
     },
-    []
+    [],
   );
   return finalStorage.sort(
-    (a, b) => (a.position ?? LAST_POSITION) - (b.position ?? LAST_POSITION)
+    (a, b) => (a.position ?? LAST_POSITION) - (b.position ?? LAST_POSITION),
   );
 }
 
@@ -171,7 +171,7 @@ export function getSchemaProviders(
   schema: CloudStorageSchema[],
   shortList = false,
   targetSchema?: string,
-  currentProvider?: string
+  currentProvider?: string,
 ): CloudStorageProvider[] | undefined {
   if (!targetSchema) return;
   const storage = schema.find((s) => s.prefix === targetSchema);
@@ -224,12 +224,12 @@ export function getSchemaProviders(
       }
       return current;
     },
-    []
+    [],
   );
 
   if (!finalProviders) return;
   return finalProviders.sort(
-    (a, b) => (a.position ?? LAST_POSITION) - (b.position ?? LAST_POSITION)
+    (a, b) => (a.position ?? LAST_POSITION) - (b.position ?? LAST_POSITION),
   );
 }
 export function hasProviderShortlist(targetProvider?: string): boolean {
@@ -261,7 +261,7 @@ export function getSchemaOptions(
   shortList = false,
   targetSchema?: string,
   targetProvider?: string,
-  flags = { override: true, convertType: true, filterHidden: true }
+  flags = { override: true, convertType: true, filterHidden: true },
 ): CloudStorageSchemaOption[] | undefined {
   if (!targetSchema) {
     return undefined;
@@ -276,7 +276,7 @@ export function getSchemaOptions(
     : storage.options;
 
   const optionsFiltered = optionsOverridden.filter((option) =>
-    filterOption(option, shortList, targetProvider, flags.filterHidden)
+    filterOption(option, shortList, targetProvider, flags.filterHidden),
   );
 
   if (!optionsFiltered.length) {
@@ -291,7 +291,7 @@ export function getSchemaOptions(
 }
 
 export function getSourcePathHint(
-  targetSchema = ""
+  targetSchema = "",
 ): Record<"help" | "placeholder" | "label", string> {
   const initialText = STORAGES_WITH_ACCESS_MODE.includes(targetSchema)
     ? ""
@@ -308,7 +308,7 @@ export function getSourcePathHint(
 }
 
 export function findSensitive(
-  schema: CloudStorageSchema | undefined
+  schema: CloudStorageSchema | undefined,
 ): string[] {
   if (!schema) return [];
   return schema.options
@@ -319,7 +319,7 @@ export function findSensitive(
 }
 
 export function storageDefinitionAfterSavingCredentialsFromConfig(
-  cs: SessionStartDataConnectorConfiguration
+  cs: SessionStartDataConnectorConfiguration,
 ): SessionStartDataConnectorConfiguration {
   const newCs: SessionStartDataConnectorConfiguration = {
     ...cs,
@@ -340,7 +340,7 @@ export function storageDefinitionAfterSavingCredentialsFromConfig(
 }
 
 export function dataConnectorsOverrideFromConfig(
-  config: SessionStartDataConnectorConfiguration
+  config: SessionStartDataConnectorConfiguration,
 ): SessionDataConnectorOverride[] {
   if (!config.skip && !config.touched) {
     return [];
@@ -365,7 +365,7 @@ export function dataConnectorsOverrideFromConfig(
 function overrideOptions(
   options: CloudStorageSchemaOption[],
   targetSchema: string,
-  targetProvider?: string
+  targetProvider?: string,
 ): CloudStorageSchemaOption[] {
   return options.map((option) => {
     const schemaOverrides =
@@ -385,7 +385,7 @@ function filterOption(
   option: CloudStorageSchemaOption,
   shortList: boolean,
   targetProvider?: string,
-  filterHidden = true
+  filterHidden = true,
 ): boolean {
   if (filterHidden && shouldHideOption(option)) return false;
   if (!option.name || option.name == "provider") return false;
@@ -418,7 +418,7 @@ function filterByProvider(provider: string, targetProvider?: string): boolean {
 
 function convertOptions(
   options: CloudStorageSchemaOption[],
-  targetProvider?: string
+  targetProvider?: string,
 ): CloudStorageSchemaOption[] {
   return options.map((option) => {
     const convertedOption = { ...option };
@@ -429,12 +429,12 @@ function convertOptions(
 
     convertedOption.convertedDefault = convertDefaultValue(
       option,
-      convertedOption.convertedType
+      convertedOption.convertedType,
     );
 
     if (option.examples) {
       convertedOption.filteredExamples = option.examples.filter((example) =>
-        filterExample(example, targetProvider)
+        filterExample(example, targetProvider),
       );
     }
 
@@ -443,7 +443,7 @@ function convertOptions(
 }
 
 function inferOptionType(
-  option: CloudStorageSchemaOption
+  option: CloudStorageSchemaOption,
 ): CloudStorageOptionTypes {
   const optionType = option.type.toString().toLowerCase();
   if (option.ispassword || option.sensitive) return "secret";
@@ -451,7 +451,7 @@ function inferOptionType(
   if (
     // eslint-disable-next-line spellcheck/spell-checker
     ["float", "int", "number", "duration", "sizesuffix", "multiencoder"].some(
-      (type) => optionType.startsWith(type)
+      (type) => optionType.startsWith(type),
     )
   ) {
     return "number";
@@ -461,7 +461,7 @@ function inferOptionType(
 
 function convertDefaultValue(
   option: CloudStorageSchemaOption,
-  type: string
+  type: string,
 ): undefined | string | number | boolean {
   try {
     const value = option.default;
@@ -477,7 +477,7 @@ function convertDefaultValue(
 
 function filterExample(
   example: { provider?: string },
-  targetProvider?: string
+  targetProvider?: string,
 ): boolean {
   if (!targetProvider || !example.provider) return true;
 
@@ -489,7 +489,7 @@ function filterExample(
 }
 
 function sortOptionsByPosition(
-  options: CloudStorageSchemaOption[]
+  options: CloudStorageSchemaOption[],
 ): CloudStorageSchemaOption[] {
   return options.sort((a, b) => {
     const positionA = a.position ?? Infinity; // Default to Infinity if "position" is undefined

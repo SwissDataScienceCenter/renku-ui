@@ -58,16 +58,16 @@ export function useGithubOAuthCompleteFollowUpData(): GithubOAuthCompleteFollowU
   const hasGithubConnection =
     !!checkId &&
     !!connections?.some(
-      (c) => c.provider_id === checkId && c.status === "connected"
+      (c) => c.provider_id === checkId && c.status === "connected",
     );
 
   connectedServicesApi.endpoints.getOauth2Connections.useQuerySubscription(
     isGithubAppFollowUp && !hasGithubConnection ? undefined : skipToken,
-    { pollingInterval: OAUTH_CONNECT_POLLING_INTERVAL_MS }
+    { pollingInterval: OAUTH_CONNECT_POLLING_INTERVAL_MS },
   );
 
   const connection = connections?.find(
-    (c) => c.provider_id === checkId && c.status === "connected"
+    (c) => c.provider_id === checkId && c.status === "connected",
   );
 
   const skipData =
@@ -90,7 +90,7 @@ export function useGithubOAuthCompleteFollowUpData(): GithubOAuthCompleteFollowU
 
 export function shouldAutoCloseAfterOAuth(
   hasError: boolean,
-  data: GithubOAuthCompleteFollowUpData
+  data: GithubOAuthCompleteFollowUpData,
 ): boolean {
   const {
     checkId,

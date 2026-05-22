@@ -57,7 +57,7 @@ export default function UserNotFound({ error }: UserNotFoundProps) {
               "my-0",
               "d-flex",
               "align-items-center",
-              "gap-3"
+              "gap-3",
             )}
           >
             <img src={rkNotFoundImgV2} />

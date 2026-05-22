@@ -49,7 +49,7 @@ describe("validateCodeRepository", () => {
     const result = validateCodeRepository(repositoryURL);
 
     expect(result).toContain(
-      "The repository URL must be a valid HTTP or HTTPS URL."
+      "The repository URL must be a valid HTTP or HTTPS URL.",
     );
   });
 
@@ -59,7 +59,7 @@ describe("validateCodeRepository", () => {
     const result = validateCodeRepository(repositoryURL);
 
     expect(result).toContain(
-      "The repository URL must be a valid HTTP or HTTPS URL."
+      "The repository URL must be a valid HTTP or HTTPS URL.",
     );
   });
 });
@@ -85,7 +85,7 @@ describe("validateNoDuplicatesInCodeRepositories", () => {
     const result = validateNoDuplicatesInCodeRepositories(repositories);
 
     expect(result).toContain(
-      "This repository is already included in the project."
+      "This repository is already included in the project.",
     );
   });
 });

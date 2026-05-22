@@ -70,11 +70,11 @@ export default function BuildLauncherButtons({
   const { data: builds } = useGetBuildsQuery(
     launcher.environment.environment_image_source === "build"
       ? { environmentId: launcher.environment.id }
-      : skipToken
+      : skipToken,
   );
   const inProgressBuild = useMemo(
     () => builds?.find(({ status }) => status === "in_progress"),
-    [builds]
+    [builds],
   );
   const hasInProgressBuild = !!inProgressBuild;
 

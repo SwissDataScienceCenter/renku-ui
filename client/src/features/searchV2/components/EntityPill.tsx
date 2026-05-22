@@ -48,22 +48,22 @@ export default function EntityPill({
     entityType === "Project"
       ? Folder2Open
       : entityType === "Group"
-      ? People
-      : entityType === "User"
-      ? Person
-      : entityType === "DataConnector"
-      ? Database
-      : Question;
+        ? People
+        : entityType === "User"
+          ? Person
+          : entityType === "DataConnector"
+            ? Database
+            : Question;
   const sizeClass =
     size == "sm"
       ? "fs-6"
       : size === "md"
-      ? "fs-5"
-      : size === "lg"
-      ? "fs-4"
-      : size === "xl"
-      ? "fs-2"
-      : null;
+        ? "fs-5"
+        : size === "lg"
+          ? "fs-4"
+          : size === "xl"
+            ? "fs-2"
+            : null;
 
   return (
     <>
@@ -74,9 +74,9 @@ export default function EntityPill({
             "border-dark-subtle",
             "border",
             "d-flex",
-            "p-2",
+            size === "sm" ? "p-1" : "p-2",
             "text-dark-emphasis",
-            sizeClass
+            sizeClass,
           )}
           pill
         >

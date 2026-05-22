@@ -243,7 +243,7 @@ export function meta({ error }: Route.MetaArgs): MetaDescriptor[] {
 export default function Root({ loaderData }: Route.ComponentProps) {
   const params = useMemo(
     () => validatedAppParams(loaderData.config),
-    [loaderData.config]
+    [loaderData.config],
   );
   const isClientSide = typeof window === "object";
   if (isClientSide) {

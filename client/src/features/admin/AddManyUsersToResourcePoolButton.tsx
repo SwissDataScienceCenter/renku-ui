@@ -143,14 +143,14 @@ function AddManyUsersToResourcePoolModal({
             lastName: "",
             addToResourcePool: false,
             keycloakId: "",
-          }))
+          })),
         );
         setStep("validate-users");
         return;
       }
 
       const usersToAdd = data.users.filter(
-        ({ addToResourcePool }) => addToResourcePool
+        ({ addToResourcePool }) => addToResourcePool,
       );
       const userIds = usersToAdd.map(({ keycloakId }) => ({ id: keycloakId }));
       addUsersToResourcePool({
@@ -158,7 +158,7 @@ function AddManyUsersToResourcePoolModal({
         poolUsersWithId: userIds,
       });
     },
-    [addUsersToResourcePool, resourcePool.id, setError, setValue, step]
+    [addUsersToResourcePool, resourcePool.id, setError, setValue, step],
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -171,7 +171,7 @@ function AddManyUsersToResourcePoolModal({
   const watchUsers = watch("users");
   const isFetchingUsers = watchUsers.some(({ isFetching }) => isFetching);
   const usersToAdd = watchUsers.filter(
-    ({ addToResourcePool }) => addToResourcePool
+    ({ addToResourcePool }) => addToResourcePool,
   ).length;
 
   useEffect(() => {
@@ -230,7 +230,7 @@ function AddManyUsersToResourcePoolModal({
                     id="addManyUsersToResourcePoolUsers"
                     className={cx(
                       "form-control",
-                      errors.userEmails && "is-invalid"
+                      errors.userEmails && "is-invalid",
                     )}
                     placeholder={USERS_EMAILS_PLACEHOLDER}
                     rows={10}
@@ -254,7 +254,7 @@ function AddManyUsersToResourcePoolModal({
                     key={index}
                     className={cx(
                       index == 0 && "rounded-top",
-                      index + 1 == userFields.length && "rounded-bottom"
+                      index + 1 == userFields.length && "rounded-bottom",
                     )}
                     control={control}
                     index={index}
@@ -370,7 +370,7 @@ function UserItem({
     }
     const match = users.find(
       (keycloakUser) =>
-        keycloakUser.email.toLowerCase() === item.email.toLowerCase()
+        keycloakUser.email.toLowerCase() === item.email.toLowerCase(),
     );
     return match;
   }, [item.email, users]);
@@ -405,7 +405,7 @@ function UserItem({
         "justify-content-between",
         "align-items-center",
         "bg-rk-white",
-        !userItem.isFetching && !userItem.found && "text-danger"
+        !userItem.isFetching && !userItem.found && "text-danger",
       )}
     >
       {userItem.isFetching ? (

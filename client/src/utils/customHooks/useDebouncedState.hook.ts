@@ -22,13 +22,13 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 export default function useDebouncedState<S>(
   initialState: S | (() => S),
   wait?: number,
-  options?: DebounceSettings
+  options?: DebounceSettings,
 ): [S, DebouncedFunc<Dispatch<SetStateAction<S>>>] {
   const [state, setState] = useState(initialState);
 
   const debouncedSet = useMemo<DebouncedFunc<Dispatch<SetStateAction<S>>>>(
     () => debounce(setState, wait, options),
-    [wait, options]
+    [wait, options],
   );
 
   useEffect(() => {

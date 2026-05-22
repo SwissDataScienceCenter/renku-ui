@@ -101,7 +101,7 @@ export default function SessionEnvironmentFormContent({
             <Input
               className={cx(
                 "form-control",
-                errors.container_image && "is-invalid"
+                errors.container_image && "is-invalid",
               )}
               id="addSessionEnvironmentContainerImage"
               placeholder="Docker image"

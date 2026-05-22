@@ -52,7 +52,7 @@ function RenkuUserCard({
         "h-100",
         "bg-white",
         "align-items-center",
-        "p-4"
+        "p-4",
       )}
     >
       <div

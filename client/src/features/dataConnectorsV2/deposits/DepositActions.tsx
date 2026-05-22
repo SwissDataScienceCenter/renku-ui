@@ -190,7 +190,7 @@ interface DepositRemovalModalProps {
   onDelete: () => void;
   toggleModal: () => void;
 }
-function DepositRemovalModal({
+export function DepositRemovalModal({
   deposit,
   onDelete,
   toggleModal,
@@ -204,7 +204,7 @@ function DepositRemovalModal({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTypedName(e.target.value);
     },
-    [setTypedName]
+    [setTypedName],
   );
 
   useEffect(() => {
@@ -284,13 +284,13 @@ interface DepositLogsModalProps {
   isOpen: boolean;
   toggleModal: () => void;
 }
-function DepositLogsModal({
+export function DepositLogsModal({
   deposit,
   toggleModal,
   isOpen,
 }: DepositLogsModalProps) {
   const query = useGetDepositsByDepositIdLogsQuery(
-    deposit.id ? { depositId: deposit.id } : skipToken
+    deposit.id ? { depositId: deposit.id } : skipToken,
   );
 
   return (

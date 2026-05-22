@@ -27,7 +27,7 @@ import {
 } from "../api/data-connectors.enhanced-api";
 
 interface UseDataConnectorPermissionsArgs {
-  dataConnectorId: string;
+  dataConnectorId?: string;
 }
 type UseQueryStateResult = ReturnType<
   typeof useGetDataConnectorsByDataConnectorIdPermissionsQuery
@@ -41,7 +41,7 @@ export default function useDataConnectorPermissions({
 }: UseDataConnectorPermissionsArgs): Result {
   const { currentData, isLoading, isError, isUninitialized, ...result } =
     dataConnectorsApi.endpoints.getDataConnectorsByDataConnectorIdPermissions.useQueryState(
-      dataConnectorId ? { dataConnectorId } : skipToken
+      dataConnectorId ? { dataConnectorId } : skipToken,
     );
   const [fetchPermissions] =
     dataConnectorsApi.endpoints.getDataConnectorsByDataConnectorIdPermissions.useLazyQuery();

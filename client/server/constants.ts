@@ -43,7 +43,14 @@ export const SITEMAP = `<?xml version="1.0" encoding="UTF-8"?>
     <loc>${BASE_URL}/help/release</loc>
   </url>
 </urlset>`;
-export const ROBOTS = `Sitemap: ${BASE_URL} /sitemap.xml`;
+export const ROBOTS = `User-agent: Applebot
+User-agent: AhrefsBot
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+Disallow: /p/*/sessions/*/start
+
+Sitemap: ${BASE_URL}/sitemap.xml`;
 export const CONFIG_JSON = {
   UI_VERSION: process.env.UI_VERSION || "",
   RENKU_CHART_VERSION: process.env.RENKU_CHART_VERSION,
@@ -70,7 +77,7 @@ export const CONFIG_JSON = {
   STATUSPAGE_ID: process.env.STATUSPAGE_ID,
   HOMEPAGE: safeJsonToObject(process.env.HOMEPAGE),
   CORE_API_VERSION_CONFIG: safeJsonToObject(
-    process.env.CORE_API_VERSION_CONFIG
+    process.env.CORE_API_VERSION_CONFIG,
   ),
   USER_PREFERENCES_MAX_PINNED_PROJECTS:
     process.env.USER_PREFERENCES_MAX_PINNED_PROJECTS,

@@ -72,7 +72,7 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
               "my-0",
               "d-flex",
               "align-items-center",
-              "gap-3"
+              "gap-3",
             )}
           >
             <img src={rkNotFoundImgV2} />

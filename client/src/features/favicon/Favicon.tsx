@@ -27,7 +27,7 @@ export function Favicon() {
   useEffect(() => {
     const removeExistingFavicon = () => {
       const existingIcons = document.querySelectorAll(
-        'link[rel="icon"], link[rel="shortcut icon"]'
+        'link[rel="icon"], link[rel="shortcut icon"]',
       );
       existingIcons.forEach((icon) => icon?.parentNode?.removeChild(icon));
     };
@@ -36,8 +36,8 @@ export function Favicon() {
       const faviconType = href.endsWith(".svg")
         ? "image/svg+xml"
         : href.endsWith(".ico")
-        ? "image/x-icon"
-        : "image/png";
+          ? "image/x-icon"
+          : "image/png";
 
       const linkElement = document.createElement("link");
       linkElement.rel = rel;

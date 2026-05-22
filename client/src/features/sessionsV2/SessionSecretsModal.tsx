@@ -168,7 +168,7 @@ function ReadySessionSecrets({
 }: ReadySessionSecretsProps) {
   const readySessionSecrets = useMemo(
     () => sessionSecretSlotsWithSecrets.filter(({ secretId }) => secretId),
-    [sessionSecretSlotsWithSecrets]
+    [sessionSecretSlotsWithSecrets],
   );
 
   if (readySessionSecrets.length == 0) {
@@ -216,7 +216,7 @@ function UnreadySessionSecrets({
 }: UnreadySessionSecretsProps) {
   const unreadySessionSecrets = useMemo(
     () => sessionSecretSlotsWithSecrets.filter(({ secretId }) => !secretId),
-    [sessionSecretSlotsWithSecrets]
+    [sessionSecretSlotsWithSecrets],
   );
 
   if (unreadySessionSecrets.length == 0) {
@@ -335,11 +335,11 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
         sessionSecretPatchList: [{ secret_slot_id: slotId, value: data.value }],
       });
     },
-    [patchSessionSecrets, projectId, slotId]
+    [patchSessionSecrets, projectId, slotId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   useEffect(() => {
@@ -436,11 +436,11 @@ function ProvideExistingContent({ secretSlot }: ProvideExistingContentProps) {
         ],
       });
     },
-    [patchSessionSecrets, projectId, slotId]
+    [patchSessionSecrets, projectId, slotId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   useEffect(() => {

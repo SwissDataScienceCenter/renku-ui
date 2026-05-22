@@ -45,7 +45,7 @@ export function SessionRowResourceRequests({
   }
 
   const numericEntries = Object.entries(resourceRequests).filter(
-    ([name]) => name !== "name" && name !== "poolName"
+    ([name]) => name !== "name" && name !== "poolName",
   );
   const { poolName, name } = resourceRequests as SessionLauncherResources;
   const resourceClassName =

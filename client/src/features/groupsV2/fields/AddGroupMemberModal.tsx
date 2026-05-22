@@ -120,7 +120,7 @@ function AddGroupMemberAccessForm({
         groupMemberPatchRequestList: groupMembers,
       });
     },
-    [patchGroupMembers, groupSlug, members]
+    [patchGroupMembers, groupSlug, members],
   );
 
   return (

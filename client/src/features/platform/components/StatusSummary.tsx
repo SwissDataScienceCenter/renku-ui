@@ -97,7 +97,7 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
     fulfilledTimeStamp,
   } = useGetSummaryQuery(
     { statusPageId },
-    { pollingInterval: FIVE_MINUTES_MILLIS }
+    { pollingInterval: FIVE_MINUTES_MILLIS },
   );
 
   if (isLoading) {
@@ -182,18 +182,18 @@ function OverallStatus({ summary }: OverallStatusProps) {
     indicator === "none"
       ? "alert-success"
       : indicator === "maintenance"
-      ? "alert-info"
-      : indicator === "minor"
-      ? "alert-warning"
-      : "alert-danger";
+        ? "alert-info"
+        : indicator === "minor"
+          ? "alert-warning"
+          : "alert-danger";
   const Icon =
     indicator === "none"
       ? CheckCircleFill
       : indicator === "maintenance"
-      ? WrenchAdjustableCircleFill
-      : indicator === "minor"
-      ? DashCircleFill
-      : XCircleFill;
+        ? WrenchAdjustableCircleFill
+        : indicator === "minor"
+          ? DashCircleFill
+          : XCircleFill;
 
   return (
     <div className={cx("alert", alertColor, "rounded", "p-3")}>
@@ -215,9 +215,9 @@ function ScheduledMaintenanceDisplay({
       [...summary.scheduled_maintenances].sort((a, b) =>
         ensureDateTime(a.scheduled_for)
           .diff(ensureDateTime(b.scheduled_for))
-          .valueOf()
+          .valueOf(),
       ),
-    [summary.scheduled_maintenances]
+    [summary.scheduled_maintenances],
   );
 
   if (!maintenances.length) {
@@ -245,7 +245,7 @@ interface MaintenanceItemProps {
 function MaintenanceItem({ maintenance }: MaintenanceItemProps) {
   const maintenanceStart = ensureDateTime(maintenance.scheduled_for);
   const maintenanceDuration = ensureDateTime(maintenance.scheduled_until).diff(
-    maintenanceStart
+    maintenanceStart,
   );
   const displayStart = toHumanDateTime({
     datetime: maintenanceStart,
@@ -275,7 +275,7 @@ function ComponentsStatus({ summary }: ComponentsStatusProps) {
       [...summary.components]
         .filter(({ showcase }) => showcase)
         .sort((a, b) => a.position - b.position),
-    [summary.components]
+    [summary.components],
   );
 
   return (
@@ -300,20 +300,20 @@ function ComponentStatus({ component }: ComponentStatusProps) {
     status === "operational"
       ? CheckCircleFill
       : status === "under_maintenance"
-      ? WrenchAdjustableCircleFill
-      : status === "degraded_performance"
-      ? DashCircleFill
-      : status === "partial_outage"
-      ? ExclamationCircleFill
-      : XCircleFill;
+        ? WrenchAdjustableCircleFill
+        : status === "degraded_performance"
+          ? DashCircleFill
+          : status === "partial_outage"
+            ? ExclamationCircleFill
+            : XCircleFill;
   const iconColor =
     status === "operational"
       ? "text-success"
       : status === "under_maintenance"
-      ? "text-info"
-      : status === "degraded_performance"
-      ? "text-warning"
-      : "text-danger";
+        ? "text-info"
+        : status === "degraded_performance"
+          ? "text-warning"
+          : "text-danger";
 
   return (
     <Fragment>

@@ -62,7 +62,7 @@ export default function ProjectSessionSecrets() {
     isLoading: isLoadingSessionSecrets,
     error: sessionSecretsError,
   } = useGetProjectsByProjectIdSessionSecretsQuery(
-    isUserLoggedIn ? { projectId } : skipToken
+    isUserLoggedIn ? { projectId } : skipToken,
   );
   const isLoading = isLoadingSessionSecretSlots || isLoadingSessionSecrets;
   const error = sessionSecretSlotsError ?? sessionSecretsError;
@@ -102,7 +102,7 @@ export default function ProjectSessionSecrets() {
             "align-items-center",
             "d-flex",
             "justify-content-between",
-            "mb-2"
+            "mb-2",
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>
@@ -166,7 +166,7 @@ function ProjectSessionSecretsContent({
   const sessionSecretSlotsWithSecrets = useMemo(
     () =>
       getSessionSecretSlotsWithSecrets({ sessionSecretSlots, sessionSecrets }),
-    [sessionSecretSlots, sessionSecrets]
+    [sessionSecretSlots, sessionSecrets],
   );
 
   if (!sessionSecretSlots.length) {

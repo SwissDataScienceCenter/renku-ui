@@ -47,7 +47,7 @@ app.use("/storybook", express.static("storybook-static"));
 // Client assets
 app.use(
   "/assets",
-  express.static("build/client/assets", { immutable: true, maxAge: "1y" })
+  express.static("build/client/assets", { immutable: true, maxAge: "1y" }),
 );
 
 // Configuration and miscellaneous files
@@ -56,7 +56,7 @@ await import(BUILD_PATH).then(
     /**
      * @import * as ModuleType from './server/app'
      * @type {ModuleType} */
-    mod
+    mod,
   ) => {
     const {
       CONFIG_JSON,
@@ -87,7 +87,7 @@ await import(BUILD_PATH).then(
           : res.send(SAMPLE_PRIVACY_CONTENT);
       });
     }
-  }
+  },
 );
 
 // Logging
@@ -105,7 +105,7 @@ if (process.env.CI !== "1") {
         requestID: tokens.req(req, res, "X-Request-Id"),
       };
       return JSON.stringify(log);
-    })
+    }),
   );
 }
 
@@ -126,16 +126,16 @@ if (METRICS_ENABLED) {
       /**
        * @import * as ModuleType from './server/app'
        * @type {ModuleType} */
-      mod
+      mod,
     ) => {
       await mod.metrics({ app, metricsApp });
-    }
+    },
   );
 
   metricsApp.listen(METRICS_PORT, () => {
     // eslint-disable-next-line no-console
     console.log(
-      `Prometheus exporter is running at http://localhost:${METRICS_PORT}/metrics`
+      `Prometheus exporter is running at http://localhost:${METRICS_PORT}/metrics`,
     );
   });
 }
@@ -147,9 +147,9 @@ app.use(
       /**
        * @import * as ModuleType from './server/app'
        * @type {ModuleType} */
-      mod
-    ) => mod.app
-  )
+      mod,
+    ) => mod.app,
+  ),
 );
 
 app.listen(PORT, () => {

@@ -116,7 +116,7 @@ function EditCodeRepositoryModal({
         return;
       }
       const repositories = project.repositories.map((url) =>
-        url === repositoryUrl ? data.repositoryUrl : url
+        url === repositoryUrl ? data.repositoryUrl : url,
       );
       const validationResult =
         validateNoDuplicatesInCodeRepositories(repositories);
@@ -137,7 +137,7 @@ function EditCodeRepositoryModal({
       repositoryUrl,
       setError,
       updateProject,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -419,7 +419,7 @@ export function RepositoryItem({
   }, []);
   const canonicalUrlStr = useMemo(
     () => `${url.replace(/(?:\.git|\/)$/i, "")}`,
-    [url]
+    [url],
   );
   const title = getRepositoryName(url);
 
@@ -427,7 +427,7 @@ export function RepositoryItem({
     ? {
         action: true,
         className: cx(
-          !readonly && ["cursor-pointer", "link-primary", "text-body"]
+          !readonly && ["cursor-pointer", "link-primary", "text-body"],
         ),
         onClick: toggleDetails,
       }
@@ -763,11 +763,11 @@ export function RepositoryCallToActionAlert({
   }, [userInfo]);
 
   const { data: oauthProviders } = useGetOauth2ProvidersQuery(
-    anonymousUser ? skipToken : undefined
+    anonymousUser ? skipToken : undefined,
   );
   const oauthProvider = useMemo(
     () => oauthProviders?.find((p) => p.id === data?.provider?.id) ?? undefined,
-    [data?.provider?.id, oauthProviders]
+    [data?.provider?.id, oauthProviders],
   );
 
   const onRepositoryOAuthConnected = useCallback(() => {
@@ -775,7 +775,7 @@ export function RepositoryCallToActionAlert({
       dispatch(
         repositoriesApi.util.invalidateTags([
           { type: "Repository", id: repoUrl },
-        ])
+        ]),
       );
     });
   }, [dispatch, project]);

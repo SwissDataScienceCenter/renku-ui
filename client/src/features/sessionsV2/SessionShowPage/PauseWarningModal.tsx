@@ -40,8 +40,8 @@ export default function PauseWarningModal({
           duration: PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS,
         })
       : deltaPause > 0
-      ? toHumanDuration({ duration: deltaPause })
-      : "a few seconds";
+        ? toHumanDuration({ duration: deltaPause })
+        : "a few seconds";
 
   return (
     <Modal

@@ -80,25 +80,25 @@ export default function SessionSecretActions({
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const toggleRemove = useCallback(
     () => setIsRemoveOpen((isOpen) => !isOpen),
-    []
+    [],
   );
 
   const [isProvideOpen, setIsProvideOpen] = useState(false);
   const toggleProvide = useCallback(
     () => setIsProvideOpen((isOpen) => !isOpen),
-    []
+    [],
   );
 
   const [isClearOpen, setIsClearOpen] = useState(false);
   const toggleClear = useCallback(
     () => setIsClearOpen((isOpen) => !isOpen),
-    []
+    [],
   );
 
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
   const toggleReplace = useCallback(
     () => setIsReplaceOpen((isOpen) => !isOpen),
-    []
+    [],
   );
 
   if (!user?.isLoggedIn) {
@@ -314,11 +314,11 @@ function EditSessionSecretModal({
         },
       });
     },
-    [patchSessionSecretSlot, secretSlot, slotId]
+    [patchSessionSecretSlot, secretSlot, slotId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   useEffect(() => {
@@ -573,7 +573,7 @@ function ReplaceSecretValueModalWrapped({
       ? {
           secretId,
         }
-      : skipToken
+      : skipToken,
   );
 
   if (error || !userSecret) {

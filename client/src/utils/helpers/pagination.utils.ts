@@ -20,7 +20,7 @@ import processPaginationHeadersJs from "../../api-client/pagination";
 import { Pagination } from "../types/pagination.types";
 
 const processPaginationHeaders = processPaginationHeadersJs as (
-  headers: Headers | undefined | null
+  headers: Headers | undefined | null,
 ) => Pagination;
 
 export default processPaginationHeaders;

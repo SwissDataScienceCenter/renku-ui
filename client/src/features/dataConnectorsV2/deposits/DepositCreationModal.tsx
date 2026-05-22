@@ -29,7 +29,7 @@ import { PROVIDER_OPTIONS } from "./deposits.constants";
 import { CreateDepositionForm } from "./deposits.types";
 
 interface DepositCreationModalProps {
-  dataConnector: DataConnectorRead;
+  dataConnector?: DataConnectorRead | null;
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
   toggleModal: () => void;
@@ -67,7 +67,7 @@ export default function DepositCreationModal({
 
   const targetProvider = useMemo(() => {
     return providers?.find(
-      (provider) => provider.kind === targetProviderString
+      (provider) => provider.kind === targetProviderString,
     );
   }, [providers, targetProviderString]);
 
@@ -78,7 +78,7 @@ export default function DepositCreationModal({
   } = useGetOauth2ConnectionsQuery(targetProvider ? undefined : skipToken);
   const targetConnection = useMemo(() => {
     return connections?.find(
-      (connection) => connection.provider_id === targetProvider?.id
+      (connection) => connection.provider_id === targetProvider?.id,
     );
   }, [connections, targetProvider]);
 
@@ -89,14 +89,14 @@ export default function DepositCreationModal({
     (data: CreateDepositionForm) => {
       postDeposit({
         depositPost: {
-          data_connector_id: dataConnector.id,
+          data_connector_id: dataConnector?.id ?? "",
           name: data.name,
           path: data.path,
           provider: data.provider,
         },
       });
     },
-    [dataConnector.id, postDeposit]
+    [dataConnector?.id, postDeposit],
   );
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function DepositCreationModal({
                     <Input
                       id="name"
                       type="text"
-                      placeholder="Name (local)"
+                      placeholder="Name"
                       invalid={!!fieldState.error}
                       {...field}
                     />

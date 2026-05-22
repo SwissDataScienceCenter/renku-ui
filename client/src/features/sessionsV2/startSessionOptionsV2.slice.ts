@@ -45,7 +45,7 @@ const startSessionOptionsV2Slice = createSlice({
   reducers: {
     addDataConnectorOverrideItem: (
       state,
-      action: PayloadAction<SessionStartDataConnectorConfiguration>
+      action: PayloadAction<SessionStartDataConnectorConfiguration>,
     ) => {
       if (state.dataConnectors == null) {
         state.dataConnectors = [];
@@ -57,19 +57,19 @@ const startSessionOptionsV2Slice = createSlice({
     },
     removeDataConnectorOverrideItem: (
       state,
-      action: PayloadAction<{ index: number }>
+      action: PayloadAction<{ index: number }>,
     ) => {
       state.dataConnectors?.splice(action.payload.index, 1);
     },
     removeEnvironmentVariable: (
       state,
-      action: PayloadAction<{ index: number }>
+      action: PayloadAction<{ index: number }>,
     ) => {
       state.environmentVariables.splice(action.payload.index, 1);
     },
     setDataConnectorsOverrides: (
       state,
-      action: PayloadAction<SessionStartDataConnectorConfiguration[]>
+      action: PayloadAction<SessionStartDataConnectorConfiguration[]>,
     ) => {
       state.dataConnectors = action.payload;
     },
@@ -102,7 +102,7 @@ const startSessionOptionsV2Slice = createSlice({
       action: PayloadAction<{
         index: number;
         storage: SessionStartDataConnectorConfiguration;
-      }>
+      }>,
     ) => {
       if (state.dataConnectors) {
         state.dataConnectors[action.payload.index] = action.payload.storage;
@@ -113,14 +113,14 @@ const startSessionOptionsV2Slice = createSlice({
       action: PayloadAction<{
         index: number;
         variable: SessionEnvironmentVariable;
-      }>
+      }>,
     ) => {
       state.environmentVariables[action.payload.index] =
         action.payload.variable;
     },
     updateRepository: (
       state,
-      action: PayloadAction<UpdateRepositoryPayload>
+      action: PayloadAction<UpdateRepositoryPayload>,
     ) => {
       state.repositories[action.payload.index] = action.payload.repository;
     },

@@ -52,7 +52,7 @@ export async function clientLoader() {
   const { data: selfUser, error } = selector(
     store.getState() as RootState & {
       [usersApi.reducerPath]: ReturnType<typeof usersApi.reducer>;
-    }
+    },
   );
   //? Unsubscribe to let the cache expire when navigating to other pages
   promise.unsubscribe();

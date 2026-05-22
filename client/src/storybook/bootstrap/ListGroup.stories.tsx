@@ -57,7 +57,7 @@ export const ListGroup_: Story = {
         {[...Array(elements)].map((_, index) => (
           <ListGroupItem
             className={cx(
-              clickable ? ["cursor-pointer", "list-group-item-action"] : ""
+              clickable ? ["cursor-pointer", "list-group-item-action"] : "",
             )}
             key={index}
           >

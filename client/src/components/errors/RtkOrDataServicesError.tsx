@@ -32,7 +32,7 @@ interface BackendErrorResponse {
 
 function extractRkErrorMessage(
   error: FetchBaseQueryError | SerializedError,
-  property = "message"
+  property = "message",
 ): string {
   if ("error" in error && error.error.length) return error.error.toString();
   if ("message" in error && error.message?.length)
@@ -73,8 +73,8 @@ function RtkErrorAlert({
     "status" in error
       ? error.status.toString()
       : "code" in error && error.code !== undefined
-      ? error.code.toString()
-      : "Unknown";
+        ? error.code.toString()
+        : "Unknown";
 
   // message
   const errorMessage = extractRkErrorMessage(error, property);

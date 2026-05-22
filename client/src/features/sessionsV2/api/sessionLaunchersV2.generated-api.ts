@@ -8,7 +8,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/environments`,
-        params: { get_environment_params: queryArg.getEnvironmentParams },
+        params: {
+          get_environment_params: queryArg.getEnvironmentParams,
+        },
       }),
     }),
     postEnvironments: build.mutation<
@@ -119,7 +121,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/builds/${queryArg.buildId}/logs`,
-        params: { max_lines: queryArg.maxLines },
+        params: {
+          max_lines: queryArg.maxLines,
+        },
       }),
     }),
     getEnvironmentsByEnvironmentIdBuilds: build.query<
@@ -167,8 +171,7 @@ export type PatchEnvironmentsByEnvironmentIdApiArg = {
   environmentId: Ulid;
   environmentPatch: EnvironmentPatch;
 };
-export type DeleteEnvironmentsByEnvironmentIdApiResponse =
-  /** status 204 The session environment was removed or did not exist in the first place */ void;
+export type DeleteEnvironmentsByEnvironmentIdApiResponse = unknown;
 export type DeleteEnvironmentsByEnvironmentIdApiArg = {
   environmentId: Ulid;
 };
@@ -191,8 +194,7 @@ export type PatchSessionLaunchersByLauncherIdApiArg = {
   launcherId: Ulid;
   sessionLauncherPatch: SessionLauncherPatch;
 };
-export type DeleteSessionLaunchersByLauncherIdApiResponse =
-  /** status 204 The session was removed or did not exist in the first place */ void;
+export type DeleteSessionLaunchersByLauncherIdApiResponse = unknown;
 export type DeleteSessionLaunchersByLauncherIdApiArg = {
   launcherId: Ulid;
 };

@@ -33,7 +33,7 @@ export function getSessionSecretSlotsWithSecrets({
 }: GetSessionSecretSlotsWithSecretsArgs): SessionSecretSlotWithSecret[] {
   return sessionSecretSlots.map((secretSlot) => {
     const secret = sessionSecrets.find(
-      ({ secret_slot }) => secret_slot.id === secretSlot.id
+      ({ secret_slot }) => secret_slot.id === secretSlot.id,
     );
     return {
       secretSlot,

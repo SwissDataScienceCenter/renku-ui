@@ -101,7 +101,7 @@ function AddSessionEnvironmentModal({
           },
         });
     },
-    [addSessionEnvironment]
+    [addSessionEnvironment],
   );
 
   useEffect(() => {

@@ -21,7 +21,7 @@ import { useMemo } from "react";
 import {
   Database,
   Eye,
-  Folder2Open,
+  Folder,
   Globe2,
   Lock,
   Pencil,
@@ -100,16 +100,16 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
           slug: item.slug,
         })
       : item.type === "DataConnector"
-      ? `${location.search}#data-connector-${item.id}`
-      : item.type === "User"
-      ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-          username: item.slug ?? "",
-        })
-      : item.type === "Group"
-      ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-          slug: item.slug,
-        })
-      : "";
+        ? `${location.search}#data-connector-${item.id}`
+        : item.type === "User"
+          ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+              username: item.slug ?? "",
+            })
+          : item.type === "Group"
+            ? generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+                slug: item.slug,
+              })
+            : "";
 
   return (
     <Link
@@ -118,7 +118,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
         "text-body",
         "text-decoration-none",
         "list-group-item",
-        "list-group-item-action"
+        "list-group-item-action",
       )}
       to={url}
       data-cy="search-list-item"
@@ -143,7 +143,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
                 "d-flex",
                 "flex-wrap",
                 "gap-3",
-                "mb-0"
+                "mb-0",
               )}
             >
               <span>
@@ -174,7 +174,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
               "flex-column",
               "flex-sm-row",
               "gap-2",
-              "justify-content-between"
+              "justify-content-between",
             )}
           >
             {!isNamespaceType && <SearchResultVisibility item={item} />}
@@ -196,7 +196,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
 
 function SearchResultListItemIcon({ item }: { item: SearchEntity }) {
   return item.type === "Project" ? (
-    <Folder2Open />
+    <Folder />
   ) : item.type === "DataConnector" ? (
     <Database />
   ) : item.type === "User" ? (
@@ -316,7 +316,7 @@ function SearchResultCounts({ item }: { item: SearchEntity }) {
   return (
     <div className={cx("d-flex", "gap-4")}>
       <div>
-        <Folder2Open className={cx("bi", "me-1")} />
+        <Folder className={cx("bi", "me-1")} />
         Projects <Badge className="ms-1">{item.project_count}</Badge>
       </div>
       <div>

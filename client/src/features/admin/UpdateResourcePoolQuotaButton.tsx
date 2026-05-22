@@ -108,7 +108,7 @@ function UpdateResourcePoolQuotaModal({
         },
       });
     },
-    [id, idle_threshold, hibernation_threshold, updateResourcePool]
+    [id, idle_threshold, hibernation_threshold, updateResourcePool],
   );
 
   useEffect(() => {

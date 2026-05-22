@@ -56,7 +56,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/projects?query=last_activity_at&per_page=100&starred=true&page=1",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -77,7 +77,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("GET", `/ui-server/api/projects/${projectId}`, response).as(
-        name
+        name,
       );
       return this;
     }
@@ -90,7 +90,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         statistics = true,
       } = args ?? {};
       const url = `/ui-server/api/projects/${encodeURIComponent(
-        projectPath
+        projectPath,
       )}?statistics=${statistics}&doNotTrack=*`;
       const response = { fixture };
       cy.intercept("GET", url, response).as(name);
@@ -136,21 +136,21 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1",
-        rootResponse
+        rootResponse,
       ).as(root.name);
 
       const gitAttributesResponse = { fixture: gitAttributes.fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/files/.gitattributes/raw?ref=master",
-        gitAttributesResponse
+        gitAttributesResponse,
       ).as(gitAttributes.name);
 
       const countFlightsResponse = { fixture: countFlights.fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/files/01-CountFlights.ipynb?ref=master",
-        countFlightsResponse
+        countFlightsResponse,
       ).as(countFlights.name);
 
       const historicalUseNotebookResponse = {
@@ -159,21 +159,21 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/files/Historical-Use.ipynb?ref=master",
-        historicalUseNotebookResponse
+        historicalUseNotebookResponse,
       ).as(historicalUseNotebook.name);
 
       const latexNotebookResponse = { fixture: latexNotebook.fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/files/latex-notebook.ipynb?ref=master",
-        latexNotebookResponse
+        latexNotebookResponse,
       ).as(latexNotebook.name);
 
       const randomPyFileResponse = { fixture: randomPyFile.fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/files/random_py_file.py?ref=master",
-        randomPyFileResponse
+        randomPyFileResponse,
       ).as(randomPyFile.name);
 
       return this;
@@ -197,16 +197,16 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/projects/${encodeURIComponent(
-          project.projectPath
+          project.projectPath,
         )}?statistics=*`,
-        projectResponse
+        projectResponse,
       ).as(project.name);
 
       const branchesResponse = { statusCode: branches.statusCode };
       cy.intercept(
         "GET",
         "/ui-server/api/projects/null/repository/branches?per_page=100&page=1",
-        branchesResponse
+        branchesResponse,
       ).as(branches.name);
 
       return this;
@@ -223,14 +223,14 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "POST",
         "/ui-server/api/kg/webhooks/projects/*/webhooks",
-        webhookResponse
+        webhookResponse,
       );
 
       const response = { fixture };
       cy.intercept(
         "PUT",
         `/ui-server/api/projects/${encodeURIComponent(projectPath)}`,
-        response
+        response,
       ).as(name);
 
       return this;
@@ -245,12 +245,12 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/renku/cache.project_list",
-        response
+        response,
       ).as(name);
       cy.intercept(
         "GET",
         "/ui-server/api/renku/*/cache.project_list",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -275,15 +275,15 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const defaultFixture = error
         ? "errors/core-error-2001.json"
         : legacyError
-        ? "errors/core-error-old.json"
-        : "project/config-show.json";
+          ? "errors/core-error-old.json"
+          : "project/config-show.json";
       const { fixture = defaultFixture, name = "getProjectConfigShow" } =
         args ?? {};
       const response = { fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/renku/*/config.show?git_url=*",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -314,8 +314,8 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const defaultFixture = error
         ? "errors/core-error-2001.json"
         : legacyError
-        ? "errors/core-error-old.json"
-        : null;
+          ? "errors/core-error-old.json"
+          : null;
       const { fixture = defaultFixture, name = "getProjectLockStatus" } =
         args ?? {};
       const coreUrl = "/ui-server/api/renku/**/project.lock_status";
@@ -374,7 +374,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/renku/10/config.show?git_url=*",
-        configResponse
+        configResponse,
       ).as(config.name);
 
       const coreServiceVersionResponse = {
@@ -389,7 +389,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/renku/9/version",
-        coreServiceVersionResponse
+        coreServiceVersionResponse,
       ).as(coreServiceVersion.name);
 
       const coreServiceV8Response = {
@@ -404,19 +404,19 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/renku/${coreServiceV8.coreVersion}/version`,
-        coreServiceV8Response
+        coreServiceV8Response,
       ).as(coreServiceV8.name);
 
       const projectBranchesResponse = { fixture: projectBranches.fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/branches?",
-        projectBranchesResponse
+        projectBranchesResponse,
       ).as(projectBranches.name);
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/branches?page=1&per_page=100",
-        projectBranchesResponse
+        projectBranchesResponse,
       ).as(projectBranches.name);
       // The session start screen also requests the data for the default branch
       cy.fixture(projectBranches.fixture)
@@ -424,7 +424,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
           cy.intercept(
             "GET",
             "/ui-server/api/projects/*/repository/branches/master",
-            branches[0]
+            branches[0],
           );
         })
         .as(projectBranches.name);
@@ -432,19 +432,19 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
-        projectBranchesResponse
+        projectBranchesResponse,
       ).as(projectBranches.name);
 
       const projectCommitsResponse = { fixture: projectCommits.fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master",
-        projectCommitsResponse
+        projectCommitsResponse,
       ).as(projectCommits.name);
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master&page=1&per_page=100",
-        projectCommitsResponse
+        projectCommitsResponse,
       ).as(projectCommits.name);
 
       const projectReadmeCommitsResponse = {
@@ -453,21 +453,21 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=2&path=README.md&page=1",
-        projectReadmeCommitsResponse
+        projectReadmeCommitsResponse,
       ).as(projectReadmeCommits.name);
 
       const readmeCommitsResponse = { fixture: readme.fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
-        readmeCommitsResponse
+        readmeCommitsResponse,
       ).as(readme.name);
 
       const kgStatusIndexingResponse = { fixture: kgStatusIndexing.fixture };
       cy.intercept(
         "GET",
         "/ui-server/api/kg/webhooks/projects/*/events/status",
-        kgStatusIndexingResponse
+        kgStatusIndexingResponse,
       ).as(kgStatusIndexing.name);
 
       return this;
@@ -488,7 +488,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         response["visibility"] = overrides.visibility;
         cy.intercept(
           "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
-          response
+          response,
         ).as(project.name);
       });
 
@@ -508,7 +508,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         cy.intercept(
           "GET",
           "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
-          response
+          response,
         ).as(project.name);
       });
 
@@ -527,14 +527,14 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "POST",
         "/ui-server/api/kg/webhooks/projects/*/webhooks",
-        webhookResponse
+        webhookResponse,
       );
 
       const response = { fixture, statusCode };
       cy.intercept(
         "PUT",
         `/ui-server/api/projects/${encodeURIComponent(projectPath)}`,
-        response
+        response,
       ).as(name);
 
       return this;
@@ -555,7 +555,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const { forbidden = false, name = "deleteProject" } = args ?? {};
       const response = { statusCode: forbidden ? 403 : 200 };
       cy.intercept("DELETE", "/ui-server/api/kg/projects/**", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -567,7 +567,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("POST", "/ui-server/api/renku/**/project.edit", response).as(
-        name
+        name,
       );
       return this;
     }
@@ -608,7 +608,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         cy.intercept(
           "PUT",
           `/ui-server/api/projects/${projectId}`,
-          response
+          response,
         ).as(name);
       });
       return this;
@@ -622,7 +622,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("GET", `/ui-server/api/groups/${namespace}`, response).as(
-        name
+        name,
       );
       return this;
     }
@@ -636,7 +636,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/kg/webhooks/projects/*/events/status",
-        response
+        response,
       ).as(name);
       return this;
     }
@@ -650,7 +650,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=100&page=1",
-        response
+        response,
       ).as(name);
       return this;
     }

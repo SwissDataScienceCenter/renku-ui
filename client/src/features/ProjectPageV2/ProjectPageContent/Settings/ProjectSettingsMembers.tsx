@@ -222,7 +222,7 @@ function ProjectPageSettingsMembersList({
   const [memberToEdit, setMemberToEdit] = useState<ProjectMemberResponse>();
   const numberOfOwners = useMemo(
     () => members.filter((m) => m.role === "owner").length,
-    [members]
+    [members],
   );
 
   const onEdit = useCallback((member: ProjectMemberResponse) => {

@@ -32,7 +32,7 @@ export default function LoginHandler() {
       skipPollingIfUnfocused: true,
       refetchOnReconnect: true,
       refetchOnFocus: true,
-    }
+    },
   );
 
   const [{ isLoggedIn }, setState] = useState<LoginState>({

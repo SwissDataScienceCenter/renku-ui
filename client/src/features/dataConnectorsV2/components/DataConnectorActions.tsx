@@ -27,7 +27,7 @@ import {
   Trash,
   XLg,
 } from "react-bootstrap-icons";
-import { matchPath, useLocation } from "react-router";
+import { matchPath, useLocation, useNavigate } from "react-router";
 import {
   Button,
   Col,
@@ -70,30 +70,32 @@ import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
 
 interface DataConnectorRemoveModalProps {
-  dataConnector: DataConnectorRead;
+  dataConnector?: DataConnectorRead | null;
   dataConnectorLink?: DataConnectorToProjectLink;
+  executeOnSuccess?: () => void;
   isOpen: boolean;
-  onDelete: () => void;
+  redirectOnSuccess?: string;
   toggleModal: () => void;
 }
 
-function DataConnectorRemoveDeleteModal({
+export function DataConnectorRemoveDeleteModal({
   dataConnector,
-  onDelete,
-  toggleModal,
+  executeOnSuccess,
   isOpen,
+  redirectOnSuccess,
+  toggleModal,
 }: DataConnectorRemoveModalProps) {
   const { permissions, isLoading: isLoadingPermissions } =
-    useDataConnectorPermissions({ dataConnectorId: dataConnector.id });
+    useDataConnectorPermissions({ dataConnectorId: dataConnector?.id });
 
   const {
     data: dataConnectorLinks,
     isLoading: isLoadingLinks,
     isError: isLoadingLinksError,
   } = useGetDataConnectorsByDataConnectorIdProjectLinksQuery({
-    dataConnectorId: dataConnector.id,
+    dataConnectorId: dataConnector?.id ?? "",
   });
-  const [deleteDataConnector, { isLoading, isSuccess }] =
+  const [deleteDataConnector, { error, isLoading, isSuccess }] =
     useDeleteDataConnectorsByDataConnectorIdMutation();
 
   const [typedName, setTypedName] = useState("");
@@ -101,22 +103,37 @@ function DataConnectorRemoveDeleteModal({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTypedName(e.target.value.trim());
     },
-    [setTypedName]
+    [setTypedName],
   );
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if (isSuccess && isOpen) {
-      onDelete();
+    if (isSuccess && executeOnSuccess) {
+      executeOnSuccess();
     }
-  }, [isOpen, isSuccess, onDelete]);
-  const onDeleteDataCollector = useCallback(() => {
-    deleteDataConnector({
-      dataConnectorId: dataConnector.id,
-    });
-  }, [deleteDataConnector, dataConnector.id]);
+  }, [isSuccess, executeOnSuccess]);
+  const onDeleteDataConnector = useCallback(async () => {
+    if (!dataConnector?.id) return;
+
+    try {
+      await deleteDataConnector({
+        dataConnectorId: dataConnector.id,
+      }).unwrap();
+      if (redirectOnSuccess) navigate(redirectOnSuccess);
+    } catch {
+      // keep existing `error` rendering from the mutation result
+    }
+  }, [dataConnector, deleteDataConnector, redirectOnSuccess, navigate]);
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
+    <Modal
+      data-cy="data-connector-edit-modal"
+      size="lg"
+      isOpen={isOpen}
+      toggle={toggleModal}
+      centered
+    >
       <ModalHeader className="text-danger" tag="h2" toggle={toggleModal}>
         Delete data connector
       </ModalHeader>
@@ -144,7 +161,7 @@ function DataConnectorRemoveDeleteModal({
                       possible that it is used in some projects.
                     </p>
                     <p>
-                      Please type <strong>{dataConnector.slug}</strong>, the
+                      Please type <strong>{dataConnector?.slug}</strong>, the
                       slug of the data connector, to confirm.
                     </p>
                     <Input
@@ -179,7 +196,7 @@ function DataConnectorRemoveDeleteModal({
                       )}
                     </p>
                     <p>
-                      Please type <strong>{dataConnector.slug}</strong>, the
+                      Please type <strong>{dataConnector?.slug}</strong>, the
                       slug of the data connector, to confirm.
                     </p>
                     <Input
@@ -195,10 +212,16 @@ function DataConnectorRemoveDeleteModal({
             userPermissions={permissions}
           />
         )}
+        {error && (
+          <RtkOrDataServicesError
+            className={cx("mb-0", "mt-3")}
+            error={error}
+          />
+        )}
       </ModalBody>
       <ModalFooter>
         <div className="d-flex justify-content-end">
-          <Button color="outline-danger" onClick={toggleModal}>
+          <Button color="outline-danger" onClick={toggleModal} type="button">
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
@@ -206,12 +229,12 @@ function DataConnectorRemoveDeleteModal({
             disabled={null}
             enabled={
               <Button
-                color="danger"
                 className={cx("float-right", "ms-2")}
-                disabled={isLoading || typedName !== dataConnector.slug.trim()}
+                color="danger"
                 data-cy="delete-data-connector-modal-button"
-                type="submit"
-                onClick={onDeleteDataCollector}
+                disabled={isLoading || typedName !== dataConnector?.slug.trim()}
+                onClick={onDeleteDataConnector}
+                type="button"
               >
                 {isLoading ? (
                   <>
@@ -235,8 +258,10 @@ function DataConnectorRemoveDeleteModal({
   );
 }
 
-interface DataConnectorRemoveUnlinkModalProps
-  extends Omit<DataConnectorRemoveModalProps, "dataConnectorLink"> {
+interface DataConnectorRemoveUnlinkModalProps extends Omit<
+  DataConnectorRemoveModalProps,
+  "dataConnectorLink"
+> {
   dataConnectorLink: DataConnectorToProjectLink;
   projectNamespace: string;
   projectSlug: string;
@@ -245,11 +270,11 @@ interface DataConnectorRemoveUnlinkModalProps
 function DataConnectorRemoveUnlinkModal({
   dataConnector,
   dataConnectorLink,
-  onDelete,
+  executeOnSuccess,
+  isOpen,
   projectNamespace,
   projectSlug,
   toggleModal,
-  isOpen,
 }: DataConnectorRemoveUnlinkModalProps) {
   const [
     unlinkDataConnector,
@@ -265,19 +290,19 @@ function DataConnectorRemoveUnlinkModal({
   const linkId = dataConnectorLink.id;
 
   useEffect(() => {
-    if (isSuccess && isOpen) {
-      onDelete();
+    if (isSuccess && executeOnSuccess) {
+      executeOnSuccess();
     }
-  }, [isOpen, isSuccess, onDelete]);
+  }, [isSuccess, executeOnSuccess]);
 
-  const onDeleteDataCollector = useCallback(() => {
+  const onDeleteDataConnector = useCallback(() => {
     if (!linkId) return;
 
     unlinkDataConnector({
-      dataConnectorId: dataConnector.id,
+      dataConnectorId: dataConnector?.id ?? "",
       linkId,
     });
-  }, [unlinkDataConnector, dataConnector.id, linkId]);
+  }, [unlinkDataConnector, dataConnector?.id, linkId]);
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggleModal} centered>
@@ -307,7 +332,7 @@ function DataConnectorRemoveUnlinkModal({
                     <>
                       <p>
                         Are you sure you want to unlink the data connector{" "}
-                        <strong>{dataConnector.slug}</strong> from the project{" "}
+                        <strong>{dataConnector?.slug}</strong> from the project{" "}
                         <strong>
                           {projectNamespace}/{projectSlug}
                         </strong>
@@ -328,7 +353,11 @@ function DataConnectorRemoveUnlinkModal({
           <ModalFooter>
             {error && <RtkOrDataServicesError error={error} />}
             <div className="d-flex justify-content-end">
-              <Button color="outline-danger" onClick={toggleModal}>
+              <Button
+                color="outline-danger"
+                onClick={toggleModal}
+                type="button"
+              >
                 <XLg className={cx("bi", "me-1")} />
                 Cancel
               </Button>
@@ -336,12 +365,12 @@ function DataConnectorRemoveUnlinkModal({
                 disabled={null}
                 enabled={
                   <Button
-                    color="danger"
                     className={cx("float-right", "ms-2")}
-                    disabled={isLoadingUnlink}
+                    color="danger"
                     data-cy="delete-data-connector-modal-button"
-                    type="submit"
-                    onClick={onDeleteDataCollector}
+                    disabled={isLoadingUnlink}
+                    onClick={onDeleteDataConnector}
+                    type="button"
                   >
                     {isLoadingUnlink ? (
                       <>
@@ -419,7 +448,7 @@ function DataConnectorActionsInner({
       dataConnectorId: dataConnector.id,
       params: LAST_DEPOSIT_QUERY_PARAMS,
     },
-    { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS }
+    { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS },
   );
 
   const { project_id: projectId } = dataConnectorLink ?? {};
@@ -429,7 +458,7 @@ function DataConnectorActionsInner({
   const location = useLocation();
   const pathMatch = matchPath(
     ABSOLUTE_ROUTES.v2.projects.show.root,
-    location.pathname
+    location.pathname,
   );
   const namespace = pathMatch?.params?.namespace;
   const slug = pathMatch?.params?.slug;
@@ -487,26 +516,26 @@ function DataConnectorActionsInner({
                 ),
               }
             : lastDeposit.status === "upload_complete"
-            ? {
-                key: "data-connector-deposit-finalize",
-                onClick: toggleFinalizationDepositOpen,
-                content: (
-                  <>
-                    <Check2 className={cx("bi", "me-1")} />
-                    Finalize deposit
-                  </>
-                ),
-              }
-            : {
-                key: "data-connector-deposit-edit",
-                onClick: toggleEditDeposit,
-                content: (
-                  <>
-                    <Pencil className={cx("bi", "me-1")} />
-                    Edit or rerun data export
-                  </>
-                ),
-              },
+              ? {
+                  key: "data-connector-deposit-finalize",
+                  onClick: toggleFinalizationDepositOpen,
+                  content: (
+                    <>
+                      <Check2 className={cx("bi", "me-1")} />
+                      Finalize deposit
+                    </>
+                  ),
+                }
+              : {
+                  key: "data-connector-deposit-edit",
+                  onClick: toggleEditDeposit,
+                  content: (
+                    <>
+                      <Pencil className={cx("bi", "me-1")} />
+                      Edit or rerun data export
+                    </>
+                  ),
+                },
         ]
       : []),
     ...(requiresCredentials
@@ -602,8 +631,8 @@ function DataConnectorActionsInner({
       <DataConnectorRemoveDeleteModal
         dataConnector={dataConnector}
         dataConnectorLink={dataConnectorLink}
+        executeOnSuccess={onDelete}
         isOpen={isDeleteOpen}
-        onDelete={onDelete}
         toggleModal={toggleDelete}
       />
       <DepositCreationModal
@@ -632,8 +661,8 @@ function DataConnectorActionsInner({
         <DataConnectorRemoveUnlinkModal
           dataConnector={dataConnector}
           dataConnectorLink={dataConnectorLink}
+          executeOnSuccess={onUnlink}
           isOpen={isUnlinkOpen}
-          onDelete={onUnlink}
           projectNamespace={namespace!}
           projectSlug={slug!}
           toggleModal={toggleUnlink}

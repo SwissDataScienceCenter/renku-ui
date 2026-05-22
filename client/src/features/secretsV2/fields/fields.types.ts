@@ -22,8 +22,9 @@ import type {
   UseControllerProps,
 } from "react-hook-form";
 
-export interface UserSecretFormFieldProps<T extends FieldValues>
-  extends UseControllerProps<T> {
+export interface UserSecretFormFieldProps<
+  T extends FieldValues,
+> extends UseControllerProps<T> {
   errors: FieldErrors<T>;
   formId?: string;
 }

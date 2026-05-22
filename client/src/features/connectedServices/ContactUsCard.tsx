@@ -35,16 +35,16 @@ export default function ContactUsCard() {
     DEFAULT_APP_PARAMS["SESSION_CLASS_EMAIL_US"];
 
   const { data: user } = useGetUserQueryState(
-    SESSION_CLASS_EMAIL_US.enabled ? undefined : skipToken
+    SESSION_CLASS_EMAIL_US.enabled ? undefined : skipToken,
   );
   const name = useMemo(
     () =>
       user?.isLoggedIn && user.first_name && user.last_name
         ? `${user.first_name} ${user.last_name}`
         : user?.isLoggedIn
-        ? user?.first_name || user?.last_name
-        : undefined,
-    [user]
+          ? user?.first_name || user?.last_name
+          : undefined,
+    [user],
   );
 
   if (!SESSION_CLASS_EMAIL_US.enabled) {

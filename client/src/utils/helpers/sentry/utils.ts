@@ -39,7 +39,7 @@ export function initClientSideSentry(params: AppParams) {
   const tracesSampleRate = clamp(
     parseFloat(params.SENTRY_SAMPLE_RATE) || 0,
     0,
-    1
+    1,
   );
 
   const config: Sentry.BrowserOptions = {

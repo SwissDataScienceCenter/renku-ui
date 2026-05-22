@@ -18,12 +18,10 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
-import type { SearchEntity } from "../../searchV2/api/searchV2Api.api";
-import EntityPill from "../../searchV2/components/EntityPill";
 import { usersApi } from "../api/users.api";
 
 import styles from "./UserAvatar.module.scss";
@@ -43,7 +41,7 @@ export default function UserAvatar({
 }: UserAvatarProps) {
   const { data: namespace, isUninitialized: isNamespaceUninitialized } =
     projectV2Api.endpoints.getNamespacesByNamespaceSlug.useQueryState(
-      namespaceSlug ? { namespaceSlug } : skipToken
+      namespaceSlug ? { namespaceSlug } : skipToken,
     );
   const [fetchNamespace] =
     projectV2Api.endpoints.getNamespacesByNamespaceSlug.useLazyQuery();
@@ -57,7 +55,7 @@ export default function UserAvatar({
     usersApi.endpoints.getUsersByUserId.useQueryState(
       namespace?.namespace_kind === "user" && namespace.created_by
         ? { userId: namespace.created_by }
-        : skipToken
+        : skipToken,
     );
   const [fetchUser] = usersApi.endpoints.getUsersByUserId.useLazyQuery();
   useEffect(() => {
@@ -79,7 +77,7 @@ export default function UserAvatar({
     projectV2Api.endpoints.getGroupsByGroupSlug.useQueryState(
       namespace?.namespace_kind === "group"
         ? { groupSlug: namespace.slug }
-        : skipToken
+        : skipToken,
     );
   const [fetchGroup] =
     projectV2Api.endpoints.getGroupsByGroupSlug.useLazyQuery();
@@ -100,8 +98,8 @@ export default function UserAvatar({
       return firstName && lastName
         ? `${firstName.slice(0, 1)}${lastName.slice(0, 1)}`
         : firstName || lastName
-        ? `${firstName}${lastName}`.slice(0, 2)
-        : username.slice(0, 2) || "??";
+          ? `${firstName}${lastName}`.slice(0, 2)
+          : username.slice(0, 2) || "??";
     }
     if (group) {
       const { name, slug } = group;
@@ -128,7 +126,7 @@ export default function UserAvatar({
         styles.avatar,
         size === "lg" && styles.large,
         size === "md" && styles.medium,
-        className
+        className,
       )}
       style={{ backgroundColor: randomPastelColor }}
     >
@@ -146,30 +144,6 @@ function generatePastelColor(input: string) {
 }
 function hashStringToNumber(str: string) {
   return str.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-}
-
-type EntityType = Extract<SearchEntity["type"], "User" | "Group">;
-
-interface AvatarTypeWrapProps {
-  type: EntityType;
-  children?: ReactNode;
-}
-export function AvatarTypeWrap({ type, children }: AvatarTypeWrapProps) {
-  return (
-    <div
-      className={cx(
-        styles.typeBadge,
-        "d-flex",
-        "align-items-end",
-        "position-relative"
-      )}
-    >
-      {children}
-      <div className={cx("position-absolute", "top-0", "end-0")}>
-        <EntityPill entityType={type} size="sm" />
-      </div>
-    </div>
-  );
 }
 
 const TOOLTIP_MAX_LENGTH = 150;
@@ -200,7 +174,7 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
           "rounded-circle",
           "text-center",
           "text-black",
-          styles.avatar
+          styles.avatar,
         )}
       >
         +{count}
@@ -209,7 +183,7 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
         {truncateTooltipText(
           hiddenMembers
             .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
-            .join(", ")
+            .join(", "),
         )}
       </UncontrolledTooltip>
     </>

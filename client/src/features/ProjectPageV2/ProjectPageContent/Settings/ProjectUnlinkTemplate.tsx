@@ -65,7 +65,7 @@ export default function ProjectUnlinkTemplate({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTypedName(e.target.value.trim());
     },
-    [setTypedName]
+    [setTypedName],
   );
 
   if (project.template_id == null) return null;

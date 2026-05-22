@@ -12,7 +12,9 @@ const injectedRtkApi = api.injectEndpoints({
     getAlerts: build.query<GetAlertsApiResponse, GetAlertsApiArg>({
       query: (queryArg) => ({
         url: `/alerts`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     patchAlertsByAlertId: build.mutation<

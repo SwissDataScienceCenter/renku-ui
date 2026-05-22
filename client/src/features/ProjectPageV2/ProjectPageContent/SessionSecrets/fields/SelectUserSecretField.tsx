@@ -37,8 +37,9 @@ import type { SessionSecretFormFieldProps } from "./fields.types";
 
 import styles from "./SelectUserSecretField.module.scss";
 
-interface SelectUserSecretFieldProps<T extends FieldValues>
-  extends SessionSecretFormFieldProps<T> {
+interface SelectUserSecretFieldProps<
+  T extends FieldValues,
+> extends SessionSecretFormFieldProps<T> {
   formId?: string;
 }
 
@@ -107,8 +108,9 @@ export default function SelectUserSecretField<T extends FieldValues>({
   );
 }
 
-interface UserSecretSelectorProps<T extends FieldValues>
-  extends SelectUserSecretFieldProps<T> {
+interface UserSecretSelectorProps<
+  T extends FieldValues,
+> extends SelectUserSecretFieldProps<T> {
   userSecrets: SecretWithId[];
 }
 
@@ -158,7 +160,7 @@ const selectClassNames: ClassNamesConfig<SecretWithId, false> = {
       menuIsOpen ? "rounded-top" : "rounded",
       "border",
       "cursor-pointer",
-      isFocused && "border-primary-subtle"
+      isFocused && "border-primary-subtle",
       // styles.control
     ),
   dropdownIndicator: () => cx("pe-3"),
@@ -169,7 +171,7 @@ const selectClassNames: ClassNamesConfig<SecretWithId, false> = {
       "rounded-bottom",
       "border",
       "border-top-0",
-      "border-primary-subtle"
+      "border-primary-subtle",
     ),
   menuList: () => cx("d-grid"),
   option: ({ isFocused, isSelected }) =>
@@ -179,7 +181,7 @@ const selectClassNames: ClassNamesConfig<SecretWithId, false> = {
       "cursor-pointer",
       styles.option,
       isFocused && styles.optionIsFocused,
-      !isFocused && isSelected && styles.optionIsSelected
+      !isFocused && isSelected && styles.optionIsSelected,
     ),
   placeholder: () => cx("px-3"),
   singleValue: () => cx("px-3"),

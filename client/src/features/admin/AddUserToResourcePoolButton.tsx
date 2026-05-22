@@ -109,7 +109,7 @@ function AddUserToResourcePoolModal({
         poolUsersWithId: [{ id: data.userId }],
       });
     },
-    [addUsersToResourcePool, resourcePool.id]
+    [addUsersToResourcePool, resourcePool.id],
   );
 
   const onPickUser = useCallback((user: KeycloakUser | null | undefined) => {
@@ -178,7 +178,7 @@ function AddUserToResourcePoolModal({
                 className={cx(
                   "rounded-0",
                   "rounded-start",
-                  errors.userId && "is-invalid"
+                  errors.userId && "is-invalid",
                 )}
                 disabled
                 id="addUserToResourcePoolUserDisplay"
@@ -250,7 +250,7 @@ function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
     (_event: FormEvent<HTMLElement>, { newValue }: ChangeEvent) => {
       setValue(newValue);
     },
-    []
+    [],
   );
 
   const inputProps: InputProps<KeycloakUser> = {
@@ -261,7 +261,7 @@ function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
 
   const getSuggestionValue = useCallback(
     ({ firstName, lastName }: KeycloakUser) => `${firstName} ${lastName}`,
-    []
+    [],
   );
 
   const onSuggestionsClearRequested = useCallback(() => {
@@ -272,17 +272,17 @@ function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
     ({ value }: SuggestionsFetchRequestedParams) => {
       getKeycloakUsers({ realm, search: value }, /*preferCacheValue=*/ true);
     },
-    [getKeycloakUsers, realm]
+    [getKeycloakUsers, realm],
   );
 
   const onSuggestionSelected = useCallback(
     (
       _event: FormEvent<HTMLElement>,
-      { suggestion }: SuggestionSelectedEventData<KeycloakUser>
+      { suggestion }: SuggestionSelectedEventData<KeycloakUser>,
     ) => {
       onPickUser(suggestion);
     },
-    [onPickUser]
+    [onPickUser],
   );
 
   const renderSuggestion = ({ firstName, lastName, email }: KeycloakUser) => (

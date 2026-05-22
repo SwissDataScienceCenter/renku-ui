@@ -101,7 +101,7 @@ function AddConnectedServiceModal({
         },
       });
     },
-    [createProvider]
+    [createProvider],
   );
 
   useEffect(() => {

@@ -52,7 +52,7 @@ app.use(
       if (!req.url.startsWith(config.server.prefix)) return true;
       return false;
     },
-  })
+  }),
 );
 
 logger.info("Server configuration: " + JSON.stringify(config));

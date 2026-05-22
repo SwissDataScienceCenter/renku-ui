@@ -43,8 +43,10 @@ interface RemoveProjectMemberModalProps {
 
 type ProjectMemberForRemove = ProjectMemberResponse;
 
-interface RemoveProjectMemberAccessFormProps
-  extends Pick<RemoveProjectMemberModalProps, "projectId" | "toggle"> {
+interface RemoveProjectMemberAccessFormProps extends Pick<
+  RemoveProjectMemberModalProps,
+  "projectId" | "toggle"
+> {
   member: ProjectMemberResponse;
 }
 function RemoveProjectMemberAccessForm({

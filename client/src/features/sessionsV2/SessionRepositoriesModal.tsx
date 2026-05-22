@@ -69,7 +69,7 @@ export default function SessionRepositoriesModal({
 
   const projectPermissions = useProjectPermissions({ projectId: project.id });
   const { data, error, isLoading } = useGetRepositoriesQuery(
-    project.repositories ?? []
+    project.repositories ?? [],
   );
 
   const repoWithInterruptions = useMemo(() => {
@@ -78,7 +78,8 @@ export default function SessionRepositoriesModal({
       data.filter(
         (repo) =>
           repo.error ||
-          (repo.data && shouldInterrupt(repo.data, !!projectPermissions?.write))
+          (repo.data &&
+            shouldInterrupt(repo.data, !!projectPermissions?.write)),
       ) ?? []
     );
   }, [data, isLoading, projectPermissions?.write]);
