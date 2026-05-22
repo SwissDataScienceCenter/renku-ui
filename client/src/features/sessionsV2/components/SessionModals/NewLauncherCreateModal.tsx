@@ -19,13 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckLg,
-  PlayCircle,
-  XLg,
-} from "react-bootstrap-icons";
+import { ArrowLeft, ArrowRight, CheckLg, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import {
@@ -45,44 +39,55 @@ import {
   usePostSessionLaunchersMutation as useAddSessionLauncherMutation,
   useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery,
 } from "../../api/sessionLaunchersV2.api";
-import { DEFAULT_PORT, DEFAULT_URL } from "../../session.constants";
-import { getFormattedEnvironmentValues } from "../../session.utils";
+import {
+  getFormattedEnvironmentValues,
+  getLauncherApiType,
+  getLauncherCategoryDefinition,
+  getNewLauncherFormDefaultValues,
+  isGlobalEnvironmentIncluded,
+} from "../../session.utils";
+import type { LauncherCategory } from "../../sessionsV2.types";
 import { LauncherStep, SessionLauncherForm } from "../../sessionsV2.types";
 import { EnvironmentFields } from "../SessionForm/EnvironmentField";
 import { LauncherDetailsFields } from "../SessionForm/LauncherDetailsFields";
 
 import scrollableModalStyles from "~/components/modal/ScrollableModal.module.scss";
 
-interface NewSessionLauncherModalProps {
+interface NewLauncherCreateModalProps {
   isOpen: boolean;
+  launcherCategory: LauncherCategory;
   toggle: () => void;
+  goBack: () => void;
 }
 
-export default function NewSessionLauncherModal({
+export default function NewLauncherCreateModal({
   isOpen,
+  launcherCategory,
   toggle,
-}: NewSessionLauncherModalProps) {
+  goBack,
+}: NewLauncherCreateModalProps) {
+  const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
+  const HeaderIcon = categoryDefinition.icon;
+
   const [step, setStep] = useState<LauncherStep>(LauncherStep.Environment);
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
   const { data: environments } = useGetSessionEnvironmentsQuery({});
   const [addSessionLauncher, result] = useAddSessionLauncherMutation();
   const { data: project } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
-    namespace && slug ? { namespace, slug } : skipToken,
+    namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id;
 
+  const defaultEnvironmentSelect =
+    categoryDefinition.allowedEnvironmentSelects[0];
+
+  const defaultFormValues = useMemo(
+    () => getNewLauncherFormDefaultValues(defaultEnvironmentSelect),
+    [defaultEnvironmentSelect]
+  );
+
   const useFormResult = useForm<SessionLauncherForm>({
-    defaultValues: {
-      name: "",
-      environmentSelect: "global",
-      environmentId: "",
-      container_image: "",
-      default_url: DEFAULT_URL,
-      port: DEFAULT_PORT,
-      repository: "",
-      platform: "",
-      builder_variant: "python",
-    },
+    defaultValues: defaultFormValues,
   });
   const {
     control,
@@ -127,18 +132,18 @@ export default function NewSessionLauncherModal({
 
     if (isDirty && isEnvironmentDefined && isValid)
       setStep(LauncherStep.LauncherDetails);
-  }, [isDirty, setStep, trigger, isEnvironmentDefined, isValid]);
+  }, [isDirty, isEnvironmentDefined, isValid, trigger]);
 
   const onCancel = useCallback(() => {
     setStep(LauncherStep.Environment);
-    reset();
+    reset(defaultFormValues);
     toggle();
-  }, [reset, toggle, setStep]);
+  }, [defaultFormValues, reset, toggle]);
 
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
-      const { name, resourceClass } = data;
-      const environment = getFormattedEnvironmentValues(data);
+      const { name, resourceClass, description } = data;
+      const environment = getFormattedEnvironmentValues(data, launcherCategory);
       const diskStorage =
         data.disk_storage && data.disk_storage != resourceClass.default_storage
           ? data.disk_storage
@@ -150,14 +155,13 @@ export default function NewSessionLauncherModal({
             resource_class_id: resourceClass.id,
             disk_storage: diskStorage,
             name,
-            // TODO: fix types for this session environment
-
+            description: description?.trim() ? description : undefined,
+            launcher_type: getLauncherApiType(launcherCategory),
             environment: environment.data,
-            launcher_type: "interactive",
           },
         });
     },
-    [projectId, addSessionLauncher],
+    [addSessionLauncher, launcherCategory, projectId]
   );
 
   useEffect(() => {
@@ -165,14 +169,25 @@ export default function NewSessionLauncherModal({
   }, [watchEnvironmentCustomImage, trigger]);
 
   useEffect(() => {
+    if (
+      !isGlobalEnvironmentIncluded(categoryDefinition.allowedEnvironmentSelects)
+    ) {
+      return;
+    }
     trigger(["environmentId"]);
     if (environments?.length) {
       const environmentSelected = environments.find(
-        (env) => env.id === watchEnvironmentId,
+        (env) => env.id === watchEnvironmentId
       );
       setValue("name", environmentSelected?.name ?? "");
     }
-  }, [watchEnvironmentId, setValue, environments, trigger]);
+  }, [
+    categoryDefinition.allowedEnvironmentSelects,
+    watchEnvironmentId,
+    setValue,
+    environments,
+    trigger,
+  ]);
 
   useEffect(() => {
     if (watchEnvironmentSelect === "custom + build" && watchBuilderVariant) {
@@ -181,35 +196,39 @@ export default function NewSessionLauncherModal({
         `${
           watchBuilderVariant.charAt(0).toUpperCase() +
           watchBuilderVariant.slice(1)
-        } environment`,
+        } environment`
       );
     }
   }, [watchEnvironmentSelect, watchBuilderVariant, setValue]);
 
   useEffect(() => {
+    if (
+      !isGlobalEnvironmentIncluded(categoryDefinition.allowedEnvironmentSelects)
+    ) {
+      return;
+    }
     if (environments == null) {
       return;
     }
     if (environments.length == 0) {
       setValue("environmentSelect", "custom + image");
     }
-  }, [environments, setValue]);
+  }, [categoryDefinition.allowedEnvironmentSelects, environments, setValue]);
 
   useEffect(() => {
     if (!isOpen) {
       setStep(LauncherStep.Environment);
-      reset();
+      reset(defaultFormValues);
       result.reset();
     }
-  }, [isOpen, reset, result, setStep]);
+  }, [defaultFormValues, isOpen, reset, result]);
 
-  //? NOTE: the scrollable modal breaks when we use react-select inside it
   return (
     <Modal
       backdrop="static"
       centered
       className={cx(
-        step !== LauncherStep.LauncherDetails && scrollableModalStyles.modal,
+        step !== LauncherStep.LauncherDetails && scrollableModalStyles.modal
       )}
       fullscreen="lg"
       isOpen={isOpen}
@@ -218,35 +237,33 @@ export default function NewSessionLauncherModal({
       toggle={toggle}
     >
       <ModalHeader tag="h2" toggle={toggle}>
-        <PlayCircle className={cx("bi", "me-1")} />
-        Add session launcher
+        <HeaderIcon className={cx("bi", "me-1")} />
+        Create a new launcher - {categoryDefinition.text.display}
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
-          <ConfirmationCreate />
+          <ConfirmationCreate
+            launcherCategoryTitle={categoryDefinition.text.display}
+          />
         ) : (
           <div className={cx("d-flex", "flex-column", "gap-3")}>
-            {step === "environment" && (
-              <>
-                <p className="mb-0">
-                  Define an interactive environment in which to do your work and
-                  share it with others.
-                </p>
-              </>
-            )}
             <Form noValidate onSubmit={handleSubmit(onSubmit)}>
               {result.error && <RtkOrDataServicesError error={result.error} />}
-              {step === "environment" && (
+              {step === LauncherStep.Environment && (
                 <EnvironmentFields
                   control={control}
                   errors={errors}
+                  launcherCategory={launcherCategory}
                   setValue={setValue}
                   touchedFields={touchedFields}
                   watch={watch}
                 />
               )}
-              {step === "launcherDetails" && (
-                <LauncherDetailsFields control={control} />
+              {step === LauncherStep.LauncherDetails && (
+                <LauncherDetailsFields
+                  control={control}
+                  launcherCategory={launcherCategory}
+                />
               )}
             </Form>
           </div>
@@ -261,7 +278,7 @@ export default function NewSessionLauncherModal({
           <XLg className={cx("bi", "me-1")} />
           {result.isSuccess ? "Close" : "Cancel"}
         </Button>
-        {!result.isSuccess && step == LauncherStep.LauncherDetails && (
+        {!result.isSuccess && step === LauncherStep.LauncherDetails && (
           <Button
             color="outline-primary"
             data-cy="back-environment-button"
@@ -271,7 +288,17 @@ export default function NewSessionLauncherModal({
             Back
           </Button>
         )}
-        {!result.isSuccess && step === "environment" && (
+        {!result.isSuccess && step === LauncherStep.Environment && (
+          <Button
+            color="outline-primary"
+            data-cy="back-environment-button"
+            onClick={() => goBack()}
+          >
+            <ArrowLeft className={cx("bi", "me-1")} />
+            Back
+          </Button>
+        )}
+        {!result.isSuccess && step === LauncherStep.Environment && (
           <Button
             color="primary"
             data-cy="next-session-button"
@@ -282,7 +309,7 @@ export default function NewSessionLauncherModal({
             <ArrowRight className={cx("bi", "ms-1")} />
           </Button>
         )}
-        {!result.isSuccess && step === "launcherDetails" && (
+        {!result.isSuccess && step === LauncherStep.LauncherDetails && (
           <Button
             color="primary"
             data-cy="add-session-button"
@@ -295,7 +322,7 @@ export default function NewSessionLauncherModal({
             ) : (
               <CheckLg className={cx("bi", "me-1")} />
             )}
-            Add session launcher
+            Add {categoryDefinition.text.inline} launcher
           </Button>
         )}
       </ModalFooter>
@@ -303,14 +330,20 @@ export default function NewSessionLauncherModal({
   );
 }
 
-const ConfirmationCreate = () => {
+function ConfirmationCreate({
+  launcherCategoryTitle,
+}: {
+  launcherCategoryTitle: string;
+}) {
   return (
     <SuccessAlert
       data-cy="session-launcher-creation-success"
       dismissible={false}
       timeout={0}
     >
-      <p className="mb-0">Session launcher was created successfully!</p>
+      <p className="mb-0">
+        {launcherCategoryTitle} launcher was created successfully!
+      </p>
     </SuccessAlert>
   );
-};
+}

@@ -16,6 +16,8 @@
  * limitations under the License
  */
 
+import { Gear, PlayCircle } from "react-bootstrap-icons";
+
 import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
 import faviconSVG from "../../styles/assets/favicon/Favicon.svg";
@@ -37,7 +39,11 @@ import faviconWaitingICO from "../../styles/assets/favicon/FaviconWaiting.ico";
 import faviconWaitingSVG from "../../styles/assets/favicon/FaviconWaiting.svg";
 import faviconWaiting16px from "../../styles/assets/favicon/FaviconWaiting16px.png";
 import faviconWaiting32px from "../../styles/assets/favicon/FaviconWaiting32px.png";
-import { BuilderSelectorOption } from "./sessionsV2.types";
+import type {
+  BuilderSelectorOption,
+  LauncherCategory,
+  LauncherCategoryDefinition,
+} from "./sessionsV2.types";
 
 export const DEFAULT_URL = "/";
 export const DEFAULT_PORT = 8888;
@@ -197,3 +203,32 @@ export const DEFAULT_POLLING_INTERVAL_MS = 5_000;
 export const MIN_SESSION_STORAGE_GB = 1;
 
 export const STEP_SESSION_STORAGE_GB = 1;
+
+export const LAUNCHER_OPTIONS: LauncherCategory[] = ["session", "job"];
+
+export const LAUNCHER_BY_CATEGORY: Record<
+  LauncherCategory,
+  LauncherCategoryDefinition
+> = {
+  session: {
+    apiType: "interactive",
+    text: {
+      display: "Session",
+      inline: "session",
+    },
+    icon: PlayCircle,
+    description:
+      "Create an interactive environment for coding and data exploration.",
+    allowedEnvironmentSelects: ["global", "custom + build", "custom + image"],
+  },
+  job: {
+    apiType: "non_interactive",
+    text: {
+      display: "Job",
+      inline: "job",
+    },
+    icon: Gear,
+    description: "Run a process in the background.",
+    allowedEnvironmentSelects: ["custom + build", "custom + image"],
+  },
+};

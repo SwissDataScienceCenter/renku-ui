@@ -101,7 +101,7 @@ describe("Set up project components", () => {
     cy.wait("@getSessionsV2");
     cy.wait("@sessionLaunchers");
     // ADD SESSION CUSTOM IMAGE
-    cy.getDataCy("add-session-launcher").click();
+    cy.openSessionLauncherCreateFlow();
 
     fixtures.sessionLaunchers({
       fixture: "projectV2/session-launchers.json",
@@ -154,7 +154,7 @@ describe("Set up project components", () => {
     cy.go("back");
 
     // ADD SESSION EXISTING ENVIRONMENT
-    cy.getDataCy("add-session-launcher").click();
+    cy.openSessionLauncherCreateFlow();
     fixtures.sessionLaunchers({
       fixture: "projectV2/session-launchers-global.json",
       name: "session-launchers-global",

@@ -42,8 +42,11 @@ import {
   LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE,
   LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE,
 } from "../../session.constants";
-import { prioritizeSelectedEnvironment } from "../../session.utils";
-import { SessionLauncherForm } from "../../sessionsV2.types";
+import {
+  getLauncherCategoryDefinition,
+  prioritizeSelectedEnvironment,
+} from "../../session.utils";
+import { LauncherCategory, SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 import EnvironmentKindField from "./EnvironmentKindField";
@@ -61,6 +64,7 @@ interface SessionLauncherFormContentProps {
 
 interface EditLauncherFormContentProps extends SessionLauncherFormContentProps {
   environmentId?: string;
+  launcherCategory: LauncherCategory;
 }
 export default function EditLauncherFormContent({
   control,
@@ -68,6 +72,7 @@ export default function EditLauncherFormContent({
   watch,
   touchedFields,
   environmentId,
+  launcherCategory,
 }: EditLauncherFormContentProps) {
   const watchEnvironmentSelect = watch("environmentSelect");
   const watchContainerImage = watch("container_image");
@@ -81,7 +86,7 @@ export default function EditLauncherFormContent({
   const [debouncedContainerImage, setDebouncedContainerImage] =
     useDebouncedState<string>(
       watchContainerImage ?? "",
-      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE,
+      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE
     );
   useEffect(() => {
     setDebouncedContainerImage(watchContainerImage ?? "");
@@ -94,12 +99,12 @@ export default function EditLauncherFormContent({
       debouncedContainerImage &&
       !errors.container_image
       ? { imageUrl: debouncedContainerImage }
-      : skipToken,
+      : skipToken
   );
 
   const orderedEnvironment = useMemo(
     () => prioritizeSelectedEnvironment(environments, environmentId),
-    [environments, environmentId],
+    [environments, environmentId]
   );
 
   const renderEnvironmentList = () => {
@@ -176,7 +181,7 @@ export default function EditLauncherFormContent({
                     data?.accessible === true &&
                     !isFetching &&
                     !inputModified &&
-                    "is-valid",
+                    "is-valid"
                 )}
                 data-cy="custom-image-input"
                 id="addSessionLauncherContainerImage"
@@ -216,26 +221,31 @@ export default function EditLauncherFormContent({
           )}
       </div>
 
-      <div>
-        <h4 className="fw-bold">Advanced settings</h4>
+      <div className={cx("d-flex", "flex-column", "gap-3")}>
+        {launcherCategory === "session" && (
+          <h4 className={cx("fw-bold", "mt-3", "mb-0")}>Advanced settings</h4>
+        )}
 
-        <InfoAlert dismissible={false} timeout={0}>
-          <p className="mb-0">
-            Please see the{" "}
-            <ExternalLink
-              role="text"
-              url={NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE}
-              title="documentation"
-              showLinkIcon
-              iconAfter
-            />{" "}
-            for how to complete this form to make your image run on Renkulab.
-          </p>
-        </InfoAlert>
+        {launcherCategory === "session" && (
+          <InfoAlert dismissible={false} timeout={0}>
+            <p className="mb-0">
+              Please see the{" "}
+              <ExternalLink
+                role="text"
+                url={NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE}
+                title="documentation"
+                showLinkIcon
+                iconAfter
+              />{" "}
+              for how to complete this form to make your image run on Renkulab.
+            </p>
+          </InfoAlert>
+        )}
 
         <AdvancedSettingsFields<SessionLauncherForm>
           control={control}
           errors={errors}
+          launcherCategory={launcherCategory}
         />
       </div>
     </>
@@ -243,13 +253,20 @@ export default function EditLauncherFormContent({
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <EnvironmentKindField control={control} />
+      <EnvironmentKindField
+        control={control}
+        launcherCategory={launcherCategory}
+      />
 
       {watchEnvironmentSelect === "global" && renderEnvironmentList()}
       {watchEnvironmentSelect === "custom + image" &&
         renderCustomEnvironmentFields()}
       {watchEnvironmentSelect === "custom + build" && (
-        <BuilderEnvironmentFields control={control} isEdit />
+        <BuilderEnvironmentFields
+          control={control}
+          isEdit
+          launcherCategory={launcherCategory}
+        />
       )}
     </div>
   );
@@ -258,12 +275,14 @@ export default function EditLauncherFormContent({
 export function EditLauncherFormMetadata({
   control,
   errors,
+  launcherCategory,
 }: EditLauncherFormContentProps) {
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <div>
         <Label className="form-label" for="addSessionLauncherName">
-          Session launcher name
+          {launcherDefinition.text.display} launcher name
         </Label>
         <Controller
           control={control}
@@ -284,7 +303,7 @@ export function EditLauncherFormMetadata({
       </div>
       <div>
         <Label className="form-label" for="addSessionLauncherDescription">
-          Session launcher description
+          {launcherDefinition.text.display} launcher description
           <span className={cx("text-muted", "small", "ms-2")}>(Optional)</span>
         </Label>
         <Controller
@@ -294,7 +313,7 @@ export function EditLauncherFormMetadata({
             <textarea
               className="form-control"
               id="addSessionLauncherDescription"
-              placeholder="session description"
+              placeholder={`${launcherDefinition.text.display} description`}
               rows={3}
               {...field}
             />

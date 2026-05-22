@@ -39,9 +39,9 @@ export default function SessionEnvironmentAdvancedFields({
   const toggleIsOpen = useCallback(
     () =>
       setIsAdvancedSettingsOpen(
-        (isAdvancedSettingOpen) => !isAdvancedSettingOpen,
+        (isAdvancedSettingOpen) => !isAdvancedSettingOpen
       ),
-    [],
+    []
   );
   return (
     <>
@@ -56,7 +56,7 @@ export default function SessionEnvironmentAdvancedFields({
             "fw-bold",
             "gap-1",
             "p-0",
-            "w-100",
+            "w-100"
           )}
           type="button"
           onClick={toggleIsOpen}
@@ -70,6 +70,7 @@ export default function SessionEnvironmentAdvancedFields({
             <AdvancedSettingsFields<SessionEnvironmentForm>
               control={control}
               errors={errors}
+              launcherCategory="session"
             />
           </CollapseBody>
         </Collapse>

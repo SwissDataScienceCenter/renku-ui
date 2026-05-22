@@ -19,11 +19,12 @@
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo } from "react";
-import { Gear, PlayCircle } from "react-bootstrap-icons";
+import { PlayCircle } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
+import { getLauncherCategoryDefinition } from "~/features/sessionsV2/session.utils";
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -37,24 +38,29 @@ import {
   type ImageCheckResponse,
 } from "../api/sessionsV2.api";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "../session.constants";
+import { LauncherCategory } from "../sessionsV2.types";
 import BuildLauncherButtons, {
   RebuildLauncherDropdownItem,
 } from "./BuildLauncherButtons";
+import SubmitJobLauncherAction from "./SubmitJobLauncherAction";
 
-interface SessionLauncherDefaultAction extends Pick<
-  SessionLauncherButtonsProps,
-  "hasSession" | "launcher" | "namespace" | "slug"
-> {
+interface SessionLauncherDefaultAction
+  extends Pick<
+    SessionLauncherButtonsProps,
+    "hasSession" | "launcher" | "namespace" | "slug"
+  > {
   displayBuildActions: boolean;
   displayLaunchSession: boolean;
   imageCheckData: ImageCheckResponse | undefined;
   imageCheckLoading: boolean;
+  launcherCategory: LauncherCategory;
 }
 
 function SessionLauncherDefaultAction({
   displayBuildActions,
   displayLaunchSession,
   hasSession,
+  launcherCategory,
   imageCheckData,
   imageCheckLoading,
   launcher,
@@ -81,7 +87,7 @@ function SessionLauncherDefaultAction({
       launcherId: launcher.id,
       namespace,
       slug,
-    },
+    }
   );
 
   if (imageCheckLoading)
@@ -91,7 +97,8 @@ function SessionLauncherDefaultAction({
       </Button>
     );
 
-  const launchAction = displayLaunchSession && (
+  const launchAction = !displayLaunchSession ? null : launcherCategory ===
+    "session" ? (
     <span id={`launch-btn-${launcher.id}`}>
       <Link
         className={cx(
@@ -99,7 +106,7 @@ function SessionLauncherDefaultAction({
           "btn-sm",
           hasSession ? "btn-outline-primary" : "btn-primary",
           hasSession && "disabled",
-          displayBuildActions ? "rounded-0" : "rounded-end-0",
+          displayBuildActions ? "rounded-0" : "rounded-end-0"
         )}
         to={startUrl}
         data-cy="start-session-button"
@@ -108,6 +115,10 @@ function SessionLauncherDefaultAction({
         Launch
       </Link>
     </span>
+  ) : (
+    launcherCategory === "job" && (
+      <SubmitJobLauncherAction launcher={launcher} />
+    )
   );
 
   if (displayBuildActions) {
@@ -138,7 +149,6 @@ function SessionLauncherDefaultAction({
         onClick={toggleLauncherView}
         data-cy="open-panel-button"
       >
-        <Gear className={cx("bi", "me-1")} />
         Show launcher details
       </Button>
     </span>
@@ -153,6 +163,7 @@ interface SessionLauncherButtonsProps {
   otherActions?: ReactNode;
   slug: string;
   useOldImage?: boolean;
+  launcherCategory: LauncherCategory;
 }
 export function SessionLauncherButtons({
   hasSession,
@@ -162,6 +173,7 @@ export function SessionLauncherButtons({
   otherActions,
   slug,
   useOldImage,
+  launcherCategory,
 }: SessionLauncherButtonsProps) {
   const { environment } = launcher;
   const permissions = useProjectPermissions({ projectId: launcher.project_id });
@@ -169,19 +181,19 @@ export function SessionLauncherButtons({
   const isExternalImageEnvironment =
     environment.environment_kind === "CUSTOM" &&
     environment.environment_image_source === "image";
-
+  const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
     {
       launcherId: launcher.id,
       namespace,
       slug,
-    },
+    }
   );
   const { data, isLoading } = useGetSessionsImagesQuery(
     environment.environment_kind === "CUSTOM" && environment.container_image
       ? { imageUrl: environment.container_image }
-      : skipToken,
+      : skipToken
   );
   const displayLaunchSession =
     !isCodeEnvironment ||
@@ -198,6 +210,7 @@ export function SessionLauncherButtons({
     <SessionLauncherDefaultAction
       displayBuildActions={displayBuildActions}
       displayLaunchSession={displayLaunchSession}
+      launcherCategory={launcherCategory}
       imageCheckData={data}
       imageCheckLoading={isLoading}
       hasSession={hasSession}
@@ -209,32 +222,34 @@ export function SessionLauncherButtons({
 
   const force = isExternalImageEnvironment && !isLoading && !data?.accessible;
 
-  const customizeLaunch = displayLaunchSession && (
-    <Link
-      className={cx("dropdown-item", hasSession && "disabled")}
-      to={{
-        pathname: startUrl,
-        search: new URLSearchParams({
-          [CUSTOM_LAUNCH_SEARCH_PARAM]: "1",
-        }).toString(),
-      }}
-      data-cy="start-custom-session-button"
-    >
-      <PlayCircle className={cx("bi", "me-1")} />
-      {force ? "Force custom launch" : "Custom launch"}
-    </Link>
-  );
+  const customizeLaunch = displayLaunchSession &&
+    launcherCategory === "session" && (
+      <Link
+        className={cx("dropdown-item", hasSession && "disabled")}
+        to={{
+          pathname: startUrl,
+          search: new URLSearchParams({
+            [CUSTOM_LAUNCH_SEARCH_PARAM]: "1",
+          }).toString(),
+        }}
+        data-cy="start-custom-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        {force ? "Force custom launch" : "Custom launch"}
+      </Link>
+    );
 
-  const launchAnyway = displayLaunchSession && (
-    <Link
-      className={cx("dropdown-item", hasSession && "disabled")}
-      to={startUrl}
-      data-cy="start-session-button"
-    >
-      <PlayCircle className={cx("bi", "me-1")} />
-      {force ? "Force launch" : "Launch"}
-    </Link>
-  );
+  const launchAnyway = displayLaunchSession &&
+    launcherCategory === "session" && (
+      <Link
+        className={cx("dropdown-item", hasSession && "disabled")}
+        to={startUrl}
+        data-cy="start-session-button"
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        {force ? "Force launch" : "Launch"}
+      </Link>
+    );
 
   if (!defaultAction) return null;
   return (
@@ -254,13 +269,16 @@ export function SessionLauncherButtons({
         )}
         {otherActions}
       </ButtonWithMenuV2>
-      {hasSession && displayLaunchSession && !data?.accessible === false ? (
+      {hasSession &&
+      displayLaunchSession &&
+      !!data?.accessible &&
+      launcherCategory === "session" ? (
         <UncontrolledTooltip target={`launch-btn-${launcher.id}`}>
           Cannot launch more than 1 session per session launcher.
         </UncontrolledTooltip>
       ) : useOldImage && !data?.accessible === false ? (
         <UncontrolledTooltip target={`launch-btn-${launcher.id}`}>
-          Launch session using an older image
+          Launch {categoryDefinition.text.inline} using an older image
         </UncontrolledTooltip>
       ) : null}
     </>

@@ -67,6 +67,10 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
+import {
+  getLauncherCategory,
+  getLauncherCategoryDefinitionByLauncher,
+} from "../session.utils";
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
 import StartSessionButton from "../StartSessionButton";
@@ -144,6 +148,7 @@ function SessionCardNotRunning({
   launcher: SessionLauncher;
   project: Project;
 }) {
+  const launcherCategory = getLauncherCategory(launcher);
   return (
     <SessionCardContent
       color="dark"
@@ -173,6 +178,7 @@ function SessionCardNotRunning({
             launcher={launcher}
             namespace={project.namespace}
             slug={project.slug}
+            launcherCategory={launcherCategory}
           />
         </div>
       }
@@ -184,14 +190,14 @@ function getSessionColor(state: string) {
   return state === "running"
     ? "success"
     : state === "starting"
-      ? "warning"
-      : state === "stopping"
-        ? "warning"
-        : state === "hibernated"
-          ? "dark"
-          : state === "failed"
-            ? "danger"
-            : "dark";
+    ? "warning"
+    : state === "stopping"
+    ? "warning"
+    : state === "hibernated"
+    ? "dark"
+    : state === "failed"
+    ? "danger"
+    : "dark";
 }
 
 interface SessionViewProps {
@@ -230,17 +236,20 @@ export function SessionView({
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
+  const launcherDefinition = launcher
+    ? getLauncherCategoryDefinitionByLauncher(launcher)
+    : undefined;
 
   const { data: dataConnectorLinks } =
     useGetProjectsByProjectIdDataConnectorLinksQuery({
       projectId: project.id,
     });
   const dataConnectorIds = dataConnectorLinks?.map(
-    (link) => link.data_connector_id,
+    (link) => link.data_connector_id
   );
   const { data: dataConnectorsMap } =
     useGetDataConnectorsListByDataConnectorIdsQuery(
-      dataConnectorIds ? { dataConnectorIds } : skipToken,
+      dataConnectorIds ? { dataConnectorIds } : skipToken
     );
   const dataConnectors = Object.values(dataConnectorsMap ?? {});
 
@@ -251,11 +260,13 @@ export function SessionView({
   } = useGetClassesByClassIdQuery(
     launcher?.resource_class_id
       ? { classId: `${launcher.resource_class_id}` }
-      : skipToken,
+      : skipToken
   );
 
   const totalSession = sessions ? Object.keys(sessions).length : 0;
-  const title = launcher ? launcher.name : "Orphan Session";
+  const title = launcher
+    ? launcher.name
+    : "Orphan " + launcherDefinition?.text.inline;
   const launcherMenu = launcher && (
     <SessionV2Actions
       launcher={launcher}
@@ -273,22 +284,22 @@ export function SessionView({
   const key = launcher
     ? launcher.id
     : sessions && Object.keys(sessions).length > 0
-      ? Object.keys(sessions)[0]
-      : "nn";
+    ? Object.keys(sessions)[0]
+    : "nn";
 
   const userLauncherResourcePool = useMemo(
     () =>
       resourcePools?.find((pool) =>
-        pool.classes.find((c) => c.id == launcher?.resource_class_id),
+        pool.classes.find((c) => c.id == launcher?.resource_class_id)
       ),
-    [launcher, resourcePools],
+    [launcher, resourcePools]
   );
   const userLauncherResourceClass = useMemo(
     () =>
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == launcher?.resource_class_id),
-    [launcher, resourcePools],
+    [launcher, resourcePools]
   );
 
   const resourceDetails =
@@ -336,7 +347,8 @@ export function SessionView({
               </div>
               <div className={cx("d-flex", "flex-column")}>
                 <span className={cx("small", "text-muted", "me-3")}>
-                  {launcher ? "Session launcher" : "Session without launcher"}
+                  {launcherDefinition?.text.display}
+                  {launcher ? " launcher" : " without launcher"}
                 </span>
                 <h2
                   className={cx("m-0", "text-break")}
@@ -350,7 +362,9 @@ export function SessionView({
           {description && <p className="m-0">{description}</p>}
 
           <div className={cx("d-flex", "flex-column", "gap-2")}>
-            <h3 className="mb-0">Launched Session</h3>
+            <h3 className="mb-0">
+              Launched {launcherDefinition?.text.display}
+            </h3>
             {totalSession > 0 ? (
               sessions &&
               Object.entries(sessions).map(([key, session]) => (
@@ -362,7 +376,8 @@ export function SessionView({
             ) : (
               <div>
                 <p className="mb-2">
-                  No session is running from this launcher.
+                  No {launcherDefinition?.text.inline} is running from this
+                  launcher.
                 </p>
                 {launcher && (
                   <SessionCardNotRunning
@@ -376,7 +391,9 @@ export function SessionView({
           {launcher && (
             <div>
               <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-                <h3 className="my-auto">Session Environment</h3>
+                <h3 className="my-auto">
+                  {launcherDefinition?.text.display} Environment
+                </h3>
                 <PermissionsGuard
                   disabled={null}
                   enabled={
@@ -392,7 +409,7 @@ export function SessionView({
                         <Pencil className="bi" />
                       </Button>
                       <UncontrolledTooltip target="modify-session-environment-button">
-                        Modify session environment
+                        Modify {launcherDefinition?.text.inline} environment
                       </UncontrolledTooltip>
                     </>
                   }
@@ -474,8 +491,8 @@ export function SessionView({
           <div>
             <h3>Default URL</h3>
             <p className="mb-2">
-              The default URL specifies the URL pathname on the session to go to
-              upon launch
+              The default URL specifies the URL pathname on the{" "}
+              {launcherDefinition?.text.inline} to go to upon launch
             </p>
             <div>
               {launcher && launcher.environment?.default_url ? (
@@ -553,7 +570,7 @@ export function SessionView({
                   "d-flex",
                   "align-items-center",
                   "justify-content-between",
-                  "mb-2",
+                  "mb-2"
                 )}
               >
                 <h3 className={cx("mb-0", "me-2")}>

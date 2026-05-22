@@ -25,6 +25,8 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 
+import { getLauncherCategoryDefinition } from "../../session.utils";
+import type { LauncherCategory } from "../../sessionsV2.types";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import BuilderEnvironmentFields from "./BuilderEnvironmentFields";
 import { CustomEnvironmentFields } from "./CustomEnvironmentFields";
@@ -34,6 +36,7 @@ import { GlobalEnvironmentFields } from "./GlobalEnvironmentFields";
 export interface EnvironmentFieldsProps {
   control: Control<SessionLauncherForm, unknown>;
   errors: FieldErrors<SessionLauncherForm>;
+  launcherCategory: LauncherCategory;
   setValue: UseFormSetValue<SessionLauncherForm>;
   touchedFields: Partial<
     Readonly<FieldNamesMarkedBoolean<SessionLauncherForm>>
@@ -44,21 +47,29 @@ export interface EnvironmentFieldsProps {
 export function EnvironmentFields({
   control,
   errors,
+  launcherCategory,
   setValue,
   touchedFields,
   watch,
 }: EnvironmentFieldsProps) {
   const watchEnvironmentSelect = watch("environmentSelect");
+  const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <h3 className="mb-0">1 of 2. Define environment</h3>
+      <h3 className="mb-0">
+        1 of 2. Define {categoryDefinition.text.inline} environment
+      </h3>
       <div>
-        <EnvironmentKindField control={control} />
+        <EnvironmentKindField
+          control={control}
+          launcherCategory={launcherCategory}
+        />
       </div>
       <div className={cx(watchEnvironmentSelect !== "global" && "d-none")}>
         <GlobalEnvironmentFields
           control={control}
           errors={errors}
+          launcherCategory={launcherCategory}
           setValue={setValue}
           touchedFields={touchedFields}
           watch={watch}
@@ -70,13 +81,17 @@ export function EnvironmentFields({
         <CustomEnvironmentFields
           control={control}
           errors={errors}
+          launcherCategory={launcherCategory}
           setValue={setValue}
           touchedFields={touchedFields}
           watch={watch}
         />
       </div>
       {watchEnvironmentSelect === "custom + build" && (
-        <BuilderEnvironmentFields control={control} />
+        <BuilderEnvironmentFields
+          control={control}
+          launcherCategory={launcherCategory}
+        />
       )}
     </div>
   );

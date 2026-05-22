@@ -33,9 +33,11 @@ import {
 } from "../../api/sessionLaunchersV2.api";
 import {
   getFormattedEnvironmentValuesForEdit,
+  getLauncherCategory,
+  getLauncherCategoryDefinition,
   getLauncherDefaultValues,
 } from "../../session.utils";
-import { SessionLauncherForm } from "../../sessionsV2.types";
+import { LauncherCategory, SessionLauncherForm } from "../../sessionsV2.types";
 import EditLauncherFormContent from "../SessionForm/EditLauncherFormContent";
 import { EnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
 
@@ -50,11 +52,13 @@ export default function UpdateSessionLauncherEnvironmentModal({
   launcher,
   toggle,
 }: UpdateSessionLauncherModalProps) {
+  const launcherCategory = getLauncherCategory(launcher);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   const { data: environments } = useGetSessionEnvironmentsQuery({});
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
-    [launcher],
+    [launcher]
   );
 
   const {
@@ -81,7 +85,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
           },
         });
     },
-    [launcher.id, updateSessionLauncher],
+    [launcher.id, updateSessionLauncher]
   );
 
   useEffect(() => {
@@ -121,7 +125,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
-          <ConfirmationUpdate />
+          <ConfirmationUpdate launcherCategory={launcherCategory} />
         ) : (
           <Form noValidate onSubmit={handleSubmit(onSubmit)}>
             {result.error && <RtkOrDataServicesError error={result.error} />}
@@ -131,6 +135,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
               watch={watch}
               touchedFields={touchedFields}
               environmentId={launcher.environment?.id}
+              launcherCategory={launcherCategory}
             />
           </Form>
         )}
@@ -157,7 +162,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
             ) : (
               <CheckLg className={cx("bi", "me-1")} />
             )}
-            Update session launcher
+            Update {launcherDefinition.text.inline} launcher
           </Button>
         )}
       </ModalFooter>
@@ -165,16 +170,20 @@ export default function UpdateSessionLauncherEnvironmentModal({
   );
 }
 
-const ConfirmationUpdate = () => {
+interface ConfirmationUpdateProps {
+  launcherCategory: LauncherCategory;
+}
+const ConfirmationUpdate = ({ launcherCategory }: ConfirmationUpdateProps) => {
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   return (
     <div data-cy="session-launcher-update-success">
       <SuccessAlert dismissible={false} timeout={0}>
-        <p className="fw-bold">
-          Session launcher environment updated successfully!
-        </p>
+        <p className="fw-bold">Launcher environment updated successfully!</p>
         <p className="mb-0">
-          The changes will take effect the next time you launch a session with
-          this launcher. Current sessions will not be affected.
+          The changes will take effect the next time you{" "}
+          {launcherCategory === "session" ? "launch a session" : "run a job"}{" "}
+          with this launcher. Current {launcherDefinition.text.inline}s will not
+          be affected.
         </p>
       </SuccessAlert>
     </div>

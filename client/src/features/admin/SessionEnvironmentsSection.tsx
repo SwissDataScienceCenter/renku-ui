@@ -31,7 +31,6 @@ import {
 
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
-import { ErrorLabel } from "~/components/formlabels/FormLabels";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
 import { TimeCaption } from "~/components/TimeCaption";
@@ -40,6 +39,7 @@ import type {
   EnvironmentList as SessionEnvironmentList,
 } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { useGetEnvironmentsQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
+import { EnvironmentCode } from "../sessionsV2/components/EnvironmentCode";
 import { safeStringify } from "../sessionsV2/session.utils";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
@@ -142,7 +142,7 @@ function SessionEnvironmentDisplay({
               "fw-bold",
               "gap-3",
               "p-3",
-              "w-100",
+              "w-100"
             )}
             onClick={toggle}
             type="button"
@@ -216,9 +216,4 @@ function SessionEnvironmentDisplay({
       </Card>
     </Col>
   );
-}
-
-function EnvironmentCode({ value }: { value: string | null }) {
-  if (value === null) return <ErrorLabel text={"Invalid JSON array value"} />;
-  return <code>{value}</code>;
 }

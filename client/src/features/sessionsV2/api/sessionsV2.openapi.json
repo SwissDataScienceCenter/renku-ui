@@ -320,7 +320,7 @@
       },
       "SessionType": {
         "type": "string",
-        "enum": ["interactive", "non-interactive"]
+        "enum": ["interactive", "non_interactive"]
       },
       "SessionPostRequest": {
         "properties": {

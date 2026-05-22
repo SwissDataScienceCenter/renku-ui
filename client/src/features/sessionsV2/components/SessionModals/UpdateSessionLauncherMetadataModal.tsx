@@ -32,9 +32,11 @@ import {
 } from "../../api/sessionLaunchersV2.api";
 import {
   getFormattedEnvironmentValuesForEdit,
+  getLauncherCategory,
+  getLauncherCategoryDefinition,
   getLauncherDefaultValues,
 } from "../../session.utils";
-import { SessionLauncherForm } from "../../sessionsV2.types";
+import { LauncherCategory, SessionLauncherForm } from "../../sessionsV2.types";
 import { EditLauncherFormMetadata } from "../SessionForm/EditLauncherFormContent";
 import { UpdateSessionLauncherModalProps } from "./UpdateSessionLauncherModal";
 
@@ -47,9 +49,10 @@ export default function UpdateSessionLauncherMetadataModal({
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
-    [launcher],
+    [launcher]
   );
-
+  const launcherCategory = getLauncherCategory(launcher);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   const {
     control,
     formState: { errors, isDirty, touchedFields },
@@ -74,7 +77,7 @@ export default function UpdateSessionLauncherMetadataModal({
           },
         });
     },
-    [launcher.id, updateSessionLauncher],
+    [launcher.id, updateSessionLauncher]
   );
 
   useEffect(() => {
@@ -108,11 +111,11 @@ export default function UpdateSessionLauncherMetadataModal({
     >
       <ModalHeader tag="h2" toggle={toggle}>
         <Pencil className={cx("bi", "me-1")} />
-        Edit session launcher {launcher.name}
+        Edit {launcherDefinition.text.inline} launcher {launcher.name}
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
-          <ConfirmationUpdate />
+          <ConfirmationUpdate launcherCategory={launcherCategory} />
         ) : (
           <Form noValidate onSubmit={handleSubmit(onSubmit)}>
             {result.error && <RtkOrDataServicesError error={result.error} />}
@@ -122,6 +125,7 @@ export default function UpdateSessionLauncherMetadataModal({
               watch={watch}
               touchedFields={touchedFields}
               environmentId={launcher.environment?.id}
+              launcherCategory={launcherCategory}
             />
           </Form>
         )}
@@ -148,7 +152,7 @@ export default function UpdateSessionLauncherMetadataModal({
             ) : (
               <CheckLg className={cx("bi", "me-1")} />
             )}
-            Update session launcher
+            Update {launcherDefinition.text.inline} launcher
           </Button>
         )}
       </ModalFooter>
@@ -156,16 +160,24 @@ export default function UpdateSessionLauncherMetadataModal({
   );
 }
 
-const ConfirmationUpdate = () => {
+const ConfirmationUpdate = ({
+  launcherCategory,
+}: {
+  launcherCategory: LauncherCategory;
+}) => {
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   return (
     <div data-cy="session-launcher-update-success">
       <SuccessAlert dismissible={false} timeout={0}>
         <p className="fw-bold">
-          Session launcher metadata updated successfully!
+          {launcherDefinition.text.display} launcher metadata updated
+          successfully!
         </p>
         <p className="mb-0">
-          The changes will take effect the next time you launch a session with
-          this launcher. Current sessions will not be affected.
+          The changes will take effect the next time you{" "}
+          {launcherCategory === "session" ? "launch a session" : "run a job"}{" "}
+          with this launcher. Current {launcherDefinition.text.inline}s will not
+          be affected.
         </p>
       </SuccessAlert>
     </div>

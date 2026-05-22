@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
+import { Icon } from "react-bootstrap-icons";
 
 import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
@@ -27,12 +28,37 @@ import type {
   EnvironmentPort,
   EnvironmentPost,
   EnvironmentUid,
+  LauncherType,
   SessionLauncherPost,
 } from "./api/sessionLaunchersV2.api";
 
+export interface SvgIconProps {
+  className?: string;
+  style?: CSSProperties;
+}
+
+export type LauncherCategory = "session" | "job";
+
+export type LauncherApiType = LauncherType;
+
+export type EnvironmentSelectOption =
+  | "global"
+  | "custom + image"
+  | "custom + build";
+
+export interface LauncherCategoryDefinition {
+  apiType: LauncherApiType;
+  text: {
+    display: string;
+    inline: string;
+  };
+  icon: Icon;
+  description: string;
+  allowedEnvironmentSelects: EnvironmentSelectOption[];
+}
+
 export interface SessionLauncherForm
-  extends
-    Pick<
+  extends Pick<
       SessionLauncherPost,
       "name" | "description" | "disk_storage" | "project_id"
     >,
@@ -51,7 +77,7 @@ export interface SessionLauncherForm
   resourceClass: ResourceClassWithId;
 
   // Substitute for Environment Kind and Environment Image Source in forms
-  environmentSelect: "global" | "custom + image" | "custom + build";
+  environmentSelect: EnvironmentSelectOption;
 
   // For "global" environments
   environmentId: EnvironmentId;

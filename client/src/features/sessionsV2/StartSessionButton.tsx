@@ -24,6 +24,8 @@ import { generatePath, Link } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
 import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
+import SubmitJobLauncherAction from "~/features/sessionsV2/components/SubmitJobLauncherAction";
+import { LauncherCategory } from "~/features/sessionsV2/sessionsV2.types";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ButtonWithMenuV2 } from "../../components/buttons/Button";
@@ -40,12 +42,14 @@ interface StartSessionButtonProps {
   useOldImage?: boolean;
   otherActions?: ReactNode;
   isDisabledDropdownToggle?: boolean;
+  launcherCategory: LauncherCategory;
 }
 
 export default function StartSessionButton({
   launcher,
   namespace,
   slug,
+  launcherCategory,
 }: StartSessionButtonProps) {
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
@@ -53,7 +57,7 @@ export default function StartSessionButton({
       launcherId: launcher.id,
       namespace,
       slug,
-    },
+    }
   );
   const environment = launcher?.environment;
   const isExternalImageEnvironment =
@@ -64,7 +68,7 @@ export default function StartSessionButton({
       environment.environment_kind === "CUSTOM" &&
       environment.container_image
       ? { imageUrl: environment.container_image }
-      : skipToken,
+      : skipToken
   );
   const { params } = useContext(AppContext);
   const imageBuildersEnabled =
@@ -72,11 +76,11 @@ export default function StartSessionButton({
   const { data: builds } = useGetBuildsQuery(
     imageBuildersEnabled && environment.environment_image_source === "build"
       ? { environmentId: environment.id }
-      : skipToken,
+      : skipToken
   );
 
   const hasSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded",
+    (build) => build.status === "succeeded"
   );
 
   const force = isExternalImageEnvironment && !isLoading && !data?.accessible;
@@ -88,20 +92,27 @@ export default function StartSessionButton({
 
   const launchAction = (
     <span id={`launch-btn-${launcher.id}`}>
-      <Link
-        className={cx(
-          "btn",
-          "btn-sm",
-          force ? "btn-outline-primary" : "btn-primary",
-          "rounded-end-0",
-          isLaunchButtonDisabled && "disabled",
-        )}
-        to={startUrl}
-        data-cy="start-session-button"
-      >
-        <PlayCircle className={cx("bi", "me-1")} />
-        {force ? "Force launch" : "Launch"}
-      </Link>
+      {launcherCategory === "session" ? (
+        <Link
+          className={cx(
+            "btn",
+            "btn-sm",
+            force ? "btn-outline-primary" : "btn-primary",
+            "rounded-end-0",
+            isLaunchButtonDisabled && "disabled"
+          )}
+          to={startUrl}
+          data-cy="start-session-button"
+        >
+          <PlayCircle className={cx("bi", "me-1")} />
+          {force ? "Force launch" : "Launch"}
+        </Link>
+      ) : (
+        <SubmitJobLauncherAction
+          launcher={launcher}
+          disabled={isLaunchButtonDisabled}
+        />
+      )}
       {isLaunchButtonDisabled && (
         <UncontrolledTooltip
           placement="top"
@@ -128,6 +139,7 @@ export default function StartSessionButton({
       {force ? "Force custom launch" : "Custom launch"}
     </Link>
   );
+  if (launcherCategory === "job") return launchAction;
 
   return (
     <>
