@@ -153,6 +153,7 @@ export default function NewSessionLauncherModal({
             // TODO: fix types for this session environment
 
             environment: environment.data,
+            launcher_type: "interactive",
           },
         });
     },

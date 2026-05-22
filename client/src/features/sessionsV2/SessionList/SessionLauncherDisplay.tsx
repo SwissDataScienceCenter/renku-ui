@@ -69,7 +69,7 @@ export function SessionLauncherDisplay({
     });
   }, [launcherHash, setHash]);
 
-  const { data: sessions } = useGetSessionsQueryV2();
+  const { data: sessions } = useGetSessionsQueryV2({});
 
   const filteredSessions = useMemo(
     () =>

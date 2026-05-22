@@ -33,6 +33,7 @@ export const SESSION_STATES = {
   STOPPING: "stopping",
   HIBERNATED: "hibernated",
   FAILED: "failed",
+  SUCCEEDED: "succeeded",
 } as const;
 
 export const SESSION_STYLES = {
@@ -98,6 +99,7 @@ export const SESSION_TITLE = {
   [SESSION_STATES.STOPPING]: "Shutting down my session...",
   [SESSION_STATES.HIBERNATED]: "My paused session",
   [SESSION_STATES.FAILED]: "Error in my session",
+  [SESSION_STATES.SUCCEEDED]: "Session succeeded (TBD)",
   default: "Unknown status",
 };
 
@@ -107,5 +109,6 @@ export const SESSION_TITLE_DASHBOARD = {
   [SESSION_STATES.STOPPING]: "Shutting down session...",
   [SESSION_STATES.HIBERNATED]: "Paused session",
   [SESSION_STATES.FAILED]: "Error in session",
+  [SESSION_STATES.SUCCEEDED]: "Session succeeded (TBD)",
   default: "Unknown status",
 };

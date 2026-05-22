@@ -76,7 +76,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     data: sessions,
     error: sessionsError,
     isLoading: isLoadingSessions,
-  } = useGetSessionsQueryV2();
+  } = useGetSessionsQueryV2({});
 
   const isLoading = isLoadingLaunchers || isLoadingSessions;
   const error = launchersError || sessionsError;
