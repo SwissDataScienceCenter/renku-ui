@@ -317,7 +317,11 @@ describe("Work with group data connectors", () => {
     cy.wait("@listDataConnectorProjectLinks");
     cy.wait("@readProject1");
     cy.wait("@readProject2");
-    cy.contains("user1-uuid/test-2-v2-project").should("be.visible");
+    cy.getDataCy("linked-project-list").within(() => {
+      cy.getDataCy("project-link")
+        .filter(`[href*="user1-uuid/test-2-v2-project"]`)
+        .should("exist");
+    });
   });
 
   it("add a group data connector", () => {
@@ -468,7 +472,11 @@ describe("Work with group data connectors, missing permissions", () => {
     cy.wait("@listDataConnectorProjectLinks");
     cy.wait("@readProject1");
     cy.wait("@readProject2");
-    cy.contains("user1-uuid/test-2-v2-project").should("be.visible");
+    cy.getDataCy("linked-project-list").within(() => {
+      cy.getDataCy("project-link")
+        .filter(`[href*="user1-uuid/test-2-v2-project"]`)
+        .should("exist");
+    });
   });
 
   it("add a group data connector", () => {

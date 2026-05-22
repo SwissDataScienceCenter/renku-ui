@@ -1132,26 +1132,35 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
           <span className="fst-italic">{provider.display_name}</span> Renku
           integration first.
         </p>
-        <ConnectButton
-          className="btn-sm"
-          connectionStatus={connection?.status}
-          includeSource
-          provider={provider}
-          withIcon
-        />
-        <Link
-          className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
-          to={{
-            pathname: ABSOLUTE_ROUTES.v2.integrations.root,
-            search: new URLSearchParams({
-              [SEARCH_PARAM_PROVIDER]: provider.id,
-              [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
-              [SEARCH_PARAM_ACTION_REQUIRED]: "true",
-            }).toString(),
-          }}
+        <div
+          className={cx("d-flex", "align-items-center", "flex-wrap", "gap-2")}
         >
-          Check integration
-        </Link>
+          <ConnectButton
+            className={cx("btn-sm", "flex-shrink-0")}
+            connectionStatus={connection?.status}
+            includeSource
+            provider={provider}
+            withIcon
+          />
+          <Link
+            className={cx(
+              "btn",
+              "btn-outline-primary",
+              "btn-sm",
+              "flex-shrink-0",
+            )}
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.integrations.root,
+              search: new URLSearchParams({
+                [SEARCH_PARAM_PROVIDER]: provider.id,
+                [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
+                [SEARCH_PARAM_ACTION_REQUIRED]: "true",
+              }).toString(),
+            }}
+          >
+            Check integration
+          </Link>
+        </div>
       </WarnAlert>
     );
   }
