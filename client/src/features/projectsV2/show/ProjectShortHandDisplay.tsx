@@ -95,6 +95,7 @@ export default function ProjectShortHandDisplay({
         "text-body",
         className,
       )}
+      data-cy="project-link"
       to={generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
         namespace: project.namespace,
         slug: project.slug,

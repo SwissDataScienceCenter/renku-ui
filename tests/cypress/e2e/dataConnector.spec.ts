@@ -537,9 +537,9 @@ describe("Set up data connectors with credentials in project pages", () => {
       "contain.text",
       "example storage",
     );
-    cy.getDataCy("access_key_id-value").should(
+    cy.getDataCy("data-connector-requires-credentials").should(
       "contain.text",
-      "Requires credentials",
+      "Yes",
     );
   });
 
@@ -621,7 +621,7 @@ describe("Set up data connectors with credentials in project pages", () => {
       "contain.text",
       "example storage",
     );
-    cy.getDataCy("access_key_id-value").should(
+    cy.getDataCy("data-connector-access_key_id").should(
       "contain.text",
       "Credentials saved",
     );
@@ -676,9 +676,9 @@ describe("Set up data connectors with credentials in group pages", () => {
       "contain.text",
       "private-storage-1",
     );
-    cy.getDataCy("access_key_id-value").should(
+    cy.getDataCy("data-connector-requires-credentials").should(
       "contain.text",
-      "Requires credentials",
+      "Yes",
     );
     cy.getDataCy("data-connector-view-back-button").click();
   });
@@ -880,6 +880,7 @@ describe("Set up data connectors with credentials in group pages", () => {
 
     cy.visit("/g/test-2-group-v2");
     cy.wait(["@readGroupV2", "@listDataConnectors"]);
+
     // Credentials should not yet be stored
     cy.getDataCy("data-connector-item")
       .should("be.visible")
@@ -890,7 +891,7 @@ describe("Set up data connectors with credentials in group pages", () => {
       .click()
       .then(() => {
         cy.hash().should("include", "data-connector-");
-        cy.getDataCy("data-connector-metadata-section").should("be.visible");
+        cy.getDataCy("data-connector-credentials-box").should("be.visible");
       });
 
     cy.wait("@getDataConnectorSecretsEmpty");
@@ -898,7 +899,11 @@ describe("Set up data connectors with credentials in group pages", () => {
       .first()
       .should("contain.text", "example storage");
 
-    cy.getDataCy("access_key_id-value").should(
+    cy.getDataCy("data-connector-requires-credentials").should(
+      "contain.text",
+      "Yes",
+    );
+    cy.getDataCy("data-connector-access_key_id").should(
       "contain.text",
       "Requires credentials",
     );
@@ -947,7 +952,11 @@ describe("Set up data connectors with credentials in group pages", () => {
       "contain.text",
       "example storage",
     );
-    cy.getDataCy("access_key_id-value").should(
+    cy.getDataCy("data-connector-requires-credentials").should(
+      "contain.text",
+      "Yes",
+    );
+    cy.getDataCy("data-connector-access_key_id").should(
       "contain.text",
       "Credentials saved",
     );
@@ -992,7 +1001,7 @@ describe("Set up data connectors with credentials in group pages", () => {
       "contain.text",
       "example storage",
     );
-    cy.getDataCy("access_key_id-value").should(
+    cy.getDataCy("data-connector-access_key_id").should(
       "contain.text",
       "Credentials saved",
     );
@@ -1018,9 +1027,9 @@ describe("Set up data connectors with credentials in group pages", () => {
       "contain.text",
       "example storage",
     );
-    cy.getDataCy("access_key_id-value").should(
+    cy.getDataCy("data-connector-requires-credentials").should(
       "contain.text",
-      "Requires credentials",
+      "Yes",
     );
   });
 

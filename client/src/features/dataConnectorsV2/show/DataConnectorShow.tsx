@@ -1,8 +1,10 @@
+import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import DataConnectorCredentialsBox from "../components/DataConnectorCredentialsBox";
 import DataConnectorInfoBox from "../components/DataConnectorInfoBox";
+import { DataConnectorIntegrationBox } from "../components/DataConnectorIntegrationBox";
 import DataConnectorProjectsBox from "../components/DataConnectorProjectsBox";
 
 export default function DataConnectorShow() {
@@ -10,6 +12,9 @@ export default function DataConnectorShow() {
     <Row className="g-4">
       <Col xs={12} md={8} xl={9}>
         <Row className="g-4">
+          <Col className={cx("d-block", "d-md-none")} xs={12}>
+            <DataConnectorIntegrationWrapper />
+          </Col>
           <Col xs={12}>
             <DataConnectorInformationWrapper />
           </Col>
@@ -19,7 +24,14 @@ export default function DataConnectorShow() {
         </Row>
       </Col>
       <Col xs={12} md={4} xl={3}>
-        <DataConnectorCredentialsWrapper />
+        <Row className="g-4">
+          <Col className={cx("d-none", "d-md-block")} xs={12}>
+            <DataConnectorIntegrationWrapper />
+          </Col>
+          <Col xs={12}>
+            <DataConnectorCredentialsWrapper />
+          </Col>
+        </Row>
       </Col>
     </Row>
   );
@@ -57,5 +69,17 @@ function DataConnectorProjectsBoxWrapper() {
 
   return (
     <DataConnectorProjectsBox dataConnector={dataConnector} headerTag="h2" />
+  );
+}
+
+function DataConnectorIntegrationWrapper() {
+  const ctx = useNamespaceContext();
+  const { kind } = ctx;
+  const dataConnector = ctx.kind === "dataConnector" ? ctx.dataConnector : null;
+
+  if (!ctx || kind !== "dataConnector" || !dataConnector) return null;
+
+  return (
+    <DataConnectorIntegrationBox dataConnector={dataConnector} headerTag="h2" />
   );
 }
