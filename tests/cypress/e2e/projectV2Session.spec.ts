@@ -87,7 +87,7 @@ describe("launch sessions with data connectors", () => {
       "contain.text",
       "example storage",
     );
-    cy.getDataCy("requires-credentials-section")
+    cy.getDataCy("data-connector-credentials-box")
       .contains("No")
       .should("be.visible");
     cy.getDataCy("data-connector-view-back-button").click();
@@ -151,7 +151,7 @@ describe("launch sessions with data connectors", () => {
       "contain.text",
       "example storage",
     );
-    cy.getDataCy("requires-credentials-section")
+    cy.getDataCy("data-connector-credentials-box")
       .contains("Yes")
       .should("be.visible");
     cy.getDataCy("data-connector-view-back-button").click();
@@ -505,7 +505,7 @@ describe("launch sessions with data connectors", () => {
       "contain.text",
       "example storage",
     );
-    cy.getDataCy("requires-credentials-section")
+    cy.getDataCy("data-connector-credentials-box")
       .contains("No")
       .should("be.visible");
     cy.getDataCy("data-connector-view-back-button").click();

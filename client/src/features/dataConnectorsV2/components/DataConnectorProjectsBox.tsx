@@ -29,7 +29,7 @@ export default function DataConnectorProjectsBox({
         {isLoading ? (
           <Loader />
         ) : projects.length > 0 ? (
-          <ListGroup flush data-cy="dashboard-project-list">
+          <ListGroup flush data-cy="linked-project-list">
             {projects.map((project) => (
               <ProjectShortHandDisplay
                 displayRows={["description", "namespace"]}
