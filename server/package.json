@@ -27,7 +27,7 @@
   "dependencies": {
     "@sentry/node": "^7.119.2",
     "cross-fetch": "^3.1.8",
-    "express": "^4.22.1",
+    "express": "^4.22.2",
     "express-prom-bundle": "^6.6.0",
     "http-proxy-middleware": "^2.0.9",
     "jsonwebtoken": "^9.0.1",
