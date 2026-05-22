@@ -22,7 +22,7 @@ import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
-import { DataConnectorRead } from "../api/data-connectors.api";
+import { DataConnectorRead, DepositProvider } from "../api/data-connectors.api";
 import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
 import { PROVIDER_OPTIONS } from "./deposits.constants";
@@ -50,26 +50,29 @@ export default function DepositCreationModal({
   });
   const [postDeposit, result] = usePostDepositsMutation();
 
-  // Fetch connection information for the selected provider
+  // Fetch connection information for the selected provider if necessary
   const userSelectedProvider = useWatch({
     control,
     name: "provider",
   });
-  const targetProviderString = ["zenodo"].includes(userSelectedProvider)
-    ? userSelectedProvider
-    : null;
+  const targetProviderIntegration = PROVIDER_OPTIONS.find(
+    (provider) =>
+      provider.value === userSelectedProvider && provider.integration,
+  )?.integration;
 
   const {
     data: providers,
     error: providersError,
     isLoading: isLoadingProviders,
-  } = useGetOauth2ProvidersQuery(targetProviderString ? undefined : skipToken);
+  } = useGetOauth2ProvidersQuery(
+    targetProviderIntegration ? undefined : skipToken,
+  );
 
   const targetProvider = useMemo(() => {
     return providers?.find(
-      (provider) => provider.kind === targetProviderString,
+      (provider) => provider.kind === targetProviderIntegration,
     );
-  }, [providers, targetProviderString]);
+  }, [providers, targetProviderIntegration]);
 
   const {
     data: connections,
@@ -92,7 +95,7 @@ export default function DepositCreationModal({
           data_connector_id: dataConnector?.id ?? "",
           name: data.name,
           path: data.path,
-          provider: data.provider,
+          provider: data.provider as DepositProvider, // ! Temp -- remove
         },
       });
     },
@@ -216,14 +219,16 @@ export default function DepositCreationModal({
                 Different platforms might have different
                 limitations/requirements.
               </FormText>
-              <div className="mt-1">
-                <DepositIntegrationInfo
-                  connection={targetConnection}
-                  isError={!!error}
-                  isLoading={isLoading}
-                  provider={targetProvider}
-                />
-              </div>
+              {targetProviderIntegration && (
+                <div className="mt-1">
+                  <DepositIntegrationInfo
+                    connection={targetConnection}
+                    isError={!!error}
+                    isLoading={isLoading}
+                    provider={targetProvider}
+                  />
+                </div>
+              )}
             </div>
           </FormGroup>
 
