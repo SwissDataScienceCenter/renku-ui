@@ -422,7 +422,7 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
 }
 
 function SessionsDashboard() {
-  const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
+  const { data: sessions, error, isLoading } = useGetSessionsQueryV2({});
   const totalSessions = sessions ? sessions?.length : 0;
   return (
     <Card data-cy="sessions-container">

@@ -37,10 +37,13 @@ export function useWaitForSessionStatusV2({
 }: UseWaitForSessionStatusArgs) {
   const [isWaiting, setIsWaiting] = useState(false);
 
-  const result = useGetSessionsQuery(undefined, {
-    pollingInterval,
-    skip: skip || !isWaiting,
-  });
+  const result = useGetSessionsQuery(
+    {},
+    {
+      pollingInterval,
+      skip: skip || !isWaiting,
+    },
+  );
   const session = useMemo(() => {
     if (result.data == null) {
       return undefined;
