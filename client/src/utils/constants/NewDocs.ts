@@ -107,3 +107,11 @@ export const NEW_DOCS_USER_INTEGRATIONS = newDocsLinkPage(
 export const NEW_DOCS_DATA_CONNECTORS = newDocsLinkPage("docs/users/data/data")(
   DEFAULT_NEW_DOC_LINK_ARGS,
 );
+
+export const NEW_DOCS_RENKU_EVENTS = newDocsLinkPage(
+  "docs/users/use-cases/events",
+)(DEFAULT_NEW_DOC_LINK_ARGS);
+
+export const NEW_DOCS_MARKDOWN_SYNTAX = newDocsLinkPage(
+  "docs/users/knowledge-base/writing-documentation-in-renku",
+)(DEFAULT_NEW_DOC_LINK_ARGS);
