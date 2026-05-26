@@ -39,10 +39,11 @@ import faviconWaitingICO from "../../styles/assets/favicon/FaviconWaiting.ico";
 import faviconWaitingSVG from "../../styles/assets/favicon/FaviconWaiting.svg";
 import faviconWaiting16px from "../../styles/assets/favicon/FaviconWaiting16px.png";
 import faviconWaiting32px from "../../styles/assets/favicon/FaviconWaiting32px.png";
-import type {
-  BuilderSelectorOption,
-  LauncherCategory,
-  LauncherCategoryDefinition,
+import {
+  SESSION_LAUNCHER_KIND,
+  type BuilderSelectorOption,
+  type LauncherCategory,
+  type LauncherCategoryDefinition,
 } from "./sessionsV2.types";
 
 export const DEFAULT_URL = "/";
@@ -210,6 +211,16 @@ export const MIN_SESSION_STORAGE_GB = 1;
 
 export const STEP_SESSION_STORAGE_GB = 1;
 
+/** Matches SessionPostRequest.submission_id in sessionsV2 OpenAPI. */
+export const SUBMISSION_ID_PATTERN = /^[0-9A-Za-z]{4,}$/;
+
+export const SUBMISSION_ID_VALIDATION_MESSAGE = {
+  required: "Please provide a nickname.",
+  pattern:
+    "Submission ID must be at least 4 characters and contain only letters and numbers (no spaces).",
+  taken: "This submission ID is already used for a job on this launcher.",
+};
+
 export const LAUNCHER_OPTIONS: LauncherCategory[] = ["session", "job"];
 
 export const LAUNCHER_BY_CATEGORY: Record<
@@ -217,11 +228,20 @@ export const LAUNCHER_BY_CATEGORY: Record<
   LauncherCategoryDefinition
 > = {
   session: {
-    apiType: "interactive",
+    apiType: SESSION_LAUNCHER_KIND.INTERACTIVE,
     text: {
       display: "Session",
       inline: "session",
       action: "launch",
+      state: {
+        running: "Launched",
+        starting: "Launching",
+        hibernated: "Paused",
+        hibernatedAndDelete: "Session will be deleted in",
+        failed: "Error",
+        stopping: "Stopping",
+        succeeded: "Succeeded",
+      },
     },
     icon: PlayCircle,
     description:
@@ -229,11 +249,20 @@ export const LAUNCHER_BY_CATEGORY: Record<
     allowedEnvironmentSelects: ["global", "custom + build", "custom + image"],
   },
   job: {
-    apiType: "non-interactive",
+    apiType: SESSION_LAUNCHER_KIND.NON_INTERACTIVE,
     text: {
       display: "Job",
       inline: "job",
       action: "submit",
+      state: {
+        running: "Submitted",
+        starting: "Starting",
+        hibernated: "Paused",
+        hibernatedAndDelete: "Job will be dismissed in",
+        failed: "Error",
+        stopping: "Stopping",
+        succeeded: "Completed",
+      },
     },
     icon: Gear,
     description: "Run a process in the background.",

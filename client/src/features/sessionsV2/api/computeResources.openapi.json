@@ -1723,6 +1723,9 @@
           },
           "node_affinities": {
             "$ref": "#/components/schemas/NodeAffinityList"
+          },
+          "quota_enforced": {
+            "$ref": "#/components/schemas/QuotaEnforced"
           }
         }
       },
@@ -1756,6 +1759,14 @@
           },
           "node_affinities": {
             "$ref": "#/components/schemas/NodeAffinityList"
+          },
+          "quota_enforced": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuotaEnforced"
+              }
+            ],
+            "default": false
           }
         },
         "required": [
@@ -1774,7 +1785,8 @@
           "memory": 2,
           "gpu": 0,
           "max_storage": 100,
-          "default_storage": 10
+          "default_storage": 10,
+          "quota_enforced": false
         }
       },
       "ResourceClassPatch": {
@@ -1841,6 +1853,14 @@
           },
           "id": {
             "$ref": "#/components/schemas/IntegerId"
+          },
+          "quota_enforced": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuotaEnforced"
+              }
+            ],
+            "default": false
           }
         },
         "required": [
@@ -1861,6 +1881,7 @@
           "gpu": 0,
           "max_storage": 100,
           "default_storage": 10,
+          "quota_enforced": false,
           "id": 1
         }
       },
@@ -1917,6 +1938,7 @@
             "gpu": 0,
             "max_storage": 100,
             "default_storage": 10,
+            "quota_enforced": true,
             "id": 1
           },
           {
@@ -1927,6 +1949,7 @@
             "gpu": 2,
             "max_storage": 10000,
             "default_storage": 10,
+            "quota_enforced": true,
             "id": 2
           }
         ]
@@ -1946,6 +1969,7 @@
             "gpu": 0,
             "max_storage": 100,
             "default_storage": 10,
+            "quota_enforced": true,
             "id": 1
           },
           {
@@ -1956,6 +1980,7 @@
             "gpu": 2,
             "max_storage": 10000,
             "default_storage": 10,
+            "quota_enforced": true,
             "id": 2
           }
         ]
@@ -2569,6 +2594,11 @@
         "type": "boolean",
         "description": "A default selection for resource classes or resource pools",
         "example": false
+      },
+      "QuotaEnforced": {
+        "type": "boolean",
+        "description": "Whether sessions in this resource class should be hibernated when quota is exhausted",
+        "example": true
       },
       "PublicFlag": {
         "type": "boolean",

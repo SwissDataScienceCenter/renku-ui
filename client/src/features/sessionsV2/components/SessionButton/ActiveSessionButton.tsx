@@ -57,6 +57,7 @@ import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
 } from "../../api/sessionsV2.api";
+import { sessionLauncherKindToCategory } from "../../session.utils";
 import {
   SessionResources,
   SessionStatus,
@@ -208,7 +209,7 @@ export default function ActiveSessionButton({
   const [showModalStopSession, setShowModalStopSession] = useState(false);
   const toggleStopSession = useCallback(
     () => setShowModalStopSession((show) => !show),
-    [],
+    []
   );
 
   // Handle modifying session
@@ -227,7 +228,7 @@ export default function ActiveSessionButton({
         });
       }
     },
-    [modifySession, onResumeSession, session.name, session.status.state],
+    [modifySession, onResumeSession, session.name, session.status.state]
   );
   useEffect(() => {
     if (errorModifySession) {
@@ -241,19 +242,19 @@ export default function ActiveSessionButton({
   const [showModalModifySession, setShowModalModifySession] = useState(false);
   const toggleModifySession = useCallback(
     () => setShowModalModifySession((show) => !show),
-    [],
+    []
   );
 
   const status = session.status.state;
   const failedScheduling =
     status === "failed" &&
     (!!session.status.message?.includes(
-      "The resource quota has been exceeded.",
+      "The resource quota has been exceeded."
     ) ||
       !!session.status.message?.includes(
         // TODO: fix spelling in notebooks
         // eslint-disable-next-line spellcheck/spell-checker
-        "Your session cannot be scheduled due to insufficent resources.",
+        "Your session cannot be scheduled due to insufficent resources."
       ));
 
   const buttonClassName = cx(
@@ -263,48 +264,24 @@ export default function ActiveSessionButton({
     "start-session-button",
     "py-1",
     "px-2",
-    "btn-outline-primary",
+    "btn-outline-primary"
   );
 
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+
   const defaultAction =
-    status === "stopping" || isStopping ? (
-      <Button color="primary" data-cy="stopping-btn" disabled>
-        <Loader className="me-1" inline size={16} />
-        Shutting down
-      </Button>
-    ) : isHibernating ? (
-      <Button color="primary" data-cy="stopping-btn" disabled>
-        <Loader className="me-1" inline size={16} />
-        Pausing
-      </Button>
-    ) : status === "starting" ? (
-      <Link
-        className={cx("btn", "btn-primary")}
-        data-cy="open-session"
-        to={showSessionUrl}
-      >
-        <ArrowRightCircle className={cx("bi", "me-1")} />
-        Open
-      </Link>
-    ) : status === "running" ? (
-      <>
-        <Button
-          color="outline-primary"
-          className={buttonClassName}
-          data-cy={
-            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
-          }
-          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
-        >
-          {isUserLoggedIn ? (
-            <span className="align-self-start">
-              <PauseCircle className={cx("bi", "me-1")} />
-            </span>
-          ) : (
-            <Trash className={cx("bi", "me-1")} />
-          )}
-          {isUserLoggedIn ? "Pause" : "Delete"}
+    launcherCategory === "session" ? (
+      status === "stopping" || isStopping ? (
+        <Button color="primary" data-cy="stopping-btn" disabled>
+          <Loader className="me-1" inline size={16} />
+          Shutting down
         </Button>
+      ) : isHibernating ? (
+        <Button color="primary" data-cy="stopping-btn" disabled>
+          <Loader className="me-1" inline size={16} />
+          Pausing
+        </Button>
+      ) : status === "starting" ? (
         <Link
           className={cx("btn", "btn-primary")}
           data-cy="open-session"
@@ -313,74 +290,184 @@ export default function ActiveSessionButton({
           <ArrowRightCircle className={cx("bi", "me-1")} />
           Open
         </Link>
-      </>
-    ) : status === "hibernated" ? (
-      <Button
-        color="primary"
-        data-cy="resume-session-button"
-        disabled={isResuming}
-        onClick={onResumeSession}
-      >
-        {isResuming ? (
-          <>
-            <Loader className="me-1" inline size={16} />
-            Resuming
-          </>
-        ) : (
-          <>
-            <PlayFill className={cx("bi", "me-1")} />
-            Resume
-          </>
-        )}
-      </Button>
-    ) : failedScheduling ? (
-      <>
+      ) : status === "running" ? (
+        <>
+          <Button
+            color="outline-primary"
+            className={buttonClassName}
+            data-cy={
+              isUserLoggedIn ? "pause-session-button" : "delete-session-button"
+            }
+            onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
+          >
+            {isUserLoggedIn ? (
+              <span className="align-self-start">
+                <PauseCircle className={cx("bi", "me-1")} />
+              </span>
+            ) : (
+              <Trash className={cx("bi", "me-1")} />
+            )}
+            {isUserLoggedIn ? "Pause" : "Delete"}
+          </Button>
+          <Link
+            className={cx("btn", "btn-primary")}
+            data-cy="open-session"
+            to={showSessionUrl}
+          >
+            <ArrowRightCircle className={cx("bi", "me-1")} />
+            Open
+          </Link>
+        </>
+      ) : status === "hibernated" ? (
+        <Button
+          color="primary"
+          data-cy="resume-session-button"
+          disabled={isResuming}
+          onClick={onResumeSession}
+        >
+          {isResuming ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Resuming
+            </>
+          ) : (
+            <>
+              <PlayFill className={cx("bi", "me-1")} />
+              Resume
+            </>
+          )}
+        </Button>
+      ) : failedScheduling ? (
+        <>
+          <Button
+            color="outline-primary"
+            data-cy="show-logs-session-button"
+            onClick={toggleLogsModal}
+          >
+            <FileEarmarkText className={cx("bi", "me-1")} />
+            Get logs
+          </Button>
+          <Button
+            color="primary"
+            className={buttonClassName}
+            data-cy="modify-session-button"
+            onClick={toggleModifySession}
+          >
+            <Tools className={cx("bi", "me-1")} />
+            Modify
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            color="outline-primary"
+            data-cy={"show-logs-session-button"}
+            onClick={toggleLogsModal}
+          >
+            <FileEarmarkText className={cx("bi", "me-1")} />
+            Get logs
+          </Button>
+          <Button
+            color="primary"
+            data-cy={
+              isUserLoggedIn ? "pause-session-button" : "delete-session-button"
+            }
+            onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
+          >
+            {isUserLoggedIn ? (
+              <span className="align-self-start">
+                <PauseCircle className={cx("bi", "me-1")} />
+              </span>
+            ) : (
+              <Trash className={cx("bi", "me-1")} />
+            )}
+            {isUserLoggedIn ? "Pause" : "Delete"}
+          </Button>
+        </>
+      )
+    ) : launcherCategory === "job" ? (
+      status === "stopping" || isStopping ? (
+        <Button color="primary" data-cy="stopping-btn" disabled>
+          <Loader className="me-1" inline size={16} />
+          Dismissing job
+        </Button>
+      ) : isHibernating ? (
+        <Button color="primary" data-cy="stopping-btn" disabled>
+          <Loader className="me-1" inline size={16} />
+          Pausing
+        </Button>
+      ) : status === "starting" ? (
+        <>
+          <Button
+            color="outline-primary"
+            data-cy="show-logs-session-button"
+            onClick={toggleLogsModal}
+          >
+            <FileEarmarkText className={cx("bi", "me-1")} />
+            Logs
+          </Button>
+        </>
+      ) : status === "running" ? (
         <Button
           color="outline-primary"
           data-cy="show-logs-session-button"
           onClick={toggleLogsModal}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
-          Get logs
+          Logs
         </Button>
+      ) : status === "hibernated" ? (
         <Button
           color="primary"
-          className={buttonClassName}
-          data-cy="modify-session-button"
-          onClick={toggleModifySession}
+          data-cy="resume-session-button"
+          disabled={isResuming}
+          onClick={onResumeSession}
         >
-          <Tools className={cx("bi", "me-1")} />
-          Modify
+          {isResuming ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Resuming
+            </>
+          ) : (
+            <>
+              <PlayFill className={cx("bi", "me-1")} />
+              Resume
+            </>
+          )}
         </Button>
-      </>
-    ) : (
-      <>
+      ) : failedScheduling ? (
+        <>
+          <Button
+            color="outline-primary"
+            data-cy="show-logs-session-button"
+            onClick={toggleLogsModal}
+          >
+            <FileEarmarkText className={cx("bi", "me-1")} />
+            Get logs
+          </Button>
+        </>
+      ) : status === "succeeded" ? (
         <Button
           color="outline-primary"
-          data-cy={"show-logs-session-button"}
+          data-cy="show-logs-session-button"
           onClick={toggleLogsModal}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
-          Get logs
+          Logs
         </Button>
-        <Button
-          color="primary"
-          data-cy={
-            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
-          }
-          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
-        >
-          {isUserLoggedIn ? (
-            <span className="align-self-start">
-              <PauseCircle className={cx("bi", "me-1")} />
-            </span>
-          ) : (
-            <Trash className={cx("bi", "me-1")} />
-          )}
-          {isUserLoggedIn ? "Pause" : "Delete"}
-        </Button>
-      </>
-    );
+      ) : (
+        <>
+          <Button
+            color="outline-primary"
+            data-cy={"show-logs-session-button"}
+            onClick={toggleLogsModal}
+          >
+            <FileEarmarkText className={cx("bi", "me-1")} />
+            Get logs
+          </Button>
+        </>
+      )
+    ) : null;
 
   const hibernateAction = status !== "stopping" &&
     (status !== "failed" || failedScheduling) &&
@@ -404,6 +491,13 @@ export default function ActiveSessionButton({
     >
       <Trash className={cx("bi", "me-1")} />
       Shut down session
+    </DropdownItem>
+  );
+
+  const dismissAction = launcherCategory === "job" && (
+    <DropdownItem data-cy="delete-session-button" onClick={onStopSession}>
+      <XLg className={cx("bi", "me-1")} />
+      Dismiss job
     </DropdownItem>
   );
 
@@ -434,6 +528,27 @@ export default function ActiveSessionButton({
       Get logs
     </DropdownItem>
   );
+
+  if (launcherCategory === "job") {
+    return (
+      <div className={cx("d-flex", "flex-row", "gap-2")}>
+        <ButtonWithMenuV2
+          className={cx(className)}
+          color={"outline-primary"}
+          default={defaultAction}
+          preventPropagation
+          size="sm"
+        >
+          {dismissAction}
+        </ButtonWithMenuV2>
+        <SessionLogsModal
+          isOpen={showLogsModal}
+          sessionName={session.name}
+          toggle={toggleLogsModal}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2")}>
@@ -617,7 +732,7 @@ function ModifySessionModalContent({
         toggleModal();
       };
     },
-    [currentSessionClass, onModifySession, toggleModal],
+    [currentSessionClass, onModifySession, toggleModal]
   );
 
   useEffect(() => {

@@ -17,35 +17,49 @@
  */
 
 import cx from "classnames";
+import { useCallback, useState } from "react";
 import { Send } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import SubmitJobModal from "./SessionModals/SubmitJobModal";
 
 interface SubmitJobLauncherActionProps {
   launcher: SessionLauncher;
   disabled?: boolean;
 }
 
-// TODO: implement action when submit a job
 export default function SubmitJobLauncherAction({
+  launcher,
   disabled,
 }: SubmitJobLauncherActionProps) {
+  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
+
+  const toggleSubmit = useCallback(() => {
+    setIsSubmitOpen((open) => !open);
+  }, []);
+
   return (
     <>
       <Button
         className="text-nowrap"
         color="primary"
         data-cy="submit-job-button"
+        disabled={disabled}
         onClick={(event) => {
           event.stopPropagation();
+          toggleSubmit();
         }}
         size="sm"
-        disabled={disabled}
       >
         <Send className={cx("bi", "me-1")} />
         Submit
       </Button>
+      <SubmitJobModal
+        isOpen={isSubmitOpen}
+        launcher={launcher}
+        toggle={toggleSubmit}
+      />
     </>
   );
 }

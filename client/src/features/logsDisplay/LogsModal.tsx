@@ -100,10 +100,13 @@ export default function LogsModal({
               "fs-4",
               "fst-italic",
               "mb-0",
-              getSessionStatusStyles({
-                status: { state: sessionState },
-                image: "url",
-              })["textColorCard"],
+              getSessionStatusStyles(
+                {
+                  status: { state: sessionState },
+                  image: "url",
+                },
+                "session"
+              )["textColorCard"]
             )}
           >
             Session status: {sessionState}
@@ -217,7 +220,7 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
   }, [data, defaultTab]);
 
   const [activeTab, setActiveTab] = useState<string>(
-    sortedLogs.at(0)?.tab ?? "",
+    sortedLogs.at(0)?.tab ?? ""
   );
 
   const preRef = useRef<HTMLPreElement>(null);
@@ -301,7 +304,7 @@ function ModalFooterButtons({
   const [isDownloading, triggerDownload] = useDownloadLogs(
     name,
     refetch,
-    downloadQueryTrigger,
+    downloadQueryTrigger
   );
   const canDownload =
     !isFetching &&
@@ -350,7 +353,7 @@ function ModalFooterButtons({
 function useDownloadLogs(
   name: string,
   refetch: LogsQuery["refetch"],
-  downloadQueryTrigger: DownloadLogsLazyQueryTrigger | undefined | null,
+  downloadQueryTrigger: DownloadLogsLazyQueryTrigger | undefined | null
 ): [boolean, () => void] {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 

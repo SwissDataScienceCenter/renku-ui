@@ -369,6 +369,7 @@ export default function SessionLauncherCard({
                   key={`session-item-${session.name}`}
                   project={project}
                   session={session}
+                  launcherCategory={launcherCategory}
                 />
               ))}
           </div>

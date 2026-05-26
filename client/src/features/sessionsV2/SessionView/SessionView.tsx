@@ -77,9 +77,10 @@ import { DEFAULT_URL } from "../session.constants";
 import {
   getLauncherCategory,
   getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
 } from "../session.utils";
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
-import { SessionV2 } from "../sessionsV2.types";
+import { LauncherCategory, SessionV2 } from "../sessionsV2.types";
 import StartSessionButton from "../StartSessionButton";
 import EnvironmentItem from "./EnvironmentItem";
 import EnvVariablesCard from "./EnvVariablesCard";
@@ -128,9 +129,10 @@ function SessionCard({
   session: SessionV2;
   project: Project;
 }) {
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   return (
     <SessionCardContent
-      color={getSessionColor(session.status.state)}
+      color={getSessionColor(session.status.state, launcherCategory)}
       contentDescription={<SessionStatusV2Description session={session} />}
       contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
@@ -193,17 +195,21 @@ function SessionCardNotRunning({
   );
 }
 
-function getSessionColor(state: string) {
+function getSessionColor(state: string, launcherCategory?: LauncherCategory) {
   return state === "running"
     ? "success"
-    : state === "starting"
+    : state === "starting" && launcherCategory === "session"
     ? "warning"
+    : state === "starting" && launcherCategory === "job"
+    ? "info"
     : state === "stopping"
     ? "warning"
     : state === "hibernated"
     ? "dark"
     : state === "failed"
     ? "danger"
+    : state === "succeeded"
+    ? "success"
     : "dark";
 }
 

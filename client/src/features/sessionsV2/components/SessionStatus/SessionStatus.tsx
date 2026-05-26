@@ -23,7 +23,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode, useRef } from "react";
-import { CircleFill, Clock, Hourglass } from "react-bootstrap-icons";
+import { CircleFill, Clock, Hourglass, Icon } from "react-bootstrap-icons";
 import {
   Badge,
   PopoverBody,
@@ -31,16 +31,27 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 
+import {
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
+} from "~/features/sessionsV2/session.utils";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
+  JOB_TITLE,
+  JOB_TITLE_DASHBOARD,
   SESSION_STATES,
   SESSION_STYLES,
   SESSION_TITLE,
   SESSION_TITLE_DASHBOARD,
 } from "../../SessionStyles.constants";
-import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
+import {
+  LauncherCategory,
+  SessionLauncherKind,
+  SessionStatus,
+  SessionV2,
+} from "../../sessionsV2.types";
 
 interface PrettySessionErrorMessageProps {
   message: string | null | undefined;
@@ -115,6 +126,7 @@ export function SessionBadge({
 interface ActiveSessionV2Props {
   session: SessionV2;
   variant?: "card" | "list";
+  includeIcon?: boolean;
 }
 interface ActiveSessionDescV2Props extends ActiveSessionV2Props {
   showInfoDetails?: boolean;
@@ -126,26 +138,54 @@ interface ActiveSessionTitleV2Props {
 export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
   const { status, image } = session;
   const state = status.state;
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   const badge =
     state === "running" && !image ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
         <CircleFill className={cx("bi", "me-1", "text-warning-emphasis")} />
-        <span className="text-warning-emphasis">Running Session</span>
+        <span className="text-warning-emphasis">
+          Running {launcherDefinition.text.display}
+        </span>
       </SessionBadge>
     ) : state === "running" ? (
       <SessionBadge className={cx("border-success", "bg-success-subtle")}>
         <CircleFill className={cx("bi", "me-1", "text-success-emphasis")} />
-        <span className="text-success-emphasis">Running Session</span>
+        <span className="text-success-emphasis">
+          Running {launcherDefinition.text.display}
+        </span>
       </SessionBadge>
-    ) : state === "starting" ? (
+    ) : state === "starting" && launcherCategory === "session" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
         <Loader
           size={12}
           className={cx("me-1", "text-warning-emphasis")}
           inline
         />
-        <span className="text-warning-emphasis">Launching Session</span>
+        <span className="text-warning-emphasis">
+          {launcherDefinition.text.state.starting}{" "}
+          {launcherDefinition.text.display}
+        </span>
+      </SessionBadge>
+    ) : state === "starting" && launcherCategory === "job" ? (
+      <SessionBadge className={cx("border-success", "bg-success-subtle")}>
+        <Loader
+          size={12}
+          className={cx("me-1", "text-success-emphasis")}
+          inline
+        />
+        <span className="text-success-emphasis">
+          {launcherDefinition.text.state.starting}{" "}
+          {launcherDefinition.text.display}
+        </span>
+      </SessionBadge>
+    ) : state === "succeeded" ? (
+      <SessionBadge className={cx("border-success", "bg-success-subtle")}>
+        <CircleFill className={cx("bi", "me-1", "text-success-emphasis")} />
+        <span className="text-success-emphasis">
+          Completed {launcherDefinition.text.display}
+        </span>
       </SessionBadge>
     ) : state === "stopping" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
@@ -154,12 +194,16 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
           className={cx("me-1", "text-warning-emphasis")}
           inline
         />
-        <span className="text-warning-emphasis">Shutting down session</span>
+        <span className="text-warning-emphasis">
+          Shutting down {launcherDefinition.text.display}
+        </span>
       </SessionBadge>
     ) : state === "hibernated" ? (
       <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
         <CircleFill className={cx("bi", "me-1", "text-light-emphasis")} />
-        <span className="text-dark-emphasis">Paused Session</span>
+        <span className="text-dark-emphasis">
+          Paused {launcherDefinition.text.display}
+        </span>
       </SessionBadge>
     ) : state === "failed" ? (
       <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
@@ -167,7 +211,9 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
           className={cx("bi", "me-1", "text-danger-emphasis")}
           fontSize={16}
         />
-        <span className="text-danger-emphasis">Error in Session</span>
+        <span className="text-danger-emphasis">
+          Error in {launcherDefinition.text.display}
+        </span>
       </SessionBadge>
     ) : (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
@@ -191,12 +237,16 @@ interface SessionStatusStyles {
   borderColor: string;
   sessionLine: string;
   sessionIcon: string;
+  jobIcon: Icon;
 }
 
-export function getSessionStatusStyles(session: {
-  status: { state: string };
-  image?: string;
-}): SessionStatusStyles {
+export function getSessionStatusStyles(
+  session: {
+    status: { state: string };
+    image?: string;
+  },
+  launcherCategory: LauncherCategory
+): SessionStatusStyles {
   const { status, image } = session;
   const state = status.state;
 
@@ -204,11 +254,16 @@ export function getSessionStatusStyles(session: {
     return image ? SESSION_STYLES.SUCCESS : SESSION_STYLES.WARNING;
   }
 
+  if (state === SESSION_STATES.STARTING && launcherCategory === "job") {
+    return SESSION_STYLES.RUNNING_JOB;
+  }
+
   const stateStyleMap: Record<string, SessionStatusStyles> = {
     [SESSION_STATES.STARTING]: SESSION_STYLES.WARNING,
     [SESSION_STATES.STOPPING]: SESSION_STYLES.STOPPING,
     [SESSION_STATES.HIBERNATED]: SESSION_STYLES.HIBERNATED,
     [SESSION_STATES.FAILED]: SESSION_STYLES.FAILED,
+    [SESSION_STATES.SUCCEEDED]: SESSION_STYLES.SUCCESS,
   };
 
   return stateStyleMap[state] ?? SESSION_STYLES.DEFAULT;
@@ -217,9 +272,11 @@ export function getSessionStatusStyles(session: {
 export function SessionStatusV2Label({
   session,
   variant = "card",
+  includeIcon = false,
 }: ActiveSessionV2Props) {
   const { status, image } = session;
-  const styles = getSessionStatusStyles({ status, image });
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const styles = getSessionStatusStyles({ status, image }, launcherCategory);
 
   const getStatusMessage = (
     state:
@@ -230,21 +287,40 @@ export function SessionStatusV2Label({
       | "hibernated"
       | "succeeded",
     variant?: "card" | "list",
+    sessionType?: SessionLauncherKind
   ) => {
+    const launcherCategory = sessionType
+      ? sessionLauncherKindToCategory(sessionType)
+      : "session";
     return variant === "list"
-      ? SESSION_TITLE_DASHBOARD[state]
-      : SESSION_TITLE[state];
+      ? launcherCategory === "session"
+        ? SESSION_TITLE_DASHBOARD[state]
+        : JOB_TITLE_DASHBOARD[state]
+      : launcherCategory === "session"
+      ? SESSION_TITLE[state]
+      : JOB_TITLE[state];
   };
 
+  const JobIcon = styles.jobIcon as Icon;
+  const animationIcon = { animation: "spin 2s linear infinite" };
+  // todo: should apply for running and no starting
+  const isRunningJob =
+    status.state === SESSION_STATES.STARTING && launcherCategory === "job";
   return (
     <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
       <div className={cx("fs-4", "fw-bold")}>
+        {includeIcon && (
+          <JobIcon
+            style={isRunningJob ? animationIcon : undefined}
+            className={cx("bi", "me-1")}
+          />
+        )}
         <span
           className={
             variant === "list" ? styles.textColorList : styles.textColorCard
           }
         >
-          {getStatusMessage(status.state, variant)}
+          {getStatusMessage(status.state, variant, session.session_type)}
         </span>
       </div>
     </div>
@@ -255,7 +331,8 @@ export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
 }: ActiveSessionDescV2Props) {
-  const { started, status } = session;
+  const { started, status, session_type } = session;
+  const launcherCategory = sessionLauncherKindToCategory(session_type);
   return (
     <div
       className={cx(
@@ -263,11 +340,15 @@ export function SessionStatusV2Description({
         "d-flex",
         "flex-row",
         "gap-2",
-        "align-items-center",
+        "align-items-center"
       )}
     >
       {started && (
-        <SessionStatusV2Text startTimestamp={started} status={status} />
+        <SessionStatusV2Text
+          startTimestamp={started}
+          status={status}
+          launcherCategory={launcherCategory}
+        />
       )}
       {showInfoDetails && (
         <SessionListRowStatusExtraDetailsV2 status={status} />
@@ -334,54 +415,64 @@ export function SessionStatusV2Title({
 }: ActiveSessionTitleV2Props) {
   const { status } = session;
   const state = status.state;
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   const text =
     state === "running" && !launcher
-      ? "You are currently running a orphan session"
+      ? `You are currently running a orphan ${launcherDefinition.text.inline}`
       : state === "running"
-        ? "You are currently running a session from this launcher"
-        : state === "starting"
-          ? "You are currently starting a session from this launcher"
-          : state === "stopping"
-            ? "You are currently deleting a session from this launcher"
-            : state === "hibernated"
-              ? "You have a paused session from this launcher"
-              : state === "failed"
-                ? "An error was encountered while attempting to launch this session."
-                : null;
+      ? `You are currently running a ${launcherDefinition.text.inline} from this launcher`
+      : state === "starting"
+      ? `You are currently starting a ${launcherDefinition.text.inline} from this launcher`
+      : state === "stopping"
+      ? `You are currently deleting a ${launcherDefinition.text.inline} from this launcher`
+      : state === "hibernated"
+      ? `You have a paused ${launcherDefinition.text.inline} from this launcher`
+      : state === "failed"
+      ? `An error was encountered while attempting to launch this ${launcherDefinition.text.inline}.`
+      : null;
 
   return text ? <p className={cx("fst-italic", "mb-2")}>{text}</p> : null;
 }
 interface SessionStatusV2TextProps {
   startTimestamp: string;
   status: SessionStatus;
+  launcherCategory: LauncherCategory;
 }
 function SessionStatusV2Text({
   startTimestamp,
   status,
+  launcherCategory,
 }: SessionStatusV2TextProps) {
   const { state, will_hibernate_at, will_delete_at } = status;
+  const launcherCategoryDefinition =
+    getLauncherCategoryDefinition(launcherCategory);
   const startTimeText = (
     <TimeCaption datetime={startTimestamp} enableTooltip noCaption />
   );
   const hibernationTimestamp =
-    state === "hibernated" ? (will_hibernate_at ?? "") : null;
+    state === "hibernated" ? will_hibernate_at ?? "" : null;
 
   return state === "running" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock fontSize={16} className="flex-shrink-0" />
-      <span>Launched {startTimeText}</span>
+      <span>
+        {launcherCategoryDefinition.text.state.running} {startTimeText}
+      </span>
     </div>
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock fontSize={16} className="flex-shrink-0" />
-      <span>Launching since {startTimeText}</span>
+      <span>
+        {launcherCategoryDefinition.text.state.starting} since {startTimeText}
+      </span>
     </div>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Hourglass fontSize={16} className="flex-shrink-0" />
       <span>
-        Session will be deleted in{" "}
+        {launcherCategoryDefinition.text.state.hibernatedAndDelete}{" "}
         <TimeCaption
           datetime={will_delete_at}
           enableTooltip
@@ -394,7 +485,7 @@ function SessionStatusV2Text({
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock fontSize={16} className="flex-shrink-0" />
       <span>
-        Paused
+        {launcherCategoryDefinition.text.state.hibernated}{" "}
         <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />
       </span>
     </div>
@@ -402,7 +493,7 @@ function SessionStatusV2Text({
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock fontSize={16} className="flex-shrink-0" />
       <span>
-        Paused
+        {launcherCategoryDefinition.text.state.hibernated}{" "}
         <MissingHibernationInfo />
       </span>
     </div>
@@ -410,7 +501,8 @@ function SessionStatusV2Text({
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       <Clock fontSize={16} className="flex-shrink-0" />
       <span>
-        Error {"("}created {startTimeText}
+        {launcherCategoryDefinition.text.state.failed} {"("}created{" "}
+        {startTimeText}
         {")"}
       </span>
     </div>
