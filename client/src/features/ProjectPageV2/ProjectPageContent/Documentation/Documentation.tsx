@@ -326,7 +326,8 @@ function MarkdownHelp() {
   return (
     <div>
       <ExternalLink role="text" url={NEW_DOCS_MARKDOWN_SYNTAX}>
-        <Markdown className="me-1" /> Markdown supported
+        <Markdown className="me-1" />
+        Markdown supported
       </ExternalLink>
     </div>
   );
