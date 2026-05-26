@@ -29,8 +29,6 @@ const Links = {
   RENKU_2_ADMIN_HOW_TO_GUIDE_INCIDENTS:
     "https://docs.renkulab.io/en/0.70.0/how-to-guides/admin/incidents-maintenance.html",
   RENKU_2_LEARN_MORE: "https://blog.renkulab.io/early-access",
-  RENKU_2_EVENTS:
-    "https://renku.notion.site/Renku-for-Events-18c0df2efafc800bb26ae93333b4318d",
   RENKU_2_SUNSET: "https://blog.renkulab.io/sunsetting-legacy/",
   RENKU_2_REGISTER_REDIRECT:
     "https://www.notion.so/renku/2540df2efafc80c5ac36c6ecf6a375a0?v=2540df2efafc80b1ae2b000cee3e5a3c#2540df2efafc80c5ac36c6ecf6a375a0",

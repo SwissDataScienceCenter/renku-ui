@@ -32,6 +32,7 @@ import {
 } from "reactstrap";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { NEW_DOCS_MARKDOWN_SYNTAX } from "~/utils/constants/NewDocs";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
@@ -324,11 +325,8 @@ function DocumentationWordCount({
 function MarkdownHelp() {
   return (
     <div>
-      <ExternalLink
-        role="text"
-        url="https://www.notion.so/renku/Writing-Documentation-in-Renku-Renku-s-Markdown-1a70df2efafc80329211c493917ff6e4"
-      >
-        <Markdown className="bi me-1" /> Markdown supported
+      <ExternalLink role="text" url={NEW_DOCS_MARKDOWN_SYNTAX}>
+        <Markdown className="me-1" /> Markdown supported
       </ExternalLink>
     </div>
   );
