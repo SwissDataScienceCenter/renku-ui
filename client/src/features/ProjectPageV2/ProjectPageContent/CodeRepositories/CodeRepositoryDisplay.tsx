@@ -51,6 +51,8 @@ import {
 import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import ExternalLink from "~/components/ExternalLink";
+import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
+import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
   useGetOauth2ProvidersQuery,
@@ -602,33 +604,16 @@ function RepositoryView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="code-repository-details">
-        <div className="mb-3">
-          <button
-            aria-label="Close"
-            className="btn-close"
-            data-bs-dismiss="offcanvas"
-            onClick={toggleDetails}
-          ></button>
-        </div>
+        <OffcanvasTopButtons
+          entityType="code-repository"
+          toggleView={toggleDetails}
+        />
 
         <div>
           <div className="mb-4">
-            <div>
-              <div className={cx("float-end", "mt-1", "ms-1")}>
-                <CodeRepositoryActions project={project} url={repositoryUrl} />
-              </div>
-              <div className={cx("d-flex", "flex-column")}>
-                <span className={cx("small", "text-muted", "me-3")}>
-                  Code repository
-                </span>
-                <h2
-                  className={cx("m-0", "text-break")}
-                  data-cy="code-repository-title"
-                >
-                  {title}
-                </h2>
-              </div>
-            </div>
+            <OffcanvasHeaderWithType entityType="code-repository" title={title}>
+              <CodeRepositoryActions project={project} url={repositoryUrl} />
+            </OffcanvasHeaderWithType>
           </div>
 
           {isLoading ? (
