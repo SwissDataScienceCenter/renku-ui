@@ -320,7 +320,7 @@
       },
       "SessionType": {
         "type": "string",
-        "enum": ["interactive", "non_interactive"]
+        "enum": ["interactive", "non-interactive"]
       },
       "SessionPostRequest": {
         "properties": {
@@ -334,6 +334,12 @@
           "resource_class_id": {
             "nullable": true,
             "type": "integer"
+          },
+          "submission_id": {
+            "nullable": true,
+            "type": "string",
+            "pattern": "^[0-9A-Za-z]{4,}$",
+            "description": "When submitting a job, i.e. the launcher used is a job\nlauncher, the submission id is required to deduplicate\nsame job submissions and allows retries.\n"
           },
           "data_connectors_overrides": {
             "$ref": "#/components/schemas/SessionDataConnectorsOverrideList"
@@ -380,6 +386,13 @@
           },
           "resource_class_id": {
             "type": "integer"
+          },
+          "session_type": {
+            "$ref": "#/components/schemas/SessionType"
+          },
+          "submission_id": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
@@ -391,7 +404,8 @@
           "url",
           "project_id",
           "launcher_id",
-          "resource_class_id"
+          "resource_class_id",
+          "session_type"
         ],
         "type": "object"
       },

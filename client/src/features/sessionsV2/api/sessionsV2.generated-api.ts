@@ -12,9 +12,7 @@ const injectedRtkApi = api.injectEndpoints({
     getSessions: build.query<GetSessionsApiResponse, GetSessionsApiArg>({
       query: (queryArg) => ({
         url: `/sessions`,
-        params: {
-          session_type: queryArg.sessionType,
-        },
+        params: { session_type: queryArg.sessionType },
       }),
     }),
     getSessionsBySessionId: build.query<
@@ -48,9 +46,7 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/sessions/${queryArg.sessionId}/logs`,
-        params: {
-          max_lines: queryArg.maxLines,
-        },
+        params: { max_lines: queryArg.maxLines },
       }),
     }),
     getSessionsImages: build.query<
@@ -59,9 +55,7 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/sessions/images`,
-        params: {
-          image_url: queryArg.imageUrl,
-        },
+        params: { image_url: queryArg.imageUrl },
       }),
     }),
   }),
@@ -86,7 +80,8 @@ export type GetSessionsBySessionIdApiArg = {
   /** The id of the session */
   sessionId: string;
 };
-export type DeleteSessionsBySessionIdApiResponse = unknown;
+export type DeleteSessionsBySessionIdApiResponse =
+  /** status 204 The session was deleted or it never existed in the first place */ void;
 export type DeleteSessionsBySessionIdApiArg = {
   /** The id of the session that should be deleted */
   sessionId: string;
@@ -141,6 +136,7 @@ export type SessionStatus = {
   total_containers: number;
 };
 export type Ulid = string;
+export type SessionType = "interactive" | "non-interactive";
 export type SessionResponse = {
   image: string;
   name: ServerName;
@@ -152,6 +148,8 @@ export type SessionResponse = {
   project_id: Ulid;
   launcher_id: Ulid;
   resource_class_id: number;
+  session_type: SessionType;
+  submission_id?: string | null;
 };
 export type ErrorResponse = {
   error: {
@@ -188,11 +186,15 @@ export type SessionPostRequest = {
   /** The size of disk storage for the session, in gigabytes */
   disk_storage?: number;
   resource_class_id?: number | null;
+  /** When submitting a job, i.e. the launcher used is a job
+    launcher, the submission id is required to deduplicate
+    same job submissions and allows retries.
+     */
+  submission_id?: string | null;
   data_connectors_overrides?: SessionDataConnectorsOverrideList;
   env_variable_overrides?: EnvVariableOverrides;
 };
 export type SessionListResponse = SessionResponse[];
-export type SessionType = "interactive" | "non-interactive";
 export type CurrentTime = "now";
 export type SessionPatchRequest = {
   resource_class_id?: number;

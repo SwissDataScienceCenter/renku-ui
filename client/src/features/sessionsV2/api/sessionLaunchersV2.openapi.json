@@ -870,7 +870,7 @@
       },
       "LauncherType": {
         "type": "string",
-        "enum": ["interactive", "non_interactive"]
+        "enum": ["interactive", "non-interactive"]
       },
       "SessionLaunchersList": {
         "description": "A list of Renku session launchers",
@@ -1192,7 +1192,7 @@
         "description": "A container image",
         "type": "string",
         "maxLength": 500,
-        "pattern": "^[a-z0-9]+((\\.|_|__|-+)[a-z0-9]+)*(\\/[a-z0-9]+((\\.|_|__|-+)[a-z0-9]+)*)*(:[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}|@sha256:[a-fA-F0-9]{64}){0,1}$",
+        "minLength": 3,
         "example": "renku/renkulab-py:3.10-0.18.1"
       },
       "Repository": {
