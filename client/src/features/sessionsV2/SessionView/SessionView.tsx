@@ -42,6 +42,8 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
+import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -264,12 +266,8 @@ export function SessionView({
       toggleUpdateEnvironment={toggleUpdateEnvironment ?? undefined}
     />
   );
-  const description =
-    launcher && launcher.description ? (
-      launcher.description
-    ) : (
-      <i>No description</i>
-    );
+  const description = launcher?.description;
+
   const key = launcher
     ? launcher.id
     : sessions && Object.keys(sessions).length > 0
@@ -318,35 +316,22 @@ export function SessionView({
       backdrop={true}
     >
       <OffcanvasBody>
-        <div className="mb-3">
-          <button
-            aria-label="Close"
-            className="btn-close"
-            data-cy="get-back-session-view"
-            data-bs-dismiss="offcanvas"
-            onClick={setToggleSessionView}
-          ></button>
-        </div>
+        <OffcanvasTopButtons
+          entityType="session-launcher"
+          toggleView={setToggleSessionView}
+        />
 
-        <div className={cx("d-flex", "flex-column", "gap-4")}>
-          <div>
-            <div>
-              <div className={cx("float-end", "mt-1", "ms-1")}>
-                {launcherMenu}
-              </div>
-              <div className={cx("d-flex", "flex-column")}>
-                <span className={cx("small", "text-muted", "me-3")}>
-                  {launcher ? "Session launcher" : "Session without launcher"}
-                </span>
-                <h2
-                  className={cx("m-0", "text-break")}
-                  data-cy="session-view-title"
-                >
-                  {title}
-                </h2>
-              </div>
-            </div>
-          </div>
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
+          <OffcanvasHeaderWithType
+            entityName={
+              launcher ? "Session launcher" : "Session without launcher"
+            }
+            entityType="session-launcher"
+            title={title}
+          >
+            {launcherMenu}
+          </OffcanvasHeaderWithType>
+
           {description && <p className="m-0">{description}</p>}
 
           <div className={cx("d-flex", "flex-column", "gap-2")}>
