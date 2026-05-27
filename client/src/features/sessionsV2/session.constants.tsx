@@ -222,7 +222,7 @@ export const LAUNCHER_BY_CATEGORY: Record<
     allowedEnvironmentSelects: ["global", "custom + build", "custom + image"],
   },
   job: {
-    apiType: "non_interactive",
+    apiType: "non-interactive",
     text: {
       display: "Job",
       inline: "job",

@@ -67,7 +67,7 @@ export function getLauncherApiType(category: LauncherCategory): LauncherType {
 }
 
 export function isJobLauncher(launcher: SessionLauncher): boolean {
-  return launcher.launcher_type === "non_interactive";
+  return launcher.launcher_type === "non-interactive";
 }
 
 export function isGlobalEnvironmentIncluded(environmentsSelect: string[]) {
