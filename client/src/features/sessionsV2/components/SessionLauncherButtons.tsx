@@ -117,7 +117,9 @@ function SessionLauncherDefaultAction({
     </span>
   ) : (
     launcherCategory === "job" && (
-      <SubmitJobLauncherAction launcher={launcher} />
+      <span id={`launch-btn-${launcher.id}`}>
+        <SubmitJobLauncherAction launcher={launcher} />
+      </span>
     )
   );
 

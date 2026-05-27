@@ -69,7 +69,7 @@ import {
 import { DEFAULT_URL } from "../session.constants";
 import {
   getLauncherCategory,
-  getLauncherCategoryDefinitionByLauncher,
+  getLauncherCategoryDefinition,
 } from "../session.utils";
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
@@ -236,8 +236,9 @@ export function SessionView({
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
-  const launcherDefinition = launcher
-    ? getLauncherCategoryDefinitionByLauncher(launcher)
+  const launcherCategory = launcher && getLauncherCategory(launcher);
+  const launcherDefinition = launcherCategory
+    ? getLauncherCategoryDefinition(launcherCategory)
     : undefined;
 
   const { data: dataConnectorLinks } =
@@ -477,13 +478,14 @@ export function SessionView({
                   {launcherResourceClass.max_storage} GB).
                 </p>
               )}
-            {launcher && (
+            {launcher && launcherCategory && (
               <ModifyResourcesLauncherModal
                 isOpen={isModifyResourcesOpen}
                 toggleModal={toggleModifyResources}
                 resourceClassId={userLauncherResourceClass?.id}
                 diskStorage={launcher.disk_storage}
                 sessionLauncherId={launcher.id}
+                launcherCategory={launcherCategory}
               />
             )}
           </div>

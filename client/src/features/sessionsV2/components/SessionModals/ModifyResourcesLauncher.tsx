@@ -35,6 +35,8 @@ import {
 
 import { SuccessAlert } from "~/components/Alert";
 import { Loader } from "~/components/Loader";
+import { getLauncherCategoryDefinition } from "~/features/sessionsV2/session.utils";
+import { LauncherCategory } from "~/features/sessionsV2/sessionsV2.types";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
@@ -56,6 +58,7 @@ interface ModifyResourcesLauncherModalProps {
   resourceClassId?: number;
   diskStorage?: number;
   sessionLauncherId: string;
+  launcherCategory: LauncherCategory;
 }
 
 export function ModifyResourcesLauncherModal({
@@ -64,6 +67,7 @@ export function ModifyResourcesLauncherModal({
   toggleModal,
   resourceClassId,
   diskStorage,
+  launcherCategory,
 }: ModifyResourcesLauncherModalProps) {
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const {
@@ -101,11 +105,11 @@ export function ModifyResourcesLauncherModal({
         });
       }
     },
-    [sessionLauncherId, updateSessionLauncher],
+    [sessionLauncherId, updateSessionLauncher]
   );
   const onSubmit = useMemo(
     () => handleSubmit(onSubmitInner),
-    [handleSubmit, onSubmitInner],
+    [handleSubmit, onSubmitInner]
   );
 
   useEffect(() => {
@@ -133,6 +137,7 @@ export function ModifyResourcesLauncherModal({
   // eslint-disable-next-line react-hooks/incompatible-library
   const watchCurrentSessionClass = watch("resourceClass");
   const watchCurrentDiskStorage = watch("diskStorage");
+  const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   const selector = isLoadingResources ? (
     <FetchingResourcePools />
@@ -189,16 +194,26 @@ export function ModifyResourcesLauncherModal({
               Default resource class updated
             </h3>
             <p className="mb-0">
-              The session launcher’s default resource class has been changed.
-              This change will apply the next time you launch a new session.
+              The {categoryDefinition.text.inline} launcher’s default resource
+              class has been changed. This change will apply the next time you{" "}
+              {categoryDefinition.text.action} a new session.
             </p>
           </SuccessAlert>
         )}
         <p>
           These changes will apply the{" "}
-          <strong>next time you launch a new session</strong>. If you wish to
-          modify a currently running session, pause it and select ‘Modify
-          session’ in the session options.
+          <strong>
+            next time you {categoryDefinition.text.action} a new{" "}
+            {categoryDefinition.text.inline}
+          </strong>
+          .
+          {launcherCategory === "session" && (
+            <span>
+              {" "}
+              If you wish to modify a currently running session, pause it and
+              select ‘Modify session’ in the session options.
+            </span>
+          )}
         </p>
         <div className="field-group">{selector}</div>
         {watchCurrentSessionClass && (

@@ -51,6 +51,7 @@ export interface LauncherCategoryDefinition {
   text: {
     display: string;
     inline: string;
+    action: string;
   };
   icon: Icon;
   description: string;

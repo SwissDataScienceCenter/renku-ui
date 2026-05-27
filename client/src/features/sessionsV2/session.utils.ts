@@ -280,7 +280,8 @@ export function getFormattedEnvironmentValues(
  *   - `error`: If `success` is false, contains a string describing the error (e.g., "Invalid command or args format").
  */
 export function getFormattedEnvironmentValuesForEdit(
-  data: SessionLauncherForm
+  data: SessionLauncherForm,
+  launcherCategory: LauncherCategory
 ): {
   success: boolean;
   data?: SessionLauncherEnvironmentPatchParams;
@@ -288,17 +289,19 @@ export function getFormattedEnvironmentValuesForEdit(
 } {
   const { environmentSelect } = data;
 
+  const result = getFormattedEnvironmentValues(data);
+  if (!result.success) {
+    return result;
+  }
+  const commandParsed = safeParseJSONStringArray(data.command);
+  const argsParsed = safeParseJSONStringArray(data.args);
+
   if (
     environmentSelect === "global" ||
     environmentSelect === "custom + image"
   ) {
-    const result = getFormattedEnvironmentValues(data);
-    if (!result.success) {
-      return result;
-    }
     const { data: environment } = result;
-    const commandParsed = safeParseJSONStringArray(data.command);
-    const argsParsed = safeParseJSONStringArray(data.args);
+
     return {
       ...result,
       data: {
@@ -336,6 +339,12 @@ export function getFormattedEnvironmentValuesForEdit(
         repository_revision: repository_revision ?? "",
         context_dir: context_dir ?? "",
         platforms: [platform],
+        ...(launcherCategory === "job" && commandParsed.data
+          ? { job_command: commandParsed.data }
+          : {}),
+        ...(launcherCategory === "job" && argsParsed.data
+          ? { job_args: argsParsed.data }
+          : {}),
       },
     },
   };

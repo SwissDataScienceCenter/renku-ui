@@ -74,7 +74,10 @@ export default function UpdateSessionLauncherEnvironmentModal({
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
       const { description, name } = data;
-      const environment = getFormattedEnvironmentValuesForEdit(data);
+      const environment = getFormattedEnvironmentValuesForEdit(
+        data,
+        launcherCategory
+      );
       if (environment.success && environment.data)
         updateSessionLauncher({
           launcherId: launcher.id,

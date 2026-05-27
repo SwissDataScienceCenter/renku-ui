@@ -66,7 +66,10 @@ export default function UpdateSessionLauncherMetadataModal({
   const onSubmit = useCallback(
     (data: SessionLauncherForm) => {
       const { description, name } = data;
-      const environment = getFormattedEnvironmentValuesForEdit(data);
+      const environment = getFormattedEnvironmentValuesForEdit(
+        data,
+        launcherCategory
+      );
       if (environment.success && environment.data)
         updateSessionLauncher({
           launcherId: launcher.id,
@@ -77,7 +80,7 @@ export default function UpdateSessionLauncherMetadataModal({
           },
         });
     },
-    [launcher.id, updateSessionLauncher]
+    [launcher.id, launcherCategory, updateSessionLauncher]
   );
 
   useEffect(() => {

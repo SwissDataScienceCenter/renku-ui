@@ -215,6 +215,7 @@ export const LAUNCHER_BY_CATEGORY: Record<
     text: {
       display: "Session",
       inline: "session",
+      action: "launch",
     },
     icon: PlayCircle,
     description:
@@ -226,6 +227,7 @@ export const LAUNCHER_BY_CATEGORY: Record<
     text: {
       display: "Job",
       inline: "job",
+      action: "submit",
     },
     icon: Gear,
     description: "Run a process in the background.",
