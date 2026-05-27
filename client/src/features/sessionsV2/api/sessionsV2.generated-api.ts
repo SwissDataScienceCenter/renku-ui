@@ -193,6 +193,7 @@ export type SessionPostRequest = {
   submission_id?: string | null;
   data_connectors_overrides?: SessionDataConnectorsOverrideList;
   env_variable_overrides?: EnvVariableOverrides;
+  job_args_override?: string[] | null;
 };
 export type SessionListResponse = SessionResponse[];
 export type CurrentTime = "now";

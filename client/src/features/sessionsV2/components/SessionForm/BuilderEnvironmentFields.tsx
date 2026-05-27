@@ -122,38 +122,72 @@ export default function BuilderEnvironmentFields({
         <BuilderFrontendSelector name="frontend_variant" control={control} />
       )}
       {launcherCategory === "job" && (
-        <div>
-          <Label className="form-label" for="addSessionLauncherJobCommand">
-            Job command
-          </Label>
-          <Controller
-            control={control}
-            name="command"
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <textarea
-                  className={cx("w-100 form-control", error && "is-invalid")}
-                  data-cy="job-command-input"
-                  id="addSessionLauncherJobCommand"
-                  placeholder='["npm", "run", "build"]'
-                  rows={2}
-                  {...field}
-                />
-                {error && (
-                  <div className="invalid-feedback mt-0 d-block">
-                    {error.message}
-                  </div>
-                )}
-              </>
-            )}
-            rules={{
-              validate: (value) => isValidJSONStringArray(value?.toString()),
-            }}
-          />
-          <FormText>
-            Command to run when submitting a job (JSON array format).
-          </FormText>
-        </div>
+        <>
+          <div>
+            <Label className="form-label" for="addSessionLauncherJobCommand">
+              Job command
+            </Label>
+            <Controller
+              control={control}
+              name="command"
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <textarea
+                    className={cx("w-100 form-control", error && "is-invalid")}
+                    data-cy="job-command-input"
+                    id="addSessionLauncherJobCommand"
+                    placeholder='["npm", "run", "build"]'
+                    rows={2}
+                    {...field}
+                  />
+                  {error && (
+                    <div className="invalid-feedback mt-0 d-block">
+                      {error.message}
+                    </div>
+                  )}
+                </>
+              )}
+              rules={{
+                validate: (value) => isValidJSONStringArray(value?.toString()),
+              }}
+            />
+            <FormText>
+              Enter the command that will run as a job (JSON array format).
+            </FormText>
+          </div>
+          <div>
+            <Label className="form-label" for="addSessionLauncherJobArgs">
+              Job args
+            </Label>
+            <Controller
+              control={control}
+              name="args"
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <textarea
+                    className={cx("w-100 form-control", error && "is-invalid")}
+                    data-cy="job-command-input"
+                    id="addSessionLauncherJobArgs"
+                    placeholder='["npm", "run", "build"]'
+                    rows={2}
+                    {...field}
+                  />
+                  {error && (
+                    <div className="invalid-feedback mt-0 d-block">
+                      {error.message}
+                    </div>
+                  )}
+                </>
+              )}
+              rules={{
+                validate: (value) => isValidJSONStringArray(value?.toString()),
+              }}
+            />
+            <FormText>
+              Enter the command args that will run as a job (JSON array format).
+            </FormText>
+          </div>{" "}
+        </>
       )}
       {launcherCategory === "session" && (
         <BuilderAdvancedSettings control={control} />

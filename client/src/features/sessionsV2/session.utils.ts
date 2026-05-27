@@ -223,8 +223,23 @@ export function getFormattedEnvironmentValues(
       if (!commandFormatted.parsed) {
         return { success: false, error: "Invalid job command format" };
       }
+      if (launcherCategory === "job") {
+        if (commandFormatted.data == null || !commandFormatted.data)
+          return { success: false, error: "Job command can't be empty" };
+        buildPayload.job_command = commandFormatted.data;
+      }
     }
-    //TODO: pending to add job command
+    if (launcherCategory === "job" && args?.trim()) {
+      const argsFormatted = safeParseJSONStringArray(args);
+      if (!argsFormatted.parsed) {
+        return { success: false, error: "Invalid job args format" };
+      }
+      if (launcherCategory === "job") {
+        if (argsFormatted.data == null || !argsFormatted.data)
+          return { success: false, error: "Job args can't be empty" };
+        buildPayload.job_args = argsFormatted.data;
+      }
+    }
     return { success: true, data: buildPayload };
   }
 
