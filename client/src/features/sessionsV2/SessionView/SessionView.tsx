@@ -20,6 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
+  Box2,
   Braces,
   CircleFill,
   Clock,
@@ -382,7 +383,7 @@ export function SessionView({
                   )}
                 >
                   <h3 className="mb-0">
-                    <PlayCircle className="me-1" />
+                    <Box2 className="me-1" />
                     Session Environment
                   </h3>
                   <PermissionsGuard
