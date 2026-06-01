@@ -350,6 +350,7 @@ export type EnvVar = {
   value?: string;
 };
 export type EnvVariables = EnvVar[];
+export type LauncherType = "interactive" | "non_interactive";
 export type SessionLauncher = {
   id: Ulid;
   project_id: Ulid;
@@ -360,6 +361,7 @@ export type SessionLauncher = {
   resource_class_id: ResourceClassId;
   disk_storage?: DiskStorage;
   env_variables?: EnvVariables;
+  launcher_type: LauncherType;
 };
 export type SessionLaunchersList = SessionLauncher[];
 export type EnvironmentPostInLauncherHelper = EnvironmentPost & {
@@ -382,6 +384,7 @@ export type SessionLauncherPost = {
   resource_class_id?: ResourceClassId;
   disk_storage?: DiskStorage;
   env_variables?: EnvVariables;
+  launcher_type: LauncherType;
   environment: EnvironmentPostInLauncher | EnvironmentIdOnlyPost;
 };
 export type DiskStoragePatch = number | null;

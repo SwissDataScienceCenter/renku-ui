@@ -45,7 +45,7 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
     sessionServersEmptyV2(args?: NameOnlyFixture) {
       const { name = "sessionServersEmptyV2" } = args ?? {};
       const response = { body: [] };
-      cy.intercept("GET", "/api/data/sessions", response).as(name);
+      cy.intercept("GET", "/api/data/sessions?*", response).as(name);
       return this;
     }
   };

@@ -53,6 +53,18 @@
       },
       "get": {
         "summary": "Get a list of all sessions for a user",
+        "parameters": [
+          {
+            "description": "Filter by session mode.",
+            "in": "query",
+            "name": "session_type",
+            "required": false,
+            "default": "interactive",
+            "schema": {
+              "$ref": "#/components/schemas/SessionType"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Information about the sessions",
@@ -306,6 +318,10 @@
         },
         "required": ["error"]
       },
+      "SessionType": {
+        "type": "string",
+        "enum": ["interactive", "non-interactive"]
+      },
       "SessionPostRequest": {
         "properties": {
           "launcher_id": {
@@ -417,7 +433,14 @@
             "type": "string"
           },
           "state": {
-            "enum": ["running", "starting", "stopping", "failed", "hibernated"],
+            "enum": [
+              "running",
+              "starting",
+              "stopping",
+              "failed",
+              "hibernated",
+              "succeeded"
+            ],
             "type": "string"
           },
           "will_hibernate_at": {

@@ -222,7 +222,13 @@ export function SessionStatusV2Label({
   const styles = getSessionStatusStyles({ status, image });
 
   const getStatusMessage = (
-    state: "running" | "starting" | "stopping" | "failed" | "hibernated",
+    state:
+      | "running"
+      | "starting"
+      | "stopping"
+      | "failed"
+      | "hibernated"
+      | "succeeded",
     variant?: "card" | "list",
   ) => {
     return variant === "list"

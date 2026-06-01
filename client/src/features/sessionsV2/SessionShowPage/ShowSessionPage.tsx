@@ -108,7 +108,7 @@ export default function ShowSessionPage() {
     data: sessions,
     isLoading,
     isFetching,
-  } = useGetSessionsQuery(undefined, { refetchOnMountOrArgChange: true });
+  } = useGetSessionsQuery({}, { refetchOnMountOrArgChange: true });
 
   const thisSession = useMemo(() => {
     if (sessions == null) {
