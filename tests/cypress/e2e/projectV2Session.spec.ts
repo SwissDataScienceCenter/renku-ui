@@ -90,7 +90,7 @@ describe("launch sessions with data connectors", () => {
     cy.getDataCy("data-connector-credentials-box")
       .contains("No")
       .should("be.visible");
-    cy.getDataCy("data-connector-view-back-button").click();
+    cy.getDataCy("data-connector-close-offcanvas-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")
@@ -154,7 +154,7 @@ describe("launch sessions with data connectors", () => {
     cy.getDataCy("data-connector-credentials-box")
       .contains("Yes")
       .should("be.visible");
-    cy.getDataCy("data-connector-view-back-button").click();
+    cy.getDataCy("data-connector-close-offcanvas-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")
@@ -508,7 +508,7 @@ describe("launch sessions with data connectors", () => {
     cy.getDataCy("data-connector-credentials-box")
       .contains("No")
       .should("be.visible");
-    cy.getDataCy("data-connector-view-back-button").click();
+    cy.getDataCy("data-connector-close-offcanvas-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")

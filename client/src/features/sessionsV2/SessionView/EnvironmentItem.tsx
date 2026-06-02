@@ -21,7 +21,7 @@ import cx from "classnames";
 import { ReactNode, useContext, useEffect, useMemo } from "react";
 import { CircleFill, Clock, Plugin, Send } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
-import { Badge, Card, CardBody, Col, Row } from "reactstrap";
+import { Badge, Col, ListGroupItem, Row } from "reactstrap";
 
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
@@ -50,7 +50,7 @@ import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { getLauncherCategory, safeStringify } from "../session.utils";
 
-export default function EnvironmentCard({
+export default function EnvironmentItem({
   launcher,
 }: {
   launcher: SessionLauncher;
@@ -76,78 +76,76 @@ export default function EnvironmentCard({
 
   return (
     <>
-      <Card className={cx("border")}>
-        <CardBody className={cx("d-flex", "flex-column")}>
-          <Row>
-            <Col
-              xs={12}
-              className={cx(
-                "d-flex",
-                "flex-wrap",
-                "flex-sm-nowrap",
-                "align-items-start",
-                "justify-content-between",
-                "pb-2",
-                "gap-2"
-              )}
-            >
-              <h5 className={cx("fw-bold", "mb-0", "text-break")}>
-                <small>{cardName}</small>
-              </h5>
-              {buildActions}
-            </Col>
-            <EnvironmentRow>
-              {environment.environment_kind === "GLOBAL" ? (
-                <>
-                  <EnvironmentIcon type="global" />
-                  Global environment
-                </>
-              ) : environment.environment_image_source === "build" ? (
-                <>
-                  <EnvironmentIcon type="codeBased" size={16} />
-                  Code based environment
-                </>
-              ) : (
-                <>
-                  <EnvironmentIcon type="custom" size={16} />
-                  External image environment
-                </>
-              )}
-            </EnvironmentRow>
-            {environment_kind === "GLOBAL" && (
+      <ListGroupItem className={cx("d-flex", "flex-column")}>
+        <Row>
+          <Col
+            xs={12}
+            className={cx(
+              "d-flex",
+              "flex-wrap",
+              "flex-sm-nowrap",
+              "align-items-start",
+              "justify-content-between",
+              "pb-2",
+              "gap-2"
+            )}
+          >
+            <h4 className={cx("fw-semibold", "mb-0", "text-break")}>
+              {cardName}
+            </h4>
+            {buildActions}
+          </Col>
+          <EnvironmentRow>
+            {environment.environment_kind === "GLOBAL" ? (
               <>
-                <GlobalEnvironmentSessionImageBadge launcher={launcher} />
-                <EnvironmentRow>
-                  {environment?.description ? (
-                    <p className={cx("text-truncate", "text-wrap")}>
-                      {environment.description}
-                    </p>
-                  ) : (
-                    <p className={cx("fst-italic", "mb-0")}>No description</p>
-                  )}
-                </EnvironmentRow>
-                <EnvironmentRowWithLabel
-                  label="Container image"
-                  value={environment?.container_image || ""}
-                />
-                <EnvironmentRow>
-                  <Clock fontSize={16} className="flex-shrink-0" />
-                  Created by <strong>Renku</strong> on{" "}
-                  {toHumanDateTime({
-                    datetime: launcher.creation_date,
-                    format: "date",
-                  })}
-                </EnvironmentRow>
+                <EnvironmentIcon type="global" />
+                Global environment
+              </>
+            ) : environment.environment_image_source === "build" ? (
+              <>
+                <EnvironmentIcon type="codeBased" size={16} />
+                Code based environment
+              </>
+            ) : (
+              <>
+                <EnvironmentIcon type="custom" size={16} />
+                External image environment
               </>
             )}
-            {environment_kind === "CUSTOM" && (
-              <>
-                <CustomEnvironmentValues launcher={launcher} />
-              </>
-            )}
-          </Row>
-        </CardBody>
-      </Card>
+          </EnvironmentRow>
+          {environment_kind === "GLOBAL" && (
+            <>
+              <GlobalEnvironmentSessionImageBadge launcher={launcher} />
+              <EnvironmentRow>
+                {environment?.description ? (
+                  <p className={cx("mb-0", "text-truncate", "text-wrap")}>
+                    {environment.description}
+                  </p>
+                ) : (
+                  <p className={cx("fst-italic", "mb-0")}>No description</p>
+                )}
+              </EnvironmentRow>
+              <EnvironmentRowWithLabel
+                label="Container image"
+                value={environment?.container_image || ""}
+              />
+              <EnvironmentRow>
+                <Clock className="flex-shrink-0" />
+                Created by <strong>Renku</strong> on{" "}
+                {toHumanDateTime({
+                  datetime: launcher.creation_date,
+                  format: "date",
+                })}
+              </EnvironmentRow>
+            </>
+          )}
+          {environment_kind === "CUSTOM" && (
+            <>
+              <CustomEnvironmentValues launcher={launcher} />
+            </>
+          )}
+        </Row>
+      </ListGroupItem>
     </>
   );
 }

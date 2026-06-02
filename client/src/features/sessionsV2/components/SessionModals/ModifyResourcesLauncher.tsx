@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, Cpu, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -179,6 +179,7 @@ export function ModifyResourcesLauncherModal({
         toggle={toggleModal}
         data-cy="set-resource-class-header"
       >
+        <Cpu className="me-1" />
         Set default resource class
       </ModalHeader>
       <ModalBody>
