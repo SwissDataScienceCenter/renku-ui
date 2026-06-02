@@ -2,6 +2,7 @@ import cx from "classnames";
 import {
   Database,
   FileCode,
+  Folder,
   PlayCircle,
   QuestionCircle,
 } from "react-bootstrap-icons";
@@ -31,6 +32,8 @@ export default function OffcanvasHeaderWithType({
     <PlayCircle className="me-1" />
   ) : entityType === "code-repository" ? (
     <FileCode className="me-1" />
+  ) : entityType === "project" ? (
+    <Folder className="me-1" />
   ) : (
     <QuestionCircle className="me-1" />
   );
@@ -43,7 +46,9 @@ export default function OffcanvasHeaderWithType({
         ? "Session launcher"
         : entityType === "code-repository"
           ? "Code repository"
-          : "Unknown";
+          : entityType === "project"
+            ? "Project"
+            : "Unknown";
 
   return (
     <div>

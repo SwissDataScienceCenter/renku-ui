@@ -105,13 +105,13 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
 }
 
 interface ProjectInformationProps {
-  output?: "plain" | "card";
+  headerTag?: "h2" | "h3" | "h4";
+  project: Project;
 }
 export default function ProjectInformation({
-  output = "plain",
+  headerTag = "h2",
+  project,
 }: ProjectInformationProps) {
-  const { project } = useProject();
-
   const permissions = useProjectPermissions({ projectId: project.id });
 
   const { data: members } = useGetProjectsByProjectIdMembersQuery({
@@ -208,29 +208,28 @@ export default function ProjectInformation({
       <ProjectCopyTemplateInformationBox project={project} />
     </div>
   );
-  return output === "plain" ? (
-    information
-  ) : (
-    <Card data-cy="project-info-card">
-      <CardHeader>
-        <div
-          className={cx(
-            "align-items-center",
-            "d-flex",
-            "justify-content-between",
-          )}
-        >
-          <h2 className="m-0">
-            <InfoCircle className={cx("me-1", "bi")} />
-            Info
-          </h2>
 
-          <div>
-            <ProjectInformationButton
-              userPermissions={permissions}
-              project={project}
-            />
-          </div>
+  const Header = headerTag;
+  return (
+    <Card data-cy="project-info-card">
+      <CardHeader
+        className={cx(
+          "align-items-center",
+          "d-flex",
+          "justify-content-between",
+        )}
+        tag="div"
+      >
+        <Header className="m-0">
+          <InfoCircle className={cx("me-1", "bi")} />
+          Info
+        </Header>
+
+        <div>
+          <ProjectInformationButton
+            userPermissions={permissions}
+            project={project}
+          />
         </div>
       </CardHeader>
       <CardBody>{information}</CardBody>
