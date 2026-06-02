@@ -74,7 +74,7 @@ export default function SessionUnavailable() {
             You are not logged in. If you have an account, you should{" "}
             {loginLink} and try again.
           </p>
-          <p className="mb-0">Otherise, you can {link}.</p>
+          <p className="mb-0">Otherwise, you can {link}.</p>
         </WarnAlert>
       )}
     </div>
