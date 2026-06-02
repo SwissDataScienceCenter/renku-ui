@@ -17,19 +17,20 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { ArrowsFullscreen, CloudArrowUp, XLg } from "react-bootstrap-icons";
-import { generatePath, Link } from "react-router";
+import { useCallback, useMemo, useState } from "react";
+import { CloudArrowUp } from "react-bootstrap-icons";
+import { generatePath } from "react-router";
 import {
   Card,
   CardBody,
   CardHeader,
   Offcanvas,
   OffcanvasBody,
-  UncontrolledTooltip,
 } from "reactstrap";
 
 import ExternalLink from "~/components/ExternalLink";
+import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
+import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import { TimeCaption } from "~/components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -105,10 +106,6 @@ export default function DataConnectorView({
       slug: dataConnector.slug,
     },
   );
-
-  const refClose = useRef(null);
-  const refExpand = useRef(null);
-
   return (
     <Offcanvas
       toggle={toggleView}
@@ -117,48 +114,17 @@ export default function DataConnectorView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="data-connector-view">
-        <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
-          <button
-            aria-label="Close"
-            className={cx(
-              "border-0",
-              "btn",
-              "d-flex",
-              "fs-2",
-              "link-secondary",
-              "p-0",
-              "shadow-none",
-            )}
-            data-cy="data-connector-view-back-button"
-            data-bs-dismiss="offcanvas"
-            ref={refClose}
-            onClick={toggleView}
-          >
-            <XLg />
-            <span className="visually-hidden">Close side panel</span>
-          </button>
-          <UncontrolledTooltip target={refClose}>
-            Close side panel
-          </UncontrolledTooltip>
-          <Link
-            className={cx("d-flex", "fs-3", "link-secondary")}
-            data-cy="data-connector-standalone-page-link"
-            ref={refExpand}
-            to={dataConnectorStandaloneLink}
-          >
-            <ArrowsFullscreen />
-            <span className="visually-hidden">Open full page</span>
-          </Link>
-          <UncontrolledTooltip target={refExpand}>
-            Open full page
-          </UncontrolledTooltip>
-        </div>
-
-        <DataConnectorViewHeader
-          {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
+        <OffcanvasTopButtons
+          entityType="data-connector"
+          fullPageLink={dataConnectorStandaloneLink}
+          toggleView={toggleView}
         />
 
         <div className={cx("d-flex", "flex-column", "gap-3")}>
+          <DataConnectorViewHeader
+            {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
+          />
+
           <DataConnectorInfoBox
             dataConnector={dataConnector}
             headerTag="h3"
@@ -297,21 +263,16 @@ function DataConnectorViewHeader({
   toggleEdit,
 }: Omit<DataConnectorViewProps, "showView">) {
   return (
-    <div className="mb-3">
-      <span className={cx("small", "text-muted", "me-3")}>Data connector</span>
-      <div>
-        <div className={cx("float-end", "mt-1", "ms-1")}>
-          <DataConnectorActions
-            dataConnector={dataConnector}
-            dataConnectorLink={dataConnectorLink}
-            toggleView={toggleView}
-            toggleEdit={toggleEdit}
-          />
-        </div>
-        <h2 className={cx("m-0", "text-break")} data-cy="data-connector-title">
-          {dataConnector.name}
-        </h2>
-      </div>
-    </div>
+    <OffcanvasHeaderWithType
+      entityType="data-connector"
+      title={dataConnector.name}
+    >
+      <DataConnectorActions
+        dataConnector={dataConnector}
+        dataConnectorLink={dataConnectorLink}
+        toggleView={toggleView}
+        toggleEdit={toggleEdit}
+      />
+    </OffcanvasHeaderWithType>
   );
 }

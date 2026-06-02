@@ -625,7 +625,7 @@ describe("Set up data connectors with credentials in project pages", () => {
       "contain.text",
       "Credentials saved",
     );
-    cy.getDataCy("data-connector-view-back-button").click();
+    cy.getDataCy("data-connector-close-offcanvas-button").click();
 
     // Check that the state was reset
     cy.getDataCy("add-data-connector").should("be.visible").click();
@@ -680,7 +680,7 @@ describe("Set up data connectors with credentials in group pages", () => {
       "contain.text",
       "Yes",
     );
-    cy.getDataCy("data-connector-view-back-button").click();
+    cy.getDataCy("data-connector-close-offcanvas-button").click();
   });
 
   it("create data connector after failed connection test", () => {

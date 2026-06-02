@@ -127,9 +127,7 @@ describe("Set up project components", () => {
 
     // check session launcher view and edit session launcher
     cy.getDataCy("session-name").click();
-    cy.getDataCy("session-view-menu-edit").should("be.visible");
-    cy.getDataCy("session-launcher-menu-dropdown").first().click();
-    cy.getDataCy("session-view-menu-delete").should("be.visible");
+    cy.getDataCy("session-launcher-menu-dropdown").should("be.visible");
     cy.getDataCy("session-view-menu-edit").should("be.visible").click();
     cy.getDataCy("edit-session-name").clear().type("Session custom");
     cy.getDataCy("edit-session-button").click();
@@ -143,7 +141,7 @@ describe("Set up project components", () => {
       .click();
     cy.getDataCy("environment-kind-custom").should("be.visible");
     cy.getDataCy("close-cancel-button").click();
-    cy.getDataCy("get-back-session-view").click();
+    cy.getDataCy("session-launcher-close-offcanvas-button").click();
 
     // start session
     cy.getDataCy("session-launcher-item").within(() => {
@@ -245,7 +243,7 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.contains("Session launcher updated successfully").should("be.visible");
     cy.getDataCy("close-cancel-button").click();
-    cy.getDataCy("get-back-session-view").click();
+    cy.getDataCy("session-launcher-close-offcanvas-button").click();
   });
 
   it("initialize env variable form with empty row", () => {
