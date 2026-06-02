@@ -257,7 +257,11 @@ export function SessionLauncherButtons({
   return (
     <>
       <ButtonWithMenuV2
-        color={"primary"}
+        color={
+          displayBuildActions || (launcherCategory === "session" && hasSession)
+            ? "outline-primary"
+            : "primary"
+        }
         default={defaultAction}
         preventPropagation
         size="sm"

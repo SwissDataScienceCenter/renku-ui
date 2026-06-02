@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Send } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 
+import { useGetProjectsByProjectIdQuery } from "~/features/projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import SubmitJobModal from "./SessionModals/SubmitJobModal";
 
@@ -38,6 +40,17 @@ export default function SubmitJobLauncherAction({
   const toggleSubmit = useCallback(() => {
     setIsSubmitOpen((open) => !open);
   }, []);
+
+  const projectId = launcher.project_id;
+  const {
+    data: project,
+    isLoading: isLoadingProject,
+    isFetching: isFetchingProject,
+  } = useGetProjectsByProjectIdQuery(projectId ? { projectId } : skipToken);
+
+  if (isLoadingProject || isFetchingProject || !project) {
+    return null;
+  }
 
   return (
     <>
@@ -58,6 +71,7 @@ export default function SubmitJobLauncherAction({
       <SubmitJobModal
         isOpen={isSubmitOpen}
         launcher={launcher}
+        project={project}
         toggle={toggleSubmit}
       />
     </>

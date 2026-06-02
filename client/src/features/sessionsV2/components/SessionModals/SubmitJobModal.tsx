@@ -18,7 +18,14 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -35,9 +42,13 @@ import {
 import { SuccessAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
+import { TimeCaption } from "~/components/TimeCaption";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
+import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
+import type { DataConnectorConfiguration } from "../../../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
+import type { SessionSecretSlotWithSecret } from "../../../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
 import {
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
@@ -48,6 +59,8 @@ import {
   useGetSessionsQuery,
   usePostSessionsMutation,
 } from "../../api/sessionsV2.api";
+import DataConnectorSecretsModal from "../../DataConnectorSecretsModal";
+import SaveCloudStorageCredentials from "../../SaveCloudStorageCredentials";
 import { SUBMISSION_ID_VALIDATION_MESSAGE } from "../../session.constants";
 import {
   buildJobSessionPostRequest,
@@ -58,6 +71,15 @@ import {
   isValidJSONStringArray,
   validateSubmissionId,
 } from "../../session.utils";
+import {
+  allSessionSecretsReady,
+  dataConnectorsShouldSaveCredentials,
+  doesCloudStorageNeedCredentials,
+} from "../../sessionLaunchValidation.utils";
+import SessionRepositoriesModal from "../../SessionRepositoriesModal";
+import SessionSecretsModal from "../../SessionSecretsModal";
+import type { SessionStartDataConnectorConfiguration } from "../../startSessionOptionsV2.types";
+import useSessionLaunchPrerequisites from "../../useSessionLaunchPrerequisites.hook";
 import { BuildStatusDescription } from "../BuildStatusComponents";
 import SessionClassSelector from "../SessionClassSelector";
 import { LauncherEnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
@@ -72,9 +94,91 @@ import {
   type SubmitJobForm,
 } from "./useSubmitJobForm";
 
+interface SubmitJobGates {
+  repositoriesReady: boolean;
+  userSecretsReady: boolean;
+  dataConnectorsResolved: boolean;
+  credentialsSaved: boolean;
+}
+
+const INITIAL_GATES: SubmitJobGates = {
+  repositoriesReady: false,
+  userSecretsReady: false,
+  dataConnectorsResolved: false,
+  credentialsSaved: false,
+};
+
+type ValidationStep =
+  | "repositories"
+  | "sessionSecrets"
+  | "dataConnectors"
+  | "saveCredentials"
+  | "complete";
+
+interface GetValidationStepArgs {
+  isValidating: boolean;
+  isLoadingPrerequisites: boolean;
+  gates: SubmitJobGates;
+  repositoriesNeedAttention: boolean;
+  secretsNeedAttention: boolean;
+  sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[] | null;
+  needsCredentials: boolean;
+  shouldSaveCredentials: boolean;
+}
+
+function isUserSecretsReadyForSubmit(
+  gates: SubmitJobGates,
+  isValidating: boolean,
+  sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[] | null
+): boolean {
+  return (
+    gates.userSecretsReady ||
+    (isValidating &&
+      !!sessionSecretSlotsWithSecrets &&
+      allSessionSecretsReady(sessionSecretSlotsWithSecrets))
+  );
+}
+
+function getSubmitJobValidationStep({
+  isValidating,
+  isLoadingPrerequisites,
+  gates,
+  repositoriesNeedAttention,
+  secretsNeedAttention,
+  sessionSecretSlotsWithSecrets,
+  needsCredentials,
+  shouldSaveCredentials,
+}: GetValidationStepArgs): ValidationStep | null {
+  if (!isValidating || isLoadingPrerequisites) {
+    return null;
+  }
+  if (!gates.repositoriesReady && repositoriesNeedAttention) {
+    return "repositories";
+  }
+  if (
+    !isUserSecretsReadyForSubmit(
+      gates,
+      isValidating,
+      sessionSecretSlotsWithSecrets
+    ) &&
+    secretsNeedAttention &&
+    sessionSecretSlotsWithSecrets
+  ) {
+    return "sessionSecrets";
+  }
+  if (!gates.dataConnectorsResolved && needsCredentials) {
+    return "dataConnectors";
+  }
+  if (shouldSaveCredentials && !gates.credentialsSaved) {
+    return "saveCredentials";
+  }
+  return "complete";
+}
+
 interface SubmitJobModalProps {
   isOpen: boolean;
   launcher: SessionLauncher;
+  project: Project;
   toggle: () => void;
 }
 
@@ -137,11 +241,23 @@ function SubmitJobJsonField({
   );
 }
 
-export default function SubmitJobModal({
+interface SubmitJobFormModalProps {
+  isOpen: boolean;
+  launcher: SessionLauncher;
+  toggle: () => void;
+  isCheckingLaunchPrerequisites: boolean;
+  onSubmitJob: (data: SubmitJobForm) => void;
+  postSessionResult: ReturnType<typeof usePostSessionsMutation>[1];
+}
+
+function SubmitJobFormModal({
   isOpen,
   launcher,
   toggle,
-}: SubmitJobModalProps) {
+  isCheckingLaunchPrerequisites,
+  onSubmitJob,
+  postSessionResult,
+}: SubmitJobFormModalProps) {
   const submissionIdInputRef = useRef<HTMLInputElement>(null);
   const { params } = useContext(AppContext);
   const imageBuildersEnabled =
@@ -177,6 +293,7 @@ export default function SubmitJobModal({
   );
 
   const lastBuild = builds?.at(0);
+  const isLastBuildRunning = lastBuild?.status === "in_progress";
   const lastSuccessfulBuild = builds?.find(
     (build) => build.status === "succeeded" && build.id !== lastBuild?.id
   );
@@ -210,15 +327,12 @@ export default function SubmitJobModal({
       defaultValues,
     });
 
-  const [postSession, postSessionResult] = usePostSessionsMutation();
-
   // eslint-disable-next-line react-hooks/incompatible-library
   const watchResourceClass = watch("resourceClass");
 
   useEffect(() => {
     if (!isOpen) {
       reset(defaultValues);
-      postSessionResult.reset();
       return;
     }
     const defaultResourceClass = resolveDefaultResourceClass({
@@ -235,14 +349,7 @@ export default function SubmitJobModal({
       submissionId: generateSubmissionId(),
     });
     submissionIdInputRef.current?.focus();
-  }, [
-    defaultValues,
-    isOpen,
-    launcher,
-    postSessionResult,
-    reset,
-    resourcePools,
-  ]);
+  }, [defaultValues, isOpen, launcher, reset, resourcePools]);
 
   const launcherSessions = useMemo(
     () =>
@@ -259,16 +366,9 @@ export default function SubmitJobModal({
       if (!data.resourceClass) {
         return;
       }
-      const sessionPostRequest = buildJobSessionPostRequest({
-        launcher,
-        submissionId: data.submissionId,
-        resourceClass: data.resourceClass,
-        diskStorage: data.diskStorage,
-        args: data.args,
-      });
-      postSession({ sessionPostRequest });
+      onSubmitJob(data);
     },
-    [launcher, postSession]
+    [onSubmitJob]
   );
 
   const isLoadingPrerequisites =
@@ -282,6 +382,7 @@ export default function SubmitJobModal({
     !canWrite ||
     !displayLaunchSession ||
     isLoadingPrerequisites ||
+    isCheckingLaunchPrerequisites ||
     !watchResourceClass ||
     postSessionResult.isLoading;
 
@@ -317,7 +418,7 @@ export default function SubmitJobModal({
           )}
         </>
       )}
-      rules={{ required: "Please provide a resource class." }}
+      rules={{ required: "Please provide a valid resource class." }}
     />
   );
 
@@ -345,10 +446,10 @@ export default function SubmitJobModal({
           </SuccessAlert>
         ) : (
           <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-            {postSessionResult.error && (
+            {Boolean(postSessionResult.error) && (
               <RtkOrDataServicesError
                 dismissible={false}
-                error={postSessionResult.error}
+                error={postSessionResult.error as never}
               />
             )}
             <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -397,10 +498,28 @@ export default function SubmitJobModal({
                   data-cy="submit-job-old-image-warning"
                   dismissible={false}
                 >
-                  <p className="mb-1">
-                    The latest build failed or is not ready yet. This job will
-                    run using the last successfully built image.
-                  </p>
+                  {isLastBuildRunning ? (
+                    <p className="mb-1">
+                      The environment for this launcher is currently rebuilding
+                      and not yet complete. This job will use the last
+                      successfully built environment from{" "}
+                      <TimeCaption
+                        datetime={lastSuccessfulBuild.created_at}
+                        enableTooltip
+                        noCaption
+                      />
+                    </p>
+                  ) : (
+                    <p className="mb-1">
+                      The most recent build for this environment failed, so this
+                      job will use the last successfully built environment from{" "}
+                      <TimeCaption
+                        datetime={lastSuccessfulBuild.created_at}
+                        enableTooltip
+                        noCaption
+                      />
+                    </p>
+                  )}
                 </WarnAlert>
               )}
 
@@ -514,6 +633,257 @@ export default function SubmitJobModal({
         )}
       </ModalFooter>
     </Modal>
+  );
+}
+
+function SubmitJobModalContent({
+  launcher,
+  project,
+  toggle,
+}: Omit<SubmitJobModalProps, "isOpen">) {
+  const prerequisites = useSessionLaunchPrerequisites({
+    project,
+    enabled: true,
+  });
+
+  const [postSession, postSessionResult] = usePostSessionsMutation();
+  const hasSubmittedRef = useRef(false);
+  const [gates, setGates] = useState<SubmitJobGates>(INITIAL_GATES);
+  const [dataConnectorConfigs, setDataConnectorConfigs] = useState<
+    SessionStartDataConnectorConfiguration[] | undefined
+  >();
+  const [pendingSubmit, setPendingSubmit] = useState<SubmitJobForm | null>(
+    null
+  );
+  const [isValidating, setIsValidating] = useState(false);
+
+  const configsWithCredentials = useMemo(
+    () =>
+      (prerequisites.dataConnectorConfigs ?? []).filter(
+        (config) => !doesCloudStorageNeedCredentials(config)
+      ),
+    [prerequisites.dataConnectorConfigs]
+  );
+
+  const configsNeedingCredentials = prerequisites.configsNeedingCredentials;
+
+  const shouldSaveCredentials =
+    dataConnectorConfigs != null &&
+    dataConnectorsShouldSaveCredentials(dataConnectorConfigs);
+
+  const validationStep = useMemo(
+    (): ValidationStep | null =>
+      getSubmitJobValidationStep({
+        isValidating,
+        isLoadingPrerequisites: prerequisites.isLoading,
+        gates,
+        repositoriesNeedAttention: prerequisites.repositoriesNeedAttention,
+        secretsNeedAttention: prerequisites.secretsNeedAttention,
+        sessionSecretSlotsWithSecrets:
+          prerequisites.sessionSecretSlotsWithSecrets,
+        needsCredentials: prerequisites.needsCredentials,
+        shouldSaveCredentials,
+      }),
+    [
+      gates,
+      isValidating,
+      prerequisites.isLoading,
+      prerequisites.needsCredentials,
+      prerequisites.repositoriesNeedAttention,
+      prerequisites.secretsNeedAttention,
+      prerequisites.sessionSecretSlotsWithSecrets,
+      shouldSaveCredentials,
+    ]
+  );
+
+  useEffect(() => {
+    if (validationStep !== "complete") {
+      hasSubmittedRef.current = false;
+      return;
+    }
+    if (!pendingSubmit?.resourceClass) {
+      return;
+    }
+    if (postSessionResult.isLoading || postSessionResult.isSuccess) {
+      return;
+    }
+    if (hasSubmittedRef.current) {
+      return;
+    }
+    hasSubmittedRef.current = true;
+    postSession({
+      sessionPostRequest: buildJobSessionPostRequest({
+        launcher,
+        submissionId: pendingSubmit.submissionId,
+        resourceClass: pendingSubmit.resourceClass,
+        diskStorage: pendingSubmit.diskStorage,
+        args: pendingSubmit.args,
+        dataConnectors: dataConnectorConfigs,
+      }),
+    });
+  }, [
+    dataConnectorConfigs,
+    launcher,
+    pendingSubmit,
+    postSession,
+    postSessionResult.isLoading,
+    postSessionResult.isSuccess,
+    validationStep,
+  ]);
+
+  const cancelValidation = useCallback(() => {
+    setIsValidating(false);
+  }, []);
+
+  const handleSubmitAttempt = useCallback(
+    (data: SubmitJobForm) => {
+      if (prerequisites.isLoading) {
+        return;
+      }
+      setPendingSubmit(data);
+      setIsValidating(true);
+      setGates({
+        repositoriesReady: !prerequisites.repositoriesNeedAttention,
+        userSecretsReady: !prerequisites.secretsNeedAttention,
+        dataConnectorsResolved: !prerequisites.needsCredentials,
+        credentialsSaved: false,
+      });
+      if (
+        !prerequisites.needsCredentials &&
+        prerequisites.dataConnectorConfigs
+      ) {
+        setDataConnectorConfigs(prerequisites.dataConnectorConfigs);
+      } else {
+        setDataConnectorConfigs(undefined);
+      }
+    },
+    [
+      prerequisites.dataConnectorConfigs,
+      prerequisites.isLoading,
+      prerequisites.needsCredentials,
+      prerequisites.repositoriesNeedAttention,
+      prerequisites.secretsNeedAttention,
+    ]
+  );
+
+  const onDataConnectorsComplete = useCallback(
+    (configs: DataConnectorConfiguration[]) => {
+      const cloudStorageConfigs = [
+        ...configsWithCredentials,
+        ...configs,
+      ] as SessionStartDataConnectorConfiguration[];
+      setDataConnectorConfigs(cloudStorageConfigs);
+      setGates((prev) => ({
+        ...prev,
+        dataConnectorsResolved: true,
+        credentialsSaved:
+          !dataConnectorsShouldSaveCredentials(cloudStorageConfigs),
+      }));
+    },
+    [configsWithCredentials]
+  );
+
+  const onSaveCredentialsComplete = useCallback(
+    (configs: SessionStartDataConnectorConfiguration[]) => {
+      setDataConnectorConfigs(configs);
+      setGates((prev) => ({ ...prev, credentialsSaved: true }));
+    },
+    []
+  );
+
+  const onRepositoriesSkip = useCallback(() => {
+    setGates((prev) => ({ ...prev, repositoriesReady: true }));
+  }, []);
+
+  const onSecretsSkip = useCallback(() => {
+    setGates((prev) => ({ ...prev, userSecretsReady: true }));
+  }, []);
+
+  return (
+    <>
+      <SubmitJobFormModal
+        isCheckingLaunchPrerequisites={prerequisites.isLoading}
+        isOpen
+        launcher={launcher}
+        onSubmitJob={handleSubmitAttempt}
+        postSessionResult={postSessionResult}
+        toggle={toggle}
+      />
+
+      {validationStep === "repositories" && (
+        <SessionRepositoriesModal
+          continueLabel="Submit anyway"
+          isOpen
+          onCancel={cancelValidation}
+          onSkip={onRepositoriesSkip}
+          project={project}
+          title="Project repositories not accessible"
+          warningIntro="your attention before submitting the job"
+        />
+      )}
+
+      {validationStep === "sessionSecrets" &&
+        prerequisites.sessionSecretSlotsWithSecrets && (
+          <SessionSecretsModal
+            isOpen
+            onCancel={cancelValidation}
+            onSkip={onSecretsSkip}
+            project={project}
+            sessionSecretSlotsWithSecrets={
+              prerequisites.sessionSecretSlotsWithSecrets
+            }
+            title="Session secrets"
+          />
+        )}
+
+      {validationStep === "dataConnectors" && (
+        <DataConnectorSecretsModal
+          context="job"
+          dataConnectorConfigs={configsNeedingCredentials}
+          isOpen
+          onCancel={cancelValidation}
+          onStart={onDataConnectorsComplete}
+        />
+      )}
+
+      {validationStep === "saveCredentials" && dataConnectorConfigs && (
+        <Modal
+          backdrop="static"
+          centered
+          data-cy="submit-job-save-credentials-modal"
+          isOpen
+          toggle={cancelValidation}
+        >
+          <ModalHeader tag="h2">Saving credentials</ModalHeader>
+          <ModalBody>
+            <SaveCloudStorageCredentials
+              dataConnectors={dataConnectorConfigs}
+              onComplete={onSaveCredentialsComplete}
+              title={`Submitting job ${launcher.name}`}
+            />
+          </ModalBody>
+        </Modal>
+      )}
+    </>
+  );
+}
+
+export default function SubmitJobModal({
+  isOpen,
+  launcher,
+  project,
+  toggle,
+}: SubmitJobModalProps) {
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <SubmitJobModalContent
+      launcher={launcher}
+      project={project}
+      toggle={toggle}
+    />
   );
 }
 

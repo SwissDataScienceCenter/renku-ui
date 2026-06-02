@@ -16,6 +16,7 @@
  * limitations under the License
  */
 
+import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudStorage.utils";
 import { FaviconStatus } from "../display/display.types";
 import type {
   ResourceClassWithId,
@@ -51,6 +52,7 @@ import {
   type SessionLauncherKind,
   type SessionStatusState,
 } from "./sessionsV2.types";
+import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
 
 export function getLauncherCategoryDefinitionByLauncher(
   launcher: SessionLauncher
@@ -620,6 +622,7 @@ export interface BuildJobSessionPostRequestArgs {
   diskStorage?: number;
   command?: string;
   args?: string;
+  dataConnectors?: SessionStartDataConnectorConfiguration[];
 }
 
 export function buildJobSessionPostRequest({
@@ -628,6 +631,7 @@ export function buildJobSessionPostRequest({
   resourceClass,
   diskStorage,
   args,
+  dataConnectors,
 }: BuildJobSessionPostRequestArgs): SessionPostRequest {
   const argsParsed = safeParseJSONStringArray(args ?? "");
   const request: SessionPostRequest = {
@@ -639,6 +643,12 @@ export function buildJobSessionPostRequest({
 
   if (diskStorage != null && diskStorage !== resourceClass.default_storage) {
     request.disk_storage = diskStorage;
+  }
+
+  if (dataConnectors?.length) {
+    request.data_connectors_overrides = dataConnectors.flatMap(
+      dataConnectorsOverrideFromConfig
+    );
   }
 
   // TODO: include command/args overrides when SessionPostRequest supports them.
@@ -682,25 +692,20 @@ export function isImageCompatibleWith(
   return imagePlatforms.some((p) => p === platform);
 }
 
-const CHARS = "abcdefghjkmnpqrstuvwxyz23456789";
+const CHARS = "23456789";
 
 // Simple consonant/vowel groups to keep IDs more readable
-const CONSONANTS = "bcdfghjkmnpqrstvwxyz";
+const CONSONANTS = "bcdfghjkmnpqrstvwxyz2345689";
 const VOWELS = "aeu";
 
 export function generateSubmissionId(): string {
   let result = "";
 
   // Build a mostly pronounceable 8-char core
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 6; i++) {
     const source = i % 2 === 0 ? CONSONANTS : VOWELS;
     result += source[Math.floor(Math.random() * source.length)];
   }
 
-  // Add 2 random safe chars for extra uniqueness
-  for (let i = 0; i < 2; i++) {
-    result += CHARS[Math.floor(Math.random() * CHARS.length)];
-  }
-
-  return result;
+  return "run" + result + CHARS[Math.floor(Math.random() * CHARS.length)];
 }

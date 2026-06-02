@@ -320,7 +320,7 @@ export default function ActiveSessionButton({
         </>
       ) : status === "hibernated" ? (
         <Button
-          color="primary"
+          color="outline-primary"
           data-cy="resume-session-button"
           disabled={isResuming}
           onClick={onResumeSession}
@@ -418,7 +418,7 @@ export default function ActiveSessionButton({
         </Button>
       ) : status === "hibernated" ? (
         <Button
-          color="primary"
+          color="outline-primary"
           data-cy="resume-session-button"
           disabled={isResuming}
           onClick={onResumeSession}
