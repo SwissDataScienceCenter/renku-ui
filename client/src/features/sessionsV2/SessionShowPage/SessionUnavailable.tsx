@@ -53,12 +53,6 @@ export default function SessionUnavailable() {
     </Link>
   );
 
-  const loginLink = (
-    <a className={cx("btn", "btn-primary", "btn-sm")} href={loginUrl.href}>
-      Login
-    </a>
-  );
-
   return (
     <div className={cx("p-2", "p-lg-3", "container-lg")}>
       <p className="mt-2">
@@ -72,7 +66,13 @@ export default function SessionUnavailable() {
         <WarnAlert timeout={0} dismissible={false}>
           <p>
             You are not logged in. If you have an account, you should{" "}
-            {loginLink} and try again.
+            <a
+              className={cx("btn", "btn-primary", "btn-sm")}
+              href={loginUrl.href}
+            >
+              Login
+            </a>{" "}
+            and try again.
           </p>
           <p className="mb-0">Otherwise, you can {link}.</p>
         </WarnAlert>
