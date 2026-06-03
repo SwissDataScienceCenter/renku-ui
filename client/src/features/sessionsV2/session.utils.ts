@@ -236,11 +236,10 @@ export function getFormattedEnvironmentValues(
       if (!argsFormatted.parsed) {
         return { success: false, error: "Invalid job args format" };
       }
-      if (launcherCategory === "job") {
-        if (argsFormatted.data == null || !argsFormatted.data)
-          return { success: false, error: "Job args can't be empty" };
-        buildPayload.job_args = argsFormatted.data;
+      if (argsFormatted.data == null || argsFormatted.data.length === 0) {
+        return { success: false, error: "Job args can't be empty" };
       }
+      buildPayload.job_args = argsFormatted.data;
     }
     return { success: true, data: buildPayload };
   }
@@ -364,6 +363,14 @@ export function getJSONStringArray(value: string[] | undefined) {
 export function getLauncherDefaultValues(
   launcher: SessionLauncher
 ): Partial<SessionLauncherForm> {
+  const isJobBuildEnvironment =
+    isJobLauncher(launcher) &&
+    launcher.environment.environment_image_source === "build";
+  const buildParameters =
+    launcher.environment.environment_image_source === "build"
+      ? launcher.environment.build_parameters
+      : undefined;
+
   return {
     name: launcher.name,
     description: launcher.description ?? "",
@@ -387,8 +394,12 @@ export function getLauncherDefaultValues(
     mount_directory: launcher.environment?.mount_directory,
     uid: launcher.environment?.uid,
     gid: launcher.environment?.gid,
-    command: getJSONStringArray(launcher.environment?.command),
-    args: getJSONStringArray(launcher.environment?.args),
+    command: isJobBuildEnvironment
+      ? getJSONStringArray(buildParameters?.job_command)
+      : getJSONStringArray(launcher.environment?.command),
+    args: isJobBuildEnvironment
+      ? getJSONStringArray(buildParameters?.job_args)
+      : getJSONStringArray(launcher.environment?.args),
     strip_path_prefix: launcher.environment?.strip_path_prefix ?? false,
     builder_variant:
       launcher.environment.environment_image_source === "build"
@@ -505,10 +516,6 @@ export function isValidRequiredJSONStringArray(
   }
 
   return validationResult ?? requiredMessage;
-}
-
-export function isJobBuildCommandValid(command: string | undefined): boolean {
-  return isValidRequiredJSONStringArray(command ?? "") === true;
 }
 
 /**

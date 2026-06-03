@@ -38,6 +38,12 @@ function openSessionLauncherCreateFlow() {
   cy.getDataCy("launcher-option-session").click();
 }
 
+function openJobLauncherCreateFlow() {
+  cy.getDataCy("add-session-launcher").click();
+  cy.getDataCy("launcher-type-selector-modal").should("be.visible");
+  cy.getDataCy("launcher-option-job").click();
+}
+
 export default function registerSessionsCommands() {
   Cypress.Commands.add("openLogs", openLogs);
   Cypress.Commands.add("openSession", openSession);
@@ -45,6 +51,7 @@ export default function registerSessionsCommands() {
     "openSessionLauncherCreateFlow",
     openSessionLauncherCreateFlow,
   );
+  Cypress.Commands.add("openJobLauncherCreateFlow", openJobLauncherCreateFlow);
 }
 
 declare global {
@@ -54,6 +61,7 @@ declare global {
       openLogs: typeof openLogs;
       openSession: typeof openSession;
       openSessionLauncherCreateFlow: typeof openSessionLauncherCreateFlow;
+      openJobLauncherCreateFlow: typeof openJobLauncherCreateFlow;
     }
   }
 }

@@ -169,6 +169,31 @@ describe("Set up project components", () => {
       cy.getDataCy("session-name").should("contain.text", "Jupyter Notebook");
       cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
+
+    // ADD JOB CUSTOM IMAGE
+    cy.openJobLauncherCreateFlow();
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers-job.json",
+      name: "session-launchers-job",
+    });
+    const jobImage = "renku/renkulab-py:latest";
+    cy.getDataCy("environment-kind-custom").click();
+    cy.getDataCy("custom-image-input")
+      .clear()
+      .type(jobImage, { delay: 0 })
+      .should("have.value", jobImage);
+    cy.getDataCy("next-session-button").click();
+    cy.getDataCy("launcher-name-input").type("Job-custom");
+    cy.getDataCy("add-session-button").click();
+    cy.wait("@newLauncher");
+    cy.wait("@session-launchers-job");
+    cy.getDataCy("close-cancel-button").click();
+    cy.getDataCy("session-launcher-item")
+      .contains("Job-custom")
+      .parents("[data-cy='session-launcher-item']")
+      .within(() => {
+        cy.getDataCy("submit-job-button").should("contain.text", "Submit");
+      });
   });
 });
 

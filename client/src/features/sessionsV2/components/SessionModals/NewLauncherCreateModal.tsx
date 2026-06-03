@@ -323,7 +323,7 @@ export default function NewLauncherCreateModal({
         {!result.isSuccess && step === LauncherStep.Environment && (
           <Button
             color="outline-primary"
-            data-cy="back-environment-button"
+            data-cy="back-launcher-type-button"
             onClick={() => goBack()}
           >
             <ArrowLeft className={cx("bi", "me-1")} />

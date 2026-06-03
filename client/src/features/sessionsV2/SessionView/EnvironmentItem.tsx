@@ -451,6 +451,7 @@ function CustomBuildEnvironmentValues({
     return null;
   }
 
+  const launcherCategory = getLauncherCategory(launcher);
   const { build_parameters } = environment;
   const {
     builder_variant,
@@ -458,6 +459,8 @@ function CustomBuildEnvironmentValues({
     frontend_variant,
     repository_revision,
     repository,
+    job_command,
+    job_args,
   } = build_parameters;
 
   return (
@@ -554,6 +557,20 @@ function CustomBuildEnvironmentValues({
         label="User interface"
         value={frontend_variant || ""}
       />
+      {launcherCategory === "job" && (
+        <>
+          <EnvironmentJSONArrayRowWithLabel
+            label="Job command"
+            value={safeStringify(job_command)}
+            dataCy="session-view-job-command"
+          />
+          <EnvironmentJSONArrayRowWithLabel
+            label="Job args"
+            value={safeStringify(job_args)}
+            dataCy="session-view-job-args"
+          />
+        </>
+      )}
 
       {environment.container_image !== BUILDER_IMAGE_NOT_READY_VALUE && (
         <CustomImageEnvironmentValues launcher={launcher} />

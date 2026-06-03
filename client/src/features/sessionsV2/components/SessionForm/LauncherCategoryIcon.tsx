@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 
-import { SvgIconProps } from "~/features/sessionsV2/sessionsV2.types.ts";
+import { SvgIconProps } from "~/features/sessionsV2/sessionsV2.types";
 
 function JobIconSvg({ className, style }: SvgIconProps) {
   return (

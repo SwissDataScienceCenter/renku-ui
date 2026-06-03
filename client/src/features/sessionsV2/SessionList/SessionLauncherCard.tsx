@@ -119,16 +119,20 @@ export default function SessionLauncherCard({
     }
   );
 
-  const otherLauncherActions = launcher && (
-    <LauncherDropdownActions
-      project={project}
-      launcher={launcher}
-      toggleDelete={toggleDelete}
-      toggleUpdate={toggleUpdate}
-      toggleUpdateEnvironment={toggleUpdateEnvironment}
-      toggleShareLink={toggleShareLink}
-    />
-  );
+  const otherLauncherActions = launcher &&
+    (toggleUpdate ||
+      toggleDelete ||
+      toggleShareLink ||
+      toggleUpdateEnvironment) && (
+      <LauncherDropdownActions
+        project={project}
+        launcher={launcher}
+        toggleDelete={toggleDelete}
+        toggleUpdate={toggleUpdate}
+        toggleUpdateEnvironment={toggleUpdateEnvironment}
+        toggleShareLink={toggleShareLink}
+      />
+    );
 
   const ENVIRONMENT_KIND_CLASSES = [
     "align-items-center",
