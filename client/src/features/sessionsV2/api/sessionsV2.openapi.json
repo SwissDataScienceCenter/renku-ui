@@ -336,16 +336,20 @@
             "type": "integer"
           },
           "submission_id": {
-            "nullable": true,
-            "type": "string",
-            "pattern": "^[0-9A-Za-z]{4,}$",
-            "description": "When submitting a job, i.e. the launcher used is a job\nlauncher, the submission id is required to deduplicate\nsame job submissions and allows retries.\n"
+            "$ref": "#/components/schemas/SubmissionId"
           },
           "data_connectors_overrides": {
             "$ref": "#/components/schemas/SessionDataConnectorsOverrideList"
           },
           "env_variable_overrides": {
             "$ref": "#/components/schemas/EnvVariableOverrides"
+          },
+          "job_command_override": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "job_args_override": {
             "nullable": true,
@@ -374,6 +378,11 @@
             "nullable": true,
             "type": "string"
           },
+          "job_completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
           "lastInteraction": {
             "type": "string",
             "format": "date-time",
@@ -398,7 +407,14 @@
             "$ref": "#/components/schemas/SessionType"
           },
           "submission_id": {
-            "type": "string",
+            "$ref": "#/components/schemas/SubmissionId",
+            "nullable": true
+          },
+          "command_args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           }
         },
@@ -619,6 +635,11 @@
         "maxLength": 50,
         "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
         "example": "d185e68d-d43-renku-2-b9ac279a4e8a85ac28d08"
+      },
+      "SubmissionId": {
+        "type": "string",
+        "pattern": "^[a-z][-0-9a-z]{3,19}$",
+        "description": "When submitting a job, i.e. the launcher used is a job\nlauncher, the submission id is required to deduplicate\nsame job submissions and allows retries.\n"
       },
       "ImageCheckResponse": {
         "type": "object",

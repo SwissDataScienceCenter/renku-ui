@@ -137,11 +137,13 @@ export type SessionStatus = {
 };
 export type Ulid = string;
 export type SessionType = "interactive" | "non-interactive";
+export type SubmissionId = string;
 export type SessionResponse = {
   image: string;
   name: ServerName;
   resources: SessionResources;
   started: string | null;
+  job_completed_at?: string | null;
   lastInteraction?: string | null;
   status: SessionStatus;
   url: string;
@@ -149,7 +151,8 @@ export type SessionResponse = {
   launcher_id: Ulid;
   resource_class_id: number;
   session_type: SessionType;
-  submission_id?: string | null;
+  submission_id?: SubmissionId;
+  command_args?: string[] | null;
 };
 export type ErrorResponse = {
   error: {
@@ -186,13 +189,10 @@ export type SessionPostRequest = {
   /** The size of disk storage for the session, in gigabytes */
   disk_storage?: number;
   resource_class_id?: number | null;
-  /** When submitting a job, i.e. the launcher used is a job
-    launcher, the submission id is required to deduplicate
-    same job submissions and allows retries.
-     */
-  submission_id?: string | null;
+  submission_id?: SubmissionId;
   data_connectors_overrides?: SessionDataConnectorsOverrideList;
   env_variable_overrides?: EnvVariableOverrides;
+  job_command_override?: string[] | null;
   job_args_override?: string[] | null;
 };
 export type SessionListResponse = SessionResponse[];
