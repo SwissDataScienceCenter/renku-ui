@@ -341,9 +341,13 @@ export function SessionView({
         <div className={cx("d-flex", "flex-column", "gap-3")}>
           <OffcanvasHeaderWithType
             entityName={
-              launcher ? "Session launcher" : "Session without launcher"
+              launcher
+                ? `${launcherDefinition?.text.display} launcher`
+                : `${launcherDefinition?.text.display} without launcher`
             }
-            entityType="session-launcher"
+            entityType={
+              launcherCategory === "job" ? "job-launcher" : "session-launcher"
+            }
             title={title}
           >
             {launcherMenu}

@@ -19,8 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { Controller, type Control } from "react-hook-form";
-import { FormText, Label } from "reactstrap";
+import { type Control, type FieldErrors } from "react-hook-form";
 
 import { useProject } from "~/routes/projects/root";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
@@ -29,14 +28,13 @@ import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useGetRepositoriesQuery } from "../../../repositories/api/repositories.api";
-import {
-  getLauncherCategoryDefinition,
-  isValidJSONStringArray,
-} from "../../session.utils";
+import { ENVIRONMENT_VALUES_DESCRIPTION } from "../../session.constants";
+import { getLauncherCategoryDefinition } from "../../session.utils";
 import type {
   LauncherCategory,
   SessionLauncherForm,
 } from "../../sessionsV2.types";
+import { JsonField } from "./AdvancedSettingsFields";
 import BuilderAdvancedSettings from "./BuilderAdvancedSettings";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
@@ -45,12 +43,14 @@ import CodeRepositorySelector from "./CodeRepositorySelector";
 
 interface BuilderEnvironmentFieldsProps {
   control: Control<SessionLauncherForm>;
+  errors?: FieldErrors<SessionLauncherForm>;
   isEdit?: boolean;
   launcherCategory: LauncherCategory;
 }
 
 export default function BuilderEnvironmentFields({
   control,
+  errors,
   isEdit,
   launcherCategory,
 }: BuilderEnvironmentFieldsProps) {
@@ -124,69 +124,29 @@ export default function BuilderEnvironmentFields({
       {launcherCategory === "job" && (
         <>
           <div>
-            <Label className="form-label" for="addSessionLauncherJobCommand">
-              Job command
-            </Label>
-            <Controller
+            <JsonField<SessionLauncherForm>
               control={control}
               name="command"
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <textarea
-                    className={cx("w-100 form-control", error && "is-invalid")}
-                    data-cy="job-command-input"
-                    id="addSessionLauncherJobCommand"
-                    placeholder='["npm", "run", "build"]'
-                    rows={2}
-                    {...field}
-                  />
-                  {error && (
-                    <div className="invalid-feedback mt-0 d-block">
-                      {error.message}
-                    </div>
-                  )}
-                </>
-              )}
-              rules={{
-                validate: (value) => isValidJSONStringArray(value?.toString()),
-              }}
+              label="Job command"
+              info={ENVIRONMENT_VALUES_DESCRIPTION.command}
+              errors={errors}
+              helpText="Enter the command that will run as a job (JSON array format)."
+              isOptional={false}
+              dataCy="job-command-input"
             />
-            <FormText>
-              Enter the command that will run as a job (JSON array format).
-            </FormText>
           </div>
           <div>
-            <Label className="form-label" for="addSessionLauncherJobArgs">
-              Job args
-            </Label>
-            <Controller
+            <JsonField<SessionLauncherForm>
               control={control}
               name="args"
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <textarea
-                    className={cx("w-100 form-control", error && "is-invalid")}
-                    data-cy="job-command-input"
-                    id="addSessionLauncherJobArgs"
-                    placeholder='["npm", "run", "build"]'
-                    rows={2}
-                    {...field}
-                  />
-                  {error && (
-                    <div className="invalid-feedback mt-0 d-block">
-                      {error.message}
-                    </div>
-                  )}
-                </>
-              )}
-              rules={{
-                validate: (value) => isValidJSONStringArray(value?.toString()),
-              }}
+              label="Job args"
+              info={ENVIRONMENT_VALUES_DESCRIPTION.args}
+              errors={errors}
+              helpText="Enter the command args that will run as a job (JSON array format)."
+              isOptional={true}
+              dataCy="job-args-input"
             />
-            <FormText>
-              Enter the command args that will run as a job (JSON array format).
-            </FormText>
-          </div>{" "}
+          </div>
         </>
       )}
       {launcherCategory === "session" && (

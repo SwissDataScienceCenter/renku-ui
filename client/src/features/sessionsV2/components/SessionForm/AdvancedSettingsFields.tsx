@@ -35,8 +35,12 @@ import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormCon
 import {
   DEFAULT_URL,
   ENVIRONMENT_VALUES_DESCRIPTION,
+  JOB_COMMAND_VALIDATION_MESSAGE,
 } from "../../session.constants";
-import { isValidJSONStringArray } from "../../session.utils";
+import {
+  isValidJSONStringArray,
+  isValidRequiredJSONStringArray,
+} from "../../session.utils";
 import {
   SessionLauncherForm,
   type LauncherCategory,
@@ -209,7 +213,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
   );
 }
 
-interface JsonFieldProps<T extends FieldValues> {
+export interface JsonFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
@@ -217,9 +221,10 @@ interface JsonFieldProps<T extends FieldValues> {
   errors?: FieldErrors<T>;
   helpText: string;
   isOptional?: boolean;
+  dataCy?: string;
 }
 
-function JsonField<T extends FieldValues>({
+export function JsonField<T extends FieldValues>({
   control,
   name,
   label,
@@ -227,7 +232,21 @@ function JsonField<T extends FieldValues>({
   errors,
   helpText,
   isOptional,
+  dataCy,
 }: JsonFieldProps<T>) {
+  const rules = isOptional
+    ? {
+        validate: (value: string) => isValidJSONStringArray(value?.toString()),
+      }
+    : {
+        validate: (value: string) =>
+          isValidRequiredJSONStringArray(
+            value?.toString(),
+            JOB_COMMAND_VALIDATION_MESSAGE.required,
+            JOB_COMMAND_VALIDATION_MESSAGE.empty
+          ),
+      };
+
   return (
     <>
       <FormFieldLabel
@@ -239,24 +258,27 @@ function JsonField<T extends FieldValues>({
       <Controller
         control={control}
         name={name}
-        rules={{
-          validate: (value) => isValidJSONStringArray(value?.toString()),
+        rules={rules}
+        render={({ field, fieldState: { error: fieldError } }) => {
+          const error = errors?.[name] ?? fieldError;
+          return (
+            <>
+              <textarea
+                className={cx("w-100 form-control", error && "is-invalid")}
+                data-cy={dataCy ?? `session-launcher-field-${name}`}
+                id={`addSessionLauncher${name}`}
+                rows={2}
+                {...field}
+              />
+              {error && (
+                <div className="invalid-feedback mt-0 d-block">
+                  {error.message?.toString()}
+                </div>
+              )}
+            </>
+          );
         }}
-        render={({ field }) => (
-          <textarea
-            className={cx("w-100 form-control", errors?.[name] && "is-invalid")}
-            data-cy={`session-launcher-field-${name}`}
-            id={`addSessionLauncher${name}`}
-            rows={2}
-            {...field}
-          />
-        )}
       />
-      {errors?.[name] && (
-        <div className="invalid-feedback mt-0 d-block">
-          {errors[name]?.message?.toString()}
-        </div>
-      )}
       <FormText tag="div">{helpText}</FormText>
     </>
   );

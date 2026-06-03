@@ -88,7 +88,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
           },
         });
     },
-    [launcher.id, updateSessionLauncher]
+    [launcher.id, updateSessionLauncher, launcherCategory]
   );
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import cx from "classnames";
 import {
   Database,
   FileCode,
+  Gear,
   PlayCircle,
   QuestionCircle,
 } from "react-bootstrap-icons";
@@ -29,6 +30,8 @@ export default function OffcanvasHeaderWithType({
     <Database className="me-1" />
   ) : entityType === "session-launcher" ? (
     <PlayCircle className="me-1" />
+  ) : entityType === "job-launcher" ? (
+    <Gear className="me-1" />
   ) : entityType === "code-repository" ? (
     <FileCode className="me-1" />
   ) : (

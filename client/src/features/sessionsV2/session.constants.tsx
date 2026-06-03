@@ -192,6 +192,12 @@ export const LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE = {
   pattern: "Please provide a valid container image.",
 };
 
+export const JOB_COMMAND_VALIDATION_MESSAGE = {
+  required: "Job command is required.",
+  invalid: "Invalid job command format.",
+  empty: "Job command can't be empty.",
+};
+
 export const LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE = 1_000;
 
 export const PAUSE_SESSION_WARNING_DEBOUNCE_SECONDS = 30;

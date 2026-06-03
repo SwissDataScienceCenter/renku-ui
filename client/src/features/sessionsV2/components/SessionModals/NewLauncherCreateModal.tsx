@@ -91,7 +91,8 @@ export default function NewLauncherCreateModal({
   });
   const {
     control,
-    formState: { errors, isDirty, touchedFields, isValid },
+    formState: { errors, touchedFields },
+    getValues,
     handleSubmit,
     reset,
     setValue,
@@ -119,20 +120,51 @@ export default function NewLauncherCreateModal({
     watchEnvironmentSelect,
   ]);
 
-  const onNext = useCallback(() => {
-    trigger([
-      "args",
+  const touchFields = useCallback(
+    (fieldNames: (keyof SessionLauncherForm)[]) => {
+      fieldNames.forEach((fieldName) => {
+        setValue(fieldName, getValues(fieldName), {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
+      });
+    },
+    [getValues, setValue]
+  );
+
+  const onNext = useCallback(async () => {
+    const fieldsToValidate: (keyof SessionLauncherForm)[] = [
       "builder_variant",
-      "command",
       "container_image",
       "environmentId",
       "frontend_variant",
       "repository",
-    ]);
+    ];
 
-    if (isDirty && isEnvironmentDefined && isValid)
+    if (watchEnvironmentSelect === "custom + image") {
+      fieldsToValidate.push("command", "args");
+    }
+
+    if (
+      launcherCategory === "job" &&
+      watchEnvironmentSelect === "custom + build"
+    ) {
+      fieldsToValidate.push("command", "args");
+    }
+
+    touchFields(fieldsToValidate);
+    const isValidStep = await trigger(fieldsToValidate, { shouldFocus: true });
+
+    if (isEnvironmentDefined && isValidStep) {
       setStep(LauncherStep.LauncherDetails);
-  }, [isDirty, isEnvironmentDefined, isValid, trigger]);
+    }
+  }, [
+    isEnvironmentDefined,
+    launcherCategory,
+    touchFields,
+    trigger,
+    watchEnvironmentSelect,
+  ]);
 
   const onCancel = useCallback(() => {
     setStep(LauncherStep.Environment);
@@ -303,7 +335,7 @@ export default function NewLauncherCreateModal({
             color="primary"
             data-cy="next-session-button"
             onClick={onNext}
-            type="submit"
+            type="button"
           >
             Next
             <ArrowRight className={cx("bi", "ms-1")} />
@@ -313,7 +345,7 @@ export default function NewLauncherCreateModal({
           <Button
             color="primary"
             data-cy="add-session-button"
-            disabled={result.isLoading || !isDirty}
+            disabled={result.isLoading}
             onClick={handleSubmit(onSubmit)}
             type="submit"
           >

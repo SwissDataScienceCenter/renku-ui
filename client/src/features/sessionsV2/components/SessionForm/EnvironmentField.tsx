@@ -90,6 +90,7 @@ export function EnvironmentFields({
       {watchEnvironmentSelect === "custom + build" && (
         <BuilderEnvironmentFields
           control={control}
+          errors={errors}
           launcherCategory={launcherCategory}
         />
       )}

@@ -264,6 +264,7 @@ export default function EditLauncherFormContent({
       {watchEnvironmentSelect === "custom + build" && (
         <BuilderEnvironmentFields
           control={control}
+          errors={errors}
           isEdit
           launcherCategory={launcherCategory}
         />

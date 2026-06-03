@@ -218,16 +218,18 @@ export function getFormattedEnvironmentValues(
       ...(repository_revision ? { repository_revision } : {}),
     };
 
-    if (launcherCategory === "job" && command?.trim()) {
+    if (launcherCategory === "job") {
+      if (!command?.trim()) {
+        return { success: false, error: "Job command is required" };
+      }
       const commandFormatted = safeParseJSONStringArray(command);
       if (!commandFormatted.parsed) {
         return { success: false, error: "Invalid job command format" };
       }
-      if (launcherCategory === "job") {
-        if (commandFormatted.data == null || !commandFormatted.data)
-          return { success: false, error: "Job command can't be empty" };
-        buildPayload.job_command = commandFormatted.data;
+      if (commandFormatted.data == null || commandFormatted.data.length === 0) {
+        return { success: false, error: "Job command can't be empty" };
       }
+      buildPayload.job_command = commandFormatted.data;
     }
     if (launcherCategory === "job" && args?.trim()) {
       const argsFormatted = safeParseJSONStringArray(args);
@@ -289,7 +291,7 @@ export function getFormattedEnvironmentValuesForEdit(
 } {
   const { environmentSelect } = data;
 
-  const result = getFormattedEnvironmentValues(data);
+  const result = getFormattedEnvironmentValues(data, launcherCategory);
   if (!result.success) {
     return result;
   }
@@ -326,6 +328,10 @@ export function getFormattedEnvironmentValuesForEdit(
     BUILDER_PLATFORMS.map(({ value }) => value).find(
       (value) => value === platform_
     ) ?? BUILDER_PLATFORMS[0].value;
+
+  if (launcherCategory === "job" && !commandParsed.data?.length) {
+    return { success: false, error: "Job command is required" };
+  }
 
   return {
     success: true,
@@ -475,6 +481,34 @@ export function isValidJSONStringArray(
 
   if (parseString.parsed) return true;
   return parseString.error ?? "Is not a valid JSON array string";
+}
+
+/**
+ * Validates a JSON string array field that must be present and non-empty.
+ */
+export function isValidRequiredJSONStringArray(
+  value: string,
+  requiredMessage = "Job command is required.",
+  emptyMessage = "Job command can't be empty."
+): true | string {
+  if (!value?.toString().trim()) {
+    return requiredMessage;
+  }
+
+  const validationResult = isValidJSONStringArray(value);
+  if (validationResult === true) {
+    const parsed = safeParseJSONStringArray(value);
+    if (!parsed.data?.length) {
+      return emptyMessage;
+    }
+    return true;
+  }
+
+  return validationResult ?? requiredMessage;
+}
+
+export function isJobBuildCommandValid(command: string | undefined): boolean {
+  return isValidRequiredJSONStringArray(command ?? "") === true;
 }
 
 /**
