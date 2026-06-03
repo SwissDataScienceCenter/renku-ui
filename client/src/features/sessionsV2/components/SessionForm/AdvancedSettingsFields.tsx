@@ -222,6 +222,7 @@ export interface JsonFieldProps<T extends FieldValues> {
   helpText: string;
   isOptional?: boolean;
   dataCy?: string;
+  disabled?: boolean;
 }
 
 export function JsonField<T extends FieldValues>({
@@ -233,6 +234,7 @@ export function JsonField<T extends FieldValues>({
   helpText,
   isOptional,
   dataCy,
+  disabled = false,
 }: JsonFieldProps<T>) {
   const rules = isOptional
     ? {
@@ -268,6 +270,7 @@ export function JsonField<T extends FieldValues>({
                 data-cy={dataCy ?? `session-launcher-field-${name}`}
                 id={`addSessionLauncher${name}`}
                 rows={2}
+                disabled={disabled}
                 {...field}
               />
               {error && (

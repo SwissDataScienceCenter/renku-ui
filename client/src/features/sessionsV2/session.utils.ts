@@ -630,15 +630,18 @@ export function buildJobSessionPostRequest({
   submissionId,
   resourceClass,
   diskStorage,
+  command,
   args,
   dataConnectors,
 }: BuildJobSessionPostRequestArgs): SessionPostRequest {
+  const commandParsed = safeParseJSONStringArray(command ?? "");
   const argsParsed = safeParseJSONStringArray(args ?? "");
   const request: SessionPostRequest = {
     launcher_id: launcher.id,
     submission_id: submissionId.trim(),
     resource_class_id: resourceClass.id,
-    job_args_override: args ? argsParsed.data : undefined,
+    job_command_override: command?.trim() ? commandParsed.data : undefined,
+    job_args_override: args?.trim() ? argsParsed.data : undefined,
   };
 
   if (diskStorage != null && diskStorage !== resourceClass.default_storage) {
@@ -650,8 +653,6 @@ export function buildJobSessionPostRequest({
       dataConnectorsOverrideFromConfig
     );
   }
-
-  // TODO: include command/args overrides when SessionPostRequest supports them.
 
   return request;
 }

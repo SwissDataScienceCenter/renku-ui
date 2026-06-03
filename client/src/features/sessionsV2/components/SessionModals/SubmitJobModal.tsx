@@ -61,14 +61,15 @@ import {
 } from "../../api/sessionsV2.api";
 import DataConnectorSecretsModal from "../../DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "../../SaveCloudStorageCredentials";
-import { SUBMISSION_ID_VALIDATION_MESSAGE } from "../../session.constants";
+import {
+  ENVIRONMENT_VALUES_DESCRIPTION,
+  SUBMISSION_ID_VALIDATION_MESSAGE,
+} from "../../session.constants";
 import {
   buildJobSessionPostRequest,
   generateSubmissionId,
-  getJSONStringArray,
   getSubmitJobEnvironmentKindLabel,
   isSubmissionIdTaken,
-  isValidJSONStringArray,
   validateSubmissionId,
 } from "../../session.utils";
 import {
@@ -82,6 +83,7 @@ import type { SessionStartDataConnectorConfiguration } from "../../startSessionO
 import useSessionLaunchPrerequisites from "../../useSessionLaunchPrerequisites.hook";
 import { BuildStatusDescription } from "../BuildStatusComponents";
 import SessionClassSelector from "../SessionClassSelector";
+import { JsonField } from "../SessionForm/AdvancedSettingsFields";
 import { LauncherEnvironmentIcon } from "../SessionForm/LauncherEnvironmentIcon";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -182,65 +184,6 @@ interface SubmitJobModalProps {
   toggle: () => void;
 }
 
-function SubmitJobJsonField({
-  control,
-  name,
-  label,
-  helpText,
-  info,
-  isOptional,
-  dataCy,
-  id,
-  rules,
-}: {
-  control: ReturnType<typeof useForm<SubmitJobForm>>["control"];
-  name: "command" | "args";
-  label: string;
-  helpText: string;
-  info: string;
-  isOptional?: boolean;
-  dataCy: string;
-  id: string;
-  rules?: Record<string, unknown>;
-}) {
-  return (
-    <div>
-      <Label className="form-label" for={id}>
-        {label}
-        {isOptional && (
-          <span className={cx("small", "text-muted", "ms-1")}>(Optional)</span>
-        )}
-      </Label>
-      <Controller
-        control={control}
-        name={name}
-        rules={{
-          validate: (value) => isValidJSONStringArray(value?.toString()),
-          ...rules,
-        }}
-        render={({ field, fieldState: { error } }) => (
-          <>
-            <textarea
-              className={cx("w-100 form-control", error && "is-invalid")}
-              data-cy={dataCy}
-              id={id}
-              rows={2}
-              {...field}
-            />
-            {error && (
-              <div className="invalid-feedback mt-0 d-block">
-                {error.message}
-              </div>
-            )}
-          </>
-        )}
-      />
-      <FormText tag="div">{helpText}</FormText>
-      {info && <FormText tag="div">{info}</FormText>}
-    </div>
-  );
-}
-
 interface SubmitJobFormModalProps {
   isOpen: boolean;
   launcher: SessionLauncher;
@@ -322,10 +265,16 @@ function SubmitJobFormModal({
     [launcher]
   );
 
-  const { control, handleSubmit, reset, setValue, watch } =
-    useForm<SubmitJobForm>({
-      defaultValues,
-    });
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+  } = useForm<SubmitJobForm>({
+    defaultValues,
+  });
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const watchResourceClass = watch("resourceClass");
@@ -404,6 +353,7 @@ function SubmitJobFormModal({
             id="submitJobResourceClass"
             currentSessionClass={value}
             resourcePools={resourcePools}
+            disabled={isSubmitDisabled}
             onChange={(resourceClass) => {
               onChange(resourceClass);
               if (resourceClass) {
@@ -574,6 +524,7 @@ function SubmitJobFormModal({
                         id="submitJobNickname"
                         innerRef={submissionIdInputRef}
                         type="text"
+                        disabled={isSubmitDisabled}
                       />
                       <div className="invalid-feedback">{error?.message}</div>
                     </>
@@ -584,25 +535,42 @@ function SubmitJobFormModal({
                   only, min 4 characters).
                 </FormText>
               </div>
-
               <div>
-                <Label className={cx("form-label", "me-2")}>Command:</Label>
-                <code className="user-select-all">
-                  {getJSONStringArray(launcher.environment?.command)}
-                </code>
+                <JsonField<SubmitJobForm>
+                  control={control}
+                  name="command"
+                  label={
+                    isCustomImageEnvironment ? "Command CMD" : "Job command"
+                  }
+                  helpText={
+                    isCodeEnvironment
+                      ? "Enter the command that will run as a job (JSON array format)."
+                      : 'Please enter a valid JSON array format e.g. ["npm", "build"]'
+                  }
+                  info={ENVIRONMENT_VALUES_DESCRIPTION.command}
+                  errors={errors}
+                  isOptional={!isCodeEnvironment}
+                  dataCy="submit-job-command-input"
+                  disabled={isSubmitDisabled}
+                />
               </div>
-              <SubmitJobJsonField
-                control={control}
-                name="args"
-                label={
-                  isCustomImageEnvironment ? "Command Arguments CMD" : "Job Arg"
-                }
-                helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2"]'
-                info=""
-                isOptional={isCustomImageEnvironment}
-                dataCy="submit-job-args-input"
-                id="submitJobArgs"
-              />
+              <div>
+                <JsonField<SubmitJobForm>
+                  control={control}
+                  name="args"
+                  label={
+                    isCustomImageEnvironment
+                      ? "Command Arguments CMD"
+                      : "Job arg"
+                  }
+                  helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2"]'
+                  info={ENVIRONMENT_VALUES_DESCRIPTION.args}
+                  errors={errors}
+                  isOptional={isCustomImageEnvironment || isCodeEnvironment}
+                  dataCy="submit-job-args-input"
+                  disabled={isSubmitDisabled}
+                />
+              </div>
               <div>
                 <Label className="form-label" for="submitJobResourceClass">
                   Compute resources
@@ -717,6 +685,7 @@ function SubmitJobModalContent({
         submissionId: pendingSubmit.submissionId,
         resourceClass: pendingSubmit.resourceClass,
         diskStorage: pendingSubmit.diskStorage,
+        command: pendingSubmit.command,
         args: pendingSubmit.args,
         dataConnectors: dataConnectorConfigs,
       }),

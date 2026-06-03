@@ -26,6 +26,7 @@ import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   getJSONStringArray,
   getLauncherEnvironmentSelect,
+  isJobLauncher,
 } from "../../session.utils";
 import type { EnvironmentSelectOption } from "../../sessionsV2.types";
 
@@ -40,10 +41,22 @@ export interface SubmitJobForm {
 export function getSubmitJobDefaultValues(
   launcher: SessionLauncher
 ): SubmitJobForm {
+  const isJobBuildEnvironment =
+    isJobLauncher(launcher) &&
+    launcher.environment.environment_image_source === "build";
+  const buildParameters =
+    launcher.environment.environment_image_source === "build"
+      ? launcher.environment.build_parameters
+      : undefined;
+
   return {
     submissionId: "",
-    command: getJSONStringArray(launcher.environment?.command) ?? "",
-    args: getJSONStringArray(launcher.environment?.args) ?? "",
+    command: isJobBuildEnvironment
+      ? getJSONStringArray(buildParameters?.job_command) ?? ""
+      : getJSONStringArray(launcher.environment?.command) ?? "",
+    args: isJobBuildEnvironment
+      ? getJSONStringArray(buildParameters?.job_args) ?? ""
+      : getJSONStringArray(launcher.environment?.args) ?? "",
     resourceClass: undefined,
     diskStorage: launcher.disk_storage ?? undefined,
   };
