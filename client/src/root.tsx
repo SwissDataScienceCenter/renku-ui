@@ -47,11 +47,14 @@ import NotFound from "./not-found/NotFound";
 import { storeMiddleware } from "./store/store.utils.server";
 import { CONFIG_JSON } from "./utils/.server/config.constants";
 import { validatedAppParams } from "./utils/context/appParams.utils";
+import removeChildGuard from "./utils/helpers/removeChildGuard";
 import { initClientSideSentry } from "./utils/helpers/sentry/utils";
 import { makeMeta, makeMetaTitle } from "./utils/meta/meta";
 
 import "./styles/renku_bootstrap.scss";
 import "./utils/bootstrap/bootstrap.client";
+
+removeChildGuard();
 
 type ServerLoaderReturn_ =
   | { clientSideFetch: true; config: undefined }
