@@ -870,7 +870,7 @@
       },
       "LauncherType": {
         "type": "string",
-        "enum": ["interactive", "non_interactive"]
+        "enum": ["interactive", "non-interactive"]
       },
       "SessionLaunchersList": {
         "description": "A list of Renku session launchers",
@@ -1144,6 +1144,12 @@
           },
           "context_dir": {
             "$ref": "#/components/schemas/BuildContextDir"
+          },
+          "job_command": {
+            "$ref": "#/components/schemas/EnvironmentCommand"
+          },
+          "job_args": {
+            "$ref": "#/components/schemas/EnvironmentArgs"
           }
         },
         "required": ["repository", "builder_variant", "frontend_variant"]
@@ -1185,6 +1191,12 @@
           },
           "context_dir": {
             "$ref": "#/components/schemas/BuildContextDirPatch"
+          },
+          "job_command": {
+            "$ref": "#/components/schemas/EnvironmentCommand"
+          },
+          "job_args": {
+            "$ref": "#/components/schemas/EnvironmentArgs"
           }
         }
       },

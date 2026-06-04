@@ -19,6 +19,7 @@
 import { FaviconStatus } from "../display/display.types";
 import type { ResourcePoolWithId } from "./api/computeResources.api";
 import type {
+  LauncherType,
   EnvironmentList as SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherEnvironmentParams,
@@ -27,17 +28,90 @@ import type {
 import type { ImageCheckResponse } from "./api/sessionsV2.api";
 import {
   BUILDER_PLATFORMS,
+  DEFAULT_PORT,
   DEFAULT_URL,
   ENV_VARIABLES_RESERVED_PREFIX,
+  getCompatibleFrontends,
+  LAUNCHER_BY_CATEGORY,
 } from "./session.constants";
 import type {
+  EnvironmentSelectOption,
+  LauncherCategory,
+  LauncherCategoryDefinition,
   SessionLauncherForm,
   SessionStatusState,
 } from "./sessionsV2.types";
 
+export function getLauncherCategoryDefinitionByLauncher(
+  launcher: SessionLauncher
+): LauncherCategoryDefinition {
+  return isJobLauncher(launcher)
+    ? LAUNCHER_BY_CATEGORY["job"]
+    : LAUNCHER_BY_CATEGORY["session"];
+}
+
+export function getLauncherCategory(
+  launcher: SessionLauncher
+): LauncherCategory {
+  return isJobLauncher(launcher) ? "job" : "session";
+}
+
+export function getLauncherCategoryDefinition(
+  category: LauncherCategory
+): LauncherCategoryDefinition {
+  return LAUNCHER_BY_CATEGORY[category];
+}
+
+export function getLauncherApiType(category: LauncherCategory): LauncherType {
+  return getLauncherCategoryDefinition(category).apiType;
+}
+
+export function isJobLauncher(launcher: SessionLauncher): boolean {
+  return launcher.launcher_type === "non-interactive";
+}
+
+export function isGlobalEnvironmentIncluded(allowedEnvironments: string[]) {
+  return allowedEnvironments.includes("global");
+}
+
+export function getNewLauncherFormDefaultValues(
+  environmentSelect: EnvironmentSelectOption
+): Pick<
+  SessionLauncherForm,
+  | "name"
+  | "description"
+  | "environmentSelect"
+  | "environmentId"
+  | "container_image"
+  | "default_url"
+  | "port"
+  | "repository"
+  | "platform"
+  | "builder_variant"
+  | "frontend_variant"
+  | "command"
+  | "args"
+> {
+  return {
+    name: "",
+    description: "",
+    environmentSelect,
+    environmentId: "",
+    container_image: "",
+    default_url: DEFAULT_URL,
+    port: DEFAULT_PORT,
+    repository: "",
+    platform: "",
+    builder_variant: "python",
+    frontend_variant: "jupyterlab", // eslint-disable-line spellcheck/spell-checker
+    command: "",
+    args: "",
+  };
+}
+
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
-  isLoading?: boolean,
+  isLoading?: boolean
 ): FaviconStatus {
   if (isLoading) {
     return "waiting";
@@ -63,18 +137,18 @@ export function getSessionFavicon(
 
 export function prioritizeSelectedEnvironment(
   environments?: SessionEnvironmentList,
-  selectedEnvironmentId?: string,
+  selectedEnvironmentId?: string
 ): SessionEnvironmentList | undefined {
   if (!environments || !selectedEnvironmentId) return environments;
   const targetEnvironment = environments.find(
-    (env) => env.id === selectedEnvironmentId,
+    (env) => env.id === selectedEnvironmentId
   );
 
   if (!targetEnvironment) {
     return environments;
   }
   const otherEnvironments = environments.filter(
-    (env) => env.id !== selectedEnvironmentId,
+    (env) => env.id !== selectedEnvironmentId
   );
   return [targetEnvironment, ...otherEnvironments];
 }
@@ -90,7 +164,10 @@ export function prioritizeSelectedEnvironment(
  *   - `data`: If `success` is true, contains the formatted `SessionLauncherEnvironmentParams` object.
  *   - `error`: If `success` is false, contains a string describing the error (e.g., "Invalid command or args format").
  */
-export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
+export function getFormattedEnvironmentValues(
+  data: SessionLauncherForm,
+  launcherCategory: LauncherCategory = "session"
+): {
   success: boolean;
   data?: SessionLauncherEnvironmentParams;
   error?: string;
@@ -126,20 +203,45 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
     const repository_revision = repository_revision_?.trim();
     const platform =
       BUILDER_PLATFORMS.map(({ value }) => value).find(
-        (value) => value === platform_,
+        (value) => value === platform_
       ) ?? BUILDER_PLATFORMS[0].value;
-    return {
-      success: true,
-      data: {
-        environment_image_source: "build",
-        builder_variant,
-        frontend_variant,
-        repository,
-        platforms: [platform],
-        ...(context_dir ? { context_dir } : {}),
-        ...(repository_revision ? { repository_revision } : {}),
-      },
+    const buildPayload: SessionLauncherEnvironmentParams = {
+      environment_image_source: "build",
+      builder_variant,
+      frontend_variant:
+        frontend_variant ||
+        getCompatibleFrontends(builder_variant)[0] ||
+        "jupyterlab", // eslint-disable-line spellcheck/spell-checker
+      repository,
+      platforms: [platform],
+      ...(context_dir ? { context_dir } : {}),
+      ...(repository_revision ? { repository_revision } : {}),
     };
+
+    if (launcherCategory === "job") {
+      if (!command?.trim()) {
+        return { success: false, error: "Job command is required" };
+      }
+      const commandFormatted = safeParseJSONStringArray(command);
+      if (!commandFormatted.parsed) {
+        return { success: false, error: "Invalid job command format" };
+      }
+      if (commandFormatted.data == null || commandFormatted.data.length === 0) {
+        return { success: false, error: "Job command can't be empty" };
+      }
+      buildPayload.job_command = commandFormatted.data;
+    }
+    if (launcherCategory === "job" && args?.trim()) {
+      const argsFormatted = safeParseJSONStringArray(args);
+      if (!argsFormatted.parsed) {
+        return { success: false, error: "Invalid job args format" };
+      }
+      if (argsFormatted.data == null || argsFormatted.data.length === 0) {
+        return { success: false, error: "Job args can't be empty" };
+      }
+      buildPayload.job_args = argsFormatted.data;
+    }
+    return { success: true, data: buildPayload };
   }
 
   const commandFormatted = safeParseJSONStringArray(command);
@@ -180,6 +282,7 @@ export function getFormattedEnvironmentValues(data: SessionLauncherForm): {
  */
 export function getFormattedEnvironmentValuesForEdit(
   data: SessionLauncherForm,
+  launcherCategory: LauncherCategory
 ): {
   success: boolean;
   data?: SessionLauncherEnvironmentPatchParams;
@@ -187,17 +290,19 @@ export function getFormattedEnvironmentValuesForEdit(
 } {
   const { environmentSelect } = data;
 
+  const result = getFormattedEnvironmentValues(data, launcherCategory);
+  if (!result.success) {
+    return result;
+  }
+  const commandParsed = safeParseJSONStringArray(data.command);
+  const argsParsed = safeParseJSONStringArray(data.args);
+
   if (
     environmentSelect === "global" ||
     environmentSelect === "custom + image"
   ) {
-    const result = getFormattedEnvironmentValues(data);
-    if (!result.success) {
-      return result;
-    }
     const { data: environment } = result;
-    const commandParsed = safeParseJSONStringArray(data.command);
-    const argsParsed = safeParseJSONStringArray(data.args);
+
     return {
       ...result,
       data: {
@@ -220,8 +325,12 @@ export function getFormattedEnvironmentValuesForEdit(
   } = data;
   const platform =
     BUILDER_PLATFORMS.map(({ value }) => value).find(
-      (value) => value === platform_,
+      (value) => value === platform_
     ) ?? BUILDER_PLATFORMS[0].value;
+
+  if (launcherCategory === "job" && !commandParsed.data?.length) {
+    return { success: false, error: "Job command is required" };
+  }
 
   return {
     success: true,
@@ -235,6 +344,12 @@ export function getFormattedEnvironmentValuesForEdit(
         repository_revision: repository_revision ?? "",
         context_dir: context_dir ?? "",
         platforms: [platform],
+        ...(launcherCategory === "job" && commandParsed.data
+          ? { job_command: commandParsed.data }
+          : {}),
+        ...(launcherCategory === "job" && argsParsed.data
+          ? { job_args: argsParsed.data }
+          : {}),
       },
     },
   };
@@ -246,8 +361,16 @@ export function getJSONStringArray(value: string[] | undefined) {
 }
 
 export function getLauncherDefaultValues(
-  launcher: SessionLauncher,
+  launcher: SessionLauncher
 ): Partial<SessionLauncherForm> {
+  const isJobBuildEnvironment =
+    isJobLauncher(launcher) &&
+    launcher.environment.environment_image_source === "build";
+  const buildParameters =
+    launcher.environment.environment_image_source === "build"
+      ? launcher.environment.build_parameters
+      : undefined;
+
   return {
     name: launcher.name,
     description: launcher.description ?? "",
@@ -255,8 +378,8 @@ export function getLauncherDefaultValues(
       launcher.environment.environment_kind === "GLOBAL"
         ? "global"
         : launcher.environment.environment_image_source === "build"
-          ? "custom + build"
-          : "custom + image",
+        ? "custom + build"
+        : "custom + image",
     environmentId:
       launcher.environment?.environment_kind === "GLOBAL"
         ? launcher.environment?.id
@@ -271,8 +394,12 @@ export function getLauncherDefaultValues(
     mount_directory: launcher.environment?.mount_directory,
     uid: launcher.environment?.uid,
     gid: launcher.environment?.gid,
-    command: getJSONStringArray(launcher.environment?.command),
-    args: getJSONStringArray(launcher.environment?.args),
+    command: isJobBuildEnvironment
+      ? getJSONStringArray(buildParameters?.job_command)
+      : getJSONStringArray(launcher.environment?.command),
+    args: isJobBuildEnvironment
+      ? getJSONStringArray(buildParameters?.job_args)
+      : getJSONStringArray(launcher.environment?.args),
     strip_path_prefix: launcher.environment?.strip_path_prefix ?? false,
     builder_variant:
       launcher.environment.environment_image_source === "build"
@@ -288,15 +415,15 @@ export function getLauncherDefaultValues(
         : "",
     repository_revision:
       launcher.environment.environment_image_source === "build"
-        ? (launcher.environment.build_parameters.repository_revision ?? "")
+        ? launcher.environment.build_parameters.repository_revision ?? ""
         : "",
     context_dir:
       launcher.environment.environment_image_source === "build"
-        ? (launcher.environment.build_parameters.context_dir ?? "")
+        ? launcher.environment.build_parameters.context_dir ?? ""
         : "",
     platform:
       launcher.environment.environment_image_source === "build"
-        ? (launcher.environment.build_parameters.platforms?.at(0) ?? "")
+        ? launcher.environment.build_parameters.platforms?.at(0) ?? ""
         : "",
   };
 }
@@ -358,13 +485,37 @@ export function safeParseJSONStringArray(value: string): ParseResult {
  * - `undefined` if the input is an empty or whitespace-only string (i.e., no validation performed).
  */
 export function isValidJSONStringArray(
-  value: string,
+  value: string
 ): true | string | undefined {
   const parseString = safeParseJSONStringArray(value);
   if (parseString.parsed && parseString.data === null) return undefined;
 
   if (parseString.parsed) return true;
   return parseString.error ?? "Is not a valid JSON array string";
+}
+
+/**
+ * Validates a JSON string array field that must be present and non-empty.
+ */
+export function isValidRequiredJSONStringArray(
+  value: string,
+  requiredMessage = "Job command is required.",
+  emptyMessage = "Job command can't be empty."
+): true | string {
+  if (!value?.toString().trim()) {
+    return requiredMessage;
+  }
+
+  const validationResult = isValidJSONStringArray(value);
+  if (validationResult === true) {
+    const parsed = safeParseJSONStringArray(value);
+    if (!parsed.data?.length) {
+      return emptyMessage;
+    }
+    return true;
+  }
+
+  return validationResult ?? requiredMessage;
 }
 
 /**
@@ -409,13 +560,13 @@ export function validateEnvVariableName(name: string): true | string {
 
 export function isImageCompatibleWith(
   image: ImageCheckResponse,
-  platform: ResourcePoolWithId["platform"],
+  platform: ResourcePoolWithId["platform"]
 ): boolean | "unknown" {
   if (image.platforms == null) {
     return "unknown";
   }
   const imagePlatforms = image.platforms?.map(
-    ({ os, architecture }) => `${os}/${architecture}`,
+    ({ os, architecture }) => `${os}/${architecture}`
   );
   return imagePlatforms.some((p) => p === platform);
 }
