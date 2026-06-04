@@ -4,10 +4,14 @@ export function fixExternalDOMMutationsCrashes() {
   if (typeof Node === "function" && Node.prototype) {
     const originalRemoveChild = Node.prototype.removeChild;
     Node.prototype.removeChild = function <T extends Node>(child: T): T {
-      // Translate moved it, detach from its real parent.
       if (child.parentNode !== this) {
-        if (child.parentNode) {
-          child.parentNode.removeChild(child);
+        if (console) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "Cannot remove a child from a different parent",
+            child,
+            this,
+          );
         }
         return child;
       }
