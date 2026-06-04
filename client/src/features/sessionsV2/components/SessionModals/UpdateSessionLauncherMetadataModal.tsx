@@ -49,7 +49,7 @@ export default function UpdateSessionLauncherMetadataModal({
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
-    [launcher],
+    [launcher]
   );
   const launcherCategory = getLauncherCategory(launcher);
   const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
@@ -68,7 +68,7 @@ export default function UpdateSessionLauncherMetadataModal({
       const { description, name } = data;
       const environment = getFormattedEnvironmentValuesForEdit(
         data,
-        launcherCategory,
+        launcherCategory
       );
       if (environment.success && environment.data)
         updateSessionLauncher({
@@ -80,7 +80,7 @@ export default function UpdateSessionLauncherMetadataModal({
           },
         });
     },
-    [launcher.id, launcherCategory, updateSessionLauncher],
+    [launcher.id, launcherCategory, updateSessionLauncher]
   );
 
   useEffect(() => {

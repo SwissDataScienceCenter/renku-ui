@@ -97,12 +97,12 @@ export default function SessionLauncherCard({
   const { data: builds, isLoading } = useGetBuildsQuery(
     imageBuildersEnabled && isCodeEnvironment
       ? { environmentId: environment.id }
-      : skipToken,
+      : skipToken
   );
 
   const lastBuild = builds?.at(0);
   const lastSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
+    (build) => build.status === "succeeded" && build.id !== lastBuild?.id
   );
   const hasSession = !!sessions?.length;
   const launcherDefinition =
@@ -116,7 +116,7 @@ export default function SessionLauncherCard({
       : skipToken,
     {
       pollingInterval: 1_000,
-    },
+    }
   );
 
   const otherLauncherActions = launcher &&
@@ -147,7 +147,7 @@ export default function SessionLauncherCard({
     useGetSessionsImagesQuery(
       environment?.container_image != null
         ? { imageUrl: environment.container_image }
-        : skipToken,
+        : skipToken
     );
 
   const {
@@ -168,7 +168,7 @@ export default function SessionLauncherCard({
       return undefined;
     }
     return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id),
+      classes.some(({ id }) => id === launcher.resource_class_id)
     );
   }, [launcher?.resource_class_id, resourcePools]);
 
@@ -178,7 +178,7 @@ export default function SessionLauncherCard({
         styles.SessionLauncherCard,
         "cursor-pointer",
         "shadow-none",
-        "rounded-0",
+        "rounded-0"
       )}
       data-cy="session-launcher-item"
       onClick={toggleSessionView}
@@ -196,7 +196,7 @@ export default function SessionLauncherCard({
                     className={cx(
                       "d-inline-block",
                       "link-primary",
-                      "text-body",
+                      "text-body"
                     )}
                   >
                     <span
@@ -206,7 +206,7 @@ export default function SessionLauncherCard({
                         "me-3",
                         "d-inline-flex",
                         "align-items-center",
-                        "gap-1",
+                        "gap-1"
                       )}
                     >
                       <LauncherTypeIcon className={cx("bi")} size={14} />
@@ -302,8 +302,8 @@ export default function SessionLauncherCard({
                         lastBuild?.status === "succeeded"
                           ? lastBuild?.result?.completed_at
                           : lastSuccessfulBuild?.status === "succeeded"
-                            ? lastSuccessfulBuild?.result?.completed_at
-                            : undefined
+                          ? lastSuccessfulBuild?.result?.completed_at
+                          : undefined
                       }
                     />
                   </Col>
@@ -328,7 +328,7 @@ export default function SessionLauncherCard({
                     "d-flex",
                     "flex-column",
                     "align-items-end",
-                    "gap-2",
+                    "gap-2"
                   )}
                 >
                   <SessionLauncherButtons

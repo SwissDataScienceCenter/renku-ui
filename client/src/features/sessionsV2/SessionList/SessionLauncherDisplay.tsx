@@ -60,7 +60,7 @@ export function SessionLauncherDisplay({
   const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
   const isSessionViewOpen = useMemo(
     () => hash === launcherHash,
-    [hash, launcherHash],
+    [hash, launcherHash]
   );
   const toggleSessionView = useCallback(() => {
     setHash((prev) => {
@@ -77,10 +77,10 @@ export function SessionLauncherDisplay({
         ? sessions.filter(
             (session) =>
               session.launcher_id === launcher.id &&
-              session.project_id === project.id,
+              session.project_id === project.id
           )
         : [],
-    [launcher.id, project.id, sessions],
+    [launcher.id, project.id, sessions]
   );
 
   return (

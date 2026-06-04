@@ -63,8 +63,7 @@ export interface LauncherCategoryDefinition {
 }
 
 export interface SessionLauncherForm
-  extends
-    Pick<
+  extends Pick<
       SessionLauncherPost,
       "name" | "description" | "disk_storage" | "project_id"
     >,

@@ -70,7 +70,7 @@ export default function NewLauncherModal({
         handleSelectCategory(category);
       }
     },
-    [handleSelectCategory],
+    [handleSelectCategory]
   );
 
   const showChooser = isOpen && selectedCategory == null;
@@ -104,7 +104,7 @@ export default function NewLauncherModal({
                       "border-primary",
                       "shadow-none",
                       "cursor-pointer",
-                      "text-primary",
+                      "text-primary"
                     )}
                     data-cy={`launcher-option-${category}`}
                     onClick={() => handleSelectCategory(category)}
@@ -119,7 +119,7 @@ export default function NewLauncherModal({
                           "d-flex",
                           "flex-column",
                           "align-items-center",
-                          "gap-2",
+                          "gap-2"
                         )}
                       >
                         <div className={cx("d-flex", "align-items-center")}>

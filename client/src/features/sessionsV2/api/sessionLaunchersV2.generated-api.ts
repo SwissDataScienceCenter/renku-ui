@@ -328,6 +328,8 @@ export type BuildParameters = any & {
   frontend_variant: FrontendVariant;
   repository_revision?: RepositoryRevision;
   context_dir?: BuildContextDir;
+  job_command?: EnvironmentCommand;
+  job_args?: EnvironmentArgs;
 };
 export type EnvironmentImageSourceBuild = "build";
 export type EnvironmentWithBuildGet = EnvironmentWithoutContainerImage & {
@@ -397,6 +399,8 @@ export type BuildParametersPatch = {
   frontend_variant?: FrontendVariant;
   repository_revision?: RepositoryRevisionPatch;
   context_dir?: BuildContextDirPatch;
+  job_command?: EnvironmentCommand;
+  job_args?: EnvironmentArgs;
 };
 export type EnvironmentPatchInLauncher = EnvironmentPatch & {
   environment_kind?: EnvironmentKind;

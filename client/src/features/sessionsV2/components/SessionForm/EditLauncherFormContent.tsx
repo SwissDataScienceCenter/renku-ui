@@ -86,7 +86,7 @@ export default function EditLauncherFormContent({
   const [debouncedContainerImage, setDebouncedContainerImage] =
     useDebouncedState<string>(
       watchContainerImage ?? "",
-      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE,
+      LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE
     );
   useEffect(() => {
     setDebouncedContainerImage(watchContainerImage ?? "");
@@ -99,12 +99,12 @@ export default function EditLauncherFormContent({
       debouncedContainerImage &&
       !errors.container_image
       ? { imageUrl: debouncedContainerImage }
-      : skipToken,
+      : skipToken
   );
 
   const orderedEnvironment = useMemo(
     () => prioritizeSelectedEnvironment(environments, environmentId),
-    [environments, environmentId],
+    [environments, environmentId]
   );
 
   const renderEnvironmentList = () => {
@@ -181,7 +181,7 @@ export default function EditLauncherFormContent({
                     data?.accessible === true &&
                     !isFetching &&
                     !inputModified &&
-                    "is-valid",
+                    "is-valid"
                 )}
                 data-cy="custom-image-input"
                 id="addSessionLauncherContainerImage"

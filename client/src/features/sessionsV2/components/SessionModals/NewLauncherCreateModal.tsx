@@ -74,7 +74,7 @@ export default function NewLauncherCreateModal({
   const { data: environments } = useGetSessionEnvironmentsQuery({});
   const [addSessionLauncher, result] = useAddSessionLauncherMutation();
   const { data: project } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
-    namespace && slug ? { namespace, slug } : skipToken,
+    namespace && slug ? { namespace, slug } : skipToken
   );
   const projectId = project?.id;
 
@@ -83,7 +83,7 @@ export default function NewLauncherCreateModal({
 
   const defaultFormValues = useMemo(
     () => getNewLauncherFormDefaultValues(defaultEnvironmentSelect),
-    [defaultEnvironmentSelect],
+    [defaultEnvironmentSelect]
   );
 
   const useFormResult = useForm<SessionLauncherForm>({
@@ -209,7 +209,7 @@ export default function NewLauncherCreateModal({
     trigger(["environmentId"]);
     if (environments?.length) {
       const environmentSelected = environments.find(
-        (env) => env.id === watchEnvironmentId,
+        (env) => env.id === watchEnvironmentId
       );
       setValue("name", environmentSelected?.name ?? "");
     }
@@ -228,7 +228,7 @@ export default function NewLauncherCreateModal({
         `${
           watchBuilderVariant.charAt(0).toUpperCase() +
           watchBuilderVariant.slice(1)
-        } environment`,
+        } environment`
       );
     }
   }, [watchEnvironmentSelect, watchBuilderVariant, setValue]);
@@ -260,7 +260,7 @@ export default function NewLauncherCreateModal({
       backdrop="static"
       centered
       className={cx(
-        step !== LauncherStep.LauncherDetails && scrollableModalStyles.modal,
+        step !== LauncherStep.LauncherDetails && scrollableModalStyles.modal
       )}
       fullscreen="lg"
       isOpen={isOpen}

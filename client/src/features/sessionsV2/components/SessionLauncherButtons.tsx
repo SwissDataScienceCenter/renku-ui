@@ -47,10 +47,11 @@ import BuildLauncherButtons, {
 } from "./BuildLauncherButtons";
 import SubmitJobLauncherAction from "./SubmitJobLauncherAction";
 
-interface SessionLauncherDefaultAction extends Pick<
-  SessionLauncherButtonsProps,
-  "hasSession" | "launcher" | "namespace" | "slug"
-> {
+interface SessionLauncherDefaultAction
+  extends Pick<
+    SessionLauncherButtonsProps,
+    "hasSession" | "launcher" | "namespace" | "slug"
+  > {
   displayBuildActions: boolean;
   displayLaunchSession: boolean;
   displaySubmitJob: boolean;
@@ -91,7 +92,7 @@ function SessionLauncherDefaultAction({
       launcherId: launcher.id,
       namespace,
       slug,
-    },
+    }
   );
 
   if (imageCheckLoading)
@@ -112,6 +113,35 @@ function SessionLauncherDefaultAction({
                 hasSession ? "btn-outline-primary" : "btn-primary",
                 hasSession && "disabled",
                 displayBuildActions ? "rounded-0" : "rounded-end-0",
+              )}
+              to={startUrl}
+              data-cy="start-session-button"
+            >
+              <PlayCircle className={cx("bi", "me-1")} />
+              Launch
+            </Link>
+          </span>
+        )
+      : displaySubmitJob &&
+        launcher && (
+          <span id={`launch-btn-${launcher.id}`}>
+            <SubmitJobLauncherAction
+              launcher={launcher}
+              className={displayBuildActions ? "rounded-0" : "rounded-end-0"}
+            />
+          </span>
+        );
+  const launchAction =
+    launcherCategory === "session"
+      ? displayLaunchSession && (
+          <span id={`launch-btn-${launcher.id}`}>
+            <Link
+              className={cx(
+                "btn",
+                "btn-sm",
+                hasSession ? "btn-outline-primary" : "btn-primary",
+                hasSession && "disabled",
+                displayBuildActions ? "rounded-0" : "rounded-end-0"
               )}
               to={startUrl}
               data-cy="start-session-button"
@@ -200,12 +230,12 @@ export function SessionLauncherButtons({
       launcherId: launcher.id,
       namespace,
       slug,
-    },
+    }
   );
   const { data, isLoading } = useGetSessionsImagesQuery(
     environment.environment_kind === "CUSTOM" && environment.container_image
       ? { imageUrl: environment.container_image }
-      : skipToken,
+      : skipToken
   );
   const displayLaunchSession =
     !isCodeEnvironment ||
