@@ -4,10 +4,10 @@ import { HydratedRouter } from "react-router/dom";
 
 import { fixExternalDOMMutationsCrashes } from "./utils/helpers/domMutation.utils";
 
-startTransition(() => {
-  // Prevent crashes from browser extensions like Google Translate
-  fixExternalDOMMutationsCrashes();
+// Prevent crashes from browser extensions like Google Translate
+fixExternalDOMMutationsCrashes();
 
+startTransition(() => {
   hydrateRoot(
     document,
     <StrictMode>
