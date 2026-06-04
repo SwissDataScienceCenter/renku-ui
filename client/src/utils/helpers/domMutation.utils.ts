@@ -1,6 +1,15 @@
 // Guards against React crashes when the DOM is manipulated by extensions like Google Translate
 // ? Reference: https://github.com/facebook/react/issues/11538#issuecomment-417504600
+declare global {
+  interface Window {
+    __renku_appliedDOMFix?: boolean;
+  }
+}
+
 export function fixExternalDOMMutationsCrashes() {
+  // Prevent invoking the code twice
+  if (typeof window !== "object" || window.__renku_appliedDOMFix) return;
+
   if (typeof Node === "function" && Node.prototype) {
     const originalRemoveChild = Node.prototype.removeChild;
     Node.prototype.removeChild = function <T extends Node>(child: T): T {
@@ -37,4 +46,6 @@ export function fixExternalDOMMutationsCrashes() {
       return originalInsertBefore.call(this, newNode, referenceNode) as T;
     };
   }
+
+  window.__renku_appliedDOMFix = true;
 }
