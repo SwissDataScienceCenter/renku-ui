@@ -24,8 +24,15 @@ export function fixExternalDOMMutationsCrashes() {
       referenceNode: Node | null,
     ): T {
       if (referenceNode && referenceNode.parentNode !== this) {
-        // Reference node was moved. Do not throw, append instead
-        return originalInsertBefore.call(this, newNode, null) as T;
+        if (console) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "Cannot insert before a reference node from a different parent",
+            referenceNode,
+            this,
+          );
+        }
+        return newNode;
       }
       return originalInsertBefore.call(this, newNode, referenceNode) as T;
     };
