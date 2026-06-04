@@ -1,5 +1,6 @@
-// Guards against crashes from Google Translate plugin mutating React text nodes
-export default function removeChildGuard() {
+// Guards against React crashes when the DOM is manipulated by extensions like Google Translate
+// ? Reference: https://github.com/facebook/react/issues/11538#issuecomment-417504600
+export function fixExternalDOMMutationsCrashes() {
   if (typeof Node === "function" && Node.prototype) {
     const originalRemoveChild = Node.prototype.removeChild;
     Node.prototype.removeChild = function <T extends Node>(child: T): T {
