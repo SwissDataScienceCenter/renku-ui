@@ -130,6 +130,8 @@ export function getNewLauncherFormDefaultValues(
   };
 }
 
+
+
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
   isLoading?: boolean
