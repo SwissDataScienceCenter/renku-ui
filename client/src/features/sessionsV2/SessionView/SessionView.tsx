@@ -384,11 +384,7 @@ export function SessionView({
                       session={session}
                       launcher={launcher}
                     />
-                    <SessionCard
-                      session={session}
-                      project={project}
-                      launcherCategory={launcherCategory || orphanCategory}
-                    />
+                    <SessionCard session={session} project={project} />
                   </div>
                 ))
               ) : (
