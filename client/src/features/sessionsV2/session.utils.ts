@@ -350,12 +350,8 @@ export function getFormattedEnvironmentValuesForEdit(
         repository_revision: repository_revision ?? "",
         context_dir: context_dir ?? "",
         platforms: [platform],
-        ...(launcherCategory === "job" && commandParsed.data
-          ? { job_command: commandParsed.data }
-          : {}),
-        ...(launcherCategory === "job" && argsParsed.data
-          ? { job_args: argsParsed.data }
-          : {}),
+        ...(commandParsed.data && { job_command: commandParsed.data }),
+        ...(argsParsed.data && { job_args: argsParsed.data }),
       },
     },
   };
@@ -369,14 +365,6 @@ export function getJSONStringArray(value: string[] | undefined) {
 export function getLauncherDefaultValues(
   launcher: SessionLauncher
 ): Partial<SessionLauncherForm> {
-  const isJobBuildEnvironment =
-    isJobLauncher(launcher) &&
-    launcher.environment.environment_image_source === "build";
-  const buildParameters =
-    launcher.environment.environment_image_source === "build"
-      ? launcher.environment.build_parameters
-      : undefined;
-
   return {
     name: launcher.name,
     description: launcher.description ?? "",
@@ -400,12 +388,8 @@ export function getLauncherDefaultValues(
     mount_directory: launcher.environment?.mount_directory,
     uid: launcher.environment?.uid,
     gid: launcher.environment?.gid,
-    command: isJobBuildEnvironment
-      ? getJSONStringArray(buildParameters?.job_command)
-      : getJSONStringArray(launcher.environment?.command),
-    args: isJobBuildEnvironment
-      ? getJSONStringArray(buildParameters?.job_args)
-      : getJSONStringArray(launcher.environment?.args),
+    command: getJSONStringArray(launcher.environment?.command),
+    args: getJSONStringArray(launcher.environment?.args),
     strip_path_prefix: launcher.environment?.strip_path_prefix ?? false,
     builder_variant:
       launcher.environment.environment_image_source === "build"
