@@ -43,7 +43,15 @@ export interface SvgIconProps {
 
 export type LauncherCategory = "session" | "job";
 
-export type LauncherApiType = LauncherType;
+/** Shared API discriminator for `launcher_type` and `session_type`. */
+export type SessionLauncherKind = LauncherType & SessionType;
+
+export const SESSION_LAUNCHER_KIND = {
+  INTERACTIVE: "interactive",
+  NON_INTERACTIVE: "non-interactive",
+} as const satisfies Record<string, SessionLauncherKind>;
+
+export type LauncherApiType = SessionLauncherKind;
 
 export type EnvironmentSelectOption =
   | "global"
@@ -56,6 +64,15 @@ export interface LauncherCategoryDefinition {
     display: string;
     inline: string;
     action: string;
+    state: {
+      running: string;
+      starting: string;
+      hibernated: string;
+      hibernatedAndDelete: string;
+      failed: string;
+      stopping: string;
+      succeeded: string;
+    };
   };
   icon: Icon;
   description: string;
@@ -136,7 +153,7 @@ export interface SessionV2 {
   project_id: string;
   launcher_id: string;
   resource_class_id: number;
-  session_type: SessionType;
+  session_type: SessionLauncherKind;
   submission_id?: SubmissionId;
   command_args?: string[] | null;
   job_completed_at?: string | null;

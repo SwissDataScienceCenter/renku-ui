@@ -44,7 +44,7 @@ import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.a
 import { LauncherEnvironmentIcon } from "./components/SessionForm/LauncherEnvironmentIcon";
 import SessionLauncherCard from "./SessionList/SessionLauncherCard";
 import { SessionLauncherDisplay } from "./SessionList/SessionLauncherDisplay";
-import { SessionV2 } from "./sessionsV2.types";
+import { SESSION_LAUNCHER_KIND, SessionV2 } from "./sessionsV2.types";
 import { SessionView } from "./SessionView/SessionView";
 
 export function getShowSessionUrlByProject(
@@ -76,7 +76,9 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     data: sessions,
     error: sessionsError,
     isLoading: isLoadingSessions,
-  } = useGetSessionsQueryV2({});
+  } = useGetSessionsQueryV2({
+    sessionType: SESSION_LAUNCHER_KIND.NON_INTERACTIVE,
+  });
 
   const isLoading = isLoadingLaunchers || isLoadingSessions;
   const error = launchersError || sessionsError;
@@ -110,7 +112,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       <p className="text-body-secondary">
         {totalSessions > 0
           ? "Launchers are available to everyone who can see the project. Only you can see your running sessions and jobs."
-          : "Define interactive environments in which to do your work and share it  with others."}
+          : "Define interactive or not environments in which to do your work and share it  with others."}
       </p>
       {loading}
       {totalSessions > 0 && !isLoading && (

@@ -282,10 +282,16 @@ export function SessionLauncherButtons({
   return (
     <>
       <ButtonWithMenuV2
-        color={"primary"}
+        color={
+          displayBuildActions || (launcherCategory === "session" && hasSession)
+            ? "outline-primary"
+            : "primary"
+        }
         default={defaultAction}
         preventPropagation
         size="sm"
+        // hasSession disables the dropdown for session launchers (one session each).
+        // Job launchers allow multiple jobs; the Submit button stays enabled.
         disabled={hasSession}
         isDisabledDropdownToggle={false}
       >

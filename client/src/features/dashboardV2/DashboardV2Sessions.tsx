@@ -22,6 +22,7 @@ import cx from "classnames";
 import { generatePath, Link } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 
+import { sessionLauncherKindToCategory } from "~/features/sessionsV2/session.utils.ts";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -112,10 +113,10 @@ interface DashboardSessionProps {
 function DashboardSession({ session }: DashboardSessionProps) {
   const { project_id: projectId, launcher_id: launcherId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
-    projectId ? { projectId } : skipToken,
+    projectId ? { projectId } : skipToken
   );
   const { data: launcher } = useGetProjectSessionLauncherQuery(
-    launcherId ? { launcherId } : skipToken,
+    launcherId ? { launcherId } : skipToken
   );
 
   const projectUrl = project
@@ -124,10 +125,10 @@ function DashboardSession({ session }: DashboardSessionProps) {
         slug: project.slug,
       })
     : projectId
-      ? generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
-          id: projectId,
-        })
-      : ABSOLUTE_ROUTES.v2.index;
+    ? generatePath(ABSOLUTE_ROUTES.v2.projects.showById, {
+        id: projectId,
+      })
+    : ABSOLUTE_ROUTES.v2.index;
   const showSessionUrl = project
     ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
         namespace: project.namespace,
@@ -136,7 +137,8 @@ function DashboardSession({ session }: DashboardSessionProps) {
       })
     : ABSOLUTE_ROUTES.v2.index;
 
-  const sessionStyles = getSessionStatusStyles(session);
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const sessionStyles = getSessionStatusStyles(session, launcherCategory);
   const state = session.status.state;
 
   return (
@@ -151,7 +153,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
           "gap-3",
           "link-primary",
           "text-body",
-          "text-decoration-none",
+          "text-decoration-none"
         )}
         to={{ pathname: projectUrl }}
       >
@@ -165,7 +167,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
                   "cursor-pointer",
                   "d-inline-block",
                   "link-primary",
-                  "text-body",
+                  "text-body"
                 )}
                 data-cy="list-session-link"
               >
@@ -176,7 +178,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
                       {launcher?.environment?.name}
                     </>
                   ) : (
-                    (projectId ?? "Unknown")
+                    projectId ?? "Unknown"
                   )}
                 </h4>
               </Col>
@@ -195,7 +197,7 @@ function DashboardSession({ session }: DashboardSessionProps) {
               "mt-2",
               "d-block",
               "d-sm-flex",
-              "gap-5",
+              "gap-5"
             )}
             xs={12}
           >

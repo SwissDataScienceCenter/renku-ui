@@ -25,6 +25,7 @@ import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.
 import UpdateSessionLauncherMetadataModal from "../components/SessionModals/UpdateSessionLauncherMetadataModal";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
+import { SESSION_LAUNCHER_KIND } from "../sessionsV2.types";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherCard from "./SessionLauncherCard";
@@ -69,7 +70,9 @@ export function SessionLauncherDisplay({
     });
   }, [launcherHash, setHash]);
 
-  const { data: sessions } = useGetSessionsQueryV2({});
+  const { data: sessions } = useGetSessionsQueryV2({
+    sessionType: launcher.launcher_type,
+  });
 
   const filteredSessions = useMemo(
     () =>
@@ -95,7 +98,9 @@ export function SessionLauncherDisplay({
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleDelete={toggleDelete}
         toggleShareLink={
-          launcher.launcher_type === "interactive" ? toggleShareLink : undefined
+          launcher.launcher_type === SESSION_LAUNCHER_KIND.INTERACTIVE
+            ? toggleShareLink
+            : undefined
         }
         toggleSessionView={toggleSessionView}
       />

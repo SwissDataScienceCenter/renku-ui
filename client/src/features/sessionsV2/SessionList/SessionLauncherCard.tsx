@@ -55,7 +55,8 @@ import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
 import {
   getLauncherCategory,
-  getLauncherCategoryDefinitionByLauncher,
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
 } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionCard from "./SessionCard";
@@ -104,8 +105,11 @@ export default function SessionLauncherCard({
     (build) => build.status === "succeeded" && build.id !== lastBuild?.id
   );
   const hasSession = !!sessions?.length;
-  const launcherDefinition =
-    launcher && getLauncherCategoryDefinitionByLauncher(launcher);
+  const sessionType = sessions?.at(0)?.session_type ?? "interactive";
+  const launcherCategory = sessionLauncherKindToCategory(
+    launcher?.launcher_type || sessionType
+  );
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   const LauncherTypeIcon = launcherDefinition?.icon || PlayCircle;
   const launcherTypeLabel = launcherDefinition?.text.display || null;
 
