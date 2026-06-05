@@ -4,7 +4,11 @@ import * as Sentry from "@sentry/react-router";
 import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
-import type { EntryContext, RouterContextProvider } from "react-router";
+import type {
+  EntryContext,
+  RouterContextProvider,
+  ServerInstrumentation,
+} from "react-router";
 import { ServerRouter } from "react-router";
 
 import {
@@ -16,6 +20,123 @@ import {
 } from "./utils/helpers/sentry/utils";
 
 export const streamTimeout = 5_000;
+
+const enableRouteLogs = process.env.REACT_ROUTER_ROUTE_LOGS === "1";
+
+function stringifyError(error: unknown): string | undefined {
+  if (error == null) return undefined;
+  if (error instanceof Error) return `${error.name}: ${error.message}`;
+  if (typeof error === "string") return error;
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
+function logReactRouterEvent(event: Record<string, unknown>) {
+  // Keep logs as JSON, and avoid logging cookies, auth headers, or response bodies here.
+  // eslint-disable-next-line no-console
+  console.log(
+    JSON.stringify({
+      timestamp: new Date().toISOString(),
+      ...event,
+    }),
+  );
+}
+
+const routeLoggingInstrumentation: ServerInstrumentation = {
+  handler({ instrument }) {
+    instrument({
+      async request(handleRequest, { request }) {
+        const start = Date.now();
+
+        const result = await handleRequest();
+
+        logReactRouterEvent({
+          msg: "React Router request",
+          method: request.method,
+          url: request.url,
+          durationMs: Date.now() - start,
+          error: stringifyError(result.error),
+        });
+      },
+    });
+  },
+
+  route({ instrument, id }) {
+    instrument({
+      async middleware(callMiddleware, { request, params, pattern }) {
+        const start = Date.now();
+
+        const result = await callMiddleware();
+
+        logReactRouterEvent({
+          msg: "React Router middleware",
+          routeId: id,
+          pattern,
+          method: request.method,
+          url: request.url,
+          params,
+          durationMs: Date.now() - start,
+          error: stringifyError(result.error),
+        });
+      },
+
+      async loader(callLoader, { request, params, pattern }) {
+        const start = Date.now();
+
+        const result = await callLoader();
+
+        logReactRouterEvent({
+          msg: "React Router loader",
+          routeId: id,
+          pattern,
+          method: request.method,
+          url: request.url,
+          params,
+          durationMs: Date.now() - start,
+          error: stringifyError(result.error),
+        });
+      },
+
+      async action(callAction, { request, params, pattern }) {
+        const start = Date.now();
+
+        const result = await callAction();
+
+        logReactRouterEvent({
+          msg: "React Router action",
+          routeId: id,
+          pattern,
+          method: request.method,
+          url: request.url,
+          params,
+          durationMs: Date.now() - start,
+          error: stringifyError(result.error),
+        });
+      },
+
+      async lazy(callLazy) {
+        const start = Date.now();
+
+        const result = await callLazy();
+
+        logReactRouterEvent({
+          msg: "React Router lazy route",
+          routeId: id,
+          durationMs: Date.now() - start,
+          error: stringifyError(result.error),
+        });
+      },
+    });
+  },
+};
+
+export const instrumentation = enableRouteLogs
+  ? [routeLoggingInstrumentation]
+  : [];
 
 function handleRequest(
   request: Request,
@@ -87,7 +208,7 @@ function handleRequest(
         },
         onError(error: unknown) {
           responseStatusCode = 500;
-          // Log streaming rendering errors from inside the shell.  Don't log
+          // Log streaming rendering errors from inside the shell. Don't log
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
