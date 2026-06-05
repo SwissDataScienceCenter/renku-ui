@@ -254,6 +254,52 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getResourcePoolsByResourcePoolIdMembers: build.query<
+      GetResourcePoolsByResourcePoolIdMembersApiResponse,
+      GetResourcePoolsByResourcePoolIdMembersApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_pools/${queryArg.resourcePoolId}/members`,
+      }),
+    }),
+    postResourcePoolsByResourcePoolIdMembers: build.mutation<
+      PostResourcePoolsByResourcePoolIdMembersApiResponse,
+      PostResourcePoolsByResourcePoolIdMembersApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_pools/${queryArg.resourcePoolId}/members`,
+        method: "POST",
+        body: queryArg.poolMembers,
+      }),
+    }),
+    putResourcePoolsByResourcePoolIdMembers: build.mutation<
+      PutResourcePoolsByResourcePoolIdMembersApiResponse,
+      PutResourcePoolsByResourcePoolIdMembersApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_pools/${queryArg.resourcePoolId}/members`,
+        method: "PUT",
+        body: queryArg.poolMembers,
+      }),
+    }),
+    getResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberId: build.query<
+      GetResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdApiResponse,
+      GetResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_pools/${queryArg.resourcePoolId}/members/${queryArg.memberType}/${queryArg.memberId}`,
+      }),
+    }),
+    deleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberId:
+      build.mutation<
+        DeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdApiResponse,
+        DeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/resource_pools/${queryArg.resourcePoolId}/members/${queryArg.memberType}/${queryArg.memberId}`,
+          method: "DELETE",
+        }),
+      }),
     getResourcePoolsByResourcePoolIdQuota: build.query<
       GetResourcePoolsByResourcePoolIdQuotaApiResponse,
       GetResourcePoolsByResourcePoolIdQuotaApiArg
@@ -493,6 +539,41 @@ export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   resourcePoolId: number;
   userId: string;
 };
+export type GetResourcePoolsByResourcePoolIdMembersApiResponse =
+  /** status 200 The list of members */ PoolMembersResponse;
+export type GetResourcePoolsByResourcePoolIdMembersApiArg = {
+  resourcePoolId: number;
+};
+export type PostResourcePoolsByResourcePoolIdMembersApiResponse =
+  /** status 201 The members were added */ PoolMembersResponse;
+export type PostResourcePoolsByResourcePoolIdMembersApiArg = {
+  resourcePoolId: number;
+  /** List of members */
+  poolMembers: PoolMembers;
+};
+export type PutResourcePoolsByResourcePoolIdMembersApiResponse =
+  /** status 200 The members were set */ PoolMembersResponse;
+export type PutResourcePoolsByResourcePoolIdMembersApiArg = {
+  resourcePoolId: number;
+  /** List of members */
+  poolMembers: PoolMembers;
+};
+export type GetResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdApiResponse =
+  /** status 200 The member belongs to the resource pool */ PoolMemberResponse;
+export type GetResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdApiArg =
+  {
+    resourcePoolId: number;
+    memberType: "user" | "group" | "project";
+    memberId: string;
+  };
+export type DeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdApiResponse =
+  unknown;
+export type DeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdApiArg =
+  {
+    resourcePoolId: number;
+    memberType: "user" | "group" | "project";
+    memberId: string;
+  };
 export type GetResourcePoolsByResourcePoolIdQuotaApiResponse =
   /** status 200 The resource quota for the resource pool */ QuotaWithId;
 export type GetResourcePoolsByResourcePoolIdQuotaApiArg = {
@@ -549,6 +630,7 @@ export type NodeAffinity = {
 };
 export type NodeAffinityList = NodeAffinity[];
 export type IntegerId = number;
+export type QuotaEnforced = boolean;
 export type ResourceClassWithId = {
   name: Name;
   default: DefaultFlag;
@@ -560,6 +642,7 @@ export type ResourceClassWithId = {
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   id: IntegerId;
+  quota_enforced?: QuotaEnforced;
 };
 export type ErrorResponse = {
   error: {
@@ -719,6 +802,7 @@ export type ResourceClass = {
   default_storage: Storage;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
+  quota_enforced?: QuotaEnforced;
 };
 export type ResourceClasses = ResourceClass[];
 export type ResourcePool = {
@@ -763,6 +847,7 @@ export type ResourceClassProperties = {
   default_storage?: Storage;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
+  quota_enforced?: QuotaEnforced;
 };
 export type ResourceClassPatchWithId = ResourceClassProperties & {
   id: IntegerId;
@@ -810,6 +895,49 @@ export type PoolUserWithId = {
   no_default_access?: boolean;
 };
 export type PoolUsersWithId = PoolUserWithId[];
+export type PoolMemberUserResponse = {
+  member_type: "user";
+  id: UserId;
+  role: "viewer" | "prohibited";
+  email: string;
+};
+export type PoolMemberGroupResponse = {
+  member_type: "group";
+  id: Ulid;
+  role: "group_viewer";
+  slug: string;
+  name: string;
+};
+export type PoolMemberProjectResponse = {
+  member_type: "project";
+  id: Ulid;
+  role: "project_viewer";
+  /** Full project namespace path (e.g. user/project) */
+  namespace: string;
+  name: string;
+};
+export type PoolMemberResponse =
+  | PoolMemberUserResponse
+  | PoolMemberGroupResponse
+  | PoolMemberProjectResponse;
+export type PoolMembersResponse = PoolMemberResponse[];
+export type PoolMemberUser = {
+  member_type: "user";
+  id: UserId;
+  role: "viewer" | "prohibited";
+};
+export type PoolMemberGroup = {
+  member_type: "group";
+  id: Ulid;
+  role: "group_viewer";
+};
+export type PoolMemberProject = {
+  member_type: "project";
+  id: Ulid;
+  role: "project_viewer";
+};
+export type PoolMember = PoolMemberUser | PoolMemberGroup | PoolMemberProject;
+export type PoolMembers = PoolMember[];
 export type ResourcePoolsWithId = ResourcePoolWithId[];
 export type IntegerIds = IntegerId[];
 export type Version = {
@@ -845,6 +973,11 @@ export const {
   usePutResourcePoolsByResourcePoolIdUsersMutation,
   useGetResourcePoolsByResourcePoolIdUsersAndUserIdQuery,
   useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
+  useGetResourcePoolsByResourcePoolIdMembersQuery,
+  usePostResourcePoolsByResourcePoolIdMembersMutation,
+  usePutResourcePoolsByResourcePoolIdMembersMutation,
+  useGetResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdQuery,
+  useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
   useGetResourcePoolsByResourcePoolIdQuotaQuery,
   usePutResourcePoolsByResourcePoolIdQuotaMutation,
   usePatchResourcePoolsByResourcePoolIdQuotaMutation,
