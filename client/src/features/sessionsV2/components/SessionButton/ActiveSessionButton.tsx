@@ -387,7 +387,7 @@ export default function ActiveSessionButton({
       status === "stopping" || isStopping ? (
         <Button color="primary" data-cy="stopping-btn" disabled>
           <Loader className="me-1" inline size={16} />
-          Dismissing job
+          Dismissing
         </Button>
       ) : isHibernating ? (
         <Button color="primary" data-cy="stopping-btn" disabled>
@@ -402,7 +402,7 @@ export default function ActiveSessionButton({
             onClick={toggleLogsModal}
           >
             <FileEarmarkText className={cx("bi", "me-1")} />
-            Logs
+            Get logs
           </Button>
         </>
       ) : status === "running" ? (
@@ -412,7 +412,7 @@ export default function ActiveSessionButton({
           onClick={toggleLogsModal}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
-          Logs
+          Get Logs
         </Button>
       ) : status === "hibernated" ? (
         <Button
@@ -447,11 +447,11 @@ export default function ActiveSessionButton({
       ) : status === "succeeded" ? (
         <Button
           color="outline-primary"
-          data-cy="show-logs-session-button"
-          onClick={toggleLogsModal}
+          data-cy="delete-session-button"
+          onClick={onStopSession}
         >
-          <FileEarmarkText className={cx("bi", "me-1")} />
-          Logs
+          <Trash className={cx("bi", "me-1")} />
+          Dismiss
         </Button>
       ) : (
         <>
@@ -494,8 +494,8 @@ export default function ActiveSessionButton({
 
   const dismissAction = launcherCategory === "job" && (
     <DropdownItem data-cy="delete-session-button" onClick={onStopSession}>
-      <XLg className={cx("bi", "me-1")} />
-      Dismiss job
+      <Trash className={cx("bi", "me-1")} />
+      Dismiss
     </DropdownItem>
   );
 
@@ -537,7 +537,7 @@ export default function ActiveSessionButton({
           preventPropagation
           size="sm"
         >
-          {dismissAction}
+          {status === "succeeded" ? logsAction : dismissAction}
         </ButtonWithMenuV2>
         <SessionLogsModal
           isOpen={showLogsModal}

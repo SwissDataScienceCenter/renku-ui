@@ -29,6 +29,7 @@ import {
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
+import JobCard from "~/features/sessionsV2/SessionList/JobCard";
 import { Loader } from "../../../components/Loader";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -73,6 +74,7 @@ interface SessionLauncherCardProps {
   toggleUpdateEnvironment?: () => void;
   toggleShareLink?: () => void;
   toggleSessionView?: () => void;
+  openSessionViewWithJob?: (submissionId: string) => void;
 }
 export default function SessionLauncherCard({
   launcher,
@@ -84,6 +86,7 @@ export default function SessionLauncherCard({
   toggleUpdateEnvironment,
   toggleSessionView,
   toggleShareLink,
+  openSessionViewWithJob,
 }: SessionLauncherCardProps) {
   const { params } = useContext(AppContext);
   const environment = launcher?.environment;
@@ -175,11 +178,21 @@ export default function SessionLauncherCard({
         "rounded-0"
       )}
       data-cy="session-launcher-item"
-      onClick={toggleSessionView}
-      tabIndex={0}
+      tabIndex={-1}
     >
       <CardBody className={cx("p-0")}>
-        <div className={cx(hasSession && "border-bottom", "p-3")}>
+        <div
+          className={cx(hasSession && "border-bottom", "p-3")}
+          onClick={toggleSessionView}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              toggleSessionView?.();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+        >
           <Row className="g-2">
             <Col className={cx("align-items-center")} xs={12} lg={6} xl={8}>
               {launcher && (
@@ -366,13 +379,24 @@ export default function SessionLauncherCard({
           <div className="p-0">
             {sessions &&
               sessions?.length > 0 &&
-              sessions.map((session) => (
-                <SessionCard
-                  key={`session-item-${session.name}`}
-                  project={project}
-                  session={session}
-                />
-              ))}
+              sessions.map((session) => {
+                if (session.session_type === "interactive")
+                  return (
+                    <SessionCard
+                      key={`session-item-${session.name}`}
+                      project={project}
+                      session={session}
+                    />
+                  );
+                return (
+                  <JobCard
+                    key={`job-item-${session.name}`}
+                    project={project}
+                    session={session}
+                    onOpen={openSessionViewWithJob}
+                  />
+                );
+              })}
           </div>
         )}
       </CardBody>

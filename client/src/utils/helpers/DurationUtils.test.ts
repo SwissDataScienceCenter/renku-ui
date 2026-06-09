@@ -53,6 +53,22 @@ describe("toHumanDuration", () => {
 
     expect(durationStr).toBe("< 1 second");
   });
+
+  it("converts a valid duration with short format", () => {
+    const duration = Duration.fromObject({ minutes: 3, seconds: 15 });
+
+    const durationStr = toHumanDuration({ duration, format: "short" });
+
+    expect(durationStr).toBe("3min");
+  });
+
+  it("converts a valid very short duration with short format", () => {
+    const duration = Duration.fromObject({ milliseconds: 638 });
+
+    const durationStr = toHumanDuration({ duration, format: "short" });
+
+    expect(durationStr).toBe("< 1s");
+  });
 });
 
 describe("ensureDuration", () => {
@@ -233,6 +249,34 @@ describe("toHumanRelativeDuration", () => {
     const relativeStr = toHumanRelativeDuration({ datetime, now });
 
     expect(relativeStr).toBe("just now");
+  });
+
+  it("converts a valid datetime in the past with short format", () => {
+    const duration = Duration.fromObject({ seconds: 195 });
+    const datetime = DateTime.utc().minus(duration);
+    const now = DateTime.utc();
+
+    const relativeStr = toHumanRelativeDuration({
+      datetime,
+      now,
+      format: "short",
+    });
+
+    expect(relativeStr).toBe("3min ago");
+  });
+
+  it("converts a valid datetime in the future with short format", () => {
+    const duration = Duration.fromObject({ days: 296 });
+    const datetime = DateTime.utc().plus(duration);
+    const now = DateTime.utc();
+
+    const relativeStr = toHumanRelativeDuration({
+      datetime,
+      now,
+      format: "short",
+    });
+
+    expect(relativeStr).toBe("9mo from now");
   });
 });
 

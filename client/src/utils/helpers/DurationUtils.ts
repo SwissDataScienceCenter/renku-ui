@@ -16,24 +16,62 @@
  * limitations under the License.
  */
 
-import {
-  DateTime,
-  Duration,
-  DurationLikeObject,
-  DurationObjectUnits,
-} from "luxon";
+import { DateTime, Duration, DurationLikeObject } from "luxon";
 
 import { ensureDateTime } from "./DateTimeUtils";
+
+const DURATION_ORDERED_DISPLAY_UNITS = [
+  "years",
+  "months",
+  "weeks",
+  "days",
+  "hours",
+  "minutes",
+  "seconds",
+] as const;
+
+type DisplayDurationUnit = (typeof DURATION_ORDERED_DISPLAY_UNITS)[number];
+
+export type DurationFormat = "short" | "long";
+
+const SHORT_DURATION_UNIT_LABELS: Record<DisplayDurationUnit, string> = {
+  years: "yr",
+  months: "mo",
+  weeks: "w",
+  days: "d",
+  hours: "h",
+  minutes: "min",
+  seconds: "s",
+};
+
+function formatDurationUnitLabel({
+  unit,
+  rescaled,
+  format,
+}: {
+  unit: DisplayDurationUnit;
+  rescaled: number;
+  format: DurationFormat;
+}): string {
+  if (format === "short") {
+    return SHORT_DURATION_UNIT_LABELS[unit];
+  }
+
+  return rescaled < 2 ? unit.slice(0, -1) : unit;
+}
 
 /**
  * Converts a duration-like object to a human-readable string.
  * @param duration a Duration instance or a number of seconds
+ * @param format use short unit labels (e.g. "min", "s") or long labels (e.g. "minutes", "seconds")
  * @returns a human-readable string
  */
 export function toHumanDuration({
   duration: duration_,
+  format = "long",
 }: {
   duration: Duration | number;
+  format?: DurationFormat;
 }): string {
   const duration = ensureDuration(duration_);
 
@@ -45,11 +83,11 @@ export function toHumanDuration({
   const rescaled = Math.floor(Math.abs(duration.as(unit)));
 
   if (unit === "seconds" && rescaled < 1) {
-    return "< 1 second";
+    return format === "short" ? "< 1s" : "< 1 second";
   }
 
-  const unitStr = rescaled < 2 ? unit.slice(0, -1) : unit;
-  return `${rescaled} ${unitStr}`;
+  const unitStr = formatDurationUnitLabel({ unit, rescaled, format });
+  return format === "long" ? `${rescaled} ${unitStr}` : `${rescaled}${unitStr}`;
 }
 
 /**
@@ -60,7 +98,7 @@ export function toHumanDuration({
  */
 export function toFullHumanDuration(
   duration: Duration | number,
-  units: (keyof DurationLikeObject)[] = ["days", "hours", "minutes", "seconds"],
+  units: (keyof DurationLikeObject)[] = ["days", "hours", "minutes", "seconds"]
 ): string {
   const duration_ = ensureDuration(duration);
 
@@ -70,8 +108,8 @@ export function toFullHumanDuration(
   const shiftedDuration = duration_.shiftTo(...units);
   const filteredDuration = Object.fromEntries(
     Object.entries(shiftedDuration.toObject()).filter(
-      ([, value]) => value !== 0,
-    ),
+      ([, value]) => value !== 0
+    )
   );
   return Duration.fromObject(filteredDuration)
     .toHuman({
@@ -89,32 +127,22 @@ export function ensureDuration(duration: Duration | number): Duration {
   return duration instanceof Duration
     ? duration
     : isFinite(duration)
-      ? Duration.fromObject({ seconds: duration })
-      : Duration.fromISO("");
+    ? Duration.fromObject({ seconds: duration })
+    : Duration.fromISO("");
 }
-
-type DurationUnit = keyof DurationObjectUnits;
-
-const DURATION_ORDERED_DISPLAY_UNITS: readonly DurationUnit[] = [
-  "years",
-  "months",
-  "weeks",
-  "days",
-  "hours",
-  "minutes",
-  "seconds",
-] as const;
 
 /**
  * @returns the most significant duration unit from the input
  */
-export function getMostSignificantUnit(duration: Duration): DurationUnit {
+export function getMostSignificantUnit(
+  duration: Duration
+): DisplayDurationUnit {
   if (!duration.isValid) {
     return "seconds";
   }
 
   const unit = DURATION_ORDERED_DISPLAY_UNITS.find(
-    (unit) => Math.abs(duration.as(unit)) >= 1,
+    (unit) => Math.abs(duration.as(unit)) >= 1
   );
   return unit ?? "seconds";
 }
@@ -145,14 +173,17 @@ export function toShortHumanDuration({
  * e.g. "3 minutes ago", "2 days from now".
  * @param datetime a DateTime instance, a Date instance or an ISO 8601 string
  * @param now the current instant
+ * @param format use short unit labels (e.g. "3min ago") or long labels (e.g. "3 minutes ago")
  * @returns a human-readable string
  */
 export function toHumanRelativeDuration({
   datetime: datetime_,
   now: now_,
+  format = "long",
 }: {
   datetime: DateTime | Date | string;
   now: DateTime | Date;
+  format?: DurationFormat;
 }): string {
   const datetime = ensureDateTime(datetime_);
   const now = ensureDateTime(now_);
@@ -169,6 +200,6 @@ export function toHumanRelativeDuration({
   }
 
   const suffix = duration.valueOf() > 0 ? "ago" : "from now";
-  const durationStr = toHumanDuration({ duration });
+  const durationStr = toHumanDuration({ duration, format });
   return `${durationStr} ${suffix}`;
 }

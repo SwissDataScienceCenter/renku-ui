@@ -23,7 +23,15 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode, useRef } from "react";
-import { CircleFill, Clock, Hourglass, Icon } from "react-bootstrap-icons";
+import {
+  CheckCircleFill,
+  CircleFill,
+  Clock,
+  ExclamationDiamondFill,
+  GearFill,
+  Hourglass,
+  Icon,
+} from "react-bootstrap-icons";
 import {
   Badge,
   PopoverBody,
@@ -37,6 +45,11 @@ import {
 } from "~/features/sessionsV2/session.utils";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
+import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
+import {
+  DurationFormat,
+  toHumanDuration,
+} from "../../../../utils/helpers/DurationUtils";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   JOB_TITLE,
@@ -52,6 +65,8 @@ import {
   SessionStatus,
   SessionV2,
 } from "../../sessionsV2.types";
+
+import statusStyles from "./SessionStatus.module.scss";
 
 interface PrettySessionErrorMessageProps {
   message: string | null | undefined;
@@ -140,6 +155,7 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
   const state = status.state;
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
+  const animationIcon = statusStyles.spinIcon;
 
   const badge =
     state === "running" && !image ? (
@@ -149,12 +165,21 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
           Running {launcherDefinition.text.display}
         </span>
       </SessionBadge>
-    ) : state === "running" ? (
+    ) : state === "running" && launcherCategory === "session" ? (
       <SessionBadge className={cx("border-success", "bg-success-subtle")}>
-        <CircleFill className={cx("bi", "me-1", "text-success-emphasis")} />
+        <CheckCircleFill
+          className={cx("bi", "me-1", "text-success-emphasis")}
+        />
         <span className="text-success-emphasis">
           Running {launcherDefinition.text.display}
         </span>
+      </SessionBadge>
+    ) : state === "running" && launcherCategory === "job" ? (
+      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
+        <GearFill
+          className={cx("bi", "me-1", "text-warning-emphasis", animationIcon)}
+        />
+        <span className="text-warning-emphasis">Running</span>
       </SessionBadge>
     ) : state === "starting" && launcherCategory === "session" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
@@ -169,23 +194,22 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
         </span>
       </SessionBadge>
     ) : state === "starting" && launcherCategory === "job" ? (
-      <SessionBadge className={cx("border-success", "bg-success-subtle")}>
+      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
         <Loader
           size={12}
-          className={cx("me-1", "text-success-emphasis")}
+          className={cx("me-1", "text-warning-emphasis")}
           inline
         />
-        <span className="text-success-emphasis">
-          {launcherDefinition.text.state.starting}{" "}
-          {launcherDefinition.text.display}
+        <span className="text-warning-emphasis">
+          {launcherDefinition.text.state.starting}
         </span>
       </SessionBadge>
     ) : state === "succeeded" ? (
       <SessionBadge className={cx("border-success", "bg-success-subtle")}>
-        <CircleFill className={cx("bi", "me-1", "text-success-emphasis")} />
-        <span className="text-success-emphasis">
-          Completed {launcherDefinition.text.display}
-        </span>
+        <CheckCircleFill
+          className={cx("bi", "me-1", "text-success-emphasis")}
+        />
+        <span className="text-success-emphasis">Completed</span>
       </SessionBadge>
     ) : state === "stopping" ? (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
@@ -202,22 +226,22 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
       <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
         <CircleFill className={cx("bi", "me-1", "text-light-emphasis")} />
         <span className="text-dark-emphasis">
-          Paused {launcherDefinition.text.display}
+          {launcherDefinition.text.state.hibernated}
         </span>
       </SessionBadge>
     ) : state === "failed" ? (
       <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
-        <CircleFill
+        <ExclamationDiamondFill
           className={cx("bi", "me-1", "text-danger-emphasis")}
           fontSize={16}
         />
         <span className="text-danger-emphasis">
-          Error in {launcherDefinition.text.display}
+          {launcherDefinition.text.state.failed}
         </span>
       </SessionBadge>
     ) : (
       <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <CircleFill className={cx("bi", "me-1", "text-warning")} />
+        <ExclamationDiamondFill className={cx("bi", "me-1", "text-warning")} />
         <span className="text-warning">Unknown status</span>
       </SessionBadge>
     );
@@ -302,19 +326,15 @@ export function SessionStatusV2Label({
   };
 
   const JobIcon = styles.jobIcon as Icon;
-  const animationIcon = { animation: "spin 2s linear infinite" };
-  // todo: should apply for running and no starting
+  const animationIcon = statusStyles.spinIcon;
   const isStartingRunningJob =
-    (status.state === SESSION_STATES.STARTING ||
-      status.state === SESSION_STATES.RUNNING) &&
-    launcherCategory === "job";
+    status.state === SESSION_STATES.RUNNING && launcherCategory === "job";
   return (
     <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
       <div className={cx("fs-4", "fw-bold")}>
         {includeIcon && (
           <JobIcon
-            style={isStartingRunningJob ? animationIcon : undefined}
-            className={cx("bi", "me-1")}
+            className={cx("bi", "me-1", isStartingRunningJob && animationIcon)}
           />
         )}
         <span
@@ -332,8 +352,9 @@ export function SessionStatusV2Label({
 export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
+  includeIcon = true,
 }: ActiveSessionDescV2Props) {
-  const { started, status, session_type } = session;
+  const { started, status, session_type, job_completed_at } = session;
   const launcherCategory = sessionLauncherKindToCategory(session_type);
   return (
     <div
@@ -345,11 +366,14 @@ export function SessionStatusV2Description({
         "align-items-center"
       )}
     >
-      {started && (
+      {(started || status.state === "succeeded") && (
         <SessionStatusV2Text
-          startTimestamp={started}
+          startTimestamp={started ?? ""}
+          jobCompletedAt={job_completed_at}
           status={status}
           launcherCategory={launcherCategory}
+          format="short"
+          includeIcon={includeIcon}
         />
       )}
       {showInfoDetails && (
@@ -439,40 +463,71 @@ export function SessionStatusV2Title({
 }
 interface SessionStatusV2TextProps {
   startTimestamp: string;
+  jobCompletedAt?: string | null;
   status: SessionStatus;
   launcherCategory: LauncherCategory;
+  format?: DurationFormat;
+  includeIcon?: boolean;
 }
+
+function getJobRunningDuration({
+  startTimestamp,
+  jobCompletedAt,
+  format,
+}: {
+  startTimestamp: string;
+  jobCompletedAt: string;
+  format: DurationFormat;
+}): string | null {
+  const start = ensureDateTime(startTimestamp);
+  const end = ensureDateTime(jobCompletedAt);
+
+  if (!start.isValid || !end.isValid) {
+    return null;
+  }
+
+  return toHumanDuration({ duration: end.diff(start), format });
+}
+
 function SessionStatusV2Text({
   startTimestamp,
+  jobCompletedAt,
   status,
   launcherCategory,
+  format = "long",
+  includeIcon = true,
 }: SessionStatusV2TextProps) {
   const { state, will_hibernate_at, will_delete_at } = status;
   const launcherCategoryDefinition =
     getLauncherCategoryDefinition(launcherCategory);
   const startTimeText = (
-    <TimeCaption datetime={startTimestamp} enableTooltip noCaption />
+    <TimeCaption
+      datetime={startTimestamp}
+      format={format}
+      enableTooltip
+      noCaption
+    />
   );
   const hibernationTimestamp =
     state === "hibernated" ? will_hibernate_at ?? "" : null;
 
   return state === "running" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
+      {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
       <span>
         {launcherCategoryDefinition.text.state.running} {startTimeText}
       </span>
     </div>
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
+      {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
       <span>
         {launcherCategoryDefinition.text.state.starting} since {startTimeText}
       </span>
     </div>
   ) : state === "hibernated" && will_delete_at ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Hourglass fontSize={16} className="flex-shrink-0" />
+      {includeIcon && <Hourglass fontSize={16} className="flex-shrink-0" />}
       <span>
         {launcherCategoryDefinition.text.state.hibernatedAndDelete}{" "}
         <TimeCaption
@@ -480,33 +535,66 @@ function SessionStatusV2Text({
           enableTooltip
           noCaption
           suffix=" "
+          prefix=""
+          format={format}
         />
       </span>
     </div>
   ) : state === "hibernated" && hibernationTimestamp ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
+      {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
       <span>
         {launcherCategoryDefinition.text.state.hibernated}{" "}
-        <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />
+        <TimeCaption
+          datetime={hibernationTimestamp}
+          format={format}
+          enableTooltip
+          noCaption
+        />
       </span>
     </div>
   ) : state === "hibernated" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
+      {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
       <span>
         {launcherCategoryDefinition.text.state.hibernated}{" "}
         <MissingHibernationInfo />
       </span>
     </div>
-  ) : state === "failed" ? (
+  ) : state === "failed" && launcherCategory === "session" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      <Clock fontSize={16} className="flex-shrink-0" />
+      {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
       <span>
         {launcherCategoryDefinition.text.state.failed} {"("}created{" "}
         {startTimeText}
         {")"}
       </span>
+    </div>
+  ) : state === "failed" && launcherCategory === "job" ? (
+    <div className={cx("d-flex", "align-items-center", "gap-2")}>
+      {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
+      <span>
+        {launcherCategoryDefinition.text.state.failed} {startTimeText}
+      </span>
+    </div>
+  ) : state === "succeeded" && startTimestamp && jobCompletedAt ? (
+    <div className={cx("d-flex", "align-items-center", "gap-2")}>
+      {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
+      <span>
+        Completed in{" "}
+        {getJobRunningDuration({
+          startTimestamp,
+          jobCompletedAt,
+          format,
+        }) ?? launcherCategoryDefinition.text.state.succeeded}
+      </span>
+    </div>
+  ) : state === "succeeded" ? (
+    <div className={cx("d-flex", "align-items-center", "gap-2")}>
+      {includeIcon && (
+        <CheckCircleFill fontSize={16} className="flex-shrink-0" />
+      )}
+      <span>{launcherCategoryDefinition.text.state.succeeded}</span>
     </div>
   ) : null;
 }

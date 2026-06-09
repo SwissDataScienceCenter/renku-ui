@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import cx from "classnames";
-import { ReactNode, useCallback, useMemo } from "react";
+import { ReactNode, useCallback } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
@@ -27,6 +27,7 @@ import { Loader } from "~/components/Loader";
 import {
   getLauncherCategory,
   getLauncherCategoryDefinition,
+  toggleLauncherHash,
 } from "~/features/sessionsV2/session.utils";
 import StartSessionButton from "~/features/sessionsV2/StartSessionButton";
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
@@ -80,13 +81,9 @@ function SessionLauncherDefaultAction({
     environment.environment_image_source === "image";
 
   const [, setHash] = useLocationHash();
-  const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
   const toggleLauncherView = useCallback(() => {
-    setHash((prev) => {
-      const isOpen = prev === launcherHash;
-      return isOpen ? "" : launcherHash;
-    });
-  }, [launcherHash, setHash]);
+    setHash((prev) => toggleLauncherHash(prev, launcher.id));
+  }, [launcher.id, setHash]);
 
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
