@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Eye, Globe, Lock, Pencil, PlusLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -68,6 +68,7 @@ import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo
 
 interface AddOrEditDataConnectorProps {
   dataConnector?: DataConnectorRead | null;
+  isOpen?: boolean;
   project?: Project;
   storageSecrets: DataConnectorSecret[];
   switchMode?: () => void;
@@ -237,6 +238,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
     formState: { dirtyFields, errors, touchedFields },
     setValue,
     getValues,
+    reset,
     watch,
   } = useForm<DataConnectorMountForm>({
     mode: "onChange",
@@ -254,8 +256,50 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
       visibility: flatDataConnector.visibility || "private",
     },
   });
+  const lastResetId = useRef<string | null>(null);
+
   const currentKeywords = watch("keywords");
   const oldKeywords = dataConnector?.keywords ?? [];
+
+  useEffect(() => {
+    const dataConnectorId = dataConnector?.id ?? null;
+
+    if (dataConnectorId == null) {
+      lastResetId.current = null;
+      return;
+    }
+    if (flatDataConnector.dataConnectorId !== dataConnectorId) return;
+    if (lastResetId.current === dataConnectorId) return;
+
+    reset({
+      keyword: "",
+      keywords: flatDataConnector.keywords || [],
+      mountPoint:
+        flatDataConnector.mountPoint ||
+        `${flatDataConnector.schema?.toLowerCase()}`,
+      name: flatDataConnector.name || "",
+      namespace: flatDataConnector.namespace || "",
+      readOnly: flatDataConnector.readOnly ?? false,
+      saveCredentials: cloudStorageState.saveCredentials,
+      slug: flatDataConnector.slug || "",
+      visibility: flatDataConnector.visibility || "private",
+    });
+
+    lastResetId.current = dataConnectorId;
+  }, [
+    cloudStorageState.saveCredentials,
+    dataConnector?.id,
+    flatDataConnector.dataConnectorId,
+    flatDataConnector.keywords,
+    flatDataConnector.mountPoint,
+    flatDataConnector.name,
+    flatDataConnector.namespace,
+    flatDataConnector.readOnly,
+    flatDataConnector.schema,
+    flatDataConnector.slug,
+    flatDataConnector.visibility,
+    reset,
+  ]);
 
   const onFieldValueChange = useCallback(
     (field: DataConnectorMountFormFields, value: string | boolean) => {
