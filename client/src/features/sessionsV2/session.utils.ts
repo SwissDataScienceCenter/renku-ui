@@ -208,7 +208,7 @@ export function getFormattedEnvironmentValues(
       ) ?? BUILDER_PLATFORMS[0].value;
     const isCompatible =
       BUILDER_FRONTEND_COMBINATIONS[builder_variant]?.includes(
-        frontend_variant,
+        frontend_variant
       ) ?? true;
     const buildPayload: SessionLauncherEnvironmentParams = {
       environment_image_source: "build",
