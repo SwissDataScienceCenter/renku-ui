@@ -81,8 +81,8 @@ export const store = configureStore({
       serializableCheck: false,
     })
       .concat(adminKeycloakApi.middleware)
-      .concat(computeResourcesApi.middleware)
       .concat(connectedServicesApi.middleware)
+      .concat(computeResourcesApi.middleware)
       .concat(dataConnectorsApi.middleware)
       .concat(doiResolverApi.middleware)
       .concat(notificationsApi.middleware)
