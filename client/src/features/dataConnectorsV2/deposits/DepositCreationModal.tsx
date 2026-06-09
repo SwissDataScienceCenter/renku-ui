@@ -16,7 +16,9 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import {
   useGetOauth2ConnectionsQuery,
@@ -25,7 +27,7 @@ import {
 import { DataConnectorRead } from "../api/data-connectors.api";
 import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
-import { PROVIDER_OPTIONS } from "./deposits.constants";
+import { ENVIDAT_DASHBOARD_URL, PROVIDER_OPTIONS } from "./deposits.constants";
 import { CreateDepositionForm } from "./deposits.types";
 
 interface DepositCreationModalProps {
@@ -229,6 +231,11 @@ export default function DepositCreationModal({
                   />
                 </div>
               )}
+              {userSelectedProvider === "envidat" && (
+                <div className="mt-1">
+                  <EnviDatWarning />
+                </div>
+              )}
             </div>
           </FormGroup>
 
@@ -262,5 +269,20 @@ export default function DepositCreationModal({
         </ModalFooter>
       </Form>
     </Modal>
+  );
+}
+
+export function EnviDatWarning() {
+  return (
+    <WarnAlert dismissible={false}>
+      <p className="mb-0">
+        You need an account with <code>Editor</code> permissions on the{" "}
+        <ExternalLink href={ENVIDAT_DASHBOARD_URL}>
+          EnviDat platform
+        </ExternalLink>{" "}
+        to publish Datasets. Please check your account before starting the
+        export.
+      </p>
+    </WarnAlert>
   );
 }

@@ -27,7 +27,9 @@ import {
   usePatchDepositsByDepositIdMutation,
   usePostDepositsByDepositIdJobMutation,
 } from "../api/data-connectors.enhanced-api";
+import { EnviDatWarning } from "./DepositCreationModal";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
+import { PROVIDER_OPTIONS } from "./deposits.constants";
 import { EditDepositionForm } from "./deposits.types";
 
 interface DepositEditModalProps {
@@ -53,16 +55,23 @@ export default function DepositEditModal({
     usePatchDepositsByDepositIdMutation();
   const [postJob, postJobResult] = usePostDepositsByDepositIdJobMutation();
 
-  // Fetch connection information for the target provider
+  // Fetch connection information for the selected provider if necessary
+  const targetProviderIntegration = PROVIDER_OPTIONS.find(
+    (provider) => provider.value === deposit?.provider && provider.integration,
+  )?.integration;
+
   const {
     data: providers,
     error: providersError,
     isLoading: isLoadingProviders,
-  } = useGetOauth2ProvidersQuery(deposit?.provider ? undefined : skipToken);
-
+  } = useGetOauth2ProvidersQuery(
+    targetProviderIntegration ? undefined : skipToken,
+  );
   const targetProvider = useMemo(() => {
-    return providers?.find((provider) => provider.kind === deposit?.provider);
-  }, [providers, deposit?.provider]);
+    return providers?.find(
+      (provider) => provider.kind === targetProviderIntegration,
+    );
+  }, [providers, targetProviderIntegration]);
 
   const {
     data: connections,
@@ -216,14 +225,21 @@ export default function DepositEditModal({
                 need to change it, please delete this export and create a new
                 one with the desired configuration.
               </FormText>
-              <div className="mt-1">
-                <DepositIntegrationInfo
-                  connection={targetConnection}
-                  isError={!!error}
-                  isLoading={isLoading}
-                  provider={targetProvider}
-                />
-              </div>
+              {targetProviderIntegration && (
+                <div className="mt-1">
+                  <DepositIntegrationInfo
+                    connection={targetConnection}
+                    isError={!!error}
+                    isLoading={isLoading}
+                    provider={targetProvider}
+                  />
+                </div>
+              )}
+              {deposit?.provider === "envidat" && (
+                <div className="mt-1">
+                  <EnviDatWarning />
+                </div>
+              )}
             </div>
           </FormGroup>
 
