@@ -122,10 +122,7 @@ export default function ActiveSessionButton({
       // TODO: fix react-hooks/set-state-in-effect
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsResuming(false);
-      navigate(showSessionUrl);
-      // TODO: fix react-hooks/set-state-in-effect
-
-      setIsResuming(false);
+      if (session.session_type === "interactive") navigate(showSessionUrl);
     }
   }, [
     isResuming,
@@ -133,6 +130,7 @@ export default function ActiveSessionButton({
     isWaitingForResumedSession,
     navigate,
     showSessionUrl,
+    session.session_type,
   ]);
   useEffect(() => {
     if (errorResumeSession) {

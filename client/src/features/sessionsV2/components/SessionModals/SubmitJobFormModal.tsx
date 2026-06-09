@@ -37,7 +37,6 @@ import { SuccessAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import { TimeCaption } from "~/components/TimeCaption";
-import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
@@ -104,9 +103,6 @@ export default function SubmitJobFormModal({
     isCodeEnvironment,
     isExternalImageEnvironment,
   } = useSubmitJobEnvironmentFlags(launcher);
-
-  const permissions = useProjectPermissions({ projectId });
-  const canWrite = permissions?.write === true;
 
   const {
     data: resourcePools,
@@ -218,13 +214,11 @@ export default function SubmitJobFormModal({
     (isExternalImageEnvironment && isLoadingContainerImage);
 
   const isSubmitDisabled =
-    !canWrite ||
     !displayLaunchSession ||
     isLoadingPrerequisites ||
     isCheckingLaunchPrerequisites ||
     !watchResourceClass ||
     postSessionResult.isLoading;
-
   const handleToggle = useCallback(() => {
     toggle();
   }, [toggle]);

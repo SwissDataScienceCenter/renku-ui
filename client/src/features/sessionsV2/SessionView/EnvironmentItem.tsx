@@ -559,12 +559,12 @@ function CustomBuildEnvironmentValues({
         <>
           <EnvironmentJSONArrayRowWithLabel
             label="Job command"
-            value={safeStringify(job_command)}
+            value={safeStringify(command)}
             dataCy="session-view-job-command"
           />
           <EnvironmentJSONArrayRowWithLabel
             label="Job args"
-            value={safeStringify(job_args)}
+            value={safeStringify(args)}
             dataCy="session-view-job-args"
           />
         </>

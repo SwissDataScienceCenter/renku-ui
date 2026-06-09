@@ -28,10 +28,12 @@ import {
   getLauncherCategory,
   getLauncherCategoryDefinition,
 } from "~/features/sessionsV2/session.utils";
+import StartSessionButton from "~/features/sessionsV2/StartSessionButton";
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
+import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 import {
   Build,
   SessionLauncher,
@@ -189,7 +191,15 @@ export function SessionLauncherButtons({
 }: SessionLauncherButtonsProps) {
   const launcherCategory = getLauncherCategory(launcher);
   const { environment } = launcher;
+  const {
+    isLoading: isLoadingPermissions,
+    isUninitialized: isPermissionsUninitialized,
+  } = projectV2Api.endpoints.getProjectsByProjectIdPermissions.useQueryState(
+    launcher.project_id ? { projectId: launcher.project_id } : skipToken
+  );
   const permissions = useProjectPermissions({ projectId: launcher.project_id });
+  const arePermissionsResolved =
+    !isLoadingPermissions && !isPermissionsUninitialized;
   const isCodeEnvironment = environment.environment_image_source === "build";
   const isExternalImageEnvironment =
     environment.environment_kind === "CUSTOM" &&
@@ -279,6 +289,22 @@ export function SessionLauncherButtons({
     );
 
   if (!defaultAction) return null;
+
+  if (
+    launcherCategory === "job" &&
+    arePermissionsResolved &&
+    !permissions.write
+  )
+    return (
+      <StartSessionButton
+        launcher={launcher}
+        namespace={namespace}
+        slug={slug}
+        launcherCategory={launcherCategory}
+        isDisabledDropdownToggle={true}
+      />
+    );
+
   return (
     <>
       <ButtonWithMenuV2

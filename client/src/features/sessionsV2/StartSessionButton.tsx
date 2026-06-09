@@ -23,6 +23,7 @@ import { PlayCircle } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
+import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 import SubmitJobLauncherAction from "~/features/sessionsV2/components/SubmitJobLauncherAction";
 import { LauncherCategory } from "~/features/sessionsV2/sessionsV2.types";
@@ -80,6 +81,8 @@ export default function StartSessionButton({
       : skipToken
   );
 
+  const permissions = useProjectPermissions({ projectId: launcher.project_id });
+
   const hasSuccessfulBuild = builds?.find(
     (build) => build.status === "succeeded"
   );
@@ -88,8 +91,11 @@ export default function StartSessionButton({
 
   const isLaunchButtonDisabled =
     environment.environment_image_source === "build" && !hasSuccessfulBuild;
-  const launchButtonDisableReason =
-    "No image available. Run the Build action to generate an image.";
+  const launchButtonDisableReason = `No image available. ${
+    permissions.write
+      ? "Run the Build action"
+      : "Contact the project administrator "
+  } to generate an image.`;
 
   const launchAction = (
     <span id={`launch-btn-${launcher.id}`}>

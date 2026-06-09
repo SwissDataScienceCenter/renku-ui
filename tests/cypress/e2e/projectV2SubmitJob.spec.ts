@@ -94,7 +94,7 @@ function openSubmitJobModal() {
 }
 
 function fillSubmissionId(submissionId: string) {
-  cy.getDataCy("submit-job-nickname-input").clear().type(submissionId);
+  cy.getDataCy("submit-job-submission-id-input").clear().type(submissionId);
 }
 
 function confirmSubmitJob() {
@@ -215,9 +215,9 @@ describe("submit job from launcher", () => {
       );
       cy.getDataCy("submit-job-args-input").should("be.visible");
 
-      cy.getDataCy("submit-job-nickname-input").type("bad nick");
+      cy.getDataCy("submit-job-submission-id-input").type("bad nick");
       confirmSubmitJob();
-      cy.getDataCy("submit-job-nickname-input")
+      cy.getDataCy("submit-job-submission-id-input")
         .parent()
         .find(".invalid-feedback")
         .should("be.visible");
@@ -230,7 +230,7 @@ describe("submit job from launcher", () => {
       cy.contains("Job run01 submitted successfully").should("be.visible");
     });
 
-    it("rejects duplicate nicknames for the same launcher", () => {
+    it("rejects duplicate submission ids for the same launcher", () => {
       fixtures.getSessionsV2({
         fixture: "projectV2/sessions-with-submission-id.json",
         name: "getSessionsWithSubmission",
@@ -243,7 +243,7 @@ describe("submit job from launcher", () => {
       openSubmitJobModal();
       fillSubmissionId("run01");
       confirmSubmitJob();
-      cy.getDataCy("submit-job-nickname-input")
+      cy.getDataCy("submit-job-submission-id-input")
         .parent()
         .find(".invalid-feedback")
         .should("contain.text", "already used");
