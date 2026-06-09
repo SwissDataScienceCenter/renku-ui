@@ -130,7 +130,7 @@ export default function BuilderEnvironmentFields({
               label="Job command"
               info={ENVIRONMENT_VALUES_DESCRIPTION.command}
               errors={errors}
-              helpText="Enter the command that will run as a job (JSON array format)."
+              helpText='Enter the command that will run as a job (JSON array format) e.g. ["python","my_repo/main.py"]'
               isOptional={false}
               dataCy="job-command-input"
             />
@@ -142,7 +142,7 @@ export default function BuilderEnvironmentFields({
               label="Job args"
               info={ENVIRONMENT_VALUES_DESCRIPTION.args}
               errors={errors}
-              helpText="Enter the command args that will run as a job (JSON array format)."
+              helpText='Enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
               isOptional={true}
               dataCy="job-args-input"
             />

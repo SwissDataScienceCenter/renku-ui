@@ -392,7 +392,7 @@ export function AdvancedSettingsFields<
             isOptional={true}
             info={ENVIRONMENT_VALUES_DESCRIPTION.command}
             errors={errors}
-            helpText='Please enter a valid JSON array format e.g. ["python3","main.py"]'
+            helpText='Please enter a valid JSON array format e.g. ["python","my_repo/main.py"]'
           />
         </div>
         <div className={cx("col-12")}>

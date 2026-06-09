@@ -27,6 +27,7 @@ import type {
 } from "./api/sessionLaunchersV2.api";
 import type { ImageCheckResponse } from "./api/sessionsV2.api";
 import {
+  BUILDER_FRONTEND_COMBINATIONS,
   BUILDER_PLATFORMS,
   DEFAULT_PORT,
   DEFAULT_URL,
@@ -205,13 +206,16 @@ export function getFormattedEnvironmentValues(
       BUILDER_PLATFORMS.map(({ value }) => value).find(
         (value) => value === platform_
       ) ?? BUILDER_PLATFORMS[0].value;
+    const isCompatible =
+      BUILDER_FRONTEND_COMBINATIONS[builder_variant]?.includes(
+        frontend_variant
+      ) ?? true;
     const buildPayload: SessionLauncherEnvironmentParams = {
       environment_image_source: "build",
       builder_variant,
-      frontend_variant:
-        frontend_variant ||
-        getCompatibleFrontends(builder_variant)[0] ||
-        "jupyterlab", // eslint-disable-line spellcheck/spell-checker
+      frontend_variant: isCompatible
+        ? frontend_variant
+        : getCompatibleFrontends(builder_variant)[0] || "jupyterlab", // eslint-disable-line spellcheck/spell-checker
       repository,
       platforms: [platform],
       ...(context_dir ? { context_dir } : {}),
