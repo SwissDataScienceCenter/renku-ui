@@ -67,6 +67,62 @@
         "tags": ["platform"]
       }
     },
+    "/platform/authorization_config": {
+      "get": {
+        "summary": "Get the current authorization configuration for Renku",
+        "responses": {
+          "200": {
+            "description": "The authorization configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthzConfig"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      },
+      "patch": {
+        "summary": "Update the authorization configuration",
+        "description": "Requires admin permissions.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthzConfigPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated platform configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthzConfig"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["platform"]
+      }
+    },
     "/platform/redirects": {
       "get": {
         "summary": "Return a list of redirects from old URLs to new locations",
@@ -391,6 +447,41 @@
           }
         },
         "required": ["error"]
+      },
+      "AuthzFlag": {
+        "type": "string",
+        "enum": ["admins_only", "registered_users"],
+        "description": "Controls whether only admins or every registered user can perform a specific action.\n"
+      },
+      "AuthzConfig": {
+        "description": "The authorization configuration for the whole platform.",
+        "type": "object",
+        "properties": {
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
+          },
+          "create_projects": {
+            "$ref": "#/components/schemas/AuthzFlag"
+          },
+          "create_groups": {
+            "$ref": "#/components/schemas/AuthzFlag"
+          }
+        },
+        "required": ["etag", "create_projects", "create_groups"],
+        "additionalProperties": false
+      },
+      "AuthzConfigPatch": {
+        "description": "Patch of the configuration of RenkuLab",
+        "type": "object",
+        "properties": {
+          "create_projects": {
+            "$ref": "#/components/schemas/AuthzFlag"
+          },
+          "create_groups": {
+            "$ref": "#/components/schemas/AuthzFlag"
+          }
+        },
+        "additionalProperties": false
       }
     },
     "responses": {
