@@ -17,6 +17,7 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 import toastSlice from "~/components/toast/toast.slice";
 import adminKeycloakApi from "~/features/admin/adminKeycloak.api";
@@ -98,6 +99,8 @@ export const store = configureStore({
       .concat(usersApi.middleware)
       .concat(versionsApi.middleware),
 });
+
+setupListeners(store.dispatch);
 
 export type StoreType = typeof store;
 
