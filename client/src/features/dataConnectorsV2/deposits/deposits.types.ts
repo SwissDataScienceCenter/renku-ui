@@ -1,6 +1,6 @@
 import { DepositProvider, DepositStatus } from "../api/data-connectors.api";
 
-type DepositProviders = DepositProvider | "envidat";
+type DepositProviders = DepositProvider;
 
 export interface CreateDepositionForm {
   name: string;

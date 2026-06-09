@@ -22,7 +22,7 @@ import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
-import { DataConnectorRead, DepositProvider } from "../api/data-connectors.api";
+import { DataConnectorRead } from "../api/data-connectors.api";
 import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
 import { PROVIDER_OPTIONS } from "./deposits.constants";
@@ -95,7 +95,7 @@ export default function DepositCreationModal({
           data_connector_id: dataConnector?.id ?? "",
           name: data.name,
           path: data.path,
-          provider: data.provider as DepositProvider, // ! Temp -- remove
+          provider: data.provider,
         },
       });
     },
