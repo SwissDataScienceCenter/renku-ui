@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Eye, Globe, Lock, Pencil, PlusLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   Button,
   ButtonGroup,
@@ -239,7 +239,6 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
     setValue,
     getValues,
     reset,
-    watch,
   } = useForm<DataConnectorMountForm>({
     mode: "onChange",
     defaultValues: {
@@ -258,7 +257,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
   });
   const lastResetId = useRef<string | null>(null);
 
-  const currentKeywords = watch("keywords");
+  const currentKeywords = useWatch({ control, name: "keywords" }) ?? [];
   const oldKeywords = dataConnector?.keywords ?? [];
 
   useEffect(() => {
@@ -366,8 +365,8 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
     (o) => flatDataConnector.options && flatDataConnector.options[o.name],
   );
 
-  const currentName = watch("name");
-  const currentSlug = watch("slug");
+  const currentName = useWatch({ control, name: "name" }) ?? "";
+  const currentSlug = useWatch({ control, name: "slug" }) ?? "";
   useEffect(() => {
     dispatch(
       dataConnectorFormSlice.actions.setFlatDataConnector({
