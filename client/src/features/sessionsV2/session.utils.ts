@@ -350,8 +350,6 @@ export function getFormattedEnvironmentValuesForEdit(
         repository_revision: repository_revision ?? "",
         context_dir: context_dir ?? "",
         platforms: [platform],
-        ...(commandParsed.data && { job_command: commandParsed.data }),
-        ...(argsParsed.data && { job_args: argsParsed.data }),
       },
     },
   };
