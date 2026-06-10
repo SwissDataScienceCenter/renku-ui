@@ -233,7 +233,7 @@ export function getFormattedEnvironmentValues(
       if (commandFormatted.data == null || commandFormatted.data.length === 0) {
         return { success: false, error: "Job command can't be empty" };
       }
-      buildPayload.job_command = commandFormatted.data;
+      buildPayload.command = commandFormatted.data;
     }
     if (launcherCategory === "job" && args?.trim()) {
       const argsFormatted = safeParseJSONStringArray(args);
@@ -243,7 +243,7 @@ export function getFormattedEnvironmentValues(
       if (argsFormatted.data == null || argsFormatted.data.length === 0) {
         return { success: false, error: "Job args can't be empty" };
       }
-      buildPayload.job_args = argsFormatted.data;
+      buildPayload.args = argsFormatted.data;
     }
     return { success: true, data: buildPayload };
   }
@@ -341,6 +341,8 @@ export function getFormattedEnvironmentValuesForEdit(
     data: {
       environment_image_source: "build",
       environment_kind: "CUSTOM",
+      ...(commandParsed.data && { command: commandParsed.data }),
+      ...(argsParsed.data && { args: argsParsed.data }),
       build_parameters: {
         builder_variant,
         frontend_variant,
@@ -348,8 +350,6 @@ export function getFormattedEnvironmentValuesForEdit(
         repository_revision: repository_revision ?? "",
         context_dir: context_dir ?? "",
         platforms: [platform],
-        ...(commandParsed.data && { job_command: commandParsed.data }),
-        ...(argsParsed.data && { job_args: argsParsed.data }),
       },
     },
   };

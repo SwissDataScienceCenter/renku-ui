@@ -1083,7 +1083,7 @@ describe("view autostart link", () => {
         fixture: "projectV2SessionSecrets/empty_list.json",
       });
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
   });
 
   it("use autostart link", () => {

@@ -106,14 +106,12 @@ function UpdateSessionEnvironmentModal({
             uid: data.uid ?? undefined,
             working_directory: data.working_directory?.trim() || undefined,
             strip_path_prefix: data.strip_path_prefix,
-            ...(commandParsed.data
-              ? { command: commandParsed.data }
-              : { command: null }),
-            ...(argsParsed.data ? { args: argsParsed.data } : { args: null }),
+            command: commandParsed.data ?? undefined,
+            args: argsParsed.data ?? undefined,
           },
         });
     },
-    [environment.id, updateSessionEnvironment],
+    [environment.id, updateSessionEnvironment]
   );
 
   useEffect(() => {
