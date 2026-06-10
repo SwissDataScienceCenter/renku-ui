@@ -118,8 +118,8 @@ export default function BuilderEnvironmentFields({
         />
         {selectedRepositoryIsPrivate && (
           <InfoAlert dismissible={false} timeout={0}>
-            This is a private repository, launching the session will only be
-            available to users who have pull access to the repository.
+            This is a private code repository. Only users who have pull (read)
+            access to this code repository will be able to launch sessions.
           </InfoAlert>
         )}
         <CodeRepositoryAdvancedSettings control={control} />
