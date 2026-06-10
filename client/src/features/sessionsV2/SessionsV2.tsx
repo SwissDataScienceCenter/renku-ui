@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
+import { Pencil, RocketTakeoff, Trash } from "react-bootstrap-icons";
 import { generatePath } from "react-router";
 import {
   Badge,
@@ -44,12 +44,12 @@ import { useGetSessionsQuery as useGetSessionsQueryV2 } from "./api/sessionsV2.a
 import { LauncherEnvironmentIcon } from "./components/SessionForm/LauncherEnvironmentIcon";
 import SessionLauncherCard from "./SessionList/SessionLauncherCard";
 import { SessionLauncherDisplay } from "./SessionList/SessionLauncherDisplay";
-import { SessionV2 } from "./sessionsV2.types";
+import { SESSION_LAUNCHER_KIND, SessionV2 } from "./sessionsV2.types";
 import { SessionView } from "./SessionView/SessionView";
 
 export function getShowSessionUrlByProject(
   project: Project,
-  sessionName: string,
+  sessionName: string
 ) {
   return generatePath(ABSOLUTE_ROUTES.v2.projects.show.sessions.show, {
     namespace: project.namespace,
@@ -76,7 +76,9 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     data: sessions,
     error: sessionsError,
     isLoading: isLoadingSessions,
-  } = useGetSessionsQueryV2({});
+  } = useGetSessionsQueryV2({
+    sessionType: SESSION_LAUNCHER_KIND.NON_INTERACTIVE,
+  });
 
   const isLoading = isLoadingLaunchers || isLoadingSessions;
   const error = launchersError || sessionsError;
@@ -87,10 +89,10 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         ? sessions.filter(
             (session) =>
               launchers.every(({ id }) => session.launcher_id !== id) &&
-              session.project_id === projectId,
+              session.project_id === projectId
           )
         : [],
-    [launchers, sessions, projectId],
+    [launchers, sessions, projectId]
   );
 
   const loading = isLoading && (
@@ -109,8 +111,8 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     <>
       <p className="text-body-secondary">
         {totalSessions > 0
-          ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
-          : "Define interactive environments in which to do your work and share it  with others."}
+          ? "Launchers are available to everyone who can see the project. Only you can see your running sessions and jobs."
+          : "Define interactive or not environments in which to do your work and share it  with others."}
       </p>
       {loading}
       {totalSessions > 0 && !isLoading && (
@@ -140,13 +142,13 @@ export default function SessionsV2({ project }: SessionsV2Props) {
         className={cx(
           "align-items-center",
           "d-flex",
-          "justify-content-between",
+          "justify-content-between"
         )}
       >
         <div className={cx("align-items-center", "d-flex")}>
           <h2 className={cx("mb-0", "me-2")}>
-            <PlayCircle className={cx("me-1", "bi")} />
-            Sessions
+            <RocketTakeoff className={cx("me-1", "bi")} />
+            Launchers
           </h2>
           <Badge>{totalSessions}</Badge>
         </div>
@@ -155,7 +157,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
           enabled={
             <div className="my-auto">
               <AddSessionLauncherButton
-                data-cy="add-session-launcher"
+                data-cy="add-launcher"
                 styleBtn="iconBtn"
               />
             </div>
@@ -246,11 +248,11 @@ function OrphanSession({ session, project }: OrphanSessionProps) {
   const [hash, setHash] = useLocationHash();
   const sessionHash = useMemo(
     () => `orphan-session-${session.name}`,
-    [session.name],
+    [session.name]
   );
   const isSessionViewOpen = useMemo(
     () => hash === sessionHash,
-    [hash, sessionHash],
+    [hash, sessionHash]
   );
   const toggleSessionView = useCallback(() => {
     setHash((prev) => {

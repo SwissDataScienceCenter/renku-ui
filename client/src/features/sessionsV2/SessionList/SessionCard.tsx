@@ -19,6 +19,10 @@
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
+import {
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
+} from "~/features/sessionsV2/session.utils.ts";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
@@ -38,7 +42,9 @@ interface SessionCardProps {
 export default function SessionCard({ project, session }: SessionCardProps) {
   if (!session) return null;
 
-  const stylesPerSession = getSessionStatusStyles(session);
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const stylesPerSession = getSessionStatusStyles(session, launcherCategory);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   return (
     <div
@@ -47,16 +53,24 @@ export default function SessionCard({ project, session }: SessionCardProps) {
         `bg-${stylesPerSession.bgColor}`,
         `bg-opacity-${stylesPerSession.bgOpacity}`,
         "p-0",
-        "pb-3",
+        "pb-3"
       )}
     >
-      <img
-        src={stylesPerSession.sessionLine}
-        className={cx("position-absolute", styles.SessionLine)}
-        alt="Session line indicator"
-        loading="lazy"
-      />
-      <div className={cx("ms-5", "px-3", "pt-3")}>
+      {launcherCategory === "session" && (
+        <img
+          src={stylesPerSession.sessionLine}
+          className={cx("position-absolute", styles.SessionLine)}
+          alt="Session line indicator"
+          loading="lazy"
+        />
+      )}
+      <div
+        className={cx(
+          launcherCategory === "session" ? "ms-5" : "ms-2",
+          "px-3",
+          "pt-3"
+        )}
+      >
         <Row className="g-2">
           <Col xs={12} xl="auto">
             <Row className="g-2">
@@ -67,11 +81,14 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                   "d-inline-block",
                   "link-primary",
                   "text-body",
-                  "mt-1",
+                  "mt-1"
                 )}
               >
                 <span className={cx("small", "text-muted", "me-3")}>
-                  Session
+                  <span className={cx("fw-bold")}>
+                    {launcherDefinition.text.display}
+                  </span>
+                  {session.submission_id ? `: ${session.submission_id}` : ""}
                 </span>
               </Col>
               <Col
@@ -79,7 +96,11 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                 xs="12"
                 xl="auto"
               >
-                <SessionStatusV2Label session={session} variant="card" />
+                <SessionStatusV2Label
+                  session={session}
+                  variant="card"
+                  includeIcon={launcherCategory === "job"}
+                />
               </Col>
               <Col
                 xs="auto"
@@ -102,7 +123,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                 session={session}
                 showSessionUrl={getShowSessionUrlByProject(
                   project,
-                  session.name,
+                  session.name
                 )}
               />
             </div>

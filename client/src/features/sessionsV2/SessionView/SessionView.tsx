@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box2,
   Braces,
@@ -31,8 +31,12 @@ import {
   Link45deg,
   Pencil,
   PlayCircle,
+  Send,
 } from "react-bootstrap-icons";
 import {
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
   Badge,
   Button,
   Card,
@@ -44,9 +48,11 @@ import {
   Offcanvas,
   OffcanvasBody,
   Row,
+  UncontrolledAccordion,
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { ErrorAlert } from "~/components/Alert";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -58,10 +64,6 @@ import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepos
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import {
-  useGetClassesByClassIdQuery,
-  useGetResourcePoolsQuery,
-} from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
@@ -74,12 +76,25 @@ import {
   SessionStatusV2Title,
 } from "../components/SessionStatus/SessionStatus";
 import { DEFAULT_URL } from "../session.constants";
+import {
+  getJobAccordionTargetId,
+  getLauncherCategory,
+  getLauncherCategoryDefinition,
+  resolveOpenJobSubmissionId,
+  safeStringify,
+  sessionLauncherKindToCategory,
+} from "../session.utils";
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
-import { SessionV2 } from "../sessionsV2.types";
+import { LauncherCategory, SessionV2 } from "../sessionsV2.types";
 import StartSessionButton from "../StartSessionButton";
-import EnvironmentItem from "./EnvironmentItem";
+import useResourceClassDetails from "../useResourceClassDetails.hook";
+import EnvironmentItem, {
+  EnvironmentJSONArrayRowWithLabel,
+} from "./EnvironmentItem";
 import EnvVariablesCard from "./EnvVariablesCard";
 import EnvVariablesModal from "./EnvVariablesModal";
+
+import styles from "./SessionView.module.scss";
 
 interface SessionCardContentProps {
   color: string;
@@ -124,9 +139,10 @@ function SessionCard({
   session: SessionV2;
   project: Project;
 }) {
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   return (
     <SessionCardContent
-      color={getSessionColor(session.status.state)}
+      color={getSessionColor(session.status.state, launcherCategory)}
       contentDescription={<SessionStatusV2Description session={session} />}
       contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
@@ -151,6 +167,7 @@ function SessionCardNotRunning({
   launcher: SessionLauncher;
   project: Project;
 }) {
+  const launcherCategory = getLauncherCategory(launcher);
   return (
     <SessionCardContent
       color="dark"
@@ -180,6 +197,8 @@ function SessionCardNotRunning({
             launcher={launcher}
             namespace={project.namespace}
             slug={project.slug}
+            launcherCategory={launcherCategory}
+            isDisabledDropdownToggle={true}
           />
         </div>
       }
@@ -187,24 +206,31 @@ function SessionCardNotRunning({
   );
 }
 
-function getSessionColor(state: string) {
-  return state === "running"
+function getSessionColor(state: string, launcherCategory?: LauncherCategory) {
+  return state === "running" && launcherCategory === "session"
     ? "success"
-    : state === "starting"
-      ? "warning"
-      : state === "stopping"
-        ? "warning"
-        : state === "hibernated"
-          ? "dark"
-          : state === "failed"
-            ? "danger"
-            : "dark";
+    : state === "running" && launcherCategory === "job"
+    ? "warning"
+    : state === "starting" && launcherCategory === "session"
+    ? "warning"
+    : state === "starting" && launcherCategory === "job"
+    ? "info"
+    : state === "stopping"
+    ? "warning"
+    : state === "hibernated"
+    ? "dark"
+    : state === "failed"
+    ? "danger"
+    : state === "succeeded"
+    ? "success"
+    : "dark";
 }
 
 interface SessionViewProps {
   id?: string;
   isOpen: boolean;
   launcher?: SessionLauncher;
+  openJobSubmissionId?: string;
   project: Project;
   sessions?: SessionV2[];
   toggle: () => void;
@@ -218,6 +244,7 @@ export function SessionView({
   sessions,
   toggle: setToggleSessionView,
   isOpen: toggleSessionView,
+  openJobSubmissionId,
   project,
   toggleDelete,
   toggleUpdate,
@@ -238,31 +265,45 @@ export function SessionView({
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
 
+  // for orphan session/jobs in case can't find the type we assume is  a session
+  const orphanType =
+    !launcher && sessions && sessions?.length >= 1
+      ? sessions[0].session_type
+      : null;
+  const orphanCategory = orphanType === "non-interactive" ? "job" : "session";
+
+  const launcherCategory = launcher && getLauncherCategory(launcher);
+  const launcherDefinition = getLauncherCategoryDefinition(
+    launcherCategory || orphanCategory
+  );
+
   const { data: dataConnectorLinks } =
     useGetProjectsByProjectIdDataConnectorLinksQuery({
       projectId: project.id,
     });
   const dataConnectorIds = dataConnectorLinks?.map(
-    (link) => link.data_connector_id,
+    (link) => link.data_connector_id
   );
   const { data: dataConnectorsMap } =
     useGetDataConnectorsListByDataConnectorIdsQuery(
-      dataConnectorIds ? { dataConnectorIds } : skipToken,
+      dataConnectorIds ? { dataConnectorIds } : skipToken
     );
   const dataConnectors = Object.values(dataConnectorsMap ?? {});
 
-  const { data: resourcePools } = useGetResourcePoolsQuery({});
   const {
-    data: launcherResourceClass,
+    resourceClass: launcherResourceClass,
+    userResourceClass: userLauncherResourceClass,
+    resourceRequests: launcherResourceRequests,
     isLoading: isLoadingLauncherResourceClass,
-  } = useGetClassesByClassIdQuery(
-    launcher?.resource_class_id
-      ? { classId: `${launcher.resource_class_id}` }
-      : skipToken,
-  );
+  } = useResourceClassDetails({
+    resourceClassId: launcher?.resource_class_id,
+    storage: launcher?.disk_storage,
+  });
 
   const totalSession = sessions ? Object.keys(sessions).length : 0;
-  const title = launcher ? launcher.name : "Orphan Session";
+  const title = launcher
+    ? launcher.name
+    : `Orphan ${launcherDefinition?.text.inline} without launcher`;
   const launcherMenu = launcher && (
     <SessionV2Actions
       launcher={launcher}
@@ -276,37 +317,12 @@ export function SessionView({
   const key = launcher
     ? launcher.id
     : sessions && Object.keys(sessions).length > 0
-      ? Object.keys(sessions)[0]
-      : "nn";
-
-  const userLauncherResourcePool = useMemo(
-    () =>
-      resourcePools?.find((pool) =>
-        pool.classes.find((c) => c.id == launcher?.resource_class_id),
-      ),
-    [launcher, resourcePools],
-  );
-  const userLauncherResourceClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == launcher?.resource_class_id),
-    [launcher, resourcePools],
-  );
+    ? Object.keys(sessions)[0]
+    : "nn";
 
   const resourceDetails =
-    !isLoadingLauncherResourceClass && launcherResourceClass ? (
-      <SessionRowResourceRequests
-        resourceRequests={{
-          poolName: userLauncherResourcePool?.name,
-          name: launcherResourceClass.name,
-          cpu: launcherResourceClass.cpu,
-          memory: launcherResourceClass.memory,
-          storage:
-            launcher?.disk_storage ?? launcherResourceClass.default_storage,
-          gpu: launcherResourceClass.gpu,
-        }}
-      />
+    !isLoadingLauncherResourceClass && launcherResourceRequests ? (
+      <SessionRowResourceRequests resourceRequests={launcherResourceRequests} />
     ) : (
       <p>This session launcher does not have a default resource class.</p>
     );
@@ -329,9 +345,11 @@ export function SessionView({
         <div className={cx("d-flex", "flex-column", "gap-3")}>
           <OffcanvasHeaderWithType
             entityName={
-              launcher ? "Session launcher" : "Session without launcher"
+              launcher
+                ? `${launcherDefinition?.text.display} launcher`
+                : `${launcherDefinition?.text.display} without launcher`
             }
-            entityType="session-launcher"
+            entityType={`${launcherCategory || orphanCategory}-launcher`}
             title={title}
           >
             {launcherMenu}
@@ -341,27 +359,88 @@ export function SessionView({
 
           <Card>
             <CardHeader tag="h3">
-              <PlayCircle className="me-1" />
-              Launched Session
-            </CardHeader>
-            <CardBody>
-              {totalSession > 0 ? (
-                sessions &&
-                Object.entries(sessions).map(([key, session]) => (
-                  <div key={key}>
-                    <SessionStatusV2Title
-                      session={session}
-                      launcher={launcher}
-                    />
-                    <SessionCard session={session} project={project} />
+              {launcherCategory === "session" ? (
+                <>
+                  <PlayCircle aria-hidden="true" className="me-1" />
+                  Launched {launcherDefinition?.text.display}
+                </>
+              ) : (
+                <div
+                  className={cx(
+                    "d-flex",
+                    "justify-content-between",
+                    "align-items-center"
+                  )}
+                >
+                  <div>
+                    <Send className="me-1" aria-hidden="true" />
+                    Your submitted jobs
                   </div>
-                ))
+                  {launcher &&
+                    launcherCategory === "job" &&
+                    totalSession > 0 && (
+                      <StartSessionButton
+                        launcher={launcher}
+                        namespace={project.namespace}
+                        slug={project.slug}
+                        launcherCategory={launcherCategory}
+                        isDisabledDropdownToggle={true}
+                      />
+                    )}
+                </div>
+              )}
+            </CardHeader>
+            <CardBody
+              className={cx(
+                launcherCategory === "job" && totalSession > 0 && "pb-0 px-0 "
+              )}
+            >
+              {totalSession > 0 ? (
+                <>
+                  {launcherCategory === "session" &&
+                    sessions &&
+                    Object.entries(sessions).map(([key, session]) => (
+                      <div key={key}>
+                        <SessionStatusV2Title
+                          session={session}
+                          launcher={launcher}
+                        />
+                        <SessionCard session={session} project={project} />
+                      </div>
+                    ))}
+                  {launcherCategory === "job" && sessions && (
+                    <JobList
+                      sessions={sessions}
+                      project={project}
+                      openJobSubmissionId={openJobSubmissionId}
+                    />
+                  )}
+                </>
               ) : (
                 <div>
-                  <p className="mb-2">
-                    No session is running from this launcher.
-                  </p>
-                  {launcher && (
+                  <div
+                    className={cx(
+                      "d-flex",
+                      "justify-content-between",
+                      "align-items-center"
+                    )}
+                  >
+                    <p className="mb-2">
+                      No {launcherDefinition?.text.inline} is running from this
+                      launcher.
+                    </p>
+                    {launcher && launcherCategory === "job" && (
+                      <StartSessionButton
+                        launcher={launcher}
+                        namespace={project.namespace}
+                        slug={project.slug}
+                        launcherCategory={launcherCategory}
+                        isDisabledDropdownToggle={true}
+                      />
+                    )}
+                  </div>
+
+                  {launcher && launcherCategory === "session" && (
                     <SessionCardNotRunning
                       project={project}
                       launcher={launcher}
@@ -379,12 +458,12 @@ export function SessionView({
                   className={cx(
                     "align-items-center",
                     "d-flex",
-                    "justify-content-between",
+                    "justify-content-between"
                   )}
                 >
                   <h3 className="mb-0">
                     <Box2 className="me-1" />
-                    Session Environment
+                    {launcherDefinition?.text.display} Environment
                   </h3>
                   <PermissionsGuard
                     disabled={null}
@@ -397,11 +476,12 @@ export function SessionView({
                           onClick={toggle}
                           size="sm"
                           tabIndex={0}
+                          aria-label={`Modify ${launcherDefinition?.text.inline} environment`}
                         >
                           <Pencil />
                         </Button>
                         <UncontrolledTooltip target="modify-session-environment-button">
-                          Modify session environment
+                          Modify {launcherDefinition?.text.inline} environment
                         </UncontrolledTooltip>
                       </>
                     }
@@ -428,7 +508,7 @@ export function SessionView({
               className={cx(
                 "align-items-center",
                 "d-flex",
-                "justify-content-between",
+                "justify-content-between"
               )}
             >
               <h3
@@ -485,13 +565,14 @@ export function SessionView({
                     ({launcherResourceClass.max_storage} GB).
                   </p>
                 )}
-              {launcher && (
+              {launcher && launcherCategory && (
                 <ModifyResourcesLauncherModal
                   isOpen={isModifyResourcesOpen}
                   toggleModal={toggleModifyResources}
                   resourceClassId={userLauncherResourceClass?.id}
                   diskStorage={launcher.disk_storage}
                   sessionLauncherId={launcher.id}
+                  launcherCategory={launcherCategory}
                 />
               )}
             </CardBody>
@@ -504,8 +585,8 @@ export function SessionView({
             </CardHeader>
             <CardBody>
               <p className="mb-2">
-                The default URL specifies the URL pathname on the session to go
-                to upon launch
+                The default URL specifies the URL pathname on the{" "}
+                {launcherDefinition?.text.inline} to go to upon launch
               </p>
               <div>
                 {launcher && launcher.environment?.default_url ? (
@@ -588,7 +669,7 @@ export function SessionView({
                 className={cx(
                   "align-items-center",
                   "d-flex",
-                  "justify-content-between",
+                  "justify-content-between"
                 )}
               >
                 <h3 className={cx("mb-0", "me-2")}>
@@ -633,5 +714,116 @@ export function SessionView({
         </div>
       </OffcanvasBody>
     </Offcanvas>
+  );
+}
+
+interface JobListProps {
+  sessions: SessionV2[];
+  project: Project;
+  openJobSubmissionId?: string;
+}
+
+function JobListItem({
+  session,
+  project,
+}: {
+  session: SessionV2;
+  project: Project;
+}) {
+  const { resourceRequests, isLoading } = useResourceClassDetails({
+    resourceClassId: session.resource_class_id,
+    storage: session.resources?.requests?.storage,
+  });
+  const sessionError =
+    session?.status?.state === "failed" ? session?.status?.message : undefined;
+
+  return (
+    <AccordionItem data-cy="session-view-job-list-content">
+      <AccordionHeader targetId={`job-${session.submission_id}`}>
+        <h4 className={cx("mb-0", "me-2", "fw-normal")}>
+          Job {session.submission_id}
+        </h4>
+        <SessionStatusV2Badge session={session} />
+      </AccordionHeader>
+      <AccordionBody
+        accordionId={`job-${session.submission_id}`}
+        className="bg-light-subtle"
+      >
+        <div
+          className={cx("d-flex", "justify-content-between", "flex-shrink-0")}
+        >
+          <SessionStatusV2Description
+            session={session}
+            showInfoDetails={false}
+          />
+          <ActiveSessionButton
+            session={session}
+            showSessionUrl={getShowSessionUrlByProject(project, session.name)}
+          />
+        </div>
+
+        {sessionError && (
+          <ErrorAlert timeout={0} dismissible={false} className="mt-3">
+            {sessionError}
+          </ErrorAlert>
+        )}
+
+        <EnvironmentJSONArrayRowWithLabel
+          label="Commands"
+          value={safeStringify(session.command_args)}
+          dataCy="session-view-command"
+        />
+        {!isLoading && resourceRequests && (
+          <>
+            <label className={cx("text-nowrap", "mb-0", "me-2")}>
+              Resource class:
+            </label>
+            <SessionRowResourceRequests resourceRequests={resourceRequests} />
+          </>
+        )}
+      </AccordionBody>
+    </AccordionItem>
+  );
+}
+
+function JobList({ sessions, project, openJobSubmissionId }: JobListProps) {
+  const resolvedSubmissionId = useMemo(
+    () => resolveOpenJobSubmissionId(openJobSubmissionId, sessions),
+    [openJobSubmissionId, sessions]
+  );
+  const initialOpenJobs = useMemo(
+    () =>
+      resolvedSubmissionId
+        ? [getJobAccordionTargetId(resolvedSubmissionId)]
+        : [],
+    [resolvedSubmissionId]
+  );
+  const [openJobs, setOpenJobs] = useState(initialOpenJobs);
+
+  useEffect(() => {
+    setOpenJobs(initialOpenJobs);
+  }, [initialOpenJobs]);
+
+  return (
+    <div>
+      <UncontrolledAccordion
+        key={resolvedSubmissionId ?? "none"}
+        className={cx("d-block", styles.jobListAccordion)}
+        defaultOpen={openJobs}
+        flush={true}
+        stayOpen={true}
+        toggle={(targetId: string) =>
+          setOpenJobs((prev) => [...prev, targetId])
+        }
+      >
+        {sessions.map((session) => (
+          <JobListItem
+            key={session.submission_id}
+            session={session}
+            project={project}
+          />
+        ))}
+      </UncontrolledAccordion>
+    </div>
   );
 }

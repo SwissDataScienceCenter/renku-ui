@@ -72,7 +72,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -1092,7 +1092,7 @@ describe("view autostart link", () => {
     });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");

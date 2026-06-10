@@ -16,6 +16,13 @@
  * limitations under the License.
  */
 
+import {
+  CheckCircleFill,
+  ExclamationDiamondFill,
+  GearFill,
+  PauseBtnFill,
+} from "react-bootstrap-icons";
+
 import blockIcon from "../../styles/assets/block.svg";
 import failedIcon from "../../styles/assets/failed.svg";
 import lineBlock from "../../styles/assets/lineBlock.svg";
@@ -45,6 +52,7 @@ export const SESSION_STYLES = {
     borderColor: "border-warning",
     sessionLine: linePlaying,
     sessionIcon: playingIcon,
+    jobIcon: ExclamationDiamondFill,
   },
   SUCCESS: {
     textColorCard: "text-success-emphasis",
@@ -54,6 +62,7 @@ export const SESSION_STYLES = {
     borderColor: "border-success",
     sessionLine: linePlaying,
     sessionIcon: playingIcon,
+    jobIcon: CheckCircleFill,
   },
   HIBERNATED: {
     textColorCard: "text-dark-emphasis",
@@ -63,6 +72,7 @@ export const SESSION_STYLES = {
     borderColor: "border-dark-subtle",
     sessionLine: linePaused,
     sessionIcon: pausedIcon,
+    jobIcon: PauseBtnFill,
   },
   FAILED: {
     textColorCard: "text-danger-emphasis",
@@ -72,6 +82,7 @@ export const SESSION_STYLES = {
     borderColor: "border-danger",
     sessionLine: lineFailed,
     sessionIcon: failedIcon,
+    jobIcon: ExclamationDiamondFill,
   },
   STOPPING: {
     textColorCard: "text-warning-emphasis",
@@ -81,6 +92,17 @@ export const SESSION_STYLES = {
     borderColor: "border-warning",
     sessionLine: lineStopped,
     sessionIcon: stoppedIcon,
+    jobIcon: PauseBtnFill,
+  },
+  RUNNING_JOB: {
+    textColorCard: "text-warning-emphasis",
+    textColorList: "text-warning-emphasis",
+    bgColor: "warning",
+    bgOpacity: 10,
+    borderColor: "border-warning",
+    sessionLine: linePlaying,
+    sessionIcon: playingIcon,
+    jobIcon: GearFill,
   },
   DEFAULT: {
     textColorCard: "text-warning-emphasis",
@@ -90,6 +112,7 @@ export const SESSION_STYLES = {
     borderColor: "border-warning",
     sessionLine: lineBlock,
     sessionIcon: blockIcon,
+    jobIcon: GearFill,
   },
 } as const;
 
@@ -102,6 +125,15 @@ export const SESSION_TITLE = {
   [SESSION_STATES.SUCCEEDED]: "Session succeeded (TBD)",
   default: "Unknown status",
 };
+export const JOB_TITLE = {
+  [SESSION_STATES.RUNNING]: "My running job",
+  [SESSION_STATES.STARTING]: "Starting job...",
+  [SESSION_STATES.STOPPING]: "Dismissing my job...",
+  [SESSION_STATES.HIBERNATED]: "Paused job",
+  [SESSION_STATES.FAILED]: "Errored job", //eslint-disable-line spellcheck/spell-checker
+  [SESSION_STATES.SUCCEEDED]: "Completed job",
+  default: "Unknown status",
+};
 
 export const SESSION_TITLE_DASHBOARD = {
   [SESSION_STATES.RUNNING]: "Running session",
@@ -110,5 +142,15 @@ export const SESSION_TITLE_DASHBOARD = {
   [SESSION_STATES.HIBERNATED]: "Paused session",
   [SESSION_STATES.FAILED]: "Error in session",
   [SESSION_STATES.SUCCEEDED]: "Session succeeded (TBD)",
+  default: "Unknown status",
+};
+
+export const JOB_TITLE_DASHBOARD = {
+  [SESSION_STATES.RUNNING]: "Running job",
+  [SESSION_STATES.STARTING]: "Submitting job",
+  [SESSION_STATES.STOPPING]: "Dismissing job...",
+  [SESSION_STATES.HIBERNATED]: "Paused job",
+  [SESSION_STATES.FAILED]: "Errored job", //eslint-disable-line spellcheck/spell-checker
+  [SESSION_STATES.SUCCEEDED]: "Completed job",
   default: "Unknown status",
 };

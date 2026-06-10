@@ -21,7 +21,7 @@ import { useCallback, useState } from "react";
 import { PlusLg } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 
-import NewSessionLauncherModal from "./components/SessionModals/NewSessionLauncherModal";
+import NewLauncherModal from "./components/SessionModals/NewLauncherModal";
 
 export default function AddSessionLauncherButton({
   "data-cy": dataCy,
@@ -38,9 +38,9 @@ export default function AddSessionLauncherButton({
   return (
     <>
       {styleBtn === "iconTextBtn" ? (
-        <Button data-cy={dataCy} onClick={() => toggle()}>
+        <Button data-cy={dataCy} onClick={toggle}>
           <PlusLg className={cx("me-2", "bi")} />
-          Add session
+          Add launcher
         </Button>
       ) : (
         <Button
@@ -52,7 +52,7 @@ export default function AddSessionLauncherButton({
           <PlusLg className="bi" />
         </Button>
       )}
-      <NewSessionLauncherModal isOpen={isOpen} toggle={toggle} />
+      <NewLauncherModal isOpen={isOpen} toggle={toggle} />
     </>
   );
 }

@@ -21,22 +21,16 @@ import { useEffect, useMemo } from "react";
 
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
-import {
-  useGetDataConnectorsListByDataConnectorIdsQuery,
-  useGetProjectsByProjectIdDataConnectorLinksQuery,
-} from "../dataConnectorsV2/api/data-connectors.enhanced-api";
-import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
-import { shouldInterrupt } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetRepositoriesQuery } from "../repositories/api/repositories.api";
 import { useGetResourcePoolsQuery } from "./api/computeResources.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
 import { DEFAULT_URL } from "./session.constants";
+import { repositoriesNeedAttention } from "./sessionLaunchValidation.utils";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import useSessionLaunchPrerequisites from "./useSessionLaunchPrerequisites.hook";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
-import useSessionSecrets from "./useSessionSecrets.hook";
 
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;
@@ -52,33 +46,25 @@ export default function useSessionLauncherState({
   const default_url = launcher.environment?.default_url ?? "";
 
   const {
-    data: dataConnectorLinks,
-    isFetching: isFetchingDataConnectorLinks,
-    isLoading: isLoadingDataConnectorLinks,
-  } = useGetProjectsByProjectIdDataConnectorLinksQuery({
-    projectId: project.id,
+    dataConnectorConfigs: initialDataConnectorConfigs,
+    isFetchingOrLoadingDataConnectors: isFetchingOrLoadingStorages,
+    isFetchingRepositories,
+    isFetchingSessionSecrets,
+    isReadyDataConnectorConfigs,
+    repositories,
+    sessionSecretSlotsWithSecrets,
+  } = useSessionLaunchPrerequisites({
+    project,
+    enabled: true,
+    autoMarkSecretsReady: true,
   });
-  const dataConnectorIds = useMemo(
-    () => dataConnectorLinks?.map((link) => link.data_connector_id),
-    [dataConnectorLinks],
-  );
-  const {
-    data: dataConnectorsMap,
-    isFetching: isFetchingDataConnectors,
-    isLoading: isLoadingDataConnectors,
-  } = useGetDataConnectorsListByDataConnectorIdsQuery(
-    dataConnectorIds ? { dataConnectorIds } : skipToken,
-  );
+
   const { data: resourcePools } = useGetResourcePoolsQuery({});
   const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({
     launcher,
     isCustomLaunch,
     resourcePools,
   });
-  const {
-    isFetching: isFetchingSessionSecrets,
-    sessionSecretSlotsWithSecrets,
-  } = useSessionSecrets({ projectId: project.id });
 
   const containerImage = launcher.environment?.container_image ?? "";
   const isExternalImageEnvironment =
@@ -89,7 +75,7 @@ export default function useSessionLauncherState({
     useGetSessionsImagesQuery(
       isExternalImageEnvironment && containerImage
         ? { imageUrl: containerImage }
-        : skipToken,
+        : skipToken
     );
   const sessionImage = useMemo(() => {
     if (isExternalImageEnvironment && containerImage) {
@@ -99,7 +85,7 @@ export default function useSessionLauncherState({
   }, [containerImage, dataSessionImage, isExternalImageEnvironment]);
 
   const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2
   );
 
   const defaultSessionClass = useMemo(
@@ -110,10 +96,11 @@ export default function useSessionLauncherState({
         .find((c) => c.default) ??
       resourcePools?.find(() => true)?.classes[0] ??
       null,
-    [resourcePools],
+    [resourcePools]
   );
 
   const dispatch = useAppDispatch();
+  const projectPermissions = useProjectPermissions({ projectId: project.id });
 
   // Reset start session options slice when we navigate away
   useEffect(() => {
@@ -131,30 +118,13 @@ export default function useSessionLauncherState({
   }, [default_url, dispatch, startSessionOptionsV2.defaultUrl]);
 
   useEffect(() => {
-    const repositories = (project.repositories ?? []).map((url) => ({ url }));
-    dispatch(startSessionOptionsV2Slice.actions.setRepositories(repositories));
+    const projectRepositories = (project.repositories ?? []).map((url) => ({
+      url,
+    }));
+    dispatch(
+      startSessionOptionsV2Slice.actions.setRepositories(projectRepositories)
+    );
   }, [dispatch, project.repositories]);
-
-  const dataConnectors = useMemo(
-    () => Object.values(dataConnectorsMap ?? {}),
-    [dataConnectorsMap],
-  );
-  const {
-    dataConnectorConfigs: initialDataConnectorConfigs,
-    isReadyDataConnectorConfigs,
-  } = useDataConnectorConfiguration({ dataConnectors });
-
-  const { data: repositories, isFetching: isFetchingRepositories } =
-    useGetRepositoriesQuery(project.repositories ?? []);
-
-  const projectPermissions = useProjectPermissions({ projectId: project.id });
-
-  const isFetchingOrLoadingStorages =
-    isFetchingDataConnectorLinks ||
-    isLoadingDataConnectorLinks ||
-    isLoadingDataConnectors ||
-    isFetchingDataConnectors ||
-    !isReadyDataConnectorConfigs;
 
   useEffect(() => {
     if (
@@ -164,8 +134,8 @@ export default function useSessionLauncherState({
     ) {
       dispatch(
         startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
-          initialDataConnectorConfigs,
-        ),
+          initialDataConnectorConfigs
+        )
       );
     }
   }, [
@@ -187,10 +157,9 @@ export default function useSessionLauncherState({
 
   // Check for code repos availability -- it should only block if any repo requires it
   useEffect(() => {
-    const interrupt = !!repositories?.find(
-      (repo) =>
-        repo.error ||
-        (repo.data && shouldInterrupt(repo.data, !!projectPermissions?.write)),
+    const interrupt = repositoriesNeedAttention(
+      repositories,
+      !!projectPermissions?.write
     );
     if (!isFetchingRepositories && !interrupt) {
       dispatch(startSessionOptionsV2Slice.actions.setRepositoriesReady(true));

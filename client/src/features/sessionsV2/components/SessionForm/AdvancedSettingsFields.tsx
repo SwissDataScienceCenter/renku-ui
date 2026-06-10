@@ -35,9 +35,16 @@ import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormCon
 import {
   DEFAULT_URL,
   ENVIRONMENT_VALUES_DESCRIPTION,
+  JOB_COMMAND_VALIDATION_MESSAGE,
 } from "../../session.constants";
-import { isValidJSONStringArray } from "../../session.utils";
-import { SessionLauncherForm } from "../../sessionsV2.types";
+import {
+  isValidJSONStringArray,
+  isValidRequiredJSONStringArray,
+} from "../../session.utils";
+import {
+  SessionLauncherForm,
+  type LauncherCategory,
+} from "../../sessionsV2.types";
 
 function OptionalLabel() {
   return <span className={cx("small", "text-muted")}>(Optional)</span>;
@@ -206,7 +213,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
   );
 }
 
-interface JsonFieldProps<T extends FieldValues> {
+export interface JsonFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
@@ -214,17 +221,34 @@ interface JsonFieldProps<T extends FieldValues> {
   errors?: FieldErrors<T>;
   helpText: string;
   isOptional?: boolean;
+  dataCy?: string;
+  disabled?: boolean;
 }
 
-function JsonField<T extends FieldValues>({
+export function JsonField<T extends FieldValues>({
   control,
   name,
   label,
   info,
   errors,
   helpText,
-  isOptional,
+  isOptional = true,
+  dataCy,
+  disabled = false,
 }: JsonFieldProps<T>) {
+  const rules = isOptional
+    ? {
+        validate: (value: string) => isValidJSONStringArray(value?.toString()),
+      }
+    : {
+        validate: (value: string) =>
+          isValidRequiredJSONStringArray(
+            value?.toString(),
+            JOB_COMMAND_VALIDATION_MESSAGE.required,
+            JOB_COMMAND_VALIDATION_MESSAGE.empty
+          ),
+      };
+
   return (
     <>
       <FormFieldLabel
@@ -236,24 +260,28 @@ function JsonField<T extends FieldValues>({
       <Controller
         control={control}
         name={name}
-        rules={{
-          validate: (value) => isValidJSONStringArray(value?.toString()),
+        rules={rules}
+        render={({ field, fieldState: { error: fieldError } }) => {
+          const error = errors?.[name] ?? fieldError;
+          return (
+            <>
+              <textarea
+                className={cx("w-100 form-control", error && "is-invalid")}
+                data-cy={dataCy ?? `session-launcher-field-${name}`}
+                id={`addSessionLauncher${name}`}
+                rows={2}
+                disabled={disabled}
+                {...field}
+              />
+              {error && (
+                <div className="invalid-feedback mt-0 d-block">
+                  {error.message?.toString()}
+                </div>
+              )}
+            </>
+          );
         }}
-        render={({ field }) => (
-          <textarea
-            className={cx("w-100 form-control", errors?.[name] && "is-invalid")}
-            data-cy={`session-launcher-field-${name}`}
-            id={`addSessionLauncher${name}`}
-            rows={2}
-            {...field}
-          />
-        )}
       />
-      {errors?.[name] && (
-        <div className="invalid-feedback mt-0 d-block">
-          {errors[name]?.message?.toString()}
-        </div>
-      )}
       <FormText tag="div">{helpText}</FormText>
     </>
   );
@@ -262,94 +290,103 @@ function JsonField<T extends FieldValues>({
 interface AdvancedSettingsProp<T extends FieldValues> {
   control: Control<T, unknown>;
   errors?: FieldErrors<T>;
+  launcherCategory: LauncherCategory;
 }
 
 export function AdvancedSettingsFields<
-  T extends SessionLauncherForm | SessionEnvironmentForm,
->({ control, errors }: AdvancedSettingsProp<T>) {
+  T extends SessionLauncherForm | SessionEnvironmentForm
+>({ control, errors, launcherCategory = "session" }: AdvancedSettingsProp<T>) {
   return (
     <>
-      <div className={cx("row", "gy-3", "mb-3")}>
-        <div className={cx("col-12", "col-md-9", "mt-0")}>
-          <FormField<T>
-            control={control}
-            name={"default_url" as Path<T>}
-            label="Default URL"
-            placeholder={DEFAULT_URL}
-            errors={errors}
-            info={ENVIRONMENT_VALUES_DESCRIPTION.urlPath}
-            type="text"
-          />
+      {launcherCategory === "session" && (
+        <div className={cx("row", "gy-3", "mb-3")}>
+          <div className={cx("col-12", "col-md-9", "mt-0")}>
+            <FormField<T>
+              control={control}
+              name={"default_url" as Path<T>}
+              label="Default URL"
+              placeholder={DEFAULT_URL}
+              errors={errors}
+              info={ENVIRONMENT_VALUES_DESCRIPTION.urlPath}
+              type="text"
+            />
+          </div>
+          <div className={cx("col-12", "col-md-3", "mt-md-0")}>
+            <FormField<T>
+              control={control}
+              name={"port" as Path<T>}
+              label="Port"
+              isOptional={true}
+              placeholder="e.g. 8080"
+              info={ENVIRONMENT_VALUES_DESCRIPTION.port}
+              type="number"
+              rules={{ min: 1, max: 65535 }}
+            />
+          </div>
+          <div className={cx("col-12")}>
+            <FormField<T>
+              control={control}
+              name={"mount_directory" as Path<T>}
+              label="Mount Directory"
+              isOptional={true}
+              errors={errors}
+              info={ENVIRONMENT_VALUES_DESCRIPTION.mountDirectory}
+              type="text"
+            />
+          </div>
         </div>
-        <div className={cx("col-12", "col-md-3", "mt-md-0")}>
-          <FormField<T>
-            control={control}
-            name={"port" as Path<T>}
-            label="Port"
-            isOptional={true}
-            placeholder="e.g. 8080"
-            info={ENVIRONMENT_VALUES_DESCRIPTION.port}
-            type="number"
-            rules={{ min: 1, max: 65535 }}
-          />
-        </div>
-        <div className={cx("col-12")}>
-          <FormField<T>
-            control={control}
-            name={"mount_directory" as Path<T>}
-            label="Mount Directory"
-            isOptional={true}
-            errors={errors}
-            info={ENVIRONMENT_VALUES_DESCRIPTION.mountDirectory}
-            type="text"
-          />
-        </div>
-      </div>
+      )}
 
-      <div className="row">
-        <div className={cx("col-12")}>
-          <h3 className={cx("fw-bold", "mt-3")}>Docker settings</h3>
+      {launcherCategory === "session" && (
+        <div className="row">
+          <div className={cx("col-12")}>
+            <h3 className={cx("fw-bold")}>Docker settings</h3>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className={cx("row", "gy-3")}>
-        <div className={cx("col-12")}>
-          <FormField<T>
-            control={control}
-            name={"working_directory" as Path<T>}
-            label="Working Directory"
-            isOptional={true}
-            errors={errors}
-            info={ENVIRONMENT_VALUES_DESCRIPTION.workingDirectory}
-            type="text"
-          />
-        </div>
-        <div className={cx("col-12", "col-md-6")}>
-          <FormField<T>
-            control={control}
-            name={"uid" as Path<T>}
-            label="UID"
-            isOptional={true}
-            placeholder="e.g. 1000"
-            type="number"
-            errors={errors}
-            info={ENVIRONMENT_VALUES_DESCRIPTION.uid}
-            rules={{ min: 1, max: 65535 }}
-          />
-        </div>
-        <div className={cx("col-12", "col-md-6")}>
-          <FormField<T>
-            control={control}
-            name={"gid" as Path<T>}
-            label="GID"
-            isOptional={true}
-            placeholder="e.g. 1000"
-            type="number"
-            errors={errors}
-            info={ENVIRONMENT_VALUES_DESCRIPTION.gid}
-            rules={{ min: 1, max: 65535 }}
-          />
-        </div>
+        {launcherCategory === "session" && (
+          <>
+            <div className={cx("col-12")}>
+              <FormField<T>
+                control={control}
+                name={"working_directory" as Path<T>}
+                label="Working Directory"
+                isOptional={true}
+                errors={errors}
+                info={ENVIRONMENT_VALUES_DESCRIPTION.workingDirectory}
+                type="text"
+              />
+            </div>
+            <div className={cx("col-12", "col-md-6")}>
+              <FormField<T>
+                control={control}
+                name={"uid" as Path<T>}
+                label="UID"
+                isOptional={true}
+                placeholder="e.g. 1000"
+                type="number"
+                errors={errors}
+                info={ENVIRONMENT_VALUES_DESCRIPTION.uid}
+                rules={{ min: 1, max: 65535 }}
+              />
+            </div>
+            <div className={cx("col-12", "col-md-6")}>
+              <FormField<T>
+                control={control}
+                name={"gid" as Path<T>}
+                label="GID"
+                isOptional={true}
+                placeholder="e.g. 1000"
+                type="number"
+                errors={errors}
+                info={ENVIRONMENT_VALUES_DESCRIPTION.gid}
+                rules={{ min: 1, max: 65535 }}
+              />
+            </div>
+          </>
+        )}
         <div className={cx("col-12")}>
           <JsonField<T>
             control={control}
@@ -358,7 +395,7 @@ export function AdvancedSettingsFields<
             isOptional={true}
             info={ENVIRONMENT_VALUES_DESCRIPTION.command}
             errors={errors}
-            helpText='Please enter a valid JSON array format e.g. ["python3","main.py"]'
+            helpText='Please enter a valid JSON array format e.g. ["python","my_repo/main.py"]'
           />
         </div>
         <div className={cx("col-12")}>
@@ -372,17 +409,19 @@ export function AdvancedSettingsFields<
             helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
           />
         </div>
-        <div className={cx("col-12")}>
-          <FormField<T>
-            control={control}
-            name={"strip_path_prefix" as Path<T>}
-            label="Strip session URL path prefix"
-            isOptional={true}
-            info={ENVIRONMENT_VALUES_DESCRIPTION.stripPathPrefix}
-            errors={errors}
-            type="checkbox"
-          />
-        </div>
+        {launcherCategory === "session" && (
+          <div className={cx("col-12")}>
+            <FormField<T>
+              control={control}
+              name={"strip_path_prefix" as Path<T>}
+              label="Strip session URL path prefix"
+              isOptional={true}
+              info={ENVIRONMENT_VALUES_DESCRIPTION.stripPathPrefix}
+              errors={errors}
+              type="checkbox"
+            />
+          </div>
+        )}
       </div>
     </>
   );
