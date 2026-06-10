@@ -29,7 +29,6 @@ import {
   convertUnicodeToAscii,
   slugFromTitle,
 } from "./helpers/HelperFunctions";
-import { verifyTitleCharacters } from "./helpers/verifyTitleCharacters.utils";
 
 describe("title related functions", () => {
   // convertUnicodeToAscii
@@ -69,7 +68,7 @@ describe("title related functions", () => {
   });
   it("function slugFromTitle lowercase with custom separator", () => {
     expect(slugFromTitle("This is my Project", true, false, "+")).toEqual(
-      "this+is+my+project"
+      "this+is+my+project",
     );
   });
   it("function slugFromTitle ascii", () => {
@@ -77,18 +76,5 @@ describe("title related functions", () => {
     expect(slugFromTitle("João-._--Mario", true, true)).toEqual("joao-mario"); // eslint-disable-line
     expect(slugFromTitle("Zürich", true, true)).toEqual("zuerich"); // eslint-disable-line
     expect(slugFromTitle("здрасти", true, true)).toEqual("");
-  });
-
-  // verifyTitleCharacters
-  it("function verifyTitleCharacters - valid strings", () => {
-    expect(verifyTitleCharacters("João")).toBeTruthy();
-    expect(verifyTitleCharacters("здрасти_.и")).toBeTruthy();
-    expect(verifyTitleCharacters("")).toBeTruthy();
-  });
-
-  it("function verifyTitleCharacters - invalid strings", () => {
-    expect(verifyTitleCharacters("Test:-)")).toBeFalsy();
-    expect(verifyTitleCharacters("test!_pro-ject~")).toBeFalsy(); // eslint-disable-line
-    expect(verifyTitleCharacters("yeah 🚀")).toBeFalsy();
   });
 });

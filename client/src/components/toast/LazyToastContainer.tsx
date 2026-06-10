@@ -4,7 +4,7 @@ import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { setReady } from "./toast.slice";
 
 const ToastContainer = lazy(() =>
-  import("react-toastify").then((mod) => ({ default: mod.ToastContainer }))
+  import("react-toastify").then((mod) => ({ default: mod.ToastContainer })),
 );
 
 type Props = ComponentProps<typeof ToastContainer>;

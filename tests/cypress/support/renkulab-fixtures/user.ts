@@ -35,7 +35,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
 
       const dataServiceUserResponse = { fixture: dataServiceUser.fixture };
       cy.intercept("GET", "/api/data/user", dataServiceUserResponse).as(
-        dataServiceUser.name
+        dataServiceUser.name,
       );
 
       return this;
@@ -60,7 +60,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
         ...(delay != null ? { delay } : {}),
       };
       cy.intercept("GET", "/api/data/user", responseDataService).as(
-        dataServiceUser.name
+        dataServiceUser.name,
       );
 
       return this;
@@ -87,7 +87,23 @@ export function User<T extends FixturesConstructor>(Parent: T) {
       this.userTest({ user, dataServiceUser });
       return this;
     }
+
+    getAnyUser(args?: GetUserArgs) {
+      const {
+        fixture = "users/user1-uuid.json",
+        name = "getAnyUser",
+        userName = "user1-uuid",
+      } = args ?? {};
+
+      cy.intercept("GET", `/api/data/users/${userName}`, { fixture }).as(name);
+
+      return this;
+    }
   };
+}
+
+interface GetUserArgs extends SimpleFixture {
+  userName?: string;
 }
 
 interface UserTestArgs {

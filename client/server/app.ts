@@ -8,7 +8,7 @@ export const app = express();
 app.use(
   createRequestHandler({
     build: () => import("virtual:react-router/server-build"),
-  })
+  }),
 );
 
 export * as constants from "./constants";

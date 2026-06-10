@@ -114,11 +114,11 @@ export default function DataConnectorsBox({
 }: DataConnectorListDisplayProps) {
   const pageParam = useMemo(
     () => (pageParam_ ? pageParam_ : DEFAULT_PAGE_PARAM),
-    [pageParam_]
+    [pageParam_],
   );
   const perPage = useMemo(
     () => (limit ? limit : perPage_ ? perPage_ : DEFAULT_PER_PAGE),
-    [limit, perPage_]
+    [limit, perPage_],
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -156,7 +156,7 @@ export default function DataConnectorsBox({
           }
           return prevParams;
         },
-        { replace: true }
+        { replace: true },
       );
     }
   }, [data?.totalPages, page, pageParam, setSearchParams]);
@@ -233,7 +233,7 @@ function DataConnectorBoxContent({
                     dataConnector={dc}
                     extendedPreview={true}
                   />
-                )
+                ),
               )}
               {limit && data.total > limit && (
                 <ListGroupItem className="fst-italic">
@@ -282,7 +282,7 @@ function DataConnectorBoxHeader({
         className={cx(
           "align-items-center",
           "d-flex",
-          "justify-content-between"
+          "justify-content-between",
         )}
       >
         <div className={cx("align-items-center", "d-flex")}>
@@ -318,7 +318,7 @@ function DataConnectorLoadingBoxContent() {
           className={cx(
             "align-items-center",
             "d-flex",
-            "justify-content-between"
+            "justify-content-between",
           )}
         >
           <div className={cx("align-items-center", "d-flex")}>

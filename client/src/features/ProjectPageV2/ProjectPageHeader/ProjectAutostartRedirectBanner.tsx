@@ -59,14 +59,14 @@ function ProjectViewerAutostartRedirectInfoContent() {
 
 function ProjectAutostartRedirectInfoBanner({ isOwner }: { isOwner: boolean }) {
   return (
-    <PrimaryAlert icon={<Diagram3Fill className="bi" />}>
+    <PrimaryAlert className="mb-0" icon={<Diagram3Fill className="bi" />}>
       <div
         className={cx(
           "d-flex",
           "align-items-center",
           "justify-content-between",
           "flex-wrap",
-          "w-100"
+          "w-100",
         )}
       >
         <div>

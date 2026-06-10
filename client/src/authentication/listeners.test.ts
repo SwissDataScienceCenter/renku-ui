@@ -33,7 +33,6 @@ const location: Location<void> = {
   hash: "",
   key: "default",
   state: undefined,
-  unstable_mask: undefined,
 };
 
 const navigate = vi.fn();
@@ -45,7 +44,7 @@ window.location = { reload: vi.fn(), replace: vi.fn() };
 
 async function dispatchStorageEvent(
   key: string,
-  newValue: string
+  newValue: string,
 ): Promise<void> {
   // ? Dispatch Storage Event by creating it in an iframe
   return new Promise((resolve) => {
@@ -77,7 +76,7 @@ describe("Authentication listeners functions", () => {
     const loginUrl = new URL(url);
     loginUrl.searchParams.set(
       RENKU_QUERY_PARAMS.login,
-      RENKU_QUERY_PARAMS.loginValue
+      RENKU_QUERY_PARAMS.loginValue,
     );
     const loginLocation: Location<void> = {
       ...location,
@@ -111,7 +110,7 @@ describe("Authentication listeners functions", () => {
     await dispatchStorageEvent(RENKU_QUERY_PARAMS.login, Date.now().toString());
     expect(sessionStorage.length).toBe(1);
     const sessionStorageDateStr = sessionStorage.getItem(
-      RENKU_QUERY_PARAMS.login
+      RENKU_QUERY_PARAMS.login,
     );
     expect(sessionStorageDateStr).toBeTruthy();
     const sessionStorageDate = parseInt(sessionStorageDateStr!);
@@ -121,7 +120,7 @@ describe("Authentication listeners functions", () => {
 
     await dispatchStorageEvent(
       RENKU_QUERY_PARAMS.logout,
-      Date.now().toString()
+      Date.now().toString(),
     );
     expect(sessionStorage.length).toBe(1); // that takes longer due to the timeout
 
@@ -148,7 +147,7 @@ describe("Authentication listeners functions", () => {
 
     await dispatchStorageEvent(
       RENKU_QUERY_PARAMS.logout,
-      Date.now().toString()
+      Date.now().toString(),
     );
     expect(localStorage.length).toBe(1); // that takes longer due to the timeout
   });

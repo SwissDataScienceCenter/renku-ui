@@ -15,10 +15,10 @@ export default function DepositStatusBadge({
     status === "complete" || status === "upload_complete"
       ? "info"
       : status === "in_progress"
-      ? "warning"
-      : status === "failed"
-      ? "danger"
-      : "light";
+        ? "warning"
+        : status === "failed"
+          ? "danger"
+          : "light";
 
   return (
     <RenkuBadge

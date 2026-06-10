@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   CircleFill,
   FileCode,
   Pencil,
+  PersonGear,
   Plugin,
   Send,
   Trash,
@@ -31,6 +33,9 @@ import { Controller, useForm } from "react-hook-form";
 import { Link, useLocation } from "react-router";
 import {
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   Col,
   DropdownItem,
   Form,
@@ -50,18 +55,28 @@ import {
 import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import ExternalLink from "~/components/ExternalLink";
+import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
+import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import {
+  useGetOauth2ProvidersQuery,
+  type ConnectionStatus,
+} from "~/features/connectedServices/api/connectedServices.api";
 import {
   SEARCH_PARAM_ACTION_REQUIRED,
   SEARCH_PARAM_PROVIDER,
   SEARCH_PARAM_SOURCE,
 } from "~/features/connectedServices/connectedServices.constants";
 import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
-import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
+import {
+  repositoriesApi,
+  useGetRepositoryQuery,
+} from "~/features/repositories/api/repositories.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
@@ -69,6 +84,7 @@ import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import { Project } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import { ConnectButton } from "./../../../connectedServices/ConnectedServicesPage";
 import { SshRepositoryUrlWarning } from "./AddCodeRepositoryModal";
 import {
   getRepositoryName,
@@ -106,7 +122,7 @@ function EditCodeRepositoryModal({
         return;
       }
       const repositories = project.repositories.map((url) =>
-        url === repositoryUrl ? data.repositoryUrl : url
+        url === repositoryUrl ? data.repositoryUrl : url,
       );
       const validationResult =
         validateNoDuplicatesInCodeRepositories(repositories);
@@ -127,7 +143,7 @@ function EditCodeRepositoryModal({
       repositoryUrl,
       setError,
       updateProject,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -409,7 +425,7 @@ export function RepositoryItem({
   }, []);
   const canonicalUrlStr = useMemo(
     () => `${url.replace(/(?:\.git|\/)$/i, "")}`,
-    [url]
+    [url],
   );
   const title = getRepositoryName(url);
 
@@ -417,7 +433,7 @@ export function RepositoryItem({
     ? {
         action: true,
         className: cx(
-          !readonly && ["cursor-pointer", "link-primary", "text-body"]
+          !readonly && ["cursor-pointer", "link-primary", "text-body"],
         ),
         onClick: toggleDetails,
       }
@@ -592,124 +608,118 @@ function RepositoryView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="code-repository-details">
-        <div className="mb-3">
-          <button
-            aria-label="Close"
-            className="btn-close"
-            data-bs-dismiss="offcanvas"
-            onClick={toggleDetails}
-          ></button>
-        </div>
+        <OffcanvasTopButtons
+          entityType="code-repository"
+          toggleView={toggleDetails}
+        />
 
         <div>
-          <div className="mb-4">
-            <div>
-              <div className={cx("float-end", "mt-1", "ms-1")}>
-                <CodeRepositoryActions project={project} url={repositoryUrl} />
-              </div>
-              <div className={cx("d-flex", "flex-column")}>
-                <span className={cx("small", "text-muted", "me-3")}>
-                  Code repository
-                </span>
-                <h2
-                  className={cx("m-0", "text-break")}
-                  data-cy="code-repository-title"
-                >
-                  {title}
-                </h2>
-              </div>
-            </div>
+          <div className="mb-3">
+            <OffcanvasHeaderWithType entityType="code-repository" title={title}>
+              <CodeRepositoryActions project={project} url={repositoryUrl} />
+            </OffcanvasHeaderWithType>
           </div>
 
           {isLoading ? (
             <Loader />
           ) : (
-            <div>
-              <div className="mb-4">
-                <h3>Repository</h3>
-                <p>
-                  URL: <ExternalLink href={webUrl}>{webUrl}</ExternalLink>
-                </p>
-                {data?.metadata?.git_url && (
-                  <div>
-                    <span>Git command: </span>
-                    <CommandCopy
-                      command={`git clone ${data.metadata.git_url}`}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <h3>Permissions</h3>
-                {error ? (
-                  <RtkOrDataServicesError error={error} dismissible={false} />
-                ) : (
-                  <>
-                    <div
-                      className={cx("d-flex", "flex-column", "gap-2", "mb-3")}
-                    >
-                      <div>
-                        <RepositoryPermissionsBadge
-                          hasWriteAccess={projectPermissions?.write}
-                          repositoryUrl={repositoryUrl}
-                        />
-                      </div>
-                      <RepositoryCallToActionAlert
-                        hasWriteAccess={projectPermissions?.write}
-                        repositoryUrl={repositoryUrl}
+            <div className={cx("d-flex", "flex-column", "gap-3")}>
+              <Card>
+                <CardHeader tag="h3">
+                  <FileCode className="me-1" />
+                  Repository
+                </CardHeader>
+                <CardBody>
+                  <p>
+                    URL: <ExternalLink href={webUrl}>{webUrl}</ExternalLink>
+                  </p>
+                  {data?.metadata?.git_url && (
+                    <div>
+                      <span>Git command: </span>
+                      <CommandCopy
+                        command={`git clone ${data.metadata.git_url}`}
                       />
                     </div>
+                  )}
+                </CardBody>
+              </Card>
 
-                    <div
-                      className="mb-3"
-                      data-cy="code-repository-pull-permission"
-                    >
-                      <span>
-                        Pull:{" "}
-                        <YesNoBadge
-                          value={data?.metadata?.pull_permission ?? false}
+              <Card>
+                <CardHeader tag="h3">
+                  <PersonGear className="me-1" />
+                  Permissions
+                </CardHeader>
+                <CardBody>
+                  {error ? (
+                    <RtkOrDataServicesError error={error} dismissible={false} />
+                  ) : (
+                    <>
+                      <div
+                        className={cx("d-flex", "flex-column", "gap-2", "mb-3")}
+                      >
+                        <div>
+                          <RepositoryPermissionsBadge
+                            hasWriteAccess={projectPermissions?.write}
+                            repositoryUrl={repositoryUrl}
+                          />
+                        </div>
+                        <RepositoryCallToActionAlert
+                          hasWriteAccess={projectPermissions?.write}
+                          repositoryUrl={repositoryUrl}
+                          project={project}
                         />
-                      </span>
-                    </div>
+                      </div>
 
-                    <div
-                      className="mb-3"
-                      data-cy="code-repository-push-permission"
-                    >
-                      <span>
-                        Push:{" "}
-                        <YesNoBadge
-                          value={data?.metadata?.push_permission ?? false}
-                        />
-                      </span>
-                    </div>
-
-                    <p>
-                      Integration:{" "}
-                      {!data?.provider?.id ? (
-                        "None"
-                      ) : (
+                      <div
+                        className="mb-3"
+                        data-cy="code-repository-pull-permission"
+                      >
                         <span>
-                          {data?.connection?.status === "connected"
-                            ? "connected"
-                            : "not connected"}{" "}
-                          (
-                          <Link
-                            to={{
-                              pathname: ABSOLUTE_ROUTES.v2.integrations,
-                              search,
-                            }}
-                          >
-                            check details
-                          </Link>
-                          )
+                          Pull:{" "}
+                          <YesNoBadge
+                            value={data?.metadata?.pull_permission ?? false}
+                          />
                         </span>
-                      )}
-                    </p>
-                  </>
-                )}
-              </div>
+                      </div>
+
+                      <div
+                        className="mb-3"
+                        data-cy="code-repository-push-permission"
+                      >
+                        <span>
+                          Push:{" "}
+                          <YesNoBadge
+                            value={data?.metadata?.push_permission ?? false}
+                          />
+                        </span>
+                      </div>
+
+                      <p className="mb-0">
+                        Integration:{" "}
+                        {!data?.provider?.id ? (
+                          "None"
+                        ) : (
+                          <span>
+                            {data?.connection?.status === "connected"
+                              ? "connected"
+                              : "not connected"}{" "}
+                            (
+                            <Link
+                              to={{
+                                pathname: ABSOLUTE_ROUTES.v2.integrations.root,
+                                search,
+                              }}
+                            >
+                              check details
+                            </Link>
+                            )
+                          </span>
+                        )}
+                      </p>
+                    </>
+                  )}
+                </CardBody>
+              </Card>
             </div>
           )}
         </div>
@@ -730,11 +740,14 @@ function LogInWarning() {
 interface RepositoryCallToActionAlertProps {
   hasWriteAccess: boolean;
   repositoryUrl: string;
+  project: Project;
 }
 export function RepositoryCallToActionAlert({
   hasWriteAccess,
   repositoryUrl,
+  project,
 }: RepositoryCallToActionAlertProps) {
+  const dispatch = useAppDispatch();
   const { pathname, hash } = useLocation();
   const { params } = useContext(AppContext);
   const renkuContactEmail =
@@ -748,12 +761,24 @@ export function RepositoryCallToActionAlert({
     return userInfo && !userInfo?.isLoggedIn;
   }, [userInfo]);
 
-  const search = useMemo(() => {
-    return `?${new URLSearchParams({
-      [SEARCH_PARAM_PROVIDER]: data?.provider?.id ?? "",
-      [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
-    }).toString()}`;
-  }, [data, pathname, hash]);
+  const { data: oauthProviders } = useGetOauth2ProvidersQuery(
+    anonymousUser ? skipToken : undefined,
+  );
+  const oauthProvider = useMemo(
+    () => oauthProviders?.find((p) => p.id === data?.provider?.id) ?? undefined,
+    [data?.provider?.id, oauthProviders],
+  );
+
+  const onRepositoryOAuthConnected = useCallback(() => {
+    project.repositories?.map((repoUrl) => {
+      dispatch(
+        repositoriesApi.util.invalidateTags([
+          { type: "Repository", id: repoUrl },
+        ]),
+      );
+    });
+  }, [dispatch, project]);
+
   const searchActionRequired = useMemo(() => {
     return `?${new URLSearchParams({
       [SEARCH_PARAM_PROVIDER]: data?.provider?.id ?? "",
@@ -777,29 +802,35 @@ export function RepositoryCallToActionAlert({
         {data?.provider?.id ? (
           <>
             <p className="mb-2">
-              Either the repository does not exist, or you do not have access to
-              it.
+              The repository is not accessible and your connection to{" "}
+              <span className="fst-italic">{data.provider.name}</span> is
+              invalid.
             </p>
             {anonymousUser ? (
               <LogInWarning />
             ) : (
               <>
-                <p className="mb-2">
-                  If you think you should have access, check your integration{" "}
-                  <span className="fst-italic">{data.provider.name}</span>.
-                </p>
+                <p className="mb-2">You can try to refresh it.</p>
+                {oauthProvider && (
+                  <ConnectButton
+                    className="btn-sm"
+                    connectionStatus={
+                      data.connection?.status as ConnectionStatus | undefined
+                    }
+                    includeSource
+                    onConnected={onRepositoryOAuthConnected}
+                    provider={oauthProvider}
+                    withIcon
+                  />
+                )}
                 <Link
-                  className={cx("btn", "btn-primary", "btn-sm")}
+                  className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
                   to={{
-                    pathname: ABSOLUTE_ROUTES.v2.integrations,
-                    search:
-                      data?.connection?.status === "connected"
-                        ? search
-                        : searchActionRequired,
+                    pathname: ABSOLUTE_ROUTES.v2.integrations.root,
+                    search: searchActionRequired,
                   }}
                 >
-                  <Plugin className={cx("bi", "me-1")} />
-                  View integration
+                  Check integration
                 </Link>
               </>
             )}
@@ -816,7 +847,7 @@ export function RepositoryCallToActionAlert({
                   currently supported{" "}
                   <Link
                     to={{
-                      pathname: ABSOLUTE_ROUTES.v2.integrations,
+                      pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                     }}
                   >
                     <Plugin className={cx("bi", "me-1")} />
@@ -892,19 +923,30 @@ export function RepositoryCallToActionAlert({
         data-cy="code-repository-alert"
       >
         <p className="mb-2">
-          You can log in through the integration{" "}
+          You can connect to{" "}
           <span className="fst-italic">{data.provider.name}</span> to enable
           pushing to repositories for which you have permissions.
         </p>
+        {oauthProvider && (
+          <ConnectButton
+            className="btn-sm"
+            connectionStatus={
+              data.connection?.status as ConnectionStatus | undefined
+            }
+            includeSource
+            onConnected={onRepositoryOAuthConnected}
+            provider={oauthProvider}
+            withIcon
+          />
+        )}
         <Link
-          className={cx("btn", "btn-primary", "btn-sm")}
+          className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
           to={{
-            pathname: ABSOLUTE_ROUTES.v2.integrations,
+            pathname: ABSOLUTE_ROUTES.v2.integrations.root,
             search: searchActionRequired,
           }}
         >
-          <Plugin className={cx("bi", "me-1")} />
-          View integration
+          Check integration
         </Link>
       </WarnAlert>
     );
@@ -930,18 +972,40 @@ export function RepositoryCallToActionAlert({
         </p>
         {anonymousUser ? (
           <LogInWarning />
+        ) : oauthProvider ? (
+          <ConnectButton
+            className="btn-sm"
+            connectionStatus={
+              data.connection?.status as ConnectionStatus | undefined
+            }
+            includeSource
+            onConnected={onRepositoryOAuthConnected}
+            provider={oauthProvider}
+            withIcon
+          />
         ) : (
-          <Link
-            className={cx("btn", "btn-primary", "btn-sm")}
-            to={{
-              pathname: ABSOLUTE_ROUTES.v2.integrations,
-              search: searchActionRequired,
-            }}
-          >
-            <Plugin className={cx("bi", "me-1")} />
-            View integration
-          </Link>
+          oauthProvider && (
+            <ConnectButton
+              className="btn-sm"
+              connectionStatus={
+                data.connection?.status as ConnectionStatus | undefined
+              }
+              includeSource
+              onConnected={onRepositoryOAuthConnected}
+              provider={oauthProvider}
+              withIcon
+            />
+          )
         )}
+        <Link
+          className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
+          to={{
+            pathname: ABSOLUTE_ROUTES.v2.integrations.root,
+            search: searchActionRequired,
+          }}
+        >
+          Check integration
+        </Link>
       </InfoAlert>
     );
   }

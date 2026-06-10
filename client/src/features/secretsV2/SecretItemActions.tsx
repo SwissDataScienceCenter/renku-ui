@@ -60,7 +60,7 @@ export default function SecretItemActions({
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
   const toggleReplace = useCallback(
     () => setIsReplaceOpen((isOpen) => !isOpen),
-    []
+    [],
   );
 
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -69,7 +69,7 @@ export default function SecretItemActions({
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const toggleDelete = useCallback(
     () => setIsDeleteOpen((isOpen) => !isOpen),
-    []
+    [],
   );
 
   if (!user?.isLoggedIn) {
@@ -166,11 +166,11 @@ function EditSecretModal({
         },
       });
     },
-    [isV2, patchUserSecret, secretId]
+    [isV2, patchUserSecret, secretId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   useEffect(() => {

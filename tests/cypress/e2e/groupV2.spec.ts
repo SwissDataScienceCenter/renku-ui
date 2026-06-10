@@ -55,7 +55,7 @@ describe("Add new v2 group", () => {
     cy.getDataCy("group-slug-input").clear().type(newGroupName);
     cy.getDataCy("group-create-button").click();
     cy.contains(
-      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'."
+      "A valid slug can include lowercase letters, numbers, dots ('.'), hyphens ('-') and underscores ('_'), but must start with a letter or number and cannot end with '.git' or '.atom'.",
     ).should("be.visible");
 
     cy.getDataCy("group-slug-input").clear().type(slug);
@@ -76,7 +76,7 @@ describe("Add new group -- not logged in", () => {
 
   it("create a new group", () => {
     cy.contains("Only authenticated users can create new groups.").should(
-      "be.visible"
+      "be.visible",
     );
   });
 });
@@ -263,7 +263,7 @@ describe("Edit v2 group", () => {
       name: "listGroupV2PostDelete",
     });
     cy.contains("Group test 2 group-v2 has been successfully deleted.").should(
-      "be.visible"
+      "be.visible",
     );
   });
 });
@@ -317,7 +317,11 @@ describe("Work with group data connectors", () => {
     cy.wait("@listDataConnectorProjectLinks");
     cy.wait("@readProject1");
     cy.wait("@readProject2");
-    cy.contains("user1-uuid/test-2-v2-project").should("be.visible");
+    cy.getDataCy("linked-project-list").within(() => {
+      cy.getDataCy("project-link")
+        .filter(`[href*="user1-uuid/test-2-v2-project"]`)
+        .should("exist");
+    });
   });
 
   it("add a group data connector", () => {
@@ -353,7 +357,7 @@ describe("Work with group data connectors", () => {
     cy.wait("@postDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/example-storage-no-credentials has been successfully added."
+      "The data connector test-2-group-v2/example-storage-no-credentials has been successfully added.",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
@@ -380,7 +384,7 @@ describe("Work with group data connectors", () => {
     cy.wait("@patchDataConnector");
     cy.getDataCy("data-connector-edit-body").should(
       "contain.text",
-      "The data connector test-2-group-v2/public-storage has been successfully updated."
+      "The data connector test-2-group-v2/public-storage has been successfully updated.",
     );
     cy.getDataCy("data-connector-edit-close-button").click();
     cy.wait("@listDataConnectors");
@@ -406,7 +410,7 @@ describe("Work with group data connectors", () => {
       .should("be.visible")
       .click();
     cy.contains("Are you sure you want to delete this data connector").should(
-      "be.visible"
+      "be.visible",
     );
     cy.getDataCy("delete-confirmation-input").clear().type("public-storage");
     cy.getDataCy("delete-data-connector-modal-button")
@@ -468,7 +472,11 @@ describe("Work with group data connectors, missing permissions", () => {
     cy.wait("@listDataConnectorProjectLinks");
     cy.wait("@readProject1");
     cy.wait("@readProject2");
-    cy.contains("user1-uuid/test-2-v2-project").should("be.visible");
+    cy.getDataCy("linked-project-list").within(() => {
+      cy.getDataCy("project-link")
+        .filter(`[href*="user1-uuid/test-2-v2-project"]`)
+        .should("exist");
+    });
   });
 
   it("add a group data connector", () => {
@@ -536,7 +544,7 @@ describe("Create projects in a group", () => {
     cy.contains("Create a new project").should("be.visible");
     cy.findReactSelectSelectedValue(
       "project-creation-form-project-namespace-input",
-      "namespace-select"
+      "namespace-select",
     )
       .contains("test-2-group-v2")
       .should("be.visible");
@@ -554,7 +562,7 @@ describe("Create projects in a group", () => {
     cy.contains("Create a new project").should("be.visible");
     cy.findReactSelectSelectedValue(
       "project-creation-form-project-namespace-input",
-      "namespace-select"
+      "namespace-select",
     )
       .contains("test-2-group-v2")
       .should("be.visible");
@@ -578,7 +586,7 @@ describe("Create projects in a group", () => {
     cy.wait("@listNamespaceV2");
     cy.findReactSelectSelectedValue(
       "project-creation-form-project-namespace-input",
-      "namespace-select"
+      "namespace-select",
     )
       .contains("test-20-group-v2")
       .should("be.visible");

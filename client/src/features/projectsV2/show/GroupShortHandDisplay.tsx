@@ -37,7 +37,7 @@ export default function GroupShortHandDisplay({
   const content = (
     <div
       className={cx(
-        element === "card-body" && ["d-flex", "flex-column", "flex-grow-1"]
+        element === "card-body" && ["d-flex", "flex-column", "flex-grow-1"],
       )}
       data-cy="group-item"
     >
@@ -48,7 +48,7 @@ export default function GroupShortHandDisplay({
             "d-flex",
             "flex-column",
             "justify-content-center",
-            "text-truncate"
+            "text-truncate",
           )}
         >
           <p className={cx("m-0", "fw-bold", "text-truncate")}>{group.name}</p>
@@ -67,8 +67,8 @@ export default function GroupShortHandDisplay({
     element === "card-body"
       ? ["card-body", "d-flex"]
       : element === "list-item"
-      ? ["list-group-item", "list-group-item-action"]
-      : "";
+        ? ["list-group-item", "list-group-item-action"]
+        : "";
 
   return (
     <Link
@@ -77,7 +77,7 @@ export default function GroupShortHandDisplay({
         "text-body",
         "text-decoration-none",
         className,
-        elementClasses
+        elementClasses,
       )}
       to={generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
         slug: group.slug,

@@ -701,22 +701,28 @@
         "additionalProperties": true,
         "properties": {
           "access_token": {
-            "type": "string"
+            "type": "string",
+            "example": "some_access_token"
           },
           "token_type": {
-            "type": "string"
+            "type": "string",
+            "example": "Bearer"
           },
           "expires_in": {
-            "type": "integer"
+            "type": "integer",
+            "example": 600
           },
           "refresh_token": {
-            "type": "string"
+            "type": "string",
+            "example": "some_refresh_token"
           },
           "refresh_expires_in": {
-            "type": "integer"
+            "type": "integer",
+            "example": 3600
           },
           "scope": {
-            "type": "string"
+            "type": "string",
+            "example": "api"
           }
         },
         "required": [
@@ -828,7 +834,7 @@
       },
       "PostTokenGrantType": {
         "type": "string",
-        "description": "A grant type for OAuth 2.0 (see RFC 6749)",
+        "description": "A grant type for OAuth 2.0 (see RFC 6749).",
         "enum": ["refresh_token"]
       },
       "ErrorResponse": {

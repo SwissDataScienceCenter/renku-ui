@@ -40,7 +40,7 @@ export default function AddStorageBreadcrumbNavbar({
       ? [0, CLOUD_STORAGE_TOTAL_STEPS]
       : Array.from(
           { length: CLOUD_STORAGE_TOTAL_STEPS },
-          (_, index) => index + 1
+          (_, index) => index + 1,
         );
     const items = steps.map((stepNumber) => {
       const active = stepNumber === step;

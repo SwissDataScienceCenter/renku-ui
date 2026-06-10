@@ -113,7 +113,7 @@ function HeaderDashboard() {
         DashboardStyles.DashboardHeader,
         "position-absolute",
         "w-100",
-        "bg-navy"
+        "bg-navy",
       )}
     >
       <div className={cx("container-xxl", DashboardStyles.DashboardHeaderImg)}>
@@ -181,7 +181,7 @@ export function FooterDashboardCard({
             "align-items-center",
             "py-4",
             "link-primary",
-            "stretched-link"
+            "stretched-link",
           )}
           rel="noreferrer noopener"
           href={url}
@@ -339,7 +339,7 @@ function UserDashboard() {
           "align-items-center",
           "gap-2",
           "my-2",
-          "my-md-4"
+          "my-md-4",
         )}
       >
         <UserAvatar namespace={userInfo.username} size="lg" />
@@ -422,7 +422,7 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
 }
 
 function SessionsDashboard() {
-  const { data: sessions, error, isLoading } = useGetSessionsQueryV2();
+  const { data: sessions, error, isLoading } = useGetSessionsQueryV2({});
   const totalSessions = sessions ? sessions?.length : 0;
   return (
     <Card data-cy="sessions-container">

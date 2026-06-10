@@ -14,7 +14,8 @@ $info: #17a2b8;
 $success: #65a30d;
 $take-action: #dc3545;
 $enable-shadows: true;
-$shadow-renku: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+$shadow-renku:
+  rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
   rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
 // Variables and functions
@@ -116,7 +117,8 @@ $list-group-item-padding-y: $spacer;
   h3,
   h4,
   h5,
-  h6 {
+  h6,
+  &:is(h1, h2, h3, h4, h5, h6) {
     font-weight: $font-weight-semibold;
   }
 }

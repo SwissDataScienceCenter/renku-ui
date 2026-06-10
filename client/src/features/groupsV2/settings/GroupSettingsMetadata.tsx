@@ -75,7 +75,7 @@ function GroupDeleteConfirmation({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTypedName(e.target.value.trim());
     },
-    [setTypedName]
+    [setTypedName],
   );
 
   useEffect(() => {
@@ -165,7 +165,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
       navigate(
         generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
           slug: updateGroupResult.data.slug,
-        })
+        }),
       );
     }
   }, [navigate, updateGroupResult.data?.slug, updateGroupResult.isSuccess]);
@@ -176,7 +176,7 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
     (data: GroupMetadata) => {
       updateGroup({ groupSlug: group.slug ?? "", groupPatchRequest: data });
     },
-    [group, updateGroup]
+    [group, updateGroup],
   );
 
   const [isOpen, setIsOpen] = useState(false);

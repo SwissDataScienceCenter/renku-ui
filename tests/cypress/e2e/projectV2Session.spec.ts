@@ -80,17 +80,17 @@ describe("launch sessions with data connectors", () => {
     // ensure the data connector is there
     cy.getDataCy("data-connector-name").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("data-connector-name").click();
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
-    cy.getDataCy("requires-credentials-section")
+    cy.getDataCy("data-connector-credentials-box")
       .contains("No")
       .should("be.visible");
-    cy.getDataCy("data-connector-view-back-button").click();
+    cy.getDataCy("data-connector-close-offcanvas-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")
@@ -144,17 +144,17 @@ describe("launch sessions with data connectors", () => {
     // ensure the data connector is there
     cy.getDataCy("data-connector-name").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("data-connector-name").click();
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
-    cy.getDataCy("requires-credentials-section")
+    cy.getDataCy("data-connector-credentials-box")
       .contains("Yes")
       .should("be.visible");
-    cy.getDataCy("data-connector-view-back-button").click();
+    cy.getDataCy("data-connector-close-offcanvas-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")
@@ -177,7 +177,7 @@ describe("launch sessions with data connectors", () => {
         expect(override.configuration).to.have.property("secret_access_key");
         expect(override.configuration["access_key_id"]).to.equal("access key");
         expect(override.configuration["secret_access_key"]).to.equal(
-          "secret key"
+          "secret key",
         );
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
@@ -455,7 +455,7 @@ describe("launch sessions with data connectors", () => {
         expect(override.configuration).to.have.property("secret_access_key");
         expect(override.configuration["access_key_id"]).to.equal("access key");
         expect(override.configuration["secret_access_key"]).to.equal(
-          "secret key"
+          "secret key",
         );
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
@@ -498,17 +498,17 @@ describe("launch sessions with data connectors", () => {
     // ensure the data connector is there
     cy.getDataCy("data-connector-name").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
     cy.getDataCy("data-connector-name").click();
     cy.getDataCy("data-connector-title").should(
       "contain.text",
-      "example storage"
+      "example storage",
     );
-    cy.getDataCy("requires-credentials-section")
+    cy.getDataCy("data-connector-credentials-box")
       .contains("No")
       .should("be.visible");
-    cy.getDataCy("data-connector-view-back-button").click();
+    cy.getDataCy("data-connector-close-offcanvas-button").click();
 
     // ensure the session launcher is there
     cy.getDataCy("session-launcher-item")
@@ -601,17 +601,17 @@ describe("launch sessions with data connectors", () => {
         const s3Storage = csConfig[0];
         expect(s3Storage.configuration).to.not.have.property("access_key_id");
         expect(s3Storage.configuration).to.not.have.property(
-          "secret_access_key"
+          "secret_access_key",
         );
 
         const s3Storage1 = csConfig[1];
         expect(s3Storage1.configuration).to.have.property("access_key_id");
         expect(s3Storage1.configuration).to.have.property("secret_access_key");
         expect(s3Storage1.configuration["access_key_id"]).to.equal(
-          "access key"
+          "access key",
         );
         expect(s3Storage1.configuration["secret_access_key"]).to.equal(
-          "secret key"
+          "secret key",
         );
         const webDavStorage = csConfig[2];
         expect(webDavStorage.configuration).to.have.property("pass");
@@ -688,17 +688,17 @@ describe("launch sessions with data connectors", () => {
         const s3Storage = csConfig[0];
         expect(s3Storage.configuration).to.not.have.property("access_key_id");
         expect(s3Storage.configuration).to.not.have.property(
-          "secret_access_key"
+          "secret_access_key",
         );
 
         const s3Storage1 = csConfig[1];
         expect(s3Storage1.configuration).to.have.property("access_key_id");
         expect(s3Storage1.configuration).to.have.property("secret_access_key");
         expect(s3Storage1.configuration["access_key_id"]).to.equal(
-          "access key"
+          "access key",
         );
         expect(s3Storage1.configuration["secret_access_key"]).to.equal(
-          "secret key"
+          "secret key",
         );
         const webDavStorage = csConfig[2];
         expect(webDavStorage.configuration).to.have.property("pass");
@@ -786,17 +786,17 @@ describe("launch sessions with data connectors", () => {
         const s3Storage = csConfig[0];
         expect(s3Storage.configuration).to.not.have.property("access_key_id");
         expect(s3Storage.configuration).to.not.have.property(
-          "secret_access_key"
+          "secret_access_key",
         );
 
         const s3Storage1 = csConfig[1];
         expect(s3Storage1.configuration).to.have.property("access_key_id");
         expect(s3Storage1.configuration).to.have.property("secret_access_key");
         expect(s3Storage1.configuration["access_key_id"]).to.equal(
-          "access key"
+          "access key",
         );
         expect(s3Storage1.configuration["secret_access_key"]).to.equal(
-          "secret key"
+          "secret key",
         );
         const webDavStorage = csConfig[2];
         expect(webDavStorage.configuration).to.have.property("pass");
@@ -962,7 +962,7 @@ describe("launch sessions with secrets", () => {
       .should("be.visible");
     cy.getDataCy("session-secrets-modal").contains(
       "[data-cy=session-secrets-ready]",
-      "A Secret"
+      "A Secret",
     );
     cy.getDataCy("session-secrets-modal").contains("button", "Skip").click();
 
@@ -1009,7 +1009,7 @@ describe("launch sessions with secrets", () => {
       .should("be.visible");
     cy.getDataCy("session-secrets-modal").contains(
       "[data-cy=session-secrets-ready]",
-      "A Secret"
+      "A Secret",
     );
     cy.getDataCy("session-secrets-modal")
       .contains("[data-cy=session-secrets-unready-item]", "Another Secret")
@@ -1115,7 +1115,7 @@ describe("view autostart link", () => {
     });
     fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
     cy.visit(
-      "/p/user1-uuid/test-2-v2-project/sessions/01HYJE99XEKWNKPYN8WRB6QA8Z/start"
+      "/p/user1-uuid/test-2-v2-project/sessions/01HYJE99XEKWNKPYN8WRB6QA8Z/start",
     );
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);

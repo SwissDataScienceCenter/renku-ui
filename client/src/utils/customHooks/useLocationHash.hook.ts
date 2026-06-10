@@ -32,7 +32,7 @@ export default function useLocationHash(): [string, SetLocationHash] {
   const hash = useMemo(
     () =>
       location.hash.startsWith("#") ? location.hash.slice(1) : location.hash,
-    [location.hash]
+    [location.hash],
   );
 
   const setLocationHash = useCallback<SetLocationHash>(
@@ -40,7 +40,7 @@ export default function useLocationHash(): [string, SetLocationHash] {
       const newHash = typeof next === "function" ? next(hash) : next;
       navigate({ hash: newHash ?? "", search }, options);
     },
-    [hash, navigate, search]
+    [hash, navigate, search],
   );
 
   return [hash, setLocationHash];
@@ -48,5 +48,5 @@ export default function useLocationHash(): [string, SetLocationHash] {
 
 type SetLocationHash = (
   next?: string | ((prev: string) => string),
-  options?: NavigateOptions
+  options?: NavigateOptions,
 ) => void;

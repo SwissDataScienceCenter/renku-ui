@@ -71,7 +71,7 @@ export default function DepositEditModal({
   } = useGetOauth2ConnectionsQuery(targetProvider ? undefined : skipToken);
   const targetConnection = useMemo(() => {
     return connections?.find(
-      (connection) => connection.provider_id === targetProvider?.id
+      (connection) => connection.provider_id === targetProvider?.id,
     );
   }, [connections, targetProvider]);
 
@@ -102,7 +102,7 @@ export default function DepositEditModal({
       // Restart job
       postJob({ depositId: deposit.id });
     },
-    [deposit, patchDeposit, postJob]
+    [deposit, patchDeposit, postJob],
   );
 
   // Close modal after successful post job
@@ -160,7 +160,7 @@ export default function DepositEditModal({
                     <Input
                       id="name"
                       type="text"
-                      placeholder="Name (local)"
+                      placeholder="Name"
                       invalid={!!fieldState.error}
                       {...field}
                     />

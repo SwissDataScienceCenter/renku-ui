@@ -28,7 +28,7 @@ export function Admin<T extends FixturesConstructor>(Parent: T) {
       name = "getAdminKeycloakUser",
       fixture = "admin/user-1.json",
       userId = "user-1",
-      realm = "Renku"
+      realm = "Renku",
     ) {
       cy.intercept(`/api/kc/admin/realms/${realm}/users/${userId}`, {
         fixture,

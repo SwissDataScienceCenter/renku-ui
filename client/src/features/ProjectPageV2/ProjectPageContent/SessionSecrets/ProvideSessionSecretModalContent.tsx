@@ -152,11 +152,11 @@ function ProvideSessionSecretModalNewValueContent({
         sessionSecretPatchList: [{ secret_slot_id: slotId, value: data.value }],
       });
     },
-    [patchSessionSecrets, projectId, slotId]
+    [patchSessionSecrets, projectId, slotId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   useEffect(() => {
@@ -274,11 +274,11 @@ function ProvideSessionSecretModalExistingContent({
         ],
       });
     },
-    [patchSessionSecrets, projectId, slotId]
+    [patchSessionSecrets, projectId, slotId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler]
+    [handleSubmit, submitHandler],
   );
 
   useEffect(() => {

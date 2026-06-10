@@ -20,19 +20,24 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
+  Box2,
   Braces,
   CircleFill,
   Clock,
+  Cpu,
   Database,
   ExclamationTriangleFill,
   FileCode,
+  Link45deg,
   Pencil,
+  PlayCircle,
 } from "react-bootstrap-icons";
 import {
   Badge,
   Button,
   Card,
   CardBody,
+  CardHeader,
   Col,
   ListGroup,
   ListGroupItem,
@@ -42,6 +47,8 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
+import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -70,7 +77,7 @@ import { DEFAULT_URL } from "../session.constants";
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
 import StartSessionButton from "../StartSessionButton";
-import EnvironmentCard from "./EnvironmentCard";
+import EnvironmentItem from "./EnvironmentItem";
 import EnvVariablesCard from "./EnvVariablesCard";
 import EnvVariablesModal from "./EnvVariablesModal";
 
@@ -184,14 +191,14 @@ function getSessionColor(state: string) {
   return state === "running"
     ? "success"
     : state === "starting"
-    ? "warning"
-    : state === "stopping"
-    ? "warning"
-    : state === "hibernated"
-    ? "dark"
-    : state === "failed"
-    ? "danger"
-    : "dark";
+      ? "warning"
+      : state === "stopping"
+        ? "warning"
+        : state === "hibernated"
+          ? "dark"
+          : state === "failed"
+            ? "danger"
+            : "dark";
 }
 
 interface SessionViewProps {
@@ -236,11 +243,11 @@ export function SessionView({
       projectId: project.id,
     });
   const dataConnectorIds = dataConnectorLinks?.map(
-    (link) => link.data_connector_id
+    (link) => link.data_connector_id,
   );
   const { data: dataConnectorsMap } =
     useGetDataConnectorsListByDataConnectorIdsQuery(
-      dataConnectorIds ? { dataConnectorIds } : skipToken
+      dataConnectorIds ? { dataConnectorIds } : skipToken,
     );
   const dataConnectors = Object.values(dataConnectorsMap ?? {});
 
@@ -251,7 +258,7 @@ export function SessionView({
   } = useGetClassesByClassIdQuery(
     launcher?.resource_class_id
       ? { classId: `${launcher.resource_class_id}` }
-      : skipToken
+      : skipToken,
   );
 
   const totalSession = sessions ? Object.keys(sessions).length : 0;
@@ -264,31 +271,27 @@ export function SessionView({
       toggleUpdateEnvironment={toggleUpdateEnvironment ?? undefined}
     />
   );
-  const description =
-    launcher && launcher.description ? (
-      launcher.description
-    ) : (
-      <i>No description</i>
-    );
+  const description = launcher?.description;
+
   const key = launcher
     ? launcher.id
     : sessions && Object.keys(sessions).length > 0
-    ? Object.keys(sessions)[0]
-    : "nn";
+      ? Object.keys(sessions)[0]
+      : "nn";
 
   const userLauncherResourcePool = useMemo(
     () =>
       resourcePools?.find((pool) =>
-        pool.classes.find((c) => c.id == launcher?.resource_class_id)
+        pool.classes.find((c) => c.id == launcher?.resource_class_id),
       ),
-    [launcher, resourcePools]
+    [launcher, resourcePools],
   );
   const userLauncherResourceClass = useMemo(
     () =>
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == launcher?.resource_class_id),
-    [launcher, resourcePools]
+    [launcher, resourcePools],
   );
 
   const resourceDetails =
@@ -318,102 +321,121 @@ export function SessionView({
       backdrop={true}
     >
       <OffcanvasBody>
-        <div className="mb-3">
-          <button
-            aria-label="Close"
-            className="btn-close"
-            data-cy="get-back-session-view"
-            data-bs-dismiss="offcanvas"
-            onClick={setToggleSessionView}
-          ></button>
-        </div>
+        <OffcanvasTopButtons
+          entityType="session-launcher"
+          toggleView={setToggleSessionView}
+        />
 
-        <div className={cx("d-flex", "flex-column", "gap-4")}>
-          <div>
-            <div>
-              <div className={cx("float-end", "mt-1", "ms-1")}>
-                {launcherMenu}
-              </div>
-              <div className={cx("d-flex", "flex-column")}>
-                <span className={cx("small", "text-muted", "me-3")}>
-                  {launcher ? "Session launcher" : "Session without launcher"}
-                </span>
-                <h2
-                  className={cx("m-0", "text-break")}
-                  data-cy="session-view-title"
-                >
-                  {title}
-                </h2>
-              </div>
-            </div>
-          </div>
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
+          <OffcanvasHeaderWithType
+            entityName={
+              launcher ? "Session launcher" : "Session without launcher"
+            }
+            entityType="session-launcher"
+            title={title}
+          >
+            {launcherMenu}
+          </OffcanvasHeaderWithType>
+
           {description && <p className="m-0">{description}</p>}
 
-          <div className={cx("d-flex", "flex-column", "gap-2")}>
-            <h3 className="mb-0">Launched Session</h3>
-            {totalSession > 0 ? (
-              sessions &&
-              Object.entries(sessions).map(([key, session]) => (
-                <div key={key}>
-                  <SessionStatusV2Title session={session} launcher={launcher} />
-                  <SessionCard session={session} project={project} />
+          <Card>
+            <CardHeader tag="h3">
+              <PlayCircle className="me-1" />
+              Launched Session
+            </CardHeader>
+            <CardBody>
+              {totalSession > 0 ? (
+                sessions &&
+                Object.entries(sessions).map(([key, session]) => (
+                  <div key={key}>
+                    <SessionStatusV2Title
+                      session={session}
+                      launcher={launcher}
+                    />
+                    <SessionCard session={session} project={project} />
+                  </div>
+                ))
+              ) : (
+                <div>
+                  <p className="mb-2">
+                    No session is running from this launcher.
+                  </p>
+                  {launcher && (
+                    <SessionCardNotRunning
+                      project={project}
+                      launcher={launcher}
+                    />
+                  )}
                 </div>
-              ))
-            ) : (
-              <div>
-                <p className="mb-2">
-                  No session is running from this launcher.
-                </p>
-                {launcher && (
-                  <SessionCardNotRunning
-                    project={project}
-                    launcher={launcher}
-                  />
-                )}
-              </div>
-            )}
-          </div>
+              )}
+            </CardBody>
+          </Card>
+
           {launcher && (
-            <div>
-              <div className={cx("d-flex", "justify-content-between", "mb-2")}>
-                <h3 className="my-auto">Session Environment</h3>
-                <PermissionsGuard
-                  disabled={null}
-                  enabled={
-                    <>
-                      <Button
-                        color="outline-primary"
-                        data-cy="session-view-modify-session-environment-button"
-                        id="modify-session-environment-button"
-                        onClick={toggle}
-                        size="sm"
-                        tabIndex={0}
-                      >
-                        <Pencil className="bi" />
-                      </Button>
-                      <UncontrolledTooltip target="modify-session-environment-button">
-                        Modify session environment
-                      </UncontrolledTooltip>
-                    </>
-                  }
-                  requestedPermission="write"
-                  userPermissions={permissions}
-                />
-              </div>
-              <EnvironmentCard launcher={launcher} />
+            <>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className="mb-0">
+                    <Box2 className="me-1" />
+                    Session Environment
+                  </h3>
+                  <PermissionsGuard
+                    disabled={null}
+                    enabled={
+                      <>
+                        <Button
+                          color="outline-primary"
+                          data-cy="session-view-modify-session-environment-button"
+                          id="modify-session-environment-button"
+                          onClick={toggle}
+                          size="sm"
+                          tabIndex={0}
+                        >
+                          <Pencil />
+                        </Button>
+                        <UncontrolledTooltip target="modify-session-environment-button">
+                          Modify session environment
+                        </UncontrolledTooltip>
+                      </>
+                    }
+                    requestedPermission="write"
+                    userPermissions={permissions}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <ListGroup flush>
+                    <EnvironmentItem launcher={launcher} />
+                  </ListGroup>
+                </CardBody>
+              </Card>
               <UpdateSessionLauncherEnvironmentModal
                 isOpen={isUpdateOpen}
                 launcher={launcher}
                 toggle={toggle}
               />
-            </div>
+            </>
           )}
-          <div>
-            <div className={cx("d-flex", "justify-content-between", "mb-2")}>
+
+          <Card>
+            <CardHeader
+              className={cx(
+                "align-items-center",
+                "d-flex",
+                "justify-content-between",
+              )}
+            >
               <h3
-                className="my-auto"
+                className="mb-0"
                 data-cy="session-view-resource-class-heading"
               >
+                <Cpu className="me-1" />
                 Default Resource Class
               </h3>
               {launcher && (
@@ -440,120 +462,133 @@ export function SessionView({
                   userPermissions={permissions}
                 />
               )}
-            </div>
-            {resourceDetails}
-            {launcherResourceClass && !userLauncherResourceClass && (
-              <p>
-                <ExclamationTriangleFill className={cx("bi", "text-warning")} />{" "}
-                You do not have access to this resource class.
-              </p>
-            )}
-            {launcher &&
-              launcherResourceClass &&
-              launcher.disk_storage &&
-              launcher.disk_storage > launcherResourceClass.max_storage && (
+            </CardHeader>
+            <CardBody>
+              {resourceDetails}
+              {launcherResourceClass && !userLauncherResourceClass && (
                 <p>
                   <ExclamationTriangleFill
-                    className={cx("bi", "text-warning", "me-1")}
-                  />
-                  The selected disk storage exceeds the maximum value allowed (
-                  {launcherResourceClass.max_storage} GB).
+                    className={cx("bi", "text-warning")}
+                  />{" "}
+                  You do not have access to this resource class.
                 </p>
               )}
-            {launcher && (
-              <ModifyResourcesLauncherModal
-                isOpen={isModifyResourcesOpen}
-                toggleModal={toggleModifyResources}
-                resourceClassId={userLauncherResourceClass?.id}
-                diskStorage={launcher.disk_storage}
-                sessionLauncherId={launcher.id}
-              />
-            )}
-          </div>
-
-          <div>
-            <h3>Default URL</h3>
-            <p className="mb-2">
-              The default URL specifies the URL pathname on the session to go to
-              upon launch
-            </p>
-            <div>
-              {launcher && launcher.environment?.default_url ? (
-                <CommandCopy
-                  command={launcher.environment?.default_url}
-                  noMargin
+              {launcher &&
+                launcherResourceClass &&
+                launcher.disk_storage &&
+                launcher.disk_storage > launcherResourceClass.max_storage && (
+                  <p>
+                    <ExclamationTriangleFill
+                      className={cx("bi", "text-warning", "me-1")}
+                    />
+                    The selected disk storage exceeds the maximum value allowed
+                    ({launcherResourceClass.max_storage} GB).
+                  </p>
+                )}
+              {launcher && (
+                <ModifyResourcesLauncherModal
+                  isOpen={isModifyResourcesOpen}
+                  toggleModal={toggleModifyResources}
+                  resourceClassId={userLauncherResourceClass?.id}
+                  diskStorage={launcher.disk_storage}
+                  sessionLauncherId={launcher.id}
                 />
-              ) : environment && environment?.default_url ? (
-                <CommandCopy command={environment?.default_url} noMargin />
-              ) : (
-                <CommandCopy command={DEFAULT_URL} noMargin />
               )}
-            </div>
-          </div>
+            </CardBody>
+          </Card>
 
-          <div>
-            <div className={cx("align-items-center", "d-flex", "mb-2")}>
+          <Card>
+            <CardHeader tag="h3">
+              <Link45deg className="me-1" />
+              Default URL
+            </CardHeader>
+            <CardBody>
+              <p className="mb-2">
+                The default URL specifies the URL pathname on the session to go
+                to upon launch
+              </p>
+              <div>
+                {launcher && launcher.environment?.default_url ? (
+                  <CommandCopy
+                    command={launcher.environment?.default_url}
+                    noMargin
+                  />
+                ) : environment && environment?.default_url ? (
+                  <CommandCopy command={environment?.default_url} noMargin />
+                ) : (
+                  <CommandCopy command={DEFAULT_URL} noMargin />
+                )}
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardHeader className={cx("align-items-center", "d-flex")}>
               <h3 className={cx("mb-0", "me-2")}>
                 <Database className={cx("me-1", "bi")} />
                 Data Connectors
               </h3>
               <Badge>{dataConnectors?.length || 0}</Badge>
-            </div>
-            {dataConnectors && dataConnectors.length > 0 ? (
-              <ListGroup>
-                {dataConnectors.map((storage, index) => (
-                  <ListGroupItem key={`storage-${index}`}>
-                    <div>Name: {storage.name}</div>
-                    <div>Type: {storage.storage.storage_type}</div>
-                  </ListGroupItem>
-                ))}
-              </ListGroup>
-            ) : (
-              <p className={cx("mb-0", "fst-italic")}>
-                No data connectors included
-              </p>
-            )}
-          </div>
+            </CardHeader>
+            <CardBody>
+              {dataConnectors && dataConnectors.length > 0 ? (
+                <ListGroup flush>
+                  {dataConnectors.map((storage, index) => (
+                    <ListGroupItem key={`storage-${index}`}>
+                      <div>Name: {storage.name}</div>
+                      <div>Type: {storage.storage.storage_type}</div>
+                    </ListGroupItem>
+                  ))}
+                </ListGroup>
+              ) : (
+                <p className={cx("mb-0", "fst-italic")}>
+                  No data connectors included
+                </p>
+              )}
+            </CardBody>
+          </Card>
 
-          <div>
-            <div className={cx("align-items-center", "d-flex", "mb-2")}>
+          <Card>
+            <CardHeader className={cx("align-items-center", "d-flex")}>
               <h3
                 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
               >
-                <FileCode className={cx("me-1", "bi")} />
+                <FileCode className="me-1" />
                 Code Repositories
               </h3>
               {project?.repositories?.length != null && (
                 <Badge>{project?.repositories?.length}</Badge>
               )}
-            </div>
-            {project.repositories && project.repositories.length > 0 ? (
-              <ListGroup>
-                {project.repositories.map((repositoryUrl, index) => (
-                  <RepositoryItem
-                    key={`storage-${index}`}
-                    project={project}
-                    readonly={true}
-                    url={repositoryUrl}
-                  />
-                ))}
-              </ListGroup>
-            ) : (
-              <p className={cx("mb-0", "fst-italic")}>
-                No repositories included
-              </p>
-            )}
-          </div>
+            </CardHeader>
+            <CardBody>
+              {project.repositories && project.repositories.length > 0 ? (
+                <ListGroup flush>
+                  {project.repositories.map((repositoryUrl, index) => (
+                    <RepositoryItem
+                      key={`storage-${index}`}
+                      project={project}
+                      readonly={true}
+                      url={repositoryUrl}
+                    />
+                  ))}
+                </ListGroup>
+              ) : (
+                <p className={cx("mb-0", "fst-italic")}>
+                  No repositories included
+                </p>
+              )}
+            </CardBody>
+          </Card>
 
           <SessionViewSessionSecrets />
+
           {launcher && (
-            <div>
-              <div
+            <Card>
+              <CardHeader
                 className={cx(
-                  "d-flex",
                   "align-items-center",
+                  "d-flex",
                   "justify-content-between",
-                  "mb-2"
                 )}
               >
                 <h3 className={cx("mb-0", "me-2")}>
@@ -581,17 +616,19 @@ export function SessionView({
                   requestedPermission="write"
                   userPermissions={permissions}
                 />
-              </div>
-              <p className="mb-2">
-                Environment variables pass information into the session.
-              </p>
-              <EnvVariablesCard launcher={launcher} />
-              <EnvVariablesModal
-                isOpen={isEnvVariablesModalOpen}
-                launcher={launcher}
-                toggle={toggleEnvVariables}
-              />
-            </div>
+              </CardHeader>
+              <CardBody>
+                <p className="mb-2">
+                  Environment variables pass information into the session.
+                </p>
+                <EnvVariablesCard launcher={launcher} />
+                <EnvVariablesModal
+                  isOpen={isEnvVariablesModalOpen}
+                  launcher={launcher}
+                  toggle={toggleEnvVariables}
+                />
+              </CardBody>
+            </Card>
           )}
         </div>
       </OffcanvasBody>

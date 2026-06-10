@@ -142,7 +142,7 @@ function SessionEnvironmentDisplay({
               "fw-bold",
               "gap-3",
               "p-3",
-              "w-100"
+              "w-100",
             )}
             onClick={toggle}
             type="button"

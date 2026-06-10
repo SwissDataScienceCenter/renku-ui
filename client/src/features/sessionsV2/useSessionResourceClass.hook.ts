@@ -41,13 +41,13 @@ export default function useSessionResourceClass({
 }: UseSessionResourceClassProps) {
   const dispatch = useAppDispatch();
   const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
   const { data: launcherClass, isLoading: isLoadingLauncherClass } =
     useGetClassesByClassIdQuery(
       launcher.resource_class_id
         ? { classId: `${launcher.resource_class_id}` }
-        : skipToken
+        : skipToken,
     );
   const [isPendingResourceClass, setIsPendingResourceClass] =
     useState<boolean>(false);
@@ -55,20 +55,20 @@ export default function useSessionResourceClass({
     (envClass: ResourceClassWithId, diskStorage: number | undefined) => {
       if (envClass) {
         dispatch(
-          startSessionOptionsV2Slice.actions.setSessionClass(envClass.id)
+          startSessionOptionsV2Slice.actions.setSessionClass(envClass.id),
         );
         const cappedStorage = diskStorage
           ? Math.min(diskStorage, envClass.max_storage)
           : diskStorage;
         dispatch(
           startSessionOptionsV2Slice.actions.setStorage(
-            cappedStorage ?? envClass.default_storage
-          )
+            cappedStorage ?? envClass.default_storage,
+          ),
         );
         setIsPendingResourceClass(false);
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   // Select the default session class only if it is not a custom launch and

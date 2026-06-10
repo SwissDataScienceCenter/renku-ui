@@ -32,6 +32,7 @@ import {
 } from "reactstrap";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { NEW_DOCS_MARKDOWN_SYNTAX } from "~/utils/constants/NewDocs";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../../components/LegacyExternalLinks";
 import { Loader } from "../../../../components/Loader";
@@ -69,7 +70,7 @@ export default function Documentation({ project }: DocumentationProps) {
             className={cx(
               "align-items-center",
               "d-flex",
-              "justify-content-between"
+              "justify-content-between",
             )}
           >
             <h2 className="m-0">
@@ -170,7 +171,7 @@ function DocumentationModal({
         projectPatch: { documentation: data.documentation },
       });
     },
-    [project.etag, project.id, updateProject]
+    [project.etag, project.id, updateProject],
   );
 
   useEffect(() => {
@@ -258,7 +259,7 @@ function DocumentationModal({
               "d-flex",
               "align-items-center",
               "justify-content-between",
-              "w-100"
+              "w-100",
             )}
           >
             <div>
@@ -324,11 +325,9 @@ function DocumentationWordCount({
 function MarkdownHelp() {
   return (
     <div>
-      <ExternalLink
-        role="text"
-        url="https://www.notion.so/renku/Writing-Documentation-in-Renku-Renku-s-Markdown-1a70df2efafc80329211c493917ff6e4"
-      >
-        <Markdown className="bi me-1" /> Markdown supported
+      <ExternalLink role="text" url={NEW_DOCS_MARKDOWN_SYNTAX}>
+        <Markdown className="me-1" />
+        Markdown supported
       </ExternalLink>
     </div>
   );

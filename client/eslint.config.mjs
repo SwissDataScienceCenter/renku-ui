@@ -163,6 +163,7 @@ const jsRules = {
         "nteract",
         "ntlm",
         "nullable",
+        "oauth",
         "oauth2",
         "objectstores",
         "oidc",
@@ -307,7 +308,7 @@ export default defineConfig([
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
         "plugin:jest/recommended",
-        "prettier"
+        "prettier",
       ),
     ],
     plugins: {
@@ -348,7 +349,7 @@ export default defineConfig([
         "plugin:react/jsx-runtime",
         "plugin:react-hooks/recommended",
         "plugin:jest/recommended",
-        "prettier"
+        "prettier",
       ),
     ],
     plugins: {

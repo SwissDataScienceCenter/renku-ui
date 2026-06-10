@@ -9,7 +9,7 @@ type Route = string | RouteGroup;
 
 function routeGroupToPaths(routeGroup: RouteGroup): string[] {
   return Object.entries(routeGroup).flatMap(([, route]) =>
-    routeToPaths(route as Route)
+    routeToPaths(route as Route),
   );
 }
 
@@ -31,7 +31,7 @@ function routeToStaticPart(route: string) {
 }
 
 const KNOWN_ROUTES_SET = new Set(
-  routeGroupToPaths(ABSOLUTE_ROUTES).map((route) => routeToStaticPart(route))
+  routeGroupToPaths(ABSOLUTE_ROUTES).map((route) => routeToStaticPart(route)),
 );
 const KNOWN_ROUTES = [...Array.from(KNOWN_ROUTES_SET), "/v2", "/admin"];
 

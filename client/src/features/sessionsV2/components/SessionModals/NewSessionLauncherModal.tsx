@@ -67,7 +67,7 @@ export default function NewSessionLauncherModal({
   const { data: environments } = useGetSessionEnvironmentsQuery({});
   const [addSessionLauncher, result] = useAddSessionLauncherMutation();
   const { data: project } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
-    namespace && slug ? { namespace, slug } : skipToken
+    namespace && slug ? { namespace, slug } : skipToken,
   );
   const projectId = project?.id;
 
@@ -153,10 +153,11 @@ export default function NewSessionLauncherModal({
             // TODO: fix types for this session environment
 
             environment: environment.data,
+            launcher_type: "interactive",
           },
         });
     },
-    [projectId, addSessionLauncher]
+    [projectId, addSessionLauncher],
   );
 
   useEffect(() => {
@@ -167,7 +168,7 @@ export default function NewSessionLauncherModal({
     trigger(["environmentId"]);
     if (environments?.length) {
       const environmentSelected = environments.find(
-        (env) => env.id === watchEnvironmentId
+        (env) => env.id === watchEnvironmentId,
       );
       setValue("name", environmentSelected?.name ?? "");
     }
@@ -180,7 +181,7 @@ export default function NewSessionLauncherModal({
         `${
           watchBuilderVariant.charAt(0).toUpperCase() +
           watchBuilderVariant.slice(1)
-        } environment`
+        } environment`,
       );
     }
   }, [watchEnvironmentSelect, watchBuilderVariant, setValue]);
@@ -208,7 +209,7 @@ export default function NewSessionLauncherModal({
       backdrop="static"
       centered
       className={cx(
-        step !== LauncherStep.LauncherDetails && scrollableModalStyles.modal
+        step !== LauncherStep.LauncherDetails && scrollableModalStyles.modal,
       )}
       fullscreen="lg"
       isOpen={isOpen}

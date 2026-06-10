@@ -110,7 +110,7 @@ export default function useSearchSync() {
   // Track route/context transitions (global/user/group search contexts).
   const searchContextKey = useMemo(
     () => `${pathname}::${namespace ?? ""}`,
-    [pathname, namespace]
+    [pathname, namespace],
   );
 
   // Reset slice defaults when entering a different search context.

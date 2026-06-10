@@ -34,7 +34,7 @@ export function parseCustomDateFilter(value: string): {
 
 export function buildCustomDateFilterValue(
   afterDate: string,
-  beforeDate: string
+  beforeDate: string,
 ): string {
   const parts: string[] = [];
   if (afterDate) parts.push(`>${afterDate}`);

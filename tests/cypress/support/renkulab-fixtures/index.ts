@@ -22,15 +22,11 @@
 import { Admin } from "./admin";
 import { CloudStorage } from "./cloudStorage";
 import { ConnectedServices } from "./connectedServices";
-import { Dashboard } from "./dashboard";
 import { DataConnector } from "./dataConnectors";
 import { DataServices } from "./dataServices";
-import { Datasets } from "./datasets";
 import BaseFixtures from "./fixtures";
 import { Global } from "./global";
-import { KgSearch } from "./kgSearch";
 import { NamespaceV2 } from "./namespaceV2";
-import { NewProject } from "./newProject";
 import { NewSession } from "./newSession";
 import { Projects } from "./projects";
 import { ProjectV2 } from "./projectV2";
@@ -39,42 +35,30 @@ import { Secrets } from "./secrets";
 import { Sessions } from "./sessions";
 import { Terms } from "./terms";
 import { User } from "./user";
-import { UserPreferences } from "./user-preferences";
-import { Workflows } from "./workflows";
 
-const V1Fixtures = NewProject(
-  NewSession(
-    Dashboard(
-      Sessions(
-        Admin(
-          DataConnector(
-            DataServices(
-              CloudStorage(
-                Datasets(
+const Fixtures = SearchV2(
+  ProjectV2(
+    NamespaceV2(
+      NewSession(
+        Sessions(
+          Admin(
+            DataConnector(
+              DataServices(
+                CloudStorage(
                   Projects(
                     Secrets(
-                      Terms(
-                        User(
-                          ConnectedServices(
-                            UserPreferences(
-                              Workflows(KgSearch(Global(BaseFixtures)))
-                            )
-                          )
-                        )
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
-  )
+                      Terms(User(ConnectedServices(Global(BaseFixtures)))),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ),
 );
-
-const Fixtures = SearchV2(ProjectV2(NamespaceV2(V1Fixtures)));
 
 const fixtures = new Fixtures();
 export default fixtures;

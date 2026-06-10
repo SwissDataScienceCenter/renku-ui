@@ -68,7 +68,7 @@ function SectionCardDocsPage() {
           "border-2",
           "border-primary",
           "pb-2",
-          "text-primary"
+          "text-primary",
         )}
       >
         Container Section Card
@@ -95,7 +95,7 @@ function SectionCardDocsPage() {
             "border-2",
             "border-primary",
             "pb-2",
-            "text-primary"
+            "text-primary",
           )}
         >
           When to use it
@@ -119,7 +119,7 @@ function SectionCardDocsPage() {
             "border-2",
             "border-primary",
             "pb-2",
-            "text-primary"
+            "text-primary",
           )}
         >
           Anatomy
@@ -166,7 +166,7 @@ function SectionCardDocsPage() {
             "border-2",
             "border-primary",
             "pb-2",
-            "text-primary"
+            "text-primary",
           )}
         >
           Interactive Component
@@ -186,7 +186,7 @@ function SectionCardDocsPage() {
             "border",
             "rounded",
             "min-vh-25",
-            "w-100"
+            "w-100",
           )}
         >
           <Unstyled>
@@ -207,7 +207,7 @@ function SectionCardDocsPage() {
             "border-2",
             "border-primary",
             "pb-2",
-            "text-primary"
+            "text-primary",
           )}
         >
           Usage Guidelines
@@ -262,7 +262,7 @@ function SectionCardDocsPage() {
             "border-2",
             "border-primary",
             "pb-2",
-            "text-primary"
+            "text-primary",
           )}
         >
           Variants
@@ -280,7 +280,7 @@ function SectionCardDocsPage() {
                 "p-3",
                 "bg-light",
                 "border",
-                "rounded"
+                "rounded",
               )}
             >
               <Canvas of={Basic} />
@@ -298,7 +298,7 @@ function SectionCardDocsPage() {
                 "p-3",
                 "bg-light",
                 "border",
-                "rounded"
+                "rounded",
               )}
             >
               <Canvas of={WithBadge} />
@@ -319,7 +319,7 @@ function SectionCardDocsPage() {
                 "rounded",
                 "flex-column",
                 "gap-3",
-                "w-100"
+                "w-100",
               )}
             >
               <Canvas of={WithAction} />
@@ -343,7 +343,7 @@ function SectionCardDocsPage() {
                 "rounded",
                 "flex-column",
                 "gap-3",
-                "w-100"
+                "w-100",
               )}
             >
               <Canvas of={WithDescription} />
@@ -430,7 +430,7 @@ export const BasicCard_: StoryObj<ContainerSectionCardProps> = {
             className={cx(
               "align-items-center",
               "d-flex",
-              "justify-content-between"
+              "justify-content-between",
             )}
           >
             <div className={cx("align-items-center", "d-flex")}>

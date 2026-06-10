@@ -70,8 +70,10 @@ import useSessionLaunchState from "./useSessionLaunchState.hook";
 
 import progressBoxStyles from "~/components/progress/ProgressBox.module.scss";
 
-interface SaveCloudStorageProps
-  extends Omit<StartSessionFromLauncherProps, "project"> {
+interface SaveCloudStorageProps extends Omit<
+  StartSessionFromLauncherProps,
+  "project"
+> {
   startSessionOptionsV2: StartSessionOptionsV2;
 }
 
@@ -97,7 +99,7 @@ function SaveCloudStorage({
   }, [startSessionOptionsV2.dataConnectors]);
 
   const [results, setResults] = useState<StatusStepProgressBar[]>(
-    credentialsToSave.map(() => StatusStepProgressBar.WAITING)
+    credentialsToSave.map(() => StatusStepProgressBar.WAITING),
   );
 
   const [index, setIndex] = useState(0);
@@ -131,7 +133,7 @@ function SaveCloudStorage({
         ([key, value]) => ({
           name: key,
           value,
-        })
+        }),
       ),
     });
   }, [credentialsToSave, index, saveCredentials]);
@@ -173,13 +175,13 @@ function SaveCloudStorage({
     }
     if (index >= credentialsToSave.length) {
       const cloudStorageConfigs = startSessionOptionsV2.dataConnectors?.map(
-        (cs) => storageDefinitionAfterSavingCredentialsFromConfig(cs)
+        (cs) => storageDefinitionAfterSavingCredentialsFromConfig(cs),
       );
       if (cloudStorageConfigs)
         dispatch(
           startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
-            cloudStorageConfigs
-          )
+            cloudStorageConfigs,
+          ),
         );
     }
   }, [
@@ -194,7 +196,7 @@ function SaveCloudStorage({
     <div
       className={cx(
         progressBoxStyles.progressBoxSmall,
-        progressBoxStyles.progressBoxSmallSteps
+        progressBoxStyles.progressBoxSmallSteps,
       )}
     >
       <ProgressStepsIndicator
@@ -214,7 +216,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
 
   const [
@@ -228,7 +230,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       disk_storage: startSessionOptionsV2.storage,
       resource_class_id: startSessionOptionsV2.sessionClass,
       data_connectors_overrides: startSessionOptionsV2.dataConnectors?.flatMap(
-        dataConnectorsOverrideFromConfig
+        dataConnectorsOverrideFromConfig,
       ),
       env_variable_overrides: Array.from(searchParams)
         .filter(([name]) => validateEnvVariableName(name) === true)
@@ -295,8 +297,8 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
         status: error
           ? StatusStepProgressBar.FAILED
           : isLoadingStartSession
-          ? StatusStepProgressBar.EXECUTING
-          : StatusStepProgressBar.READY,
+            ? StatusStepProgressBar.EXECUTING
+            : StatusStepProgressBar.READY,
         step: "Requesting session",
       },
     ]);
@@ -309,7 +311,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       <div
         className={cx(
           progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps
+          progressBoxStyles.progressBoxSmallSteps,
         )}
       >
         <ProgressStepsIndicator
@@ -325,7 +327,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
 }
 
 function doesCloudStorageNeedCredentials(
-  config: SessionStartDataConnectorConfiguration
+  config: SessionStartDataConnectorConfiguration,
 ) {
   if (!config.active || config.skip) {
     return false;
@@ -337,25 +339,24 @@ function doesCloudStorageNeedCredentials(
         config.savedCredentialFields?.map((field) => [
           storageSecretNameToFieldName({ name: field }),
           true,
-        ])
+        ]),
       )
     : {};
   if (sensitiveFields.every((key) => credentialFieldDict[key] != null)) {
     return false;
   }
   return Object.values(config.sensitiveFieldValues).some(
-    (value) => value === ""
+    (value) => value === "",
   );
 }
 
 function shouldCloudStorageSaveCredentials(
-  config: SessionStartDataConnectorConfiguration
+  config: SessionStartDataConnectorConfiguration,
 ) {
   return config.saveCredentials;
 }
 
-interface StartSessionWithCloudStorageModalProps
-  extends StartSessionFromLauncherProps {
+interface StartSessionWithCloudStorageModalProps extends StartSessionFromLauncherProps {
   dataConnectors: SessionStartDataConnectorConfiguration[];
 }
 
@@ -371,17 +372,17 @@ function StartSessionWithCloudStorageModal({
   const configsWithCredentials = useMemo(
     () =>
       dataConnectors.filter(
-        (config) => !doesCloudStorageNeedCredentials(config)
+        (config) => !doesCloudStorageNeedCredentials(config),
       ),
-    [dataConnectors]
+    [dataConnectors],
   );
 
   const configsNeedingCredentials = useMemo(
     () =>
       dataConnectors.filter((config) =>
-        doesCloudStorageNeedCredentials(config)
+        doesCloudStorageNeedCredentials(config),
       ),
-    [dataConnectors]
+    [dataConnectors],
   );
 
   useEffect(() => {
@@ -401,11 +402,11 @@ function StartSessionWithCloudStorageModal({
       ];
       dispatch(
         startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
-          cloudStorageConfigs
-        )
+          cloudStorageConfigs,
+        ),
       );
     },
-    [dispatch, configsWithCredentials]
+    [dispatch, configsWithCredentials],
   );
 
   const steps = [
@@ -435,7 +436,7 @@ function StartSessionWithCloudStorageModal({
       <div
         className={cx(
           progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps
+          progressBoxStyles.progressBoxSmallSteps,
         )}
       >
         <ProgressStepsIndicator
@@ -478,7 +479,7 @@ function StartSessionFromLauncher({
   });
 
   const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
 
   const {
@@ -498,11 +499,11 @@ function StartSessionFromLauncher({
   });
 
   const needsCredentials = startSessionOptionsV2.dataConnectors?.some(
-    doesCloudStorageNeedCredentials
+    doesCloudStorageNeedCredentials,
   );
 
   const shouldSaveCredentials = startSessionOptionsV2.dataConnectors?.some(
-    shouldCloudStorageSaveCredentials
+    shouldCloudStorageSaveCredentials,
   );
 
   const allDataFetched =
@@ -642,7 +643,7 @@ function StartSessionFromLauncher({
     <div
       className={cx(
         progressBoxStyles.progressBoxSmall,
-        progressBoxStyles.progressBoxSmallSteps
+        progressBoxStyles.progressBoxSmallSteps,
       )}
     >
       <ProgressStepsIndicator
@@ -672,7 +673,7 @@ export default function SessionStartPage() {
     isLoading: isLoadingProject,
     error: projectError,
   } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
-    namespace && slug ? { namespace, slug } : skipToken
+    namespace && slug ? { namespace, slug } : skipToken,
   );
   const projectId = project?.id ?? "";
 
@@ -687,12 +688,12 @@ export default function SessionStartPage() {
 
   const launcher = useMemo(
     () => launchers?.find(({ id }) => id === launcherId),
-    [launcherId, launchers]
+    [launcherId, launchers],
   );
 
   //? We do not start the session while the logged out prompt is displayed.
   const { isLoggedIn, shouldBeLoggedIn } = useAppSelector(
-    ({ loginState }) => loginState
+    ({ loginState }) => loginState,
   );
   const isShowingLoggedOutPrompt = !isLoggedIn && shouldBeLoggedIn;
 
@@ -716,8 +717,7 @@ export default function SessionStartPage() {
   return <StartSessionFromLauncher launcher={launcher} project={project} />;
 }
 
-interface StartSessionWithSessionSecretsModalProps
-  extends StartSessionFromLauncherProps {
+interface StartSessionWithSessionSecretsModalProps extends StartSessionFromLauncherProps {
   sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[];
 }
 
@@ -727,7 +727,7 @@ function StartSessionWithSessionSecretsModal({
   sessionSecretSlotsWithSecrets,
 }: StartSessionWithSessionSecretsModalProps) {
   const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
 
   const showModal = !startSessionOptionsV2.userSecretsReady;
@@ -750,7 +750,7 @@ function StartSessionWithSessionSecretsModal({
       <div
         className={cx(
           progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps
+          progressBoxStyles.progressBoxSmallSteps,
         )}
       >
         <ProgressStepsIndicator
@@ -775,7 +775,7 @@ function StartSessionImageModal({
   project,
 }: StartSessionFromLauncherProps) {
   const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
 
   const showModal = !startSessionOptionsV2.imageReady;
@@ -798,7 +798,7 @@ function StartSessionImageModal({
       <div
         className={cx(
           progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps
+          progressBoxStyles.progressBoxSmallSteps,
         )}
       >
         <ProgressStepsIndicator
@@ -823,7 +823,7 @@ function StartSessionRepositoriesModal({
   project,
 }: StartSessionFromLauncherProps) {
   const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
 
   const showModal = !startSessionOptionsV2.repositoriesReady;
@@ -846,7 +846,7 @@ function StartSessionRepositoriesModal({
       <div
         className={cx(
           progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps
+          progressBoxStyles.progressBoxSmallSteps,
         )}
       >
         <ProgressStepsIndicator

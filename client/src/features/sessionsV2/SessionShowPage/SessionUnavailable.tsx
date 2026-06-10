@@ -17,14 +17,19 @@
  */
 
 import cx from "classnames";
-import { QuestionCircle } from "react-bootstrap-icons";
 import { generatePath, Link, useParams } from "react-router";
-import { Alert } from "reactstrap";
 
+import { useLoginUrl } from "~/authentication/useLoginUrl.hook";
+import { InfoAlert, WarnAlert } from "~/components/Alert";
+import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 
 export default function SessionUnavailable() {
   const { namespace, slug } = useParams<"namespace" | "slug">();
+  const loginUrl = useLoginUrl();
+  const { data: user } = useGetUserQueryState();
+
+  const loggedIn = user?.isLoggedIn;
 
   const backUrl =
     namespace && slug
@@ -34,13 +39,14 @@ export default function SessionUnavailable() {
         })
       : undefined;
 
+  const linkColor = loggedIn ? "btn-primary" : "btn-outline-primary";
   const link = backUrl ? (
-    <Link className={cx("btn", "btn-primary", "btn-sm")} to={backUrl}>
+    <Link className={cx("btn", linkColor, "btn-sm")} to={backUrl}>
       go back to the project page
     </Link>
   ) : (
     <Link
-      className={cx("btn", "btn-primary", "btn-sm")}
+      className={cx("btn", linkColor, "btn-sm")}
       to={ABSOLUTE_ROUTES.v2.index}
     >
       go back to the dashboard
@@ -48,16 +54,29 @@ export default function SessionUnavailable() {
   );
 
   return (
-    <div className={cx("p-2", "p-lg-3", "text-nowrap", "container-lg")}>
+    <div className={cx("p-2", "p-lg-3", "container-lg")}>
       <p className="mt-2">
         The session you are trying to open is not available.
       </p>
-      <Alert color="primary">
-        <p className="mb-0">
-          <QuestionCircle className={cx("bi", "me-2", "fs-5")} />
-          You should {link}.
-        </p>
-      </Alert>
+      {loggedIn ? (
+        <InfoAlert timeout={0} dismissible={false}>
+          You can {link}.
+        </InfoAlert>
+      ) : (
+        <WarnAlert timeout={0} dismissible={false}>
+          <p>
+            You are not logged in. If you have an account, you should{" "}
+            <a
+              className={cx("btn", "btn-primary", "btn-sm")}
+              href={loginUrl.href}
+            >
+              Login
+            </a>{" "}
+            and try again.
+          </p>
+          <p className="mb-0">Otherwise, you can {link}.</p>
+        </WarnAlert>
+      )}
     </div>
   );
 }

@@ -48,7 +48,7 @@ export default function SlugFormField<T extends FieldValues>({
               className={cx(
                 "form-control",
                 errors.slug && "is-invalid",
-                compact && "p-1"
+                compact && "p-1",
               )}
               data-cy={`${entityName}-slug-input`}
               id={`${entityName}-slug`}

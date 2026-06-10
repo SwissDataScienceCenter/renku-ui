@@ -31,7 +31,8 @@ import type {
 } from "./api/sessionLaunchersV2.api";
 
 export interface SessionLauncherForm
-  extends Pick<
+  extends
+    Pick<
       SessionLauncherPost,
       "name" | "description" | "disk_storage" | "project_id"
     >,
@@ -80,7 +81,13 @@ export interface SessionResources {
 
 export interface SessionStatus {
   message?: string;
-  state: "running" | "starting" | "stopping" | "failed" | "hibernated";
+  state:
+    | "running"
+    | "starting"
+    | "stopping"
+    | "failed"
+    | "hibernated"
+    | "succeeded";
   will_hibernate_at?: string | null;
   will_delete_at?: string | null;
   ready_containers: number;
@@ -119,6 +126,7 @@ export enum SessionStatusStateEnum {
   starting = "starting",
   stopping = "stopping",
   hibernated = "hibernated",
+  succeeded = "succeeded",
 }
 
 export interface SessionEnvironmentVariable {

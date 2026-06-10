@@ -36,7 +36,7 @@ export default function useDataConnectorProjects({
         ? {
             dataConnectorId: dataConnector.id,
           }
-        : skipToken
+        : skipToken,
     );
   const { data: projectsMap, isLoading: isLoadingProjects } =
     useGetProjectsByProjectIdsQuery({

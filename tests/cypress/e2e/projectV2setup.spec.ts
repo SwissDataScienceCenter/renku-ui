@@ -57,7 +57,7 @@ describe("Set up project components", () => {
     cy.getDataCy("add-code-repository").click();
 
     cy.getDataCy("project-add-repository-url").type(
-      "https://gitlab.dev.renku.ch/url-repo.git"
+      "https://gitlab.dev.renku.ch/url-repo.git",
     );
     cy.getDataCy("add-code-repository-modal-button").click();
 
@@ -127,9 +127,7 @@ describe("Set up project components", () => {
 
     // check session launcher view and edit session launcher
     cy.getDataCy("session-name").click();
-    cy.getDataCy("session-view-menu-edit").should("be.visible");
-    cy.getDataCy("session-launcher-menu-dropdown").first().click();
-    cy.getDataCy("session-view-menu-delete").should("be.visible");
+    cy.getDataCy("session-launcher-menu-dropdown").should("be.visible");
     cy.getDataCy("session-view-menu-edit").should("be.visible").click();
     cy.getDataCy("edit-session-name").clear().type("Session custom");
     cy.getDataCy("edit-session-button").click();
@@ -143,7 +141,7 @@ describe("Set up project components", () => {
       .click();
     cy.getDataCy("environment-kind-custom").should("be.visible");
     cy.getDataCy("close-cancel-button").click();
-    cy.getDataCy("get-back-session-view").click();
+    cy.getDataCy("session-launcher-close-offcanvas-button").click();
 
     // start session
     cy.getDataCy("session-launcher-item").within(() => {
@@ -171,350 +169,6 @@ describe("Set up project components", () => {
       cy.getDataCy("session-name").should("contain.text", "Jupyter Notebook");
       cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
-  });
-});
-
-describe("Set up data connectors", () => {
-  beforeEach(() => {
-    fixtures
-      .config()
-      .versions()
-      .userTest()
-      .listNamespaceV2()
-      .dataServicesUser({
-        response: {
-          id: "0945f006-e117-49b7-8966-4c0842146313",
-          username: "user-1",
-          email: "user1@email.com",
-        },
-      })
-      .getGroupV2Permissions()
-      .getProjectV2Permissions()
-      .listProjectV2Members();
-    fixtures.projects().landingUserProjects().readProjectV2();
-  });
-
-  it("create a simple data connector", () => {
-    const projectFullFlug = "user1-uuid/test-2-v2-project";
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .testCloudStorage({ success: false })
-      .postDataConnector({
-        namespace: projectFullFlug,
-        visibility: "public",
-      })
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" })
-      .readProjectV2Namespace();
-    cy.visit(`/p/${projectFullFlug}`);
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@listProjectDataConnectors");
-
-    // add data connector
-    cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("project-data-controller-mode-create").click();
-
-    // is polybox visible
-    cy.getDataCy("data-storage-polybox")
-      .contains("PolyBox")
-      .should("be.visible");
-    // Pick a provider
-    cy.getDataCy("data-storage-s3").click();
-    cy.getDataCy("data-provider-AWS").click();
-    cy.getDataCy("data-connector-edit-next-button").click();
-
-    // Validate is shown well the label and the help for passwords in full list
-    cy.get("#switch-storage-full-list").click();
-    cy.get("label")
-      .contains("sse_kms_key_id") // Find the label with the desired text
-      .parent() // Go one node above (to the parent div)
-      .should(
-        "contain.text",
-        "If using KMS ID you must provide the ARN of Key"
-      );
-
-    // Fill out the details
-    cy.get("#sourcePath").type("bucket/my-source");
-    cy.get("#access_key_id").type("access key");
-    cy.get("#secret_access_key").type("secret key");
-    cy.getDataCy("test-data-connector-button").click();
-    cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
-    cy.getDataCy("data-connector-edit-mount").within(() => {
-      cy.get("#name").type("example storage without credentials");
-      cy.get("#visibility")
-        .children()
-        .first()
-        .should("have.value", "public")
-        .should("be.checked");
-    });
-
-    cy.getDataCy("data-connector-edit-update-button").click();
-    cy.wait("@postDataConnector");
-    cy.getDataCy("data-connector-edit-body").should(
-      "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
-    );
-    cy.getDataCy("data-connector-edit-body").should(
-      "contain.text",
-      "project was linked"
-    );
-    cy.getDataCy("data-connector-edit-close-button").click();
-    cy.wait("@listProjectDataConnectors");
-  });
-
-  it("link a data connector", () => {
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .getDataConnectorByNamespaceAndSlug()
-      .postDataConnectorProjectLink({
-        dataConnectorId: "01KMG56188ZXT9N2FJ4000000",
-      })
-      .searchContent({
-        name: "matchAnyDataConnector",
-        queryPartialString: "type:DataConnector",
-      })
-      .searchContent({
-        fixture: "searchV2/search-DC-from-id.json",
-        name: "matchSpecificNameDataConnector",
-        queryPartialString: "user1-uuid/example-storage",
-      });
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@listProjectDataConnectors");
-
-    // add data connector
-    cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("data-connector-search-input").type(
-      "user1-uuid/example-storage"
-    );
-    cy.getDataCy("data-connector-link-button").click();
-
-    cy.wait("@postDataConnectorProjectLink");
-    cy.wait("@listProjectDataConnectors");
-    cy.getDataCy("data-connector-link-successful-badge").should("be.visible");
-  });
-
-  it("create and link a global data connector", () => {
-    const doi = "doi:10.7910/DVN/DXH6FK";
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .getDataConnectorByGlobalSlug()
-      .postGlobalDataConnector({ doi })
-      .postDataConnectorProjectLink({
-        dataConnectorId: doi,
-      });
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@listProjectDataConnectors");
-
-    // add data connector
-    cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("data-connector-search-input").type(doi);
-    cy.getDataCy("data-connector-link-button").click();
-    cy.wait("@postDataConnectorProjectLink");
-    cy.wait("@listProjectDataConnectors");
-    cy.getDataCy("data-connector-link-successful-badge").should("be.visible");
-  });
-
-  it("creates and link global data connector by URL", () => {
-    const doi = "10.5281/zenodo.123456";
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .getDataConnectorByGlobalSlug()
-      .postGlobalDataConnector({
-        doi,
-        fixture: "dataConnector/data-connector-global-2.json",
-      })
-      .postDataConnectorProjectLink({
-        dataConnectorId: doi,
-      });
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@listProjectDataConnectors");
-
-    // add data connector
-    cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("data-connector-search-input").type(
-      "https://zenodo.org/records/123456"
-    );
-    cy.getDataCy("data-connector-link-button").click();
-    cy.wait("@postDataConnectorProjectLink");
-    cy.wait("@listProjectDataConnectors");
-    cy.getDataCy("data-connector-link-successful-badge").should("be.visible");
-  });
-
-  it("unlink a data connector", () => {
-    fixtures
-      .readProjectV2WithoutDocumentation({
-        fixture: "projectV2/read-projectV2-empty.json",
-      })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .deleteDataConnectorProjectLink();
-
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2WithoutDocumentation");
-    cy.wait("@listProjectDataConnectors");
-
-    cy.contains("example storage").should("be.visible").click();
-
-    cy.getDataCy("data-connector-view")
-      .find("[data-cy=data-connector-menu-dropdown]")
-      .click();
-
-    cy.getDataCy("data-connector-view")
-      .find('[data-cy="data-connector-unlink"]')
-      .should("be.visible")
-      .click();
-
-    cy.wait("@getProjectV2Permissions");
-    cy.contains("Are you sure you want to unlink the data connector").should(
-      "be.visible"
-    );
-    cy.getDataCy("delete-data-connector-modal-button")
-      .should("be.enabled")
-      .click();
-    cy.wait("@deleteDataConnectorProjectLink");
-    cy.wait("@listProjectDataConnectors");
-  });
-
-  it("unlink data connector not allowed", () => {
-    fixtures
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .getProjectV2Permissions({
-        fixture: "projectV2/projectV2-permissions-viewer.json",
-      })
-      .deleteDataConnectorProjectLinkNotAllowed();
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    cy.wait("@listProjectDataConnectors");
-
-    cy.contains("example storage").should("be.visible").click();
-    cy.getDataCy("data-connector-credentials").should("be.visible");
-    cy.getDataCy("data-connector-unlink").should("not.exist");
-  });
-
-  it("should clear state after a data connector has been created", () => {
-    fixtures
-      .getDataConnectorPermissions()
-      .readProjectV2({ fixture: "projectV2/read-projectV2-empty.json" })
-      .listProjectDataConnectors()
-      .getDataConnector()
-      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
-      .testCloudStorage({ success: false })
-      .postDataConnector({
-        namespace: "user1-uuid/test-2-v2-project",
-        visibility: "public",
-      })
-      .postDataConnectorProjectLink({ dataConnectorId: "ULID-5" });
-    cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
-    cy.wait("@listProjectDataConnectors");
-
-    // add data connector
-    cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("project-data-controller-mode-create").click();
-    // Pick a provider
-    cy.getDataCy("data-storage-s3").click();
-    cy.getDataCy("data-provider-AWS").click();
-    cy.getDataCy("data-connector-edit-next-button").click();
-
-    // Fill out the details
-    cy.get("#sourcePath").type("bucket/my-source");
-    cy.get("#access_key_id").type("access key");
-    cy.get("#secret_access_key").type("secret key");
-    cy.getDataCy("test-data-connector-button").click();
-    cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
-    cy.getDataCy("data-connector-edit-mount").within(() => {
-      cy.get("#name").type("example storage without credentials");
-      cy.get("#visibility")
-        .children()
-        .first()
-        .should("have.value", "public")
-        .should("be.checked");
-    });
-
-    cy.getDataCy("data-connector-edit-update-button").click();
-    cy.wait("@postDataConnector");
-    cy.getDataCy("data-connector-edit-body").should(
-      "contain.text",
-      "The data connector user1-uuid/test-2-v2-project/example-storage-without-credentials has been successfully added"
-    );
-    cy.getDataCy("data-connector-edit-body").should(
-      "contain.text",
-      "project was linked"
-    );
-    cy.getDataCy("data-connector-edit-close-button").click();
-    cy.wait("@listProjectDataConnectors");
-
-    // Start adding a second data connector, but cancel
-    fixtures.postDataConnectorProjectLink({ shouldNotBeCalled: true });
-    cy.getDataCy("add-data-connector").should("be.visible").click();
-    cy.getDataCy("project-data-controller-mode-create").click();
-    cy.getDataCy("data-storage-s3").click();
-    cy.getDataCy("data-provider-AWS").click();
-    cy.getDataCy("data-connector-edit-next-button").click();
-
-    // Fill out the details
-    cy.get("#sourcePath").type("bucket/my-source");
-    cy.get("#access_key_id").type("access key");
-    cy.get("#secret_access_key").type("secret key");
-    cy.getDataCy("test-data-connector-button").click();
-    cy.getDataCy("add-data-connector-continue-button").contains("Skip").click();
-    cy.getDataCy("data-connector-edit-mount").within(() => {
-      cy.get("#name").type("example storage 2");
-      cy.get("#visibility")
-        .children()
-        .first()
-        .should("have.value", "public")
-        .should("be.checked");
-    });
-    cy.getDataCy("project-data-connector-connect-header")
-      .find("button.btn-close[aria-label='Close']")
-      .click();
-
-    // Now edit a data connector
-    fixtures
-      .testCloudStorage({ success: true })
-      .patchDataConnector({ namespace: "user1-uuid" })
-      .patchDataConnectorSecrets({
-        content: [],
-        shouldNotBeCalled: true,
-      });
-
-    cy.contains("example storage").should("be.visible").click();
-
-    cy.getDataCy("data-connector-view")
-      .find('[data-cy="data-connector-edit"]')
-      .should("be.visible")
-      .click();
-
-    // Fill out the details
-    cy.getDataCy("data-connector-edit-update-button").click();
-    cy.wait("@patchDataConnector");
-    cy.getDataCy("data-connector-edit-body").should(
-      "contain.text",
-      "The data connector user1-uuid/example-storage has been successfully updated."
-    );
   });
 });
 
@@ -582,14 +236,14 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "A variable name is made up of letters, numbers and '_'."
+      "A variable name is made up of letters, numbers and '_'.",
     );
     cy.getDataCy("env-variables-input_0-name").clear().type("TEST");
     cy.getDataCy("env-variables-input_0-value").clear().type("1");
     cy.getDataCy("edit-session-button").click();
     cy.contains("Session launcher updated successfully").should("be.visible");
     cy.getDataCy("close-cancel-button").click();
-    cy.getDataCy("get-back-session-view").click();
+    cy.getDataCy("session-launcher-close-offcanvas-button").click();
   });
 
   it("initialize env variable form with empty row", () => {
@@ -669,13 +323,13 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "A variable name is made up of letters, numbers and '_'."
+      "A variable name is made up of letters, numbers and '_'.",
     );
     cy.getDataCy("env-variables-input_0-name").clear().type("RENKU_VALUE");
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Variable names cannot start with 'RENKU'."
+      "Variable names cannot start with 'RENKU'.",
     );
 
     const longName = "a".repeat(257);
@@ -685,11 +339,11 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("edit-session-button").click();
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Name can be at most 256 characters."
+      "Name can be at most 256 characters.",
     );
     cy.get(".invalid-feedback").should(
       "contain.text",
-      "Value can be at most 500 characters."
+      "Value can be at most 500 characters.",
     );
   });
 
@@ -763,7 +417,7 @@ describe("Customize session environment variables", () => {
     cy.getDataCy("session-launcher-menu-share-link").click();
     cy.getDataCy("customize-launch-link-expand").click();
     cy.contains(
-      "To customize your launch link, first add environment variables"
+      "To customize your launch link, first add environment variables",
     ).should("be.visible");
   });
 });
@@ -819,6 +473,9 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("Yes")
       .should("be.visible");
+    cy.getDataCy("code-repository-details").within(() => {
+      cy.getDataCy("code-repository-alert").should("not.exist");
+    });
   });
 
   it("read only", () => {
@@ -845,6 +502,9 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("Yes")
       .should("be.visible");
+    cy.getDataCy("code-repository-details").within(() => {
+      cy.getDataCy("code-repository-alert").should("not.exist");
+    });
   });
 
   it("inaccessible", () => {
@@ -871,6 +531,18 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("No")
       .should("be.visible");
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "The repository is not accessible")
+      .and("contain", "GitHub.com")
+      .and("contain", "invalid");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("You can try to refresh it.").should("be.visible");
+      cy.contains("a", "Reconnect").should("be.visible");
+      cy.get("a.btn-outline-primary")
+        .contains("Check integration")
+        .should("be.visible");
+    });
   });
 
   it("request integration", () => {
@@ -897,6 +569,15 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("Yes")
       .should("be.visible");
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "don't currently support this version control platform");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("a", "contact us")
+        .should("be.visible")
+        .and("have.attr", "href")
+        .and("match", /^mailto:/);
+    });
   });
 
   it("integration required", () => {
@@ -923,5 +604,166 @@ describe("Repository connection cases", () => {
     cy.getDataCy("code-repository-pull-permission")
       .contains("No")
       .should("be.visible");
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "The repository is not accessible")
+      .and("contain", "GitHub.com");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("You can try to refresh it.").should("be.visible");
+      cy.get("a.btn-outline-primary")
+        .contains("Check integration")
+        .should("be.visible");
+    });
+  });
+
+  it("integration recommended", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture:
+          "repositories/repository-metadata-integration-recommended.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Integration recommended")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "You can connect to")
+      .and("contain", "GitHub.com");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("a", "Connect").should("be.visible");
+      cy.get("a.btn-outline-primary")
+        .contains("Check integration")
+        .should("be.visible");
+    });
+  });
+
+  it("integration recommended connect button", () => {
+    fixtures
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-viewer.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture:
+          "repositories/repository-metadata-integration-recommended.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Read only")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "log in through the integration")
+      .and("contain", "GitHub.com");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("a", "Connect").should("be.visible");
+      cy.get("a.btn-outline-primary")
+        .contains("Check integration")
+        .should("be.visible");
+    });
+  });
+
+  it("inaccessible without provider with error and contact us button", () => {
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture:
+          "repositories/repository-metadata-inaccessible-no-provider.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Inaccessible")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "version control platform we currently do not support");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("a", "integrations list.").should("be.visible");
+      cy.contains("a", "contact us")
+        .should("be.visible")
+        .and("have.attr", "href")
+        .and("match", /^mailto:/);
+    });
+  });
+
+  it("inaccessible without provider viewer", () => {
+    fixtures
+      .getProjectV2Permissions({
+        fixture: "projectV2/projectV2-permissions-viewer.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture:
+          "repositories/repository-metadata-inaccessible-no-provider.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-permission-badge")
+      .contains("Inaccessible")
+      .should("be.visible");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "version control platform we currently do not support");
+    cy.getDataCy("code-repository-alert").within(() => {
+      cy.contains("a", "integrations list.").should("not.exist");
+      cy.contains("a", "contact us").should("not.exist");
+    });
+  });
+
+  it("inaccessible repository shows log-in warning for anonymous user", () => {
+    fixtures.userNone();
+    fixtures
+      .getRepositoryMetadata({
+        repositoryUrl: "https://github.com/renku/url-repo.git",
+        fixture: "repositories/repository-metadata-inaccessible.json",
+      })
+      .listConnectedServicesConnections()
+      .listConnectedServicesProviders();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getRepositoryMetadata");
+
+    cy.getDataCy("code-repository-item").click();
+    cy.getDataCy("code-repository-alert")
+      .should("be.visible")
+      .and("contain", "The repository is not accessible");
+    cy.getDataCy("code-repository-alert")
+      .invoke("text")
+      .should(
+        "include",
+        "You need to be logged in to activate integrations and access private repositories.",
+      );
+    cy.getDataCy("code-repository-alert")
+      .invoke("text")
+      .should("not.include", "You can try to refresh it.");
   });
 });

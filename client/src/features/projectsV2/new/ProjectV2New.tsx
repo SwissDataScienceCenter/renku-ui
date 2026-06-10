@@ -153,7 +153,7 @@ function ProjectV2CreationDetails() {
     (data: NewProjectForm) => {
       createProject({ projectPost: data });
     },
-    [createProject]
+    [createProject],
   );
 
   useEffect(() => {
@@ -177,7 +177,7 @@ function ProjectV2CreationDetails() {
     {
       namespace: currentNamespace ?? "<Owner>",
       slug: "",
-    }
+    },
   );
   const parentPath = `${projectParentPath}/`;
 

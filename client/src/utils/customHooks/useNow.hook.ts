@@ -28,7 +28,7 @@ interface UseNowArgs {
 export default function useNow(args?: UseNowArgs) {
   const refresh = useMemo(
     () => args?.refresh ?? Duration.fromObject({ minute: 1 }),
-    [args?.refresh]
+    [args?.refresh],
   );
 
   const [now, setNow] = useState<DateTime>(DateTime.utc());

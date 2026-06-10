@@ -67,7 +67,7 @@ export const Clipboard = ({
         onSuccess();
       });
     },
-    [clipboardText, onSuccess]
+    [clipboardText, onSuccess],
   );
 
   useEffect(() => {

@@ -62,7 +62,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/resource_pools`,
-        params: { resource_pools_params: queryArg.resourcePoolsParams },
+        params: {
+          resource_pools_params: queryArg.resourcePoolsParams,
+        },
       }),
     }),
     postResourcePools: build.mutation<
@@ -118,7 +120,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/resource_pools/${queryArg.resourcePoolId}/classes`,
-        params: { resource_class_params: queryArg.resourceClassParams },
+        params: {
+          resource_class_params: queryArg.resourceClassParams,
+        },
       }),
     }),
     postResourcePoolsByResourcePoolIdClasses: build.mutation<
@@ -284,7 +288,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/users/${queryArg.userId}/resource_pools`,
-        params: { user_resource_params: queryArg.userResourceParams },
+        params: {
+          user_resource_params: queryArg.userResourceParams,
+        },
       }),
     }),
     postUsersByUserIdResourcePools: build.mutation<
@@ -344,8 +350,7 @@ export type PatchClustersByClusterIdApiArg = {
   clusterId: Ulid;
   clusterPatch: ClusterPatch;
 };
-export type DeleteClustersByClusterIdApiResponse =
-  /** status 204 The cluster configuration was removed or did not exist in the first place */ void;
+export type DeleteClustersByClusterIdApiResponse = unknown;
 export type DeleteClustersByClusterIdApiArg = {
   clusterId: Ulid;
 };
@@ -384,8 +389,7 @@ export type PatchResourcePoolsByResourcePoolIdApiArg = {
   resourcePoolId: number;
   resourcePoolPatch: ResourcePoolPatch;
 };
-export type DeleteResourcePoolsByResourcePoolIdApiResponse =
-  /** status 204 The resource pool was removed or did not exist in the first place */ void;
+export type DeleteResourcePoolsByResourcePoolIdApiResponse = unknown;
 export type DeleteResourcePoolsByResourcePoolIdApiArg = {
   resourcePoolId: number;
 };
@@ -425,7 +429,7 @@ export type PatchResourcePoolsByResourcePoolIdClassesAndClassIdApiArg = {
   resourceClassPatch: ResourceClassPatch;
 };
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdApiResponse =
-  /** status 204 The resource class was removed or did not exist in the first place */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdApiArg = {
   resourcePoolId: number;
   classId: string;
@@ -438,7 +442,7 @@ export type GetResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiArg =
     classId: string;
   };
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiResponse =
-  /** status 204 The tolerations have been removed */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiArg =
   {
     resourcePoolId: number;
@@ -452,7 +456,7 @@ export type GetResourcePoolsByResourcePoolIdClassesAndClassIdNodeAffinitiesApiAr
     classId: string;
   };
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdNodeAffinitiesApiResponse =
-  /** status 204 The node affinities have been removed */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdNodeAffinitiesApiArg =
   {
     resourcePoolId: number;
@@ -484,7 +488,7 @@ export type GetResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   userId: string;
 };
 export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiResponse =
-  /** status 204 The user was removed or it was not part of the pool */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdUsersAndUserIdApiArg = {
   resourcePoolId: number;
   userId: string;
@@ -532,12 +536,11 @@ export type PutUsersByUserIdResourcePoolsApiArg = {
 export type GetVersionApiResponse = /** status 200 The error */ Version;
 export type GetVersionApiArg = void;
 export type Name = string;
+export type DefaultFlag = boolean;
 export type Cpu = number;
 export type Memory = number;
 export type Gpu = number;
 export type Storage = number;
-export type IntegerId = number;
-export type DefaultFlag = boolean;
 export type K8SLabel = string;
 export type K8SLabelList = K8SLabel[];
 export type NodeAffinity = {
@@ -545,17 +548,18 @@ export type NodeAffinity = {
   required_during_scheduling?: boolean;
 };
 export type NodeAffinityList = NodeAffinity[];
+export type IntegerId = number;
 export type ResourceClassWithId = {
   name: Name;
+  default: DefaultFlag;
   cpu: Cpu;
   memory: Memory;
   gpu: Gpu;
   max_storage: Storage;
   default_storage: Storage;
-  id: IntegerId;
-  default: DefaultFlag;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
+  id: IntegerId;
 };
 export type ErrorResponse = {
   error: {
@@ -629,18 +633,12 @@ export type QuotaWithId = {
   gpu: Gpu;
   id: Name;
 };
-export type ResourceClassWithIdFiltered = {
-  name: Name;
-  cpu: Cpu;
-  memory: Memory;
-  gpu: Gpu;
-  max_storage: Storage;
-  default_storage: Storage;
-  id: IntegerId;
-  default: DefaultFlag;
+export type UsageHoursRemaining = number;
+export type UsageHoursTotal = number;
+export type ResourceClassWithIdFiltered = ResourceClassWithId & {
   matching?: boolean;
-  tolerations?: K8SLabelList;
-  node_affinities?: NodeAffinityList;
+  usage_hours_remaining?: UsageHoursRemaining;
+  usage_hours_total?: UsageHoursTotal;
 };
 export type PublicFlag = boolean;
 export type RemoteConfigurationFirecrestProviderId = string;
@@ -669,6 +667,7 @@ export type IdleThreshold = number;
 export type HibernationThreshold = number;
 export type HibernationWarningPeriod = number;
 export type RuntimePlatform = "linux/amd64" | "linux/arm64";
+export type CreditsUsed = number;
 export type ResourcePoolWithIdFiltered = {
   quota?: QuotaWithId;
   classes: ResourceClassWithIdFiltered[];
@@ -682,6 +681,7 @@ export type ResourcePoolWithIdFiltered = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform: RuntimePlatform;
+  credits_used?: CreditsUsed;
 };
 export type ResourcePoolsWithIdFiltered = ResourcePoolWithIdFiltered[];
 export type CpuFilter = number;
@@ -711,12 +711,12 @@ export type QuotaWithOptionalId = {
 };
 export type ResourceClass = {
   name: Name;
+  default: DefaultFlag;
   cpu: Cpu;
   memory: Memory;
   gpu: Gpu;
   max_storage: Storage;
   default_storage: Storage;
-  default: DefaultFlag;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
 };
@@ -753,21 +753,21 @@ export type QuotaPatch = {
   memory?: Memory;
   gpu?: Gpu;
 };
-export type DefaultFlagPatch = boolean;
-export type ResourceClassPatchWithId = {
+export type ResourceClassProperties = {
   name?: Name;
+  default?: DefaultFlag;
   cpu?: Cpu;
   memory?: Memory;
   gpu?: Gpu;
   max_storage?: Storage;
   default_storage?: Storage;
-  id: IntegerId;
-  default?: DefaultFlagPatch;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
 };
+export type ResourceClassPatchWithId = ResourceClassProperties & {
+  id: IntegerId;
+};
 export type ResourceClassesPatchWithId = ResourceClassPatchWithId[];
-export type PublicFlagPatch = boolean;
 export type RemoteConfigurationPatchReset = object;
 export type RemoteConfigurationFirecrestPatch = {
   /** Kind of remote resource pool */
@@ -791,8 +791,8 @@ export type ResourcePoolPatch = {
   quota?: QuotaPatch;
   classes?: ResourceClassesPatchWithId;
   name?: Name;
-  public?: PublicFlagPatch;
-  default?: DefaultFlagPatch;
+  public?: PublicFlag;
+  default?: DefaultFlag;
   remote?: RemoteConfigurationPatch;
   idle_threshold?: IdleThreshold;
   hibernation_threshold?: HibernationThreshold;
@@ -801,17 +801,7 @@ export type ResourcePoolPatch = {
   platform?: RuntimePlatform;
 };
 export type ResourceClassesWithIdResponse = ResourceClassWithId[];
-export type ResourceClassPatch = {
-  name?: Name;
-  cpu?: Cpu;
-  memory?: Memory;
-  gpu?: Gpu;
-  max_storage?: Storage;
-  default_storage?: Storage;
-  default?: DefaultFlagPatch;
-  tolerations?: K8SLabelList;
-  node_affinities?: NodeAffinityList;
-};
+export type ResourceClassPatch = ResourceClassProperties;
 export type NodeAffinityListResponse = NodeAffinity[];
 export type UserId = string;
 export type PoolUserWithId = {

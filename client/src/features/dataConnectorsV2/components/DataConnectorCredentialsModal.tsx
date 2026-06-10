@@ -36,7 +36,7 @@ import useDataConnectorConfiguration, {
 interface DataConnectorCredentialsModalProps {
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
-  dataConnector: DataConnectorRead;
+  dataConnector?: DataConnectorRead | null;
 }
 export default function DataConnectorCredentialsModal({
   isOpen,
@@ -44,7 +44,7 @@ export default function DataConnectorCredentialsModal({
   setOpen,
 }: DataConnectorCredentialsModalProps) {
   const { dataConnectorConfigs } = useDataConnectorConfiguration({
-    dataConnectors: [dataConnector],
+    dataConnectors: dataConnector ? [dataConnector] : undefined,
   });
 
   const [saveCredentials, saveCredentialsResult] =
@@ -57,15 +57,15 @@ export default function DataConnectorCredentialsModal({
       const activeConfigs = configs.filter((c) => c.active);
       if (activeConfigs.length === 0) {
         if (!deleteCredentialsResult.isUninitialized) return;
-        deleteCredentials({ dataConnectorId: dataConnector.id });
+        deleteCredentials({ dataConnectorId: dataConnector?.id ?? "" });
         return;
       }
       if (!saveCredentialsResult.isUninitialized) return;
       const config = configs[0];
       saveCredentials({
-        dataConnectorId: dataConnector.id,
+        dataConnectorId: dataConnector?.id ?? "",
         dataConnectorSecretPatchList: Object.entries(
-          config.sensitiveFieldValues
+          config.sensitiveFieldValues,
         ).map(([key, value]) => ({
           name: key,
           value,
@@ -75,10 +75,10 @@ export default function DataConnectorCredentialsModal({
     [
       deleteCredentials,
       deleteCredentialsResult,
-      dataConnector,
+      dataConnector?.id,
       saveCredentials,
       saveCredentialsResult,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -88,8 +88,8 @@ export default function DataConnectorCredentialsModal({
   }, [deleteCredentialsResult, saveCredentialsResult.isSuccess, setOpen]);
   if (!isOpen) return null;
   if (
-    dataConnector.storage.sensitive_fields == null ||
-    dataConnector.storage.sensitive_fields.length === 0
+    dataConnector?.storage.sensitive_fields == null ||
+    dataConnector?.storage.sensitive_fields.length === 0
   ) {
     return (
       <Modal

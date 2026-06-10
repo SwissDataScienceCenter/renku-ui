@@ -23,7 +23,7 @@ function SpacingBox({ token, spacingClass, type, value }: SpacingBoxProps) {
         "overflow-hidden",
         "d-flex",
         "flex-column",
-        "m-2"
+        "m-2",
       )}
       style={{ width: 180, minHeight: 220 }}
     >
@@ -34,7 +34,7 @@ function SpacingBox({ token, spacingClass, type, value }: SpacingBoxProps) {
               "flex-fill",
               "flex-column",
               "justify-content-center",
-              "align-items-center"
+              "align-items-center",
             )}
             style={{
               backgroundColor: "rgba(0, 123, 255, 0.1)",
@@ -53,7 +53,7 @@ function SpacingBox({ token, spacingClass, type, value }: SpacingBoxProps) {
                   "d-flex",
                   "align-items-center",
                   "justify-content-center",
-                  "fw-bold"
+                  "fw-bold",
                 )}
                 style={{
                   fontSize: "1rem",
@@ -84,7 +84,7 @@ function SpacingBox({ token, spacingClass, type, value }: SpacingBoxProps) {
               "d-flex",
               "align-items-center",
               "justify-content-center",
-              "fw-bold"
+              "fw-bold",
             )}
             style={{
               fontSize: "1rem",

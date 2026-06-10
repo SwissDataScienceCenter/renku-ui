@@ -41,17 +41,17 @@ type UseRenkuToastReturn = {
   /** Send a success Renku toast. */
   renkuToastSuccess: (
     props: RenkuTypedToastProps,
-    options?: ToastOptions
+    options?: ToastOptions,
   ) => void;
   /** Send a danger Renku toast. */
   renkuToastDanger: (
     props: RenkuTypedToastProps,
-    options?: ToastOptions
+    options?: ToastOptions,
   ) => void;
   /** Send a warning Renku toast. */
   renkuToastWarning: (
     props: RenkuTypedToastProps,
-    options?: ToastOptions
+    options?: ToastOptions,
   ) => void;
   /** Send an info Renku toast. */
   renkuToastInfo: (props: RenkuTypedToastProps, options?: ToastOptions) => void;
@@ -62,7 +62,7 @@ export default function useRenkuToast(): UseRenkuToastReturn {
     (props: RenkuToastProps, options?: ToastOptions) => {
       toast(<RenkuToast {...props} />, { ...RENKU_TOAST_OPTIONS, ...options });
     },
-    []
+    [],
   );
   const renkuToastSuccess = useCallback(
     (props: RenkuTypedToastProps, options?: ToastOptions) => {
@@ -71,7 +71,7 @@ export default function useRenkuToast(): UseRenkuToastReturn {
         ...options,
       });
     },
-    []
+    [],
   );
   const renkuToastDanger = useCallback(
     (props: RenkuTypedToastProps, options?: ToastOptions) => {
@@ -80,7 +80,7 @@ export default function useRenkuToast(): UseRenkuToastReturn {
         ...options,
       });
     },
-    []
+    [],
   );
   const renkuToastWarning = useCallback(
     (props: RenkuTypedToastProps, options?: ToastOptions) => {
@@ -89,7 +89,7 @@ export default function useRenkuToast(): UseRenkuToastReturn {
         ...options,
       });
     },
-    []
+    [],
   );
   const renkuToastInfo = useCallback(
     (props: RenkuTypedToastProps, options?: ToastOptions) => {
@@ -98,7 +98,7 @@ export default function useRenkuToast(): UseRenkuToastReturn {
         ...options,
       });
     },
-    []
+    [],
   );
   return {
     toast,
@@ -118,7 +118,7 @@ const RENKU_TOAST_OPTIONS = {
     "flex-row",
     "p-0",
     "align-items-start",
-    styles.toast
+    styles.toast,
   ),
   position: "top-right",
   autoClose: 7_500,

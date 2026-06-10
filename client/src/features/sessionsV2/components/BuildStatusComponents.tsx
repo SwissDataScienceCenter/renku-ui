@@ -101,21 +101,21 @@ export function BuildStatusBadge({
       : privateImageNotFound
       ? "Image not accessible"
       : buildStatus === "in_progress"
-      ? "Build in progress"
-      : buildStatus === "cancelled"
-      ? "Build cancelled"
-      : buildStatus === "succeeded"
-      ? "Build succeeded"
-      : "Build failed";
+        ? "Build in progress"
+        : buildStatus === "cancelled"
+          ? "Build cancelled"
+          : buildStatus === "succeeded"
+            ? "Build succeeded"
+            : "Build failed";
 
   const badgeColorClasses =
     isCompatible === false || privateImageNotFound
       ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
       : buildStatus === "in_progress"
-      ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
-      : buildStatus === "succeeded"
-      ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
-      : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
+        ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
+        : buildStatus === "succeeded"
+          ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
+          : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
 
   return (
     <Badge pill className={cx("border", badgeColorClasses)}>
@@ -294,11 +294,11 @@ export function BuildActions({ launcher }: BuildActionsProps) {
   const { data: builds } = useGetBuildsQuery(
     launcher.environment.environment_image_source === "build"
       ? { environmentId: launcher.environment.id }
-      : skipToken
+      : skipToken,
   );
   const inProgressBuild = useMemo(
     () => builds?.find(({ status }) => status === "in_progress"),
-    [builds]
+    [builds],
   );
   const hasInProgressBuild = !!inProgressBuild;
 

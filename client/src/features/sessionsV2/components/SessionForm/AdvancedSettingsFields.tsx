@@ -265,7 +265,7 @@ interface AdvancedSettingsProp<T extends FieldValues> {
 }
 
 export function AdvancedSettingsFields<
-  T extends SessionLauncherForm | SessionEnvironmentForm
+  T extends SessionLauncherForm | SessionEnvironmentForm,
 >({ control, errors }: AdvancedSettingsProp<T>) {
   return (
     <>

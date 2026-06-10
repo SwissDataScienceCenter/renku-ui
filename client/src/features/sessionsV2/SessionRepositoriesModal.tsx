@@ -69,7 +69,7 @@ export default function SessionRepositoriesModal({
 
   const projectPermissions = useProjectPermissions({ projectId: project.id });
   const { data, error, isLoading } = useGetRepositoriesQuery(
-    project.repositories ?? []
+    project.repositories ?? [],
   );
 
   const repoWithInterruptions = useMemo(() => {
@@ -78,7 +78,8 @@ export default function SessionRepositoriesModal({
       data.filter(
         (repo) =>
           repo.error ||
-          (repo.data && shouldInterrupt(repo.data, !!projectPermissions?.write))
+          (repo.data &&
+            shouldInterrupt(repo.data, !!projectPermissions?.write)),
       ) ?? []
     );
   }, [data, isLoading, projectPermissions?.write]);
@@ -114,6 +115,7 @@ export default function SessionRepositoriesModal({
               key={repository.url}
               hasWriteAccess={projectPermissions?.write}
               repository={repository}
+              project={project}
             />
           ))}
         </ListGroup>
@@ -154,10 +156,12 @@ export default function SessionRepositoriesModal({
 interface SessionRepositoryWarningProps {
   hasWriteAccess: boolean;
   repository: GetRepositoriesApiResponse;
+  project: Project;
 }
 function SessionRepositoryWarning({
   hasWriteAccess,
   repository,
+  project,
 }: SessionRepositoryWarningProps) {
   const title = getRepositoryName(repository.url);
 
@@ -174,6 +178,7 @@ function SessionRepositoryWarning({
       <RepositoryCallToActionAlert
         hasWriteAccess={hasWriteAccess}
         repositoryUrl={repository.url}
+        project={project}
       />
     </ListGroupItem>
   );

@@ -10,7 +10,12 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getSessions: build.query<GetSessionsApiResponse, GetSessionsApiArg>({
-      query: () => ({ url: `/sessions` }),
+      query: (queryArg) => ({
+        url: `/sessions`,
+        params: {
+          session_type: queryArg.sessionType,
+        },
+      }),
     }),
     getSessionsBySessionId: build.query<
       GetSessionsBySessionIdApiResponse,
@@ -43,7 +48,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/sessions/${queryArg.sessionId}/logs`,
-        params: { max_lines: queryArg.maxLines },
+        params: {
+          max_lines: queryArg.maxLines,
+        },
       }),
     }),
     getSessionsImages: build.query<
@@ -52,7 +59,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/sessions/images`,
-        params: { image_url: queryArg.imageUrl },
+        params: {
+          image_url: queryArg.imageUrl,
+        },
       }),
     }),
   }),
@@ -67,15 +76,17 @@ export type PostSessionsApiArg = {
 };
 export type GetSessionsApiResponse =
   /** status 200 Information about the sessions */ SessionListResponse;
-export type GetSessionsApiArg = void;
+export type GetSessionsApiArg = {
+  /** Filter by session mode. */
+  sessionType?: SessionType;
+};
 export type GetSessionsBySessionIdApiResponse =
   /** status 200 Information about the session */ SessionResponse;
 export type GetSessionsBySessionIdApiArg = {
   /** The id of the session */
   sessionId: string;
 };
-export type DeleteSessionsBySessionIdApiResponse =
-  /** status 204 The session was deleted or it never existed in the first place */ void;
+export type DeleteSessionsBySessionIdApiResponse = unknown;
 export type DeleteSessionsBySessionIdApiArg = {
   /** The id of the session that should be deleted */
   sessionId: string;
@@ -117,7 +128,13 @@ export type SessionResources = {
 };
 export type SessionStatus = {
   message?: string;
-  state: "running" | "starting" | "stopping" | "failed" | "hibernated";
+  state:
+    | "running"
+    | "starting"
+    | "stopping"
+    | "failed"
+    | "hibernated"
+    | "succeeded";
   will_hibernate_at?: string | null;
   will_delete_at?: string | null;
   ready_containers: number;
@@ -175,6 +192,7 @@ export type SessionPostRequest = {
   env_variable_overrides?: EnvVariableOverrides;
 };
 export type SessionListResponse = SessionResponse[];
+export type SessionType = "interactive" | "non-interactive";
 export type CurrentTime = "now";
 export type SessionPatchRequest = {
   resource_class_id?: number;

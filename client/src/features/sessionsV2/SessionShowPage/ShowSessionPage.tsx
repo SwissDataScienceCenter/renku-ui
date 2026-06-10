@@ -108,7 +108,7 @@ export default function ShowSessionPage() {
     data: sessions,
     isLoading,
     isFetching,
-  } = useGetSessionsQuery(undefined, { refetchOnMountOrArgChange: true });
+  } = useGetSessionsQuery({}, { refetchOnMountOrArgChange: true });
 
   const thisSession = useMemo(() => {
     if (sessions == null) {
@@ -154,7 +154,7 @@ export default function ShowSessionPage() {
     }
     const notificationTime = new Date(
       willHibernateAt.getTime() -
-        PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS * 1000
+        PAUSE_SESSION_WARNING_GRACE_PERIOD_SECONDS * 1000,
     );
     // TODO: fix react-hooks/set-state-in-effect
 
@@ -204,7 +204,7 @@ export default function ShowSessionPage() {
   useEffect(() => {
     const faviconByStatus = getSessionFavicon(
       thisSession?.status?.state,
-      isLoading || isFetching
+      isLoading || isFetching,
     );
     dispatch(setFavicon(faviconByStatus));
     return () => {
@@ -222,7 +222,7 @@ export default function ShowSessionPage() {
     useState(false);
   const togglePauseOrDeleteSession = useCallback(
     () => setShowModalPauseOrDeleteSession((show) => !show),
-    []
+    [],
   );
   const [pauseOrDeleteAction, setPauseOrDeleteAction] = useState<
     "pause" | "delete"
@@ -237,7 +237,7 @@ export default function ShowSessionPage() {
   }, []);
   const togglePauseOrDeleteAction = useCallback(() => {
     setPauseOrDeleteAction((prevAction) =>
-      prevAction === "delete" ? "pause" : "delete"
+      prevAction === "delete" ? "pause" : "delete",
     );
   }, []);
 
@@ -296,7 +296,7 @@ export default function ShowSessionPage() {
         "d-flex",
         "no-focus",
         "shadow-none",
-        "p-0"
+        "p-0",
       )}
       role="button"
       to={backUrl}
@@ -328,7 +328,7 @@ export default function ShowSessionPage() {
               "flex-grow-0",
               "gap-3",
               "px-3",
-              "text-truncate"
+              "text-truncate",
             )}
           >
             {backButton}
@@ -349,7 +349,7 @@ export default function ShowSessionPage() {
               "d-flex",
               "flex-grow-1",
               "justify-content-between",
-              "text-truncate"
+              "text-truncate",
             )}
           >
             <div className={cx("d-flex", "px-3", "text-truncate", "h-100")}>
@@ -419,7 +419,7 @@ function LogsBtn({ toggle }: LogsBtnProps) {
           "no-focus",
           "p-0",
           "shadow-none",
-          "text-dark"
+          "text-dark",
         )}
         data-cy="resources-button"
         id="resources-button"
@@ -458,7 +458,7 @@ function PauseSessionBtn({ openPauseSession }: PauseSessionBtnProps) {
           "no-focus",
           "p-0",
           "shadow-none",
-          "text-dark"
+          "text-dark",
         )}
         data-cy={buttonId}
         id={buttonId}
@@ -493,7 +493,7 @@ function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
           "no-focus",
           "p-0",
           "shadow-none",
-          "text-dark"
+          "text-dark",
         )}
         data-cy={buttonId}
         id={buttonId}
@@ -592,7 +592,7 @@ function SessionDetails({
               "d-block",
               "d-lg-flex",
               "gap-2",
-              "align-items-center"
+              "align-items-center",
             )}
           >
             <div>
@@ -608,7 +608,7 @@ function SessionDetails({
               "d-block",
               "d-lg-flex",
               "gap-2",
-              "align-items-center"
+              "align-items-center",
             )}
           >
             <div>
@@ -632,7 +632,7 @@ function SessionDetails({
           "shadow-none",
           "text-white",
           "w-100",
-          "text-truncate"
+          "text-truncate",
         )}
         role="link"
         onClick={toggle}
@@ -678,7 +678,7 @@ function ShareSessionLinkButton({
           "no-focus",
           "p-0",
           "shadow-none",
-          "text-dark"
+          "text-dark",
         )}
         data-cy={buttonId}
         id={buttonId}
@@ -733,12 +733,12 @@ function useSessionProjectAndLauncher({
   } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
   const { data: project, isLoading: isLoadingProject } =
     useGetNamespacesByNamespaceProjectsAndSlugQuery(
-      namespace && slug ? { namespace, slug } : skipToken
+      namespace && slug ? { namespace, slug } : skipToken,
     );
 
   const launcher = useMemo(
     () => launchers?.find(({ id }) => id === launcherId),
-    [launcherId, launchers]
+    [launcherId, launchers],
   );
   return {
     isLoadingLaunchers,

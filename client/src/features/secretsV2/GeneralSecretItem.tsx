@@ -80,7 +80,7 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
             "d-flex",
             "flex-column",
             "align-items-end",
-            "gap-1"
+            "gap-1",
           )}
         >
           <SecretItemActions isV2 secret={secret} />
@@ -120,7 +120,7 @@ function GeneralSecretUsedIn({
           "mb-1",
           "bg-transparent",
           "border-0",
-          "fw-medium"
+          "fw-medium",
         )}
         onClick={toggle}
       >
@@ -154,7 +154,7 @@ function GeneralSecretUsedInProject({
 }: GeneralSecretUsedInProjectProps) {
   const secretSlotsForThisProject = useMemo(
     () => secretSlots.filter(({ project_id }) => project_id === project.id),
-    [project.id, secretSlots]
+    [project.id, secretSlots],
   );
 
   const { data: namespace } = useGetNamespacesByNamespaceSlugQuery({
@@ -162,7 +162,7 @@ function GeneralSecretUsedInProject({
   });
   const namespaceName = useMemo(
     () => namespace?.name ?? project.namespace,
-    [namespace?.name, project.namespace]
+    [namespace?.name, project.namespace],
   );
 
   // NOTE: this case should not happen
@@ -196,7 +196,7 @@ function GeneralSecretUsedInProject({
                   "d-flex",
                   "flex-row",
                   "align-items-center",
-                  "gap-1"
+                  "gap-1",
                 )}
               >
                 <UserAvatar namespace={project.namespace} />

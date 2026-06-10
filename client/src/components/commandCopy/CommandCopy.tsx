@@ -37,13 +37,13 @@ export const CommandCopy = ({ command, noMargin }: CommandCopyProps) => {
       className={cx(
         styles.main,
         "rounded overflow-hidden d-flex align-items-stretch",
-        !noMargin && "my-2"
+        !noMargin && "my-2",
       )}
     >
       <span
         className={cx(
           "rounded-start border border-end-0 -border-primary overflow-hidden",
-          "d-inline-flex align-middle align-items-center flex-grow-1 px-2"
+          "d-inline-flex align-middle align-items-center flex-grow-1 px-2",
         )}
       >
         <code className="text-truncate user-select-all mt-1" ref={ref}>
@@ -61,7 +61,7 @@ export const CommandCopy = ({ command, noMargin }: CommandCopyProps) => {
           "align-middle",
           "cursor-pointer",
           "px-2",
-          "py-1"
+          "py-1",
         )}
         clipboardText={command}
       />

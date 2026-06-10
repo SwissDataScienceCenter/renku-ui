@@ -37,6 +37,7 @@ import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { setFlag } from "../../utils/feature-flags/featureFlags.slice";
 import LazyConnectedServicesPage from "../connectedServices/LazyConnectedServicesPage";
+import LazyOAuthCompletePage from "../connectedServices/LazyOAuthCompletePage";
 import GroupNew from "../groupsV2/new/GroupNew";
 import LazyProjectV2ShowByProjectId from "../projectsV2/LazyProjectV2ShowByProjectId";
 import ProjectV2New from "../projectsV2/new/ProjectV2New";
@@ -62,7 +63,7 @@ function BetaV2Redirect() {
           namespace: betaProjectsMatch.params.namespace,
           slug: betaProjectsMatch.params.slug,
         }),
-        { replace: true }
+        { replace: true },
       );
     }
   }, [navigate, betaProjectsMatch?.params]);
@@ -73,7 +74,7 @@ function BetaV2Redirect() {
         generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
           slug: betaGroupsMatch.params.slug,
         }),
-        { replace: true }
+        { replace: true },
       );
     }
   }, [navigate, betaGroupsMatch?.params]);
@@ -137,12 +138,16 @@ export default function RootV2() {
             }
           />
           <Route
-            path={RELATIVE_ROUTES.v2.integrations}
+            path={RELATIVE_ROUTES.v2.integrations.root}
             element={
               <ContainerWrap>
                 <LazyConnectedServicesPage />
               </ContainerWrap>
             }
+          />
+          <Route
+            path={`${RELATIVE_ROUTES.v2.integrations.root}/${RELATIVE_ROUTES.v2.integrations.complete}`}
+            element={<LazyOAuthCompletePage />}
           />
           <Route
             path={RELATIVE_ROUTES.v2.secrets}
@@ -178,7 +183,7 @@ function RedirectToSearch({
         pathname: ABSOLUTE_ROUTES.v2.search,
         search: `type=${entityType}`,
       },
-      { replace: true }
+      { replace: true },
     );
   }, [entityType, navigate]);
 

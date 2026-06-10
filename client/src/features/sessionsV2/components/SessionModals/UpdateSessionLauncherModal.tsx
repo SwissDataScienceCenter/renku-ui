@@ -54,7 +54,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
-    [launcher]
+    [launcher],
   );
 
   const {
@@ -81,7 +81,7 @@ export default function UpdateSessionLauncherEnvironmentModal({
           },
         });
     },
-    [launcher.id, updateSessionLauncher]
+    [launcher.id, updateSessionLauncher],
   );
 
   useEffect(() => {

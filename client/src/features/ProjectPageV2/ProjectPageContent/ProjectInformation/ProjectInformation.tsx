@@ -38,7 +38,6 @@ import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import type {
   Project,
   ProjectMemberListResponse,
@@ -53,8 +52,6 @@ import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectInformationButton from "./ProjectInformationButton";
 
-import styles from "./ProjectInformation.module.scss";
-
 const MAX_MEMBERS_DISPLAYED = 5;
 
 function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
@@ -64,7 +61,7 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
         ? {
             projectId: project.template_id,
           }
-        : skipToken
+        : skipToken,
     );
   const { data: templateProjectNamespace } =
     useGetNamespacesByNamespaceSlugQuery(
@@ -72,7 +69,7 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
         ? {
             namespaceSlug: templateProject.namespace,
           }
-        : skipToken
+        : skipToken,
     );
 
   if (!project.template_id) return null;
@@ -133,7 +130,7 @@ export default function ProjectInformation({
   });
   const namespaceName = useMemo(
     () => namespace?.name ?? project.namespace,
-    [namespace?.name, project.namespace]
+    [namespace?.name, project.namespace],
   );
   const namespaceUrl = useMemo(
     () =>
@@ -144,7 +141,7 @@ export default function ProjectInformation({
         : generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
             username: project.namespace,
           }),
-    [namespace?.namespace_kind, project.namespace]
+    [namespace?.namespace_kind, project.namespace],
   );
   const keywordsSorted = useMemo(() => {
     if (!project.keywords) return [];
@@ -220,7 +217,7 @@ export default function ProjectInformation({
           className={cx(
             "align-items-center",
             "d-flex",
-            "justify-content-between"
+            "justify-content-between",
           )}
         >
           <h2 className="m-0">
@@ -238,18 +235,6 @@ export default function ProjectInformation({
       </CardHeader>
       <CardBody>{information}</CardBody>
     </Card>
-  );
-}
-
-export function ProjectImageView() {
-  return (
-    <div className={cx(styles.projectPageImgPlaceholder)}>
-      <img
-        src={projectPreviewImg}
-        className={cx("mb-3", "rounded-2")}
-        alt="Project image preview"
-      />
-    </div>
   );
 }
 

@@ -71,9 +71,9 @@ export function TimeCaption({
     const refresh = Math.min(
       Math.max(
         duration.toMillis() / 10,
-        Duration.fromObject({ seconds: 5 }).toMillis()
+        Duration.fromObject({ seconds: 5 }).toMillis(),
       ),
-      Duration.fromObject({ minutes: 10 }).toMillis()
+      Duration.fromObject({ minutes: 10 }).toMillis(),
     );
     /* eslint-enable spellcheck/spell-checker */
 

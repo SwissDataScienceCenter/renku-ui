@@ -60,14 +60,14 @@ export default function useSessionLauncherState({
   });
   const dataConnectorIds = useMemo(
     () => dataConnectorLinks?.map((link) => link.data_connector_id),
-    [dataConnectorLinks]
+    [dataConnectorLinks],
   );
   const {
     data: dataConnectorsMap,
     isFetching: isFetchingDataConnectors,
     isLoading: isLoadingDataConnectors,
   } = useGetDataConnectorsListByDataConnectorIdsQuery(
-    dataConnectorIds ? { dataConnectorIds } : skipToken
+    dataConnectorIds ? { dataConnectorIds } : skipToken,
   );
   const { data: resourcePools } = useGetResourcePoolsQuery({});
   const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({
@@ -89,7 +89,7 @@ export default function useSessionLauncherState({
     useGetSessionsImagesQuery(
       isExternalImageEnvironment && containerImage
         ? { imageUrl: containerImage }
-        : skipToken
+        : skipToken,
     );
   const sessionImage = useMemo(() => {
     if (isExternalImageEnvironment && containerImage) {
@@ -99,7 +99,7 @@ export default function useSessionLauncherState({
   }, [containerImage, dataSessionImage, isExternalImageEnvironment]);
 
   const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
 
   const defaultSessionClass = useMemo(
@@ -110,7 +110,7 @@ export default function useSessionLauncherState({
         .find((c) => c.default) ??
       resourcePools?.find(() => true)?.classes[0] ??
       null,
-    [resourcePools]
+    [resourcePools],
   );
 
   const dispatch = useAppDispatch();
@@ -137,7 +137,7 @@ export default function useSessionLauncherState({
 
   const dataConnectors = useMemo(
     () => Object.values(dataConnectorsMap ?? {}),
-    [dataConnectorsMap]
+    [dataConnectorsMap],
   );
   const {
     dataConnectorConfigs: initialDataConnectorConfigs,
@@ -164,8 +164,8 @@ export default function useSessionLauncherState({
     ) {
       dispatch(
         startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
-          initialDataConnectorConfigs
-        )
+          initialDataConnectorConfigs,
+        ),
       );
     }
   }, [
@@ -190,7 +190,7 @@ export default function useSessionLauncherState({
     const interrupt = !!repositories?.find(
       (repo) =>
         repo.error ||
-        (repo.data && shouldInterrupt(repo.data, !!projectPermissions?.write))
+        (repo.data && shouldInterrupt(repo.data, !!projectPermissions?.write)),
     );
     if (!isFetchingRepositories && !interrupt) {
       dispatch(startSessionOptionsV2Slice.actions.setRepositoriesReady(true));

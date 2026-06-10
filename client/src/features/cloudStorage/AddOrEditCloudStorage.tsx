@@ -64,6 +64,7 @@ import {
 } from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
+import { ConnectButton } from "./../connectedServices/ConnectedServicesPage";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_INTEGRATION_KIND_MAP,
@@ -170,14 +171,14 @@ export function AddStorageAdvanced({
         options,
       });
     },
-    [setStorage]
+    [setStorage],
   );
 
   const onSourcePathChange = useCallback(
     (value: string) => {
       setStorage({ sourcePath: value });
     },
-    [setStorage]
+    [setStorage],
   );
 
   const sourcePathHelp = useMemo(() => {
@@ -240,7 +241,7 @@ export function AddStorageAdvanced({
               aria-describedby="addCloudStorageConfigHelp"
               className={cx(
                 "form-control",
-                errors.configuration && "is-invalid"
+                errors.configuration && "is-invalid",
               )}
               id="addCloudStorageConfig"
               placeholder={CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER}
@@ -546,7 +547,7 @@ function InputOptionItem({
     option.filteredExamples.length > 0 &&
     option.filteredExamples[0].friendlyName
       ? option.filteredExamples[0].friendlyName
-      : option.friendlyName ?? option.name;
+      : (option.friendlyName ?? option.name);
   return (
     <>
       <label className="form-label" htmlFor={option.name}>
@@ -570,8 +571,8 @@ function InputOptionItem({
                   option.convertedDefault?.toString() !== "[object Object]"
                     ? option.convertedDefault?.toString()
                     : inputType === "dropdown" && option.filteredExamples
-                    ? option.filteredExamples[0].value
-                    : ""
+                      ? option.filteredExamples[0].value
+                      : ""
                 }
                 onChange={(e) => {
                   field.onChange(e);
@@ -579,7 +580,7 @@ function InputOptionItem({
                     option.name,
                     inputType === "number"
                       ? parseFloat(e.target.value)
-                      : e.target.value
+                      : e.target.value,
                   );
                 }}
                 {...additionalProps}
@@ -622,7 +623,7 @@ export function AddStorageType({
 
   const availableSchema = useMemo(
     () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
-    [schema, state.showAllSchema, storage.schema]
+    [schema, state.showAllSchema, storage.schema],
   );
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
@@ -712,17 +713,17 @@ export function AddStorageType({
         schema,
         !state.showAllProviders,
         storage.schema,
-        storage.provider
+        storage.provider,
       ),
-    [schema, state.showAllProviders, storage.schema, storage.provider]
+    [schema, state.showAllProviders, storage.schema, storage.provider],
   );
   const providerHasShortlist = useMemo(
     () => hasProviderShortlist(storage.schema),
-    [storage.schema]
+    [storage.schema],
   );
   const hasAccessMode = useMemo(() => {
     const selectedSchema = availableSchema.find(
-      (s) => s.prefix === storage?.schema
+      (s) => s.prefix === storage?.schema,
     );
     return selectedSchema ? hasSchemaAccessMode(selectedSchema) : false;
   }, [storage.schema, availableSchema]);
@@ -743,7 +744,7 @@ export function AddStorageType({
               "cursor-pointer",
               topBorder,
               bottomBorder,
-              itemActive
+              itemActive,
             )}
             key={p.name}
             tag="div"
@@ -844,16 +845,16 @@ export function AddStorageOptions({
     schema,
     !state.showAllOptions,
     storage.schema,
-    storage.provider
+    storage.provider,
   );
   const { control, setValue, getValues } = useForm();
   const { flatDataConnector } = useAppSelector(
-    (state) => state.dataConnectorFormSlice
+    (state) => state.dataConnectorFormSlice,
   );
   const dataConnectorId = flatDataConnector.dataConnectorId;
   const onFieldValueChange = (
     option: string,
-    value: string | number | boolean
+    value: string | number | boolean,
   ) => {
     setValue(option, value);
 
@@ -866,14 +867,14 @@ export function AddStorageOptions({
       const inputType = !o.convertedType
         ? "text"
         : o.convertedType === "secret"
-        ? "password"
-        : o.convertedType === "boolean"
-        ? "checkbox"
-        : o.convertedType === "number"
-        ? "number"
-        : o.filteredExamples && o.filteredExamples.length >= 1
-        ? "dropdown"
-        : "text";
+          ? "password"
+          : o.convertedType === "boolean"
+            ? "checkbox"
+            : o.convertedType === "number"
+              ? "number"
+              : o.filteredExamples && o.filteredExamples.length >= 1
+                ? "dropdown"
+                : "text";
 
       return (
         <div className="mb-3" key={o.name}>
@@ -883,7 +884,7 @@ export function AddStorageOptions({
               defaultValue={
                 storage.options && storage.options[o.name]
                   ? (storage.options[o.name] as boolean)
-                  : (o.convertedDefault as boolean) ?? undefined
+                  : ((o.convertedDefault as boolean) ?? undefined)
               }
               onFieldValueChange={onFieldValueChange}
               option={o}
@@ -981,7 +982,7 @@ export function AddStorageOptions({
   );
 
   const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
-    storage.schema ?? ""
+    storage.schema ?? "",
   );
 
   const moreOptionsThanInTheShortList = useMemo(() => {
@@ -989,13 +990,13 @@ export function AddStorageOptions({
       schema,
       false,
       storage.schema,
-      storage.provider
+      storage.provider,
     );
     const shortListOptions = getSchemaOptions(
       schema,
       true,
       storage.schema,
-      storage.provider
+      storage.provider,
     );
     return (
       allOptions &&
@@ -1006,7 +1007,7 @@ export function AddStorageOptions({
 
   const selectedSchema = useMemo(
     () => getSchema(schema, storage.schema),
-    [schema, storage.schema]
+    [schema, storage.schema],
   );
 
   return (
@@ -1034,8 +1035,6 @@ interface IntegrationAlertProps {
 }
 
 export function IntegrationAlert({ schema }: IntegrationAlertProps) {
-  const { pathname, hash } = useLocation();
-
   const {
     data: providers,
     error: providersError,
@@ -1048,15 +1047,16 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
   } = useGetOauth2ConnectionsQuery();
   const error = providersError ?? connectionsError;
   const isLoading = isLoadingProviders || isLoadingConnections;
+  const { pathname, hash } = useLocation();
 
   const providerKind = useMemo(
     () => CLOUD_STORAGE_INTEGRATION_KIND_MAP[schema.name],
-    [schema.name]
+    [schema.name],
   );
 
   const providersForSchema = useMemo(
     () => providers?.filter(({ kind }) => kind === providerKind),
-    [providerKind, providers]
+    [providerKind, providers],
   );
 
   const connectionsForSchema = useMemo(
@@ -1064,9 +1064,9 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
       connections?.filter(
         ({ provider_id, status }) =>
           status === "connected" &&
-          providersForSchema?.some(({ id }) => id === provider_id)
+          providersForSchema?.some(({ id }) => id === provider_id),
       ),
-    [connections, providersForSchema]
+    [connections, providersForSchema],
   );
 
   if (isLoading) {
@@ -1096,7 +1096,7 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
     const link = singleProvider && (
       <Link
         to={{
-          pathname: ABSOLUTE_ROUTES.v2.integrations,
+          pathname: ABSOLUTE_ROUTES.v2.integrations.root,
           search: new URLSearchParams({
             [SEARCH_PARAM_PROVIDER]: singleProvider.id,
           }).toString(),
@@ -1119,29 +1119,48 @@ export function IntegrationAlert({ schema }: IntegrationAlertProps) {
   }
 
   if (providersForSchema && providersForSchema.length > 0) {
-    // We don't know which provider to pick when there are multiple.
     const provider = providersForSchema[0];
-    const link = (
-      <Link
-        to={{
-          pathname: ABSOLUTE_ROUTES.v2.integrations,
-          search: new URLSearchParams({
-            [SEARCH_PARAM_PROVIDER]: provider.id,
-            [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
-            [SEARCH_PARAM_ACTION_REQUIRED]: "true",
-          }).toString(),
-        }}
-      >
-        {provider.display_name}
-      </Link>
+    const connection = connections?.find(
+      ({ provider_id }) => provider_id === provider.id,
     );
 
     return (
       <WarnAlert dismissible={false}>
         <h3>Action required</h3>
-        <p className="mb-0">
-          Please connect with the {link} Renku integration first.
+        <p className="mb-2">
+          Please connect the{" "}
+          <span className="fst-italic">{provider.display_name}</span> Renku
+          integration first.
         </p>
+        <div
+          className={cx("d-flex", "align-items-center", "flex-wrap", "gap-2")}
+        >
+          <ConnectButton
+            className={cx("btn-sm", "flex-shrink-0")}
+            connectionStatus={connection?.status}
+            includeSource
+            provider={provider}
+            withIcon
+          />
+          <Link
+            className={cx(
+              "btn",
+              "btn-outline-primary",
+              "btn-sm",
+              "flex-shrink-0",
+            )}
+            to={{
+              pathname: ABSOLUTE_ROUTES.v2.integrations.root,
+              search: new URLSearchParams({
+                [SEARCH_PARAM_PROVIDER]: provider.id,
+                [SEARCH_PARAM_SOURCE]: `${pathname}${hash}`,
+                [SEARCH_PARAM_ACTION_REQUIRED]: "true",
+              }).toString(),
+            }}
+          >
+            Check integration
+          </Link>
+        </div>
       </WarnAlert>
     );
   }

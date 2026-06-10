@@ -62,7 +62,7 @@ export default function StatusBanner({ params }: StatusBannerProps) {
     statusPageId ? { statusPageId } : skipToken,
     {
       pollingInterval: FIVE_MINUTES_MILLIS,
-    }
+    },
   );
 
   const { data: platformConfig } = useGetPlatformConfigQuery(undefined, {
@@ -168,10 +168,10 @@ function StatusPageIncident({
     incident.impact === "none"
       ? "dark"
       : incident.impact === "maintenance"
-      ? "info"
-      : incident.impact === "minor"
-      ? "warning"
-      : "danger";
+        ? "info"
+        : incident.impact === "minor"
+          ? "warning"
+          : "danger";
 
   return (
     <Alert
@@ -238,13 +238,13 @@ function MaintenanceBanner({
     const sortedMaintenances = [...scheduledMaintenances].sort((a, b) =>
       ensureDateTime(a.scheduled_for)
         .diff(ensureDateTime(b.scheduled_for))
-        .valueOf()
+        .valueOf(),
     );
     const ongoingMaintenances = sortedMaintenances.filter(
       (m) =>
         m.status === "in_progress" ||
         m.status === "verifying" ||
-        ensureDateTime(m.scheduled_for).diff(now).valueOf() < 0
+        ensureDateTime(m.scheduled_for).diff(now).valueOf() < 0,
     );
     if (ongoingMaintenances.length > 0) {
       return ongoingMaintenances;
@@ -312,7 +312,7 @@ function StatusPageMaintenance({
       (isDashboard &&
         ensureDateTime(scheduled_for).diff(now).valueOf() <
           MAINTENANCE_CUTOFF.valueOf()),
-    [isDashboard, now, scheduled_for]
+    [isDashboard, now, scheduled_for],
   );
 
   if (!shouldDisplay) {

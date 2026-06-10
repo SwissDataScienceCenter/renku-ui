@@ -41,7 +41,7 @@ export default function UserRedirect() {
         generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
           username: user.username,
         }),
-        { replace: true }
+        { replace: true },
       );
     }
   }, [navigate, user]);

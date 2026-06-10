@@ -93,7 +93,7 @@ function slugFromTitle(
   title,
   lower = false,
   unicodeConversion = false,
-  separator = "-"
+  separator = "-",
 ) {
   // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35/app/assets/javascripts/lib/utils/text_utility.js#L48-L65
   const rawProjectName = lower ? title.trim().toLowerCase() : title.trim();

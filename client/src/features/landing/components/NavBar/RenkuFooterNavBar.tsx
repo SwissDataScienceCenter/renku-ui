@@ -30,7 +30,7 @@ import AppContext from "~/utils/context/appContext";
 
 export default function RenkuFooterNavBar() {
   const matchesShowSessionPage = useMatch(
-    ABSOLUTE_ROUTES.v2.projects.show.sessions.show
+    ABSOLUTE_ROUTES.v2.projects.show.sessions.show,
   );
 
   if (matchesShowSessionPage) {
@@ -53,8 +53,8 @@ function RenkuFooterNavBarInner() {
     taggedVersion == null
       ? "unknown"
       : isDevVersion
-      ? `${taggedVersion} (dev)`
-      : taggedVersion;
+        ? `${taggedVersion} (dev)`
+        : taggedVersion;
   const releaseLocation = ABSOLUTE_ROUTES.v2.help.release;
 
   return (
