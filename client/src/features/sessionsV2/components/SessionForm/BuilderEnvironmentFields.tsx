@@ -52,7 +52,7 @@ export default function BuilderEnvironmentFields({
   const repositories = project.repositories ?? [];
 
   const { data, isLoading, error } = useGetRepositoriesQuery(
-    repositories.length > 0 ? repositories : skipToken
+    repositories.length > 0 ? repositories : skipToken,
   );
 
   const selectedRepositoryUrl = useWatch({
@@ -65,18 +65,18 @@ export default function BuilderEnvironmentFields({
       data?.find(
         (repo) =>
           repo.url === selectedRepositoryUrl &&
-          repo.data?.metadata?.visibility === "private"
+          repo.data?.metadata?.visibility === "private",
       ),
-    [data, selectedRepositoryUrl]
+    [data, selectedRepositoryUrl],
   );
 
   const firstEligibleRepository = useMemo(
     () =>
       data?.findIndex(
         (repo) =>
-          repo.data?.status === "valid" && repo.data.metadata?.pull_permission
+          repo.data?.status === "valid" && repo.data.metadata?.pull_permission,
       ),
-    [data]
+    [data],
   );
 
   if (!imageBuildersEnabled) {

@@ -142,7 +142,7 @@ export default function SessionLauncherCard({
   } = useGetRepositoryQuery(
     environment?.environment_image_source === "build"
       ? { url: environment.build_parameters.repository }
-      : skipToken
+      : skipToken,
   );
 
   const { data: resourcePools, isLoading: isLoadingResourcePools } =

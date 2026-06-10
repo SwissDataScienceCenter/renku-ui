@@ -42,8 +42,9 @@ import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/Cod
 
 import styles from "./Select.module.scss";
 
-interface CodeRepositorySelectorProps<T extends FieldValues>
-  extends UseControllerProps<T> {
+interface CodeRepositorySelectorProps<
+  T extends FieldValues,
+> extends UseControllerProps<T> {
   repositoriesDetails: GetRepositoriesApiResponse[];
 }
 
@@ -58,9 +59,9 @@ export default function CodeRepositorySelector<T extends FieldValues>({
         : repositoriesDetails.find(
             (repo) =>
               repo.data?.status === "valid" &&
-              repo.data.metadata?.pull_permission
+              repo.data.metadata?.pull_permission,
           )?.url,
-    [controllerProps.defaultValue, repositoriesDetails]
+    [controllerProps.defaultValue, repositoriesDetails],
   );
 
   return (
@@ -130,18 +131,18 @@ function CodeRepositorySelect({
 }: CodeRepositorySelectProps) {
   const defaultValue = useMemo(
     () => options.find((repository) => repository.url === defaultValue_),
-    [defaultValue_, options]
+    [defaultValue_, options],
   );
   const value = useMemo(
     () => options.find((repository) => repository.url === value_),
-    [options, value_]
+    [options, value_],
   );
 
   const onChange = useCallback(
     (newValue: SingleValue<GetRepositoriesApiResponse>) => {
       onChange_?.(newValue?.url);
     },
-    [onChange_]
+    [onChange_],
   );
 
   // We need to set the default value by hand here
@@ -192,7 +193,7 @@ const selectClassNames: ClassNamesConfig<GetRepositoriesApiResponse, false> = {
       styles.option,
       isDisabled && styles.optionIsDisabled,
       isFocused && !isDisabled && styles.optionIsFocused,
-      !isFocused && isSelected && !isDisabled && styles.optionIsSelected
+      !isFocused && isSelected && !isDisabled && styles.optionIsSelected,
     ),
   placeholder: () => cx("px-3"),
   loadingMessage: () => cx("p-3"),
@@ -212,7 +213,7 @@ function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
         <span
           className={cx(
             "fw-bold",
-            isDisabled && "text-decoration-line-through"
+            isDisabled && "text-decoration-line-through",
           )}
         >
           {title}
@@ -267,7 +268,7 @@ const selectComponents: SelectComponentsConfig<
       GetRepositoriesApiResponse,
       false,
       GroupBase<GetRepositoriesApiResponse>
-    >
+    >,
   ) => {
     const { data, isDisabled } = props;
     return (
@@ -281,7 +282,7 @@ const selectComponents: SelectComponentsConfig<
       GetRepositoriesApiResponse,
       false,
       GroupBase<GetRepositoriesApiResponse>
-    >
+    >,
   ) => {
     const { data, isDisabled } = props;
     return (

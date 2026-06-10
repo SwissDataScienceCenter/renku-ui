@@ -85,7 +85,7 @@ export function BuildStatusBadge({
 
   const privateImageNotFound = useMemo(
     () => imageSourceCheck?.status === "invalid",
-    [imageSourceCheck?.status]
+    [imageSourceCheck?.status],
   );
 
   const badgeIcon =
@@ -99,14 +99,14 @@ export function BuildStatusBadge({
     isCompatible === false
       ? "Image incompatible"
       : privateImageNotFound
-      ? "Image not accessible"
-      : buildStatus === "in_progress"
-        ? "Build in progress"
-        : buildStatus === "cancelled"
-          ? "Build cancelled"
-          : buildStatus === "succeeded"
-            ? "Build succeeded"
-            : "Build failed";
+        ? "Image not accessible"
+        : buildStatus === "in_progress"
+          ? "Build in progress"
+          : buildStatus === "cancelled"
+            ? "Build cancelled"
+            : buildStatus === "succeeded"
+              ? "Build succeeded"
+              : "Build failed";
 
   const badgeColorClasses =
     isCompatible === false || privateImageNotFound
