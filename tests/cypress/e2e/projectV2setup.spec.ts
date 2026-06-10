@@ -113,9 +113,9 @@ describe("Set up project components", () => {
       .clear()
       .type(customImage, { delay: 0 })
       .should("have.value", customImage);
-    cy.getDataCy("next-session-button").click();
+    cy.getDataCy("next-launcher-button").click();
     cy.getDataCy("launcher-name-input").type("Session-custom");
-    cy.getDataCy("add-session-button").click();
+    cy.getDataCy("add-launcher-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-custom");
     cy.getDataCy("close-cancel-button").click();
@@ -159,8 +159,8 @@ describe("Set up project components", () => {
     });
     cy.getDataCy("environment-kind-global").click();
     cy.getDataCy("global-environment-item").first().click();
-    cy.getDataCy("next-session-button").click();
-    cy.getDataCy("add-session-button").click();
+    cy.getDataCy("next-launcher-button").click();
+    cy.getDataCy("add-launcher-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-global");
 
@@ -182,9 +182,9 @@ describe("Set up project components", () => {
       .clear()
       .type(jobImage, { delay: 0 })
       .should("have.value", jobImage);
-    cy.getDataCy("next-session-button").click();
+    cy.getDataCy("next-launcher-button").click();
     cy.getDataCy("launcher-name-input").type("Job-custom");
-    cy.getDataCy("add-session-button").click();
+    cy.getDataCy("add-launcher-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-job");
     cy.getDataCy("close-cancel-button").click();

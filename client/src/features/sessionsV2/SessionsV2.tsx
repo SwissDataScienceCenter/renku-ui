@@ -155,7 +155,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
           enabled={
             <div className="my-auto">
               <AddSessionLauncherButton
-                data-cy="add-session-launcher"
+                data-cy="add-launcher"
                 styleBtn="iconBtn"
               />
             </div>
