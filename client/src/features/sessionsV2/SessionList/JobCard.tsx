@@ -80,7 +80,7 @@ export default function JobCard({ project, session, onOpen }: JobCardProps) {
           : undefined
       }
       role={onOpen ? "button" : undefined}
-      aria-label={`Open job with submission id ${session.submission_id} details`}
+      aria-label={`Open details of job with submission id ${session.submission_id}`}
       tabIndex={onOpen ? 0 : undefined}
     >
       <div className={cx("ms-3", "px-3", "pt-3")}>
