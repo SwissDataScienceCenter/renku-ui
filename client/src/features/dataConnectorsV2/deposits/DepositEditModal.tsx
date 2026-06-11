@@ -16,7 +16,9 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import {
   useGetOauth2ConnectionsQuery,
@@ -27,9 +29,8 @@ import {
   usePatchDepositsByDepositIdMutation,
   usePostDepositsByDepositIdJobMutation,
 } from "../api/data-connectors.enhanced-api";
-import { EnviDatWarning } from "./DepositCreationModal";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
-import { PROVIDER_OPTIONS } from "./deposits.constants";
+import { ENVIDAT_DASHBOARD_URL, PROVIDER_OPTIONS } from "./deposits.constants";
 import { EditDepositionForm } from "./deposits.types";
 
 interface DepositEditModalProps {
@@ -260,7 +261,11 @@ export default function DepositEditModal({
           <Button
             color="primary"
             data-cy="create-deposit-modal-button"
-            disabled={postJobResult.isLoading || patchDepositResult.isLoading}
+            disabled={
+              deposit.provider === "envidat" ||
+              postJobResult.isLoading ||
+              patchDepositResult.isLoading
+            }
             type="submit"
           >
             {postJobResult.isLoading || patchDepositResult.isLoading ? (
@@ -284,5 +289,19 @@ export default function DepositEditModal({
         </ModalFooter>
       </Form>
     </Modal>
+  );
+}
+
+function EnviDatWarning() {
+  return (
+    <WarnAlert dismissible={false}>
+      <p className="mb-0">
+        We do not support editing or re running exports to the{" "}
+        <ExternalLink href={ENVIDAT_DASHBOARD_URL}>
+          EnviDat platform
+        </ExternalLink>
+        . If you need, you can still delete this export and create a new one.
+      </p>
+    </WarnAlert>
   );
 }

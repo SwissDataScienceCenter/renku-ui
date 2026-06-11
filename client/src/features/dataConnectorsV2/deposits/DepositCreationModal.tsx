@@ -272,7 +272,7 @@ export default function DepositCreationModal({
   );
 }
 
-export function EnviDatWarning() {
+function EnviDatWarning() {
   return (
     <WarnAlert dismissible={false}>
       <p className="mb-0">
