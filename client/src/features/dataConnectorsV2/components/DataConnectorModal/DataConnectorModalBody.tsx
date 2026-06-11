@@ -17,9 +17,9 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Eye, Globe, Lock, Pencil, PlusLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   Button,
   ButtonGroup,
@@ -237,7 +237,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
     formState: { dirtyFields, errors, touchedFields },
     setValue,
     getValues,
-    watch,
+    reset,
   } = useForm<DataConnectorMountForm>({
     mode: "onChange",
     defaultValues: {
@@ -254,8 +254,50 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
       visibility: flatDataConnector.visibility || "private",
     },
   });
-  const currentKeywords = watch("keywords");
+  const lastResetId = useRef<string | null>(null);
+
+  const currentKeywords = useWatch({ control, name: "keywords" }) ?? [];
   const oldKeywords = dataConnector?.keywords ?? [];
+
+  useEffect(() => {
+    const dataConnectorId = dataConnector?.id ?? null;
+
+    if (dataConnectorId == null) {
+      lastResetId.current = null;
+      return;
+    }
+    if (flatDataConnector.dataConnectorId !== dataConnectorId) return;
+    if (lastResetId.current === dataConnectorId) return;
+
+    reset({
+      keyword: "",
+      keywords: flatDataConnector.keywords || [],
+      mountPoint:
+        flatDataConnector.mountPoint ||
+        `${flatDataConnector.schema?.toLowerCase()}`,
+      name: flatDataConnector.name || "",
+      namespace: flatDataConnector.namespace || "",
+      readOnly: flatDataConnector.readOnly ?? false,
+      saveCredentials: cloudStorageState.saveCredentials,
+      slug: flatDataConnector.slug || "",
+      visibility: flatDataConnector.visibility || "private",
+    });
+
+    lastResetId.current = dataConnectorId;
+  }, [
+    cloudStorageState.saveCredentials,
+    dataConnector?.id,
+    flatDataConnector.dataConnectorId,
+    flatDataConnector.keywords,
+    flatDataConnector.mountPoint,
+    flatDataConnector.name,
+    flatDataConnector.namespace,
+    flatDataConnector.readOnly,
+    flatDataConnector.schema,
+    flatDataConnector.slug,
+    flatDataConnector.visibility,
+    reset,
+  ]);
 
   const onFieldValueChange = useCallback(
     (field: DataConnectorMountFormFields, value: string | boolean) => {
@@ -322,8 +364,8 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
     (o) => flatDataConnector.options && flatDataConnector.options[o.name],
   );
 
-  const currentName = watch("name");
-  const currentSlug = watch("slug");
+  const currentName = useWatch({ control, name: "name" }) ?? "";
+  const currentSlug = useWatch({ control, name: "slug" }) ?? "";
   useEffect(() => {
     dispatch(
       dataConnectorFormSlice.actions.setFlatDataConnector({
