@@ -42,6 +42,7 @@ import {
 } from "reactstrap";
 
 import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
+import type { RepositoryProviderData } from "~/features/repositories/api/repositories.api";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../components/LegacyExternalLinks";
@@ -65,12 +66,14 @@ import { isImageCompatibleWith } from "../session.utils";
 interface BuildStatusBadgeProps {
   buildStatus: Build["status"];
   imageCheck?: ImageCheckResponse | null;
+  imageSourceCheck?: RepositoryProviderData | null;
   resourcePool?: ResourcePoolWithId;
 }
 
 export function BuildStatusBadge({
   buildStatus,
   imageCheck,
+  imageSourceCheck,
   resourcePool,
 }: BuildStatusBadgeProps) {
   const isCompatible = useMemo(() => {
@@ -79,6 +82,11 @@ export function BuildStatusBadge({
     }
     return isImageCompatibleWith(imageCheck, resourcePool.platform);
   }, [imageCheck, resourcePool]);
+
+  const privateImageNotFound = useMemo(
+    () => imageSourceCheck?.status === "invalid",
+    [imageSourceCheck?.status],
+  );
 
   const badgeIcon =
     buildStatus === "in_progress" ? (
@@ -90,16 +98,18 @@ export function BuildStatusBadge({
   const badgeText =
     isCompatible === false
       ? "Image incompatible"
-      : buildStatus === "in_progress"
-        ? "Build in progress"
-        : buildStatus === "cancelled"
-          ? "Build cancelled"
-          : buildStatus === "succeeded"
-            ? "Build succeeded"
-            : "Build failed";
+      : privateImageNotFound
+        ? "Image not accessible"
+        : buildStatus === "in_progress"
+          ? "Build in progress"
+          : buildStatus === "cancelled"
+            ? "Build cancelled"
+            : buildStatus === "succeeded"
+              ? "Build succeeded"
+              : "Build failed";
 
   const badgeColorClasses =
-    isCompatible === false
+    isCompatible === false || privateImageNotFound
       ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
       : buildStatus === "in_progress"
         ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]

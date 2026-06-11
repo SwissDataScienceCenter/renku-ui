@@ -21,6 +21,25 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getPlatformAuthorizationConfig: build.query<
+      GetPlatformAuthorizationConfigApiResponse,
+      GetPlatformAuthorizationConfigApiArg
+    >({
+      query: () => ({ url: `/platform/authorization_config` }),
+    }),
+    patchPlatformAuthorizationConfig: build.mutation<
+      PatchPlatformAuthorizationConfigApiResponse,
+      PatchPlatformAuthorizationConfigApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/platform/authorization_config`,
+        method: "PATCH",
+        body: queryArg.authzConfigPatch,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
     getPlatformRedirects: build.query<
       GetPlatformRedirectsApiResponse,
       GetPlatformRedirectsApiArg
@@ -89,6 +108,16 @@ export type PatchPlatformConfigApiArg = {
   "If-Match": ETag;
   platformConfigPatch: PlatformConfigPatch;
 };
+export type GetPlatformAuthorizationConfigApiResponse =
+  /** status 200 The authorization configuration */ AuthzConfig;
+export type GetPlatformAuthorizationConfigApiArg = void;
+export type PatchPlatformAuthorizationConfigApiResponse =
+  /** status 200 The updated platform configuration */ AuthzConfig;
+export type PatchPlatformAuthorizationConfigApiArg = {
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  authzConfigPatch: AuthzConfigPatch;
+};
 export type GetPlatformRedirectsApiResponse =
   /** status 200 A list of redirect plans */ UrlRedirectPlanList;
 export type GetPlatformRedirectsApiArg = {
@@ -140,6 +169,16 @@ export type ErrorResponse = {
 export type PlatformConfigPatch = {
   incident_banner?: IncidentBanner;
 };
+export type AuthzFlag = "admins_only" | "registered_users";
+export type AuthzConfig = {
+  etag: ETag;
+  create_projects: AuthzFlag;
+  create_groups: AuthzFlag;
+};
+export type AuthzConfigPatch = {
+  create_projects?: AuthzFlag;
+  create_groups?: AuthzFlag;
+};
 export type SourceUrl = string;
 export type TargetUrl = string;
 export type UrlRedirectPlan = {
@@ -165,6 +204,8 @@ export type UrlRedirectPlanPatch = {
 export const {
   useGetPlatformConfigQuery,
   usePatchPlatformConfigMutation,
+  useGetPlatformAuthorizationConfigQuery,
+  usePatchPlatformAuthorizationConfigMutation,
   useGetPlatformRedirectsQuery,
   usePostPlatformRedirectsMutation,
   useGetPlatformRedirectsBySourceUrlQuery,
