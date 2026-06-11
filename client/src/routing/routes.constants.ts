@@ -86,7 +86,10 @@ export const ABSOLUTE_ROUTES = {
 export const RELATIVE_ROUTES = {
   root: "/",
   /** @deprecated Renku Legacy route */
-  datasets: "/datasets",
+  datasets: {
+    root: "datasets",
+    splat: "*",
+  },
   /** @deprecated Renku Legacy route */
   projects: { splat: "projects/*" },
   /** @deprecated Renku Legacy routes */
