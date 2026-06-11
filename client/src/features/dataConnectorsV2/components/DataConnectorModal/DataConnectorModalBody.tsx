@@ -68,7 +68,6 @@ import DataConnectorSaveCredentialsInfo from "./DataConnectorSaveCredentialsInfo
 
 interface AddOrEditDataConnectorProps {
   dataConnector?: DataConnectorRead | null;
-  isOpen?: boolean;
   project?: Project;
   storageSecrets: DataConnectorSecret[];
   switchMode?: () => void;
