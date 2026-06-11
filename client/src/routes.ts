@@ -83,6 +83,25 @@ export default [
   route(RELATIVE_ROUTES.v2.admin, "routes/admin.tsx"),
   // Legacy projects (may redirect)
   route(RELATIVE_ROUTES.projects.splat, "routes/legacy/projects.tsx"),
+
+  /*
+        <Route
+        path="/datasets/:identifier/add"
+        element={<LegacyDatasetAddToProject />}
+      />
+      <Route path="/datasets/:identifier" element={<LegacyShowDataset />} />
+      <Route path="/datasets" element={<LegacyDatasets />} />
+  */
+  ...prefix(RELATIVE_ROUTES.datasets.root, [
+    index("routes/legacy/datasets/index.tsx"),
+    route(
+      RELATIVE_ROUTES.datasets.splat,
+      "routes/legacy/datasets/catchall.tsx",
+    ),
+  ]),
+
+  route(RELATIVE_ROUTES.v1.splat, "routes/legacy/index.tsx"),
+
   // * matches all URLs, the ? makes it optional so it will match / as well
   route("*?", "routes/catchall.tsx"),
 ] satisfies RouteConfig;

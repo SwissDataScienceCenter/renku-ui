@@ -16,14 +16,7 @@
  * limitations under the License.
  */
 
-import { Route, Routes } from "react-router";
-
-import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
-import LegacyDatasets from "./features/legacy/LegacyDatasets";
-import LegacyRoot from "./features/legacy/LegacyRoot";
-import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
-import LazyRootV2 from "./features/rootV2/LazyRootV2";
-import { RELATIVE_ROUTES } from "./routing/routes.constants";
+import RootV2 from "./features/rootV2/RootV2";
 
 /**
  * "Catch all" component
@@ -31,16 +24,5 @@ import { RELATIVE_ROUTES } from "./routing/routes.constants";
  * Renders pages with client-side routing.
  */
 export default function CatchallApp() {
-  return (
-    <Routes>
-      <Route
-        path="/datasets/:identifier/add"
-        element={<LegacyDatasetAddToProject />}
-      />
-      <Route path="/datasets/:identifier" element={<LegacyShowDataset />} />
-      <Route path="/datasets" element={<LegacyDatasets />} />
-      <Route path={RELATIVE_ROUTES.v1.splat} element={<LegacyRoot />} />
-      <Route path="*" element={<LazyRootV2 />} />
-    </Routes>
-  );
+  return <RootV2 />;
 }
