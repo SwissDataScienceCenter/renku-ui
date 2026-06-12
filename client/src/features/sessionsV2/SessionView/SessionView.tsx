@@ -63,6 +63,7 @@ import {
   useGetResourcePoolsQuery,
 } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
@@ -80,7 +81,6 @@ import {
 } from "../session.utils";
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { LauncherCategory, SessionV2 } from "../sessionsV2.types";
-import StartSessionButton from "../StartSessionButton";
 import EnvironmentItem from "./EnvironmentItem";
 import EnvVariablesCard from "./EnvVariablesCard";
 import EnvVariablesModal from "./EnvVariablesModal";
@@ -151,13 +151,14 @@ function SessionCard({
 }
 
 function SessionCardNotRunning({
+  hasSession,
   launcher,
   project,
 }: {
+  hasSession?: boolean;
   launcher: SessionLauncher;
   project: Project;
 }) {
-  const launcherCategory = getLauncherCategory(launcher);
   return (
     <SessionCardContent
       color="dark"
@@ -183,12 +184,12 @@ function SessionCardNotRunning({
       }
       contentSession={
         <div className="my-auto">
-          <StartSessionButton
+          <LauncherActions
+            placement="launcher-panel"
+            hasSession={hasSession}
             launcher={launcher}
             namespace={project.namespace}
             slug={project.slug}
-            launcherCategory={launcherCategory}
-            isDisabledDropdownToggle={true}
           />
         </div>
       }
@@ -397,6 +398,7 @@ export function SessionView({
                   </p>
                   {launcher && (
                     <SessionCardNotRunning
+                      hasSession={totalSession > 0}
                       project={project}
                       launcher={launcher}
                     />

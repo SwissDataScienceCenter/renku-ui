@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,12 +16,15 @@
  * limitations under the License.
  */
 
-export type RequestedPermission = "write" | "delete" | "change_membership";
+import cx from "classnames";
+import { Button } from "reactstrap";
 
-export type Permissions = {
-  [key in RequestedPermission]: boolean;
-};
+import { Loader } from "~/components/Loader";
 
-export type ProjectPermissions = Permissions & {
-  isLoadingPermissions: boolean;
-};
+export default function CheckingLauncherButton() {
+  return (
+    <Button color="outline-primary" className={cx("disabled")} size="sm">
+      <Loader size={12} inline /> Checking launcher
+    </Button>
+  );
+}
