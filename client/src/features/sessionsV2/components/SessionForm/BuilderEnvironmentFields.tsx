@@ -62,7 +62,7 @@ export default function BuilderEnvironmentFields({
   const repositories = project.repositories ?? [];
 
   const { data, isLoading, error } = useGetRepositoriesQuery(
-    repositories.length > 0 ? repositories : skipToken
+    repositories.length > 0 ? repositories : skipToken,
   );
   const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
 
@@ -87,7 +87,7 @@ export default function BuilderEnvironmentFields({
         (repo) =>
           repo.data?.status === "valid" && repo.data.metadata?.pull_permission,
       ),
-    [data]
+    [data],
   );
 
   if (!imageBuildersEnabled) {

@@ -260,18 +260,6 @@ export function SessionView({
 
   const launcherCategory = launcher && getLauncherCategory(launcher);
   const launcherDefinition = getLauncherCategoryDefinition(
-    launcherCategory || orphanCategory,
-  );
-
-  // for orphan session/jobs in case can't find the type we assume is  a session
-  const orphanType =
-    !launcher && sessions && sessions?.length >= 1
-      ? sessions[0].session_type
-      : null;
-  const orphanCategory = orphanType === "non-interactive" ? "job" : "session";
-
-  const launcherCategory = launcher && getLauncherCategory(launcher);
-  const launcherDefinition = getLauncherCategoryDefinition(
     launcherCategory || orphanCategory
   );
 
@@ -280,11 +268,11 @@ export function SessionView({
       projectId: project.id,
     });
   const dataConnectorIds = dataConnectorLinks?.map(
-    (link) => link.data_connector_id
+    (link) => link.data_connector_id,
   );
   const { data: dataConnectorsMap } =
     useGetDataConnectorsListByDataConnectorIdsQuery(
-      dataConnectorIds ? { dataConnectorIds } : skipToken
+      dataConnectorIds ? { dataConnectorIds } : skipToken,
     );
   const dataConnectors = Object.values(dataConnectorsMap ?? {});
 
@@ -315,22 +303,22 @@ export function SessionView({
   const key = launcher
     ? launcher.id
     : sessions && Object.keys(sessions).length > 0
-    ? Object.keys(sessions)[0]
-    : "nn";
+      ? Object.keys(sessions)[0]
+      : "nn";
 
   const userLauncherResourcePool = useMemo(
     () =>
       resourcePools?.find((pool) =>
-        pool.classes.find((c) => c.id == launcher?.resource_class_id)
+        pool.classes.find((c) => c.id == launcher?.resource_class_id),
       ),
-    [launcher, resourcePools]
+    [launcher, resourcePools],
   );
   const userLauncherResourceClass = useMemo(
     () =>
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == launcher?.resource_class_id),
-    [launcher, resourcePools]
+    [launcher, resourcePools],
   );
 
   const resourceDetails =
@@ -425,7 +413,7 @@ export function SessionView({
                   className={cx(
                     "align-items-center",
                     "d-flex",
-                    "justify-content-between"
+                    "justify-content-between",
                   )}
                 >
                   <h3 className="mb-0">
@@ -474,7 +462,7 @@ export function SessionView({
               className={cx(
                 "align-items-center",
                 "d-flex",
-                "justify-content-between"
+                "justify-content-between",
               )}
             >
               <h3
@@ -635,7 +623,7 @@ export function SessionView({
                 className={cx(
                   "align-items-center",
                   "d-flex",
-                  "justify-content-between"
+                  "justify-content-between",
                 )}
               >
                 <h3 className={cx("mb-0", "me-2")}>
