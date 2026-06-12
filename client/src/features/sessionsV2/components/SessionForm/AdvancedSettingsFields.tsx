@@ -55,6 +55,7 @@ interface FormFieldLabelProps<T extends FieldValues> {
   isOptional?: boolean;
   label: ReactNode;
   name: Path<T>;
+  id?: string;
 }
 
 function FormFieldLabel<T extends FieldValues>({
@@ -92,6 +93,7 @@ function FormField<T extends FieldValues>({
   rules,
   type = "text",
   isOptional,
+  id,
 }: FormFieldLabelProps<T> & {
   control: Control<T>;
   errors?: FieldErrors<T>;
@@ -111,6 +113,7 @@ function FormField<T extends FieldValues>({
         rules={rules}
         type={type}
         isOptional={isOptional}
+        id={id}
       />
     );
   }
@@ -131,7 +134,7 @@ function FormField<T extends FieldValues>({
           <Input
             className={cx(errors?.[name] && "is-invalid")}
             data-cy={`session-launcher-field-${name}`}
-            id={`addSessionLauncher${name}`}
+            id={id ?? `addSessionLauncher${name}`}
             placeholder={placeholder}
             type={type}
             {...field}
@@ -160,6 +163,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
   rules,
   type = "text",
   isOptional,
+  id,
 }: {
   control: Control<T>;
   errors?: FieldErrors<T>;
@@ -170,6 +174,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
   rules?: ControllerProps<T>["rules"];
   type: InputType;
   isOptional?: boolean;
+  id?: string;
 }) {
   return (
     <div className="form-check">
@@ -181,7 +186,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
           <Input
             className={cx(errors?.[name] && "is-invalid")}
             data-cy={`session-launcher-field-${name}`}
-            id={`addSessionLauncher${name}`}
+            id={id ?? `addSessionLauncher${name}`}
             placeholder={placeholder}
             type={type}
             checked={field.value}
@@ -222,6 +227,7 @@ export interface JsonFieldProps<T extends FieldValues> {
   helpText: string;
   isOptional?: boolean;
   dataCy?: string;
+  id?: string;
 }
 
 export function JsonField<T extends FieldValues>({
@@ -233,6 +239,7 @@ export function JsonField<T extends FieldValues>({
   helpText,
   isOptional = true,
   dataCy,
+  id,
 }: JsonFieldProps<T>) {
   const rules = isOptional
     ? {
@@ -266,7 +273,7 @@ export function JsonField<T extends FieldValues>({
               <textarea
                 className={cx("w-100", "form-control", error && "is-invalid")}
                 data-cy={dataCy ?? `session-launcher-field-${name}`}
-                id={`addSessionLauncher${name}`}
+                id={id ?? `addSessionLauncher${name}`}
                 rows={2}
                 {...field}
               />

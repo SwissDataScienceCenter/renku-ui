@@ -133,6 +133,7 @@ export default function BuilderEnvironmentFields({
               helpText='Enter the command that will run as a job (JSON array format) e.g. ["python","my_repo/main.py"]'
               isOptional={false}
               dataCy="job-command-input"
+              id="job-command-input"
             />
           </div>
           <div>
@@ -145,6 +146,7 @@ export default function BuilderEnvironmentFields({
               helpText='Enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
               isOptional={true}
               dataCy="job-args-input"
+              id="job-args-input"
             />
           </div>
         </>
