@@ -46,11 +46,11 @@ import {
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
+import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import {
   EnvironmentIcon,
   LauncherEnvironmentIcon,
 } from "../components/SessionForm/LauncherEnvironmentIcon";
-import { SessionLauncherButtons } from "../components/SessionLauncherButtons";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
 import {
@@ -326,7 +326,8 @@ export default function SessionLauncherCard({
                     "gap-2",
                   )}
                 >
-                  <SessionLauncherButtons
+                  <LauncherActions
+                    placement="launcher-card"
                     hasSession={hasSession}
                     lastBuild={lastBuild}
                     launcher={launcher}

@@ -16,37 +16,31 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { Send } from "react-bootstrap-icons";
-import { Button } from "reactstrap";
+import type { ReactNode } from "react";
 
-import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import type { Build, SessionLauncher } from "../../api/sessionLaunchersV2.api";
 
-interface SubmitJobLauncherActionProps {
+export type LauncherActionPlacement = "launcher-card" | "launcher-panel";
+
+export interface LauncherCardActionsProps {
+  hasSession?: boolean;
+  lastBuild?: Build;
   launcher: SessionLauncher;
-  disabled?: boolean;
-  className?: string;
+  namespace: string;
+  otherActions?: ReactNode;
+  slug: string;
+  useOldImage?: boolean;
 }
 
-export default function SubmitJobLauncherAction({
-  disabled,
-  className,
-}: SubmitJobLauncherActionProps) {
-  return (
-    <>
-      <Button
-        className={cx("text-nowrap", className)}
-        color="primary"
-        data-cy="submit-job-button"
-        onClick={(event) => {
-          event.stopPropagation(); // TODO: implement action when submit a job in other PR
-        }}
-        size="sm"
-        disabled={disabled}
-      >
-        <Send className={cx("bi", "me-1")} />
-        Submit
-      </Button>
-    </>
-  );
+export interface LauncherPanelActionsProps {
+  hasSession?: boolean;
+  launcher: SessionLauncher;
+  namespace: string;
+  slug: string;
+  useOldImage?: boolean;
+}
+
+export interface LauncherActionsProps
+  extends LauncherCardActionsProps, LauncherPanelActionsProps {
+  placement: LauncherActionPlacement;
 }
