@@ -42,6 +42,8 @@ export default function OffcanvasHeaderWithType({
     ? _entityName
     : entityType === "data-connector"
     ? "Data connector"
+    : entityType === "job-launcher"
+    ? "Job launcher"
     : entityType === "session-launcher"
     ? "Session launcher"
     : entityType === "code-repository"

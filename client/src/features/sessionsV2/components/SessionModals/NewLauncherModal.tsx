@@ -86,7 +86,7 @@ export default function NewLauncherModal({
         toggle={handleCloseAll}
       >
         <ModalHeader tag="h2" toggle={handleCloseAll}>
-          <RocketTakeoff className="me-2" />
+          <RocketTakeoff className="me-1" />
           Select the type of launcher to create
         </ModalHeader>
         <ModalBody>

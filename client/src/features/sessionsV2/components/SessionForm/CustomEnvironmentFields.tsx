@@ -132,23 +132,23 @@ export function CustomEnvironmentFields({
 
       <div className={cx("d-flex", "flex-column", "gap-3")}>
         {launcherCategory === "session" && (
-          <h3 className={cx("fw-bold", "mt-3", "mb-0")}>Advanced settings</h3>
-        )}
-
-        {launcherCategory === "session" && (
-          <InfoAlert dismissible={false} timeout={0}>
-            <p className="mb-0">
-              Please see the{" "}
-              <ExternalLink
-                role="text"
-                url={NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE}
-                title="documentation"
-                showLinkIcon
-                iconAfter
-              />{" "}
-              for how to complete this form to make your image run on Renkulab.
-            </p>
-          </InfoAlert>
+          <>
+            <h3 className={cx("fw-bold", "mt-3", "mb-0")}>Advanced settings</h3>
+            <InfoAlert dismissible={false} timeout={0}>
+              <p className="mb-0">
+                Please see the{" "}
+                <ExternalLink
+                  role="text"
+                  url={NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE}
+                  title="documentation"
+                  showLinkIcon
+                  iconAfter
+                />{" "}
+                for how to complete this form to make your image run on
+                Renkulab.
+              </p>
+            </InfoAlert>
+          </>
         )}
 
         <AdvancedSettingsFields<SessionLauncherForm>
