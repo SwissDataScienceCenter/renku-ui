@@ -53,58 +53,6 @@ export default function EnvironmentKindField({
       control={control}
       name="environmentSelect"
       render={({ field }) => (
-        <ButtonGroup size="sm" className="w-100">
-          {showGlobalOption && (
-            <>
-              <input
-                type="radio"
-                className="btn-check"
-                name={field.name}
-                autoComplete="off"
-                checked={field.value === "global"}
-                id="environment-kind-global-radio"
-                onChange={() => field.onChange("global")}
-                onBlur={field.onBlur}
-              />
-              <label
-                className={cx(
-                  "btn",
-                  "btn-outline-primary",
-                  "p-2",
-                  "p-md-4",
-                  "d-flex",
-                  "justify-content-center",
-                )}
-                data-cy="environment-kind-global"
-                htmlFor="environment-kind-global-radio"
-              >
-                <div className={cx("d-flex", "flex-column", "gap-2")}>
-                  <div
-                    className={cx(
-                      "d-flex",
-                      "flex-row",
-                      "gap-3",
-                      "text-center",
-                      "text-md-start",
-                      "align-items-center",
-                    )}
-                  >
-                    <EnvironmentIcon
-                      type="global"
-                      size={30}
-                      className={cx("d-none", "d-md-block")}
-                    />
-                    <span className="fw-bold">Global environment</span>
-                  </div>
-                  <p
-                    className={cx("mb-0", "text-start", "d-none", "d-md-block")}
-                  >
-                    Get started quickly with a pre-built environment.
-                  </p>
-                </div>
-              </label>
-            </>
-          )}
         <div className={cx("d-flex", "gap-4")}>
           <ButtonGroup size="sm" className="w-100">
             {showGlobalOption && (
@@ -271,6 +219,7 @@ export default function EnvironmentKindField({
             </>
           )}
         </ButtonGroup>
+        </div>
       )}
     />
   );
