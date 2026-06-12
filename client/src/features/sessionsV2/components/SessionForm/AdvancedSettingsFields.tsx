@@ -243,7 +243,7 @@ export function JsonField<T extends FieldValues>({
           isValidRequiredJSONStringArray(
             value?.toString(),
             JOB_COMMAND_VALIDATION_MESSAGE.required,
-            JOB_COMMAND_VALIDATION_MESSAGE.empty
+            JOB_COMMAND_VALIDATION_MESSAGE.empty,
           ),
       };
 
@@ -291,7 +291,7 @@ interface AdvancedSettingsProp<T extends FieldValues> {
 }
 
 export function AdvancedSettingsFields<
-  T extends SessionLauncherForm | SessionEnvironmentForm
+  T extends SessionLauncherForm | SessionEnvironmentForm,
 >({ control, errors, launcherCategory = "session" }: AdvancedSettingsProp<T>) {
   return (
     <>

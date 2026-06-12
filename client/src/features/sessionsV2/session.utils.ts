@@ -44,7 +44,7 @@ import type {
 } from "./sessionsV2.types";
 
 export function getLauncherCategoryDefinitionByLauncher(
-  launcher: SessionLauncher
+  launcher: SessionLauncher,
 ): LauncherCategoryDefinition {
   return isJobLauncher(launcher)
     ? LAUNCHER_BY_CATEGORY["job"]
@@ -52,13 +52,13 @@ export function getLauncherCategoryDefinitionByLauncher(
 }
 
 export function getLauncherCategory(
-  launcher: SessionLauncher
+  launcher: SessionLauncher,
 ): LauncherCategory {
   return isJobLauncher(launcher) ? "job" : "session";
 }
 
 export function getLauncherCategoryDefinition(
-  category: LauncherCategory
+  category: LauncherCategory,
 ): LauncherCategoryDefinition {
   return LAUNCHER_BY_CATEGORY[category];
 }
@@ -76,7 +76,7 @@ export function isGlobalEnvironmentIncluded(allowedEnvironments: string[]) {
 }
 
 export function getNewLauncherFormDefaultValues(
-  environmentSelect: EnvironmentSelectOption
+  environmentSelect: EnvironmentSelectOption,
 ): Pick<
   SessionLauncherForm,
   | "name"
@@ -112,7 +112,7 @@ export function getNewLauncherFormDefaultValues(
 
 export function getSessionFavicon(
   sessionState?: SessionStatusState,
-  isLoading?: boolean
+  isLoading?: boolean,
 ): FaviconStatus {
   if (isLoading) {
     return "waiting";
@@ -138,18 +138,18 @@ export function getSessionFavicon(
 
 export function prioritizeSelectedEnvironment(
   environments?: SessionEnvironmentList,
-  selectedEnvironmentId?: string
+  selectedEnvironmentId?: string,
 ): SessionEnvironmentList | undefined {
   if (!environments || !selectedEnvironmentId) return environments;
   const targetEnvironment = environments.find(
-    (env) => env.id === selectedEnvironmentId
+    (env) => env.id === selectedEnvironmentId,
   );
 
   if (!targetEnvironment) {
     return environments;
   }
   const otherEnvironments = environments.filter(
-    (env) => env.id !== selectedEnvironmentId
+    (env) => env.id !== selectedEnvironmentId,
   );
   return [targetEnvironment, ...otherEnvironments];
 }
@@ -167,7 +167,7 @@ export function prioritizeSelectedEnvironment(
  */
 export function getFormattedEnvironmentValues(
   data: SessionLauncherForm,
-  launcherCategory: LauncherCategory = "session"
+  launcherCategory: LauncherCategory = "session",
 ): {
   success: boolean;
   data?: SessionLauncherEnvironmentParams;
@@ -204,11 +204,11 @@ export function getFormattedEnvironmentValues(
     const repository_revision = repository_revision_?.trim();
     const platform =
       BUILDER_PLATFORMS.map(({ value }) => value).find(
-        (value) => value === platform_
+        (value) => value === platform_,
       ) ?? BUILDER_PLATFORMS[0].value;
     const isCompatible =
       BUILDER_FRONTEND_COMBINATIONS[builder_variant]?.includes(
-        frontend_variant
+        frontend_variant,
       ) ?? true;
     const buildPayload: SessionLauncherEnvironmentParams = {
       environment_image_source: "build",
@@ -286,7 +286,7 @@ export function getFormattedEnvironmentValues(
  */
 export function getFormattedEnvironmentValuesForEdit(
   data: SessionLauncherForm,
-  launcherCategory: LauncherCategory
+  launcherCategory: LauncherCategory,
 ): {
   success: boolean;
   data?: SessionLauncherEnvironmentPatchParams;
@@ -329,7 +329,7 @@ export function getFormattedEnvironmentValuesForEdit(
   } = data;
   const platform =
     BUILDER_PLATFORMS.map(({ value }) => value).find(
-      (value) => value === platform_
+      (value) => value === platform_,
     ) ?? BUILDER_PLATFORMS[0].value;
 
   if (launcherCategory === "job" && !commandParsed.data?.length) {
@@ -361,7 +361,7 @@ export function getJSONStringArray(value: string[] | undefined) {
 }
 
 export function getLauncherDefaultValues(
-  launcher: SessionLauncher
+  launcher: SessionLauncher,
 ): Partial<SessionLauncherForm> {
   return {
     name: launcher.name,
@@ -370,8 +370,8 @@ export function getLauncherDefaultValues(
       launcher.environment.environment_kind === "GLOBAL"
         ? "global"
         : launcher.environment.environment_image_source === "build"
-        ? "custom + build"
-        : "custom + image",
+          ? "custom + build"
+          : "custom + image",
     environmentId:
       launcher.environment?.environment_kind === "GLOBAL"
         ? launcher.environment?.id
@@ -403,15 +403,15 @@ export function getLauncherDefaultValues(
         : "",
     repository_revision:
       launcher.environment.environment_image_source === "build"
-        ? launcher.environment.build_parameters.repository_revision ?? ""
+        ? (launcher.environment.build_parameters.repository_revision ?? "")
         : "",
     context_dir:
       launcher.environment.environment_image_source === "build"
-        ? launcher.environment.build_parameters.context_dir ?? ""
+        ? (launcher.environment.build_parameters.context_dir ?? "")
         : "",
     platform:
       launcher.environment.environment_image_source === "build"
-        ? launcher.environment.build_parameters.platforms?.at(0) ?? ""
+        ? (launcher.environment.build_parameters.platforms?.at(0) ?? "")
         : "",
   };
 }
@@ -473,7 +473,7 @@ export function safeParseJSONStringArray(value: string): ParseResult {
  * - `undefined` if the input is an empty or whitespace-only string (i.e., no validation performed).
  */
 export function isValidJSONStringArray(
-  value: string
+  value: string,
 ): true | string | undefined {
   const parseString = safeParseJSONStringArray(value);
   if (parseString.parsed && parseString.data === null) return undefined;
@@ -488,7 +488,7 @@ export function isValidJSONStringArray(
 export function isValidRequiredJSONStringArray(
   value: string,
   requiredMessage = "Job command is required.",
-  emptyMessage = "Job command can't be empty."
+  emptyMessage = "Job command can't be empty.",
 ): true | string {
   if (!value?.toString().trim()) {
     return requiredMessage;
@@ -548,13 +548,13 @@ export function validateEnvVariableName(name: string): true | string {
 
 export function isImageCompatibleWith(
   image: ImageCheckResponse,
-  platform: ResourcePoolWithId["platform"]
+  platform: ResourcePoolWithId["platform"],
 ): boolean | "unknown" {
   if (image.platforms == null) {
     return "unknown";
   }
   const imagePlatforms = image.platforms?.map(
-    ({ os, architecture }) => `${os}/${architecture}`
+    ({ os, architecture }) => `${os}/${architecture}`,
   );
   return imagePlatforms.some((p) => p === platform);
 }

@@ -200,18 +200,18 @@ function getSessionColor(state: string, launcherCategory: LauncherCategory) {
   return state === "running" && launcherCategory === "session"
     ? "success"
     : state === "running" && launcherCategory === "job"
-    ? "warning"
-    : state === "starting"
-    ? "warning"
-    : state === "succeeded"
-    ? "success"
-    : state === "stopping"
-    ? "warning"
-    : state === "hibernated"
-    ? "dark"
-    : state === "failed"
-    ? "danger"
-    : "dark";
+      ? "warning"
+      : state === "starting"
+        ? "warning"
+        : state === "succeeded"
+          ? "success"
+          : state === "stopping"
+            ? "warning"
+            : state === "hibernated"
+              ? "dark"
+              : state === "failed"
+                ? "danger"
+                : "dark";
 }
 
 interface SessionViewProps {
@@ -260,7 +260,7 @@ export function SessionView({
 
   const launcherCategory = launcher && getLauncherCategory(launcher);
   const launcherDefinition = getLauncherCategoryDefinition(
-    launcherCategory || orphanCategory
+    launcherCategory || orphanCategory,
   );
 
   const { data: dataConnectorLinks } =
@@ -268,11 +268,11 @@ export function SessionView({
       projectId: project.id,
     });
   const dataConnectorIds = dataConnectorLinks?.map(
-    (link) => link.data_connector_id
+    (link) => link.data_connector_id,
   );
   const { data: dataConnectorsMap } =
     useGetDataConnectorsListByDataConnectorIdsQuery(
-      dataConnectorIds ? { dataConnectorIds } : skipToken
+      dataConnectorIds ? { dataConnectorIds } : skipToken,
     );
   const dataConnectors = Object.values(dataConnectorsMap ?? {});
 
@@ -283,7 +283,7 @@ export function SessionView({
   } = useGetClassesByClassIdQuery(
     launcher?.resource_class_id
       ? { classId: `${launcher.resource_class_id}` }
-      : skipToken
+      : skipToken,
   );
 
   const totalSession = sessions ? Object.keys(sessions).length : 0;
@@ -303,22 +303,22 @@ export function SessionView({
   const key = launcher
     ? launcher.id
     : sessions && Object.keys(sessions).length > 0
-    ? Object.keys(sessions)[0]
-    : "nn";
+      ? Object.keys(sessions)[0]
+      : "nn";
 
   const userLauncherResourcePool = useMemo(
     () =>
       resourcePools?.find((pool) =>
-        pool.classes.find((c) => c.id == launcher?.resource_class_id)
+        pool.classes.find((c) => c.id == launcher?.resource_class_id),
       ),
-    [launcher, resourcePools]
+    [launcher, resourcePools],
   );
   const userLauncherResourceClass = useMemo(
     () =>
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == launcher?.resource_class_id),
-    [launcher, resourcePools]
+    [launcher, resourcePools],
   );
 
   const resourceDetails =
@@ -413,7 +413,7 @@ export function SessionView({
                   className={cx(
                     "align-items-center",
                     "d-flex",
-                    "justify-content-between"
+                    "justify-content-between",
                   )}
                 >
                   <h3 className="mb-0">
@@ -462,7 +462,7 @@ export function SessionView({
               className={cx(
                 "align-items-center",
                 "d-flex",
-                "justify-content-between"
+                "justify-content-between",
               )}
             >
               <h3
@@ -623,7 +623,7 @@ export function SessionView({
                 className={cx(
                   "align-items-center",
                   "d-flex",
-                  "justify-content-between"
+                  "justify-content-between",
                 )}
               >
                 <h3 className={cx("mb-0", "me-2")}>

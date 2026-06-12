@@ -105,11 +105,11 @@ export function ModifyResourcesLauncherModal({
         });
       }
     },
-    [sessionLauncherId, updateSessionLauncher]
+    [sessionLauncherId, updateSessionLauncher],
   );
   const onSubmit = useMemo(
     () => handleSubmit(onSubmitInner),
-    [handleSubmit, onSubmitInner]
+    [handleSubmit, onSubmitInner],
   );
 
   useEffect(() => {
