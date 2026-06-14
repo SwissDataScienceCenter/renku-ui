@@ -25,6 +25,7 @@ import {
   Eye,
   FileEarmarkText,
   Folder,
+  Gear,
   Megaphone,
   People,
   PlayCircle,
@@ -65,6 +66,7 @@ import CreateProjectV2Button from "../projectsV2/new/CreateProjectV2Button";
 import GroupShortHandDisplay from "../projectsV2/show/GroupShortHandDisplay";
 import ProjectShortHandDisplay from "../projectsV2/show/ProjectShortHandDisplay";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../sessionsV2/api/sessionsV2.api";
+import { SESSION_LAUNCHER_KIND } from "../sessionsV2/sessionsV2.types";
 import { useGetUserQueryState } from "../usersV2/api/users.api";
 import UserAvatar from "../usersV2/show/UserAvatar";
 import DashboardV2Sessions from "./DashboardV2Sessions";
@@ -96,6 +98,7 @@ export default function DashboardV2() {
               className={cx("d-flex", "flex-column", "gap-4")}
             >
               <SessionsDashboard />
+              <JobsDashboard />
               <ProjectsDashboard />
               <FooterDashboard />
             </Col>
@@ -422,7 +425,11 @@ function GroupsList({ data, error, isLoading }: GroupListProps) {
 }
 
 function SessionsDashboard() {
-  const { data: sessions, error, isLoading } = useGetSessionsQueryV2({});
+  const {
+    data: sessions,
+    error,
+    isLoading,
+  } = useGetSessionsQueryV2({ sessionType: SESSION_LAUNCHER_KIND.INTERACTIVE });
   const totalSessions = sessions ? sessions?.length : 0;
   return (
     <Card data-cy="sessions-container">
@@ -439,6 +446,38 @@ function SessionsDashboard() {
       <CardBody>
         <DashboardV2Sessions
           sessions={sessions}
+          isLoading={isLoading}
+          error={error}
+        />
+      </CardBody>
+    </Card>
+  );
+}
+
+function JobsDashboard() {
+  const {
+    data: jobs,
+    error,
+    isLoading,
+  } = useGetSessionsQueryV2({
+    sessionType: SESSION_LAUNCHER_KIND.NON_INTERACTIVE,
+  });
+  const totalJobs = jobs ? jobs?.length : 0;
+  return (
+    <Card data-cy="sessions-container">
+      <CardHeader>
+        <div className={cx("align-items-center", "d-flex")}>
+          <h2 className={cx("mb-0", "me-2")}>
+            <Gear className={cx("me-1", "bi")} />
+            My Jobs
+          </h2>
+          <Badge>{totalJobs}</Badge>
+        </div>
+      </CardHeader>
+
+      <CardBody>
+        <DashboardV2Sessions
+          sessions={jobs}
           isLoading={isLoading}
           error={error}
         />

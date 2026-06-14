@@ -237,11 +237,15 @@ export const LAUNCHER_BY_CATEGORY: Record<
       state: {
         running: "Launched",
         starting: "Launching",
-        hibernated: "Paused",
+        hibernated: "Paused session",
         hibernatedAndDelete: "Session will be deleted in",
-        failed: "Error",
+        failed: "Error in session",
         stopping: "Stopping",
         succeeded: "Succeeded",
+      },
+      delete: {
+        title: "Shut down session",
+        action: "Shutting down session",
       },
     },
     icon: PlayCircle,
@@ -256,13 +260,17 @@ export const LAUNCHER_BY_CATEGORY: Record<
       inline: "job",
       action: "submit",
       state: {
-        running: "Submitted",
+        running: "Running",
         starting: "Starting",
         hibernated: "Paused",
         hibernatedAndDelete: "Job will be dismissed in",
-        failed: "Error",
+        failed: "Errored", //eslint-disable-line
         stopping: "Stopping",
         succeeded: "Completed",
+      },
+      delete: {
+        title: "Dismiss job",
+        action: "Dismissing job",
       },
     },
     icon: Gear,

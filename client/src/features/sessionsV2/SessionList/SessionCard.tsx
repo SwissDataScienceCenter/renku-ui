@@ -43,7 +43,7 @@ export default function SessionCard({ project, session }: SessionCardProps) {
   if (!session) return null;
 
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
-  const stylesPerSession = getSessionStatusStyles(session);
+  const stylesPerSession = getSessionStatusStyles(session, launcherCategory);
   const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   return (

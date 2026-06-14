@@ -73,6 +73,10 @@ export interface LauncherCategoryDefinition {
       stopping: string;
       succeeded: string;
     };
+    delete: {
+      title: string;
+      action: string;
+    };
   };
   icon: Icon;
   description: string;
