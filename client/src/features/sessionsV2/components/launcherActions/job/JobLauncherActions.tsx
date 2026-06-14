@@ -51,6 +51,7 @@ export default function JobLauncherActions({
   lastBuild,
   launcher,
   otherActions,
+  project,
   displayBuildActions: displayBuildActionsProp,
 }: LauncherCardActionsProps) {
   const { isLoadingPermissions, write } = useProjectPermissions({
@@ -99,24 +100,20 @@ export default function JobLauncherActions({
       return <CheckingLauncherButton />;
     }
 
-    if (!write) {
-      return (
-        <JobSubmitButton
-          disabled={!hasValidImage}
-          canWriteProject={write}
-          imageStatus={imageStatus}
-        />
-      );
-    }
-
     const submitAction = (
       <JobSubmitButton
+        canWriteProject={write}
         className={submitButtonClassName}
         disabled={!hasValidImage}
-        canWriteProject={write}
         imageStatus={imageStatus}
+        launcher={launcher}
+        project={project}
       />
     );
+
+    if (!write) {
+      return submitAction;
+    }
 
     if (applyDefaultBuildActions) {
       return (
@@ -134,6 +131,7 @@ export default function JobLauncherActions({
     imageStatus,
     isLoadingContainerImage,
     launcher,
+    project,
     submitButtonClassName,
     write,
   ]);

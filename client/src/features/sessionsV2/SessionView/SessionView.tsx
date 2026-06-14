@@ -78,6 +78,7 @@ import { DEFAULT_URL } from "../session.constants";
 import {
   getLauncherCategory,
   getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
 } from "../session.utils";
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { LauncherCategory, SessionV2 } from "../sessionsV2.types";
@@ -124,12 +125,11 @@ function SessionCardContent({
 function SessionCard({
   session,
   project,
-  launcherCategory,
 }: {
   session: SessionV2;
   project: Project;
-  launcherCategory: LauncherCategory;
 }) {
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   return (
     <SessionCardContent
       color={getSessionColor(session.status.state, launcherCategory)}
@@ -188,8 +188,7 @@ function SessionCardNotRunning({
             placement="launcher-side-panel"
             hasSession={hasSession}
             launcher={launcher}
-            namespace={project.namespace}
-            slug={project.slug}
+            project={project}
           />
         </div>
       }
@@ -197,22 +196,24 @@ function SessionCardNotRunning({
   );
 }
 
-function getSessionColor(state: string, launcherCategory: LauncherCategory) {
+function getSessionColor(state: string, launcherCategory?: LauncherCategory) {
   return state === "running" && launcherCategory === "session"
     ? "success"
     : state === "running" && launcherCategory === "job"
       ? "warning"
-      : state === "starting"
+      : state === "starting" && launcherCategory === "session"
         ? "warning"
-        : state === "succeeded"
-          ? "success"
+        : state === "starting" && launcherCategory === "job"
+          ? "info"
           : state === "stopping"
             ? "warning"
             : state === "hibernated"
               ? "dark"
               : state === "failed"
                 ? "danger"
-                : "dark";
+                : state === "succeeded"
+                  ? "success"
+                  : "dark";
 }
 
 interface SessionViewProps {
@@ -383,11 +384,7 @@ export function SessionView({
                       session={session}
                       launcher={launcher}
                     />
-                    <SessionCard
-                      session={session}
-                      project={project}
-                      launcherCategory={launcherCategory || orphanCategory}
-                    />
+                    <SessionCard session={session} project={project} />
                   </div>
                 ))
               ) : (

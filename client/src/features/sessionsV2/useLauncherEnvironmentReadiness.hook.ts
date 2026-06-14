@@ -92,8 +92,6 @@ export default function useLauncherEnvironmentReadiness({
   );
   const builds = buildsProp ?? fetchedBuilds;
   const lastBuild = lastBuildProp ?? builds?.at(0);
-  const isBuildInProgress =
-    isCodeEnvironment && lastBuild?.status === "in_progress";
   const lastSuccessfulBuild = builds?.find(
     (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
   );
@@ -114,6 +112,16 @@ export default function useLauncherEnvironmentReadiness({
     );
 
   const hasCustomImageAccessible = containerImage?.accessible === true;
+  const displayLaunchSession =
+    !isCodeEnvironment ||
+    lastBuild?.status === "succeeded" ||
+    (isCodeEnvironment && containerImage?.accessible === true) ||
+    useOldImage;
+
+  const isBuildInProgress =
+    isCodeEnvironment && lastBuild?.status === "in_progress";
+
+  const isLastBuildRunning = lastBuild?.status === "in_progress";
   const hasValidImage =
     isGlobalEnvironment || hasSuccessfulBuild || hasCustomImageAccessible;
 
@@ -135,9 +143,11 @@ export default function useLauncherEnvironmentReadiness({
     forceLaunch,
     hasSuccessfulBuild,
     hasValidImage,
+    isLastBuildRunning,
     isBuildInProgress,
     isCodeEnvironment,
     isCustomImageEnvironment,
+    displayLaunchSession,
     isGlobalEnvironment,
     isLoadingBuilds: shouldFetchBuilds && isLoadingBuilds,
     isLoadingContainerImage:

@@ -48,6 +48,7 @@ import {
 } from "../components/BuildStatusComponents";
 import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
+import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { getLauncherCategory, safeStringify } from "../session.utils";
 
@@ -68,6 +69,7 @@ export default function EnvironmentItem({
 
   const { environment_kind, name } = environment;
   const cardName = environment_kind === "GLOBAL" ? name || "" : launcher.name;
+  const environmentKindLabel = getEnvironmentKindLabel(environment);
 
   const buildActions = imageBuildersEnabled &&
     launcher.environment.environment_kind === "CUSTOM" &&
@@ -97,20 +99,21 @@ export default function EnvironmentItem({
             {buildActions}
           </Col>
           <EnvironmentRow>
-            {environment.environment_kind === "GLOBAL" ? (
+            {environmentKindLabel != null && (
               <>
-                <EnvironmentIcon type="global" />
-                Global environment
-              </>
-            ) : environment.environment_image_source === "build" ? (
-              <>
-                <EnvironmentIcon type="codeBased" size={16} />
-                Code based environment
-              </>
-            ) : (
-              <>
-                <EnvironmentIcon type="custom" size={16} />
-                External image environment
+                <EnvironmentIcon
+                  type={
+                    environment.environment_kind === "GLOBAL"
+                      ? "global"
+                      : environment.environment_image_source === "build"
+                        ? "codeBased"
+                        : "custom"
+                  }
+                  size={
+                    environment.environment_kind === "GLOBAL" ? undefined : 16
+                  }
+                />
+                {environmentKindLabel}
               </>
             )}
           </EnvironmentRow>

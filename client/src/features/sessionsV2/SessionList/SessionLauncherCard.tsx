@@ -36,15 +36,14 @@ import {
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
-import {
-  EnvironmentIcon,
-  LauncherEnvironmentIcon,
-} from "../components/SessionForm/LauncherEnvironmentIcon";
+import { LauncherEnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
+import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
 import {
   getLauncherCategory,
-  getLauncherCategoryDefinitionByLauncher,
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
 } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import useLauncherEnvironmentReadiness from "../useLauncherEnvironmentReadiness.hook";
@@ -78,8 +77,6 @@ export default function SessionLauncherCard({
     builds,
     isBuildInProgress,
     isCodeEnvironment,
-    isCustomImageEnvironment,
-    isGlobalEnvironment,
     isLoadingBuilds,
     isLoadingContainerImage,
     lastBuild,
@@ -90,8 +87,11 @@ export default function SessionLauncherCard({
 
   const environment = launcher?.environment;
   const hasSession = !!sessions?.length;
-  const launcherDefinition =
-    launcher && getLauncherCategoryDefinitionByLauncher(launcher);
+  const sessionType = sessions?.at(0)?.session_type ?? "interactive";
+  const launcherCategory = sessionLauncherKindToCategory(
+    launcher?.launcher_type || sessionType,
+  );
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   const LauncherTypeIcon = launcherDefinition?.icon || PlayCircle;
   const launcherTypeLabel = launcherDefinition?.text.display || null;
 
@@ -193,22 +193,13 @@ export default function SessionLauncherCard({
                     </span>
                   </Col>
                   <Col xs={12} xl="auto">
-                    {isGlobalEnvironment ? (
-                      <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                        <EnvironmentIcon type="global" />
-                        Global environment
-                      </span>
-                    ) : isCodeEnvironment ? (
-                      <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                        <EnvironmentIcon type="codeBased" size={16} />
-                        Code based environment
-                      </span>
-                    ) : isCustomImageEnvironment ? (
-                      <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                        <EnvironmentIcon type="custom" size={16} />
-                        External image environment
-                      </span>
-                    ) : null}
+                    {launcher?.environment &&
+                      getEnvironmentKindLabel(launcher.environment) != null && (
+                        <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                          <LauncherEnvironmentIcon launcher={launcher} />
+                          {getEnvironmentKindLabel(launcher.environment)}
+                        </span>
+                      )}
                   </Col>
                 </Row>
               )}
@@ -224,7 +215,9 @@ export default function SessionLauncherCard({
                     {name ? (
                       name
                     ) : (
-                      <span className="fst-italic">Orphan session</span>
+                      <span className="fst-italic">
+                        Orphan {launcherDefinition.text.display}
+                      </span>
                     )}
                   </span>
                 </Col>
@@ -315,9 +308,8 @@ export default function SessionLauncherCard({
                     hasSession={hasSession}
                     lastBuild={lastBuild}
                     launcher={launcher}
-                    namespace={project.namespace}
                     otherActions={otherLauncherActions}
-                    slug={project.slug}
+                    project={project}
                   />
                   {useOldImage && lastSuccessfulBuild && (
                     <BuildStatusDescription

@@ -44,12 +44,12 @@ export default function SessionLauncherActions({
   hasSession,
   lastBuild,
   launcher,
-  namespace,
+  project,
   otherActions,
-  slug,
   alwaysShowLaunchAction = false,
   displayBuildActions: displayBuildActionsProp,
 }: SessionLauncherCardActionsProps) {
+  const { namespace, slug } = project;
   const { isLoadingPermissions, write } = useProjectPermissions({
     projectId: launcher.project_id,
   });
