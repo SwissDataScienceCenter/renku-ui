@@ -97,9 +97,9 @@ export default function useLauncherEnvironmentReadiness({
       shouldFetchContainerImage ? { imageUrl: containerImageUrl } : skipToken,
     );
 
-  const hasSuccessfulBuild = builds?.some(
-    (build) => build.status === "succeeded",
-  );
+  const hasSuccessfulBuild =
+    lastBuild?.status === "succeeded" ||
+    builds?.some((build) => build.status === "succeeded");
 
   const displayLaunchSession =
     !isCodeEnvironment ||

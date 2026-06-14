@@ -228,6 +228,7 @@ export interface JsonFieldProps<T extends FieldValues> {
   isOptional?: boolean;
   dataCy?: string;
   id?: string;
+  disabled?: boolean;
 }
 
 export function JsonField<T extends FieldValues>({
@@ -240,6 +241,7 @@ export function JsonField<T extends FieldValues>({
   isOptional = true,
   dataCy,
   id,
+  disabled = false,
 }: JsonFieldProps<T>) {
   const rules = isOptional
     ? {
@@ -273,6 +275,7 @@ export function JsonField<T extends FieldValues>({
               <textarea
                 className={cx("w-100", "form-control", error && "is-invalid")}
                 data-cy={dataCy ?? `session-launcher-field-${name}`}
+                disabled={disabled}
                 id={id ?? `addSessionLauncher${name}`}
                 rows={2}
                 {...field}

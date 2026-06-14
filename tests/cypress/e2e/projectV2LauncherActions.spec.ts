@@ -240,9 +240,14 @@ describe("launcher card actions", () => {
       cy.wait("@getProjectV2Permissions");
     });
 
-    it("shows submit button on card (stub — no modal)", () => {
+    it("opens submit job modal from card", () => {
       withinFirstSessionLauncher(clickSubmitJobButton);
-      cy.getDataCy("submit-job-modal").should("not.exist");
+      cy.getDataCy("submit-job-modal").should("be.visible");
+      cy.getDataCy("submit-job-submission-id-input").should("be.visible");
+      cy.getDataCy("submit-job-confirm-button").should(
+        "contain.text",
+        "Submit job",
+      );
     });
 
     it("allows submit when a job is already running", () => {

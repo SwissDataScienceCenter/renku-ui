@@ -23,5 +23,6 @@ export type Permissions = {
 };
 
 export type ProjectPermissions = Permissions & {
+  arePermissionsResolved: boolean;
   isLoadingPermissions: boolean;
 };

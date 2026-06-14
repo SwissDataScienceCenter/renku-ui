@@ -44,10 +44,13 @@ export default function useProjectPermissions({
   }, [fetchPermissions, isUninitialized, projectId]);
 
   const isLoadingPermissions = isLoading || isUninitialized;
+  const arePermissionsResolved =
+    !isLoading && !isUninitialized && !isError && currentData != null;
 
   if (isLoading || isError || !currentData) {
     return {
       ...DEFAULT_PERMISSIONS,
+      arePermissionsResolved: false,
       isLoadingPermissions,
     };
   }
@@ -55,6 +58,7 @@ export default function useProjectPermissions({
   return {
     ...DEFAULT_PERMISSIONS,
     ...currentData,
+    arePermissionsResolved,
     isLoadingPermissions: false,
   };
 }

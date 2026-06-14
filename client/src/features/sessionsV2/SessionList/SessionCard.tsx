@@ -19,6 +19,10 @@
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
+import {
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
+} from "~/features/sessionsV2/session.utils";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
@@ -38,7 +42,9 @@ interface SessionCardProps {
 export default function SessionCard({ project, session }: SessionCardProps) {
   if (!session) return null;
 
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   const stylesPerSession = getSessionStatusStyles(session);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   return (
     <div
@@ -50,13 +56,21 @@ export default function SessionCard({ project, session }: SessionCardProps) {
         "pb-3",
       )}
     >
-      <img
-        src={stylesPerSession.sessionLine}
-        className={cx("position-absolute", styles.SessionLine)}
-        alt="Session line indicator"
-        loading="lazy"
-      />
-      <div className={cx("ms-5", "px-3", "pt-3")}>
+      {launcherCategory === "session" && (
+        <img
+          src={stylesPerSession.sessionLine}
+          className={cx("position-absolute", styles.SessionLine)}
+          alt="Session line indicator"
+          loading="lazy"
+        />
+      )}
+      <div
+        className={cx(
+          launcherCategory === "session" ? "ms-5" : "ms-2",
+          "px-3",
+          "pt-3",
+        )}
+      >
         <Row className="g-2">
           <Col xs={12} xl="auto">
             <Row className="g-2">
@@ -71,7 +85,10 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                 )}
               >
                 <span className={cx("small", "text-muted", "me-3")}>
-                  Session
+                  <span className={cx("fw-bold")}>
+                    {launcherDefinition.text.display}
+                  </span>
+                  {session.submission_id ? `: ${session.submission_id}` : ""}
                 </span>
               </Col>
               <Col

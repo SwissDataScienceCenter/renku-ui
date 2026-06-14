@@ -30,6 +30,7 @@ export function LauncherActions({
   launcher,
   namespace,
   otherActions,
+  project,
   slug,
   useOldImage,
 }: LauncherActionsProps) {
@@ -43,6 +44,7 @@ export function LauncherActions({
         launcher={launcher}
         namespace={namespace}
         otherActions={otherActions}
+        project={project}
         slug={slug}
         useOldImage={useOldImage}
       />
@@ -53,6 +55,7 @@ export function LauncherActions({
         launcher={launcher}
         namespace={namespace}
         otherActions={otherActions}
+        project={project}
         slug={slug}
         useOldImage={useOldImage}
       />
@@ -64,10 +67,15 @@ export function LauncherActions({
       hasSession={hasSession}
       launcher={launcher}
       namespace={namespace}
+      project={project}
       slug={slug}
       useOldImage={useOldImage}
     />
   ) : (
-    <JobPanelSubmit launcher={launcher} useOldImage={useOldImage} />
+    <JobPanelSubmit
+      launcher={launcher}
+      project={project}
+      useOldImage={useOldImage}
+    />
   );
 }

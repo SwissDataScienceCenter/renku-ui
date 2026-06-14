@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { type ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { generatePath } from "react-router";
 import { ButtonGroup, UncontrolledTooltip } from "reactstrap";
 
@@ -135,6 +135,7 @@ export default function SessionCardActions({
       containerImage?.accessible === false &&
       displayLaunchSession && (
         <SessionLaunchLink
+          key="force-launch"
           className={cx("dropdown-item", hasSession && "disabled")}
           label={forceLaunch ? "Force launch" : "Launch"}
           launcherId={launcher.id}
@@ -143,6 +144,7 @@ export default function SessionCardActions({
       ),
     displayLaunchSession && (
       <SessionLaunchLink
+        key="custom-launch"
         className={cx("dropdown-item", hasSession && "disabled")}
         isCustomLaunch
         label={forceLaunch ? "Force custom launch" : "Custom launch"}
@@ -151,9 +153,11 @@ export default function SessionCardActions({
       />
     ),
     isCodeEnvironment && permissions.write && !displayBuildActions && (
-      <RebuildLauncherDropdownItem launcher={launcher} />
+      <RebuildLauncherDropdownItem key="rebuild" launcher={launcher} />
     ),
-    otherActions,
+    otherActions ? (
+      <Fragment key="launcher-menu-actions">{otherActions}</Fragment>
+    ) : null,
   ].filter(Boolean) as ReactNode[];
 
   const actionControl =

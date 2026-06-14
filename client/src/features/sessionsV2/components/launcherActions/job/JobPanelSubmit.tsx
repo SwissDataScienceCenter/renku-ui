@@ -17,17 +17,21 @@
  */
 
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
+import type { Project } from "~/features/projectsV2/api/projectV2.api";
+import { getJobDisabledMessage } from "~/features/sessionsV2/session.utils";
 import useLauncherEnvironmentReadiness from "~/features/sessionsV2/useLauncherEnvironmentReadiness.hook";
 import type { SessionLauncher } from "../../../api/sessionLaunchersV2.api";
 import JobSubmitButton from "./JobSubmitButton";
 
 interface JobPanelSubmitProps {
   launcher: SessionLauncher;
+  project: Project;
   useOldImage?: boolean;
 }
 
 export default function JobPanelSubmit({
   launcher,
+  project,
   useOldImage,
 }: JobPanelSubmitProps) {
   const { isLaunchButtonDisabled } = useLauncherEnvironmentReadiness({
@@ -35,19 +39,19 @@ export default function JobPanelSubmit({
     useOldImage,
   });
 
-  const permissions = useProjectPermissions({ projectId: launcher.project_id });
+  const { write } = useProjectPermissions({ projectId: launcher.project_id });
 
-  const tooltip = isLaunchButtonDisabled
-    ? `No image available. ${
-        permissions.write
-          ? "Run the Build action"
-          : "Contact the project administrator "
-      } to generate an image.`
-    : undefined;
+  const tooltip = getJobDisabledMessage(
+    !!useOldImage,
+    write,
+    isLaunchButtonDisabled,
+  );
 
   return (
     <JobSubmitButton
+      launcher={launcher}
       launcherId={launcher.id}
+      project={project}
       disabled={isLaunchButtonDisabled}
       tooltip={tooltip}
     />

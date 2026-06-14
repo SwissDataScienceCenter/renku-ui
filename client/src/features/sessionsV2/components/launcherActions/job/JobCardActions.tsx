@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import { type ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { ButtonGroup } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
-import { getLauncherCategoryDefinition } from "~/features/sessionsV2/session.utils";
+import { getJobDisabledMessage } from "~/features/sessionsV2/session.utils";
 import useLauncherEnvironmentReadiness from "~/features/sessionsV2/useLauncherEnvironmentReadiness.hook";
 import BuildLauncherButtons, {
   RebuildLauncherDropdownItem,
@@ -36,11 +36,13 @@ export default function JobCardActions({
   lastBuild,
   launcher,
   otherActions,
+  project,
   useOldImage,
 }: LauncherCardActionsProps) {
-  const { isLoadingPermissions, write } = useProjectPermissions({
-    projectId: launcher.project_id,
-  });
+  const { arePermissionsResolved, isLoadingPermissions, write } =
+    useProjectPermissions({
+      projectId: launcher.project_id,
+    });
 
   const {
     containerImage,
@@ -55,24 +57,29 @@ export default function JobCardActions({
     useOldImage,
   });
 
-  const categoryDefinition = getLauncherCategoryDefinition("job");
-
   const displayBuildActions =
     isCodeEnvironment &&
     write &&
     (resolvedUseOldImage || lastBuild?.status !== "succeeded");
 
-  const submitTooltip =
-    resolvedUseOldImage && containerImage?.accessible !== false
-      ? `Launch ${categoryDefinition.text.inline} using an older image`
-      : undefined;
+  const submitTooltip = getJobDisabledMessage(
+    resolvedUseOldImage && containerImage?.accessible !== false,
+    write,
+    isLaunchButtonDisabled,
+  );
 
   if (isLoadingPermissions) {
     return <CheckingLauncherButton />;
   }
 
-  if (!write) {
-    return <JobPanelSubmit launcher={launcher} useOldImage={useOldImage} />;
+  if (arePermissionsResolved && !write) {
+    return (
+      <JobPanelSubmit
+        launcher={launcher}
+        project={project}
+        useOldImage={useOldImage}
+      />
+    );
   }
 
   const defaultAction = (() => {
@@ -82,7 +89,9 @@ export default function JobCardActions({
 
     const submitAction = showSubmitJob && (
       <JobSubmitButton
+        launcher={launcher}
         launcherId={launcher.id}
+        project={project}
         className={displayBuildActions ? "rounded-0" : "rounded-end-0"}
         tooltip={submitTooltip}
         disabled={isLaunchButtonDisabled}
@@ -107,9 +116,11 @@ export default function JobCardActions({
 
   const menuItems = [
     isCodeEnvironment && write && !displayBuildActions && (
-      <RebuildLauncherDropdownItem launcher={launcher} />
+      <RebuildLauncherDropdownItem key="rebuild" launcher={launcher} />
     ),
-    otherActions,
+    otherActions ? (
+      <Fragment key="launcher-menu-actions">{otherActions}</Fragment>
+    ) : null,
   ].filter(Boolean) as ReactNode[];
 
   if (menuItems.length === 0) {
