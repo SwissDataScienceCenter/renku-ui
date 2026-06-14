@@ -216,10 +216,11 @@ export const SUBMISSION_ID_PATTERN = /^[a-z][-0-9a-z]{3,19}$/;
 export const SUBMISSION_ID_VALIDATION_MESSAGE = {
   required: "Please provide a submission id.",
   pattern:
-    "Submission ID must start with a lowercase letter, then use letters, numbers, or hyphens (min 4 characters, no spaces).",
+    "Submission ID must start with a lowercase letter, and use letters, numbers, or hyphens (min 4 characters, no spaces).",
+  maxLength: "Submission ID must be less than 20 characters.",
   taken: "This submission ID is already used for a job on this launcher.",
   helpText:
-    "Must start with a lowercase letter, then use letters, numbers, or hyphens (min 4 characters, no spaces).",
+    "Must start with a lowercase letter, and use letters, numbers, or hyphens (min 4 characters, no spaces).",
 };
 
 export const LAUNCHER_OPTIONS: LauncherCategory[] = ["session", "job"];
@@ -234,10 +235,24 @@ export const LAUNCHER_BY_CATEGORY: Record<
       display: "Session",
       inline: "session",
       action: "launch",
+      state: {
+        running: "Launched",
+        starting: "Launching",
+        hibernated: "Paused session",
+        hibernatedAndDelete: "Session will be deleted in",
+        failed: "Error in session",
+        stopping: "Stopping",
+        succeeded: "Succeeded",
+      },
+      delete: {
+        title: "Shut down session",
+        action: "Shutting down session",
+        button: "Yes, shut down session",
+      },
     },
     icon: PlayCircle,
     description:
-      "Create an interactive environment for coding and data exploration.",
+      "Launch an interactive environment for coding and data exploration.",
     allowedEnvironmentSelects: ["global", "custom + build", "custom + image"],
   },
   job: {
@@ -246,9 +261,23 @@ export const LAUNCHER_BY_CATEGORY: Record<
       display: "Job",
       inline: "job",
       action: "submit",
+      state: {
+        running: "Running",
+        starting: "Starting",
+        hibernated: "Paused",
+        hibernatedAndDelete: "Job will be dismissed in",
+        failed: "Errored", //eslint-disable-line
+        stopping: "Stopping",
+        succeeded: "Completed",
+      },
+      delete: {
+        title: "Dismiss job",
+        action: "Dismissing job",
+        button: "Yes, cancel job",
+      },
     },
     icon: Gear,
-    description: "Run a process in the background.",
+    description: "Submit a job that runs in the background.",
     allowedEnvironmentSelects: ["custom + build", "custom + image"],
   },
 };

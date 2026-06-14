@@ -57,6 +57,27 @@ function StoppingStatusButton({ label }: { label: string }) {
   );
 }
 
+function DismissJobButton({
+  buttonClassName,
+  color = "outline-primary",
+  onStopSession,
+}: {
+  buttonClassName?: string;
+  color?: "outline-primary" | "primary";
+  onStopSession: () => void;
+}) {
+  return (
+    <Button
+      color={color}
+      className={color === "outline-primary" ? buttonClassName : undefined}
+      data-cy={"dismiss-job-button"}
+      onClick={onStopSession}
+    >
+      <Trash className={cx("bi", "me-1")} /> Dismiss
+    </Button>
+  );
+}
+
 function PausingStatusButton() {
   return (
     <Button color="primary" data-cy="stopping-btn" disabled>
@@ -98,16 +119,14 @@ function ResumeStatusButton({
 function LogsStatusButton({
   onClick,
   label,
+  color = "outline-primary",
 }: {
   onClick: () => void;
   label: string;
+  color?: "outline-primary" | "primary";
 }) {
   return (
-    <Button
-      color="outline-primary"
-      data-cy="show-logs-session-button"
-      onClick={onClick}
-    >
+    <Button color={color} data-cy="show-logs-session-button" onClick={onClick}>
       <FileEarmarkText className={cx("bi", "me-1")} />
       {label}
     </Button>
@@ -213,7 +232,7 @@ export function getInteractiveSessionDefaultAction(
   if (failedScheduling) {
     return (
       <>
-        <LogsStatusButton onClick={toggleLogsModal} label="Get logs" />
+        <LogsStatusButton onClick={toggleLogsModal} label="View logs" />
         <Button
           color="primary"
           className={buttonClassName}
@@ -228,7 +247,7 @@ export function getInteractiveSessionDefaultAction(
   }
   return (
     <>
-      <LogsStatusButton onClick={toggleLogsModal} label="Get logs" />
+      <LogsStatusButton onClick={toggleLogsModal} label="View logs" />
       <PauseOrDeleteButton
         color="primary"
         isUserLoggedIn={isUserLoggedIn}
@@ -249,6 +268,7 @@ export function getJobDefaultAction(
     isResuming,
     onResumeSession,
     toggleLogsModal,
+    onStopSession,
   } = ctx;
 
   if (status === "stopping" || isStopping) {
@@ -257,8 +277,11 @@ export function getJobDefaultAction(
   if (isHibernating) {
     return <PausingStatusButton />;
   }
-  if (status === "starting" || status === "running" || status === "succeeded") {
-    return <LogsStatusButton onClick={toggleLogsModal} label="Logs" />;
+  if (status === "starting" || status === "running") {
+    return <LogsStatusButton onClick={toggleLogsModal} label="View logs" />;
+  }
+  if (status === "succeeded") {
+    return <DismissJobButton onStopSession={onStopSession} />;
   }
   if (status === "hibernated") {
     return (
@@ -268,5 +291,5 @@ export function getJobDefaultAction(
       />
     );
   }
-  return <LogsStatusButton onClick={toggleLogsModal} label="Get logs" />;
+  return <LogsStatusButton onClick={toggleLogsModal} label="View logs" />;
 }

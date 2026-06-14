@@ -51,7 +51,7 @@ function OptionalLabel() {
 }
 
 interface FormFieldLabelProps<T extends FieldValues> {
-  info: string;
+  info?: string;
   isOptional?: boolean;
   label: ReactNode;
   name: Path<T>;
@@ -167,7 +167,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
 }: {
   control: Control<T>;
   errors?: FieldErrors<T>;
-  info: string;
+  info?: string;
   label: ReactNode;
   name: Path<T>;
   placeholder?: string;
@@ -222,7 +222,7 @@ export interface JsonFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
-  info: string;
+  info?: string;
   errors?: FieldErrors<T>;
   helpText: string;
   isOptional?: boolean;

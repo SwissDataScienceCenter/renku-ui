@@ -354,7 +354,7 @@ export function BuildActions({ launcher }: BuildActionsProps) {
           onClick={toggleLogs}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
-          Show logs
+          View logs
         </DropdownItem>
       </ButtonWithMenuV2>
     ) : (

@@ -222,7 +222,11 @@ export default function NewLauncherCreateModal({
   ]);
 
   useEffect(() => {
-    if (watchEnvironmentSelect === "custom + build" && watchBuilderVariant) {
+    if (
+      watchEnvironmentSelect === "custom + build" &&
+      watchBuilderVariant &&
+      launcherCategory === "session"
+    ) {
       setValue(
         "name",
         `${
@@ -231,7 +235,7 @@ export default function NewLauncherCreateModal({
         } environment`,
       );
     }
-  }, [watchEnvironmentSelect, watchBuilderVariant, setValue]);
+  }, [watchEnvironmentSelect, watchBuilderVariant, setValue, launcherCategory]);
 
   useEffect(() => {
     if (

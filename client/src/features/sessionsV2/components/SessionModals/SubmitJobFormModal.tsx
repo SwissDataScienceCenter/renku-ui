@@ -212,12 +212,12 @@ export default function SubmitJobFormModal({
       toggle={toggle}
     >
       <ModalHeader tag="h2" toggle={toggle}>
-        <Send className={cx("bi", "me-1")} /> Review and submit Job
+        <Send className={cx("bi", "me-1")} /> Review and submit job
       </ModalHeader>
       <ModalBody>
         {postSessionResult.isSuccess ? (
           <SuccessAlert dismissible={false} timeout={0}>
-            <p className="mb-1">
+            <p className="mb-0">
               Job{" "}
               {postSessionResult.data?.submission_id ??
                 watch("submissionId")?.trim()}{" "}

@@ -89,7 +89,11 @@ export function LauncherDetailsFields({
             <Input
               className={cx(error && "is-invalid")}
               id="addSessionLauncherName"
-              placeholder={`${categoryDefinition.text.display} name`}
+              placeholder={
+                launcherCategory === "session"
+                  ? `${categoryDefinition.text.display} name`
+                  : ""
+              }
               type="text"
               data-cy="launcher-name-input"
               autoFocus={true}
@@ -98,6 +102,9 @@ export function LauncherDetailsFields({
           )}
           rules={{ required: true }}
         />
+        {launcherCategory === "job" && (
+          <FormText>Name what the job does (e.g. Train model)</FormText>
+        )}
         <div className="invalid-feedback">Please provide a name</div>
       </div>
       <div>

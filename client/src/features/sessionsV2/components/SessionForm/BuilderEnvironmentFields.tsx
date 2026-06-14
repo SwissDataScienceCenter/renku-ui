@@ -33,7 +33,6 @@ import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useGetRepositoriesQuery } from "../../../repositories/api/repositories.api";
-import { ENVIRONMENT_VALUES_DESCRIPTION } from "../../session.constants";
 import { getLauncherCategoryDefinition } from "../../session.utils";
 import type {
   LauncherCategory,
@@ -153,9 +152,8 @@ export default function BuilderEnvironmentFields({
               control={control}
               name="command"
               label="Job command"
-              info={ENVIRONMENT_VALUES_DESCRIPTION.command}
               errors={errors}
-              helpText='Enter the command that will run as a job (JSON array format) e.g. ["python", "my_repo/main.py"]'
+              helpText='Enter the command to run (JSON array format) e.g. ["python", "my_repo/main.py"]'
               isOptional={false}
               dataCy="job-command-input"
               id="job-command-input"
@@ -166,9 +164,8 @@ export default function BuilderEnvironmentFields({
               control={control}
               name="args"
               label="Job args"
-              info={ENVIRONMENT_VALUES_DESCRIPTION.args}
               errors={errors}
-              helpText='Enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
+              helpText='Specify the arguments to the command (JSON array format) e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
               isOptional={true}
               dataCy="job-args-input"
               id="job-args-input"

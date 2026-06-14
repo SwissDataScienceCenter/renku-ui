@@ -581,6 +581,9 @@ export function validateSubmissionId(value: string): true | string {
   if (!trimmed) {
     return SUBMISSION_ID_VALIDATION_MESSAGE.required;
   }
+  if (trimmed.length > 20) {
+    return SUBMISSION_ID_VALIDATION_MESSAGE.maxLength;
+  }
   if (/\s/.test(trimmed)) {
     return SUBMISSION_ID_VALIDATION_MESSAGE.pattern;
   }
@@ -702,4 +705,87 @@ export function getLaunchActionTooltip(
 export function generateSubmissionId(): string {
   const randomPart = Math.random().toString(36).slice(2, 8);
   return `run-${randomPart}`;
+}
+
+const LAUNCHER_HASH_PREFIX = "launcher-";
+const JOB_HASH_SEGMENT = "/job/";
+
+export function buildLauncherHash(launcherId: string): string {
+  return `${LAUNCHER_HASH_PREFIX}${launcherId}`;
+}
+
+export function buildLauncherJobHash(
+  launcherId: string,
+  submissionId: string,
+): string {
+  return `${buildLauncherHash(launcherId)}${JOB_HASH_SEGMENT}${submissionId}`;
+}
+
+export function parseLauncherHash(hash: string): {
+  launcherId?: string;
+  submissionId?: string;
+} {
+  if (!hash.startsWith(LAUNCHER_HASH_PREFIX)) {
+    return {};
+  }
+  const rest = hash.slice(LAUNCHER_HASH_PREFIX.length);
+  const jobIndex = rest.indexOf(JOB_HASH_SEGMENT);
+  if (jobIndex === -1) {
+    return { launcherId: rest };
+  }
+  return {
+    launcherId: rest.slice(0, jobIndex),
+    submissionId: rest.slice(jobIndex + JOB_HASH_SEGMENT.length),
+  };
+}
+
+export function isLauncherHashOpen(hash: string, launcherId: string): boolean {
+  return parseLauncherHash(hash).launcherId === launcherId;
+}
+
+export function getJobAccordionTargetId(submissionId: string): string {
+  return `job-${submissionId}`;
+}
+
+export function resolveOpenJobSubmissionId(
+  hashSubmissionId: string | undefined,
+  sessions: { submission_id?: string }[],
+): string | undefined {
+  if (hashSubmissionId) {
+    const exists = sessions.some(
+      (session) => session.submission_id === hashSubmissionId,
+    );
+    return exists ? hashSubmissionId : undefined;
+  }
+  if (sessions.length === 1 && sessions[0].submission_id) {
+    return sessions[0].submission_id;
+  }
+  return undefined;
+}
+
+export function toggleLauncherHash(hash: string, launcherId: string): string {
+  const parsed = parseLauncherHash(hash);
+  if (parsed.launcherId === launcherId) {
+    if (parsed.submissionId) {
+      return buildLauncherHash(launcherId);
+    }
+    return "";
+  }
+  return buildLauncherHash(launcherId);
+}
+
+export function getJobDisabledMessage(
+  useOldImage: boolean,
+  canWriteProject: boolean,
+  isSubmitDisabled: boolean,
+) {
+  return useOldImage
+    ? "Launch job using an older image"
+    : isSubmitDisabled
+      ? `No image available. ${
+          canWriteProject
+            ? "Run the Build action"
+            : "Contact the project administrator "
+        } to generate an image.`
+      : undefined;
 }

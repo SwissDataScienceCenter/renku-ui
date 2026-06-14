@@ -64,6 +64,20 @@ export interface LauncherCategoryDefinition {
     display: string;
     inline: string;
     action: string;
+    state: {
+      running: string;
+      starting: string;
+      hibernated: string;
+      hibernatedAndDelete: string;
+      failed: string;
+      stopping: string;
+      succeeded: string;
+    };
+    delete: {
+      title: string;
+      action: string;
+      button: string;
+    };
   };
   icon: Icon;
   description: string;
