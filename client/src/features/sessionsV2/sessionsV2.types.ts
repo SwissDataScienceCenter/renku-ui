@@ -41,7 +41,7 @@ export interface SvgIconProps {
   style?: CSSProperties;
 }
 
-export type LauncherCategory = "session" | "job";
+export type LauncherCategory = "session" | "job" | "app";
 
 /** Shared API discriminator for `launcher_type` and `session_type`. */
 export type SessionLauncherKind = LauncherType & SessionType;

@@ -16,7 +16,7 @@
  * limitations under the License
  */
 
-import { Gear, PlayCircle } from "react-bootstrap-icons";
+import { Gear, PlayCircle, Rocket } from "react-bootstrap-icons";
 
 import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
@@ -275,6 +275,30 @@ export const LAUNCHER_BY_CATEGORY: Record<
     },
     icon: Gear,
     description: "Run a process in the background.",
+    allowedEnvironmentSelects: ["custom + build", "custom + image"],
+  },
+  app: {
+    apiType: SESSION_LAUNCHER_KIND.INTERACTIVE,
+    text: {
+      display: "App",
+      inline: "app",
+      action: "turn on",
+      state: {
+        running: "Running",
+        starting: "Starting",
+        hibernated: "Paused",
+        hibernatedAndDelete: "App will be turning off",
+        failed: "Errored", //eslint-disable-line
+        stopping: "Stopping",
+        succeeded: "Completed",
+      },
+      delete: {
+        title: "Turn off",
+        action: "Turning off",
+      },
+    },
+    icon: Rocket,
+    description: "Launch an app",
     allowedEnvironmentSelects: ["custom + build", "custom + image"],
   },
 };
