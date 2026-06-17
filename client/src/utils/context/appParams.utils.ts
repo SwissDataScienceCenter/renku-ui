@@ -69,6 +69,10 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "IMAGE_BUILDERS_ENABLED",
   );
+  const BUILD_PRIVATE_REPO_BUILDS_ENABLED = validateBoolean(
+    params_,
+    "BUILD_PRIVATE_REPO_BUILDS_ENABLED",
+  );
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -91,6 +95,7 @@ export function validatedAppParams(params: unknown): AppParams {
     GATEWAY_URL,
     HOMEPAGE,
     IMAGE_BUILDERS_ENABLED,
+    BUILD_PRIVATE_REPO_BUILDS_ENABLED,
     KEYCLOAK_REALM,
     MAINTENANCE,
     PREVIEW_THRESHOLD,

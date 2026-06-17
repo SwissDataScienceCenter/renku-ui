@@ -48,6 +48,10 @@ export default function BuilderEnvironmentFields({
   const imageBuildersEnabled =
     params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
 
+  const privateRepoBuildEnabled =
+    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
+    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
+
   const { project } = useProject();
   const repositories = project.repositories ?? [];
 
@@ -77,6 +81,17 @@ export default function BuilderEnvironmentFields({
           repo.data?.status === "valid" && repo.data.metadata?.pull_permission,
       ),
     [data],
+  );
+
+  const showControls = useMemo(
+    () =>
+      !selectedRepositoryIsPrivate ||
+      (imageBuildersEnabled && privateRepoBuildEnabled),
+    [
+      selectedRepositoryIsPrivate,
+      imageBuildersEnabled,
+      privateRepoBuildEnabled,
+    ],
   );
 
   if (!imageBuildersEnabled) {
@@ -116,17 +131,28 @@ export default function BuilderEnvironmentFields({
           control={control}
           repositoriesDetails={data}
         />
-        {selectedRepositoryIsPrivate && (
-          <InfoAlert dismissible={false} timeout={0}>
-            This is a private code repository. Only users who have pull (read)
-            access to this code repository will be able to launch sessions.
-          </InfoAlert>
-        )}
-        <CodeRepositoryAdvancedSettings control={control} />
+        {selectedRepositoryIsPrivate &&
+          (privateRepoBuildEnabled ? (
+            <InfoAlert dismissible={false} timeout={0}>
+              This is a private code repository. Only users who have pull (read)
+              access to this code repository will be able to launch sessions.
+            </InfoAlert>
+          ) : (
+            <ErrorAlert dismissible={false} timeout={0}>
+              Creating a session environment from a private repository is not
+              currently supported by this instance of RenkuLab. Contact an
+              administrator to learn more.
+            </ErrorAlert>
+          ))}
+        {showControls && <CodeRepositoryAdvancedSettings control={control} />}
       </div>
-      <BuilderTypeSelector name="builder_variant" control={control} />
-      <BuilderFrontendSelector name="frontend_variant" control={control} />
-      <BuilderAdvancedSettings control={control} />
+      {showControls && (
+        <span>
+          <BuilderTypeSelector name="builder_variant" control={control} />
+          <BuilderFrontendSelector name="frontend_variant" control={control} />
+          <BuilderAdvancedSettings control={control} />
+        </span>
+      )}
     </div>
   );
 

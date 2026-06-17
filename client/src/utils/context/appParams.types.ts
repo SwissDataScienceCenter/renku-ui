@@ -24,6 +24,7 @@ export interface AppParams {
   GATEWAY_URL: string;
   HOMEPAGE: HomepageParams;
   IMAGE_BUILDERS_ENABLED: boolean;
+  BUILD_PRIVATE_REPO_BUILDS_ENABLED: boolean;
   KEYCLOAK_REALM: string;
   MAINTENANCE: string;
   PREVIEW_THRESHOLD: PreviewThresholdParams;
