@@ -59,10 +59,6 @@ if (process.env.NODE_ENV !== "development") {
           isRouteErrorResponse(hint.originalException) &&
           hint.originalException.status == 405
         ) {
-          // DEBUGGING
-          console.log("NOT SENDING ERROR TO SENTRY");
-          console.log(hint.originalException);
-
           return null;
         }
         return event;
