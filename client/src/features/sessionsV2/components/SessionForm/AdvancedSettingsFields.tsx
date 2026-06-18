@@ -30,6 +30,7 @@ import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import Markdown from "~/components/markdown/Markdown";
 import { MoreInfo } from "../../../../components/MoreInfo";
 import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
 import {
@@ -75,7 +76,7 @@ function FormFieldLabel<T extends FieldValues>({
       </Label>
       {info && (
         <MoreInfo>
-          <LazyMarkdown>{info}</LazyMarkdown>
+          <Markdown>{info}</Markdown>
         </MoreInfo>
       )}
       {isOptional && <OptionalLabel />}
