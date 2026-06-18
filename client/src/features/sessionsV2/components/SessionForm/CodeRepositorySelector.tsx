@@ -242,7 +242,7 @@ function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
           ) : (
             <span className="ms-1">
               <XLg className={cx("bi", "me-1")} />
-              No public access
+              Cannot clone repository
             </span>
           ))}
       </div>
@@ -277,7 +277,7 @@ function SingleValueContent({ option, isDisabled }: SingleValueContentProps) {
         ) : (
           <span className="ms-1">
             <XLg className={cx("bi", "me-1")} />
-            No public access
+            Cannot clone repository
           </span>
         ))}
     </>
