@@ -173,7 +173,7 @@ function CodeRepositorySelect({
       isOptionDisabled={(option) =>
         option.data?.status !== "valid" ||
         !option.data.metadata?.pull_permission ||
-        (option.data.metadata.visibility == "private" &&
+        (option.data.metadata.visibility === "private" &&
           !privateRepoBuildEnabled)
       }
       onChange={onChange}
@@ -233,7 +233,7 @@ function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
           {title}
         </span>
         {isDisabled &&
-          (option.data?.metadata?.visibility == "private" &&
+          (option.data?.metadata?.visibility === "private" &&
           !privateRepoBuildEnabled ? (
             <span className="ms-1">
               <XLg className={cx("bi", "me-1")} />
