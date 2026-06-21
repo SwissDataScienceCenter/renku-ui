@@ -23,10 +23,12 @@ import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 
 interface ShowLauncherDetailsButtonProps {
   launcherId: string;
+  className?: string;
 }
 
 export default function ShowLauncherDetailsButton({
   launcherId,
+  className,
 }: ShowLauncherDetailsButtonProps) {
   const [, setHash] = useLocationHash();
   const launcherHash = useMemo(() => `launcher-${launcherId}`, [launcherId]);
@@ -38,16 +40,14 @@ export default function ShowLauncherDetailsButton({
   }, [launcherHash, setHash]);
 
   return (
-    <span id={`open-panel-btn-${launcherId}`}>
-      <Button
-        className="rounded-end-0"
-        color="outline-primary"
-        size="sm"
-        onClick={toggleLauncherView}
-        data-cy="open-panel-button"
-      >
-        Show launcher details
-      </Button>
-    </span>
+    <Button
+      className={className}
+      color="outline-primary"
+      size="sm"
+      onClick={toggleLauncherView}
+      data-cy="open-panel-button"
+    >
+      Show launcher details
+    </Button>
   );
 }

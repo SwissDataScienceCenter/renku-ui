@@ -20,25 +20,23 @@ import type { ReactNode } from "react";
 
 import type { Build, SessionLauncher } from "../../api/sessionLaunchersV2.api";
 
-export type LauncherActionPlacement = "launcher-card" | "launcher-panel";
+export type LauncherActionPlacement = "launcher-card" | "launcher-side-panel";
 
 export interface LauncherCardActionsProps {
+  builds?: Build[];
   hasSession?: boolean;
   lastBuild?: Build;
   launcher: SessionLauncher;
   namespace: string;
   otherActions?: ReactNode;
   slug: string;
-  useOldImage?: boolean;
+  displayBuildActions?: boolean;
 }
 
-export interface LauncherPanelActionsProps {
-  hasSession?: boolean;
-  launcher: SessionLauncher;
-  namespace: string;
-  slug: string;
-  useOldImage?: boolean;
-}
+export type LauncherPanelActionsProps = Pick<
+  LauncherCardActionsProps,
+  "hasSession" | "launcher" | "namespace" | "slug"
+>;
 
 export interface LauncherActionsProps
   extends LauncherCardActionsProps, LauncherPanelActionsProps {

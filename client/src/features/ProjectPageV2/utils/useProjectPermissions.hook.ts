@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect } from "react";
 
 import { DEFAULT_PERMISSIONS } from "../../permissionsV2/permissions.constants";
-import type { ProjectPermissions } from "../../permissionsV2/permissions.types";
+import type { PermissionsWithLoadingState } from "../../permissionsV2/permissions.types";
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 
 interface UseProjectPermissionsArgs {
@@ -29,7 +29,7 @@ interface UseProjectPermissionsArgs {
 
 export default function useProjectPermissions({
   projectId,
-}: UseProjectPermissionsArgs): ProjectPermissions {
+}: UseProjectPermissionsArgs): PermissionsWithLoadingState {
   const { currentData, isLoading, isError, isUninitialized } =
     projectV2Api.endpoints.getProjectsByProjectIdPermissions.useQueryState(
       projectId ? { projectId } : skipToken,
@@ -43,7 +43,7 @@ export default function useProjectPermissions({
     }
   }, [fetchPermissions, isUninitialized, projectId]);
 
-  const isLoadingPermissions = isLoading || isUninitialized;
+  const isLoadingPermissions = isLoading || !!(projectId && isUninitialized);
 
   if (isLoading || isError || !currentData) {
     return {

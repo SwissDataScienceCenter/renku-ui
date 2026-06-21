@@ -17,46 +17,74 @@
  */
 
 import cx from "classnames";
+import { useCallback, useRef } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import { Link, type To } from "react-router";
+import { UncontrolledTooltip } from "reactstrap";
 
-export function sessionLaunchLinkTargetId(launcherId: string) {
-  return `launch-btn-${launcherId}`;
-}
+import { getLaunchActionTooltip } from "~/features/sessionsV2/session.utils";
+import { ImageStatus } from "~/features/sessionsV2/sessionsV2.types";
 
 interface SessionLaunchLinkProps {
   className?: string;
   isCustomLaunch?: boolean;
-  isPrimaryAction?: boolean;
+  isDisabled?: boolean;
+  alreadyRunningSession: boolean;
   label: string;
-  launcherId: string;
   to: To;
+  canWriteProject: boolean;
+  imageStatus: ImageStatus;
 }
 
-export default function SessionLaunchLink({
+function SessionLaunchLink({
   className,
   isCustomLaunch,
-  isPrimaryAction = false,
+  isDisabled = false,
   label,
-  launcherId,
   to,
+  alreadyRunningSession,
+  canWriteProject,
+  imageStatus,
 }: SessionLaunchLinkProps) {
-  const link = (
-    <Link
-      className={className}
-      to={to}
-      data-cy={
-        isCustomLaunch ? "start-custom-session-button" : "start-session-button"
+  const linkRef = useRef<HTMLAnchorElement>(null);
+  const tooltipContent = alreadyRunningSession
+    ? "Cannot launch more than 1 session per session launcher."
+    : getLaunchActionTooltip(canWriteProject, imageStatus, "session");
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.stopPropagation();
+      if (isDisabled) {
+        event.preventDefault();
       }
-    >
-      <PlayCircle className={cx("bi", "me-1")} />
-      {label}
-    </Link>
+    },
+    [isDisabled],
   );
 
-  if (isPrimaryAction) {
-    return <span id={sessionLaunchLinkTargetId(launcherId)}>{link}</span>;
-  }
-
-  return link;
+  return (
+    <>
+      <Link
+        ref={linkRef}
+        aria-disabled={isDisabled || undefined}
+        className={cx(className, isDisabled && "opacity-75")}
+        to={to}
+        data-cy={
+          isCustomLaunch
+            ? "start-custom-session-button"
+            : "start-session-button"
+        }
+        onClick={handleClick}
+      >
+        <PlayCircle className={cx("bi", "me-1")} />
+        {label}
+      </Link>
+      {tooltipContent ? (
+        <UncontrolledTooltip target={linkRef}>
+          {tooltipContent}
+        </UncontrolledTooltip>
+      ) : null}
+    </>
+  );
 }
+
+export default SessionLaunchLink;

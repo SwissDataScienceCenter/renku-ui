@@ -35,8 +35,9 @@ import {
   getCompatibleFrontends,
   LAUNCHER_BY_CATEGORY,
 } from "./session.constants";
-import type {
+import {
   EnvironmentSelectOption,
+  ImageStatus,
   LauncherCategory,
   LauncherCategoryDefinition,
   SessionLauncherForm,
@@ -73,6 +74,15 @@ export function isJobLauncher(launcher: SessionLauncher): boolean {
 
 export function isGlobalEnvironmentIncluded(allowedEnvironments: string[]) {
   return allowedEnvironments.includes("global");
+}
+
+/**
+ * Type-safe predicate for filtering out falsy optional entries.
+ */
+export function isTruthy<T>(
+  value: T | false | null | undefined,
+): value is Exclude<T, false | null | undefined> {
+  return Boolean(value);
 }
 
 export function getNewLauncherFormDefaultValues(
@@ -557,4 +567,25 @@ export function isImageCompatibleWith(
     ({ os, architecture }) => `${os}/${architecture}`,
   );
   return imagePlatforms.some((p) => p === platform);
+}
+
+export function getLaunchActionTooltip(
+  projectWritePermission: boolean,
+  imageStatus: ImageStatus,
+  launchCategory: LauncherCategory,
+): string | undefined {
+  const categoryDefinition = getLauncherCategoryDefinition(launchCategory);
+
+  switch (imageStatus) {
+    case "only-old-image-available":
+      return `Launch ${categoryDefinition.text.inline} using an older image`;
+
+    case "no-available":
+      return projectWritePermission
+        ? "No image available. Run the Build action to generate an image."
+        : "No image available. Copy the project and run the Build action to generate an image.";
+
+    case "available":
+      return undefined;
+  }
 }

@@ -74,7 +74,7 @@ export default function EnvironmentKindField({
                     "p-2",
                     "p-md-4",
                     "d-flex",
-                    "justify-content-center"
+                    "justify-content-center",
                   )}
                   data-cy="environment-kind-global"
                   htmlFor="environment-kind-global-radio"
@@ -87,7 +87,7 @@ export default function EnvironmentKindField({
                         "gap-3",
                         "text-center",
                         "text-md-start",
-                        "align-items-center"
+                        "align-items-center",
                       )}
                     >
                       <EnvironmentIcon
@@ -102,7 +102,7 @@ export default function EnvironmentKindField({
                         "mb-0",
                         "text-start",
                         "d-none",
-                        "d-md-block"
+                        "d-md-block",
                       )}
                     >
                       Get started quickly with a pre-built environment.
@@ -112,113 +112,123 @@ export default function EnvironmentKindField({
               </>
             )}
 
-          {showBuildOption && (
-            <>
-              <input
-                type="radio"
-                className="btn-check"
-                name={field.name}
-                autoComplete="off"
-                checked={field.value === "custom + build"}
-                id="environment-kind-builder-radio"
-                onChange={() => field.onChange("custom + build")}
-                onBlur={field.onBlur}
-              />
-              <label
-                className={cx(
-                  "btn",
-                  "btn-outline-primary",
-                  "p-2",
-                  "p-md-4",
-                  "d-flex",
-                  "justify-content-center",
-                )}
-                data-cy="environment-kind-builder"
-                htmlFor="environment-kind-builder-radio"
-              >
-                <div className={cx("d-flex", "flex-column", "gap-2")}>
-                  <div
-                    className={cx(
-                      "d-flex",
-                      "flex-row",
-                      "gap-3",
-                      "text-center",
-                      "text-md-start",
-                      "align-items-center",
-                    )}
-                  >
-                    <EnvironmentIcon
-                      type="codeBased"
-                      size={30}
-                      className={cx("d-none", "d-md-block")}
-                    />
-                    <span className="fw-bold">Create from code</span>
+            {showBuildOption && (
+              <>
+                <input
+                  type="radio"
+                  className="btn-check"
+                  name={field.name}
+                  autoComplete="off"
+                  checked={field.value === "custom + build"}
+                  id="environment-kind-builder-radio"
+                  onChange={() => field.onChange("custom + build")}
+                  onBlur={field.onBlur}
+                />
+                <label
+                  className={cx(
+                    "btn",
+                    "btn-outline-primary",
+                    "p-2",
+                    "p-md-4",
+                    "d-flex",
+                    "justify-content-center",
+                  )}
+                  data-cy="environment-kind-builder"
+                  htmlFor="environment-kind-builder-radio"
+                >
+                  <div className={cx("d-flex", "flex-column", "gap-2")}>
+                    <div
+                      className={cx(
+                        "d-flex",
+                        "flex-row",
+                        "gap-3",
+                        "text-center",
+                        "text-md-start",
+                        "align-items-center",
+                      )}
+                    >
+                      <EnvironmentIcon
+                        type="codeBased"
+                        size={30}
+                        className={cx("d-none", "d-md-block")}
+                      />
+                      <span className="fw-bold">Create from code</span>
+                    </div>
+                    <p
+                      className={cx(
+                        "mb-0",
+                        "text-start",
+                        "d-none",
+                        "d-md-block",
+                      )}
+                    >
+                      {launcherCategory === "job"
+                        ? "Build a container image from your code repository."
+                        : "Customize your session with a requirements.txt or similar file."}
+                    </p>
                   </div>
-                  <p
-                    className={cx("mb-0", "text-start", "d-none", "d-md-block")}
-                  >
-                    {launcherCategory === "job"
-                      ? "Build a container image from your code repository."
-                      : "Customize your session with a requirements.txt or similar file."}
-                  </p>
-                </div>
-              </label>
-            </>
-          )}
+                </label>
+              </>
+            )}
 
-          {showImageOption && (
-            <>
-              <input
-                type="radio"
-                className="btn-check"
-                name={field.name}
-                autoComplete="off"
-                checked={field.value === "custom + image"}
-                id="environment-kind-custom-radio"
-                onChange={() => field.onChange("custom + image")}
-                onBlur={field.onBlur}
-              />
-              <label
-                className={cx(
-                  "btn",
-                  "btn-outline-primary",
-                  "p-2",
-                  "p-md-4",
-                  "d-flex",
-                  "justify-content-center",
-                )}
-                data-cy="environment-kind-custom"
-                htmlFor="environment-kind-custom-radio"
-              >
-                <div className={cx("d-flex", "flex-column", "gap-2")}>
-                  <div
-                    className={cx(
-                      "d-flex",
-                      "flex-row",
-                      "gap-3",
-                      "text-center",
-                      "text-md-start",
-                      "align-items-center",
-                    )}
-                  >
-                    <EnvironmentIcon
-                      type="custom"
-                      size={30}
-                      className={cx("d-none", "d-md-block")}
-                    />
-                    <span className="fw-bold">External environment</span>
+            {showImageOption && (
+              <>
+                <input
+                  type="radio"
+                  className="btn-check"
+                  name={field.name}
+                  autoComplete="off"
+                  checked={field.value === "custom + image"}
+                  id="environment-kind-custom-radio"
+                  onChange={() => field.onChange("custom + image")}
+                  onBlur={field.onBlur}
+                />
+                <label
+                  className={cx(
+                    "btn",
+                    "btn-outline-primary",
+                    "p-2",
+                    "p-md-4",
+                    "d-flex",
+                    "justify-content-center",
+                  )}
+                  data-cy="environment-kind-custom"
+                  htmlFor="environment-kind-custom-radio"
+                >
+                  <div className={cx("d-flex", "flex-column", "gap-2")}>
+                    <div
+                      className={cx(
+                        "d-flex",
+                        "flex-row",
+                        "gap-3",
+                        "text-center",
+                        "text-md-start",
+                        "align-items-center",
+                      )}
+                    >
+                      <EnvironmentIcon
+                        type="custom"
+                        size={30}
+                        className={cx("d-none", "d-md-block")}
+                      />
+                      <span className="fw-bold">External environment</span>
+                    </div>
+                    <p
+                      className={cx(
+                        "mb-0",
+                        "text-start",
+                        "d-none",
+                        "d-md-block",
+                      )}
+                    >
+                      Run a {categoryDefinition.text.inline} from a preexisting
+                      container image.
+                    </p>
                   </div>
-                  <p
-                    className={cx("mb-0", "text-start", "d-none", "d-md-block")}
-                  >
-                    Run a {categoryDefinition.text.inline} from a preexisting
-                    container image.
-                  </p>
-                </div>
-              </label>
-            </>
-          )}
-        </ButtonGroup>
+                </label>
+              </>
+            )}
+          </ButtonGroup>
         </div>
       )}
     />

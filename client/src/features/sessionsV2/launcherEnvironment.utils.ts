@@ -21,28 +21,26 @@ import type { EnvironmentSelectOption } from "./sessionsV2.types";
 
 export function getLauncherEnvironmentSelect(
   launcher: SessionLauncher,
-): EnvironmentSelectOption {
+): EnvironmentSelectOption | undefined {
   const { environment } = launcher;
   if (environment.environment_kind === "GLOBAL") {
     return "global";
   }
-  if (environment.environment_image_source === "build") {
-    return "custom + build";
+  if (environment.environment_kind === "CUSTOM") {
+    if (environment.environment_image_source === "build")
+      return "custom + build";
+    return "custom + image";
   }
-  return "custom + image";
+  return undefined;
 }
 
 export function getLauncherEnvironmentFlags(launcher: SessionLauncher) {
   const environmentSelect = getLauncherEnvironmentSelect(launcher);
-  const { environment } = launcher;
 
   return {
     environmentSelect,
     isGlobalEnvironment: environmentSelect === "global",
     isCustomImageEnvironment: environmentSelect === "custom + image",
     isCodeEnvironment: environmentSelect === "custom + build",
-    isExternalImageEnvironment:
-      environment.environment_kind === "CUSTOM" &&
-      environment.environment_image_source === "image",
   };
 }

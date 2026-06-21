@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import { Button } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
 
 export default function CheckingLauncherButton() {
   return (
-    <Button color="outline-primary" className={cx("disabled")} size="sm">
-      <Loader size={12} inline /> Checking launcher
+    <Button color="outline-primary" disabled size="sm">
+      <Loader className="me-1" size={12} inline />
+      Checking launcher
     </Button>
   );
 }

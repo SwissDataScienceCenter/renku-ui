@@ -17,57 +17,43 @@
  */
 
 import { getLauncherCategory } from "~/features/sessionsV2/session.utils";
-import JobCardActions from "./job/JobCardActions";
-import JobPanelSubmit from "./job/JobPanelSubmit";
-import SessionCardActions from "./session/SessionCardActions";
-import SessionPanelActions from "./session/SessionPanelActions";
+import JobLauncherActions from "./job/JobLauncherActions";
+import SessionLauncherActions from "./session/SessionLauncherActions";
 import type { LauncherActionsProps } from "./types";
 
 export function LauncherActions({
   placement,
+  builds,
   hasSession,
   lastBuild,
   launcher,
   namespace,
   otherActions,
   slug,
-  useOldImage,
 }: LauncherActionsProps) {
   const category = getLauncherCategory(launcher);
-
-  if (placement === "launcher-card") {
-    return category === "session" ? (
-      <SessionCardActions
-        hasSession={hasSession}
-        lastBuild={lastBuild}
-        launcher={launcher}
-        namespace={namespace}
-        otherActions={otherActions}
-        slug={slug}
-        useOldImage={useOldImage}
-      />
-    ) : (
-      <JobCardActions
-        hasSession={hasSession}
-        lastBuild={lastBuild}
-        launcher={launcher}
-        namespace={namespace}
-        otherActions={otherActions}
-        slug={slug}
-        useOldImage={useOldImage}
-      />
-    );
-  }
-
   return category === "session" ? (
-    <SessionPanelActions
+    <SessionLauncherActions
+      builds={builds}
       hasSession={hasSession}
+      lastBuild={lastBuild}
       launcher={launcher}
       namespace={namespace}
+      otherActions={placement === "launcher-card" && otherActions}
       slug={slug}
-      useOldImage={useOldImage}
+      displayBuildActions={placement === "launcher-card"}
+      alwaysShowLaunchAction={placement === "launcher-side-panel"}
     />
   ) : (
-    <JobPanelSubmit launcher={launcher} useOldImage={useOldImage} />
+    <JobLauncherActions
+      builds={builds}
+      hasSession={hasSession}
+      lastBuild={lastBuild}
+      launcher={launcher}
+      namespace={namespace}
+      otherActions={placement === "launcher-card" && otherActions}
+      slug={slug}
+      displayBuildActions={placement === "launcher-card"}
+    />
   );
 }

@@ -17,135 +17,134 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 
+import { ImageStatus } from "~/features/sessionsV2/sessionsV2.types";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import type { Build, SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery } from "./api/sessionLaunchersV2.api";
-import {
-  useGetSessionsImagesQuery,
-  type ImageCheckResponse,
-} from "./api/sessionsV2.api";
+import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
 import { getLauncherEnvironmentFlags } from "./launcherEnvironment.utils";
 
 interface UseLauncherEnvironmentReadinessArgs {
-  launcher: SessionLauncher;
-  enabled?: boolean;
+  launcher?: SessionLauncher;
+  builds?: Build[];
   lastBuild?: Build;
-  lastSuccessfulBuild?: Build;
-  useOldImage?: boolean;
+}
+
+const DEFAULT_ENVIRONMENT_FLAGS = {
+  isCustomImageEnvironment: false,
+  isCodeEnvironment: false,
+  isGlobalEnvironment: false,
+};
+
+function getImageStatus({
+  hasCustomImageAccessible,
+  isGlobalEnvironment,
+  lastBuild,
+  useOldImage,
+}: {
+  hasCustomImageAccessible: boolean;
+  isGlobalEnvironment: boolean;
+  lastBuild?: Build;
+  useOldImage: boolean;
+}): ImageStatus {
+  if (useOldImage) {
+    return "only-old-image-available";
+  }
+  if (
+    isGlobalEnvironment ||
+    hasCustomImageAccessible ||
+    lastBuild?.status === "succeeded"
+  ) {
+    return "available";
+  }
+  return "no-available";
 }
 
 export default function useLauncherEnvironmentReadiness({
   launcher,
-  enabled = true,
+  builds: buildsProp,
   lastBuild: lastBuildProp,
-  lastSuccessfulBuild: lastSuccessfulBuildProp,
-  useOldImage: useOldImageProp,
 }: UseLauncherEnvironmentReadinessArgs) {
-  const { environment } = launcher;
+  const environment = launcher?.environment;
   const { params } = useContext(AppContext);
   const imageBuildersEnabled =
     params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
 
-  const {
-    isCustomImageEnvironment,
-    isCodeEnvironment,
-    isExternalImageEnvironment,
-  } = getLauncherEnvironmentFlags(launcher);
+  const { isCustomImageEnvironment, isCodeEnvironment, isGlobalEnvironment } =
+    launcher
+      ? getLauncherEnvironmentFlags(launcher)
+      : DEFAULT_ENVIRONMENT_FLAGS;
 
+  // custom + build cases
   const shouldFetchBuilds =
-    enabled &&
+    launcher != null &&
     imageBuildersEnabled &&
     isCodeEnvironment &&
-    lastBuildProp == null;
+    buildsProp == null;
 
-  const { data: builds, isLoading: isLoadingBuilds } = useGetBuildsQuery(
-    shouldFetchBuilds ? { environmentId: environment.id } : skipToken,
+  const { data: fetchedBuilds, isLoading: isLoadingBuilds } = useGetBuildsQuery(
+    shouldFetchBuilds && environment
+      ? { environmentId: environment.id }
+      : skipToken,
   );
-
+  const builds = buildsProp ?? fetchedBuilds;
   const lastBuild = lastBuildProp ?? builds?.at(0);
-  const lastSuccessfulBuild =
-    lastSuccessfulBuildProp ??
-    builds?.find(
-      (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
-    );
-
-  const useOldImage = useMemo(
-    () =>
-      useOldImageProp ??
-      (isCodeEnvironment &&
-        lastBuild?.status !== "succeeded" &&
-        !!lastSuccessfulBuild),
-    [
-      isCodeEnvironment,
-      lastBuild?.status,
-      lastSuccessfulBuild,
-      useOldImageProp,
-    ],
+  const isBuildInProgress =
+    isCodeEnvironment && lastBuild?.status === "in_progress";
+  const lastSuccessfulBuild = builds?.find(
+    (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
   );
+  const hasSuccessfulBuild = Boolean(
+    lastBuild?.status === "succeeded" || lastSuccessfulBuild,
+  );
+  const useOldImage =
+    isCodeEnvironment &&
+    lastBuild?.status !== "succeeded" &&
+    !!lastSuccessfulBuild;
 
-  const containerImageUrl =
-    environment.environment_kind === "CUSTOM"
-      ? environment.container_image
-      : undefined;
-  const shouldFetchContainerImage = enabled && containerImageUrl != null;
+  const containerImageUrl = environment?.container_image;
 
+  const shouldFetchContainerImage = containerImageUrl != null;
   const { data: containerImage, isLoading: isLoadingContainerImage } =
     useGetSessionsImagesQuery(
       shouldFetchContainerImage ? { imageUrl: containerImageUrl } : skipToken,
     );
 
-  const hasSuccessfulBuild = builds?.some(
-    (build) => build.status === "succeeded",
-  );
-
-  const displayLaunchSession =
-    !isCodeEnvironment ||
-    lastBuild?.status === "succeeded" ||
-    (isCodeEnvironment && containerImage?.accessible === true) ||
-    useOldImage;
-
-  const isBuildInProgress =
-    isCodeEnvironment && lastBuild?.status === "in_progress";
-
-  const isLastBuildRunning = lastBuild?.status === "in_progress";
-
+  const hasCustomImageAccessible = containerImage?.accessible === true;
   const hasValidImage =
-    !isCodeEnvironment ||
-    lastBuild?.status === "succeeded" ||
-    containerImage?.accessible === true ||
-    useOldImage;
+    isGlobalEnvironment || hasSuccessfulBuild || hasCustomImageAccessible;
 
-  const showSubmitJob = !(isBuildInProgress && !hasValidImage && !useOldImage);
-
-  const isLaunchButtonDisabled =
-    isCodeEnvironment && !hasSuccessfulBuild && !useOldImage;
+  const imageStatus = getImageStatus({
+    hasCustomImageAccessible,
+    isGlobalEnvironment,
+    lastBuild,
+    useOldImage,
+  });
 
   const forceLaunch =
-    isExternalImageEnvironment &&
+    isCustomImageEnvironment &&
     !isLoadingContainerImage &&
-    containerImage?.accessible === false;
+    !containerImage?.accessible;
 
   return {
-    containerImage: containerImage as ImageCheckResponse | undefined,
-    displayLaunchSession,
+    builds,
+    containerImage,
     forceLaunch,
     hasSuccessfulBuild,
     hasValidImage,
     isBuildInProgress,
     isCodeEnvironment,
     isCustomImageEnvironment,
-    isExternalImageEnvironment,
-    isLastBuildRunning,
-    isLaunchButtonDisabled,
+    isGlobalEnvironment,
     isLoadingBuilds: shouldFetchBuilds && isLoadingBuilds,
     isLoadingContainerImage:
       shouldFetchContainerImage && isLoadingContainerImage,
     lastBuild,
     lastSuccessfulBuild,
-    showSubmitJob,
     useOldImage,
+    imageStatus,
   };
 }

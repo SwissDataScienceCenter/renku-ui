@@ -17,48 +17,61 @@
  */
 
 import cx from "classnames";
+import { useCallback, useRef } from "react";
 import { Send } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
-export function jobSubmitButtonTargetId(launcherId: string) {
-  return `launch-btn-${launcherId}`;
-}
+import { getLaunchActionTooltip } from "~/features/sessionsV2/session.utils";
+import { ImageStatus } from "~/features/sessionsV2/sessionsV2.types";
 
 interface JobSubmitButtonProps {
   className?: string;
   disabled?: boolean;
-  launcherId: string;
-  tooltip?: string;
+  canWriteProject: boolean;
+  imageStatus: ImageStatus;
 }
 
 export default function JobSubmitButton({
   className,
-  disabled,
-  launcherId,
-  tooltip,
+  disabled = false,
+  imageStatus,
+  canWriteProject,
 }: JobSubmitButtonProps) {
-  const targetId = jobSubmitButtonTargetId(launcherId);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const tooltipMessage = getLaunchActionTooltip(
+    canWriteProject,
+    imageStatus,
+    "job",
+  );
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      if (disabled) {
+        event.preventDefault();
+      }
+    },
+    [disabled],
+  );
 
   return (
     <>
-      <span id={targetId}>
-        <Button
-          className={cx("text-nowrap", className)}
-          color="primary"
-          data-cy="submit-job-button"
-          disabled={disabled}
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-          size="sm"
-        >
-          <Send className={cx("bi", "me-1")} />
-          Submit
-        </Button>
-      </span>
-      {tooltip ? (
-        <UncontrolledTooltip placement="top" target={targetId}>
-          {tooltip}
+      <Button
+        innerRef={buttonRef}
+        aria-disabled={disabled || undefined}
+        className={cx("text-nowrap", className, disabled && "opacity-75")}
+        color="primary"
+        data-cy="submit-job-button"
+        onClick={handleClick}
+        size="sm"
+        type="button"
+      >
+        <Send className={cx("bi", "me-1")} />
+        Submit
+      </Button>
+      {tooltipMessage ? (
+        <UncontrolledTooltip placement="top" target={buttonRef}>
+          {tooltipMessage}
         </UncontrolledTooltip>
       ) : null}
     </>

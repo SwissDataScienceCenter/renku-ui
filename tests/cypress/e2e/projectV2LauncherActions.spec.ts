@@ -99,7 +99,11 @@ function openDropdownAndAssertNotEmpty() {
 }
 
 function assertLaunchButtonDisabled() {
-  cy.getDataCy("start-session-button").should("have.class", "disabled");
+  cy.getDataCy("start-session-button").should(
+    "have.attr",
+    "aria-disabled",
+    "true",
+  );
 }
 
 function setupRunningSessionOnLauncher(launcherId: string) {
@@ -161,6 +165,44 @@ function clickSubmitJobButton() {
 
 function assertSubmitJobButtonEnabled() {
   cy.getDataCy("submit-job-button").should("not.be.disabled");
+}
+
+function openFirstLauncherPanel() {
+  cy.getDataCy("session-launcher-item").first().click();
+}
+
+function setupOldImageBuildIntercept() {
+  cy.fixture("projectV2/session-launchers.json").then((launchers) => {
+    const launcher = {
+      ...launchers[0],
+      environment: {
+        ...launchers[0].environment,
+        environment_image_source: "build",
+      },
+    };
+    cy.intercept("GET", "/api/data/projects/*/session_launchers", {
+      body: [launcher],
+    }).as("sessionLaunchers");
+    cy.intercept(
+      "GET",
+      `/api/data/environments/${launcher.environment.id}/builds`,
+      {
+        body: [
+          {
+            id: "build-in-progress",
+            status: "in_progress",
+            created_at: "2024-05-23T09:59:59Z",
+          },
+          {
+            id: "build-old-success",
+            status: "succeeded",
+            created_at: "2024-05-22T09:59:59Z",
+            result: { completed_at: "2024-05-22T10:59:59Z" },
+          },
+        ],
+      },
+    ).as("environmentBuilds");
+  });
 }
 
 function setupRunningJob() {
@@ -259,7 +301,8 @@ describe("read-only user on job launcher", () => {
       permissionsFixture: "projectV2/projectV2-permissions-viewer.json",
     });
     visitProjectSessions();
-    cy.wait("@getSessionsV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@getProjectV2Permissions");
   });
 
   it("shows submit only without management dropdown", () => {
@@ -329,6 +372,49 @@ describe("launcher panel actions", () => {
 
     cy.getDataCy("session-launcher-item").first().click();
     cy.getDataCy("start-session-button").should("contain.text", "Force launch");
+  });
+
+  it("shows launch in panel when build is in progress but container image is accessible", () => {
+    fixtures.getProjectV2Permissions();
+    setupProjectSessionsPage();
+    setupBuildLauncherIntercept();
+
+    cy.intercept("GET", "/api/data/sessions/images?image_url=*", {
+      body: { accessible: true },
+    }).as("sessionImage");
+
+    visitProjectSessions();
+    openFirstLauncherPanel();
+    cy.getDataCy("start-session-button").should("contain.text", "Launch");
+  });
+
+  it("shows older image tooltip on launch button in panel", () => {
+    fixtures.getProjectV2Permissions();
+    setupProjectSessionsPage();
+    setupOldImageBuildIntercept();
+
+    cy.intercept("GET", "/api/data/sessions/images?image_url=*", {
+      body: { accessible: true },
+    }).as("sessionImage");
+
+    visitProjectSessions();
+    openFirstLauncherPanel();
+    cy.getDataCy("start-session-button").trigger("mouseenter");
+    cy.get(".tooltip").should("contain.text", "older image");
+  });
+
+  it("shows submit only in read-only job launcher panel", () => {
+    setupProjectSessionsPage({
+      launchersFixture: "projectV2/session-launchers-job.json",
+      permissionsFixture: "projectV2/projectV2-permissions-viewer.json",
+    });
+    visitProjectSessions();
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@getProjectV2Permissions");
+
+    openFirstLauncherPanel();
+    cy.getDataCy("submit-job-button").should("be.visible");
+    cy.getDataCy("button-with-menu-dropdown").should("not.exist");
   });
 
   it("shows submit only in job launcher panel", () => {

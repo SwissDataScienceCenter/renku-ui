@@ -22,6 +22,6 @@ export type Permissions = {
   [key in RequestedPermission]: boolean;
 };
 
-export type ProjectPermissions = Permissions & {
+export type PermissionsWithLoadingState = Permissions & {
   isLoadingPermissions: boolean;
 };

@@ -185,7 +185,7 @@ function SessionCardNotRunning({
       contentSession={
         <div className="my-auto">
           <LauncherActions
-            placement="launcher-panel"
+            placement="launcher-side-panel"
             hasSession={hasSession}
             launcher={launcher}
             namespace={project.namespace}
@@ -261,7 +261,7 @@ export function SessionView({
 
   const launcherCategory = launcher && getLauncherCategory(launcher);
   const launcherDefinition = getLauncherCategoryDefinition(
-    launcherCategory || orphanCategory
+    launcherCategory || orphanCategory,
   );
 
   const { data: dataConnectorLinks } =
@@ -284,7 +284,7 @@ export function SessionView({
   } = useGetClassesByClassIdQuery(
     launcher?.resource_class_id
       ? { classId: `${launcher.resource_class_id}` }
-      : skipToken
+      : skipToken,
   );
 
   const totalSession = sessions ? Object.keys(sessions).length : 0;

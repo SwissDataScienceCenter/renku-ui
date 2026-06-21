@@ -16,80 +16,109 @@
  * limitations under the License.
  */
 
-import { type ReactNode } from "react";
+import { Fragment, useMemo } from "react";
 import { ButtonGroup } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
-import { getLauncherCategoryDefinition } from "~/features/sessionsV2/session.utils";
+import { isTruthy } from "~/features/sessionsV2/session.utils";
 import useLauncherEnvironmentReadiness from "~/features/sessionsV2/useLauncherEnvironmentReadiness.hook";
 import BuildLauncherButtons, {
   RebuildLauncherDropdownItem,
 } from "../../BuildLauncherButtons";
 import CheckingLauncherButton from "../shared/CheckingLauncherButton";
-import ShowLauncherDetailsButton from "../shared/ShowLauncherDetailsButton";
 import type { LauncherCardActionsProps } from "../types";
-import JobPanelSubmit from "./JobPanelSubmit";
 import JobSubmitButton from "./JobSubmitButton";
 
-export default function JobCardActions({
+function getSubmitButtonClassName({
+  applyDefaultBuildActions,
+  hasMenuItems,
+}: {
+  applyDefaultBuildActions: boolean;
+  hasMenuItems: boolean;
+}) {
+  if (applyDefaultBuildActions) {
+    return "rounded-0";
+  }
+  if (hasMenuItems) {
+    return "rounded-end-0";
+  }
+  return "";
+}
+
+export default function JobLauncherActions({
+  builds,
   lastBuild,
   launcher,
   otherActions,
-  useOldImage,
+  displayBuildActions: displayBuildActionsProp,
 }: LauncherCardActionsProps) {
   const { isLoadingPermissions, write } = useProjectPermissions({
     projectId: launcher.project_id,
   });
 
   const {
-    containerImage,
     isCodeEnvironment,
     isLoadingContainerImage,
-    showSubmitJob,
-    useOldImage: resolvedUseOldImage,
-    isLaunchButtonDisabled,
+    useOldImage: shouldUseOldImage,
+    hasValidImage,
+    imageStatus,
   } = useLauncherEnvironmentReadiness({
+    builds,
     launcher,
     lastBuild,
-    useOldImage,
   });
 
-  const categoryDefinition = getLauncherCategoryDefinition("job");
-
   const displayBuildActions =
-    isCodeEnvironment &&
-    write &&
-    (resolvedUseOldImage || lastBuild?.status !== "succeeded");
+    displayBuildActionsProp && isCodeEnvironment && write;
 
-  const submitTooltip =
-    resolvedUseOldImage && containerImage?.accessible !== false
-      ? `Launch ${categoryDefinition.text.inline} using an older image`
-      : undefined;
+  // When only an old successful image is available or the last build failed,
+  // we prioritize inline build actions over placing them in the overflow menu.
+  const applyDefaultBuildActions = Boolean(
+    displayBuildActions &&
+    (shouldUseOldImage || lastBuild?.status !== "succeeded"),
+  );
 
-  if (isLoadingPermissions) {
-    return <CheckingLauncherButton />;
-  }
+  const menuItems = [
+    displayBuildActions && !applyDefaultBuildActions && (
+      <RebuildLauncherDropdownItem key="rebuild-launcher" launcher={launcher} />
+    ),
+    write && otherActions && (
+      <Fragment key="other-actions">{otherActions}</Fragment>
+    ),
+  ].filter(isTruthy);
+  const hasMenuItems = menuItems.length > 0;
 
-  if (!write) {
-    return <JobPanelSubmit launcher={launcher} useOldImage={useOldImage} />;
-  }
+  const submitButtonClassName = getSubmitButtonClassName({
+    applyDefaultBuildActions,
+    hasMenuItems,
+  });
 
-  const defaultAction = (() => {
+  const defaultAction = useMemo(() => {
     if (isLoadingContainerImage) {
       return <CheckingLauncherButton />;
     }
 
-    const submitAction = showSubmitJob && (
+    if (!write) {
+      return (
+        <JobSubmitButton
+          disabled={!hasValidImage}
+          canWriteProject={write}
+          imageStatus={imageStatus}
+        />
+      );
+    }
+
+    const submitAction = (
       <JobSubmitButton
-        launcherId={launcher.id}
-        className={displayBuildActions ? "rounded-0" : "rounded-end-0"}
-        tooltip={submitTooltip}
-        disabled={isLaunchButtonDisabled}
+        className={submitButtonClassName}
+        disabled={!hasValidImage}
+        canWriteProject={write}
+        imageStatus={imageStatus}
       />
     );
 
-    if (displayBuildActions) {
+    if (applyDefaultBuildActions) {
       return (
         <ButtonGroup onClick={(e) => e.stopPropagation()}>
           <BuildLauncherButtons launcher={launcher} isMainButton={false} />
@@ -98,21 +127,22 @@ export default function JobCardActions({
       );
     }
 
-    if (showSubmitJob) {
-      return submitAction;
-    }
+    return submitAction;
+  }, [
+    applyDefaultBuildActions,
+    hasValidImage,
+    imageStatus,
+    isLoadingContainerImage,
+    launcher,
+    submitButtonClassName,
+    write,
+  ]);
 
-    return <ShowLauncherDetailsButton launcherId={launcher.id} />;
-  })();
+  if (isLoadingPermissions) {
+    return <CheckingLauncherButton />;
+  }
 
-  const menuItems = [
-    isCodeEnvironment && write && !displayBuildActions && (
-      <RebuildLauncherDropdownItem launcher={launcher} />
-    ),
-    otherActions,
-  ].filter(Boolean) as ReactNode[];
-
-  if (menuItems.length === 0) {
+  if (!write || !hasMenuItems) {
     return defaultAction;
   }
 
@@ -122,7 +152,6 @@ export default function JobCardActions({
       default={defaultAction}
       preventPropagation
       size="sm"
-      isDisabledDropdownToggle={false}
     >
       {menuItems}
     </ButtonWithMenuV2>
