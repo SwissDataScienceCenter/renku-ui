@@ -46,8 +46,14 @@ import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
 import StopJobContent from "~/features/sessionsV2/components/SessionModals/StopJobContent";
+import sessionStopIntentSlice, {
+  selectSessionStopIntent,
+} from "~/features/sessionsV2/sessionStopIntent.slice";
+import { deriveSessionStopIntent } from "~/features/sessionsV2/sessionStopIntent.utils";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
+import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
@@ -190,26 +196,49 @@ export default function ActiveSessionButton({
   }, [errorHibernateSession, renkuToastDanger]);
 
   // Handle deleting session
+  const dispatch = useAppDispatch();
   const [stopSession, { error: errorStopSession }] = useStopSessionMutation();
   // Optimistically show a session as "stopping" when triggered from the UI
   const [isStopping, setIsStopping] = useState<boolean>(false);
+  const stopIntent = useAppSelector((state) =>
+    selectSessionStopIntent(state, session.name),
+  );
   const onStopSession = useCallback(() => {
+    if (sessionLauncherKindToCategory(session.session_type) === "job") {
+      dispatch(
+        sessionStopIntentSlice.actions.setSessionStopIntent({
+          sessionId: session.name,
+          intent: deriveSessionStopIntent(session.status.state),
+        }),
+      );
+    }
     stopSession({ sessionId: session.name });
     // TODO: fix react-hooks/set-state-in-effect
 
     setIsStopping(true);
-  }, [session.name, stopSession]);
+  }, [
+    dispatch,
+    session.name,
+    session.session_type,
+    session.status.state,
+    stopSession,
+  ]);
   useEffect(() => {
     if (errorStopSession) {
       renkuToastDanger({
         textHeader: NOTIFICATION_TOPICS.SESSION_START,
         textBody: "Unable to delete the session",
       });
+      dispatch(
+        sessionStopIntentSlice.actions.clearSessionStopIntent({
+          sessionId: session.name,
+        }),
+      );
       // TODO: fix react-hooks/set-state-in-effect
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsStopping(false);
     }
-  }, [errorStopSession, renkuToastDanger]);
+  }, [dispatch, errorStopSession, renkuToastDanger, session.name]);
   // Modal for confirming session deletion
   const [showModalStopSession, setShowModalStopSession] = useState(false);
   const toggleStopSession = useCallback(
@@ -288,6 +317,7 @@ export default function ActiveSessionButton({
     onResumeSession,
     toggleLogsModal,
     toggleModifySession,
+    stopIntent,
   };
 
   const defaultAction =
@@ -330,7 +360,7 @@ export default function ActiveSessionButton({
       onClick={isRunning ? toggleStopSession : onStopSession}
     >
       <Trash className={cx("bi", "me-1")} />
-      Dismiss
+      {isRunning ? "Cancel" : "Dismiss"}
     </DropdownItem>
   );
 

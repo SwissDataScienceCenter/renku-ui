@@ -139,6 +139,15 @@ export function BuildStatusDescription({
 }: BuildStatusDescriptionProps) {
   if (!status) return null;
 
+  const startTimeTextWithOutSuffix = (
+    <TimeCaption
+      datetime={createdAt}
+      enableTooltip
+      noCaption
+      includeRelativeSuffix={false}
+    />
+  );
+
   const startTimeText = (
     <TimeCaption datetime={createdAt} enableTooltip noCaption />
   );
@@ -169,7 +178,7 @@ export function BuildStatusDescription({
       className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
     >
       <Clock fontSize={16} className="flex-shrink-0" />
-      <span>Building since {startTimeText}</span>
+      <span>Building for {startTimeTextWithOutSuffix}</span>
     </div>
   ) : status === "failed" ? (
     <div

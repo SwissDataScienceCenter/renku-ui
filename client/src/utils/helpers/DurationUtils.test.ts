@@ -278,6 +278,35 @@ describe("toHumanRelativeDuration", () => {
 
     expect(relativeStr).toBe("9mo from now");
   });
+
+  it("omits suffix for a datetime in the past when includeSuffix is false", () => {
+    const duration = Duration.fromObject({ seconds: 195 });
+    const datetime = DateTime.utc().minus(duration);
+    const now = DateTime.utc();
+
+    const relativeStr = toHumanRelativeDuration({
+      datetime,
+      now,
+      includeSuffix: false,
+    });
+
+    expect(relativeStr).toBe("3 minutes");
+  });
+
+  it("omits suffix for a datetime in the future when includeSuffix is false", () => {
+    const duration = Duration.fromObject({ days: 2 });
+    const datetime = DateTime.utc().plus(duration);
+    const now = DateTime.utc();
+
+    const relativeStr = toHumanRelativeDuration({
+      datetime,
+      now,
+      format: "short",
+      includeSuffix: false,
+    });
+
+    expect(relativeStr).toBe("2d");
+  });
 });
 
 describe("toFullHumanDuration", () => {

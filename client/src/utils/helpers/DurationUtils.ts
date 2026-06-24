@@ -174,16 +174,19 @@ export function toShortHumanDuration({
  * @param datetime a DateTime instance, a Date instance or an ISO 8601 string
  * @param now the current instant
  * @param format use short unit labels (e.g. "3min ago") or long labels (e.g. "3 minutes ago")
+ * @param includeSuffix when false, returns only the duration (e.g. "3 minutes") without "ago" or "from now"
  * @returns a human-readable string
  */
 export function toHumanRelativeDuration({
   datetime: datetime_,
   now: now_,
   format = "long",
+  includeSuffix = true,
 }: {
   datetime: DateTime | Date | string;
   now: DateTime | Date;
   format?: DurationFormat;
+  includeSuffix?: boolean;
 }): string {
   const datetime = ensureDateTime(datetime_);
   const now = ensureDateTime(now_);
@@ -199,7 +202,11 @@ export function toHumanRelativeDuration({
     return "just now";
   }
 
-  const suffix = duration.valueOf() > 0 ? "ago" : "from now";
   const durationStr = toHumanDuration({ duration, format });
+  if (!includeSuffix) {
+    return durationStr;
+  }
+
+  const suffix = duration.valueOf() > 0 ? "ago" : "from now";
   return `${durationStr} ${suffix}`;
 }

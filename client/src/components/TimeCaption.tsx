@@ -35,6 +35,7 @@ interface TimeCaptionProps {
   prefix?: ReactNode;
   suffix?: ReactNode;
   format?: "long" | "short";
+  includeRelativeSuffix?: boolean;
 }
 
 export function TimeCaption({
@@ -45,13 +46,19 @@ export function TimeCaption({
   prefix,
   suffix,
   format = "long",
+  includeRelativeSuffix = true,
 }: TimeCaptionProps) {
   const [now, setNow] = useState<DateTime>(DateTime.utc());
 
   const datetime = datetime_ ? ensureDateTime(datetime_) : null;
   const durationStr =
     datetime != null && datetime.isValid
-      ? toHumanRelativeDuration({ datetime, now, format })
+      ? toHumanRelativeDuration({
+          datetime,
+          now,
+          format,
+          includeSuffix: includeRelativeSuffix,
+        })
       : "at unknown time";
 
   const className = noCaption ? className_ : cx("time-caption", className_);

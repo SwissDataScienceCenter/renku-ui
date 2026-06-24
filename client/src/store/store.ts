@@ -38,6 +38,7 @@ import { searchV2Slice } from "~/features/searchV2/searchV2.slice";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import { sessionLaunchersV2EmptyApi as sessionLaunchersV2Api } from "~/features/sessionsV2/api/sessionLaunchersV2.empty-api";
 import { sessionsV2EmptyApi as sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.empty-api";
+import sessionStopIntentSlice from "~/features/sessionsV2/sessionStopIntent.slice";
 import startSessionOptionsV2Slice from "~/features/sessionsV2/startSessionOptionsV2.slice";
 import termsApi from "~/features/terms/terms.api";
 import { usersEmptyApi as usersApi } from "~/features/usersV2/api/users.empty-api";
@@ -53,6 +54,7 @@ export const store = configureStore({
     [featureFlagsSlice.name]: featureFlagsSlice.reducer,
     [loginStateSlice.name]: loginStateSlice.reducer,
     [startSessionOptionsV2Slice.name]: startSessionOptionsV2Slice.reducer,
+    [sessionStopIntentSlice.name]: sessionStopIntentSlice.reducer,
     [searchV2Slice.name]: searchV2Slice.reducer,
     [webSocketSlice.name]: webSocketSlice.reducer,
     [toastSlice.name]: toastSlice.reducer,

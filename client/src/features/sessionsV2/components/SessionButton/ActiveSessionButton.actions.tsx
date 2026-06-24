@@ -30,6 +30,8 @@ import { Link } from "react-router";
 import { Button } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
+import type { SessionStopIntent } from "../../sessionStopIntent.types";
+import { getJobStoppingButtonLabel } from "../../sessionStopIntent.utils";
 import { SessionStatusState } from "../../sessionsV2.types";
 
 export interface ActiveSessionActionContext {
@@ -46,6 +48,7 @@ export interface ActiveSessionActionContext {
   onResumeSession: () => void;
   toggleLogsModal: () => void;
   toggleModifySession: () => void;
+  stopIntent?: SessionStopIntent | null;
 }
 
 function StoppingStatusButton({ label }: { label: string }) {
@@ -269,10 +272,13 @@ export function getJobDefaultAction(
     onResumeSession,
     toggleLogsModal,
     onStopSession,
+    stopIntent,
   } = ctx;
 
   if (status === "stopping" || isStopping) {
-    return <StoppingStatusButton label="Dismissing job" />;
+    return (
+      <StoppingStatusButton label={getJobStoppingButtonLabel(stopIntent)} />
+    );
   }
   if (isHibernating) {
     return <PausingStatusButton />;

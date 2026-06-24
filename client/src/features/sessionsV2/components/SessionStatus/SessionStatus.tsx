@@ -43,6 +43,12 @@ import {
   getLauncherCategoryDefinition,
   sessionLauncherKindToCategory,
 } from "~/features/sessionsV2/session.utils";
+import { selectSessionStopIntent } from "~/features/sessionsV2/sessionStopIntent.slice";
+import {
+  getJobStoppingButtonLabel,
+  getJobStoppingTitle,
+} from "~/features/sessionsV2/sessionStopIntent.utils";
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
@@ -156,6 +162,10 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   const animationIcon = statusStyles.spinIcon;
+  const stopIntent = useAppSelector((reduxState) =>
+    selectSessionStopIntent(reduxState, session.name),
+  );
+  const jobStoppingBadgeLabel = getJobStoppingButtonLabel(stopIntent);
 
   const badge =
     launcherCategory === "session"
@@ -273,7 +283,7 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
                 inline
               />
               <span className="text-warning-emphasis">
-                {launcherDefinition.text.delete.action}
+                {jobStoppingBadgeLabel}
               </span>
             </SessionBadge>
           ),
@@ -364,6 +374,9 @@ export function SessionStatusV2Label({
   const { status, image } = session;
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   const styles = getSessionStatusStyles({ status, image }, launcherCategory);
+  const stopIntent = useAppSelector((state) =>
+    selectSessionStopIntent(state, session.name),
+  );
 
   const getStatusMessage = (
     state:
@@ -379,6 +392,11 @@ export function SessionStatusV2Label({
     const launcherCategory = sessionType
       ? sessionLauncherKindToCategory(sessionType)
       : "session";
+
+    if (state === "stopping" && launcherCategory === "job" && variant != null) {
+      return getJobStoppingTitle({ variant, stopIntent });
+    }
+
     return variant === "list"
       ? launcherCategory === "session"
         ? SESSION_TITLE_DASHBOARD[state]
@@ -564,6 +582,15 @@ function SessionStatusV2Text({
       noCaption
     />
   );
+  const elapsedTimeText = (
+    <TimeCaption
+      datetime={startTimestamp}
+      format={format}
+      enableTooltip
+      noCaption
+      includeRelativeSuffix={false}
+    />
+  );
   const hibernationTimestamp =
     state === "hibernated" ? (will_hibernate_at ?? "") : null;
 
@@ -571,14 +598,14 @@ function SessionStatusV2Text({
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
       <span>
-        {launcherCategoryDefinition.text.state.running} {startTimeText}
+        {launcherCategoryDefinition.text.state.running} for {elapsedTimeText}
       </span>
     </div>
   ) : state === "starting" ? (
     <div className={cx("d-flex", "align-items-center", "gap-2")}>
       {includeIcon && <Clock fontSize={16} className="flex-shrink-0" />}
       <span>
-        {launcherCategoryDefinition.text.state.starting} since {startTimeText}
+        {launcherCategoryDefinition.text.state.starting} since {elapsedTimeText}
       </span>
     </div>
   ) : state === "hibernated" && will_delete_at ? (
@@ -593,6 +620,7 @@ function SessionStatusV2Text({
           suffix=" "
           prefix=""
           format={format}
+          includeRelativeSuffix={false}
         />
       </span>
     </div>
@@ -606,6 +634,7 @@ function SessionStatusV2Text({
           format={format}
           enableTooltip
           noCaption
+          includeRelativeSuffix={false}
         />
       </span>
     </div>

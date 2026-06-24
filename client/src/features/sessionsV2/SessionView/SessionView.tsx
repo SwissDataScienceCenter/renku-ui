@@ -769,7 +769,7 @@ function JobListItem({
         )}
 
         <EnvironmentJSONArrayRowWithLabel
-          label="Commands"
+          label="Command"
           value={safeStringify(session.command_args)}
           dataCy="session-view-command"
         />

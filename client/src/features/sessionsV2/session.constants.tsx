@@ -271,7 +271,7 @@ export const LAUNCHER_BY_CATEGORY: Record<
         succeeded: "Completed",
       },
       delete: {
-        title: "Dismiss job",
+        title: "Cancel job",
         action: "Dismissing job",
         button: "Yes, cancel job",
       },
