@@ -16,12 +16,10 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { useCallback, useState } from "react";
-import { DropdownItem } from "reactstrap";
+import { useCallback, useRef, useState } from "react";
+import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { SingleButtonWithMenu } from "../../../../components/buttons/Button";
 import BootstrapCopyIcon from "../../../../components/icons/BootstrapCopyIcon";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import ProjectCopyModal from "../../ProjectPageHeader/ProjectCopyModal";
@@ -38,27 +36,29 @@ export default function ProjectInformationButton({
   const toggleCopyModal = useCallback(() => {
     setCopyModalOpen((open) => !open);
   }, []);
+  const ref = useRef(null);
+
   const isUserLoggedIn = !!currentUser?.isLoggedIn;
   if (!isUserLoggedIn) return null;
   return (
-    <>
-      <SingleButtonWithMenu color="outline-primary" size="sm">
-        <DropdownItem
-          data-cy="project-copy-menu-item"
-          onClick={toggleCopyModal}
-        >
-          <BootstrapCopyIcon className={cx("bi")} />
-          <span className={cx("ms-2")}>Copy project</span>
-        </DropdownItem>
-      </SingleButtonWithMenu>
-      {
-        <ProjectCopyModal
-          currentUser={currentUser}
-          isOpen={isCopyModalOpen}
-          project={project}
-          toggle={toggleCopyModal}
-        />
-      }
-    </>
+    <div ref={ref}>
+      <Button
+        color="outline-primary"
+        data-cy="project-copy-button"
+        onClick={toggleCopyModal}
+        size="sm"
+      >
+        <BootstrapCopyIcon />
+      </Button>
+      <UncontrolledTooltip target={ref} trigger="hover">
+        Copy project
+      </UncontrolledTooltip>
+      <ProjectCopyModal
+        currentUser={currentUser}
+        isOpen={isCopyModalOpen}
+        project={project}
+        toggle={toggleCopyModal}
+      />
+    </div>
   );
 }

@@ -16,10 +16,12 @@
  * limitations under the License
  */
 
+import { useState } from "react";
 import { Col, Row } from "reactstrap";
 
 import { useProject } from "~/routes/projects/root";
 import SessionsV2 from "../../sessionsV2/SessionsV2";
+import ProjectOffcanvas from "../ProjectOffcanvas";
 import { CodeRepositoriesDisplay } from "./CodeRepositories/RepositoriesBox";
 import ProjectDataConnectorsBox from "./DataConnectors/ProjectDataConnectorsBox";
 import Documentation from "./Documentation/Documentation";
@@ -27,6 +29,8 @@ import ProjectInformation from "./ProjectInformation/ProjectInformation";
 
 export default function ProjectOverviewPage() {
   const { project } = useProject();
+
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
 
   return (
     <Row className="g-4">
@@ -48,9 +52,14 @@ export default function ProjectOverviewPage() {
       </Col>
       <Col xs={12} md={4} xl={3}>
         <div className="mb-3">
-          <ProjectInformation output="card" />
+          <ProjectInformation project={project} />
         </div>
       </Col>
+      <ProjectOffcanvas
+        isOffcanvasOpen={isOffcanvasOpen}
+        project={project}
+        toggleOffcanvas={() => setIsOffcanvasOpen(!isOffcanvasOpen)}
+      />
     </Row>
   );
 }

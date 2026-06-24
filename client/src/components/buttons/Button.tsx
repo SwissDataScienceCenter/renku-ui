@@ -163,38 +163,6 @@ export function ButtonWithMenuV2({
   );
 }
 
-export function SingleButtonWithMenu({
-  children,
-  className,
-  color,
-  direction,
-  disabled,
-  id,
-  size,
-}: Omit<ButtonWithMenuV2Props, "default" | "preventPropagation">) {
-  return (
-    <UncontrolledDropdown
-      className={className}
-      color={color ?? "primary"}
-      direction={direction ?? "down"}
-      disabled={disabled}
-      id={id}
-      size={size ?? "md"}
-    >
-      <DropdownToggle
-        caret={false}
-        data-bs-toggle="dropdown"
-        color={color ?? "primary"}
-        data-cy="button-with-menu-dropdown"
-        disabled={disabled}
-      >
-        <ThreeDotsVertical />
-      </DropdownToggle>
-      <DropdownMenu end>{children}</DropdownMenu>
-    </UncontrolledDropdown>
-  );
-}
-
 /*
  * underline Link with icon
  */
