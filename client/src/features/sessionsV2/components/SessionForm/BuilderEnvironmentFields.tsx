@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { useWatch, type Control, type Path } from "react-hook-form";
+import { useWatch, type Control, type Path, type FieldErrors } from "react-hook-form";
 
 import { useProject } from "~/routes/projects/root";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
@@ -28,7 +28,13 @@ import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useGetRepositoriesQuery } from "../../../repositories/api/repositories.api";
-import type { SessionLauncherForm } from "../../sessionsV2.types";
+import { ENVIRONMENT_VALUES_DESCRIPTION } from "../../session.constants";
+import { getLauncherCategoryDefinition } from "../../session.utils";
+import type {
+  LauncherCategory,
+  SessionLauncherForm,
+} from "../../sessionsV2.types";
+import { JsonField } from "./AdvancedSettingsFields";
 import BuilderAdvancedSettings from "./BuilderAdvancedSettings";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
@@ -37,12 +43,16 @@ import CodeRepositorySelector from "./CodeRepositorySelector";
 
 interface BuilderEnvironmentFieldsProps {
   control: Control<SessionLauncherForm>;
+  errors?: FieldErrors<SessionLauncherForm>;
   isEdit?: boolean;
+  launcherCategory: LauncherCategory;
 }
 
 export default function BuilderEnvironmentFields({
   control,
+  errors,
   isEdit,
+  launcherCategory,
 }: BuilderEnvironmentFieldsProps) {
   const { params } = useContext(AppContext);
   const imageBuildersEnabled =
@@ -54,6 +64,7 @@ export default function BuilderEnvironmentFields({
   const { data, isLoading, error } = useGetRepositoriesQuery(
     repositories.length > 0 ? repositories : skipToken,
   );
+  const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   const selectedRepositoryUrl = useWatch({
     control,
@@ -82,8 +93,9 @@ export default function BuilderEnvironmentFields({
   if (!imageBuildersEnabled) {
     return (
       <ErrorAlert dismissible={false}>
-        Creating a session environment from code is not currently supported by
-        this instance of RenkuLab. Contact an administrator to learn more.
+        Creating a {categoryDefinition.text.inline} environment from code is not
+        currently supported by this instance of RenkuLab. Contact an
+        administrator to learn more.
       </ErrorAlert>
     );
   }
@@ -96,7 +108,7 @@ export default function BuilderEnvironmentFields({
   ) : repositories?.length == 0 ? (
     <WarnAlert dismissible={false}>
       No repositories found in this project. Add a repository first before
-      creating a session environment from one.
+      creating a {categoryDefinition.text.inline} environment from one.
     </WarnAlert>
   ) : error || !data ? (
     <>
@@ -119,14 +131,48 @@ export default function BuilderEnvironmentFields({
         {selectedRepositoryIsPrivate && (
           <InfoAlert dismissible={false} timeout={0}>
             This is a private code repository. Only users who have pull (read)
-            access to this code repository will be able to launch sessions.
+            access to this code repository will be able to launch {categoryDefinition.text.inline}.
           </InfoAlert>
         )}
         <CodeRepositoryAdvancedSettings control={control} />
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
-      <BuilderFrontendSelector name="frontend_variant" control={control} />
-      <BuilderAdvancedSettings control={control} />
+      {launcherCategory === "session" && (
+        <BuilderFrontendSelector name="frontend_variant" control={control} />
+      )}
+      {launcherCategory === "job" && (
+        <>
+          <div>
+            <JsonField<SessionLauncherForm>
+              control={control}
+              name="command"
+              label="Job command"
+              info={ENVIRONMENT_VALUES_DESCRIPTION.command}
+              errors={errors}
+              helpText='Enter the command that will run as a job (JSON array format) e.g. ["python","my_repo/main.py"]'
+              isOptional={false}
+              dataCy="job-command-input"
+              id="job-command-input"
+            />
+          </div>
+          <div>
+            <JsonField<SessionLauncherForm>
+              control={control}
+              name="args"
+              label="Job args"
+              info={ENVIRONMENT_VALUES_DESCRIPTION.args}
+              errors={errors}
+              helpText='Enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
+              isOptional={true}
+              dataCy="job-args-input"
+              id="job-args-input"
+            />
+          </div>
+        </>
+      )}
+      {launcherCategory === "session" && (
+        <BuilderAdvancedSettings control={control} />
+      )}
     </div>
   );
 

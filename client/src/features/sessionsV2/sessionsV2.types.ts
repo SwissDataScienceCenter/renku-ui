@@ -16,8 +16,13 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
+import { Icon } from "react-bootstrap-icons";
 
+import {
+  SessionType,
+  SubmissionId,
+} from "~/features/sessionsV2/api/sessionsV2.generated-api";
 import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
   BuildParametersPost,
@@ -27,8 +32,35 @@ import type {
   EnvironmentPort,
   EnvironmentPost,
   EnvironmentUid,
+  LauncherType,
   SessionLauncherPost,
 } from "./api/sessionLaunchersV2.api";
+
+export interface SvgIconProps {
+  className?: string;
+  style?: CSSProperties;
+}
+
+export type LauncherCategory = "session" | "job";
+
+export type LauncherApiType = LauncherType;
+
+export type EnvironmentSelectOption =
+  | "global"
+  | "custom + image"
+  | "custom + build";
+
+export interface LauncherCategoryDefinition {
+  apiType: LauncherApiType;
+  text: {
+    display: string;
+    inline: string;
+    action: string;
+  };
+  icon: Icon;
+  description: string;
+  allowedEnvironmentSelects: EnvironmentSelectOption[];
+}
 
 export interface SessionLauncherForm
   extends
@@ -51,7 +83,7 @@ export interface SessionLauncherForm
   resourceClass: ResourceClassWithId;
 
   // Substitute for Environment Kind and Environment Image Source in forms
-  environmentSelect: "global" | "custom + image" | "custom + build";
+  environmentSelect: EnvironmentSelectOption;
 
   // For "global" environments
   environmentId: EnvironmentId;
@@ -105,6 +137,10 @@ export interface SessionV2 {
   project_id: string;
   launcher_id: string;
   resource_class_id: number;
+  session_type: SessionType;
+  submission_id?: SubmissionId;
+  command_args?: string[] | null;
+  job_completed_at?: string | null;
 }
 
 export interface BuilderSelectorOption<T extends string = string> {

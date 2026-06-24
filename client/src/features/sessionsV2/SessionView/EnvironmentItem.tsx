@@ -49,7 +49,7 @@ import {
 import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
-import { safeStringify } from "../session.utils";
+import { getLauncherCategory, safeStringify } from "../session.utils";
 
 export default function EnvironmentItem({
   launcher,
@@ -204,6 +204,7 @@ function CustomImageEnvironmentValues({
 }) {
   const { pathname, hash } = useLocation();
   const environment = launcher.environment;
+  const launcherCategory = getLauncherCategory(launcher);
 
   const { params } = useContext(AppContext);
   const renkuContactEmail =
@@ -346,36 +347,40 @@ function CustomImageEnvironmentValues({
         label="Container image"
         value={environment?.container_image || ""}
       />
-      <EnvironmentRowWithLabel
-        label="Default URL path"
-        value={environment.default_url}
-        dataCy="session-view-default-url"
-      />
-      <EnvironmentRowWithLabel
-        label="Port"
-        value={environment.port}
-        dataCy="session-view-port"
-      />
-      <EnvironmentRowWithLabel
-        label="Working directory"
-        value={environment.working_directory}
-        dataCy="session-view-working-directory"
-      />
-      <EnvironmentRowWithLabel
-        label="Mount directory"
-        value={environment.mount_directory}
-        dataCy="session-view-mount-directory"
-      />
-      <EnvironmentRowWithLabel
-        label="UID"
-        value={environment.uid}
-        dataCy="session-view-uid"
-      />
-      <EnvironmentRowWithLabel
-        label="GID"
-        value={environment.gid}
-        dataCy="session-view-gid"
-      />
+      {launcherCategory === "session" && (
+        <>
+          <EnvironmentRowWithLabel
+            label="Default URL path"
+            value={environment.default_url}
+            dataCy="session-view-default-url"
+          />
+          <EnvironmentRowWithLabel
+            label="Port"
+            value={environment.port}
+            dataCy="session-view-port"
+          />
+          <EnvironmentRowWithLabel
+            label="Working directory"
+            value={environment.working_directory}
+            dataCy="session-view-working-directory"
+          />
+          <EnvironmentRowWithLabel
+            label="Mount directory"
+            value={environment.mount_directory}
+            dataCy="session-view-mount-directory"
+          />
+          <EnvironmentRowWithLabel
+            label="UID"
+            value={environment.uid}
+            dataCy="session-view-uid"
+          />
+          <EnvironmentRowWithLabel
+            label="GID"
+            value={environment.gid}
+            dataCy="session-view-gid"
+          />
+        </>
+      )}
       <EnvironmentJSONArrayRowWithLabel
         label="Command"
         value={safeStringify(environment.command)}
@@ -386,10 +391,12 @@ function CustomImageEnvironmentValues({
         value={safeStringify(environment.args)}
         dataCy="session-view-args"
       />
-      <EnvironmentRowWithLabel
-        label="Strip session URL path prefix"
-        value={(environment.strip_path_prefix ?? false) ? "Yes" : "No"}
-      />
+      {launcherCategory === "session" && (
+        <EnvironmentRowWithLabel
+          label="Strip session URL path prefix"
+          value={(environment.strip_path_prefix ?? false) ? "Yes" : "No"}
+        />
+      )}
     </>
   );
 }
@@ -462,7 +469,8 @@ function CustomBuildEnvironmentValues({
     return null;
   }
 
-  const { build_parameters } = environment;
+  const launcherCategory = getLauncherCategory(launcher);
+  const { build_parameters, command, args } = environment;
   const {
     builder_variant,
     context_dir,
@@ -565,6 +573,21 @@ function CustomBuildEnvironmentValues({
         label="User interface"
         value={frontend_variant || ""}
       />
+      {launcherCategory === "job" &&
+        environment.container_image === BUILDER_IMAGE_NOT_READY_VALUE && (
+          <>
+            <EnvironmentJSONArrayRowWithLabel
+              label="Command"
+              value={safeStringify(command)}
+              dataCy="session-view-job-command"
+            />
+            <EnvironmentJSONArrayRowWithLabel
+              label="Args"
+              value={safeStringify(args)}
+              dataCy="session-view-job-args"
+            />
+          </>
+        )}
 
       {environment.container_image !== BUILDER_IMAGE_NOT_READY_VALUE && (
         <CustomImageEnvironmentValues launcher={launcher} />

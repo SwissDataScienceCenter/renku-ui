@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
+import { Pencil, RocketTakeoff, Trash } from "react-bootstrap-icons";
 import { generatePath } from "react-router";
 import {
   Badge,
@@ -109,7 +109,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
     <>
       <p className="text-body-secondary">
         {totalSessions > 0
-          ? "Session launchers are available to everyone who can see the project. Running sessions are only accessible to you."
+          ? "Launchers are available to everyone who can see the project. Only you can see your running sessions and jobs."
           : "Define interactive environments in which to do your work and share it  with others."}
       </p>
       {loading}
@@ -145,8 +145,8 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       >
         <div className={cx("align-items-center", "d-flex")}>
           <h2 className={cx("mb-0", "me-2")}>
-            <PlayCircle className={cx("me-1", "bi")} />
-            Sessions
+            <RocketTakeoff className={cx("me-1", "bi")} />
+            Launchers
           </h2>
           <Badge>{totalSessions}</Badge>
         </div>
@@ -155,7 +155,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
           enabled={
             <div className="my-auto">
               <AddSessionLauncherButton
-                data-cy="add-session-launcher"
+                data-cy="add-launcher"
                 styleBtn="iconBtn"
               />
             </div>

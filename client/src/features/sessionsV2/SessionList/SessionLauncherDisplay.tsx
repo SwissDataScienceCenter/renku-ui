@@ -94,7 +94,9 @@ export function SessionLauncherDisplay({
         toggleUpdate={toggleUpdate}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleDelete={toggleDelete}
-        toggleShareLink={toggleShareLink}
+        toggleShareLink={
+          launcher.launcher_type === "interactive" ? toggleShareLink : undefined
+        }
         toggleSessionView={toggleSessionView}
       />
       <SessionView

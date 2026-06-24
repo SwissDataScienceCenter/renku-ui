@@ -19,7 +19,13 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { Link45deg, Pencil, Trash } from "react-bootstrap-icons";
+import {
+  CircleFill,
+  Link45deg,
+  Pencil,
+  PlayCircle,
+  Trash,
+} from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
@@ -48,6 +54,10 @@ import {
 import { SessionLauncherButtons } from "../components/SessionLauncherButtons";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
+import {
+  getLauncherCategory,
+  getLauncherCategoryDefinitionByLauncher,
+} from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
 import SessionCard from "./SessionCard";
 
@@ -95,6 +105,10 @@ export default function SessionLauncherCard({
     (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
   );
   const hasSession = !!sessions?.length;
+  const launcherDefinition =
+    launcher && getLauncherCategoryDefinitionByLauncher(launcher);
+  const LauncherTypeIcon = launcherDefinition?.icon || PlayCircle;
+  const launcherTypeLabel = launcherDefinition?.text.display || null;
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
     isCodeEnvironment && lastBuild?.status === "in_progress"
@@ -106,11 +120,11 @@ export default function SessionLauncherCard({
   );
 
   const otherLauncherActions = launcher &&
-    toggleUpdate &&
-    toggleDelete &&
-    toggleShareLink &&
-    toggleUpdateEnvironment && (
-      <SessionLauncherDropdownActions
+    (toggleUpdate ||
+      toggleDelete ||
+      toggleShareLink ||
+      toggleUpdateEnvironment) && (
+      <LauncherDropdownActions
         project={project}
         launcher={launcher}
         toggleDelete={toggleDelete}
@@ -174,35 +188,52 @@ export default function SessionLauncherCard({
         <div className={cx(hasSession && "border-bottom", "p-3")}>
           <Row className="g-2">
             <Col className={cx("align-items-center")} xs={12} lg={6} xl={8}>
-              <Row className={cx("g-2", "mb-0")}>
-                <Col
-                  xs={12}
-                  xl={4}
-                  className={cx("d-inline-block", "link-primary", "text-body")}
-                >
-                  <span className={cx("small", "text-muted", "me-3")}>
-                    Session Launcher
-                  </span>
-                </Col>
-                <Col xs={12} xl="auto">
-                  {environment?.environment_kind === "GLOBAL" ? (
-                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                      <EnvironmentIcon type="global" />
-                      Global environment
+              {launcher && (
+                <Row className={cx("g-2", "mb-0")}>
+                  <Col
+                    xs={12}
+                    xl={4}
+                    className={cx(
+                      "d-inline-block",
+                      "link-primary",
+                      "text-body",
+                    )}
+                  >
+                    <span
+                      className={cx(
+                        "small",
+                        "text-muted",
+                        "me-3",
+                        "d-inline-flex",
+                        "align-items-center",
+                        "gap-1",
+                      )}
+                    >
+                      <LauncherTypeIcon className={cx("bi")} size={14} />
+                      <span className="fw-bold">{launcherTypeLabel}</span>{" "}
+                      Launcher
                     </span>
-                  ) : isCodeEnvironment ? (
-                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                      <EnvironmentIcon type="codeBased" size={16} />
-                      Code based environment
-                    </span>
-                  ) : isExternalImageEnvironment ? (
-                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                      <EnvironmentIcon type="custom" size={16} />
-                      External image environment
-                    </span>
-                  ) : null}
-                </Col>
-              </Row>
+                  </Col>
+                  <Col xs={12} xl="auto">
+                    {environment?.environment_kind === "GLOBAL" ? (
+                      <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                        <EnvironmentIcon type="global" />
+                        Global environment
+                      </span>
+                    ) : isCodeEnvironment ? (
+                      <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                        <EnvironmentIcon type="codeBased" size={16} />
+                        Code based environment
+                      </span>
+                    ) : isExternalImageEnvironment ? (
+                      <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                        <EnvironmentIcon type="custom" size={16} />
+                        External image environment
+                      </span>
+                    ) : null}
+                  </Col>
+                </Row>
+              )}
               <Row className={cx("g-2", isCodeEnvironment && "mb-2")}>
                 <Col
                   xs={12}
@@ -350,62 +381,72 @@ export default function SessionLauncherCard({
   );
 }
 
-interface SessionLauncherDropdownActionsProps {
+interface LauncherDropdownActionsProps {
   launcher: SessionLauncher;
-  toggleUpdate: () => void;
-  toggleDelete: () => void;
-  toggleUpdateEnvironment: () => void;
-  toggleShareLink: () => void;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
+  toggleShareLink?: () => void;
   project: Project;
 }
-function SessionLauncherDropdownActions({
+function LauncherDropdownActions({
   launcher,
   toggleDelete,
   toggleUpdate,
   toggleUpdateEnvironment,
   toggleShareLink,
-}: SessionLauncherDropdownActionsProps) {
+}: LauncherDropdownActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
-
+  const launcherCategory = getLauncherCategory(launcher);
   return (
     <>
       <PermissionsGuard
         disabled={null}
         enabled={
           <>
-            <DropdownItem
-              data-cy="session-launcher-menu-edit-env"
-              onClick={toggleUpdateEnvironment}
-            >
-              <LauncherEnvironmentIcon
-                className={cx("me-1")}
-                launcher={launcher}
-              />
-              Edit environment
-            </DropdownItem>
-            <DropdownItem
-              data-cy="session-launcher-menu-edit"
-              onClick={toggleUpdate}
-            >
-              <Pencil className={cx("bi", "me-1")} />
-              Edit launcher
-            </DropdownItem>
-            <DropdownItem
-              data-cy="session-launcher-menu-share-link"
-              onClick={toggleShareLink}
-            >
-              <Link45deg className={cx("bi", "me-1")} />
-              Share session launch link
-            </DropdownItem>
-            <DropdownItem divider />
-            <DropdownItem
-              data-cy="session-launcher-menu-delete"
-              onClick={toggleDelete}
-            >
-              <Trash className={cx("bi", "me-1")} />
-              Delete launcher
-            </DropdownItem>
+            {toggleUpdateEnvironment && (
+              <DropdownItem
+                data-cy="session-launcher-menu-edit-env"
+                onClick={toggleUpdateEnvironment}
+              >
+                <LauncherEnvironmentIcon
+                  className={cx("me-1")}
+                  launcher={launcher}
+                />
+                Edit environment
+              </DropdownItem>
+            )}
+            {toggleUpdate && (
+              <DropdownItem
+                data-cy="session-launcher-menu-edit"
+                onClick={toggleUpdate}
+              >
+                <Pencil className={cx("bi", "me-1")} />
+                Edit launcher
+              </DropdownItem>
+            )}
+            {toggleShareLink && launcherCategory === "session" && (
+              <DropdownItem
+                data-cy="session-launcher-menu-share-link"
+                onClick={toggleShareLink}
+              >
+                <Link45deg className={cx("bi", "me-1")} />
+                Share session launch link
+              </DropdownItem>
+            )}
+            {toggleDelete && (
+              <>
+                <DropdownItem divider />
+                <DropdownItem
+                  data-cy="session-launcher-menu-delete"
+                  onClick={toggleDelete}
+                >
+                  <Trash className={cx("bi", "me-1")} />
+                  Delete launcher
+                </DropdownItem>
+              </>
+            )}
           </>
         }
         requestedPermission="write"
