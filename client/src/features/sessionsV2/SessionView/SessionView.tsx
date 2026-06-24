@@ -380,12 +380,10 @@ export function SessionView({
                     launcherCategory === "job" &&
                     totalSession > 0 && (
                       <LauncherActions
-                        placement="launcher-panel"
+                        placement="launcher-side-panel"
                         hasSession={totalSession > 0}
                         launcher={launcher}
-                        namespace={project.namespace}
                         project={project}
-                        slug={project.slug}
                       />
                     )}
                 </div>
@@ -432,11 +430,9 @@ export function SessionView({
                     </p>
                     {launcher && launcherCategory === "job" && (
                       <LauncherActions
-                        placement="launcher-panel"
+                        placement="launcher-side-panel"
                         launcher={launcher}
-                        namespace={project.namespace}
                         project={project}
-                        slug={project.slug}
                       />
                     )}
                   </div>
