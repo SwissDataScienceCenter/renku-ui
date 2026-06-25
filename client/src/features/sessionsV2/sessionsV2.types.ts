@@ -169,3 +169,8 @@ export interface SessionEnvironmentVariable {
   name: string;
   value: string;
 }
+
+export type ImageStatus =
+  | "only-old-image-available"
+  | "no-available"
+  | "available";

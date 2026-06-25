@@ -18,40 +18,28 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useContext, useMemo } from "react";
-import {
-  CircleFill,
-  Link45deg,
-  Pencil,
-  PlayCircle,
-  Trash,
-} from "react-bootstrap-icons";
+import { useMemo } from "react";
+import { Link45deg, Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { Loader } from "../../../components/Loader";
-import AppContext from "../../../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { computeResourcesApi } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import {
-  sessionLaunchersV2Api,
-  useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
-} from "../api/sessionLaunchersV2.api";
-import { useGetSessionsImagesQuery } from "../api/sessionsV2.api";
+import { sessionLaunchersV2Api } from "../api/sessionLaunchersV2.api";
 import {
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
+import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import {
   EnvironmentIcon,
   LauncherEnvironmentIcon,
 } from "../components/SessionForm/LauncherEnvironmentIcon";
-import { SessionLauncherButtons } from "../components/SessionLauncherButtons";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
 import {
@@ -59,6 +47,7 @@ import {
   getLauncherCategoryDefinitionByLauncher,
 } from "../session.utils";
 import { SessionV2 } from "../sessionsV2.types";
+import useLauncherEnvironmentReadiness from "../useLauncherEnvironmentReadiness.hook";
 import SessionCard from "./SessionCard";
 
 import styles from "./Session.module.scss";
@@ -85,25 +74,21 @@ export default function SessionLauncherCard({
   toggleSessionView,
   toggleShareLink,
 }: SessionLauncherCardProps) {
-  const { params } = useContext(AppContext);
+  const {
+    builds,
+    isBuildInProgress,
+    isCodeEnvironment,
+    isCustomImageEnvironment,
+    isGlobalEnvironment,
+    isLoadingBuilds,
+    isLoadingContainerImage,
+    lastBuild,
+    lastSuccessfulBuild,
+    useOldImage,
+    containerImage,
+  } = useLauncherEnvironmentReadiness({ launcher });
+
   const environment = launcher?.environment;
-  const imageBuildersEnabled =
-    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
-  const isCodeEnvironment = environment?.environment_image_source === "build";
-  const isExternalImageEnvironment =
-    environment?.environment_kind === "CUSTOM" &&
-    environment?.environment_image_source === "image";
-
-  const { data: builds, isLoading } = useGetBuildsQuery(
-    imageBuildersEnabled && isCodeEnvironment
-      ? { environmentId: environment.id }
-      : skipToken,
-  );
-
-  const lastBuild = builds?.at(0);
-  const lastSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
-  );
   const hasSession = !!sessions?.length;
   const launcherDefinition =
     launcher && getLauncherCategoryDefinitionByLauncher(launcher);
@@ -111,8 +96,8 @@ export default function SessionLauncherCard({
   const launcherTypeLabel = launcherDefinition?.text.display || null;
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
-    isCodeEnvironment && lastBuild?.status === "in_progress"
-      ? { environmentId: environment.id }
+    launcher && isBuildInProgress
+      ? { environmentId: launcher.environment.id }
       : skipToken,
     {
       pollingInterval: 1_000,
@@ -142,13 +127,6 @@ export default function SessionLauncherCard({
     "small",
     "text-muted",
   ];
-
-  const { data: containerImage, isLoading: isLoadingContainerImage } =
-    useGetSessionsImagesQuery(
-      environment?.container_image != null
-        ? { imageUrl: environment.container_image }
-        : skipToken,
-    );
 
   const {
     data: imageRepositorySource,
@@ -215,7 +193,7 @@ export default function SessionLauncherCard({
                     </span>
                   </Col>
                   <Col xs={12} xl="auto">
-                    {environment?.environment_kind === "GLOBAL" ? (
+                    {isGlobalEnvironment ? (
                       <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
                         <EnvironmentIcon type="global" />
                         Global environment
@@ -225,7 +203,7 @@ export default function SessionLauncherCard({
                         <EnvironmentIcon type="codeBased" size={16} />
                         Code based environment
                       </span>
-                    ) : isExternalImageEnvironment ? (
+                    ) : isCustomImageEnvironment ? (
                       <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
                         <EnvironmentIcon type="custom" size={16} />
                         External image environment
@@ -260,7 +238,7 @@ export default function SessionLauncherCard({
                 <Row className="g-2">
                   <Col xs={12} xl={4}>
                     {isCodeEnvironment &&
-                    (isLoading ||
+                    (isLoadingBuilds ||
                       isLoadingContainerImage ||
                       isLoadingImageRepositorySource ||
                       isLoadingResourcePools) ? (
@@ -331,33 +309,28 @@ export default function SessionLauncherCard({
                     "gap-2",
                   )}
                 >
-                  <SessionLauncherButtons
+                  <LauncherActions
+                    placement="launcher-card"
+                    builds={builds}
                     hasSession={hasSession}
                     lastBuild={lastBuild}
                     launcher={launcher}
                     namespace={project.namespace}
                     otherActions={otherLauncherActions}
                     slug={project.slug}
-                    useOldImage={
-                      isCodeEnvironment &&
-                      lastBuild?.status !== "succeeded" &&
-                      !!lastSuccessfulBuild
-                    }
                   />
-                  {isCodeEnvironment &&
-                    lastBuild?.status !== "succeeded" &&
-                    lastSuccessfulBuild && (
-                      <BuildStatusDescription
-                        isOldImage={true}
-                        status={lastSuccessfulBuild?.status}
-                        createdAt={lastSuccessfulBuild?.created_at}
-                        completedAt={
-                          lastSuccessfulBuild?.status === "succeeded"
-                            ? lastSuccessfulBuild?.result?.completed_at
-                            : undefined
-                        }
-                      />
-                    )}
+                  {useOldImage && lastSuccessfulBuild && (
+                    <BuildStatusDescription
+                      isOldImage={true}
+                      status={lastSuccessfulBuild?.status}
+                      createdAt={lastSuccessfulBuild?.created_at}
+                      completedAt={
+                        lastSuccessfulBuild?.status === "succeeded"
+                          ? lastSuccessfulBuild?.result?.completed_at
+                          : undefined
+                      }
+                    />
+                  )}
                 </div>
               )}
             </Col>

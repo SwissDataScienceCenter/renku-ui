@@ -16,37 +16,38 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { Send } from "react-bootstrap-icons";
+import { useCallback, useMemo } from "react";
 import { Button } from "reactstrap";
 
-import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 
-interface SubmitJobLauncherActionProps {
-  launcher: SessionLauncher;
-  disabled?: boolean;
+interface ShowLauncherDetailsButtonProps {
+  launcherId: string;
   className?: string;
 }
 
-export default function SubmitJobLauncherAction({
-  disabled,
+export default function ShowLauncherDetailsButton({
+  launcherId,
   className,
-}: SubmitJobLauncherActionProps) {
+}: ShowLauncherDetailsButtonProps) {
+  const [, setHash] = useLocationHash();
+  const launcherHash = useMemo(() => `launcher-${launcherId}`, [launcherId]);
+  const toggleLauncherView = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === launcherHash;
+      return isOpen ? "" : launcherHash;
+    });
+  }, [launcherHash, setHash]);
+
   return (
-    <>
-      <Button
-        className={cx("text-nowrap", className)}
-        color="primary"
-        data-cy="submit-job-button"
-        onClick={(event) => {
-          event.stopPropagation(); // TODO: implement action when submit a job in other PR
-        }}
-        size="sm"
-        disabled={disabled}
-      >
-        <Send className={cx("bi", "me-1")} />
-        Submit
-      </Button>
-    </>
+    <Button
+      className={className}
+      color="outline-primary"
+      size="sm"
+      onClick={toggleLauncherView}
+      data-cy="open-panel-button"
+    >
+      Show launcher details
+    </Button>
   );
 }

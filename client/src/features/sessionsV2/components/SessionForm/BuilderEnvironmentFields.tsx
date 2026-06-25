@@ -19,7 +19,12 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useContext, useMemo } from "react";
-import { useWatch, type Control, type Path, type FieldErrors } from "react-hook-form";
+import {
+  useWatch,
+  type Control,
+  type FieldErrors,
+  type Path,
+} from "react-hook-form";
 
 import { useProject } from "~/routes/projects/root";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
@@ -131,7 +136,8 @@ export default function BuilderEnvironmentFields({
         {selectedRepositoryIsPrivate && (
           <InfoAlert dismissible={false} timeout={0}>
             This is a private code repository. Only users who have pull (read)
-            access to this code repository will be able to launch {categoryDefinition.text.inline}.
+            access to this code repository will be able to launch{" "}
+            {categoryDefinition.text.inline}.
           </InfoAlert>
         )}
         <CodeRepositoryAdvancedSettings control={control} />
@@ -149,7 +155,7 @@ export default function BuilderEnvironmentFields({
               label="Job command"
               info={ENVIRONMENT_VALUES_DESCRIPTION.command}
               errors={errors}
-              helpText='Enter the command that will run as a job (JSON array format) e.g. ["python","my_repo/main.py"]'
+              helpText='Enter the command that will run as a job (JSON array format) e.g. ["python", "my_repo/main.py"]'
               isOptional={false}
               dataCy="job-command-input"
               id="job-command-input"

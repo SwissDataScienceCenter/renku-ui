@@ -30,7 +30,6 @@ import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
-import Markdown from "~/components/markdown/Markdown";
 import { MoreInfo } from "../../../../components/MoreInfo";
 import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
 import {
@@ -76,7 +75,7 @@ function FormFieldLabel<T extends FieldValues>({
       </Label>
       {info && (
         <MoreInfo>
-          <Markdown>{info}</Markdown>
+          <LazyMarkdown>{info}</LazyMarkdown>
         </MoreInfo>
       )}
       {isOptional && <OptionalLabel />}
@@ -348,6 +347,51 @@ export function AdvancedSettingsFields<
           </div>
         </>
       )}
+      {launcherCategory === "session" && (
+        <>
+          <div className={cx("row", "gy-3", "mb-3")}>
+            <div className={cx("col-12", "col-md-9", "mt-0")}>
+              <FormField<T>
+                control={control}
+                name={"default_url" as Path<T>}
+                label="Default URL"
+                placeholder={DEFAULT_URL}
+                errors={errors}
+                info={ENVIRONMENT_VALUES_DESCRIPTION.urlPath}
+                type="text"
+              />
+            </div>
+            <div className={cx("col-12", "col-md-3", "mt-md-0")}>
+              <FormField<T>
+                control={control}
+                name={"port" as Path<T>}
+                label="Port"
+                isOptional={true}
+                placeholder="e.g. 8080"
+                info={ENVIRONMENT_VALUES_DESCRIPTION.port}
+                type="number"
+                rules={{ min: 1, max: 65535 }}
+              />
+            </div>
+            <div className={cx("col-12")}>
+              <FormField<T>
+                control={control}
+                name={"mount_directory" as Path<T>}
+                label="Mount Directory"
+                isOptional={true}
+                errors={errors}
+                info={ENVIRONMENT_VALUES_DESCRIPTION.mountDirectory}
+                type="text"
+              />
+            </div>
+          </div>
+          <div className="row">
+            <div className={cx("col-12")}>
+              <h3 className={cx("fw-bold")}>Docker settings</h3>
+            </div>
+          </div>
+        </>
+      )}
 
       <div className={cx("row", "gy-3")}>
         {launcherCategory === "session" && (
@@ -399,7 +443,7 @@ export function AdvancedSettingsFields<
             isOptional={true}
             info={ENVIRONMENT_VALUES_DESCRIPTION.command}
             errors={errors}
-            helpText='Please enter a valid JSON array format e.g. ["python","my_repo/main.py"]'
+            helpText='Please enter a valid JSON array format e.g. ["python", "my_repo/main.py"]'
           />
         </div>
         <div className={cx("col-12")}>
