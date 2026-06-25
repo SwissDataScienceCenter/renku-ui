@@ -16,8 +16,29 @@
  * limitations under the License.
  */
 
-import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import type {
+  SessionLauncher,
+  SessionLauncherEnvironmentParams,
+} from "./api/sessionLaunchersV2.api";
 import type { EnvironmentSelectOption } from "./sessionsV2.types";
+
+export function getEnvironmentKindLabel(
+  environment: SessionLauncherEnvironmentParams | undefined,
+): string | null {
+  if (!environment) {
+    return null;
+  }
+  if (environment.environment_kind === "GLOBAL") {
+    return "Global environment";
+  }
+  if (environment.environment_image_source === "build") {
+    return "Code based environment";
+  }
+  if (environment.environment_kind === "CUSTOM") {
+    return "External image environment";
+  }
+  return null;
+}
 
 export function getLauncherEnvironmentSelect(
   launcher: SessionLauncher,

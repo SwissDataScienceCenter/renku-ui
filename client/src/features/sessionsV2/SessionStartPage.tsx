@@ -37,17 +37,12 @@ import ProgressStepsIndicator, {
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import {
-  dataConnectorsOverrideFromConfig,
-  storageDefinitionAfterSavingCredentialsFromConfig,
-} from "../cloudStorage/projectCloudStorage.utils";
-import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
+import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudStorage.utils";
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { resetFavicon, setFavicon } from "../display/displaySlice";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
@@ -56,9 +51,15 @@ import {
 } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
+import SaveCloudStorageCredentials from "./SaveCloudStorageCredentials";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 import { validateEnvVariableName } from "./session.utils";
 import SessionImageModal from "./SessionImageModal";
+import {
+  dataConnectorsNeedCredentials,
+  dataConnectorsShouldSaveCredentials,
+  doesCloudStorageNeedCredentials,
+} from "./sessionLaunchValidation.utils";
 import SessionRepositoriesModal from "./SessionRepositoriesModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
@@ -82,131 +83,28 @@ function SaveCloudStorage({
   startSessionOptionsV2,
 }: SaveCloudStorageProps) {
   const dispatch = useAppDispatch();
-  const [steps, setSteps] = useState<StepsProgressBar[]>([]);
-  const [saveCredentials, saveCredentialsResult] =
-    usePatchDataConnectorsByDataConnectorIdSecretsMutation();
 
-  const credentialsToSave = useMemo(() => {
-    return startSessionOptionsV2.dataConnectors
-      ? startSessionOptionsV2.dataConnectors
-          .filter(shouldCloudStorageSaveCredentials)
-          .map((cs) => ({
-            storageName: cs.dataConnector.name,
-            storageId: cs.dataConnector.id,
-            secrets: cs.sensitiveFieldValues,
-          }))
-      : [];
-  }, [startSessionOptionsV2.dataConnectors]);
-
-  const [results, setResults] = useState<StatusStepProgressBar[]>(
-    credentialsToSave.map(() => StatusStepProgressBar.WAITING),
+  const onComplete = useCallback(
+    (cloudStorageConfigs: SessionStartDataConnectorConfiguration[]) => {
+      dispatch(
+        startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
+          cloudStorageConfigs,
+        ),
+      );
+    },
+    [dispatch],
   );
 
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const theSteps = credentialsToSave.map((cs, i) => ({
-      id: i,
-      status: results[i],
-      step: `Saving credentials for ${cs.storageName}`,
-    }));
-    // TODO: fix react-hooks/set-state-in-effect
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSteps(theSteps);
-  }, [credentialsToSave, results]);
-
-  // Save all the credentials that need to be saved
-  useEffect(() => {
-    if (credentialsToSave.length < 1 || index >= credentialsToSave.length)
-      return;
-    // TODO: fix react-hooks/set-state-in-effect
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setResults((prev) => {
-      const newResults = [...prev];
-      newResults[index] = StatusStepProgressBar.EXECUTING;
-      return newResults;
-    });
-    const storage = credentialsToSave[index];
-    saveCredentials({
-      dataConnectorId: storage.storageId,
-      dataConnectorSecretPatchList: Object.entries(storage.secrets).map(
-        ([key, value]) => ({
-          name: key,
-          value,
-        }),
-      ),
-    });
-  }, [credentialsToSave, index, saveCredentials]);
-
-  useEffect(() => {
-    if (
-      saveCredentialsResult.isUninitialized ||
-      saveCredentialsResult.isLoading
-    )
-      return;
-    if (saveCredentialsResult.data != null) {
-      // TODO: fix react-hooks/set-state-in-effect
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setResults((prev) => {
-        const newResults = [...prev];
-        newResults[index] = StatusStepProgressBar.READY;
-        return newResults;
-      });
-    }
-    if (saveCredentialsResult.error != null) {
-      // TODO: fix react-hooks/set-state-in-effect
-
-      setResults((prev) => {
-        const newResults = [...prev];
-        newResults[index] = StatusStepProgressBar.FAILED;
-        return newResults;
-      });
-    }
-    saveCredentialsResult.reset();
-    setIndex((prev) => prev + 1);
-  }, [index, saveCredentialsResult]);
-
-  useEffect(() => {
-    if (
-      saveCredentialsResult.isLoading ||
-      !startSessionOptionsV2.dataConnectors
-    ) {
-      return;
-    }
-    if (index >= credentialsToSave.length) {
-      const cloudStorageConfigs = startSessionOptionsV2.dataConnectors?.map(
-        (cs) => storageDefinitionAfterSavingCredentialsFromConfig(cs),
-      );
-      if (cloudStorageConfigs)
-        dispatch(
-          startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
-            cloudStorageConfigs,
-          ),
-        );
-    }
-  }, [
-    dispatch,
-    credentialsToSave,
-    index,
-    saveCredentialsResult,
-    startSessionOptionsV2.dataConnectors,
-  ]);
+  if (!startSessionOptionsV2.dataConnectors) {
+    return null;
+  }
 
   return (
-    <div
-      className={cx(
-        progressBoxStyles.progressBoxSmall,
-        progressBoxStyles.progressBoxSmallSteps,
-      )}
-    >
-      <ProgressStepsIndicator
-        description="Saving credentials..."
-        type={ProgressType.Determinate}
-        style={ProgressStyle.Light}
-        title={`Launching session ${launcher.name}`}
-        status={steps}
-      />
-    </div>
+    <SaveCloudStorageCredentials
+      dataConnectors={startSessionOptionsV2.dataConnectors}
+      onComplete={onComplete}
+      title={`Launching session ${launcher.name}`}
+    />
   );
 }
 
@@ -324,36 +222,6 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       </div>
     </div>
   );
-}
-
-function doesCloudStorageNeedCredentials(
-  config: SessionStartDataConnectorConfiguration,
-) {
-  if (!config.active || config.skip) {
-    return false;
-  }
-
-  const sensitiveFields = Object.keys(config.sensitiveFieldValues);
-  const credentialFieldDict = config.savedCredentialFields
-    ? Object.fromEntries(
-        config.savedCredentialFields?.map((field) => [
-          storageSecretNameToFieldName({ name: field }),
-          true,
-        ]),
-      )
-    : {};
-  if (sensitiveFields.every((key) => credentialFieldDict[key] != null)) {
-    return false;
-  }
-  return Object.values(config.sensitiveFieldValues).some(
-    (value) => value === "",
-  );
-}
-
-function shouldCloudStorageSaveCredentials(
-  config: SessionStartDataConnectorConfiguration,
-) {
-  return config.saveCredentials;
 }
 
 interface StartSessionWithCloudStorageModalProps extends StartSessionFromLauncherProps {
@@ -498,12 +366,12 @@ function StartSessionFromLauncher({
     isCustomLaunch: hasCustomQuery,
   });
 
-  const needsCredentials = startSessionOptionsV2.dataConnectors?.some(
-    doesCloudStorageNeedCredentials,
+  const needsCredentials = dataConnectorsNeedCredentials(
+    startSessionOptionsV2.dataConnectors,
   );
 
-  const shouldSaveCredentials = startSessionOptionsV2.dataConnectors?.some(
-    shouldCloudStorageSaveCredentials,
+  const shouldSaveCredentials = dataConnectorsShouldSaveCredentials(
+    startSessionOptionsV2.dataConnectors,
   );
 
   const allDataFetched =

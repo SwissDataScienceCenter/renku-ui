@@ -110,7 +110,7 @@ export default function SessionsV2({ project }: SessionsV2Props) {
       <p className="text-body-secondary">
         {totalSessions > 0
           ? "Launchers are available to everyone who can see the project. Only you can see your running sessions and jobs."
-          : "Define interactive environments in which to do your work and share it  with others."}
+          : "Define interactive or not environments in which to do your work and share it  with others."}
       </p>
       {loading}
       {totalSessions > 0 && !isLoading && (

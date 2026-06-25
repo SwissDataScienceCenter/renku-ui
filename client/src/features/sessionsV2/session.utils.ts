@@ -16,16 +16,23 @@
  * limitations under the License
  */
 
+import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudStorage.utils";
 import { FaviconStatus } from "../display/display.types";
-import type { ResourcePoolWithId } from "./api/computeResources.api";
 import type {
-  LauncherType,
+  ResourceClassWithId,
+  ResourcePoolWithId,
+} from "./api/computeResources.api";
+import type {
   EnvironmentList as SessionEnvironmentList,
   SessionLauncher,
   SessionLauncherEnvironmentParams,
   SessionLauncherEnvironmentPatchParams,
 } from "./api/sessionLaunchersV2.api";
-import type { ImageCheckResponse } from "./api/sessionsV2.api";
+import type {
+  ImageCheckResponse,
+  SessionPostRequest,
+  SessionResponse,
+} from "./api/sessionsV2.api";
 import {
   BUILDER_FRONTEND_COMBINATIONS,
   BUILDER_PLATFORMS,
@@ -34,15 +41,20 @@ import {
   ENV_VARIABLES_RESERVED_PREFIX,
   getCompatibleFrontends,
   LAUNCHER_BY_CATEGORY,
+  SUBMISSION_ID_PATTERN,
+  SUBMISSION_ID_VALIDATION_MESSAGE,
 } from "./session.constants";
 import {
-  EnvironmentSelectOption,
   ImageStatus,
-  LauncherCategory,
-  LauncherCategoryDefinition,
-  SessionLauncherForm,
-  SessionStatusState,
+  SESSION_LAUNCHER_KIND,
+  type EnvironmentSelectOption,
+  type LauncherCategory,
+  type LauncherCategoryDefinition,
+  type SessionLauncherForm,
+  type SessionLauncherKind,
+  type SessionStatusState,
 } from "./sessionsV2.types";
+import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
 
 export function getLauncherCategoryDefinitionByLauncher(
   launcher: SessionLauncher,
@@ -52,10 +64,16 @@ export function getLauncherCategoryDefinitionByLauncher(
     : LAUNCHER_BY_CATEGORY["session"];
 }
 
+export function sessionLauncherKindToCategory(
+  kind: SessionLauncherKind,
+): LauncherCategory {
+  return kind === SESSION_LAUNCHER_KIND.NON_INTERACTIVE ? "job" : "session";
+}
+
 export function getLauncherCategory(
   launcher: SessionLauncher,
 ): LauncherCategory {
-  return isJobLauncher(launcher) ? "job" : "session";
+  return sessionLauncherKindToCategory(launcher.launcher_type);
 }
 
 export function getLauncherCategoryDefinition(
@@ -64,12 +82,14 @@ export function getLauncherCategoryDefinition(
   return LAUNCHER_BY_CATEGORY[category];
 }
 
-export function getLauncherApiType(category: LauncherCategory): LauncherType {
+export function getLauncherApiType(
+  category: LauncherCategory,
+): SessionLauncherKind {
   return getLauncherCategoryDefinition(category).apiType;
 }
 
 export function isJobLauncher(launcher: SessionLauncher): boolean {
-  return launcher.launcher_type === "non-interactive";
+  return launcher.launcher_type === SESSION_LAUNCHER_KIND.NON_INTERACTIVE;
 }
 
 export function isGlobalEnvironmentIncluded(allowedEnvironments: string[]) {
@@ -556,6 +576,95 @@ export function validateEnvVariableName(name: string): true | string {
   return true;
 }
 
+export function validateSubmissionId(value: string): true | string {
+  const trimmed = value?.trim() ?? "";
+  if (!trimmed) {
+    return SUBMISSION_ID_VALIDATION_MESSAGE.required;
+  }
+  if (/\s/.test(trimmed)) {
+    return SUBMISSION_ID_VALIDATION_MESSAGE.pattern;
+  }
+  if (!SUBMISSION_ID_PATTERN.test(trimmed)) {
+    return SUBMISSION_ID_VALIDATION_MESSAGE.pattern;
+  }
+  return true;
+}
+
+export function isSubmissionIdTaken({
+  sessions,
+  launcherId,
+  projectId,
+  submissionId,
+}: {
+  sessions: SessionResponse[] | undefined;
+  launcherId: string;
+  projectId: string;
+  submissionId: string;
+}): boolean {
+  const trimmed = submissionId.trim();
+  if (!trimmed || sessions == null) {
+    return false;
+  }
+  return sessions.some(
+    (session) =>
+      session.launcher_id === launcherId &&
+      session.project_id === projectId &&
+      session.submission_id === trimmed,
+  );
+}
+
+export interface BuildJobSessionPostRequestArgs {
+  launcher: SessionLauncher;
+  submissionId: string;
+  resourceClass: ResourceClassWithId;
+  diskStorage?: number;
+  command?: string;
+  args?: string;
+  dataConnectors?: SessionStartDataConnectorConfiguration[];
+}
+
+export function buildJobSessionPostRequest({
+  launcher,
+  submissionId,
+  resourceClass,
+  diskStorage,
+  command,
+  args,
+  dataConnectors,
+}: BuildJobSessionPostRequestArgs): SessionPostRequest {
+  const commandParsed = safeParseJSONStringArray(command ?? "");
+  const argsParsed = safeParseJSONStringArray(args ?? "");
+
+  if (command?.trim() && !commandParsed.parsed) {
+    throw new Error("Invalid job command format");
+  }
+  if (args?.trim() && !argsParsed.parsed) {
+    throw new Error("Invalid job args format");
+  }
+
+  const request: SessionPostRequest = {
+    launcher_id: launcher.id,
+    submission_id: submissionId.trim(),
+    resource_class_id: resourceClass.id,
+    job_command_override: command?.trim() ? commandParsed.data : undefined,
+    job_args_override: args?.trim() ? argsParsed.data : undefined,
+  };
+
+  if (diskStorage != null && diskStorage !== resourceClass.default_storage) {
+    request.disk_storage = diskStorage;
+  }
+
+  if (dataConnectors?.length) {
+    request.data_connectors_overrides = dataConnectors.flatMap(
+      dataConnectorsOverrideFromConfig,
+    );
+  }
+
+  return request;
+}
+
+export { getLauncherEnvironmentSelect } from "./launcherEnvironment.utils";
+
 export function isImageCompatibleWith(
   image: ImageCheckResponse,
   platform: ResourcePoolWithId["platform"],
@@ -588,4 +697,9 @@ export function getLaunchActionTooltip(
     case "available":
       return undefined;
   }
+}
+
+export function generateSubmissionId(): string {
+  const randomPart = Math.random().toString(36).slice(2, 8);
+  return `run-${randomPart}`;
 }

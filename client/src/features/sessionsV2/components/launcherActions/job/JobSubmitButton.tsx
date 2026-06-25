@@ -17,18 +17,23 @@
  */
 
 import cx from "classnames";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Send } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
+import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import { getLaunchActionTooltip } from "~/features/sessionsV2/session.utils";
 import { ImageStatus } from "~/features/sessionsV2/sessionsV2.types";
+import type { SessionLauncher } from "../../../api/sessionLaunchersV2.api";
+import JobSubmitModal from "../../SessionModals/JobSubmitModal";
 
 interface JobSubmitButtonProps {
   className?: string;
   disabled?: boolean;
   canWriteProject: boolean;
   imageStatus: ImageStatus;
+  launcher: SessionLauncher;
+  project: Project;
 }
 
 export default function JobSubmitButton({
@@ -36,22 +41,31 @@ export default function JobSubmitButton({
   disabled = false,
   imageStatus,
   canWriteProject,
+  launcher,
+  project,
 }: JobSubmitButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const tooltipMessage = getLaunchActionTooltip(
     canWriteProject,
     imageStatus,
     "job",
   );
 
+  const toggleSubmit = useCallback(() => {
+    setIsSubmitOpen((open) => !open);
+  }, []);
+
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
       if (disabled) {
         event.preventDefault();
+        return;
       }
+      toggleSubmit();
     },
-    [disabled],
+    [disabled, toggleSubmit],
   );
 
   return (
@@ -74,6 +88,12 @@ export default function JobSubmitButton({
           {tooltipMessage}
         </UncontrolledTooltip>
       ) : null}
+      <JobSubmitModal
+        isOpen={isSubmitOpen}
+        launcher={launcher}
+        project={project}
+        toggle={toggleSubmit}
+      />
     </>
   );
 }

@@ -27,9 +27,8 @@ export function LauncherActions({
   hasSession,
   lastBuild,
   launcher,
-  namespace,
   otherActions,
-  slug,
+  project,
 }: LauncherActionsProps) {
   const category = getLauncherCategory(launcher);
   return category === "session" ? (
@@ -38,9 +37,8 @@ export function LauncherActions({
       hasSession={hasSession}
       lastBuild={lastBuild}
       launcher={launcher}
-      namespace={namespace}
       otherActions={placement === "launcher-card" && otherActions}
-      slug={slug}
+      project={project}
       displayBuildActions={placement === "launcher-card"}
       alwaysShowLaunchAction={placement === "launcher-side-panel"}
     />
@@ -50,9 +48,8 @@ export function LauncherActions({
       hasSession={hasSession}
       lastBuild={lastBuild}
       launcher={launcher}
-      namespace={namespace}
       otherActions={placement === "launcher-card" && otherActions}
-      slug={slug}
+      project={project}
       displayBuildActions={placement === "launcher-card"}
     />
   );

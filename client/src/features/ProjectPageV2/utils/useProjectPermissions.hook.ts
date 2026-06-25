@@ -30,7 +30,7 @@ interface UseProjectPermissionsArgs {
 export default function useProjectPermissions({
   projectId,
 }: UseProjectPermissionsArgs): PermissionsWithLoadingState {
-  const { currentData, isLoading, isError, isUninitialized } =
+  const { currentData, isLoading, isError, isUninitialized, error } =
     projectV2Api.endpoints.getProjectsByProjectIdPermissions.useQueryState(
       projectId ? { projectId } : skipToken,
     );
@@ -44,17 +44,25 @@ export default function useProjectPermissions({
   }, [fetchPermissions, isUninitialized, projectId]);
 
   const isLoadingPermissions = isLoading || !!(projectId && isUninitialized);
+  const arePermissionsResolved =
+    !isLoadingPermissions && !isError && currentData != null;
 
   if (isLoading || isError || !currentData) {
     return {
       ...DEFAULT_PERMISSIONS,
+      arePermissionsResolved: false,
       isLoadingPermissions,
+      isPermissionsError: isError,
+      permissionsError: isError ? error : undefined,
     };
   }
 
   return {
     ...DEFAULT_PERMISSIONS,
     ...currentData,
+    arePermissionsResolved,
     isLoadingPermissions: false,
+    isPermissionsError: false,
+    permissionsError: undefined,
   };
 }

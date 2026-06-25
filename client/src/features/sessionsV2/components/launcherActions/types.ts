@@ -18,6 +18,7 @@
 
 import type { ReactNode } from "react";
 
+import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import type { Build, SessionLauncher } from "../../api/sessionLaunchersV2.api";
 
 export type LauncherActionPlacement = "launcher-card" | "launcher-side-panel";
@@ -27,16 +28,16 @@ export interface LauncherCardActionsProps {
   hasSession?: boolean;
   lastBuild?: Build;
   launcher: SessionLauncher;
-  namespace: string;
   otherActions?: ReactNode;
-  slug: string;
+  project: Project;
   displayBuildActions?: boolean;
 }
 
-export type LauncherPanelActionsProps = Pick<
-  LauncherCardActionsProps,
-  "hasSession" | "launcher" | "namespace" | "slug"
->;
+export interface LauncherPanelActionsProps {
+  hasSession?: boolean;
+  launcher: SessionLauncher;
+  project: Project;
+}
 
 export interface LauncherActionsProps
   extends LauncherCardActionsProps, LauncherPanelActionsProps {
