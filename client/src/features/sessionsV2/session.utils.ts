@@ -47,6 +47,7 @@ import {
 import {
   ImageStatus,
   SESSION_LAUNCHER_KIND,
+  SessionStopIntent,
   type EnvironmentSelectOption,
   type LauncherCategory,
   type LauncherCategoryDefinition,
@@ -773,19 +774,47 @@ export function toggleLauncherHash(hash: string, launcherId: string): string {
   }
   return buildLauncherHash(launcherId);
 }
+const JOB_STOPPING_TITLE = {
+  cancel: {
+    card: "Canceling my job...",
+    list: "Canceling job...",
+  },
+  dismiss: {
+    card: "Dismissing my job...",
+    list: "Dismissing job...",
+  },
+  default: {
+    card: "Stopping my job...",
+    list: "Stopping job...",
+  },
+} as const;
 
-export function getJobDisabledMessage(
-  useOldImage: boolean,
-  canWriteProject: boolean,
-  isSubmitDisabled: boolean,
-) {
-  return useOldImage
-    ? "Launch job using an older image"
-    : isSubmitDisabled
-      ? `No image available. ${
-          canWriteProject
-            ? "Run the Build action"
-            : "Contact the project administrator "
-        } to generate an image.`
-      : undefined;
+const JOB_STOPPING_BUTTON_LABEL = {
+  cancel: "Canceling job",
+  dismiss: "Dismissing job",
+  default: "Stopping job",
+} as const;
+
+export function deriveSessionStopIntent(
+  state: SessionStatusState,
+): SessionStopIntent {
+  return state === "starting" || state === "running" ? "cancel" : "dismiss";
+}
+
+export function getJobStoppingTitle({
+  variant,
+  stopIntent,
+}: {
+  variant: "card" | "list";
+  stopIntent?: SessionStopIntent | null;
+}): string {
+  const key = stopIntent ?? "default";
+  return JOB_STOPPING_TITLE[key][variant];
+}
+
+export function getJobStoppingButtonLabel(
+  stopIntent?: SessionStopIntent | null,
+): string {
+  const key = stopIntent ?? "default";
+  return JOB_STOPPING_BUTTON_LABEL[key];
 }

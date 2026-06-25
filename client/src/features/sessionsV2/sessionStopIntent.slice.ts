@@ -22,8 +22,8 @@ import type { RootState } from "~/store/store";
 import {
   SessionStopIntent,
   SessionStopIntentState,
-} from "./sessionStopIntent.types";
-import { SessionV2 } from "./sessionsV2.types";
+  SessionV2,
+} from "./sessionsV2.types";
 
 const initialState: SessionStopIntentState = {
   intents: {},

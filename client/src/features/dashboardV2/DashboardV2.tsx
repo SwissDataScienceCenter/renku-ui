@@ -465,7 +465,7 @@ function JobsDashboard() {
   const totalJobs = jobs ? jobs?.length : 0;
   if (totalJobs === 0) return;
   return (
-    <Card data-cy="sessions-container">
+    <Card data-cy="jobs-container">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h2 className={cx("mb-0", "me-2")}>

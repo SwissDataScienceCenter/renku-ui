@@ -196,3 +196,9 @@ export type ImageStatus =
   | "only-old-image-available"
   | "no-available"
   | "available";
+
+export type SessionStopIntent = "cancel" | "dismiss";
+
+export interface SessionStopIntentState {
+  intents: Record<string, SessionStopIntent>;
+}

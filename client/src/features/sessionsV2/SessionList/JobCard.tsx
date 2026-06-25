@@ -69,21 +69,9 @@ export default function JobCard({ project, session, onOpen }: JobCardProps) {
         onOpen && "cursor-pointer",
       )}
       onClick={onOpen ? handleOpen : undefined}
-      onKeyDown={
-        onOpen
-          ? (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                handleOpen();
-              }
-            }
-          : undefined
-      }
       role={onOpen ? "button" : undefined}
       aria-label={
-        onOpen
-          ? `Open job with submission id ${session.submission_id} details`
-          : undefined
+        onOpen ? `View details for job ${session.submission_id}` : undefined
       }
       tabIndex={onOpen ? 0 : undefined}
     >
@@ -103,9 +91,9 @@ export default function JobCard({ project, session, onOpen }: JobCardProps) {
               "mt-lg-0",
             )}
           >
-            <span data-cy="job-submission-id" className={cx("text-truncate")}>
+            <div data-cy="job-submission-id" className="text-truncate">
               {launcherDefinition.text.display}: {session.submission_id}
-            </span>
+            </div>
             <SessionStatusV2Badge session={session} />
           </Col>
           <Col

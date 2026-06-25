@@ -163,10 +163,11 @@ function DashboardSessionStatusRow({ session }: { session: SessionV2 }) {
 
 function DashboardJobStatusRow({ session }: { session: SessionV2 }) {
   return (
-    <div className={cx("d-flex", "gap-2", "align-items-center")}>
-      <span data-cy="job-submission-id" className={cx("text-truncate")}>
-        Job: {session.submission_id}
-      </span>
+    <div
+      className={cx("d-flex", "gap-2", "align-items-center", "text-truncate")}
+      data-cy="job-submission-id"
+    >
+      Job: {session.submission_id}
       <SessionStatusV2Badge session={session} />
     </div>
   );

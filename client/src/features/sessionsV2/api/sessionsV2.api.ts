@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
+import { deriveSessionStopIntent } from "~/features/sessionsV2/session.utils.ts";
 import type { RootState } from "~/store/store";
 import sessionStopIntentSlice from "../sessionStopIntent.slice";
-import { deriveSessionStopIntent } from "../sessionStopIntent.utils";
 import { SESSION_LAUNCHER_KIND, SessionV2 } from "../sessionsV2.types";
 import { sessionsV2GeneratedApi } from "./sessionsV2.generated-api";
 

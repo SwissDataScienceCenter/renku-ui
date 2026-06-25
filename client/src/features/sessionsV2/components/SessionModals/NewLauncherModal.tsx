@@ -65,7 +65,7 @@ export default function NewLauncherModal({
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLElement>, category: LauncherCategory) => {
-      if (event.key === "Enter") {
+      if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         handleSelectCategory(category);
       }

@@ -30,9 +30,8 @@ import { Link } from "react-router";
 import { Button } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
-import type { SessionStopIntent } from "../../sessionStopIntent.types";
-import { getJobStoppingButtonLabel } from "../../sessionStopIntent.utils";
-import { SessionStatusState } from "../../sessionsV2.types";
+import { getJobStoppingButtonLabel } from "~/features/sessionsV2/session.utils.ts";
+import { SessionStatusState, SessionStopIntent } from "../../sessionsV2.types";
 
 export interface ActiveSessionActionContext {
   status: SessionStatusState;

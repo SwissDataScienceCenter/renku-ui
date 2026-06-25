@@ -37,7 +37,7 @@ export default function StopJobContent({ status }: StopJobContentProps) {
       <img
         className={cx("d-flex", "mb-3", "mx-auto")}
         src={deleteJobImage}
-        alt="delete job"
+        alt="Cancel job"
       />
       <p>
         This job is still {stateLabel}. Do you want to cancel it? This will{" "}

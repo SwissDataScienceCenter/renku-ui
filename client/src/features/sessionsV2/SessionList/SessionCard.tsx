@@ -62,18 +62,8 @@ export default function SessionCard({
         "cursor-pointer",
       )}
       onClick={onOpen}
-      onKeyDown={
-        onOpen
-          ? (event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                onOpen();
-              }
-            }
-          : undefined
-      }
       role={onOpen ? "button" : undefined}
-      aria-label={onOpen ? `Open launcher with session details` : undefined}
+      aria-label={onOpen ? "View session details for this launcher" : undefined}
       tabIndex={onOpen ? 0 : undefined}
     >
       {launcherCategory === "session" && (

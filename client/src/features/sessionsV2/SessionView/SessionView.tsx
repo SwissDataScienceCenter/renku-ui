@@ -358,12 +358,12 @@ export function SessionView({
           {description && <p className="m-0">{description}</p>}
 
           <Card>
-            <CardHeader tag="h3">
+            <CardHeader>
               {launcherCategory === "session" ? (
-                <>
+                <h3>
                   <PlayCircle aria-hidden="true" className="me-1" />
                   Launched {launcherDefinition?.text.display}
-                </>
+                </h3>
               ) : (
                 <div
                   className={cx(
@@ -372,10 +372,10 @@ export function SessionView({
                     "align-items-center",
                   )}
                 >
-                  <div>
+                  <h3>
                     <Send className="me-1" aria-hidden="true" />
                     Your submitted jobs
-                  </div>
+                  </h3>
                   {launcher &&
                     launcherCategory === "job" &&
                     totalSession > 0 && (
@@ -391,7 +391,8 @@ export function SessionView({
             </CardHeader>
             <CardBody
               className={cx(
-                launcherCategory === "job" && totalSession > 0 && "pb-0 px-0 ",
+                launcherCategory === "job" &&
+                  totalSession > 0 && ["pb-0", "px-0"],
               )}
             >
               {totalSession > 0 ? (
@@ -737,6 +738,11 @@ function JobListItem({
   const sessionError =
     session?.status?.state === "failed" ? session?.status?.message : undefined;
 
+  const sessionUrl = useMemo(
+    () => getShowSessionUrlByProject(project, session.name),
+    [project, session.name],
+  );
+
   return (
     <AccordionItem data-cy={`session-view-job-${session.submission_id}`}>
       <AccordionHeader targetId={`job-${session.submission_id}`}>
@@ -756,10 +762,7 @@ function JobListItem({
             session={session}
             showInfoDetails={false}
           />
-          <ActiveSessionButton
-            session={session}
-            showSessionUrl={getShowSessionUrlByProject(project, session.name)}
-          />
+          <ActiveSessionButton session={session} showSessionUrl={sessionUrl} />
         </div>
 
         {sessionError && (
@@ -774,12 +777,12 @@ function JobListItem({
           dataCy="session-view-command"
         />
         {!isLoading && resourceRequests && (
-          <>
-            <label className={cx("text-nowrap", "mb-0", "me-2")}>
+          <div className="d-block">
+            <span className={cx("text-nowrap", "mb-0", "me-2")}>
               Resource class:
-            </label>
+            </span>
             <SessionRowResourceRequests resourceRequests={resourceRequests} />
-          </>
+          </div>
         )}
       </AccordionBody>
     </AccordionItem>
@@ -798,25 +801,24 @@ function JobList({ sessions, project, openJobSubmissionId }: JobListProps) {
         : [],
     [resolvedSubmissionId],
   );
+  const noopToggle = useCallback(() => {}, []);
 
   return (
-    <div>
-      <UncontrolledAccordion
-        key={resolvedSubmissionId ?? "none"}
-        className={cx("d-block", styles.jobListAccordion)}
-        defaultOpen={defaultOpenJobs}
-        flush={true}
-        stayOpen={true}
-        toggle={() => {}}
-      >
-        {sessions.map((session) => (
-          <JobListItem
-            key={session.submission_id}
-            session={session}
-            project={project}
-          />
-        ))}
-      </UncontrolledAccordion>
-    </div>
+    <UncontrolledAccordion
+      key={resolvedSubmissionId ?? "none"}
+      className={cx("d-block", styles.jobListAccordion)}
+      defaultOpen={defaultOpenJobs}
+      flush={true}
+      stayOpen={true}
+      toggle={noopToggle}
+    >
+      {sessions.map((session) => (
+        <JobListItem
+          key={session.submission_id}
+          session={session}
+          project={project}
+        />
+      ))}
+    </UncontrolledAccordion>
   );
 }

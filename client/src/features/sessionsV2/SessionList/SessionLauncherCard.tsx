@@ -46,7 +46,7 @@ import {
   getLauncherCategoryDefinition,
   sessionLauncherKindToCategory,
 } from "../session.utils";
-import { SessionV2 } from "../sessionsV2.types";
+import { SESSION_LAUNCHER_KIND, SessionV2 } from "../sessionsV2.types";
 import useLauncherEnvironmentReadiness from "../useLauncherEnvironmentReadiness.hook";
 import SessionCard from "./SessionCard";
 
@@ -169,12 +169,11 @@ export default function SessionLauncherCard({
         <div
           className={cx(hasSession && "border-bottom", "p-3")}
           onClick={toggleSessionView}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              toggleSessionView?.();
-            }
-          }}
+          aria-label={
+            toggleSessionView
+              ? "View session details for this launcher"
+              : undefined
+          }
           role="button"
           tabIndex={0}
         >
@@ -347,7 +346,7 @@ export default function SessionLauncherCard({
             {sessions &&
               sessions?.length > 0 &&
               sessions.map((session) => {
-                if (session.session_type === "interactive")
+                if (session.session_type === SESSION_LAUNCHER_KIND.INTERACTIVE)
                   return (
                     <SessionCard
                       key={`session-item-${session.name}`}
