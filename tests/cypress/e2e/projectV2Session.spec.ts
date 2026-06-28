@@ -57,7 +57,6 @@ describe("launch sessions with data connectors", () => {
         repositoryUrl: "https://domain.name/repo1.git",
       });
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
   });
 
   it("launch session with public data connector", () => {
@@ -136,7 +135,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -245,7 +244,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -336,7 +335,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -399,7 +398,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -438,7 +437,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -490,7 +489,7 @@ describe("launch sessions with data connectors", () => {
     });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -587,7 +586,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -674,7 +673,7 @@ describe("launch sessions with data connectors", () => {
       });
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
+    cy.wait("@readProjectV2WithoutDocumentation");
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@sessionLaunchers");
     cy.wait("@listProjectDataConnectors");
@@ -878,7 +877,6 @@ describe("launch sessions with secrets", () => {
         repositoryUrl: "https://domain.name/repo2.git",
       });
     cy.visit("/p/user1-uuid/test-2-v2-project");
-    cy.wait("@readProjectV2");
   });
 
   it("launch session without secrets", () => {

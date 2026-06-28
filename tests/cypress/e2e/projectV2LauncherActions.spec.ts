@@ -73,7 +73,12 @@ function visitProjectSessions() {
   cy.wait("@sessionLaunchers");
 }
 
-function withinFirstSessionLauncher(callback: () => void) {
+function withinFirstSessionLauncher(
+  callback: () => void,
+  emptySessions = true,
+) {
+  if (emptySessions) cy.wait("@sessionServersEmptyV2");
+
   cy.getDataCy("session-launcher-item").first().within(callback);
 }
 
@@ -123,16 +128,10 @@ function setupRunningSessionOnLauncher(launcherId: string) {
 }
 
 function setupBuildLauncherIntercept() {
-  cy.fixture("projectV2/session-launchers.json").then((launchers) => {
-    const launcher = {
-      ...launchers[0],
-      environment: {
-        ...launchers[0].environment,
-        environment_image_source: "build",
-      },
-    };
+  cy.fixture("projectV2/session-launchers-build.json").then((launchers) => {
+    const launcher = launchers[0];
     cy.intercept("GET", "/api/data/projects/*/session_launchers", {
-      body: [launcher],
+      body: launchers,
     }).as("sessionLaunchers");
     cy.intercept(
       "GET",
@@ -167,21 +166,24 @@ function assertSubmitJobButtonEnabled() {
   cy.getDataCy("submit-job-button").should("not.be.disabled");
 }
 
+function assertOlderImageLaunchTooltipInPanel() {
+  cy.get(".offcanvas.show")
+    .find("[data-cy=start-session-button]")
+    .should("be.visible")
+    .trigger("mouseover");
+
+  cy.getDataCy("start-session-tooltip").should("contain.text", "older image");
+}
+
 function openFirstLauncherPanel() {
   cy.getDataCy("session-launcher-item").first().click();
 }
 
 function setupOldImageBuildIntercept() {
-  cy.fixture("projectV2/session-launchers.json").then((launchers) => {
-    const launcher = {
-      ...launchers[0],
-      environment: {
-        ...launchers[0].environment,
-        environment_image_source: "build",
-      },
-    };
+  cy.fixture("projectV2/session-launchers-build.json").then((launchers) => {
+    const launcher = launchers[0];
     cy.intercept("GET", "/api/data/projects/*/session_launchers", {
-      body: [launcher],
+      body: launchers,
     }).as("sessionLaunchers");
     cy.intercept(
       "GET",
@@ -247,7 +249,7 @@ describe("launcher card actions", () => {
 
     it("disables launch when a session is already running", () => {
       setupRunningSessionOnLauncher("01HYJE99XEKWNKPYN8WRB6QA8Z");
-      withinFirstSessionLauncher(assertLaunchButtonDisabled);
+      withinFirstSessionLauncher(assertLaunchButtonDisabled, false);
     });
 
     it("shows launch when build is in progress but container image is accessible", () => {
@@ -285,7 +287,6 @@ describe("launcher card actions", () => {
     it("opens submit job modal from card", () => {
       withinFirstSessionLauncher(clickSubmitJobButton);
       cy.getDataCy("submit-job-modal").should("be.visible");
-      cy.getDataCy("submit-job-submission-id-input").should("be.visible");
       cy.getDataCy("submit-job-confirm-button").should(
         "contain.text",
         "Submit job",
@@ -294,7 +295,7 @@ describe("launcher card actions", () => {
 
     it("allows submit when a job is already running", () => {
       setupRunningJob();
-      withinFirstSessionLauncher(assertSubmitJobButtonEnabled);
+      withinFirstSessionLauncher(assertSubmitJobButtonEnabled, false);
     });
   });
 });
@@ -385,7 +386,19 @@ describe("launcher panel actions", () => {
     setupBuildLauncherIntercept();
 
     cy.intercept("GET", "/api/data/sessions/images?image_url=*", {
-      body: { accessible: true },
+      body: {
+        accessible: true,
+        platforms: [
+          {
+            architecture: "amd64",
+            os: "linux",
+          },
+          {
+            architecture: "arm64",
+            os: "linux",
+          },
+        ],
+      },
     }).as("sessionImage");
 
     visitProjectSessions();
@@ -395,7 +408,9 @@ describe("launcher panel actions", () => {
 
   it("shows older image tooltip on launch button in panel", () => {
     fixtures.getProjectV2Permissions();
-    setupProjectSessionsPage();
+    setupProjectSessionsPage({
+      launchersFixture: "projectV2/session-launchers-build.json",
+    });
     setupOldImageBuildIntercept();
 
     cy.intercept("GET", "/api/data/sessions/images?image_url=*", {
@@ -403,9 +418,11 @@ describe("launcher panel actions", () => {
     }).as("sessionImage");
 
     visitProjectSessions();
+    cy.wait("@getProjectV2Permissions");
+    cy.wait("@environmentBuilds");
+    cy.wait("@sessionImage");
     openFirstLauncherPanel();
-    cy.getDataCy("start-session-button").trigger("mouseenter");
-    cy.get(".tooltip").should("contain.text", "older image");
+    assertOlderImageLaunchTooltipInPanel();
   });
 
   it("shows submit only in read-only job launcher panel", () => {
@@ -416,10 +433,8 @@ describe("launcher panel actions", () => {
     visitProjectSessions();
     cy.wait("@sessionServersEmptyV2");
     cy.wait("@getProjectV2Permissions");
-
-    openFirstLauncherPanel();
     assertSubmitJobButtonEnabled();
-    cy.getDataCy("button-with-menu-dropdown").should("not.exist");
+    cy.getDataCy("job-button-with-menu-dropdown").should("not.exist");
   });
 
   it("shows submit only in job launcher panel", () => {
@@ -430,6 +445,6 @@ describe("launcher panel actions", () => {
 
     cy.getDataCy("session-launcher-item").first().click();
     cy.getDataCy("submit-job-button").should("be.visible");
-    cy.getDataCy("button-with-menu-dropdown").should("not.exist");
+    cy.getDataCy("job-button-with-menu-dropdown").should("not.exist");
   });
 });

@@ -107,6 +107,9 @@ describe("Set up project components", () => {
       fixture: "projectV2/session-launchers.json",
       name: "session-launchers-custom",
     });
+    cy.intercept("GET", "/api/data/sessions/images?image_url=*", {
+      body: { accessible: true },
+    }).as("sessionImage");
     const customImage = "renku/renkulab-py:latest";
     cy.getDataCy("environment-kind-custom").click();
     cy.getDataCy("custom-image-input")
@@ -150,6 +153,14 @@ describe("Set up project components", () => {
     cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
 
     cy.go("back");
+    cy.url().should("include", "/p/user1-uuid/test-2-v2-project");
+    cy.url().should("not.match", /\/start$/);
+    cy.reload();
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getProjectV2Permissions");
+    cy.wait("@getSessionsV2");
+    cy.wait("@session-launchers-custom");
+    cy.getDataCy("add-launcher").should("be.visible");
 
     // ADD SESSION EXISTING ENVIRONMENT
     cy.openSessionLauncherCreateFlow();
@@ -163,6 +174,7 @@ describe("Set up project components", () => {
     cy.getDataCy("add-launcher-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-global");
+    cy.getDataCy("close-cancel-button").click();
 
     // check session values
     cy.getDataCy("session-launcher-item").within(() => {

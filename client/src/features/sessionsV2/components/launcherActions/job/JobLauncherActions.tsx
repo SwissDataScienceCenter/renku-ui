@@ -150,6 +150,7 @@ export default function JobLauncherActions({
       default={defaultAction}
       preventPropagation
       size="sm"
+      dataCy="job-button-with-menu-dropdown"
     >
       {menuItems}
     </ButtonWithMenuV2>

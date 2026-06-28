@@ -422,27 +422,27 @@ export function getLauncherDefaultValues(
     strip_path_prefix: launcher.environment?.strip_path_prefix ?? false,
     builder_variant:
       launcher.environment.environment_image_source === "build"
-        ? launcher.environment.build_parameters.builder_variant
+        ? launcher.environment.build_parameters?.builder_variant
         : "",
     frontend_variant:
       launcher.environment.environment_image_source === "build"
-        ? launcher.environment.build_parameters.frontend_variant
+        ? launcher.environment.build_parameters?.frontend_variant
         : "",
     repository:
       launcher.environment.environment_image_source === "build"
-        ? launcher.environment.build_parameters.repository
+        ? launcher.environment.build_parameters?.repository
         : "",
     repository_revision:
       launcher.environment.environment_image_source === "build"
-        ? (launcher.environment.build_parameters.repository_revision ?? "")
+        ? (launcher.environment.build_parameters?.repository_revision ?? "")
         : "",
     context_dir:
       launcher.environment.environment_image_source === "build"
-        ? (launcher.environment.build_parameters.context_dir ?? "")
+        ? (launcher.environment.build_parameters?.context_dir ?? "")
         : "",
     platform:
       launcher.environment.environment_image_source === "build"
-        ? (launcher.environment.build_parameters.platforms?.at(0) ?? "")
+        ? (launcher.environment.build_parameters?.platforms?.at(0) ?? "")
         : "",
   };
 }

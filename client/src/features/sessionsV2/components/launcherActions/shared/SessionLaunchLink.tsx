@@ -79,7 +79,14 @@ function SessionLaunchLink({
         {label}
       </Link>
       {tooltipContent ? (
-        <UncontrolledTooltip target={linkRef}>
+        <UncontrolledTooltip
+          target={linkRef}
+          data-cy={
+            isCustomLaunch
+              ? "start-custom-session-tooltip"
+              : "start-session-tooltip"
+          }
+        >
           {tooltipContent}
         </UncontrolledTooltip>
       ) : null}
