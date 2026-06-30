@@ -614,7 +614,11 @@ function GetSessionStatusTextContent({
 
   switch (state) {
     case "running":
-      return (
+      return launcherCategory === "session" ? (
+        <>
+          {text.state.running} {startTimeText}
+        </>
+      ) : (
         <>
           {text.state.running} for {elapsedTimeText}
         </>
@@ -622,7 +626,7 @@ function GetSessionStatusTextContent({
     case "starting":
       return (
         <>
-          {text.state.starting} since {elapsedTimeText}
+          {text.state.starting} since {startTimeText}
         </>
       );
     case "hibernated": {
@@ -638,7 +642,7 @@ function GetSessionStatusTextContent({
               noCaption
               suffix=" "
               prefix=""
-              includeRelativeSuffix={false}
+              removeRelativeSuffix="future"
             />
           </>
         );
@@ -648,12 +652,12 @@ function GetSessionStatusTextContent({
       if (hibernationTimestamp) {
         return (
           <>
-            {text.state.hibernated}{" "}
+            {text.state.hibernated}
+            {" for "}
             <TimeCaption
               datetime={hibernationTimestamp}
               enableTooltip
               noCaption
-              includeRelativeSuffix={false}
             />
           </>
         );
@@ -701,7 +705,7 @@ function SessionStatusV2Text({
       datetime={startTimestamp}
       enableTooltip
       noCaption
-      includeRelativeSuffix={false}
+      removeRelativeSuffix="past"
     />
   );
 

@@ -45,7 +45,6 @@ function formatDurationUnitLabel({
 /**
  * Converts a duration-like object to a human-readable string.
  * @param duration a Duration instance or a number of seconds
- * @param format use short unit labels (e.g. "min", "s") or long labels (e.g. "minutes", "seconds")
  * @returns a human-readable string
  */
 export function toHumanDuration({
@@ -148,23 +147,24 @@ export function toShortHumanDuration({
   return toHumanDuration({ duration });
 }
 
+export type RemoveSuffix = "past" | "future" | false;
+
 /**
  * Converts a datetime-like object to a human-readable string relative to the current instant,
  * e.g. "3 minutes ago", "2 days from now".
  * @param datetime a DateTime instance, a Date instance or an ISO 8601 string
  * @param now the current instant
- * @param format use short unit labels (e.g. "3min ago") or long labels (e.g. "3 minutes ago")
- * @param includeSuffix when false, returns only the duration (e.g. "3 minutes") without "ago" or "from now"
- * @returns a human-readable string
+ * @param removeSuffix when "past" or "future", omits the suffix only if datetime is on that
+ *   side of now; otherwise keeps the suffix to surface unexpected timestamp
  */
 export function toHumanRelativeDuration({
   datetime: datetime_,
   now: now_,
-  includeSuffix = true,
+  removeSuffix = false,
 }: {
   datetime: DateTime | Date | string;
   now: DateTime | Date;
-  includeSuffix?: boolean;
+  removeSuffix?: RemoveSuffix;
 }): string {
   const datetime = ensureDateTime(datetime_);
   const now = ensureDateTime(now_);
@@ -176,15 +176,23 @@ export function toHumanRelativeDuration({
   const duration = now.diff(datetime);
 
   const seconds = Math.abs(duration.as("seconds"));
-  if (seconds < 1) {
+  if (seconds < 1 && removeSuffix === false) {
     return "just now";
   }
 
   const durationStr = toHumanDuration({ duration });
-  if (!includeSuffix) {
+  const isPast = duration.valueOf() > 0;
+  const shouldRemoveSuffix =
+    removeSuffix === "past"
+      ? isPast
+      : removeSuffix === "future"
+        ? !isPast
+        : false;
+
+  if (shouldRemoveSuffix) {
     return durationStr;
   }
 
-  const suffix = duration.valueOf() > 0 ? "ago" : "from now";
+  const suffix = isPast ? "ago" : "from now";
   return `${durationStr} ${suffix}`;
 }

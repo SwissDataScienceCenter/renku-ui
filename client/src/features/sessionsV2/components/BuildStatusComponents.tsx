@@ -144,7 +144,7 @@ export function BuildStatusDescription({
       datetime={createdAt}
       enableTooltip
       noCaption
-      includeRelativeSuffix={false}
+      removeRelativeSuffix={"past"}
     />
   );
 

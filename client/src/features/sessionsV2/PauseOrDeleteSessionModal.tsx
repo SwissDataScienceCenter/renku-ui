@@ -286,7 +286,7 @@ function PauseSessionModalContent({
               noCaption
               prefix=""
               enableTooltip
-              includeRelativeSuffix={false}
+              removeRelativeSuffix="future"
             />{" "}
             if you are inactive.
           </InfoAlert>
