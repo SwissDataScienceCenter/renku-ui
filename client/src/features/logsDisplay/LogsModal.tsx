@@ -48,6 +48,7 @@ import useRenkuToast from "~/components/toast/useRenkuToast";
 import { generateZip } from "~/utils/helpers/HelperFunctions";
 import { getSessionStatusStyles } from "../sessionsV2/components/SessionStatus/SessionStatus";
 import type { SessionV2 } from "../sessionsV2/sessionsV2.types";
+import ColoredLogs from "./ColoredLogs";
 
 interface LogsQuery {
   data?: Record<string, string | undefined> | undefined;
@@ -270,7 +271,11 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
                 style={{ whiteSpace: "pre-line", maxHeight: "60vh" }}
                 ref={activeTab === tab ? preRef : undefined}
               >
-                {content ? content : <i>Empty log file</i>}
+                {content ? (
+                  <ColoredLogs>{content}</ColoredLogs>
+                ) : (
+                  <i>Empty log file</i>
+                )}
               </pre>
             </div>
           </TabPane>
