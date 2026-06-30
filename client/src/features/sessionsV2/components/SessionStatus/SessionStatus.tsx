@@ -49,7 +49,6 @@ import { selectSessionStopIntent } from "~/features/sessionsV2/sessionStopIntent
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
-import { DurationFormat } from "../../../../utils/helpers/DurationUtils";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   JOB_TITLE,
@@ -460,7 +459,6 @@ export function SessionStatusV2Description({
           jobCompletedAt={job_completed_at}
           status={status}
           launcherCategory={launcherCategory}
-          format="short"
           includeIcon={includeIcon}
         />
       )}
@@ -571,7 +569,6 @@ interface SessionStatusV2TextProps {
   jobCompletedAt?: string | null;
   status: SessionStatus;
   launcherCategory: LauncherCategory;
-  format?: DurationFormat;
   includeIcon?: boolean;
 }
 
@@ -580,7 +577,6 @@ interface SessionStatusTextPartsProps {
   launcherCategory: LauncherCategory;
   launcherCategoryDefinition: LauncherCategoryDefinition;
   status: SessionStatus;
-  format: DurationFormat;
   startTimestamp: string;
   jobCompletedAt?: string | null;
   startTimeText: ReactNode;
@@ -623,7 +619,6 @@ function GetSessionStatusTextContent({
   launcherCategory,
   launcherCategoryDefinition,
   status,
-  format,
   startTimeText,
   elapsedTimeText,
 }: SessionStatusTextPartsProps) {
@@ -655,7 +650,6 @@ function GetSessionStatusTextContent({
               noCaption
               suffix=" "
               prefix=""
-              format={format}
               includeRelativeSuffix={false}
             />
           </>
@@ -669,7 +663,6 @@ function GetSessionStatusTextContent({
             {text.state.hibernated}{" "}
             <TimeCaption
               datetime={hibernationTimestamp}
-              format={format}
               enableTooltip
               noCaption
               includeRelativeSuffix={false}
@@ -707,24 +700,17 @@ function SessionStatusV2Text({
   jobCompletedAt,
   status,
   launcherCategory,
-  format = "long",
   includeIcon = true,
 }: SessionStatusV2TextProps) {
   const { state } = status;
   const launcherCategoryDefinition =
     getLauncherCategoryDefinition(launcherCategory);
   const startTimeText = (
-    <TimeCaption
-      datetime={startTimestamp}
-      format={format}
-      enableTooltip
-      noCaption
-    />
+    <TimeCaption datetime={startTimestamp} enableTooltip noCaption />
   );
   const elapsedTimeText = (
     <TimeCaption
       datetime={startTimestamp}
-      format={format}
       enableTooltip
       noCaption
       includeRelativeSuffix={false}
@@ -736,7 +722,6 @@ function SessionStatusV2Text({
     launcherCategory,
     launcherCategoryDefinition,
     status,
-    format,
     startTimestamp,
     jobCompletedAt,
     startTimeText,

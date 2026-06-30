@@ -32,31 +32,13 @@ const DURATION_ORDERED_DISPLAY_UNITS = [
 
 type DisplayDurationUnit = (typeof DURATION_ORDERED_DISPLAY_UNITS)[number];
 
-export type DurationFormat = "short" | "long";
-
-const SHORT_DURATION_UNIT_LABELS: Record<DisplayDurationUnit, string> = {
-  years: "yr",
-  months: "mo",
-  weeks: "w",
-  days: "d",
-  hours: "h",
-  minutes: "min",
-  seconds: "s",
-};
-
 function formatDurationUnitLabel({
   unit,
   rescaled,
-  format,
 }: {
   unit: DisplayDurationUnit;
   rescaled: number;
-  format: DurationFormat;
 }): string {
-  if (format === "short") {
-    return SHORT_DURATION_UNIT_LABELS[unit];
-  }
-
   return rescaled < 2 ? unit.slice(0, -1) : unit;
 }
 
@@ -68,10 +50,8 @@ function formatDurationUnitLabel({
  */
 export function toHumanDuration({
   duration: duration_,
-  format = "long",
 }: {
   duration: Duration | number;
-  format?: DurationFormat;
 }): string {
   const duration = ensureDuration(duration_);
 
@@ -83,11 +63,11 @@ export function toHumanDuration({
   const rescaled = Math.floor(Math.abs(duration.as(unit)));
 
   if (unit === "seconds" && rescaled < 1) {
-    return format === "short" ? "< 1s" : "< 1 second";
+    return "< 1 second";
   }
 
-  const unitStr = formatDurationUnitLabel({ unit, rescaled, format });
-  return format === "long" ? `${rescaled} ${unitStr}` : `${rescaled}${unitStr}`;
+  const unitStr = formatDurationUnitLabel({ unit, rescaled });
+  return `${rescaled} ${unitStr}`;
 }
 
 /**
@@ -180,12 +160,10 @@ export function toShortHumanDuration({
 export function toHumanRelativeDuration({
   datetime: datetime_,
   now: now_,
-  format = "long",
   includeSuffix = true,
 }: {
   datetime: DateTime | Date | string;
   now: DateTime | Date;
-  format?: DurationFormat;
   includeSuffix?: boolean;
 }): string {
   const datetime = ensureDateTime(datetime_);
@@ -202,7 +180,7 @@ export function toHumanRelativeDuration({
     return "just now";
   }
 
-  const durationStr = toHumanDuration({ duration, format });
+  const durationStr = toHumanDuration({ duration });
   if (!includeSuffix) {
     return durationStr;
   }

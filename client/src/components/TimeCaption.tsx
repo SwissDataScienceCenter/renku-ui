@@ -34,7 +34,6 @@ interface TimeCaptionProps {
   noCaption?: boolean;
   prefix?: ReactNode;
   suffix?: ReactNode;
-  format?: "long" | "short";
   includeRelativeSuffix?: boolean;
 }
 
@@ -45,7 +44,6 @@ export function TimeCaption({
   noCaption,
   prefix,
   suffix,
-  format = "long",
   includeRelativeSuffix = true,
 }: TimeCaptionProps) {
   const [now, setNow] = useState<DateTime>(DateTime.utc());
@@ -56,7 +54,6 @@ export function TimeCaption({
       ? toHumanRelativeDuration({
           datetime,
           now,
-          format,
           includeSuffix: includeRelativeSuffix,
         })
       : "at unknown time";
