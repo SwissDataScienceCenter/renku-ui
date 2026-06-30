@@ -59,7 +59,7 @@ interface ColoredLogLineProps {
 function ColoredLogLine({ children }: ColoredLogLineProps) {
   const parsedLine = useMemo(() => {
     try {
-      // throw new Error("boo");
+      // eslint-disable-next-line spellcheck/spell-checker
       return Anser.ansiToJson(children, {
         json: true,
         remove_empty: true,
@@ -70,7 +70,7 @@ function ColoredLogLine({ children }: ColoredLogLineProps) {
     }
   }, [children]);
 
-  // Display the unparsed line if we failed to parse the ANSI escape codes
+  // Display the raw line if we failed to parse the ANSI escape codes
   if (parsedLine == null) {
     return children;
   }
