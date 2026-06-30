@@ -49,15 +49,10 @@ import { selectSessionStopIntent } from "~/features/sessionsV2/sessionStopIntent
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
-import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
-import {
-  DurationFormat,
-  toHumanDuration,
-} from "../../../../utils/helpers/DurationUtils";
+import { DurationFormat } from "../../../../utils/helpers/DurationUtils";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import {
   JOB_TITLE,
-  JOB_TITLE_DASHBOARD,
   SESSION_STATES,
   SESSION_STYLES,
   SESSION_TITLE,
@@ -274,7 +269,7 @@ function BuildSessionStatusBadge({
     case "starting":
       return (
         <LoaderStatusBadge
-          label={`${text.state.starting} ${launcherCategory === "session" && text.display}`}
+          label={`${text.state.starting} ${launcherCategory === "session" ? text.inline : ""}`}
         />
       );
 
@@ -351,14 +346,14 @@ function resolveSessionStatusLabel({
     return getJobStoppingTitle({ variant, stopIntent });
   }
 
-  const titles =
-    variant === "list"
-      ? launcherCategory === "session"
-        ? SESSION_TITLE_DASHBOARD
-        : JOB_TITLE_DASHBOARD
-      : launcherCategory === "session"
-        ? SESSION_TITLE
-        : JOB_TITLE;
+  const isSessionLauncher = launcherCategory === "session";
+  const isListVariant = variant === "list";
+
+  const titles = isSessionLauncher
+    ? isListVariant
+      ? SESSION_TITLE_DASHBOARD
+      : SESSION_TITLE
+    : JOB_TITLE;
 
   return titles[state] ?? titles.default;
 }
@@ -580,25 +575,6 @@ interface SessionStatusV2TextProps {
   includeIcon?: boolean;
 }
 
-function getJobRunningDuration({
-  startTimestamp,
-  jobCompletedAt,
-  format,
-}: {
-  startTimestamp: string;
-  jobCompletedAt: string;
-  format: DurationFormat;
-}): string | null {
-  const start = ensureDateTime(startTimestamp);
-  const end = ensureDateTime(jobCompletedAt);
-
-  if (!start.isValid || !end.isValid) {
-    return null;
-  }
-
-  return toHumanDuration({ duration: end.diff(start), format });
-}
-
 interface SessionStatusTextPartsProps {
   state: SessionStatusState;
   launcherCategory: LauncherCategory;
@@ -648,8 +624,6 @@ function GetSessionStatusTextContent({
   launcherCategoryDefinition,
   status,
   format,
-  startTimestamp,
-  jobCompletedAt,
   startTimeText,
   elapsedTimeText,
 }: SessionStatusTextPartsProps) {
@@ -722,19 +696,7 @@ function GetSessionStatusTextContent({
         </>
       );
     case "succeeded":
-      if (startTimestamp && jobCompletedAt) {
-        return (
-          <>
-            Completed{" "}
-            {getJobRunningDuration({
-              startTimestamp,
-              jobCompletedAt,
-              format,
-            }) ?? text.state.succeeded}
-          </>
-        );
-      }
-      return text.state.succeeded;
+      return <>Completed {startTimeText}</>;
     default:
       return null;
   }

@@ -125,15 +125,6 @@ export const SESSION_TITLE = {
   [SESSION_STATES.SUCCEEDED]: "Session succeeded (TBD)",
   default: "Unknown status",
 };
-export const JOB_TITLE = {
-  [SESSION_STATES.RUNNING]: "My running job",
-  [SESSION_STATES.STARTING]: "Starting job...",
-  [SESSION_STATES.STOPPING]: "Dismissing my job...",
-  [SESSION_STATES.HIBERNATED]: "Paused job",
-  [SESSION_STATES.FAILED]: "Errored job", //eslint-disable-line spellcheck/spell-checker
-  [SESSION_STATES.SUCCEEDED]: "Completed job",
-  default: "Unknown status",
-};
 
 export const SESSION_TITLE_DASHBOARD = {
   [SESSION_STATES.RUNNING]: "Running session",
@@ -145,7 +136,7 @@ export const SESSION_TITLE_DASHBOARD = {
   default: "Unknown status",
 };
 
-export const JOB_TITLE_DASHBOARD = {
+export const JOB_TITLE = {
   [SESSION_STATES.RUNNING]: "Running job",
   [SESSION_STATES.STARTING]: "Submitting job",
   [SESSION_STATES.STOPPING]: "Dismissing job...",
