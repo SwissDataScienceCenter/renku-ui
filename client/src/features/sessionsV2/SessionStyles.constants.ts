@@ -139,7 +139,7 @@ export const SESSION_TITLE_DASHBOARD = {
 export const JOB_TITLE = {
   [SESSION_STATES.RUNNING]: "Running job",
   [SESSION_STATES.STARTING]: "Submitting job",
-  [SESSION_STATES.STOPPING]: "Dismissing job...",
+  [SESSION_STATES.STOPPING]: "Removing my job...",
   [SESSION_STATES.HIBERNATED]: "Paused job",
   [SESSION_STATES.FAILED]: "Errored job", //eslint-disable-line spellcheck/spell-checker
   [SESSION_STATES.SUCCEEDED]: "Completed job",

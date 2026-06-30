@@ -16,39 +16,7 @@
  * limitations under the License.
  */
 
-import { deriveSessionStopIntent } from "~/features/sessionsV2/session.utils.ts";
-import type { RootState } from "~/store/store";
-import sessionStopIntentSlice from "../sessionStopIntent.slice";
-import { SESSION_LAUNCHER_KIND, SessionV2 } from "../sessionsV2.types";
 import { sessionsV2GeneratedApi } from "./sessionsV2.generated-api";
-
-function findSessionInCache(
-  state: RootState,
-  sessionId: string,
-): SessionV2 | undefined {
-  const fromDetail =
-    sessionsV2GeneratedApi.endpoints.getSessionsBySessionId.select({
-      sessionId,
-    })(state).data;
-
-  if (fromDetail) {
-    return fromDetail;
-  }
-
-  const queries = state.sessionsV2Api.queries as Record<
-    string,
-    { data?: SessionV2[] }
-  >;
-
-  for (const query of Object.values(queries)) {
-    const session = query.data?.find(({ name }) => name === sessionId);
-    if (session) {
-      return session;
-    }
-  }
-
-  return undefined;
-}
 
 // Adds tag handling for cache management
 const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
@@ -65,32 +33,12 @@ const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
               "Session",
             ]
           : ["Session"],
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          if (data) {
-            dispatch(sessionStopIntentSlice.actions.syncWithSessions(data));
-          }
-        } catch {
-          // Ignore query errors when syncing stop intent.
-        }
-      },
     },
     getSessionsBySessionId: {
       providesTags: (result) =>
         result
           ? [{ id: result.name, type: "Session" }, "Session"]
           : ["Session"],
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          if (data) {
-            dispatch(sessionStopIntentSlice.actions.syncWithSession(data));
-          }
-        } catch {
-          // Ignore query errors when syncing stop intent.
-        }
-      },
     },
     postSessions: {
       invalidatesTags: ["Session"],
@@ -101,31 +49,6 @@ const withTagHandling = sessionsV2GeneratedApi.enhanceEndpoints({
     },
     deleteSessionsBySessionId: {
       invalidatesTags: ["Session"],
-      async onQueryStarted(
-        { sessionId },
-        { dispatch, getState, queryFulfilled },
-      ) {
-        const session = findSessionInCache(getState() as RootState, sessionId);
-
-        if (session?.session_type === SESSION_LAUNCHER_KIND.NON_INTERACTIVE) {
-          dispatch(
-            sessionStopIntentSlice.actions.setSessionStopIntent({
-              sessionId,
-              intent: deriveSessionStopIntent(session.status.state),
-            }),
-          );
-        }
-
-        try {
-          await queryFulfilled;
-        } catch {
-          dispatch(
-            sessionStopIntentSlice.actions.clearSessionStopIntent({
-              sessionId,
-            }),
-          );
-        }
-      },
     },
     getSessionsBySessionIdLogs: {
       transformResponse: (result: unknown) => {

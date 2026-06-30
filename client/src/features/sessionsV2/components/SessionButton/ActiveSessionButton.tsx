@@ -46,10 +46,8 @@ import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
 import StopJobContent from "~/features/sessionsV2/components/SessionModals/StopJobContent";
-import { selectSessionStopIntent } from "~/features/sessionsV2/sessionStopIntent.slice";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
-import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
@@ -195,9 +193,6 @@ export default function ActiveSessionButton({
   const [stopSession, { error: errorStopSession }] = useStopSessionMutation();
   // Optimistically show a session as "stopping" when triggered from the UI
   const [isStopping, setIsStopping] = useState<boolean>(false);
-  const stopIntent = useAppSelector((state) =>
-    selectSessionStopIntent(state, session.name),
-  );
   const onStopSession = useCallback(() => {
     stopSession({ sessionId: session.name });
     // TODO: fix react-hooks/set-state-in-effect
@@ -293,7 +288,6 @@ export default function ActiveSessionButton({
     onResumeSession,
     toggleLogsModal,
     toggleModifySession,
-    stopIntent,
   };
 
   const defaultAction =

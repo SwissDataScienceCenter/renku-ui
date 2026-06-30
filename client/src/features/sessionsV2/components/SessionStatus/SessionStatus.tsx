@@ -40,13 +40,11 @@ import {
 } from "reactstrap";
 
 import {
-  getJobStoppingButtonLabel,
-  getJobStoppingTitle,
   getLauncherCategoryDefinition,
+  JOB_STOPPING_BUTTON_LABEL,
+  JOB_STOPPING_TITLE,
   sessionLauncherKindToCategory,
 } from "~/features/sessionsV2/session.utils";
-import { selectSessionStopIntent } from "~/features/sessionsV2/sessionStopIntent.slice";
-import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
@@ -63,7 +61,6 @@ import {
   SessionLauncherKind,
   SessionStatus,
   SessionStatusState,
-  SessionStopIntent,
   SessionV2,
 } from "../../sessionsV2.types";
 
@@ -311,9 +308,6 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
   const state = status.state;
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
-  const stopIntent = useAppSelector((reduxState) =>
-    selectSessionStopIntent(reduxState, session.name),
-  );
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
@@ -322,7 +316,7 @@ export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
         launcherCategory={launcherCategory}
         launcherDefinition={launcherDefinition}
         image={image}
-        jobStoppingBadgeLabel={getJobStoppingButtonLabel(stopIntent)}
+        jobStoppingBadgeLabel={JOB_STOPPING_BUTTON_LABEL}
       />
     </div>
   );
@@ -332,17 +326,15 @@ function resolveSessionStatusLabel({
   state,
   variant,
   sessionType,
-  stopIntent,
 }: {
   state: SessionStatusState;
   variant: "card" | "list";
   sessionType: SessionLauncherKind;
-  stopIntent: SessionStopIntent | null;
 }): string {
   const launcherCategory = sessionLauncherKindToCategory(sessionType);
 
   if (state === "stopping" && launcherCategory === "job") {
-    return getJobStoppingTitle({ variant, stopIntent });
+    return JOB_STOPPING_TITLE[variant];
   }
 
   const isSessionLauncher = launcherCategory === "session";
@@ -404,14 +396,10 @@ export function SessionStatusV2Label({
   const { status, image } = session;
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   const styles = getSessionStatusStyles({ status, image }, launcherCategory);
-  const stopIntent = useAppSelector((state) =>
-    selectSessionStopIntent(state, session.name),
-  );
   const statusLabel = resolveSessionStatusLabel({
     state: status.state,
     variant,
     sessionType: session.session_type,
-    stopIntent,
   });
 
   return (
