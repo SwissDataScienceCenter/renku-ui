@@ -100,10 +100,13 @@ export default function LogsModal({
               "fs-4",
               "fst-italic",
               "mb-0",
-              getSessionStatusStyles({
-                status: { state: sessionState },
-                image: "url",
-              })["textColorCard"],
+              getSessionStatusStyles(
+                {
+                  status: { state: sessionState },
+                  image: "url",
+                },
+                "session",
+              )["textColorCard"],
             )}
           >
             Session status: {sessionState}

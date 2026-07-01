@@ -59,6 +59,13 @@ const CONTEXT_STRINGS = {
     testError:
       "The data connector could not be mounted. Please retry with different credentials, or skip the data connector. If you skip, the data connector will not be mounted in the session.",
   },
+  job: {
+    continueButton: "Continue",
+    dataCy: "job-data-connector-credentials-modal",
+    header: "Job Storage Credentials",
+    testError:
+      "The data connector could not be mounted. Please retry with different credentials, or skip the data connector. If you skip, the data connector will not be mounted in the job.",
+  },
   storage: {
     continueButton: "Test and Save",
     dataCy: "data-connector-credentials-modal",
@@ -158,7 +165,7 @@ function DataConnectorSecrets({
 }
 
 interface DataConnectorSecretsModalProps {
-  context?: "session" | "storage";
+  context?: "session" | "job" | "storage";
   isOpen: boolean;
   onCancel: () => void;
   onStart: (dataConnectorConfigs: DataConnectorConfiguration[]) => void;
@@ -352,7 +359,9 @@ function CredentialsButtons({
         <XLg className={cx("bi", "me-1")} />
         Cancel
       </Button>
-      {context === "session" && <SkipConnectionTestButton onSkip={onSkip} />}
+      {(context === "session" || context === "job") && (
+        <SkipConnectionTestButton context={context} onSkip={onSkip} />
+      )}
       {context === "storage" && (
         <ClearCredentialsButton
           onSkip={onSkip}
@@ -612,9 +621,11 @@ function SensitiveFieldInput({
 }
 
 function SkipConnectionTestButton({
+  context,
   onSkip,
-}: Pick<CredentialsButtonsProps, "onSkip">) {
+}: Pick<CredentialsButtonsProps, "context" | "onSkip">) {
   const skipButtonRef = useRef<HTMLAnchorElement>(null);
+  const targetLabel = context === "job" ? "job" : "session";
   return (
     <>
       <span ref={skipButtonRef}>
@@ -624,7 +635,7 @@ function SkipConnectionTestButton({
         </Button>
       </span>
       <UncontrolledTooltip target={skipButtonRef}>
-        Skip the data connector. It will not be mounted in the session.
+        {`Skip the data connector. It will not be mounted in the ${targetLabel}.`}
       </UncontrolledTooltip>
     </>
   );

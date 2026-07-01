@@ -53,19 +53,30 @@ import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 interface SessionRepositoriesModalProps {
   isOpen: boolean;
   project: Project;
+  onSkip?: () => void;
+  onCancel?: () => void;
+  continueLabel?: string;
+  title?: string;
+  warningIntro?: string;
 }
 export default function SessionRepositoriesModal({
   isOpen,
   project,
+  onSkip: onSkipProp,
+  onCancel: onCancelProp,
+  continueLabel = "Launch anyway",
+  title = "Session repositories not accessible",
+  warningIntro = "your attention before launching the session",
 }: SessionRepositoriesModalProps) {
   const navigate = useNavigate();
-  const onCancel = useCallback(() => {
+  const defaultOnCancel = useCallback(() => {
     const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
       namespace: project.namespace,
       slug: project.slug,
     });
     navigate(url);
   }, [navigate, project.namespace, project.slug]);
+  const onCancel = onCancelProp ?? defaultOnCancel;
 
   const projectPermissions = useProjectPermissions({ projectId: project.id });
   const { data, error, isLoading } = useGetRepositoriesQuery(
@@ -85,9 +96,10 @@ export default function SessionRepositoriesModal({
   }, [data, isLoading, projectPermissions?.write]);
 
   const dispatch = useAppDispatch();
-  const onSkip = useCallback(() => {
+  const defaultOnSkip = useCallback(() => {
     dispatch(startSessionOptionsV2Slice.actions.setRepositoriesReady(true));
   }, [dispatch]);
+  const onSkip = onSkipProp ?? defaultOnSkip;
 
   const content =
     isLoading || !data ? (
@@ -107,7 +119,7 @@ export default function SessionRepositoriesModal({
           {repoWithInterruptions.length === 1
             ? `is ${repoWithInterruptions.length} repository that requires`
             : `are ${repoWithInterruptions.length} repositories that require`}{" "}
-          your attention before launching the session:
+          your attention {warningIntro}:
         </p>
         <ListGroup>
           {repoWithInterruptions.map((repository) => (
@@ -129,7 +141,7 @@ export default function SessionRepositoriesModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader tag="h2">Session repositories not accessible</ModalHeader>
+      <ModalHeader tag="h2">{title}</ModalHeader>
       <ModalBody>{content}</ModalBody>
       <ModalFooter>
         <Button
@@ -146,7 +158,7 @@ export default function SessionRepositoriesModal({
           onClick={onSkip}
         >
           <SkipForward className={cx("bi", "me-1")} />
-          Launch anyway
+          {continueLabel}
         </Button>
       </ModalFooter>
     </ScrollableModal>

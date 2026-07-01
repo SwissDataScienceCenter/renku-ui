@@ -234,6 +234,62 @@ describe("toHumanRelativeDuration", () => {
 
     expect(relativeStr).toBe("just now");
   });
+
+  it('omits suffix for a datetime in the past when removeSuffix is "past"', () => {
+    const duration = Duration.fromObject({ seconds: 195 });
+    const datetime = DateTime.utc().minus(duration);
+    const now = DateTime.utc();
+
+    const relativeStr = toHumanRelativeDuration({
+      datetime,
+      now,
+      removeSuffix: "past",
+    });
+
+    expect(relativeStr).toBe("3 minutes");
+  });
+
+  it('keeps suffix for a datetime in the future when removeSuffix is "past"', () => {
+    const duration = Duration.fromObject({ seconds: 195 });
+    const datetime = DateTime.utc().plus(duration);
+    const now = DateTime.utc();
+
+    const relativeStr = toHumanRelativeDuration({
+      datetime,
+      now,
+      removeSuffix: "past",
+    });
+
+    expect(relativeStr).toBe("3 minutes from now");
+  });
+
+  it('omits suffix for a datetime in the future when removeSuffix is "future"', () => {
+    const duration = Duration.fromObject({ seconds: 195 });
+    const datetime = DateTime.utc().plus(duration);
+    const now = DateTime.utc();
+
+    const relativeStr = toHumanRelativeDuration({
+      datetime,
+      now,
+      removeSuffix: "future",
+    });
+
+    expect(relativeStr).toBe("3 minutes");
+  });
+
+  it('keeps suffix for a datetime in the past when removeSuffix is "future"', () => {
+    const duration = Duration.fromObject({ seconds: 195 });
+    const datetime = DateTime.utc().minus(duration);
+    const now = DateTime.utc();
+
+    const relativeStr = toHumanRelativeDuration({
+      datetime,
+      now,
+      removeSuffix: "future",
+    });
+
+    expect(relativeStr).toBe("3 minutes ago");
+  });
 });
 
 describe("toFullHumanDuration", () => {
