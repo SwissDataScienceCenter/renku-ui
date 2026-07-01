@@ -65,7 +65,7 @@ export function initClientSideSentry(params: AppParams) {
     input: RequestInfo | URL,
     init?: RequestInit,
   ): Promise<Response> {
-    if (!isSameOrigin(input, init)) {
+    if (!isSameOrigin(input)) {
       return origFetch(input, init);
     }
 
@@ -76,8 +76,9 @@ export function initClientSideSentry(params: AppParams) {
       requestCounts = new Map();
     }
 
-    const req = new Request(input, init);
-    const key = req.url;
+    const href = window.location.href;
+    const url = new URL(input instanceof Request ? input.url : input, href);
+    const key = url.toString();
     const count = (requestCounts.get(key) ?? 0) + 1;
     requestCounts.set(key, count);
     console.log("requestCounts", key, requestCounts.get(key));
@@ -87,7 +88,11 @@ export function initClientSideSentry(params: AppParams) {
     }
 
     console.log("Repeated query detected", key);
-    const headers = req.headers;
+    const headers = new Headers(
+      (init?.headers ?? input instanceof Request)
+        ? (input as Request).headers
+        : {},
+    );
     headers.set("Renku-Repeated-Request", "true");
     const _init = init ?? {};
     _init.headers = headers;
@@ -137,11 +142,14 @@ function beforeSend(event: Sentry.ErrorEvent) {
   return event;
 }
 
-function isSameOrigin(input: RequestInfo | URL, init?: RequestInit): boolean {
+function isSameOrigin(input: RequestInfo | URL): boolean {
   try {
-    const windowOrigin = new URL(window.location.href).origin;
-    const req = new Request(input, init);
-    const targetOrigin = new URL(req.url, window.location.href).origin;
+    const href = window.location.href;
+    const windowOrigin = new URL(href).origin;
+    const targetOrigin = new URL(
+      input instanceof Request ? input.url : input,
+      href,
+    ).origin;
     return windowOrigin === targetOrigin;
   } catch {
     return false;
