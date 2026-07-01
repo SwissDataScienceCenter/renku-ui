@@ -178,7 +178,7 @@ export default function SessionLauncherCard({
           tabIndex={0}
         >
           <Row className="g-2">
-            <Col className={cx("align-items-center")} xs={12} lg={6} xl={8}>
+            <Col className={cx("align-items-center")} xs={12} lg={6} xl={7}>
               {launcher && (
                 <Row className={cx("g-2", "mb-0")}>
                   <Col
@@ -242,7 +242,7 @@ export default function SessionLauncherCard({
               </Row>
               {isCodeEnvironment ? (
                 <Row className="g-2">
-                  <Col xs={12} xl={4}>
+                  <Col xs={12} xl={5}>
                     {isCodeEnvironment &&
                     (isLoadingBuilds ||
                       isLoadingContainerImage ||
