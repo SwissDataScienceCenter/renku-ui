@@ -51,7 +51,7 @@ function OptionalLabel() {
 }
 
 interface FormFieldLabelProps<T extends FieldValues> {
-  info: string;
+  info?: string;
   isOptional?: boolean;
   label: ReactNode;
   name: Path<T>;
@@ -167,7 +167,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
 }: {
   control: Control<T>;
   errors?: FieldErrors<T>;
-  info: string;
+  info?: string;
   label: ReactNode;
   name: Path<T>;
   placeholder?: string;
@@ -222,7 +222,7 @@ export interface JsonFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
-  info: string;
+  info?: string;
   errors?: FieldErrors<T>;
   helpText: string;
   isOptional?: boolean;
@@ -305,51 +305,6 @@ export function AdvancedSettingsFields<
 >({ control, errors, launcherCategory = "session" }: AdvancedSettingsProp<T>) {
   return (
     <>
-      {launcherCategory === "session" && (
-        <>
-          <div className={cx("row", "gy-3", "mb-3")}>
-            <div className={cx("col-12", "col-md-9", "mt-0")}>
-              <FormField<T>
-                control={control}
-                name={"default_url" as Path<T>}
-                label="Default URL"
-                placeholder={DEFAULT_URL}
-                errors={errors}
-                info={ENVIRONMENT_VALUES_DESCRIPTION.urlPath}
-                type="text"
-              />
-            </div>
-            <div className={cx("col-12", "col-md-3", "mt-md-0")}>
-              <FormField<T>
-                control={control}
-                name={"port" as Path<T>}
-                label="Port"
-                isOptional={true}
-                placeholder="e.g. 8080"
-                info={ENVIRONMENT_VALUES_DESCRIPTION.port}
-                type="number"
-                rules={{ min: 1, max: 65535 }}
-              />
-            </div>
-            <div className={cx("col-12")}>
-              <FormField<T>
-                control={control}
-                name={"mount_directory" as Path<T>}
-                label="Mount Directory"
-                isOptional={true}
-                errors={errors}
-                info={ENVIRONMENT_VALUES_DESCRIPTION.mountDirectory}
-                type="text"
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className={cx("col-12")}>
-              <h3 className={cx("fw-bold")}>Docker settings</h3>
-            </div>
-          </div>
-        </>
-      )}
       {launcherCategory === "session" && (
         <>
           <div className={cx("row", "gy-3", "mb-3")}>

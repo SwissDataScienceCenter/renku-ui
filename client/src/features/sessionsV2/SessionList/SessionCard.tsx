@@ -37,13 +37,18 @@ import styles from "./Session.module.scss";
 
 interface SessionCardProps {
   project: Project;
+  onOpen?: () => void;
   session?: SessionV2;
 }
-export default function SessionCard({ project, session }: SessionCardProps) {
+export default function SessionCard({
+  project,
+  session,
+  onOpen,
+}: SessionCardProps) {
   if (!session) return null;
 
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
-  const stylesPerSession = getSessionStatusStyles(session);
+  const stylesPerSession = getSessionStatusStyles(session, launcherCategory);
   const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   return (
@@ -54,7 +59,12 @@ export default function SessionCard({ project, session }: SessionCardProps) {
         `bg-opacity-${stylesPerSession.bgOpacity}`,
         "p-0",
         "pb-3",
+        "cursor-pointer",
       )}
+      onClick={onOpen}
+      role={onOpen ? "button" : undefined}
+      aria-label={onOpen ? "View session details for this launcher" : undefined}
+      tabIndex={onOpen ? 0 : undefined}
     >
       {launcherCategory === "session" && (
         <img

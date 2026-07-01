@@ -22,6 +22,7 @@ import cx from "classnames";
 import { generatePath, Link } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 
+import { sessionLauncherKindToCategory } from "~/features/sessionsV2/session.utils";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -30,10 +31,15 @@ import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncher
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
   getSessionStatusStyles,
+  SessionStatusV2Badge,
   SessionStatusV2Description,
   SessionStatusV2Label,
 } from "../sessionsV2/components/SessionStatus/SessionStatus";
-import { SessionList, SessionV2 } from "../sessionsV2/sessionsV2.types";
+import {
+  SESSION_LAUNCHER_KIND,
+  SessionList,
+  SessionV2,
+} from "../sessionsV2/sessionsV2.types";
 
 import styles from "./DashboardV2Sessions.module.scss";
 
@@ -100,16 +106,13 @@ function SessionDashboardList({
   return (
     <ListGroup flush data-cy="dashboard-session-list">
       {sessions?.map((session) => (
-        <DashboardSession key={session.name} session={session} />
+        <DashboardSessionListItem key={session.name} session={session} />
       ))}
     </ListGroup>
   );
 }
 
-interface DashboardSessionProps {
-  session: SessionV2;
-}
-function DashboardSession({ session }: DashboardSessionProps) {
+function useDashboardSessionItem(session: SessionV2) {
   const { project_id: projectId, launcher_id: launcherId } = session;
   const { data: project } = useGetProjectsByProjectIdQuery(
     projectId ? { projectId } : skipToken,
@@ -136,8 +139,44 @@ function DashboardSession({ session }: DashboardSessionProps) {
       })
     : ABSOLUTE_ROUTES.v2.index;
 
-  const sessionStyles = getSessionStatusStyles(session);
+  return { launcher, project, projectId, projectUrl, showSessionUrl };
+}
+
+function DashboardSessionStatusRow({ session }: { session: SessionV2 }) {
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const sessionStyles = getSessionStatusStyles(session, launcherCategory);
   const state = session.status.state;
+
+  return (
+    <div className={cx("d-flex", "gap-2", "align-items-center")}>
+      <img
+        src={sessionStyles.sessionIcon}
+        alt={`Session is ${state}`}
+        loading="lazy"
+        width={16}
+        height={16}
+      />
+      <SessionStatusV2Label session={session} variant="list" />
+    </div>
+  );
+}
+
+function DashboardJobStatusRow({ session }: { session: SessionV2 }) {
+  return (
+    <div
+      className={cx("d-flex", "gap-2", "align-items-center", "text-truncate")}
+      data-cy="job-submission-id"
+    >
+      Job: {session.submission_id}
+      <SessionStatusV2Badge session={session} />
+    </div>
+  );
+}
+
+function DashboardSessionListItem({ session }: { session: SessionV2 }) {
+  const { launcher, project, projectId, projectUrl, showSessionUrl } =
+    useDashboardSessionItem(session);
+  const isJob = session.session_type === SESSION_LAUNCHER_KIND.NON_INTERACTIVE;
 
   return (
     <div
@@ -195,21 +234,19 @@ function DashboardSession({ session }: DashboardSessionProps) {
               "mt-2",
               "d-block",
               "d-sm-flex",
-              "gap-5",
+              "justify-content-between",
             )}
             xs={12}
           >
-            <div className={cx("d-flex", "gap-2")}>
-              <img
-                src={sessionStyles.sessionIcon}
-                alt={`Session is ${state}`}
-                loading="lazy"
-              />
-              <SessionStatusV2Label session={session} variant="list" />
-            </div>
+            {isJob ? (
+              <DashboardJobStatusRow session={session} />
+            ) : (
+              <DashboardSessionStatusRow session={session} />
+            )}
             <SessionStatusV2Description
               session={session}
               showInfoDetails={false}
+              includeIcon={false}
             />
           </Col>
         </Row>

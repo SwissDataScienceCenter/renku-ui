@@ -30,6 +30,7 @@ import { Link } from "react-router";
 import { Button } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
+import { JOB_STOPPING_BUTTON_LABEL } from "~/features/sessionsV2/session.utils.ts";
 import { SessionStatusState } from "../../sessionsV2.types";
 
 export interface ActiveSessionActionContext {
@@ -53,6 +54,27 @@ function StoppingStatusButton({ label }: { label: string }) {
     <Button color="primary" data-cy="stopping-btn" disabled>
       <Loader className="me-1" inline size={16} />
       {label}
+    </Button>
+  );
+}
+
+function DismissJobButton({
+  buttonClassName,
+  color = "outline-primary",
+  onStopSession,
+}: {
+  buttonClassName?: string;
+  color?: "outline-primary" | "primary";
+  onStopSession: () => void;
+}) {
+  return (
+    <Button
+      color={color}
+      className={color === "outline-primary" ? buttonClassName : undefined}
+      data-cy={"dismiss-job-button"}
+      onClick={onStopSession}
+    >
+      <Trash className={cx("bi", "me-1")} /> Dismiss
     </Button>
   );
 }
@@ -98,16 +120,14 @@ function ResumeStatusButton({
 function LogsStatusButton({
   onClick,
   label,
+  color = "outline-primary",
 }: {
   onClick: () => void;
   label: string;
+  color?: "outline-primary" | "primary";
 }) {
   return (
-    <Button
-      color="outline-primary"
-      data-cy="show-logs-session-button"
-      onClick={onClick}
-    >
+    <Button color={color} data-cy="show-logs-session-button" onClick={onClick}>
       <FileEarmarkText className={cx("bi", "me-1")} />
       {label}
     </Button>
@@ -213,7 +233,7 @@ export function getInteractiveSessionDefaultAction(
   if (failedScheduling) {
     return (
       <>
-        <LogsStatusButton onClick={toggleLogsModal} label="Get logs" />
+        <LogsStatusButton onClick={toggleLogsModal} label="View logs" />
         <Button
           color="primary"
           className={buttonClassName}
@@ -228,7 +248,7 @@ export function getInteractiveSessionDefaultAction(
   }
   return (
     <>
-      <LogsStatusButton onClick={toggleLogsModal} label="Get logs" />
+      <LogsStatusButton onClick={toggleLogsModal} label="View logs" />
       <PauseOrDeleteButton
         color="primary"
         isUserLoggedIn={isUserLoggedIn}
@@ -249,16 +269,20 @@ export function getJobDefaultAction(
     isResuming,
     onResumeSession,
     toggleLogsModal,
+    onStopSession,
   } = ctx;
 
   if (status === "stopping" || isStopping) {
-    return <StoppingStatusButton label="Dismissing job" />;
+    return <StoppingStatusButton label={JOB_STOPPING_BUTTON_LABEL} />;
   }
   if (isHibernating) {
     return <PausingStatusButton />;
   }
-  if (status === "starting" || status === "running" || status === "succeeded") {
-    return <LogsStatusButton onClick={toggleLogsModal} label="Logs" />;
+  if (status === "starting" || status === "running") {
+    return <LogsStatusButton onClick={toggleLogsModal} label="View logs" />;
+  }
+  if (status === "succeeded") {
+    return <DismissJobButton onStopSession={onStopSession} />;
   }
   if (status === "hibernated") {
     return (
@@ -268,5 +292,5 @@ export function getJobDefaultAction(
       />
     );
   }
-  return <LogsStatusButton onClick={toggleLogsModal} label="Get logs" />;
+  return <LogsStatusButton onClick={toggleLogsModal} label="View logs" />;
 }

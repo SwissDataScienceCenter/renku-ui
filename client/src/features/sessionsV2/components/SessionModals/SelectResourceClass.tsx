@@ -257,7 +257,7 @@ export function SelectResourceClassModal({
         <Link
           className={cx("btn", "btn-outline-primary")}
           to={projectUrl}
-          data-cy="start-session-button"
+          data-cy="cancel-start-session-button"
         >
           <XLg className={cx("bi", "me-1")} />
           Cancel launch

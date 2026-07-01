@@ -33,13 +33,13 @@ function openSession() {
 }
 
 function openSessionLauncherCreateFlow() {
-  cy.getDataCy("add-launcher").click();
+  cy.getDataCy("add-launcher").should("be.visible").click();
   cy.getDataCy("launcher-type-selector-modal").should("be.visible");
   cy.getDataCy("launcher-option-session").click();
 }
 
 function openJobLauncherCreateFlow() {
-  cy.getDataCy("add-launcher").click();
+  cy.getDataCy("add-launcher").should("be.visible").click();
   cy.getDataCy("launcher-type-selector-modal").should("be.visible");
   cy.getDataCy("launcher-option-job").click();
 }

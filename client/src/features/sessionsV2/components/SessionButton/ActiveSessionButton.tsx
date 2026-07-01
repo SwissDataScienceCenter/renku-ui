@@ -45,6 +45,7 @@ import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
+import StopJobContent from "~/features/sessionsV2/components/SessionModals/StopJobContent";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
 import {
@@ -55,8 +56,12 @@ import {
   usePatchSessionsBySessionIdMutation as usePatchSessionMutation,
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
 } from "../../api/sessionsV2.api";
-import { sessionLauncherKindToCategory } from "../../session.utils";
 import {
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
+} from "../../session.utils";
+import {
+  LauncherCategory,
   SessionResources,
   SessionStatus,
   SessionStatusState,
@@ -292,6 +297,8 @@ export default function ActiveSessionButton({
         ? getJobDefaultAction(actionContext)
         : null;
 
+  const isRunning = status === "running" || status === "starting";
+
   const hibernateAction = status !== "stopping" &&
     (status !== "failed" || failedScheduling) &&
     status !== "hibernated" &&
@@ -318,9 +325,12 @@ export default function ActiveSessionButton({
   );
 
   const dismissAction = launcherCategory === "job" && (
-    <DropdownItem data-cy="delete-session-button" onClick={onStopSession}>
-      <XLg className={cx("bi", "me-1")} />
-      Dismiss job
+    <DropdownItem
+      data-cy="delete-session-button"
+      onClick={isRunning ? toggleStopSession : onStopSession}
+    >
+      <Trash className={cx("bi", "me-1")} />
+      {isRunning ? "Cancel" : "Dismiss"}
     </DropdownItem>
   );
 
@@ -348,47 +358,36 @@ export default function ActiveSessionButton({
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={toggleLogsModal}>
       <FileEarmarkText className={cx("bi", "me-1")} />
-      Get logs
+      View logs
     </DropdownItem>
   );
-
-  if (launcherCategory === "job") {
-    return (
-      <div className={cx("d-flex", "flex-row", "gap-2")}>
-        <ButtonWithMenuV2
-          className={cx(className)}
-          color={"outline-primary"}
-          default={defaultAction}
-          preventPropagation
-          size="sm"
-        >
-          {dismissAction}
-        </ButtonWithMenuV2>
-        <SessionLogsModal
-          isOpen={showLogsModal}
-          sessionName={session.name}
-          toggle={toggleLogsModal}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2")}>
       <ButtonWithMenuV2
         className={cx(className)}
-        color={"primary"}
+        color={launcherCategory === "job" ? "outline-primary" : "primary"}
         default={defaultAction}
         preventPropagation
         size="sm"
       >
-        {deleteAction}
-        {modifyAction}
-        {(hibernateAction || deleteAction || modifyAction) &&
-          (openInNewTabAction || logsAction) && <DropdownItem divider />}
+        {launcherCategory === "job" ? (
+          status === "succeeded" ? (
+            logsAction
+          ) : (
+            dismissAction
+          )
+        ) : (
+          <>
+            {deleteAction}
+            {modifyAction}
+            {(hibernateAction || deleteAction || modifyAction) &&
+              (openInNewTabAction || logsAction) && <DropdownItem divider />}
 
-        {openInNewTabAction}
-        {logsAction}
+            {openInNewTabAction}
+            {logsAction}
+          </>
+        )}
       </ButtonWithMenuV2>
       <ConfirmDeleteModal
         isOpen={showModalStopSession}
@@ -399,15 +398,18 @@ export default function ActiveSessionButton({
         sessionLauncherId={session.launcher_id}
         status={status}
         toggleModal={toggleStopSession}
+        launcherCategory={launcherCategory}
       />
-      <ModifySessionModal
-        isOpen={showModalModifySession}
-        onModifySession={onModifySession}
-        resources={session.resources}
-        status={session.status}
-        toggleModal={toggleModifySession}
-        resource_class_id={session.resource_class_id}
-      />
+      {launcherCategory === "session" && (
+        <ModifySessionModal
+          isOpen={showModalModifySession}
+          onModifySession={onModifySession}
+          resources={session.resources}
+          status={session.status}
+          toggleModal={toggleModifySession}
+          resource_class_id={session.resource_class_id}
+        />
+      )}
       <SessionLogsModal
         isOpen={showLogsModal}
         sessionName={session.name}
@@ -426,6 +428,7 @@ interface ConfirmDeleteModalProps {
   sessionProjectId: string;
   status: SessionStatusState;
   toggleModal: () => void;
+  launcherCategory: LauncherCategory;
 }
 function ConfirmDeleteModal({
   isOpen,
@@ -433,23 +436,30 @@ function ConfirmDeleteModal({
   onStopSession,
   sessionLauncherId,
   sessionProjectId,
+  status,
   toggleModal,
+  launcherCategory,
 }: ConfirmDeleteModalProps) {
   const onClick = useCallback(() => {
     onStopSession();
     toggleModal();
   }, [onStopSession, toggleModal]);
 
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
+
   return (
     <Modal size="lg" centered isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader className="text-danger" toggle={toggleModal}>
-        Shut Down Session
+      <ModalHeader className="text-danger" toggle={toggleModal} tag="h2">
+        {launcherDefinition.text.delete.title}
       </ModalHeader>
       <ModalBody>
-        <ShutdownSessionContent
-          sessionLauncherId={sessionLauncherId}
-          sessionProjectId={sessionProjectId}
-        />
+        {launcherCategory === "session" && (
+          <ShutdownSessionContent
+            sessionLauncherId={sessionLauncherId}
+            sessionProjectId={sessionProjectId}
+          />
+        )}
+        {launcherCategory === "job" && <StopJobContent status={status} />}
       </ModalBody>
       <ModalFooter>
         <Button
@@ -458,7 +468,7 @@ function ConfirmDeleteModal({
           onClick={toggleModal}
         >
           <XLg className={cx("bi", "me-1")} />
-          Cancel
+          {launcherCategory === "job" ? "Close" : "Cancel"}
         </Button>
         <Button
           color="danger"
@@ -468,7 +478,7 @@ function ConfirmDeleteModal({
           onClick={onClick}
         >
           <Trash className={cx("bi", "me-1")} />
-          Shut down session
+          {launcherDefinition.text.delete.button}
         </Button>
       </ModalFooter>
     </Modal>

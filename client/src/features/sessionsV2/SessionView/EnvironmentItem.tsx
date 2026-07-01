@@ -629,7 +629,7 @@ function EnvironmentRowWithLabel({
   );
 }
 
-function EnvironmentJSONArrayRowWithLabel({
+export function EnvironmentJSONArrayRowWithLabel({
   label,
   value,
   dataCy,
