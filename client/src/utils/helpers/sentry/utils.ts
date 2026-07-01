@@ -55,6 +55,44 @@ export function initClientSideSentry(params: AppParams) {
   Sentry.setTags({
     component: UI_COMPONENT,
   });
+
+  // Handle repeated API queries: indicate repeated queries so that
+  // the backend stops distributed Sentry tracing.
+  let currentTraceId = "";
+  let requestCounts: Map<string, number> = new Map();
+  const origFetch = window.fetch;
+  window.fetch = function wrappedFetch(
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> {
+    if (!isSameOrigin(input, init)) {
+      return origFetch(input, init);
+    }
+
+    const span = Sentry.getActiveSpan();
+    const traceId = span?.spanContext().traceId ?? "unknown";
+    if (currentTraceId !== traceId) {
+      currentTraceId = traceId;
+      requestCounts = new Map();
+    }
+
+    const req = new Request(input, init);
+    const key = req.url;
+    const count = (requestCounts.get(key) ?? 0) + 1;
+    requestCounts.set(key, count);
+    console.log("requestCounts", key, requestCounts.get(key));
+
+    if (count <= 5) {
+      return origFetch(input, init);
+    }
+
+    console.log("Repeated query detected", key);
+    const headers = req.headers;
+    headers.set("Renku-Repeated-Request", "true");
+    const _init = init ?? {};
+    _init.headers = headers;
+    return origFetch(input, _init);
+  };
 }
 
 export function getRelease(version: string): string {
@@ -97,4 +135,15 @@ function beforeSend(event: Sentry.ErrorEvent) {
     return null;
 
   return event;
+}
+
+function isSameOrigin(input: RequestInfo | URL, init?: RequestInit): boolean {
+  try {
+    const windowOrigin = new URL(window.location.href).origin;
+    const req = new Request(input, init);
+    const targetOrigin = new URL(req.url, window.location.href).origin;
+    return windowOrigin === targetOrigin;
+  } catch {
+    return false;
+  }
 }
