@@ -107,7 +107,7 @@ export default function BuildLauncherButtons({
         size="sm"
       >
         <FileEarmarkText className={cx("bi", "me-1")} />
-        Logs
+        View logs
       </Button>
       <Button
         className={cx("text-nowrap", "rounded-end-0")}
@@ -131,7 +131,7 @@ export default function BuildLauncherButtons({
           size="sm"
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
-          Logs
+          View logs
         </Button>
       )}
       <Button
