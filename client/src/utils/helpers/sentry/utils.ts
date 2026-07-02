@@ -98,9 +98,8 @@ export function initClientSideSentry(params: AppParams) {
     }
 
     const headers = new Headers(
-      (init?.headers ?? input instanceof Request)
-        ? (input as Request).headers
-        : {},
+      init?.headers ??
+        (input instanceof Request ? (input as Request).headers : {}),
     );
     headers.set("Renku-Repeated-Request", "true");
     const _init = init ?? {};
