@@ -60,6 +60,13 @@ export function initClientSideSentry(params: AppParams) {
 
   // Handle repeated API queries: indicate repeated queries so that
   // the backend stops Sentry distributed tracing.
+  const GATEWAY_ORIGIN = (function () {
+    try {
+      return new URL(params.GATEWAY_URL).origin;
+    } catch {
+      return "";
+    }
+  })();
   let currentTraceId = "";
   let requestCounts: Map<string, number> = new Map();
   const origFetch = window.fetch;
@@ -67,7 +74,7 @@ export function initClientSideSentry(params: AppParams) {
     input: RequestInfo | URL,
     init?: RequestInit,
   ): Promise<Response> {
-    if (!isSameOrigin(input)) {
+    if (!isGatewayOrigin(input, GATEWAY_ORIGIN)) {
       return origFetch(input, init);
     }
 
@@ -144,7 +151,10 @@ function beforeSend(event: Sentry.ErrorEvent) {
   return event;
 }
 
-function isSameOrigin(input: RequestInfo | URL): boolean {
+function isGatewayOrigin(
+  input: RequestInfo | URL,
+  gatewayOrigin: string,
+): boolean {
   try {
     const href = window.location.href;
     const windowOrigin = new URL(href).origin;
@@ -152,7 +162,7 @@ function isSameOrigin(input: RequestInfo | URL): boolean {
       input instanceof Request ? input.url : input,
       href,
     ).origin;
-    return windowOrigin === targetOrigin;
+    return targetOrigin === windowOrigin || targetOrigin === gatewayOrigin;
   } catch {
     return false;
   }
