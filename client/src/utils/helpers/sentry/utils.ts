@@ -32,6 +32,8 @@ export const EXCLUDED_URLS = [
   /^chrome:\/\//i, // Chrome extensions 2
 ];
 
+const REPEATED_REQUEST_THRESHOLD = 5;
+
 export function initClientSideSentry(params: AppParams) {
   const dsn = params.SENTRY_URL;
   const environment = params.SENTRY_NAMESPACE || NAMESPACE_DEFAULT;
@@ -84,7 +86,7 @@ export function initClientSideSentry(params: AppParams) {
     const count = (requestCounts.get(key) ?? 0) + 1;
     requestCounts.set(key, count);
 
-    if (count <= 5) {
+    if (count <= REPEATED_REQUEST_THRESHOLD) {
       return origFetch(input, init);
     }
 
