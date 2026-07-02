@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
+// NOTE: The apps feature (app session launchers) is served entirely by
+// renku-data-services and reached by the client through the existing
+// `/api/data` gateway route, so it requires no changes in this server.
+
 import express from "express";
 import morgan from "morgan";
 import ws from "ws";
