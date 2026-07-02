@@ -154,6 +154,11 @@ export const BUILDER_FRONTENDS = [
     /* eslint-enable spellcheck/spell-checker */
   },
   {
+    value: "rstudio",
+    label: "RStudio",
+    description: "Web-based integrated development environment for R.",
+  },
+  {
     /* eslint-disable spellcheck/spell-checker */
     value: "infer",
     label: "Infer Frontend",
@@ -168,11 +173,6 @@ export const BUILDER_FRONTENDS = [
     description:
       "Do not inject a frontend. Please define the entrypoint in a Procfile if needed.",
     /* eslint-enable spellcheck/spell-checker */
-  },
-  {
-    value: "rstudio",
-    label: "RStudio",
-    description: "Web-based integrated development environment for R.",
   },
 ] as readonly BuilderSelectorOption[];
 
