@@ -16,7 +16,9 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import {
   useGetOauth2ConnectionsQuery,
@@ -28,6 +30,7 @@ import {
   usePostDepositsByDepositIdJobMutation,
 } from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
+import { ENVIDAT_DASHBOARD_URL, PROVIDER_OPTIONS } from "./deposits.constants";
 import { EditDepositionForm } from "./deposits.types";
 
 interface DepositEditModalProps {
@@ -53,16 +56,23 @@ export default function DepositEditModal({
     usePatchDepositsByDepositIdMutation();
   const [postJob, postJobResult] = usePostDepositsByDepositIdJobMutation();
 
-  // Fetch connection information for the target provider
+  // Fetch connection information for the selected provider if necessary
+  const targetProviderIntegration = PROVIDER_OPTIONS.find(
+    (provider) => provider.value === deposit?.provider && provider.integration,
+  )?.integration;
+
   const {
     data: providers,
     error: providersError,
     isLoading: isLoadingProviders,
-  } = useGetOauth2ProvidersQuery(deposit?.provider ? undefined : skipToken);
-
+  } = useGetOauth2ProvidersQuery(
+    targetProviderIntegration ? undefined : skipToken,
+  );
   const targetProvider = useMemo(() => {
-    return providers?.find((provider) => provider.kind === deposit?.provider);
-  }, [providers, deposit?.provider]);
+    return providers?.find(
+      (provider) => provider.kind === targetProviderIntegration,
+    );
+  }, [providers, targetProviderIntegration]);
 
   const {
     data: connections,
@@ -216,14 +226,21 @@ export default function DepositEditModal({
                 need to change it, please delete this export and create a new
                 one with the desired configuration.
               </FormText>
-              <div className="mt-1">
-                <DepositIntegrationInfo
-                  connection={targetConnection}
-                  isError={!!error}
-                  isLoading={isLoading}
-                  provider={targetProvider}
-                />
-              </div>
+              {targetProviderIntegration && (
+                <div className="mt-1">
+                  <DepositIntegrationInfo
+                    connection={targetConnection}
+                    isError={!!error}
+                    isLoading={isLoading}
+                    provider={targetProvider}
+                  />
+                </div>
+              )}
+              {deposit?.provider === "envidat" && (
+                <div className="mt-1">
+                  <EnviDatWarning />
+                </div>
+              )}
             </div>
           </FormGroup>
 
@@ -244,7 +261,11 @@ export default function DepositEditModal({
           <Button
             color="primary"
             data-cy="create-deposit-modal-button"
-            disabled={postJobResult.isLoading || patchDepositResult.isLoading}
+            disabled={
+              deposit.provider === "envidat" ||
+              postJobResult.isLoading ||
+              patchDepositResult.isLoading
+            }
             type="submit"
           >
             {postJobResult.isLoading || patchDepositResult.isLoading ? (
@@ -268,5 +289,19 @@ export default function DepositEditModal({
         </ModalFooter>
       </Form>
     </Modal>
+  );
+}
+
+function EnviDatWarning() {
+  return (
+    <WarnAlert dismissible={false}>
+      <p className="mb-0">
+        We do not support editing or re running exports to the{" "}
+        <ExternalLink href={ENVIDAT_DASHBOARD_URL}>
+          EnviDat platform
+        </ExternalLink>
+        . If you need, you can still delete this export and create a new one.
+      </p>
+    </WarnAlert>
   );
 }
