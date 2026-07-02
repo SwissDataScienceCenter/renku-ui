@@ -57,7 +57,7 @@ export function initClientSideSentry(params: AppParams) {
   });
 
   // Handle repeated API queries: indicate repeated queries so that
-  // the backend stops distributed Sentry tracing.
+  // the backend stops Sentry distributed tracing.
   let currentTraceId = "";
   let requestCounts: Map<string, number> = new Map();
   const origFetch = window.fetch;
@@ -83,13 +83,11 @@ export function initClientSideSentry(params: AppParams) {
     const key = `${method.toUpperCase()}|${url.toString()}`;
     const count = (requestCounts.get(key) ?? 0) + 1;
     requestCounts.set(key, count);
-    console.log("requestCounts", key, requestCounts.get(key));
 
     if (count <= 5) {
       return origFetch(input, init);
     }
 
-    console.log("Repeated query detected", key);
     const headers = new Headers(
       (init?.headers ?? input instanceof Request)
         ? (input as Request).headers
