@@ -18,37 +18,36 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useContext, useMemo } from "react";
-import { Link45deg, Pencil, Trash } from "react-bootstrap-icons";
+import { useMemo } from "react";
+import { Link45deg, Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
+import JobCard from "~/features/sessionsV2/SessionList/JobCard";
 import { Loader } from "../../../components/Loader";
-import AppContext from "../../../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { computeResourcesApi } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
-import {
-  sessionLaunchersV2Api,
-  useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
-} from "../api/sessionLaunchersV2.api";
-import { useGetSessionsImagesQuery } from "../api/sessionsV2.api";
+import { sessionLaunchersV2Api } from "../api/sessionLaunchersV2.api";
 import {
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
-import {
-  EnvironmentIcon,
-  LauncherEnvironmentIcon,
-} from "../components/SessionForm/LauncherEnvironmentIcon";
-import { SessionLauncherButtons } from "../components/SessionLauncherButtons";
+import { LauncherActions } from "../components/launcherActions/LauncherActions";
+import { LauncherEnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { SessionBadge } from "../components/SessionStatus/SessionStatus";
-import { SessionV2 } from "../sessionsV2.types";
+import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
+import {
+  getLauncherCategory,
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
+} from "../session.utils";
+import { SESSION_LAUNCHER_KIND, SessionV2 } from "../sessionsV2.types";
+import useLauncherEnvironmentReadiness from "../useLauncherEnvironmentReadiness.hook";
 import SessionCard from "./SessionCard";
 
 import styles from "./Session.module.scss";
@@ -63,6 +62,7 @@ interface SessionLauncherCardProps {
   toggleUpdateEnvironment?: () => void;
   toggleShareLink?: () => void;
   toggleSessionView?: () => void;
+  openSessionViewWithJob?: (submissionId: string) => void;
 }
 export default function SessionLauncherCard({
   launcher,
@@ -74,31 +74,34 @@ export default function SessionLauncherCard({
   toggleUpdateEnvironment,
   toggleSessionView,
   toggleShareLink,
+  openSessionViewWithJob,
 }: SessionLauncherCardProps) {
-  const { params } = useContext(AppContext);
+  const {
+    builds,
+    isBuildInProgress,
+    isCodeEnvironment,
+    isLoadingBuilds,
+    isLoadingContainerImage,
+    lastBuild,
+    lastSuccessfulBuild,
+    useOldImage,
+    containerImage,
+  } = useLauncherEnvironmentReadiness({ launcher });
+
   const environment = launcher?.environment;
-  const imageBuildersEnabled =
-    params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
-  const isCodeEnvironment = environment?.environment_image_source === "build";
-  const isExternalImageEnvironment =
-    environment?.environment_kind === "CUSTOM" &&
-    environment?.environment_image_source === "image";
-
-  const { data: builds, isLoading } = useGetBuildsQuery(
-    imageBuildersEnabled && isCodeEnvironment
-      ? { environmentId: environment.id }
-      : skipToken,
-  );
-
-  const lastBuild = builds?.at(0);
-  const lastSuccessfulBuild = builds?.find(
-    (build) => build.status === "succeeded" && build.id !== lastBuild?.id,
-  );
   const hasSession = !!sessions?.length;
+  const sessionType = sessions?.at(0)?.session_type ?? "interactive";
+  // Orphan sessions have no launcher; get category from the session itself
+  const launcherCategory = sessionLauncherKindToCategory(
+    launcher?.launcher_type || sessionType,
+  );
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
+  const LauncherTypeIcon = launcherDefinition?.icon || PlayCircle;
+  const launcherTypeLabel = launcherDefinition?.text.display || null;
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
-    isCodeEnvironment && lastBuild?.status === "in_progress"
-      ? { environmentId: environment.id }
+    launcher && isBuildInProgress
+      ? { environmentId: launcher.environment.id }
       : skipToken,
     {
       pollingInterval: 1_000,
@@ -106,11 +109,11 @@ export default function SessionLauncherCard({
   );
 
   const otherLauncherActions = launcher &&
-    toggleUpdate &&
-    toggleDelete &&
-    toggleShareLink &&
-    toggleUpdateEnvironment && (
-      <SessionLauncherDropdownActions
+    (toggleUpdate ||
+      toggleDelete ||
+      toggleShareLink ||
+      toggleUpdateEnvironment) && (
+      <LauncherDropdownActions
         project={project}
         launcher={launcher}
         toggleDelete={toggleDelete}
@@ -129,19 +132,12 @@ export default function SessionLauncherCard({
     "text-muted",
   ];
 
-  const { data: containerImage, isLoading: isLoadingContainerImage } =
-    useGetSessionsImagesQuery(
-      environment?.container_image != null
-        ? { imageUrl: environment.container_image }
-        : skipToken,
-    );
-
   const {
     data: imageRepositorySource,
     isLoading: isLoadingImageRepositorySource,
   } = useGetRepositoryQuery(
     environment?.environment_image_source === "build"
-      ? { url: environment.build_parameters.repository }
+      ? { url: environment.build_parameters?.repository }
       : skipToken,
   );
 
@@ -167,42 +163,59 @@ export default function SessionLauncherCard({
         "rounded-0",
       )}
       data-cy="session-launcher-item"
-      onClick={toggleSessionView}
-      tabIndex={0}
+      tabIndex={-1}
     >
       <CardBody className={cx("p-0")}>
-        <div className={cx(hasSession && "border-bottom", "p-3")}>
+        <div
+          className={cx(hasSession && "border-bottom", "p-3")}
+          onClick={toggleSessionView}
+          aria-label={
+            toggleSessionView
+              ? "View session details for this launcher"
+              : undefined
+          }
+          role="button"
+          tabIndex={0}
+        >
           <Row className="g-2">
-            <Col className={cx("align-items-center")} xs={12} lg={6} xl={8}>
-              <Row className={cx("g-2", "mb-0")}>
-                <Col
-                  xs={12}
-                  xl={4}
-                  className={cx("d-inline-block", "link-primary", "text-body")}
-                >
-                  <span className={cx("small", "text-muted", "me-3")}>
-                    Session Launcher
-                  </span>
-                </Col>
-                <Col xs={12} xl="auto">
-                  {environment?.environment_kind === "GLOBAL" ? (
-                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                      <EnvironmentIcon type="global" />
-                      Global environment
+            <Col className={cx("align-items-center")} xs={12} lg={6} xl={7}>
+              {launcher && (
+                <Row className={cx("g-2", "mb-0")}>
+                  <Col
+                    xs={12}
+                    xl={4}
+                    className={cx(
+                      "d-inline-block",
+                      "link-primary",
+                      "text-body",
+                    )}
+                  >
+                    <span
+                      className={cx(
+                        "small",
+                        "text-muted",
+                        "me-3",
+                        "d-inline-flex",
+                        "align-items-center",
+                        "gap-1",
+                      )}
+                    >
+                      <LauncherTypeIcon className={cx("bi")} size={14} />
+                      <span className="fw-bold">{launcherTypeLabel}</span>{" "}
+                      Launcher
                     </span>
-                  ) : isCodeEnvironment ? (
-                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                      <EnvironmentIcon type="codeBased" size={16} />
-                      Code based environment
-                    </span>
-                  ) : isExternalImageEnvironment ? (
-                    <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                      <EnvironmentIcon type="custom" size={16} />
-                      External image environment
-                    </span>
-                  ) : null}
-                </Col>
-              </Row>
+                  </Col>
+                  <Col xs={12} xl="auto">
+                    {launcher?.environment &&
+                      getEnvironmentKindLabel(launcher.environment) != null && (
+                        <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                          <LauncherEnvironmentIcon launcher={launcher} />
+                          {getEnvironmentKindLabel(launcher.environment)}
+                        </span>
+                      )}
+                  </Col>
+                </Row>
+              )}
               <Row className={cx("g-2", isCodeEnvironment && "mb-2")}>
                 <Col
                   xs={12}
@@ -215,7 +228,9 @@ export default function SessionLauncherCard({
                     {name ? (
                       name
                     ) : (
-                      <span className="fst-italic">Orphan session</span>
+                      <span className="fst-italic">
+                        Orphan {launcherDefinition.text.display}
+                      </span>
                     )}
                   </span>
                 </Col>
@@ -227,9 +242,9 @@ export default function SessionLauncherCard({
               </Row>
               {isCodeEnvironment ? (
                 <Row className="g-2">
-                  <Col xs={12} xl={4}>
+                  <Col xs={12} xl={5}>
                     {isCodeEnvironment &&
-                    (isLoading ||
+                    (isLoadingBuilds ||
                       isLoadingContainerImage ||
                       isLoadingImageRepositorySource ||
                       isLoadingResourcePools) ? (
@@ -300,33 +315,27 @@ export default function SessionLauncherCard({
                     "gap-2",
                   )}
                 >
-                  <SessionLauncherButtons
+                  <LauncherActions
+                    placement="launcher-card"
+                    builds={builds}
                     hasSession={hasSession}
                     lastBuild={lastBuild}
                     launcher={launcher}
-                    namespace={project.namespace}
                     otherActions={otherLauncherActions}
-                    slug={project.slug}
-                    useOldImage={
-                      isCodeEnvironment &&
-                      lastBuild?.status !== "succeeded" &&
-                      !!lastSuccessfulBuild
-                    }
+                    project={project}
                   />
-                  {isCodeEnvironment &&
-                    lastBuild?.status !== "succeeded" &&
-                    lastSuccessfulBuild && (
-                      <BuildStatusDescription
-                        isOldImage={true}
-                        status={lastSuccessfulBuild?.status}
-                        createdAt={lastSuccessfulBuild?.created_at}
-                        completedAt={
-                          lastSuccessfulBuild?.status === "succeeded"
-                            ? lastSuccessfulBuild?.result?.completed_at
-                            : undefined
-                        }
-                      />
-                    )}
+                  {useOldImage && lastSuccessfulBuild && (
+                    <BuildStatusDescription
+                      isOldImage={true}
+                      status={lastSuccessfulBuild?.status}
+                      createdAt={lastSuccessfulBuild?.created_at}
+                      completedAt={
+                        lastSuccessfulBuild?.status === "succeeded"
+                          ? lastSuccessfulBuild?.result?.completed_at
+                          : undefined
+                      }
+                    />
+                  )}
                 </div>
               )}
             </Col>
@@ -336,13 +345,25 @@ export default function SessionLauncherCard({
           <div className="p-0">
             {sessions &&
               sessions?.length > 0 &&
-              sessions.map((session) => (
-                <SessionCard
-                  key={`session-item-${session.name}`}
-                  project={project}
-                  session={session}
-                />
-              ))}
+              sessions.map((session) => {
+                if (session.session_type === SESSION_LAUNCHER_KIND.INTERACTIVE)
+                  return (
+                    <SessionCard
+                      key={`session-item-${session.name}`}
+                      project={project}
+                      session={session}
+                      onOpen={toggleSessionView}
+                    />
+                  );
+                return (
+                  <JobCard
+                    key={`job-item-${session.name}`}
+                    project={project}
+                    session={session}
+                    onOpen={openSessionViewWithJob}
+                  />
+                );
+              })}
           </div>
         )}
       </CardBody>
@@ -350,62 +371,72 @@ export default function SessionLauncherCard({
   );
 }
 
-interface SessionLauncherDropdownActionsProps {
+interface LauncherDropdownActionsProps {
   launcher: SessionLauncher;
-  toggleUpdate: () => void;
-  toggleDelete: () => void;
-  toggleUpdateEnvironment: () => void;
-  toggleShareLink: () => void;
+  toggleUpdate?: () => void;
+  toggleDelete?: () => void;
+  toggleUpdateEnvironment?: () => void;
+  toggleShareLink?: () => void;
   project: Project;
 }
-function SessionLauncherDropdownActions({
+function LauncherDropdownActions({
   launcher,
   toggleDelete,
   toggleUpdate,
   toggleUpdateEnvironment,
   toggleShareLink,
-}: SessionLauncherDropdownActionsProps) {
+}: LauncherDropdownActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
-
+  const launcherCategory = getLauncherCategory(launcher);
   return (
     <>
       <PermissionsGuard
         disabled={null}
         enabled={
           <>
-            <DropdownItem
-              data-cy="session-launcher-menu-edit-env"
-              onClick={toggleUpdateEnvironment}
-            >
-              <LauncherEnvironmentIcon
-                className={cx("me-1")}
-                launcher={launcher}
-              />
-              Edit environment
-            </DropdownItem>
-            <DropdownItem
-              data-cy="session-launcher-menu-edit"
-              onClick={toggleUpdate}
-            >
-              <Pencil className={cx("bi", "me-1")} />
-              Edit launcher
-            </DropdownItem>
-            <DropdownItem
-              data-cy="session-launcher-menu-share-link"
-              onClick={toggleShareLink}
-            >
-              <Link45deg className={cx("bi", "me-1")} />
-              Share session launch link
-            </DropdownItem>
-            <DropdownItem divider />
-            <DropdownItem
-              data-cy="session-launcher-menu-delete"
-              onClick={toggleDelete}
-            >
-              <Trash className={cx("bi", "me-1")} />
-              Delete launcher
-            </DropdownItem>
+            {toggleUpdateEnvironment && (
+              <DropdownItem
+                data-cy="session-launcher-menu-edit-env"
+                onClick={toggleUpdateEnvironment}
+              >
+                <LauncherEnvironmentIcon
+                  className={cx("me-1")}
+                  launcher={launcher}
+                />
+                Edit environment
+              </DropdownItem>
+            )}
+            {toggleUpdate && (
+              <DropdownItem
+                data-cy="session-launcher-menu-edit"
+                onClick={toggleUpdate}
+              >
+                <Pencil className={cx("bi", "me-1")} />
+                Edit launcher
+              </DropdownItem>
+            )}
+            {toggleShareLink && launcherCategory === "session" && (
+              <DropdownItem
+                data-cy="session-launcher-menu-share-link"
+                onClick={toggleShareLink}
+              >
+                <Link45deg className={cx("bi", "me-1")} />
+                Share session launch link
+              </DropdownItem>
+            )}
+            {toggleDelete && (
+              <>
+                <DropdownItem divider />
+                <DropdownItem
+                  data-cy="session-launcher-menu-delete"
+                  onClick={toggleDelete}
+                >
+                  <Trash className={cx("bi", "me-1")} />
+                  Delete launcher
+                </DropdownItem>
+              </>
+            )}
           </>
         }
         requestedPermission="write"

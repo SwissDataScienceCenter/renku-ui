@@ -101,21 +101,24 @@ describe("Set up project components", () => {
     cy.wait("@getSessionsV2");
     cy.wait("@sessionLaunchers");
     // ADD SESSION CUSTOM IMAGE
-    cy.getDataCy("add-session-launcher").click();
+    cy.openSessionLauncherCreateFlow();
 
     fixtures.sessionLaunchers({
       fixture: "projectV2/session-launchers.json",
       name: "session-launchers-custom",
     });
+    cy.intercept("GET", "/api/data/sessions/images?image_url=*", {
+      body: { accessible: true },
+    }).as("sessionImage");
     const customImage = "renku/renkulab-py:latest";
     cy.getDataCy("environment-kind-custom").click();
     cy.getDataCy("custom-image-input")
       .clear()
       .type(customImage, { delay: 0 })
       .should("have.value", customImage);
-    cy.getDataCy("next-session-button").click();
+    cy.getDataCy("next-launcher-button").click();
     cy.getDataCy("launcher-name-input").type("Session-custom");
-    cy.getDataCy("add-session-button").click();
+    cy.getDataCy("add-launcher-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-custom");
     cy.getDataCy("close-cancel-button").click();
@@ -150,25 +153,59 @@ describe("Set up project components", () => {
     cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
 
     cy.go("back");
+    cy.url().should("include", "/p/user1-uuid/test-2-v2-project");
+    cy.url().should("not.match", /\/start$/);
+    cy.reload();
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@getProjectV2Permissions");
+    cy.wait("@getSessionsV2");
+    cy.wait("@session-launchers-custom");
+    cy.getDataCy("add-launcher").should("be.visible");
 
     // ADD SESSION EXISTING ENVIRONMENT
-    cy.getDataCy("add-session-launcher").click();
+    cy.openSessionLauncherCreateFlow();
     fixtures.sessionLaunchers({
       fixture: "projectV2/session-launchers-global.json",
       name: "session-launchers-global",
     });
     cy.getDataCy("environment-kind-global").click();
     cy.getDataCy("global-environment-item").first().click();
-    cy.getDataCy("next-session-button").click();
-    cy.getDataCy("add-session-button").click();
+    cy.getDataCy("next-launcher-button").click();
+    cy.getDataCy("add-launcher-button").click();
     cy.wait("@newLauncher");
     cy.wait("@session-launchers-global");
+    cy.getDataCy("close-cancel-button").click();
 
     // check session values
     cy.getDataCy("session-launcher-item").within(() => {
       cy.getDataCy("session-name").should("contain.text", "Jupyter Notebook");
       cy.getDataCy("start-session-button").should("contain.text", "Launch");
     });
+
+    // ADD JOB CUSTOM IMAGE
+    cy.openJobLauncherCreateFlow();
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers-job.json",
+      name: "session-launchers-job",
+    });
+    const jobImage = "renku/renkulab-py:latest";
+    cy.getDataCy("environment-kind-custom").click();
+    cy.getDataCy("custom-image-input")
+      .clear()
+      .type(jobImage, { delay: 0 })
+      .should("have.value", jobImage);
+    cy.getDataCy("next-launcher-button").click();
+    cy.getDataCy("launcher-name-input").type("Job-custom");
+    cy.getDataCy("add-launcher-button").click();
+    cy.wait("@newLauncher");
+    cy.wait("@session-launchers-job");
+    cy.getDataCy("close-cancel-button").click();
+    cy.getDataCy("session-launcher-item")
+      .contains("Job-custom")
+      .parents("[data-cy='session-launcher-item']")
+      .within(() => {
+        cy.getDataCy("submit-job-button").should("contain.text", "Submit");
+      });
   });
 });
 

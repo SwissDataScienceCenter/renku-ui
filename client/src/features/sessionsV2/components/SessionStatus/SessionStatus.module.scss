@@ -1,0 +1,29 @@
+@mixin custom-animation() {
+  $name: inline-#{unique-id()};
+
+  @keyframes #{$name} {
+    @content;
+  }
+
+  animation-name: $name;
+}
+
+.spinIcon {
+  --spin-icon-animation-speed: 2s;
+
+  display: inline-block;
+
+  @include custom-animation() {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  animation-duration: var(--spin-icon-animation-speed);
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinIcon {
+    animation: none;
+  }
+}

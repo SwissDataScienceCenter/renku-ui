@@ -19,9 +19,11 @@
 import "cypress-file-upload";
 import registerGeneralCommands from "./commands/general";
 import registerReactSelectCommands from "./commands/react-select";
+import registerSessionsCommands from "./commands/sessions";
 
 registerGeneralCommands();
 registerReactSelectCommands();
+registerSessionsCommands();
 
 Cypress.on("uncaught:exception", () => {
   // returning false here prevents Cypress from failing the test

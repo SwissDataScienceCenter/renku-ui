@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import {
-  ArrowRightCircle,
   BoxArrowUpRight,
   CheckLg,
   FileEarmarkText,
@@ -29,7 +28,7 @@ import {
   Trash,
   XLg,
 } from "react-bootstrap-icons";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { SingleValue } from "react-select";
 import {
   Button,
@@ -44,9 +43,9 @@ import {
 
 import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
-import { Loader } from "~/components/Loader";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
+import StopJobContent from "~/features/sessionsV2/components/SessionModals/StopJobContent";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { NOTIFICATION_TOPICS } from "~/notifications/Notifications.constants";
 import {
@@ -58,6 +57,11 @@ import {
   useDeleteSessionsBySessionIdMutation as useStopSessionMutation,
 } from "../../api/sessionsV2.api";
 import {
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
+} from "../../session.utils";
+import {
+  LauncherCategory,
   SessionResources,
   SessionStatus,
   SessionStatusState,
@@ -71,6 +75,10 @@ import {
 } from "../SessionModals/ResourceClassWarning";
 import ShutdownSessionContent from "../SessionModals/ShoutdownSessionContent";
 import { SessionRowResourceRequests } from "../SessionsList";
+import {
+  getInteractiveSessionDefaultAction,
+  getJobDefaultAction,
+} from "./ActiveSessionButton.actions";
 
 interface ActiveSessionButtonProps {
   className?: string;
@@ -121,10 +129,7 @@ export default function ActiveSessionButton({
       // TODO: fix react-hooks/set-state-in-effect
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsResuming(false);
-      navigate(showSessionUrl);
-      // TODO: fix react-hooks/set-state-in-effect
-
-      setIsResuming(false);
+      if (session.session_type === "interactive") navigate(showSessionUrl);
     }
   }, [
     isResuming,
@@ -132,6 +137,7 @@ export default function ActiveSessionButton({
     isWaitingForResumedSession,
     navigate,
     showSessionUrl,
+    session.session_type,
   ]);
   useEffect(() => {
     if (errorResumeSession) {
@@ -266,121 +272,32 @@ export default function ActiveSessionButton({
     "btn-outline-primary",
   );
 
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+
+  const actionContext = {
+    status,
+    isStopping,
+    isHibernating,
+    isResuming,
+    failedScheduling,
+    isUserLoggedIn,
+    showSessionUrl,
+    buttonClassName,
+    onHibernateSession,
+    onStopSession,
+    onResumeSession,
+    toggleLogsModal,
+    toggleModifySession,
+  };
+
   const defaultAction =
-    status === "stopping" || isStopping ? (
-      <Button color="primary" data-cy="stopping-btn" disabled>
-        <Loader className="me-1" inline size={16} />
-        Shutting down
-      </Button>
-    ) : isHibernating ? (
-      <Button color="primary" data-cy="stopping-btn" disabled>
-        <Loader className="me-1" inline size={16} />
-        Pausing
-      </Button>
-    ) : status === "starting" ? (
-      <Link
-        className={cx("btn", "btn-primary")}
-        data-cy="open-session"
-        to={showSessionUrl}
-      >
-        <ArrowRightCircle className={cx("bi", "me-1")} />
-        Open
-      </Link>
-    ) : status === "running" ? (
-      <>
-        <Button
-          color="outline-primary"
-          className={buttonClassName}
-          data-cy={
-            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
-          }
-          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
-        >
-          {isUserLoggedIn ? (
-            <span className="align-self-start">
-              <PauseCircle className={cx("bi", "me-1")} />
-            </span>
-          ) : (
-            <Trash className={cx("bi", "me-1")} />
-          )}
-          {isUserLoggedIn ? "Pause" : "Delete"}
-        </Button>
-        <Link
-          className={cx("btn", "btn-primary")}
-          data-cy="open-session"
-          to={showSessionUrl}
-        >
-          <ArrowRightCircle className={cx("bi", "me-1")} />
-          Open
-        </Link>
-      </>
-    ) : status === "hibernated" ? (
-      <Button
-        color="primary"
-        data-cy="resume-session-button"
-        disabled={isResuming}
-        onClick={onResumeSession}
-      >
-        {isResuming ? (
-          <>
-            <Loader className="me-1" inline size={16} />
-            Resuming
-          </>
-        ) : (
-          <>
-            <PlayFill className={cx("bi", "me-1")} />
-            Resume
-          </>
-        )}
-      </Button>
-    ) : failedScheduling ? (
-      <>
-        <Button
-          color="outline-primary"
-          data-cy="show-logs-session-button"
-          onClick={toggleLogsModal}
-        >
-          <FileEarmarkText className={cx("bi", "me-1")} />
-          Get logs
-        </Button>
-        <Button
-          color="primary"
-          className={buttonClassName}
-          data-cy="modify-session-button"
-          onClick={toggleModifySession}
-        >
-          <Tools className={cx("bi", "me-1")} />
-          Modify
-        </Button>
-      </>
-    ) : (
-      <>
-        <Button
-          color="outline-primary"
-          data-cy={"show-logs-session-button"}
-          onClick={toggleLogsModal}
-        >
-          <FileEarmarkText className={cx("bi", "me-1")} />
-          Get logs
-        </Button>
-        <Button
-          color="primary"
-          data-cy={
-            isUserLoggedIn ? "pause-session-button" : "delete-session-button"
-          }
-          onClick={isUserLoggedIn ? onHibernateSession : onStopSession}
-        >
-          {isUserLoggedIn ? (
-            <span className="align-self-start">
-              <PauseCircle className={cx("bi", "me-1")} />
-            </span>
-          ) : (
-            <Trash className={cx("bi", "me-1")} />
-          )}
-          {isUserLoggedIn ? "Pause" : "Delete"}
-        </Button>
-      </>
-    );
+    launcherCategory === "session"
+      ? getInteractiveSessionDefaultAction(actionContext)
+      : launcherCategory === "job"
+        ? getJobDefaultAction(actionContext)
+        : null;
+
+  const isRunning = status === "running" || status === "starting";
 
   const hibernateAction = status !== "stopping" &&
     (status !== "failed" || failedScheduling) &&
@@ -404,6 +321,16 @@ export default function ActiveSessionButton({
     >
       <Trash className={cx("bi", "me-1")} />
       Shut down session
+    </DropdownItem>
+  );
+
+  const dismissAction = launcherCategory === "job" && (
+    <DropdownItem
+      data-cy="delete-session-button"
+      onClick={isRunning ? toggleStopSession : onStopSession}
+    >
+      <Trash className={cx("bi", "me-1")} />
+      {isRunning ? "Cancel" : "Dismiss"}
     </DropdownItem>
   );
 
@@ -431,7 +358,7 @@ export default function ActiveSessionButton({
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={toggleLogsModal}>
       <FileEarmarkText className={cx("bi", "me-1")} />
-      Get logs
+      View logs
     </DropdownItem>
   );
 
@@ -439,18 +366,28 @@ export default function ActiveSessionButton({
     <div className={cx("d-flex", "flex-row", "gap-2")}>
       <ButtonWithMenuV2
         className={cx(className)}
-        color={"primary"}
+        color={launcherCategory === "job" ? "outline-primary" : "primary"}
         default={defaultAction}
         preventPropagation
         size="sm"
       >
-        {deleteAction}
-        {modifyAction}
-        {(hibernateAction || deleteAction || modifyAction) &&
-          (openInNewTabAction || logsAction) && <DropdownItem divider />}
+        {launcherCategory === "job" ? (
+          status === "succeeded" ? (
+            logsAction
+          ) : (
+            dismissAction
+          )
+        ) : (
+          <>
+            {deleteAction}
+            {modifyAction}
+            {(hibernateAction || deleteAction || modifyAction) &&
+              (openInNewTabAction || logsAction) && <DropdownItem divider />}
 
-        {openInNewTabAction}
-        {logsAction}
+            {openInNewTabAction}
+            {logsAction}
+          </>
+        )}
       </ButtonWithMenuV2>
       <ConfirmDeleteModal
         isOpen={showModalStopSession}
@@ -461,15 +398,18 @@ export default function ActiveSessionButton({
         sessionLauncherId={session.launcher_id}
         status={status}
         toggleModal={toggleStopSession}
+        launcherCategory={launcherCategory}
       />
-      <ModifySessionModal
-        isOpen={showModalModifySession}
-        onModifySession={onModifySession}
-        resources={session.resources}
-        status={session.status}
-        toggleModal={toggleModifySession}
-        resource_class_id={session.resource_class_id}
-      />
+      {launcherCategory === "session" && (
+        <ModifySessionModal
+          isOpen={showModalModifySession}
+          onModifySession={onModifySession}
+          resources={session.resources}
+          status={session.status}
+          toggleModal={toggleModifySession}
+          resource_class_id={session.resource_class_id}
+        />
+      )}
       <SessionLogsModal
         isOpen={showLogsModal}
         sessionName={session.name}
@@ -488,6 +428,7 @@ interface ConfirmDeleteModalProps {
   sessionProjectId: string;
   status: SessionStatusState;
   toggleModal: () => void;
+  launcherCategory: LauncherCategory;
 }
 function ConfirmDeleteModal({
   isOpen,
@@ -495,23 +436,30 @@ function ConfirmDeleteModal({
   onStopSession,
   sessionLauncherId,
   sessionProjectId,
+  status,
   toggleModal,
+  launcherCategory,
 }: ConfirmDeleteModalProps) {
   const onClick = useCallback(() => {
     onStopSession();
     toggleModal();
   }, [onStopSession, toggleModal]);
 
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
+
   return (
     <Modal size="lg" centered isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader className="text-danger" toggle={toggleModal}>
-        Shut Down Session
+      <ModalHeader className="text-danger" toggle={toggleModal} tag="h2">
+        {launcherDefinition.text.delete.title}
       </ModalHeader>
       <ModalBody>
-        <ShutdownSessionContent
-          sessionLauncherId={sessionLauncherId}
-          sessionProjectId={sessionProjectId}
-        />
+        {launcherCategory === "session" && (
+          <ShutdownSessionContent
+            sessionLauncherId={sessionLauncherId}
+            sessionProjectId={sessionProjectId}
+          />
+        )}
+        {launcherCategory === "job" && <StopJobContent status={status} />}
       </ModalBody>
       <ModalFooter>
         <Button
@@ -520,7 +468,7 @@ function ConfirmDeleteModal({
           onClick={toggleModal}
         >
           <XLg className={cx("bi", "me-1")} />
-          Cancel
+          {launcherCategory === "job" ? "Close" : "Cancel"}
         </Button>
         <Button
           color="danger"
@@ -530,7 +478,7 @@ function ConfirmDeleteModal({
           onClick={onClick}
         >
           <Trash className={cx("bi", "me-1")} />
-          Shut down session
+          {launcherDefinition.text.delete.button}
         </Button>
       </ModalFooter>
     </Modal>

@@ -20,7 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect } from "react";
 
 import { DEFAULT_PERMISSIONS } from "../../permissionsV2/permissions.constants";
-import type { Permissions } from "../../permissionsV2/permissions.types";
+import type { PermissionsWithLoadingState } from "../../permissionsV2/permissions.types";
 import { projectV2Api } from "../../projectsV2/api/projectV2.enhanced-api";
 
 interface UseProjectPermissionsArgs {
@@ -29,8 +29,8 @@ interface UseProjectPermissionsArgs {
 
 export default function useProjectPermissions({
   projectId,
-}: UseProjectPermissionsArgs): Permissions {
-  const { currentData, isLoading, isError, isUninitialized } =
+}: UseProjectPermissionsArgs): PermissionsWithLoadingState {
+  const { currentData, isLoading, isError, isUninitialized, error } =
     projectV2Api.endpoints.getProjectsByProjectIdPermissions.useQueryState(
       projectId ? { projectId } : skipToken,
     );
@@ -43,13 +43,26 @@ export default function useProjectPermissions({
     }
   }, [fetchPermissions, isUninitialized, projectId]);
 
+  const isLoadingPermissions = isLoading || !!(projectId && isUninitialized);
+  const arePermissionsResolved =
+    !isLoadingPermissions && !isError && currentData != null;
+
   if (isLoading || isError || !currentData) {
-    return DEFAULT_PERMISSIONS;
+    return {
+      ...DEFAULT_PERMISSIONS,
+      arePermissionsResolved: false,
+      isLoadingPermissions,
+      isPermissionsError: isError,
+      permissionsError: isError ? error : undefined,
+    };
   }
 
-  const permissions: Permissions = {
+  return {
     ...DEFAULT_PERMISSIONS,
     ...currentData,
+    arePermissionsResolved,
+    isLoadingPermissions: false,
+    isPermissionsError: false,
+    permissionsError: undefined,
   };
-  return permissions;
 }
