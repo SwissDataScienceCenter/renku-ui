@@ -78,7 +78,9 @@ export function initClientSideSentry(params: AppParams) {
 
     const href = window.location.href;
     const url = new URL(input instanceof Request ? input.url : input, href);
-    const key = url.toString();
+    const method =
+      input instanceof Request ? input.method : (init?.method ?? "GET");
+    const key = `${method.toUpperCase()}|${url.toString()}`;
     const count = (requestCounts.get(key) ?? 0) + 1;
     requestCounts.set(key, count);
     console.log("requestCounts", key, requestCounts.get(key));
