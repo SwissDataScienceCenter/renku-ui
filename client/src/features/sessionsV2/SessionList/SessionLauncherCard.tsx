@@ -27,6 +27,7 @@ import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.
 import JobCard from "~/features/sessionsV2/SessionList/JobCard";
 import { Loader } from "../../../components/Loader";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import { RepositoryPermissionsBadge } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import { computeResourcesApi } from "../api/computeResources.api";
@@ -154,6 +155,8 @@ export default function SessionLauncherCard({
     );
   }, [launcher?.resource_class_id, resourcePools]);
 
+  const permissions = useProjectPermissions({ projectId: project.id });
+
   return (
     <Card
       className={cx(
@@ -261,12 +264,22 @@ export default function SessionLauncherCard({
                         </span>
                       </SessionBadge>
                     ) : isCodeEnvironment && lastBuild ? (
-                      <BuildStatusBadge
-                        buildStatus={lastBuild?.status}
-                        imageCheck={containerImage}
-                        imageSourceCheck={imageRepositorySource}
-                        resourcePool={resourcePool}
-                      />
+                      <>
+                        <BuildStatusBadge
+                          buildStatus={lastBuild?.status}
+                          imageCheck={containerImage}
+                          imageSourceCheck={imageRepositorySource}
+                          resourcePool={resourcePool}
+                        />
+                        <p>
+                          <RepositoryPermissionsBadge
+                            hasWriteAccess={permissions?.write}
+                            repositoryUrl={
+                              environment.build_parameters.repository
+                            }
+                          />
+                        </p>
+                      </>
                     ) : (
                       <SessionImageBadge
                         data={containerImage}
