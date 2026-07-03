@@ -161,17 +161,17 @@ export const BUILDER_FRONTENDS = [
   {
     /* eslint-disable spellcheck/spell-checker */
     value: "infer",
-    label: "Infer Frontend",
+    label: "Auto-Detect",
     description:
-      "Infer frontend from dependencies, Currently only Marimo is supported.",
+      "Auto-detect the frontend from dependencies. Currently only Marimo is supported.",
     /* eslint-enable spellcheck/spell-checker */
   },
   {
     /* eslint-disable spellcheck/spell-checker */
     value: "none",
-    label: "None",
+    label: "Custom / No Frontend",
     description:
-      "Do not inject a frontend. Please define the entrypoint in a Procfile if needed.",
+      "Renku does not add a frontend. For a custom frontend, define an entrypoint in a Procfile.",
     /* eslint-enable spellcheck/spell-checker */
   },
 ] as readonly BuilderSelectorOption[];
