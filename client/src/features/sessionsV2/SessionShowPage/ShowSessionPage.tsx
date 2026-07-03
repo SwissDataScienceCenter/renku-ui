@@ -429,7 +429,7 @@ function LogsBtn({ toggle }: LogsBtnProps) {
         <FileEarmarkText className="bi" />
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
-        Get logs
+        View logs
       </UncontrolledTooltip>
     </div>
   );

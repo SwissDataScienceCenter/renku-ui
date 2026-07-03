@@ -43,6 +43,7 @@ const jsRules = {
         "accessor",
         "allowfullscreen",
         "amazonaws",
+        "anser",
         "apiversion",
         "ascii",
         "asciimath",

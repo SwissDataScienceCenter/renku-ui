@@ -19,6 +19,10 @@
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
+import {
+  getLauncherCategoryDefinition,
+  sessionLauncherKindToCategory,
+} from "~/features/sessionsV2/session.utils";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import {
@@ -33,12 +37,19 @@ import styles from "./Session.module.scss";
 
 interface SessionCardProps {
   project: Project;
+  onOpen?: () => void;
   session?: SessionV2;
 }
-export default function SessionCard({ project, session }: SessionCardProps) {
+export default function SessionCard({
+  project,
+  session,
+  onOpen,
+}: SessionCardProps) {
   if (!session) return null;
 
-  const stylesPerSession = getSessionStatusStyles(session);
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const stylesPerSession = getSessionStatusStyles(session, launcherCategory);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   return (
     <div
@@ -48,15 +59,28 @@ export default function SessionCard({ project, session }: SessionCardProps) {
         `bg-opacity-${stylesPerSession.bgOpacity}`,
         "p-0",
         "pb-3",
+        "cursor-pointer",
       )}
+      onClick={onOpen}
+      role={onOpen ? "button" : undefined}
+      aria-label={onOpen ? "View session details for this launcher" : undefined}
+      tabIndex={onOpen ? 0 : undefined}
     >
-      <img
-        src={stylesPerSession.sessionLine}
-        className={cx("position-absolute", styles.SessionLine)}
-        alt="Session line indicator"
-        loading="lazy"
-      />
-      <div className={cx("ms-5", "px-3", "pt-3")}>
+      {launcherCategory === "session" && (
+        <img
+          src={stylesPerSession.sessionLine}
+          className={cx("position-absolute", styles.SessionLine)}
+          alt="Session line indicator"
+          loading="lazy"
+        />
+      )}
+      <div
+        className={cx(
+          launcherCategory === "session" ? "ms-5" : "ms-2",
+          "px-3",
+          "pt-3",
+        )}
+      >
         <Row className="g-2">
           <Col xs={12} xl="auto">
             <Row className="g-2">
@@ -71,7 +95,8 @@ export default function SessionCard({ project, session }: SessionCardProps) {
                 )}
               >
                 <span className={cx("small", "text-muted", "me-3")}>
-                  Session
+                  {launcherDefinition.text.display}
+                  {session.submission_id ? `: ${session.submission_id}` : ""}
                 </span>
               </Col>
               <Col
