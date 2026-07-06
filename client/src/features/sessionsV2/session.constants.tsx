@@ -158,12 +158,28 @@ export const BUILDER_FRONTENDS = [
     label: "RStudio",
     description: "Web-based integrated development environment for R.",
   },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "infer",
+    label: "Auto-Detect",
+    description:
+      "Auto-detect the frontend from dependencies. Currently only Marimo is supported.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "none",
+    label: "Custom / No Frontend",
+    description:
+      "Renku does not add a frontend. For a custom frontend, define an entrypoint in a Procfile.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
 ] as readonly BuilderSelectorOption[];
 
 /* eslint-disable spellcheck/spell-checker */
 export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
-  python: ["vscodium", "jupyterlab", "ttyd"],
-  r: ["rstudio"],
+  python: ["vscodium", "jupyterlab", "ttyd", "infer", "none"],
+  r: ["rstudio", "none"],
 };
 
 export const getCompatibleFrontends = (builderVariant: string) => {
