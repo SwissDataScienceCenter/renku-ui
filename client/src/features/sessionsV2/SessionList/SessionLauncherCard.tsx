@@ -271,14 +271,21 @@ export default function SessionLauncherCard({
                           imageSourceCheck={imageRepositorySource}
                           resourcePool={resourcePool}
                         />
-                        <p>
-                          <RepositoryPermissionsBadge
-                            hasWriteAccess={permissions?.write}
-                            repositoryUrl={
-                              environment.build_parameters.repository
-                            }
-                          />
-                        </p>
+                        {(lastBuild.status === "succeeded" ||
+                          lastSuccessfulBuild?.status === "succeeded") && (
+                          <p>
+                            <RepositoryPermissionsBadge
+                              hasWriteAccess={permissions?.write}
+                              repositoryUrl={
+                                lastBuild.status === "succeeded"
+                                  ? lastBuild.result.repository_url
+                                  : lastSuccessfulBuild?.status === "succeeded"
+                                    ? lastSuccessfulBuild.result.repository_url
+                                    : ""
+                              }
+                            />
+                          </p>
+                        )}
                       </>
                     ) : (
                       <SessionImageBadge
