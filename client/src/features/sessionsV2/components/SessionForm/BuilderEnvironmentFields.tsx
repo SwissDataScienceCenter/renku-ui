@@ -97,7 +97,7 @@ export default function BuilderEnvironmentFields({
           (privateRepoBuildEnabled ||
             repo.data.metadata.visibility === "public"),
       ),
-    [data],
+    [data, privateRepoBuildEnabled],
   );
 
   if (!imageBuildersEnabled) {
