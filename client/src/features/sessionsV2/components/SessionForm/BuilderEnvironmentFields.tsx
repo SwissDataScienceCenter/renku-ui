@@ -61,6 +61,9 @@ export default function BuilderEnvironmentFields({
   const { params } = useContext(AppContext);
   const imageBuildersEnabled =
     params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+  const privateRepoBuildEnabled =
+    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
+    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
 
   const { project } = useProject();
   const repositories = project.repositories ?? [];
@@ -89,7 +92,10 @@ export default function BuilderEnvironmentFields({
     () =>
       data?.findIndex(
         (repo) =>
-          repo.data?.status === "valid" && repo.data.metadata?.pull_permission,
+          repo.data?.status === "valid" &&
+          repo.data.metadata?.pull_permission &&
+          (privateRepoBuildEnabled ||
+            repo.data.metadata.visibility === "public"),
       ),
     [data],
   );
