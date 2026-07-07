@@ -88,6 +88,14 @@ export default function BuilderEnvironmentFields({
     [data, selectedRepositoryUrl],
   );
 
+  const hasPullRepository = useMemo(
+    () =>
+      data?.some(
+        (repo) =>
+          repo.data?.status === "valid" && repo.data.metadata?.pull_permission,
+      ) ?? false,
+    [data],
+  );
   const firstEligibleRepository = useMemo(
     () =>
       data?.findIndex(
@@ -125,19 +133,17 @@ export default function BuilderEnvironmentFields({
       <p className="mb-0">Error: could not check code repositories.</p>
       {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
+  ) : (firstEligibleRepository == null || firstEligibleRepository < 0) &&
+    !privateRepoBuildEnabled &&
+    hasPullRepository ? (
+    <WarnAlert dismissible={false}>
+      No public code repositories found in this project. Please note that
+      building from private code repositories is not available.
+    </WarnAlert>
   ) : firstEligibleRepository == null || firstEligibleRepository < 0 ? (
     <WarnAlert dismissible={false}>
-      {privateRepoBuildEnabled ? (
-        <>
-          No accessible code repositories found in this project. Please ensure
-          that you have proper access to them.
-        </>
-      ) : (
-        <>
-          No public code repositories found in this project. Please note that
-          building from private code repositories is not available.
-        </>
-      )}
+      No accessible code repositories found in this project. Please ensure that
+      you have proper access to them.
     </WarnAlert>
   ) : (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
