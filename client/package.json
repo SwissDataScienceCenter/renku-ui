@@ -115,7 +115,7 @@
     "@rtk-query/codegen-openapi": "^2.2.0",
     "@storybook/addon-docs": "^10.2.15",
     "@storybook/react-vite": "^10.2.15",
-    "@storybook/test-runner": "^0.24.2",
+    "@storybook/test-runner": "^0.24.4",
     "@types/compression": "^1.8.1",
     "@types/express": "^5.0.3",
     "@types/lodash-es": "^4.17.12",
@@ -155,7 +155,7 @@
     "vite-env-only": "^3.0.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.1.0",
-    "wait-on": "^8.0.3",
+    "wait-on": "^9.0.10",
     "yaml": "^2.8.3"
   },
   "overrides": {
