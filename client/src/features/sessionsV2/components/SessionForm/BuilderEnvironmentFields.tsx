@@ -127,8 +127,17 @@ export default function BuilderEnvironmentFields({
     </>
   ) : firstEligibleRepository == null || firstEligibleRepository < 0 ? (
     <WarnAlert dismissible={false}>
-      No accessible code repositories found in this project. Please ensure that
-      you have proper access to them.
+      {privateRepoBuildEnabled ? (
+        <>
+          No accessible code repositories found in this project. Please ensure
+          that you have proper access to them.
+        </>
+      ) : (
+        <>
+          No public code repositories found in this project. Please note that
+          building from private code repositories is not available.
+        </>
+      )}
     </WarnAlert>
   ) : (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
