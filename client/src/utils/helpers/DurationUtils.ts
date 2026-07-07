@@ -16,14 +16,31 @@
  * limitations under the License.
  */
 
-import {
-  DateTime,
-  Duration,
-  DurationLikeObject,
-  DurationObjectUnits,
-} from "luxon";
+import { DateTime, Duration, DurationLikeObject } from "luxon";
 
 import { ensureDateTime } from "./DateTimeUtils";
+
+const DURATION_ORDERED_DISPLAY_UNITS = [
+  "years",
+  "months",
+  "weeks",
+  "days",
+  "hours",
+  "minutes",
+  "seconds",
+] as const;
+
+type DisplayDurationUnit = (typeof DURATION_ORDERED_DISPLAY_UNITS)[number];
+
+function formatDurationUnitLabel({
+  unit,
+  rescaled,
+}: {
+  unit: DisplayDurationUnit;
+  rescaled: number;
+}): string {
+  return rescaled < 2 ? unit.slice(0, -1) : unit;
+}
 
 /**
  * Converts a duration-like object to a human-readable string.
@@ -48,7 +65,7 @@ export function toHumanDuration({
     return "< 1 second";
   }
 
-  const unitStr = rescaled < 2 ? unit.slice(0, -1) : unit;
+  const unitStr = formatDurationUnitLabel({ unit, rescaled });
   return `${rescaled} ${unitStr}`;
 }
 
@@ -93,22 +110,12 @@ export function ensureDuration(duration: Duration | number): Duration {
       : Duration.fromISO("");
 }
 
-type DurationUnit = keyof DurationObjectUnits;
-
-const DURATION_ORDERED_DISPLAY_UNITS: readonly DurationUnit[] = [
-  "years",
-  "months",
-  "weeks",
-  "days",
-  "hours",
-  "minutes",
-  "seconds",
-] as const;
-
 /**
  * @returns the most significant duration unit from the input
  */
-export function getMostSignificantUnit(duration: Duration): DurationUnit {
+export function getMostSignificantUnit(
+  duration: Duration,
+): DisplayDurationUnit {
   if (!duration.isValid) {
     return "seconds";
   }
@@ -140,19 +147,24 @@ export function toShortHumanDuration({
   return toHumanDuration({ duration });
 }
 
+export type RemoveSuffix = "past" | "future" | false;
+
 /**
  * Converts a datetime-like object to a human-readable string relative to the current instant,
  * e.g. "3 minutes ago", "2 days from now".
  * @param datetime a DateTime instance, a Date instance or an ISO 8601 string
  * @param now the current instant
- * @returns a human-readable string
+ * @param removeSuffix when "past" or "future", omits the suffix only if datetime is on that
+ *   side of now; otherwise keeps the suffix to surface unexpected timestamp
  */
 export function toHumanRelativeDuration({
   datetime: datetime_,
   now: now_,
+  removeSuffix = false,
 }: {
   datetime: DateTime | Date | string;
   now: DateTime | Date;
+  removeSuffix?: RemoveSuffix;
 }): string {
   const datetime = ensureDateTime(datetime_);
   const now = ensureDateTime(now_);
@@ -164,11 +176,23 @@ export function toHumanRelativeDuration({
   const duration = now.diff(datetime);
 
   const seconds = Math.abs(duration.as("seconds"));
-  if (seconds < 1) {
+  if (seconds < 1 && removeSuffix === false) {
     return "just now";
   }
 
-  const suffix = duration.valueOf() > 0 ? "ago" : "from now";
   const durationStr = toHumanDuration({ duration });
+  const isPast = duration.valueOf() > 0;
+  const shouldRemoveSuffix =
+    removeSuffix === "past"
+      ? isPast
+      : removeSuffix === "future"
+        ? !isPast
+        : false;
+
+  if (shouldRemoveSuffix) {
+    return durationStr;
+  }
+
+  const suffix = isPast ? "ago" : "from now";
   return `${durationStr} ${suffix}`;
 }

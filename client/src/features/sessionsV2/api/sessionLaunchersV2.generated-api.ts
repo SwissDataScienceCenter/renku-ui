@@ -275,8 +275,12 @@ export type ErrorResponse = {
     trace_id?: string;
   };
 };
+export type CommandAndArgs = {
+  command?: EnvironmentCommand;
+  args?: EnvironmentArgs;
+};
 export type EnvironmentImageSourceImage = "image";
-export type EnvironmentPost = {
+export type EnvironmentPost = CommandAndArgs & {
   name: SessionName;
   description?: Description;
   container_image: ContainerImage;
@@ -286,19 +290,15 @@ export type EnvironmentPost = {
   working_directory?: EnvironmentWorkingDirectory;
   mount_directory?: EnvironmentMountDirectory;
   port?: EnvironmentPort;
-  command?: EnvironmentCommand;
-  args?: EnvironmentArgs;
   is_archived?: IsArchived;
   environment_image_source: EnvironmentImageSourceImage;
   strip_path_prefix?: StripPathPrefix;
 };
 export type EnvironmentWorkingDirectoryPatch = string;
 export type EnvironmentMountDirectoryPatch = string;
-export type EnvironmentPatchCommand = string[] | null;
-export type EnvironmentPatchArgs = string[] | null;
 export type IsArchivedPatch = boolean;
 export type StripPathPrefixPatch = boolean;
-export type EnvironmentPatch = {
+export type EnvironmentPatch = CommandAndArgs & {
   name?: SessionName;
   description?: Description;
   container_image?: ContainerImage;
@@ -308,8 +308,6 @@ export type EnvironmentPatch = {
   working_directory?: EnvironmentWorkingDirectoryPatch;
   mount_directory?: EnvironmentMountDirectoryPatch;
   port?: EnvironmentPort;
-  command?: EnvironmentPatchCommand;
-  args?: EnvironmentPatchArgs;
   is_archived?: IsArchivedPatch;
   strip_path_prefix?: StripPathPrefixPatch;
 };
@@ -325,7 +323,7 @@ export type BuilderVariant = string;
 export type FrontendVariant = string;
 export type RepositoryRevision = string;
 export type BuildContextDir = string;
-export type BuildParameters = {
+export type BuildParameters = any & {
   repository: Repository;
   platforms?: BuildPlatforms;
   builder_variant: BuilderVariant;
@@ -350,7 +348,7 @@ export type EnvVar = {
   value?: string;
 };
 export type EnvVariables = EnvVar[];
-export type LauncherType = "interactive" | "non_interactive";
+export type LauncherType = "interactive" | "non-interactive";
 export type SessionLauncher = {
   id: Ulid;
   project_id: Ulid;
@@ -367,9 +365,10 @@ export type SessionLaunchersList = SessionLauncher[];
 export type EnvironmentPostInLauncherHelper = EnvironmentPost & {
   environment_kind: EnvironmentKind;
 };
-export type BuildParametersPost = BuildParameters & {
-  environment_image_source: EnvironmentImageSourceBuild;
-};
+export type BuildParametersPost = BuildParameters &
+  CommandAndArgs & {
+    environment_image_source: EnvironmentImageSourceBuild;
+  };
 export type EnvironmentPostInLauncher =
   | EnvironmentPostInLauncherHelper
   | BuildParametersPost;

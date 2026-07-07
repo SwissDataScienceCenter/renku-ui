@@ -25,7 +25,10 @@ import {
   ensureDateTime,
   toHumanDateTime,
 } from "../utils/helpers/DateTimeUtils";
-import { toHumanRelativeDuration } from "../utils/helpers/DurationUtils";
+import {
+  RemoveSuffix,
+  toHumanRelativeDuration,
+} from "../utils/helpers/DurationUtils";
 
 interface TimeCaptionProps {
   className?: string;
@@ -34,6 +37,8 @@ interface TimeCaptionProps {
   noCaption?: boolean;
   prefix?: ReactNode;
   suffix?: ReactNode;
+  /** Omit "ago"/"from now" when datetime is on the given side of now. */
+  removeRelativeSuffix?: RemoveSuffix;
 }
 
 export function TimeCaption({
@@ -43,13 +48,18 @@ export function TimeCaption({
   noCaption,
   prefix,
   suffix,
+  removeRelativeSuffix = false,
 }: TimeCaptionProps) {
   const [now, setNow] = useState<DateTime>(DateTime.utc());
 
   const datetime = datetime_ ? ensureDateTime(datetime_) : null;
   const durationStr =
     datetime != null && datetime.isValid
-      ? toHumanRelativeDuration({ datetime, now })
+      ? toHumanRelativeDuration({
+          datetime,
+          now,
+          removeSuffix: removeRelativeSuffix,
+        })
       : "at unknown time";
 
   const className = noCaption ? className_ : cx("time-caption", className_);
