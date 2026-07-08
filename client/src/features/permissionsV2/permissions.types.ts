@@ -21,3 +21,12 @@ export type RequestedPermission = "write" | "delete" | "change_membership";
 export type Permissions = {
   [key in RequestedPermission]: boolean;
 };
+
+export type PermissionsWithLoadingState = Permissions & {
+  arePermissionsResolved: boolean;
+  isLoadingPermissions: boolean;
+  isPermissionsError: boolean;
+  permissionsError?: unknown;
+};
+
+export type ProjectPermissions = PermissionsWithLoadingState;

@@ -472,6 +472,7 @@
       },
       "patch": {
         "summary": "Update specific fields of an existing resource pool",
+        "description": "Note that the quota cannot be removed using the PATCH method.\nTo remove the quota, use the PUT method and unset the quota field.\n",
         "parameters": [
           {
             "in": "path",

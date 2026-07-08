@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ChevronDown, XLg } from "react-bootstrap-icons";
 import {
   Controller,
@@ -38,6 +38,8 @@ import Select, {
 import { Label } from "reactstrap";
 
 import { GetRepositoriesApiResponse } from "~/features/repositories/api/repositories.api";
+import AppContext from "../../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 
 import styles from "./Select.module.scss";
@@ -52,6 +54,10 @@ export default function CodeRepositorySelector<T extends FieldValues>({
   repositoriesDetails,
   ...controllerProps
 }: CodeRepositorySelectorProps<T>) {
+  const { params } = useContext(AppContext);
+  const privateRepoBuildEnabled =
+    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
+    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
   const defaultValue = useMemo(
     () =>
       controllerProps.defaultValue
@@ -59,9 +65,15 @@ export default function CodeRepositorySelector<T extends FieldValues>({
         : repositoriesDetails.find(
             (repo) =>
               repo.data?.status === "valid" &&
-              repo.data.metadata?.pull_permission,
+              repo.data.metadata?.pull_permission &&
+              (privateRepoBuildEnabled ||
+                repo.data.metadata.visibility === "public"),
           )?.url,
-    [controllerProps.defaultValue, repositoriesDetails],
+    [
+      controllerProps.defaultValue,
+      privateRepoBuildEnabled,
+      repositoriesDetails,
+    ],
   );
 
   return (
@@ -129,6 +141,11 @@ function CodeRepositorySelect({
   value: value_,
   disabled,
 }: CodeRepositorySelectProps) {
+  const { params } = useContext(AppContext);
+  const privateRepoBuildEnabled =
+    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
+    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
+
   const defaultValue = useMemo(
     () => options.find((repository) => repository.url === defaultValue_),
     [defaultValue_, options],
@@ -165,7 +182,9 @@ function CodeRepositorySelect({
       unstyled
       isOptionDisabled={(option) =>
         option.data?.status !== "valid" ||
-        !option.data.metadata?.pull_permission
+        !option.data.metadata?.pull_permission ||
+        (option.data.metadata.visibility === "private" &&
+          !privateRepoBuildEnabled)
       }
       onChange={onChange}
       onBlur={onBlur}
@@ -207,6 +226,11 @@ interface OptionValueContentProps {
 
 function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
   const title = getRepositoryName(option.url);
+  const { params } = useContext(AppContext);
+  const privateRepoBuildEnabled =
+    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
+    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
+
   return (
     <>
       <div>
@@ -218,12 +242,19 @@ function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
         >
           {title}
         </span>
-        {isDisabled && (
-          <span className="ms-1">
-            <XLg className={cx("bi", "me-1")} />
-            No public access
-          </span>
-        )}
+        {isDisabled &&
+          (option.data?.metadata?.visibility === "private" &&
+          !privateRepoBuildEnabled ? (
+            <span className="ms-1">
+              <XLg className={cx("bi", "me-1")} />
+              Private repository builds are not available
+            </span>
+          ) : (
+            <span className="ms-1">
+              <XLg className={cx("bi", "me-1")} />
+              Cannot clone repository
+            </span>
+          ))}
       </div>
       <div>{option.url}</div>
     </>
@@ -236,17 +267,29 @@ interface SingleValueContentProps {
 }
 
 function SingleValueContent({ option, isDisabled }: SingleValueContentProps) {
+  const { params } = useContext(AppContext);
+  const privateRepoBuildEnabled =
+    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
+    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
+
   return (
     <>
       <span className={cx(isDisabled && "text-decoration-line-through")}>
         {option.url}
       </span>
-      {isDisabled && (
-        <span className="ms-1">
-          <XLg className={cx("bi", "me-1")} />
-          No public access
-        </span>
-      )}
+      {isDisabled &&
+        (option.data?.metadata?.visibility == "private" &&
+        !privateRepoBuildEnabled ? (
+          <span className="ms-1">
+            <XLg className={cx("bi", "me-1")} />
+            Private repository builds are not available
+          </span>
+        ) : (
+          <span className="ms-1">
+            <XLg className={cx("bi", "me-1")} />
+            Cannot clone repository
+          </span>
+        ))}
     </>
   );
 }

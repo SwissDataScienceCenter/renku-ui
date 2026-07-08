@@ -35,7 +35,19 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
 
     sessionImage(args?: NameOnlyFixture) {
       const { name = "getSessionImage" } = args ?? {};
-      const response = { status: 200 };
+      const response = {
+        accessible: true,
+        platforms: [
+          {
+            architecture: "amd64",
+            os: "linux",
+          },
+          {
+            architecture: "arm64",
+            os: "linux",
+          },
+        ],
+      };
       cy.intercept("GET", "/api/data/sessions/images?image_url=*", response).as(
         name,
       );

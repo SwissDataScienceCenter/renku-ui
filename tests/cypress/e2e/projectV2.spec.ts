@@ -613,7 +613,7 @@ describe("Editor cannot maintain members", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.wait("@listProjectV2Members");
     cy.wait("@getDataServicesUser");
-    cy.getDataCy("add-session-launcher").should("be.visible");
+    cy.getDataCy("add-launcher").should("be.visible");
     cy.getDataCy("add-data-connector").should("be.visible");
     cy.getDataCy("add-code-repository").should("be.visible");
   });
@@ -668,7 +668,7 @@ describe("Viewer cannot edit project", () => {
     cy.contains("test 2 v2-project").should("be.visible");
     cy.wait("@listProjectV2Members");
     cy.wait("@getDataServicesUser");
-    cy.getDataCy("add-session-launcher").should("not.exist");
+    cy.getDataCy("add-launcher").should("not.exist");
     cy.getDataCy("add-data-connector").should("not.exist");
     cy.getDataCy("add-code-repository").should("not.exist");
   });
