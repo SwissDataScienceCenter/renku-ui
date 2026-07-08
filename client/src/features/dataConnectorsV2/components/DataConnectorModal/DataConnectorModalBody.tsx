@@ -750,7 +750,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
         </Row>
 
         <div className={cx("form-text", "text-muted")}>
-          Keywords help orginizing your work and are available to search. You
+          Keywords help organizing your work and are available to search. You
           can use them to group elements that belong together or to create
           specific topics. You can add multiple keywords.
         </div>
