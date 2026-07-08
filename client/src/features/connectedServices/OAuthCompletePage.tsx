@@ -22,8 +22,9 @@ import { Plugin, XLg } from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
 import { Button } from "reactstrap";
 
-import { ErrorAlert, SuccessAlert } from "../../components/Alert";
+import { ErrorAlert, InfoAlert, SuccessAlert } from "../../components/Alert";
 import ContainerWrap from "../../components/container/ContainerWrap";
+import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { GitHubOAuthCompleteFollowUp } from "./ConnectedServicesPage";
 import {
@@ -73,6 +74,11 @@ export default function OAuthCompletePage() {
     hasError,
     githubFollowUpData,
   );
+  const isCompletingGithubSetup =
+    !hasError &&
+    (githubFollowUpData.isLoadingProviders ||
+      githubFollowUpData.isLoadingConnections ||
+      githubFollowUpData.isGithubAppFollowUp);
 
   const onCloseTab = useCallback(() => {
     window.close();
@@ -116,6 +122,26 @@ export default function OAuthCompletePage() {
                 Close Tab
               </Button>
             </div>
+          </>
+        ) : isCompletingGithubSetup ? (
+          <>
+            <InfoAlert
+              dismissible={false}
+              timeout={0}
+              data-cy="oauth2-complete-pending"
+            >
+              <h3>Checking GitHub installation</h3>
+              <p>
+                Your authorization has been received. We are checking for
+                possible additional setup required on GitHub side. Please
+                wait... <Loader inline size={16} />
+              </p>
+            </InfoAlert>
+            <GitHubOAuthCompleteFollowUp
+              skipData={githubFollowUpData.skipData}
+              connection={githubFollowUpData.connection}
+              provider={githubFollowUpData.provider}
+            />
           </>
         ) : (
           <>
