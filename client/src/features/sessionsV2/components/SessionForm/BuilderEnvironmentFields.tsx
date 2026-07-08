@@ -61,6 +61,9 @@ export default function BuilderEnvironmentFields({
   const { params } = useContext(AppContext);
   const imageBuildersEnabled =
     params?.IMAGE_BUILDERS_ENABLED ?? DEFAULT_APP_PARAMS.IMAGE_BUILDERS_ENABLED;
+  const privateRepoBuildEnabled =
+    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
+    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
 
   const { project } = useProject();
   const repositories = project.repositories ?? [];
@@ -85,13 +88,24 @@ export default function BuilderEnvironmentFields({
     [data, selectedRepositoryUrl],
   );
 
+  const hasPullRepository = useMemo(
+    () =>
+      data?.some(
+        (repo) =>
+          repo.data?.status === "valid" && repo.data.metadata?.pull_permission,
+      ) ?? false,
+    [data],
+  );
   const firstEligibleRepository = useMemo(
     () =>
       data?.findIndex(
         (repo) =>
-          repo.data?.status === "valid" && repo.data.metadata?.pull_permission,
+          repo.data?.status === "valid" &&
+          repo.data.metadata?.pull_permission &&
+          (privateRepoBuildEnabled ||
+            repo.data.metadata.visibility === "public"),
       ),
-    [data],
+    [data, privateRepoBuildEnabled],
   );
 
   if (!imageBuildersEnabled) {
@@ -119,6 +133,13 @@ export default function BuilderEnvironmentFields({
       <p className="mb-0">Error: could not check code repositories.</p>
       {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
+  ) : (firstEligibleRepository == null || firstEligibleRepository < 0) &&
+    !privateRepoBuildEnabled &&
+    hasPullRepository ? (
+    <WarnAlert dismissible={false}>
+      No public code repositories found in this project. Please note that
+      building from private code repositories is not available.
+    </WarnAlert>
   ) : firstEligibleRepository == null || firstEligibleRepository < 0 ? (
     <WarnAlert dismissible={false}>
       No accessible code repositories found in this project. Please ensure that
