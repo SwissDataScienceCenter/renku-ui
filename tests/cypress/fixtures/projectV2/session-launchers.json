@@ -27,6 +27,7 @@
         "name": "VAR_WITH_LONGER_NAME",
         "value": "value2"
       }
-    ]
+    ],
+    "launcher_type": "interactive"
   }
 ]

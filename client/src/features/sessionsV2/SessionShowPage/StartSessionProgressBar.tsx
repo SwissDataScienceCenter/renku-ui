@@ -57,7 +57,7 @@ export function StartSessionProgressBarV2({
       </div>
       <div>
         <Button className="mt-3" color="outline-primary" onClick={toggleLogs}>
-          Open Logs
+          View logs
         </Button>
       </div>
     </div>

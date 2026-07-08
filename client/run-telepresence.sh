@@ -201,6 +201,7 @@ tee > ./public/config.json << EOF
   "USER_PREFERENCES_MAX_PINNED_PROJECTS": ${USER_PREFERENCES_MAX_PINNED_PROJECTS:-5},
   "SESSION_CLASS_EMAIL_US": { "enabled": false },
   "IMAGE_BUILDERS_ENABLED": true,
+  "BUILD_PRIVATE_REPO_BUILDS_ENABLED": true,
   "CONTACT_EMAIL":  "hello@renku.io"
 }
 EOF
