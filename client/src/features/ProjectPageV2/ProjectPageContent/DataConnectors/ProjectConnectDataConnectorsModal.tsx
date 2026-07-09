@@ -19,6 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   Bullseye, // eslint-disable-line spellcheck/spell-checker
   CheckLg,
@@ -29,6 +30,7 @@ import {
   NodePlus,
   People,
   PlusLg,
+  XLg,
   XCircleFill,
 } from "react-bootstrap-icons";
 import { createSearchParams, Link } from "react-router";
@@ -37,14 +39,18 @@ import {
   ButtonGroup,
   Col,
   Form,
+  FormText,
   Input,
   InputGroup,
+  InputGroupText,
   Label,
   ListGroup,
   ListGroupItem,
   ModalBody,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
+import { InfoAlert } from "~/components/Alert";
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
@@ -82,6 +88,10 @@ import {
   DC_SEARCH_SLUG_PREFIX,
   DC_SEARCH_TYPE,
   DC_SUCCESS_MESSAGE_TIMEOUT_MS,
+  MIN_PROJECT_STORAGE_GB,
+  MAX_PROJECT_STORAGE_GB,
+  STEP_PROJECT_STORAGE_GB,
+  DEFAULT_PROJECT_STORAGE_GB,
 } from "./projectDataConnectors.constants";
 
 interface ProjectConnectDataConnectorsModalProps extends Omit<
@@ -89,10 +99,10 @@ interface ProjectConnectDataConnectorsModalProps extends Omit<
   "dataConnector" | "projectId"
 > {
   project: Project;
-  switchMode?: () => void;
+  switchMode?: (mode: ProjectConnectDataConnectorMode) => void;
 }
 
-type ProjectConnectDataConnectorMode = "create" | "search";
+export type ProjectConnectDataConnectorMode = "create" | "search" | "add-storage";
 
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
@@ -106,10 +116,9 @@ export default function ProjectConnectDataConnectorsModal({
     dispatch(dataConnectorFormSlice.actions.resetTransientState());
     originalToggle();
   }, [dispatch, originalToggle]);
-  const switchMode = useCallback(() => {
-    if (mode === "create") setMode("search");
-    else setMode("create");
-  }, [mode]);
+  const switchMode = useCallback((mode: ProjectConnectDataConnectorMode) => {
+    setMode(mode);
+  }, []);
 
   return (
     <ScrollableModal
@@ -138,7 +147,7 @@ export default function ProjectConnectDataConnectorsModal({
             toggle,
           }}
         />
-      ) : (
+      ) : mode === "search" ? (
         <ProjectSearchDataConnectorBodyAndFooter
           {...{
             isOpen,
@@ -148,7 +157,17 @@ export default function ProjectConnectDataConnectorsModal({
             toggle,
           }}
         />
-      )}
+      ) : mode === "add-storage" ? (
+        <ProjectStorageDataConnectorBodyAndFooter
+          {...{
+            isOpen,
+            namespace,
+            project,
+            switchMode,
+            toggle,
+          }}
+        />
+      ) : null}
     </ScrollableModal>
   );
 }
@@ -198,7 +217,7 @@ export function ProjectConnectDataConnectorModeSwitch({
   switchMode,
 }: {
   mode: ProjectConnectDataConnectorMode;
-  switchMode: () => void;
+  switchMode: (mode: ProjectConnectDataConnectorMode) => void;
 }) {
   return (
     <ButtonGroup>
@@ -208,7 +227,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         id="project-data-controller-mode-search"
         value="search"
         checked={mode === "search"}
-        onChange={switchMode}
+        onChange={() => switchMode("search")}
       />
       <Label
         data-cy="project-data-controller-mode-search"
@@ -230,7 +249,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         id="project-data-controller-mode-create"
         value="create"
         checked={mode === "create"}
-        onChange={switchMode}
+        onChange={() => switchMode("create")}
       />
       <Label
         data-cy="project-data-controller-mode-create"
@@ -245,7 +264,199 @@ export function ProjectConnectDataConnectorModeSwitch({
         <PlusLg className={cx("fs-3", "me-1")} />
         Create a data connector
       </Label>
+
+      <Input
+        type="radio"
+        className="btn-check"
+        id="project-data-controller-mode-add-storage"
+        value="add-storage"
+        checked={mode === "add-storage"}
+        onChange={() => switchMode("add-storage")}
+      />
+      <Label
+        data-cy="project-data-controller-mode-add-storage"
+        for="project-data-controller-mode-add-storage"
+        className={cx(
+          "align-items-center",
+          "btn-outline-primary",
+          "btn",
+          "d-flex",
+        )}
+      >
+        <PlusLg className={cx("fs-3", "me-1")} />
+        Add project storage
+      </Label>
     </ButtonGroup>
+  );
+}
+
+interface ProjectStorageForm {
+  projectStorage: number | null;
+  mountPoint: string;
+}
+
+function ProjectStorageDataConnectorBodyAndFooter({
+  isOpen,
+  project,
+  switchMode,
+  toggle,
+}: ProjectConnectDataConnectorsModalProps) {
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<ProjectStorageForm>({
+    mode: "onChange",
+    defaultValues: {
+      projectStorage: DEFAULT_PROJECT_STORAGE_GB,
+      mountPoint: "",
+    },
+  });
+
+  const watchCurrentProjectStorage = useWatch({ control, name: "projectStorage" });
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+  }, [isOpen]);
+
+  const onSubmit = (values: ProjectStorageForm) => {
+    // TODO: Call api to add project storage with the provided values
+    console.log("Form submitted with values:", values);
+  };
+
+  return (
+    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <ModalBody data-cy="data-connector-search-body" toggle={toggle}>
+        {switchMode && (
+          <div className="mb-3">
+            <ProjectConnectDataConnectorModeSwitch
+              mode="add-storage"
+              switchMode={switchMode}
+            />
+          </div>
+        )}
+
+        <div className="mb-4">
+          <InfoAlert dismissible={false} timeout={0}>
+            <p>This is how project storage is configured... This is only available to project owners. 1 project storage per project.</p>
+          </InfoAlert>
+          <div className="mb-3">
+            <div>
+              Project storage:{" "}
+              <span className="fw-bold">
+                {watchCurrentProjectStorage &&
+                  <>{watchCurrentProjectStorage} GB {watchCurrentProjectStorage == DEFAULT_PROJECT_STORAGE_GB ? "(default)" : ""}</>
+                }
+              </span>
+            </div>
+            <Controller
+              control={control}
+              name="projectStorage"
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <InputGroup className={cx(error && "is-invalid")}>
+                    <Input
+                      id="projectStorage"
+                      className={cx(error && "is-invalid")}
+                      type="number"
+                      min={MIN_PROJECT_STORAGE_GB}
+                      max={MAX_PROJECT_STORAGE_GB}
+                      step={STEP_PROJECT_STORAGE_GB}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(event) => {
+                        if (isNaN(event.target.valueAsNumber)) {
+                          field.onChange(event.target.value);
+                        } else {
+                          field.onChange(event.target.valueAsNumber);
+                        }
+                      }}
+                    />
+                    <InputGroupText id="configure-project-storage-addon">
+                      GB
+                    </InputGroupText>
+                    <UncontrolledTooltip target="configure-project-storage-addon">
+                      Gigabytes
+                    </UncontrolledTooltip>
+                  </InputGroup>
+                  <div className="invalid-feedback">
+                    {error?.message ||
+                      "Please provide a valid value for project storage."}
+                  </div>
+                  <FormText>
+                    Default: {DEFAULT_PROJECT_STORAGE_GB} GB, max:{" "}
+                    {MAX_PROJECT_STORAGE_GB} GB
+                  </FormText>
+                </>
+              )}
+              rules={{
+                min: {
+                  value: MIN_PROJECT_STORAGE_GB,
+                  message: `Please select a value greater than or equal to ${MIN_PROJECT_STORAGE_GB}.`,
+                },
+                max: {
+                  value: MAX_PROJECT_STORAGE_GB,
+                  message: `Selected project storage exceeds maximum allowed value (${MAX_PROJECT_STORAGE_GB} GB).`,
+                },
+                validate: {
+                  integer: (value: unknown) =>
+                    value == null ||
+                    value === "" ||
+                    (!isNaN(parseInt(`${value}`, 10)) &&
+                      parseInt(`${value}`, 10) == parseFloat(`${value}`)),
+                },
+              }}
+            />
+          </div>
+          <div className="mb-3">
+            <Label className="form-label" for="mountPoint">
+              Mount location
+            </Label>
+            <Controller
+              name="mountPoint"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <input
+                    id="mountPoint"
+                    type="text"
+                    placeholder="e.g., /mnt/data"
+                    {...field}
+                    className={cx("form-control", errors.mountPoint && "is-invalid")}
+                    data-cy="simple-form-mount-point-input"
+                  />
+                  <FormText>
+                    By default, the mount location is <code>/mnt/data</code>. You can change it if needed.
+                  </FormText>
+                </>
+              )}
+              rules={{ required: false }}
+            />
+            <div className="invalid-feedback">Please provide a mount location.</div>
+          </div>
+
+          <div className={cx("d-flex", "gap-2", "justify-content-end")}>
+            <Button
+              color="outline-primary"
+              data-cy="simple-form-cancel-button"
+              onClick={() => toggle()}
+            >
+              <XLg className={cx("bi", "me-1")} />
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              data-cy="simple-form-submit-button"
+              type="submit"
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
+      </ModalBody>
+    </Form>
   );
 }
 

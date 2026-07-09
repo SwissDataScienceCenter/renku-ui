@@ -45,6 +45,7 @@ import {
 } from "../dataConnector.utils";
 import DataConnectorModalBody from "./DataConnectorModalBody";
 import DataConnectorModalFooter from "./DataConnectorModalFooter";
+import type { ProjectConnectDataConnectorMode } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 
 import styles from "./DataConnectorModal.module.scss";
 
@@ -163,7 +164,7 @@ interface DataConnectorModalProps {
   isOpen: boolean;
   namespace?: string;
   project?: Project;
-  switchMode?: () => void;
+  switchMode?: (mode: ProjectConnectDataConnectorMode) => void;
   toggle: (initialStep?: number) => void;
 }
 export default function DataConnectorModal({
