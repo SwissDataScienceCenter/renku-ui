@@ -36,7 +36,10 @@ import {
   getSchema,
   getSchemaOptions,
 } from "~/features/cloudStorage/projectCloudStorage.utils";
-import { type ProjectConnectDataConnectorMode, ProjectConnectDataConnectorModeSwitch } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
+import {
+  ProjectConnectDataConnectorModeSwitch,
+  type ProjectConnectDataConnectorMode,
+} from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
@@ -149,6 +152,7 @@ function AddOrEditDataConnector({
             <ProjectConnectDataConnectorModeSwitch
               mode="create"
               switchMode={switchMode}
+              project={project as Project}
             />
           </div>
         )}

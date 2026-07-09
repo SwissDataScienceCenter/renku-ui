@@ -22,6 +22,7 @@ import { useCallback, useEffect } from "react";
 import { Database, XLg } from "react-bootstrap-icons";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
+import type { ProjectConnectDataConnectorMode } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 import { ErrorAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
@@ -45,7 +46,6 @@ import {
 } from "../dataConnector.utils";
 import DataConnectorModalBody from "./DataConnectorModalBody";
 import DataConnectorModalFooter from "./DataConnectorModalFooter";
-import type { ProjectConnectDataConnectorMode } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 
 import styles from "./DataConnectorModal.module.scss";
 

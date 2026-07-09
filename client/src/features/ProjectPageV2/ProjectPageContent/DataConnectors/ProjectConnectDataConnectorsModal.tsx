@@ -19,7 +19,6 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   Bullseye, // eslint-disable-line spellcheck/spell-checker
   CheckLg,
@@ -30,9 +29,10 @@ import {
   NodePlus,
   People,
   PlusLg,
-  XLg,
   XCircleFill,
+  XLg,
 } from "react-bootstrap-icons";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { createSearchParams, Link } from "react-router";
 import {
   Button,
@@ -50,8 +50,8 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { InfoAlert } from "~/components/Alert";
 
+import { InfoAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
@@ -76,8 +76,10 @@ import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { doiFromUrl } from "../../utils/dataConnectorUtils";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import {
   DC_LIKELY_DOI_ID,
   DC_SEARCH_DOI_PREFIX,
@@ -88,10 +90,10 @@ import {
   DC_SEARCH_SLUG_PREFIX,
   DC_SEARCH_TYPE,
   DC_SUCCESS_MESSAGE_TIMEOUT_MS,
-  MIN_PROJECT_STORAGE_GB,
-  MAX_PROJECT_STORAGE_GB,
-  STEP_PROJECT_STORAGE_GB,
   DEFAULT_PROJECT_STORAGE_GB,
+  MAX_PROJECT_STORAGE_GB,
+  MIN_PROJECT_STORAGE_GB,
+  STEP_PROJECT_STORAGE_GB,
 } from "./projectDataConnectors.constants";
 
 interface ProjectConnectDataConnectorsModalProps extends Omit<
@@ -102,7 +104,10 @@ interface ProjectConnectDataConnectorsModalProps extends Omit<
   switchMode?: (mode: ProjectConnectDataConnectorMode) => void;
 }
 
-export type ProjectConnectDataConnectorMode = "create" | "search" | "add-storage";
+export type ProjectConnectDataConnectorMode =
+  | "create"
+  | "search"
+  | "add-storage";
 
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
@@ -215,10 +220,14 @@ function ProjectCreateDataConnectorBodyAndFooter({
 export function ProjectConnectDataConnectorModeSwitch({
   mode,
   switchMode,
+  project,
 }: {
   mode: ProjectConnectDataConnectorMode;
   switchMode: (mode: ProjectConnectDataConnectorMode) => void;
+  project: Project;
 }) {
+  const permissions = useProjectPermissions({ projectId: project.id });
+
   return (
     <ButtonGroup>
       <Input
@@ -265,27 +274,36 @@ export function ProjectConnectDataConnectorModeSwitch({
         Create a data connector
       </Label>
 
-      <Input
-        type="radio"
-        className="btn-check"
-        id="project-data-controller-mode-add-storage"
-        value="add-storage"
-        checked={mode === "add-storage"}
-        onChange={() => switchMode("add-storage")}
+      <PermissionsGuard
+        disabled={null}
+        enabled={
+          <>
+            <Input
+              type="radio"
+              className="btn-check"
+              id="project-data-controller-mode-add-storage"
+              value="add-storage"
+              checked={mode === "add-storage"}
+              onChange={() => switchMode("add-storage")}
+            />
+            <Label
+              data-cy="project-data-controller-mode-add-storage"
+              for="project-data-controller-mode-add-storage"
+              className={cx(
+                "align-items-center",
+                "btn-outline-primary",
+                "btn",
+                "d-flex",
+              )}
+            >
+              <PlusLg className={cx("fs-3", "me-1")} />
+              Add project storage
+            </Label>
+          </>
+        }
+        requestedPermission="delete" // TODO: change to proper permission
+        userPermissions={permissions}
       />
-      <Label
-        data-cy="project-data-controller-mode-add-storage"
-        for="project-data-controller-mode-add-storage"
-        className={cx(
-          "align-items-center",
-          "btn-outline-primary",
-          "btn",
-          "d-flex",
-        )}
-      >
-        <PlusLg className={cx("fs-3", "me-1")} />
-        Add project storage
-      </Label>
     </ButtonGroup>
   );
 }
@@ -313,7 +331,10 @@ function ProjectStorageDataConnectorBodyAndFooter({
     },
   });
 
-  const watchCurrentProjectStorage = useWatch({ control, name: "projectStorage" });
+  const watchCurrentProjectStorage = useWatch({
+    control,
+    name: "projectStorage",
+  });
 
   useEffect(() => {
     if (!isOpen) {
@@ -334,21 +355,29 @@ function ProjectStorageDataConnectorBodyAndFooter({
             <ProjectConnectDataConnectorModeSwitch
               mode="add-storage"
               switchMode={switchMode}
+              project={project}
             />
           </div>
         )}
 
         <div className="mb-4">
           <InfoAlert dismissible={false} timeout={0}>
-            <p>This is how project storage is configured... This is only available to project owners. 1 project storage per project.</p>
+            <p>
+              This is how project storage is configured... You can only setup 1
+              project storage per project.
+            </p>
           </InfoAlert>
           <div className="mb-3">
             <div>
               Project storage:{" "}
               <span className="fw-bold">
-                {watchCurrentProjectStorage &&
-                  <>{watchCurrentProjectStorage} GB {watchCurrentProjectStorage == DEFAULT_PROJECT_STORAGE_GB ? "(default)" : ""}</>
-                }
+                {watchCurrentProjectStorage && (
+                  <>
+                    {watchCurrentProjectStorage} GB{" "}
+                    {watchCurrentProjectStorage == DEFAULT_PROJECT_STORAGE_GB &&
+                      "(default)"}
+                  </>
+                )}
               </span>
             </div>
             <Controller
@@ -424,23 +453,29 @@ function ProjectStorageDataConnectorBodyAndFooter({
                     type="text"
                     placeholder="e.g., /mnt/data"
                     {...field}
-                    className={cx("form-control", errors.mountPoint && "is-invalid")}
-                    data-cy="simple-form-mount-point-input"
+                    className={cx(
+                      "form-control",
+                      errors.mountPoint && "is-invalid",
+                    )}
+                    data-cy="project-storage-form-mount-point-input"
                   />
                   <FormText>
-                    By default, the mount location is <code>/mnt/data</code>. You can change it if needed.
+                    By default, the mount location is <code>/mnt/data</code>.
+                    You can change it if needed.
                   </FormText>
                 </>
               )}
               rules={{ required: false }}
             />
-            <div className="invalid-feedback">Please provide a mount location.</div>
+            <div className="invalid-feedback">
+              Please provide a mount location.
+            </div>
           </div>
 
           <div className={cx("d-flex", "gap-2", "justify-content-end")}>
             <Button
               color="outline-primary"
-              data-cy="simple-form-cancel-button"
+              data-cy="project-storage-form-cancel-button"
               onClick={() => toggle()}
             >
               <XLg className={cx("bi", "me-1")} />
@@ -448,7 +483,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
             </Button>
             <Button
               color="primary"
-              data-cy="simple-form-submit-button"
+              data-cy="project-storage-form-submit-button"
               type="submit"
             >
               Submit
@@ -728,6 +763,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
             <ProjectConnectDataConnectorModeSwitch
               mode="search"
               switchMode={switchMode}
+              project={project}
             />
           </div>
         )}
