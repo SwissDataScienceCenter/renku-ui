@@ -19,10 +19,7 @@
 import { CSSProperties, ReactNode } from "react";
 import { Icon } from "react-bootstrap-icons";
 
-import {
-  SessionType,
-  SubmissionId,
-} from "~/features/sessionsV2/api/sessionsV2.generated-api";
+import { SubmissionId } from "~/features/sessionsV2/api/sessionsV2.generated-api";
 import type { ResourceClassWithId } from "./api/computeResources.api";
 import type {
   BuildParametersPost,
@@ -41,14 +38,21 @@ export interface SvgIconProps {
   style?: CSSProperties;
 }
 
-export type LauncherCategory = "session" | "job";
+export type LauncherCategory = "session" | "job" | "app";
 
-/** Shared API discriminator for `launcher_type` and `session_type`. */
-export type SessionLauncherKind = LauncherType & SessionType;
+/**
+ * Shared API discriminator. For interactive sessions and jobs this matches both
+ * `launcher_type` and `session_type`. Apps (`launcher_type === "app"`) never
+ * produce a `session_type`, so this is keyed on the (wider) `launcher_type`.
+ * `SessionType` is a strict subset of `LauncherType`, so passing a
+ * `session_type` here remains type-safe.
+ */
+export type SessionLauncherKind = LauncherType;
 
 export const SESSION_LAUNCHER_KIND = {
   INTERACTIVE: "interactive",
   NON_INTERACTIVE: "non-interactive",
+  APP: "app",
 } as const satisfies Record<string, SessionLauncherKind>;
 
 export type LauncherApiType = SessionLauncherKind;

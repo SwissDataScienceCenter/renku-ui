@@ -59,15 +59,20 @@ import type { SessionStartDataConnectorConfiguration } from "./startSessionOptio
 export function getLauncherCategoryDefinitionByLauncher(
   launcher: SessionLauncher,
 ): LauncherCategoryDefinition {
-  return isJobLauncher(launcher)
-    ? LAUNCHER_BY_CATEGORY["job"]
-    : LAUNCHER_BY_CATEGORY["session"];
+  return getLauncherCategoryDefinition(getLauncherCategory(launcher));
 }
 
 export function sessionLauncherKindToCategory(
   kind: SessionLauncherKind,
 ): LauncherCategory {
-  return kind === SESSION_LAUNCHER_KIND.NON_INTERACTIVE ? "job" : "session";
+  switch (kind) {
+    case SESSION_LAUNCHER_KIND.NON_INTERACTIVE:
+      return "job";
+    case SESSION_LAUNCHER_KIND.APP:
+      return "app";
+    default:
+      return "session";
+  }
 }
 
 export function getLauncherCategory(
@@ -92,8 +97,28 @@ export function isJobLauncher(launcher: SessionLauncher): boolean {
   return launcher.launcher_type === SESSION_LAUNCHER_KIND.NON_INTERACTIVE;
 }
 
+export function isAppLauncher(launcher: SessionLauncher): boolean {
+  return launcher.launcher_type === SESSION_LAUNCHER_KIND.APP;
+}
+
 export function isGlobalEnvironmentIncluded(allowedEnvironments: string[]) {
   return allowedEnvironments.includes("global");
+}
+
+/**
+ * Whether a launcher category exposes the full set of session-style launcher
+ * form fields — Default URL, port, mount/working directory, UID/GID,
+ * strip-path-prefix, and the builder frontend/advanced settings.
+ *
+ * Apps currently mirror sessions here; jobs deliberately do not (they only
+ * take a command/args). This is expected to change once apps get their own
+ * curated field set, so the policy lives in this one predicate rather than
+ * being scattered as `=== "app"` checks across the form components.
+ */
+export function showsSessionLauncherFields(
+  launcherCategory: LauncherCategory,
+): boolean {
+  return launcherCategory === "session" || launcherCategory === "app";
 }
 
 /**

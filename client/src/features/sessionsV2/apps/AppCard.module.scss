@@ -1,0 +1,41 @@
+@mixin custom-animation() {
+  $name: inline-#{unique-id()};
+
+  @keyframes #{$name} {
+    @content;
+  }
+
+  animation-name: $name;
+}
+
+// A gently "breathing" status dot, used to signal that a published app is live
+// and reachable. Mirrors the CircleFill dot the session status badges use, but
+// animated so the live state reads as active rather than static.
+.pulseDot {
+  --pulse-dot-animation-speed: 1.6s;
+
+  display: inline-block;
+
+  @include custom-animation() {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(0.82);
+    }
+  }
+  animation-duration: var(--pulse-dot-animation-speed);
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+// Honour users who have asked the OS to minimise motion: keep the dot, drop the
+// animation.
+@media (prefers-reduced-motion: reduce) {
+  .pulseDot {
+    animation: none;
+  }
+}

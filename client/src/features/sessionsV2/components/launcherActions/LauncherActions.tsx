@@ -17,6 +17,7 @@
  */
 
 import { getLauncherCategory } from "~/features/sessionsV2/session.utils";
+import AppLauncherActions from "./app/AppLauncherActions";
 import JobLauncherActions from "./job/JobLauncherActions";
 import SessionLauncherActions from "./session/SessionLauncherActions";
 import type { LauncherActionsProps } from "./types";
@@ -31,6 +32,21 @@ export function LauncherActions({
   project,
 }: LauncherActionsProps) {
   const category = getLauncherCategory(launcher);
+
+  if (category === "app") {
+    return (
+      <AppLauncherActions
+        builds={builds}
+        hasSession={hasSession}
+        lastBuild={lastBuild}
+        launcher={launcher}
+        otherActions={placement === "launcher-card" && otherActions}
+        project={project}
+        displayBuildActions={placement === "launcher-card"}
+      />
+    );
+  }
+
   return category === "session" ? (
     <SessionLauncherActions
       builds={builds}

@@ -33,7 +33,10 @@ import { Loader } from "../../../../components/Loader";
 import AppContext from "../../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { useGetRepositoriesQuery } from "../../../repositories/api/repositories.api";
-import { getLauncherCategoryDefinition } from "../../session.utils";
+import {
+  getLauncherCategoryDefinition,
+  showsSessionLauncherFields,
+} from "../../session.utils";
 import type {
   LauncherCategory,
   SessionLauncherForm,
@@ -73,6 +76,11 @@ export default function BuilderEnvironmentFields({
   const selectedRepositoryUrl = useWatch({
     control,
     name: "repository" as Path<SessionLauncherForm>,
+  }) as string;
+
+  const selectedFrontend = useWatch({
+    control,
+    name: "frontend_variant" as Path<SessionLauncherForm>,
   }) as string;
 
   const selectedRepositoryIsPrivate = useMemo(
@@ -142,9 +150,29 @@ export default function BuilderEnvironmentFields({
         <CodeRepositoryAdvancedSettings control={control} />
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
-      {launcherCategory === "session" && (
+      {showsSessionLauncherFields(launcherCategory) && (
         <BuilderFrontendSelector name="frontend_variant" control={control} />
       )}
+      {showsSessionLauncherFields(launcherCategory) &&
+        selectedFrontend === "custom" && (
+          <InfoAlert dismissible={false} timeout={0}>
+            <p className="mb-1">
+              RenkuLab won&apos;t add a user interface to this environment.
+              You&apos;re responsible for starting your own web app:
+            </p>
+            <ul className="mb-1">
+              <li>
+                Add a <code>Procfile</code> with a <code>web</code> process to
+                the root of your repository, e.g.{" "}
+                <code>web: python -m http.server $RENKU_SESSION_PORT</code>.
+              </li>
+              <li>
+                Make your app listen on the port given by the{" "}
+                <code>$RENKU_SESSION_PORT</code> environment variable.
+              </li>
+            </ul>
+          </InfoAlert>
+        )}
       {launcherCategory === "job" && (
         <>
           <div>
@@ -173,7 +201,7 @@ export default function BuilderEnvironmentFields({
           </div>
         </>
       )}
-      {launcherCategory === "session" && (
+      {showsSessionLauncherFields(launcherCategory) && (
         <BuilderAdvancedSettings control={control} />
       )}
     </div>

@@ -40,6 +40,7 @@ import {
 import {
   isValidJSONStringArray,
   isValidRequiredJSONStringArray,
+  showsSessionLauncherFields,
 } from "../../session.utils";
 import {
   SessionLauncherForm,
@@ -305,7 +306,7 @@ export function AdvancedSettingsFields<
 >({ control, errors, launcherCategory = "session" }: AdvancedSettingsProp<T>) {
   return (
     <>
-      {launcherCategory === "session" && (
+      {showsSessionLauncherFields(launcherCategory) && (
         <>
           <div className={cx("row", "gy-3", "mb-3")}>
             <div className={cx("col-12", "col-md-9", "mt-0")}>
@@ -352,7 +353,7 @@ export function AdvancedSettingsFields<
       )}
 
       <div className={cx("row", "gy-3")}>
-        {launcherCategory === "session" && (
+        {showsSessionLauncherFields(launcherCategory) && (
           <>
             <div className={cx("col-12")}>
               <FormField<T>
@@ -415,7 +416,7 @@ export function AdvancedSettingsFields<
             helpText='Please enter a valid JSON array format e.g. ["--arg1", "--arg2", "--pwd=/home/user"]'
           />
         </div>
-        {launcherCategory === "session" && (
+        {showsSessionLauncherFields(launcherCategory) && (
           <div className={cx("col-12")}>
             <FormField<T>
               control={control}

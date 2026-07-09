@@ -872,7 +872,7 @@
       },
       "LauncherType": {
         "type": "string",
-        "enum": ["interactive", "non-interactive"]
+        "enum": ["interactive", "non-interactive", "app"]
       },
       "SessionLaunchersList": {
         "description": "A list of Renku session launchers",

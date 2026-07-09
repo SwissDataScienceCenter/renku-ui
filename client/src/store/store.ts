@@ -35,6 +35,7 @@ import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import { repositoriesApi } from "~/features/repositories/api/repositories.api";
 import { searchV2EmptyApi as searchV2Api } from "~/features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "~/features/searchV2/searchV2.slice";
+import { appsEmptyApi as appsApi } from "~/features/sessionsV2/api/apps.empty-api";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import { sessionLaunchersV2EmptyApi as sessionLaunchersV2Api } from "~/features/sessionsV2/api/sessionLaunchersV2.empty-api";
 import { sessionsV2EmptyApi as sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.empty-api";
@@ -58,6 +59,7 @@ export const store = configureStore({
     [toastSlice.name]: toastSlice.reducer,
     // APIs
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
+    [appsApi.reducerPath]: appsApi.reducer,
     [computeResourcesApi.reducerPath]: computeResourcesApi.reducer,
     [connectedServicesApi.reducerPath]: connectedServicesApi.reducer,
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
@@ -82,6 +84,7 @@ export const store = configureStore({
       serializableCheck: false,
     })
       .concat(adminKeycloakApi.middleware)
+      .concat(appsApi.middleware)
       .concat(computeResourcesApi.middleware)
       .concat(connectedServicesApi.middleware)
       .concat(dataConnectorsApi.middleware)

@@ -16,7 +16,7 @@
  * limitations under the License
  */
 
-import { Gear, PlayCircle } from "react-bootstrap-icons";
+import { Gear, Globe, PlayCircle } from "react-bootstrap-icons";
 
 import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
@@ -158,12 +158,21 @@ export const BUILDER_FRONTENDS = [
     label: "RStudio",
     description: "Web-based integrated development environment for R.",
   },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "custom",
+    label: "Custom app",
+    description:
+      "Run your own web app. Add a Procfile with a “web” process to your " +
+      "repository and make the app listen on $RENKU_SESSION_PORT.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
 ] as readonly BuilderSelectorOption[];
 
 /* eslint-disable spellcheck/spell-checker */
 export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
-  python: ["vscodium", "jupyterlab", "ttyd"],
-  r: ["rstudio"],
+  python: ["vscodium", "jupyterlab", "ttyd", "custom"],
+  r: ["rstudio", "custom"],
 };
 
 export const getCompatibleFrontends = (builderVariant: string) => {
@@ -223,7 +232,7 @@ export const SUBMISSION_ID_VALIDATION_MESSAGE = {
     "Must start with a lowercase letter, and use letters, numbers, or hyphens (min 4 characters, no spaces).",
 };
 
-export const LAUNCHER_OPTIONS: LauncherCategory[] = ["session", "job"];
+export const LAUNCHER_OPTIONS: LauncherCategory[] = ["session", "job", "app"];
 
 export const LAUNCHER_BY_CATEGORY: Record<
   LauncherCategory,
@@ -278,6 +287,32 @@ export const LAUNCHER_BY_CATEGORY: Record<
     },
     icon: Gear,
     description: "Submit a job that runs in the background.",
+    allowedEnvironmentSelects: ["custom + build", "custom + image"],
+  },
+  app: {
+    apiType: SESSION_LAUNCHER_KIND.APP,
+    text: {
+      display: "App",
+      inline: "app",
+      action: "publish",
+      state: {
+        running: "Live",
+        starting: "Publishing",
+        hibernated: "Stopped",
+        hibernatedAndDelete: "App will be deleted in",
+        failed: "Error",
+        stopping: "Stopping",
+        succeeded: "Live",
+      },
+      delete: {
+        title: "Delete app",
+        action: "Deleting app",
+        button: "Yes, delete app",
+      },
+    },
+    icon: Globe,
+    description:
+      "Publish a long-running web app that anyone can open via a public URL. Only available in public projects.",
     allowedEnvironmentSelects: ["custom + build", "custom + image"],
   },
 };

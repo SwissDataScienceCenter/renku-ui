@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useCallback, useMemo, useState } from "react";
 
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import type { SessionType } from "../api/sessionsV2.api";
 import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.api";
 import UpdateSessionLauncherMetadataModal from "../components/SessionModals/UpdateSessionLauncherMetadataModal";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
@@ -28,6 +30,7 @@ import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
 import {
   buildLauncherHash,
   buildLauncherJobHash,
+  isAppLauncher,
   isLauncherHashOpen,
   parseLauncherHash,
   toggleLauncherHash,
@@ -93,9 +96,16 @@ export function SessionLauncherDisplay({
     [launcher.id, setHash],
   );
 
-  const { data: sessions } = useGetSessionsQueryV2({
-    sessionType: launcher.launcher_type,
-  });
+  // Apps do not spawn per-user sessions; their runtime state comes from the
+  // dedicated /apps API (fetched inside the app-specific components), so we
+  // skip the sessions query entirely for app launchers.
+  const isApp = isAppLauncher(launcher);
+  const { data: sessions } = useGetSessionsQueryV2(
+    isApp
+      ? skipToken
+      : // Safe cast: non-app launcher types are exactly `SessionType`.
+        { sessionType: launcher.launcher_type as SessionType },
+  );
 
   const filteredSessions = useMemo(
     () =>
@@ -125,21 +135,25 @@ export function SessionLauncherDisplay({
             ? toggleShareLink
             : undefined
         }
-        toggleSessionView={toggleSessionView}
+        // Apps render their runtime state inline in the launcher card; the
+        // session/job details offcanvas does not apply to them.
+        toggleSessionView={isApp ? undefined : toggleSessionView}
         openSessionViewWithJob={openSessionViewWithJob}
       />
-      <SessionView
-        id={launcherHash}
-        launcher={launcher}
-        project={project}
-        sessions={filteredSessions}
-        toggle={closeSessionView}
-        isOpen={isSessionViewOpen}
-        openJobSubmissionId={openJobSubmissionId}
-        toggleUpdate={toggleUpdate}
-        toggleDelete={toggleDelete}
-        toggleUpdateEnvironment={toggleUpdateEnvironment}
-      />
+      {!isApp && (
+        <SessionView
+          id={launcherHash}
+          launcher={launcher}
+          project={project}
+          sessions={filteredSessions}
+          toggle={closeSessionView}
+          isOpen={isSessionViewOpen}
+          openJobSubmissionId={openJobSubmissionId}
+          toggleUpdate={toggleUpdate}
+          toggleDelete={toggleDelete}
+          toggleUpdateEnvironment={toggleUpdateEnvironment}
+        />
+      )}
       {launcher && (
         <>
           <UpdateSessionLauncherEnvironmentModal
