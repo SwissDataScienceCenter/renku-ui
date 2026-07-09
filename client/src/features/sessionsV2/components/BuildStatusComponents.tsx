@@ -88,8 +88,12 @@ export function BuildStatusBadge({
       <CircleFill className={cx("me-1", "bi")} />
     );
 
-  var badgeText = "";
-  var isCodeAvailable = true;
+  const { data, isLoading } = useGetRepositoryQuery({
+    url: build.result?.repository_url,
+  });
+
+  let badgeText = "";
+  let isCodeAvailable = true;
 
   if (isCompatible === false) {
     badgeText = "Image incompatible";
@@ -102,10 +106,6 @@ export function BuildStatusBadge({
         badgeText = "Build cancelled";
         break;
       case "succeeded":
-        const { data, isLoading } = useGetRepositoryQuery({
-          url: build.result.repository_url,
-        });
-
         if (isLoading) {
           badgeText = "Loading";
         } else if (data?.metadata?.pull_permission) {
