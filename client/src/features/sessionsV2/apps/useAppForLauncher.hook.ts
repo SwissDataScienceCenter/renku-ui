@@ -18,9 +18,13 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 
-import { useGetAppsQuery } from "../api/apps.api";
+import { appsApi, useGetAppsQuery } from "../api/apps.api";
 import type { AppResponse } from "../api/apps.api";
-import { findAppForLauncher } from "./apps.utils";
+import {
+  APP_STATUS_POLLING_INTERVAL_MS,
+  findAppForLauncher,
+  hasPendingApp,
+} from "./apps.utils";
 
 interface UseAppForLauncherArgs {
   projectId: string;
@@ -33,11 +37,16 @@ interface UseAppForLauncherArgs {
  * Read the (single) app deployment backing a launcher.
  *
  * This is the display-side read, analogous to how the sessions list uses
- * useGetSessionsQuery: it does not poll on its own. Both consumers — the
- * launcher card and its action buttons — hit the same /apps query, so RTK Query
- * collapses them into one request, and freshness while an action is in flight is
+ * useGetSessionsQuery. Both consumers — the launcher card and its action
+ * buttons — hit the same /apps query, so RTK Query collapses them into one
+ * request, and freshness while an action is in flight is
  * driven by useWaitForAppStatus (which polls the same cache key until the app
  * reaches the action's target), mirroring useWaitForSessionStatus.
+ *
+ * On top of that action-driven polling, this hook keeps the display fresh for
+ * transitions that happen with no action in flight (a freshly published app
+ * settles pending → ready server-side) by polling the shared /apps cache while
+ * any app in the project is still pending, stopping once they have all settled.
  */
 export default function useAppForLauncher({
   projectId,
@@ -46,7 +55,15 @@ export default function useAppForLauncher({
 }: UseAppForLauncherArgs): ReturnType<typeof useGetAppsQuery> & {
   app: AppResponse | undefined;
 } {
-  const result = useGetAppsQuery(skip ? skipToken : { projectId });
+  const arg = skip ? skipToken : { projectId };
+  const result = useGetAppsQuery(arg);
+
+  appsApi.endpoints.getApps.useQuerySubscription(arg, {
+    pollingInterval: hasPendingApp(result.data)
+      ? APP_STATUS_POLLING_INTERVAL_MS
+      : 0,
+  });
+
   const app = findAppForLauncher(result.data, launcherId);
   return { ...result, app };
 }

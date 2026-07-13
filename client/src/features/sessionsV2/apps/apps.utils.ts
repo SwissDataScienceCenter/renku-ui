@@ -117,6 +117,11 @@ export function isAppHibernated(app: AppResponse): boolean {
   return app.status === "hibernated";
 }
 
+/** Whether any app in the list is still `pending` (mid-transition server-side). */
+export function hasPendingApp(apps: AppResponse[] | undefined): boolean {
+  return !!apps?.some((app) => app.status === "pending");
+}
+
 /**
  * How often to poll the /apps query while an app action is in flight, in
  * milliseconds. Matches the sessions' DEFAULT_POLLING_INTERVAL_MS so the two

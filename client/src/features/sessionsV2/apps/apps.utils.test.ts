@@ -23,6 +23,7 @@ import {
   findAppForLauncher,
   getAppStatusDisplay,
   getAppStatusStyles,
+  hasPendingApp,
   hasReachedAppTarget,
   isAppHibernated,
   toSecureAppUrl,
@@ -133,6 +134,30 @@ describe("isAppHibernated()", () => {
     expect(isAppHibernated(makeApp({ status: "ready" }))).toBe(false);
     expect(isAppHibernated(makeApp({ status: "pending" }))).toBe(false);
     expect(isAppHibernated(makeApp({ status: "failed" }))).toBe(false);
+  });
+});
+
+describe("hasPendingApp()", () => {
+  it("is true when at least one app is pending", () => {
+    const apps = [
+      makeApp({ name: "a", status: "ready" }),
+      makeApp({ name: "b", status: "pending" }),
+    ];
+    expect(hasPendingApp(apps)).toBe(true);
+  });
+
+  it("is false when every app has settled", () => {
+    const apps = [
+      makeApp({ name: "a", status: "ready" }),
+      makeApp({ name: "b", status: "hibernated" }),
+      makeApp({ name: "c", status: "failed" }),
+    ];
+    expect(hasPendingApp(apps)).toBe(false);
+  });
+
+  it("is false for an empty list or undefined", () => {
+    expect(hasPendingApp([])).toBe(false);
+    expect(hasPendingApp(undefined)).toBe(false);
   });
 });
 
