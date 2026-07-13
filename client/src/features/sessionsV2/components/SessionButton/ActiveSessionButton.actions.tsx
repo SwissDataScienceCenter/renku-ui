@@ -58,26 +58,27 @@ function StoppingStatusButton({ label }: { label: string }) {
   );
 }
 
-function DismissJobButton({
-  buttonClassName,
-  color = "outline-primary",
-  onStopSession,
-}: {
-  buttonClassName?: string;
-  color?: "outline-primary" | "primary";
-  onStopSession: () => void;
-}) {
-  return (
-    <Button
-      color={color}
-      className={color === "outline-primary" ? buttonClassName : undefined}
-      data-cy={"dismiss-job-button"}
-      onClick={onStopSession}
-    >
-      <Trash className={cx("bi", "me-1")} /> Dismiss
-    </Button>
-  );
-}
+// TODO: Reuse this button when a confirmation action is present to avoid dismiss jobs by mistake
+// function DismissJobButton({
+//   buttonClassName,
+//   color = "outline-primary",
+//   onStopSession,
+// }: {
+//   buttonClassName?: string;
+//   color?: "outline-primary" | "primary";
+//   onStopSession: () => void;
+// }) {
+//   return (
+//     <Button
+//       color={color}
+//       className={color === "outline-primary" ? buttonClassName : undefined}
+//       data-cy={"dismiss-job-button"}
+//       onClick={onStopSession}
+//     >
+//       <Trash className={cx("bi", "me-1")} /> Dismiss
+//     </Button>
+//   );
+// }
 
 function PausingStatusButton() {
   return (
@@ -269,7 +270,6 @@ export function getJobDefaultAction(
     isResuming,
     onResumeSession,
     toggleLogsModal,
-    onStopSession,
   } = ctx;
 
   if (status === "stopping" || isStopping) {
@@ -278,12 +278,10 @@ export function getJobDefaultAction(
   if (isHibernating) {
     return <PausingStatusButton />;
   }
-  if (status === "starting" || status === "running") {
+  if (status === "starting" || status === "running" || status === "succeeded") {
     return <LogsStatusButton onClick={toggleLogsModal} label="View logs" />;
   }
-  if (status === "succeeded") {
-    return <DismissJobButton onStopSession={onStopSession} />;
-  }
+
   if (status === "hibernated") {
     return (
       <ResumeStatusButton
