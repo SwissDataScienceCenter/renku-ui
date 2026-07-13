@@ -90,10 +90,10 @@ import {
   DC_SEARCH_SLUG_PREFIX,
   DC_SEARCH_TYPE,
   DC_SUCCESS_MESSAGE_TIMEOUT_MS,
-  DEFAULT_PROJECT_STORAGE_GB,
-  MAX_PROJECT_STORAGE_GB,
-  MIN_PROJECT_STORAGE_GB,
-  STEP_PROJECT_STORAGE_GB,
+  PROJECT_STORAGE_DEFAULT_GB,
+  PROJECT_STORAGE_MAX_GB,
+  PROJECT_STORAGE_MIN_GB,
+  PROJECT_STORAGE_STEP_GB,
 } from "./projectDataConnectors.constants";
 
 interface ProjectConnectDataConnectorsModalProps extends Omit<
@@ -326,7 +326,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
   } = useForm<ProjectStorageForm>({
     mode: "onChange",
     defaultValues: {
-      projectStorage: DEFAULT_PROJECT_STORAGE_GB,
+      projectStorage: PROJECT_STORAGE_DEFAULT_GB,
       mountPoint: "",
     },
   });
@@ -362,10 +362,8 @@ function ProjectStorageDataConnectorBodyAndFooter({
 
         <div className="mb-4">
           <InfoAlert dismissible={false} timeout={0}>
-            <p>
-              This is how project storage is configured... You can only setup 1
-              project storage per project.
-            </p>
+            This is how project storage is configured... You can only setup 1
+            project storage per project.
           </InfoAlert>
           <div className="mb-3">
             <div>
@@ -374,7 +372,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
                 {watchCurrentProjectStorage && (
                   <>
                     {watchCurrentProjectStorage} GB{" "}
-                    {watchCurrentProjectStorage == DEFAULT_PROJECT_STORAGE_GB &&
+                    {watchCurrentProjectStorage == PROJECT_STORAGE_DEFAULT_GB &&
                       "(default)"}
                   </>
                 )}
@@ -390,9 +388,9 @@ function ProjectStorageDataConnectorBodyAndFooter({
                       id="projectStorage"
                       className={cx(error && "is-invalid")}
                       type="number"
-                      min={MIN_PROJECT_STORAGE_GB}
-                      max={MAX_PROJECT_STORAGE_GB}
-                      step={STEP_PROJECT_STORAGE_GB}
+                      min={PROJECT_STORAGE_MIN_GB}
+                      max={PROJECT_STORAGE_MAX_GB}
+                      step={PROJECT_STORAGE_STEP_GB}
                       {...field}
                       value={field.value ?? ""}
                       onChange={(event) => {
@@ -415,19 +413,19 @@ function ProjectStorageDataConnectorBodyAndFooter({
                       "Please provide a valid value for project storage."}
                   </div>
                   <FormText>
-                    Default: {DEFAULT_PROJECT_STORAGE_GB} GB, max:{" "}
-                    {MAX_PROJECT_STORAGE_GB} GB
+                    Default: {PROJECT_STORAGE_DEFAULT_GB} GB, max:{" "}
+                    {PROJECT_STORAGE_MAX_GB} GB
                   </FormText>
                 </>
               )}
               rules={{
                 min: {
-                  value: MIN_PROJECT_STORAGE_GB,
-                  message: `Please select a value greater than or equal to ${MIN_PROJECT_STORAGE_GB}.`,
+                  value: PROJECT_STORAGE_MIN_GB,
+                  message: `Please select a value greater than or equal to ${PROJECT_STORAGE_MIN_GB}.`,
                 },
                 max: {
-                  value: MAX_PROJECT_STORAGE_GB,
-                  message: `Selected project storage exceeds maximum allowed value (${MAX_PROJECT_STORAGE_GB} GB).`,
+                  value: PROJECT_STORAGE_MAX_GB,
+                  message: `Selected project storage exceeds maximum allowed value (${PROJECT_STORAGE_MAX_GB} GB).`,
                 },
                 validate: {
                   integer: (value: unknown) =>
@@ -441,7 +439,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
           </div>
           <div className="mb-3">
             <Label className="form-label" for="mountPoint">
-              Mount location
+              Mount point
             </Label>
             <Controller
               name="mountPoint"
@@ -450,8 +448,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
                 <>
                   <input
                     id="mountPoint"
-                    type="text"
-                    placeholder="e.g., /mnt/data"
+                    type="string"
                     {...field}
                     className={cx(
                       "form-control",
@@ -459,16 +456,17 @@ function ProjectStorageDataConnectorBodyAndFooter({
                     )}
                     data-cy="project-storage-form-mount-point-input"
                   />
-                  <FormText>
-                    By default, the mount location is <code>/mnt/data</code>.
-                    You can change it if needed.
-                  </FormText>
                 </>
               )}
               rules={{ required: false }}
             />
             <div className="invalid-feedback">
-              Please provide a mount location.
+              Please provide a mount point.
+            </div>
+            <div className={cx("form-text", "text-muted")}>
+              By default, the mount point is <code>store??</code>. This is the
+              name of the folder where you will find your project storage in
+              sessions.
             </div>
           </div>
 
@@ -1098,5 +1096,5 @@ function DataConnectorSearchSourceBadge({
       </div>
     );
 
-  return <p className={cx("mb-0", "small", "text-muted")}>{badgeText}</p>;
+  return <div className={cx("mb-0", "small", "text-muted")}>{badgeText}</div>;
 }

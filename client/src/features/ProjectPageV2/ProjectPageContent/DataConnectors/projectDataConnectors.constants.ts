@@ -11,7 +11,7 @@ export const DC_SEARCH_MAX_RESULTS = 10;
 
 export const DC_SUCCESS_MESSAGE_TIMEOUT_MS = 5_000;
 
-export const MIN_PROJECT_STORAGE_GB = 1;
-export const MAX_PROJECT_STORAGE_GB = 10;
-export const STEP_PROJECT_STORAGE_GB = 1;
-export const DEFAULT_PROJECT_STORAGE_GB = 1;
+export const PROJECT_STORAGE_MIN_GB = 1;
+export const PROJECT_STORAGE_MAX_GB = 10;
+export const PROJECT_STORAGE_STEP_GB = 1;
+export const PROJECT_STORAGE_DEFAULT_GB = 1;
