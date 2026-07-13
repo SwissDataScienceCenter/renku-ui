@@ -32,7 +32,7 @@ import {
   XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { createSearchParams, Link } from "react-router";
 import {
   Button,
@@ -309,7 +309,7 @@ export function ProjectConnectDataConnectorModeSwitch({
 }
 
 interface ProjectStorageForm {
-  projectStorage: number | null;
+  projectStorage: number;
   mountPoint: string;
 }
 
@@ -331,11 +331,6 @@ function ProjectStorageDataConnectorBodyAndFooter({
     },
   });
 
-  const watchCurrentProjectStorage = useWatch({
-    control,
-    name: "projectStorage",
-  });
-
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -344,7 +339,13 @@ function ProjectStorageDataConnectorBodyAndFooter({
 
   const onSubmit = (values: ProjectStorageForm) => {
     // TODO: Call api to add project storage with the provided values
-    console.log("Form submitted with values:", values);
+    console.log("Create project storage with values:", {
+      project_id: project.id,
+      size: values.projectStorage,
+      mount_path: values.mountPoint,
+    });
+
+    toggle();
   };
 
   return (
@@ -360,24 +361,15 @@ function ProjectStorageDataConnectorBodyAndFooter({
           </div>
         )}
 
-        <div className="mb-4">
+        <div>
           <InfoAlert dismissible={false} timeout={0}>
             This is how project storage is configured... You can only setup 1
             project storage per project.
           </InfoAlert>
           <div className="mb-3">
-            <div>
-              Project storage:{" "}
-              <span className="fw-bold">
-                {watchCurrentProjectStorage && (
-                  <>
-                    {watchCurrentProjectStorage} GB{" "}
-                    {watchCurrentProjectStorage == PROJECT_STORAGE_DEFAULT_GB &&
-                      "(default)"}
-                  </>
-                )}
-              </span>
-            </div>
+            <Label className="form-label" for="projectStorage">
+              Project storage size
+            </Label>
             <Controller
               control={control}
               name="projectStorage"
@@ -419,6 +411,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
                 </>
               )}
               rules={{
+                required: true,
                 min: {
                   value: PROJECT_STORAGE_MIN_GB,
                   message: `Please select a value greater than or equal to ${PROJECT_STORAGE_MIN_GB}.`,
@@ -432,7 +425,8 @@ function ProjectStorageDataConnectorBodyAndFooter({
                     value == null ||
                     value === "" ||
                     (!isNaN(parseInt(`${value}`, 10)) &&
-                      parseInt(`${value}`, 10) == parseFloat(`${value}`)),
+                      parseInt(`${value}`, 10) == parseFloat(`${value}`)) ||
+                    "Please provide an integer value.",
                 },
               }}
             />
@@ -445,18 +439,16 @@ function ProjectStorageDataConnectorBodyAndFooter({
               name="mountPoint"
               control={control}
               render={({ field }) => (
-                <>
-                  <input
-                    id="mountPoint"
-                    type="string"
-                    {...field}
-                    className={cx(
-                      "form-control",
-                      errors.mountPoint && "is-invalid",
-                    )}
-                    data-cy="project-storage-form-mount-point-input"
-                  />
-                </>
+                <input
+                  id="mountPoint"
+                  type="text"
+                  {...field}
+                  className={cx(
+                    "form-control",
+                    errors.mountPoint && "is-invalid",
+                  )}
+                  data-cy="project-storage-form-mount-point-input"
+                />
               )}
               rules={{ required: false }}
             />
@@ -464,9 +456,12 @@ function ProjectStorageDataConnectorBodyAndFooter({
               Please provide a mount point.
             </div>
             <div className={cx("form-text", "text-muted")}>
-              By default, the mount point is <code>store??</code>. This is the
-              name of the folder where you will find your project storage in
-              sessions.
+              By default, the mount point is{" "}
+              <code>
+                store??{/* TODO: Replace with actual default mount point */}
+              </code>
+              . This is the name of the folder where you will find your project
+              storage in sessions.
             </div>
           </div>
 
