@@ -157,8 +157,9 @@ export function DataConnectorRemoveDeleteModal({
                 <Row>
                   <Col>
                     <p>
-                      Are you sure you want to delete this data connector? It is
-                      possible that it is used in some projects.
+                      Are you sure you want to permanently delete this data
+                      connector? It is possible that it is used in some
+                      projects.
                     </p>
                     <p>
                       Please type <strong>{dataConnector?.slug}</strong>, the
@@ -175,7 +176,8 @@ export function DataConnectorRemoveDeleteModal({
                 <Row>
                   <Col>
                     <p>
-                      Are you sure you want to delete this data connector?{" "}
+                      Are you sure you want to permanently delete this data
+                      connector?{" "}
                       {dataConnectorLinks.length < 1 ? (
                         <>
                           It is not used in any projects that are visible to
@@ -462,13 +464,6 @@ function DataConnectorActionsInner({
   );
   const namespace = pathMatch?.params?.namespace;
   const slug = pathMatch?.params?.slug;
-  const removeMode =
-    pathMatch == null ||
-    namespace == null ||
-    slug == null ||
-    dataConnectorLink == null
-      ? "delete"
-      : "unlink";
   const requiresCredentials =
     dataConnector.storage.sensitive_fields?.length > 0;
   const lastDeposit = useMemo(() => {
@@ -552,21 +547,7 @@ function DataConnectorActionsInner({
           },
         ]
       : []),
-    ...(permissions.delete && removeMode === "delete" && scope !== "global"
-      ? [
-          {
-            key: "data-connector-delete",
-            onClick: toggleDelete,
-            content: (
-              <>
-                <Trash className={cx("bi", "me-1")} />
-                Remove
-              </>
-            ),
-          },
-        ]
-      : []),
-    ...(projectPermissions.write && removeMode === "unlink"
+    ...(projectPermissions.write
       ? [
           {
             key: "data-connector-unlink",
@@ -575,6 +556,20 @@ function DataConnectorActionsInner({
               <>
                 <NodeMinus className={cx("bi", "me-1")} />
                 Unlink
+              </>
+            ),
+          },
+        ]
+      : []),
+    ...(permissions.delete && scope !== "global"
+      ? [
+          {
+            key: "data-connector-delete",
+            onClick: toggleDelete,
+            content: (
+              <>
+                <Trash className={cx("bi", "me-1")} />
+                Delete
               </>
             ),
           },
