@@ -95,7 +95,7 @@ export function DataConnectorRemoveDeleteModal({
   } = useGetDataConnectorsByDataConnectorIdProjectLinksQuery({
     dataConnectorId: dataConnector?.id ?? "",
   });
-  const [deleteDataConnector, { error, isLoading, isSuccess }] =
+  const [deleteDataConnector, { error, isLoading }] =
     useDeleteDataConnectorsByDataConnectorIdMutation();
 
   const [typedName, setTypedName] = useState("");
@@ -108,11 +108,6 @@ export function DataConnectorRemoveDeleteModal({
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isSuccess && executeOnSuccess) {
-      executeOnSuccess();
-    }
-  }, [isSuccess, executeOnSuccess]);
   const onDeleteDataConnector = useCallback(async () => {
     if (!dataConnector?.id) return;
 
@@ -120,11 +115,18 @@ export function DataConnectorRemoveDeleteModal({
       await deleteDataConnector({
         dataConnectorId: dataConnector.id,
       }).unwrap();
+      executeOnSuccess?.();
       if (redirectOnSuccess) navigate(redirectOnSuccess);
     } catch {
       // keep existing `error` rendering from the mutation result
     }
-  }, [dataConnector, deleteDataConnector, redirectOnSuccess, navigate]);
+  }, [
+    dataConnector,
+    deleteDataConnector,
+    executeOnSuccess,
+    redirectOnSuccess,
+    navigate,
+  ]);
 
   return (
     <Modal
