@@ -1,5 +1,6 @@
 import cx from "classnames";
 import {
+  CircleSquare,
   Database,
   FileCode,
   Gear,
@@ -32,6 +33,8 @@ export default function OffcanvasHeaderWithType({
     <PlayCircle className="me-1" />
   ) : entityType === "job-launcher" ? (
     <Gear className="me-1" />
+  ) : entityType === "app-launcher" ? (
+    <CircleSquare className="me-1" />
   ) : entityType === "code-repository" ? (
     <FileCode className="me-1" />
   ) : (
@@ -46,9 +49,11 @@ export default function OffcanvasHeaderWithType({
         ? "Job launcher"
         : entityType === "session-launcher"
           ? "Session launcher"
-          : entityType === "code-repository"
-            ? "Code repository"
-            : "Unknown";
+          : entityType === "app-launcher"
+            ? "App launcher"
+            : entityType === "code-repository"
+              ? "Code repository"
+              : "Unknown";
 
   return (
     <div>

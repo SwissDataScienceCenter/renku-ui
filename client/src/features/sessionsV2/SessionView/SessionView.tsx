@@ -65,6 +65,7 @@ import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/Se
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import AppRuntimeCard from "../apps/AppRuntimeCard";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
@@ -357,67 +358,19 @@ export function SessionView({
 
           {description && <p className="m-0">{description}</p>}
 
-          <Card>
-            <CardHeader>
-              {launcherCategory === "session" ? (
-                <h3>
-                  <PlayCircle aria-hidden="true" className="me-1" />
-                  Launched {launcherDefinition?.text.display}
-                </h3>
-              ) : (
-                <div
-                  className={cx(
-                    "d-flex",
-                    "justify-content-between",
-                    "align-items-center",
-                  )}
-                >
+          {launcher != null && launcherCategory === "app" ? (
+            // Apps have no per-user sessions; show the running deployment
+            // (status, URL, actions) in place of the launched-session card.
+            <AppRuntimeCard launcher={launcher} project={project} />
+          ) : (
+            <Card>
+              <CardHeader>
+                {launcherCategory === "session" ? (
                   <h3>
-                    <Send className="me-1" aria-hidden="true" />
-                    Your submitted jobs
+                    <PlayCircle aria-hidden="true" className="me-1" />
+                    Launched {launcherDefinition?.text.display}
                   </h3>
-                  {launcher &&
-                    launcherCategory === "job" &&
-                    totalSession > 0 && (
-                      <LauncherActions
-                        placement="launcher-side-panel"
-                        hasSession={totalSession > 0}
-                        launcher={launcher}
-                        project={project}
-                      />
-                    )}
-                </div>
-              )}
-            </CardHeader>
-            <CardBody
-              className={cx(
-                launcherCategory === "job" &&
-                  totalSession > 0 && ["pb-0", "px-0"],
-              )}
-            >
-              {totalSession > 0 ? (
-                <>
-                  {launcherCategory === "session" &&
-                    sessions &&
-                    Object.entries(sessions).map(([key, session]) => (
-                      <div key={key}>
-                        <SessionStatusV2Title
-                          session={session}
-                          launcher={launcher}
-                        />
-                        <SessionCard session={session} project={project} />
-                      </div>
-                    ))}
-                  {launcherCategory === "job" && sessions && (
-                    <JobList
-                      sessions={sessions}
-                      project={project}
-                      openJobSubmissionId={openJobSubmissionId}
-                    />
-                  )}
-                </>
-              ) : (
-                <div>
+                ) : (
                   <div
                     className={cx(
                       "d-flex",
@@ -425,30 +378,84 @@ export function SessionView({
                       "align-items-center",
                     )}
                   >
-                    <p className="mb-2">
-                      No {launcherDefinition?.text.inline} is running from this
-                      launcher.
-                    </p>
-                    {launcher && launcherCategory === "job" && (
-                      <LauncherActions
-                        placement="launcher-side-panel"
-                        launcher={launcher}
+                    <h3>
+                      <Send className="me-1" aria-hidden="true" />
+                      Your submitted jobs
+                    </h3>
+                    {launcher &&
+                      launcherCategory === "job" &&
+                      totalSession > 0 && (
+                        <LauncherActions
+                          placement="launcher-side-panel"
+                          hasSession={totalSession > 0}
+                          launcher={launcher}
+                          project={project}
+                        />
+                      )}
+                  </div>
+                )}
+              </CardHeader>
+              <CardBody
+                className={cx(
+                  launcherCategory === "job" &&
+                    totalSession > 0 && ["pb-0", "px-0"],
+                )}
+              >
+                {totalSession > 0 ? (
+                  <>
+                    {launcherCategory === "session" &&
+                      sessions &&
+                      Object.entries(sessions).map(([key, session]) => (
+                        <div key={key}>
+                          <SessionStatusV2Title
+                            session={session}
+                            launcher={launcher}
+                          />
+                          <SessionCard session={session} project={project} />
+                        </div>
+                      ))}
+                    {launcherCategory === "job" && sessions && (
+                      <JobList
+                        sessions={sessions}
                         project={project}
+                        openJobSubmissionId={openJobSubmissionId}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <div>
+                    <div
+                      className={cx(
+                        "d-flex",
+                        "justify-content-between",
+                        "align-items-center",
+                      )}
+                    >
+                      <p className="mb-2">
+                        No {launcherDefinition?.text.inline} is running from
+                        this launcher.
+                      </p>
+                      {launcher && launcherCategory === "job" && (
+                        <LauncherActions
+                          placement="launcher-side-panel"
+                          launcher={launcher}
+                          project={project}
+                        />
+                      )}
+                    </div>
+
+                    {launcher && launcherCategory === "session" && (
+                      <SessionCardNotRunning
+                        hasSession={totalSession > 0}
+                        project={project}
+                        launcher={launcher}
                       />
                     )}
                   </div>
-
-                  {launcher && launcherCategory === "session" && (
-                    <SessionCardNotRunning
-                      hasSession={totalSession > 0}
-                      project={project}
-                      launcher={launcher}
-                    />
-                  )}
-                </div>
-              )}
-            </CardBody>
-          </Card>
+                )}
+              </CardBody>
+            </Card>
+          )}
 
           {launcher && (
             <>
@@ -662,7 +669,8 @@ export function SessionView({
             </CardBody>
           </Card>
 
-          <SessionViewSessionSecrets />
+          {/* Session secrets do not apply to apps. */}
+          {launcherCategory !== "app" && <SessionViewSessionSecrets />}
 
           {launcher && (
             <Card>
@@ -701,7 +709,8 @@ export function SessionView({
               </CardHeader>
               <CardBody>
                 <p className="mb-2">
-                  Environment variables pass information into the session.
+                  Environment variables pass information into the{" "}
+                  {launcherCategory === "app" ? "app" : "session"}.
                 </p>
                 <EnvVariablesCard launcher={launcher} />
                 <EnvVariablesModal

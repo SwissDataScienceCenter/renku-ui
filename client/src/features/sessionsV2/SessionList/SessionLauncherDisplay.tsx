@@ -135,25 +135,21 @@ export function SessionLauncherDisplay({
             ? toggleShareLink
             : undefined
         }
-        // Apps render their runtime state inline in the launcher card; the
-        // session/job details offcanvas does not apply to them.
-        toggleSessionView={isApp ? undefined : toggleSessionView}
+        toggleSessionView={toggleSessionView}
         openSessionViewWithJob={openSessionViewWithJob}
       />
-      {!isApp && (
-        <SessionView
-          id={launcherHash}
-          launcher={launcher}
-          project={project}
-          sessions={filteredSessions}
-          toggle={closeSessionView}
-          isOpen={isSessionViewOpen}
-          openJobSubmissionId={openJobSubmissionId}
-          toggleUpdate={toggleUpdate}
-          toggleDelete={toggleDelete}
-          toggleUpdateEnvironment={toggleUpdateEnvironment}
-        />
-      )}
+      <SessionView
+        id={launcherHash}
+        launcher={launcher}
+        project={project}
+        sessions={filteredSessions}
+        toggle={closeSessionView}
+        isOpen={isSessionViewOpen}
+        openJobSubmissionId={openJobSubmissionId}
+        toggleUpdate={toggleUpdate}
+        toggleDelete={toggleDelete}
+        toggleUpdateEnvironment={toggleUpdateEnvironment}
+      />
       {launcher && (
         <>
           <UpdateSessionLauncherEnvironmentModal
