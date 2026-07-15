@@ -352,47 +352,56 @@ export function AdvancedSettingsFields<
       )}
 
       <div className={cx("row", "gy-3")}>
-        {launcherCategory === "session" && (
-          <>
-            <div className={cx("col-12")}>
-              <FormField<T>
-                control={control}
-                name={"working_directory" as Path<T>}
-                label="Working Directory"
-                isOptional={true}
-                errors={errors}
-                info={ENVIRONMENT_VALUES_DESCRIPTION.workingDirectory}
-                type="text"
-              />
-            </div>
-            <div className={cx("col-12", "col-md-6")}>
-              <FormField<T>
-                control={control}
-                name={"uid" as Path<T>}
-                label="UID"
-                isOptional={true}
-                placeholder="e.g. 1000"
-                type="number"
-                errors={errors}
-                info={ENVIRONMENT_VALUES_DESCRIPTION.uid}
-                rules={{ min: 1, max: 65535 }}
-              />
-            </div>
-            <div className={cx("col-12", "col-md-6")}>
-              <FormField<T>
-                control={control}
-                name={"gid" as Path<T>}
-                label="GID"
-                isOptional={true}
-                placeholder="e.g. 1000"
-                type="number"
-                errors={errors}
-                info={ENVIRONMENT_VALUES_DESCRIPTION.gid}
-                rules={{ min: 1, max: 65535 }}
-              />
-            </div>
-          </>
+        {launcherCategory === "job" && (
+          <div className={cx("col-12")}>
+            <FormField<T>
+              control={control}
+              name={"mount_directory" as Path<T>}
+              label="Mount Directory"
+              isOptional={true}
+              errors={errors}
+              info={ENVIRONMENT_VALUES_DESCRIPTION.mountDirectory}
+              type="text"
+            />
+          </div>
         )}
+        <div className={cx("col-12")}>
+          <FormField<T>
+            control={control}
+            name={"working_directory" as Path<T>}
+            label="Working Directory"
+            isOptional={true}
+            errors={errors}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.workingDirectory}
+            type="text"
+          />
+        </div>
+        <div className={cx("col-12", "col-md-6")}>
+          <FormField<T>
+            control={control}
+            name={"uid" as Path<T>}
+            label="UID"
+            isOptional={true}
+            placeholder="e.g. 1000"
+            type="number"
+            errors={errors}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.uid}
+            rules={{ min: 1, max: 65535 }}
+          />
+        </div>
+        <div className={cx("col-12", "col-md-6")}>
+          <FormField<T>
+            control={control}
+            name={"gid" as Path<T>}
+            label="GID"
+            isOptional={true}
+            placeholder="e.g. 1000"
+            type="number"
+            errors={errors}
+            info={ENVIRONMENT_VALUES_DESCRIPTION.gid}
+            rules={{ min: 1, max: 65535 }}
+          />
+        </div>
         <div className={cx("col-12")}>
           <JsonField<T>
             control={control}

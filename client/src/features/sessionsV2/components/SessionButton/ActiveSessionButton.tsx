@@ -372,11 +372,7 @@ export default function ActiveSessionButton({
         size="sm"
       >
         {launcherCategory === "job" ? (
-          status === "succeeded" ? (
-            logsAction
-          ) : (
-            dismissAction
-          )
+          dismissAction
         ) : (
           <>
             {deleteAction}
