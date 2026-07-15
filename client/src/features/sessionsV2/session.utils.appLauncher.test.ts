@@ -27,6 +27,7 @@ import {
   getFormattedEnvironmentValues,
   getLauncherApiType,
   getLauncherCategory,
+  getNewLauncherFormDefaultValues,
   isAppLauncher,
   isJobLauncher,
   sessionLauncherKindToCategory,
@@ -138,6 +139,30 @@ describe("custom frontend (bring-your-own app)", () => {
     expect(result.success).toBe(true);
     expect(result.data).not.toHaveProperty("command");
     expect(result.data).not.toHaveProperty("args");
+  });
+});
+
+describe("getNewLauncherFormDefaultValues() frontend default", () => {
+  it("defaults an app launcher to the custom (bring-your-own) frontend", () => {
+    expect(
+      getNewLauncherFormDefaultValues("custom + build", "app").frontend_variant,
+    ).toBe("custom");
+  });
+
+  it("keeps the interactive default for session and job launchers", () => {
+    expect(
+      getNewLauncherFormDefaultValues("custom + build", "session")
+        .frontend_variant,
+    ).toBe("jupyterlab"); // eslint-disable-line spellcheck/spell-checker
+    expect(
+      getNewLauncherFormDefaultValues("custom + build", "job").frontend_variant,
+    ).toBe("jupyterlab"); // eslint-disable-line spellcheck/spell-checker
+  });
+
+  it("defaults to the session frontend when no category is given", () => {
+    expect(
+      getNewLauncherFormDefaultValues("custom + build").frontend_variant,
+    ).toBe("jupyterlab"); // eslint-disable-line spellcheck/spell-checker
   });
 });
 

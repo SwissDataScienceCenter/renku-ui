@@ -150,29 +150,32 @@ export default function BuilderEnvironmentFields({
         <CodeRepositoryAdvancedSettings control={control} />
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
-      {showsSessionLauncherFields(launcherCategory) && (
+      {/* Apps have no user-interface choice: they always bring their own web
+          app ("custom"), so the picker is only shown for sessions. */}
+      {launcherCategory === "session" && (
         <BuilderFrontendSelector name="frontend_variant" control={control} />
       )}
-      {showsSessionLauncherFields(launcherCategory) &&
-        selectedFrontend === "custom" && (
-          <InfoAlert dismissible={false} timeout={0}>
-            <p className="mb-1">
-              RenkuLab won&apos;t add a user interface to this environment.
-              You&apos;re responsible for starting your own web app:
-            </p>
-            <ul className="mb-1">
-              <li>
-                Add a <code>Procfile</code> with a <code>web</code> process to
-                the root of your repository, e.g.{" "}
-                <code>web: python -m http.server $RENKU_SESSION_PORT</code>.
-              </li>
-              <li>
-                Make your app listen on the port given by the{" "}
-                <code>$RENKU_SESSION_PORT</code> environment variable.
-              </li>
-            </ul>
-          </InfoAlert>
-        )}
+      {(launcherCategory === "app" ||
+        (showsSessionLauncherFields(launcherCategory) &&
+          selectedFrontend === "custom")) && (
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-1">
+            RenkuLab won&apos;t add a user interface to this environment.
+            You&apos;re responsible for starting your own web app:
+          </p>
+          <ul className="mb-1">
+            <li>
+              Add a <code>Procfile</code> with a <code>web</code> process to the
+              root of your repository, e.g.{" "}
+              <code>web: python -m http.server $RENKU_SESSION_PORT</code>.
+            </li>
+            <li>
+              Make your app listen on the port given by the{" "}
+              <code>$RENKU_SESSION_PORT</code> environment variable.
+            </li>
+          </ul>
+        </InfoAlert>
+      )}
       {launcherCategory === "job" && (
         <>
           <div>

@@ -132,6 +132,7 @@ export function isTruthy<T>(
 
 export function getNewLauncherFormDefaultValues(
   environmentSelect: EnvironmentSelectOption,
+  launcherCategory: LauncherCategory = "session",
 ): Pick<
   SessionLauncherForm,
   | "name"
@@ -159,7 +160,9 @@ export function getNewLauncherFormDefaultValues(
     repository: "",
     platform: "",
     builder_variant: "python",
-    frontend_variant: "jupyterlab", // eslint-disable-line spellcheck/spell-checker
+    // Apps always bring their own web app frontend ("custom"): there is no UI
+    // picker for them, so the default must be custom rather than an interface.
+    frontend_variant: launcherCategory === "app" ? "custom" : "jupyterlab", // eslint-disable-line spellcheck/spell-checker
     command: "",
     args: "",
   };
