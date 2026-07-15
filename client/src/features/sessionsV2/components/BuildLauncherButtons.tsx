@@ -30,6 +30,7 @@ import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import {
+  sessionLaunchersV2Api,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
@@ -77,6 +78,13 @@ export default function BuildLauncherButtons({
     [builds],
   );
   const hasInProgressBuild = !!inProgressBuild;
+
+  sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
+    hasInProgressBuild
+      ? { environmentId: launcher.environment.id }
+      : skipToken,
+    { pollingInterval: 1_000 },
+  );
 
   const [postBuild, postResult] = usePostBuildMutation();
   const triggerBuild = useCallback(() => {
