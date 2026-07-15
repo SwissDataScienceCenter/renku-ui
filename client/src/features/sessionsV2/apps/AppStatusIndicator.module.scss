@@ -1,3 +1,9 @@
+// A touch smaller than the surrounding controls, so the status reads as a quiet
+// annotation next to the primary action rather than competing with it.
+.statusText {
+  font-size: 0.75rem;
+}
+
 @mixin custom-animation() {
   $name: inline-#{unique-id()};
 

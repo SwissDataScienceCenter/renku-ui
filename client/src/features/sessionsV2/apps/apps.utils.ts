@@ -17,13 +17,17 @@
  */
 
 import type { AppResponse, AppStatus } from "../api/apps.api";
-import { SESSION_STYLES } from "../SessionStyles.constants";
 
 /** Error messages returned verbatim by the backend for app operations. */
 export const APP_PUBLIC_PROJECT_ONLY_MESSAGE =
   "An app launcher can only be created in a public project.";
-export const APP_RESUME_REQUIRES_PUBLIC_MESSAGE =
-  "This app cannot be resumed because its project is not public.";
+
+/**
+ * Shown on a launcher's Publish button when another launcher in the project
+ * already has an app. The backend allows only one app deployment per project.
+ */
+export const APP_ALREADY_EXISTS_MESSAGE =
+  "Another launcher in this project already has an app. Only one app is allowed per project at a time.";
 
 /**
  * Find the (single) app deployment backing a given launcher, if any. The
@@ -36,85 +40,54 @@ export function findAppForLauncher(
   return apps?.find((app) => app.launcher_id === launcherId);
 }
 
-export interface AppStatusDisplay {
-  label: string;
-  /** Bootstrap utility classes for the status badge. */
-  badgeClassName: string;
-  /**
-   * A short human-readable explanation of the current status, shown alongside
-   * the label. It complements the label rather than repeating it (the label
-   * already says "Stopped"/"Publishing"), so it is empty where the label says
-   * enough on its own (e.g. the live state).
-   */
-  description: string;
-  /**
-   * Prefix for the `started` timestamp caption, or null to hide it. The
-   * timestamp is when the deployment last started running, so "Published …"
-   * only reads correctly while the app is actually up; for a stopped, failed or
-   * still-publishing app the caption is suppressed rather than shown as a
-   * misleading "Published N seconds ago".
-   */
-  timeCaptionPrefix: string | null;
-  /** Whether the app is reachable and its URL should be offered. */
-  isLive: boolean;
+/**
+ * Whether the project already has an app on some launcher other than the given
+ * one. The backend enforces at most one app deployment per project (matched by
+ * the project-id label, independent of the app's status), so any existing app on
+ * another launcher — including a failed or stopped one — blocks publishing here.
+ */
+export function hasAppOnAnotherLauncher(
+  apps: AppResponse[] | undefined,
+  launcherId: string,
+): boolean {
+  return !!apps?.some((app) => app.launcher_id !== launcherId);
 }
 
 /**
- * Map the observed app status onto its user-facing label, badge styling and a
- * short description. Mirrors the AppStatus enum from the backend (`pending |
- * ready | failed | hibernated`).
+ * The state shown by the app status indicator next to a launcher's primary
+ * action. This is the user-facing collapse of the backend AppStatus (`pending |
+ * ready | failed | hibernated`) plus the "no deployment yet" case:
+ *   - not-running — no app, or one the platform has hibernated (the UI offers
+ *     no resume, so from the user's side it simply isn't running)
+ *   - starting    — a deployment is being created or is still pending
+ *   - live        — the app is up and reachable
+ *   - error       — the deployment failed
  */
-export function getAppStatusDisplay(status: AppStatus): AppStatusDisplay {
-  switch (status) {
-    case "ready":
-      return {
-        label: "Available",
-        badgeClassName:
-          "border-success bg-success-subtle text-success-emphasis",
-        description: "",
-        timeCaptionPrefix: "Published",
-        isLive: true,
-      };
-    case "pending":
-      return {
-        label: "Publishing",
-        badgeClassName:
-          "border-warning bg-warning-subtle text-warning-emphasis",
-        description: "This may take a minute.",
-        timeCaptionPrefix: null,
-        isLive: false,
-      };
-    case "failed":
-      return {
-        label: "Error",
-        badgeClassName: "border-danger bg-danger-subtle text-danger-emphasis",
-        description: "Publishing failed. Try again.",
-        timeCaptionPrefix: null,
-        isLive: false,
-      };
-    case "hibernated":
-      return {
-        label: "Stopped",
-        badgeClassName: "border-dark-subtle bg-light text-body-secondary",
-        description: "Resume it to start it again.",
-        timeCaptionPrefix: null,
-        isLive: false,
-      };
-    default:
-      return {
-        label: "Unknown",
-        badgeClassName:
-          "border-warning bg-warning-subtle text-warning-emphasis",
-        description: "Status unknown.",
-        timeCaptionPrefix: null,
-        isLive: false,
-      };
-  }
-}
+export type AppIndicatorState = "not-running" | "starting" | "live" | "error";
 
-/** Whether the app is currently stopped (scaled to zero). */
-export function isAppHibernated(app: AppResponse): boolean {
-  return app.status === "hibernated";
+/**
+ * Derive the indicator state from the observed app (or its absence).
+ *
+ * `isStarting` lets the caller force the "starting" state while a publish
+ * mutation is in flight but the deployment has not yet appeared in the /apps
+ * response, so the indicator reflects intent immediately rather than briefly
+ * showing "not running". Kept as a pure function so the mapping can be
+ * unit-tested independently of the React/RTK plumbing.
+ */
+export function getAppIndicatorState(
+  app: AppResponse | undefined,
+  { isStarting = false }: { isStarting?: boolean } = {},
+): AppIndicatorState {
+  if (isStarting || app?.status === "pending") {
+    return "starting";
+  }
+  if (app == null || app.status === "hibernated") {
+    return "not-running";
+  }
+  if (app.status === "ready") {
+    return "live";
+  }
+  return "error";
 }
 
 /** Whether any app in the list is still `pending` (mid-transition server-side). */
@@ -158,28 +131,6 @@ export function hasReachedAppTarget(
     return app == null;
   }
   return app != null && target.desiredStatus.includes(app.status);
-}
-
-/**
- * Map an app status onto the shared session status styles (background tint and
- * emphasis text color) so the app row reads the same as a running session's
- * card. Reuses SESSION_STYLES rather than defining a parallel palette.
- */
-export function getAppStatusStyles(
-  status: AppStatus,
-): (typeof SESSION_STYLES)[keyof typeof SESSION_STYLES] {
-  switch (status) {
-    case "ready":
-      return SESSION_STYLES.SUCCESS;
-    case "pending":
-      return SESSION_STYLES.WARNING;
-    case "failed":
-      return SESSION_STYLES.FAILED;
-    case "hibernated":
-      return SESSION_STYLES.HIBERNATED;
-    default:
-      return SESSION_STYLES.DEFAULT;
-  }
 }
 
 /**

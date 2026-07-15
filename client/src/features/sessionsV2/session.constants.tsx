@@ -16,7 +16,7 @@
  * limitations under the License
  */
 
-import { Gear, Globe, PlayCircle } from "react-bootstrap-icons";
+import { Gear, CircleSquare, PlayCircle } from "react-bootstrap-icons";
 
 import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
@@ -297,7 +297,7 @@ export const LAUNCHER_BY_CATEGORY: Record<
       action: "publish",
       state: {
         running: "Live",
-        starting: "Publishing",
+        starting: "Starting",
         hibernated: "Stopped",
         hibernatedAndDelete: "App will be deleted in",
         failed: "Error",
@@ -310,9 +310,9 @@ export const LAUNCHER_BY_CATEGORY: Record<
         button: "Yes, delete app",
       },
     },
-    icon: Globe,
+    icon: CircleSquare,
     description:
-      "Publish a long-running web app that anyone can open via a public URL. Only available in public projects.",
+      "Start a long-running web app that anyone can open via a public URL. Only available in public projects.",
     allowedEnvironmentSelects: ["custom + build", "custom + image"],
   },
 };

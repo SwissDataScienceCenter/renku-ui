@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { PauseCircle, Trash, XLg } from "react-bootstrap-icons";
+import { StopCircle, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
@@ -37,60 +37,16 @@ interface AppActionModalProps {
   onConfirm: () => void;
 }
 
-export function StopAppModal({
-  appName,
-  isOpen,
-  toggle,
-  onConfirm,
-}: AppActionModalProps) {
-  const onStop = useCallback(() => {
-    onConfirm();
-    toggle();
-  }, [onConfirm, toggle]);
-
-  return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader data-cy="stop-app-title" tag="h2" toggle={toggle}>
-        Stop app
-      </ModalHeader>
-      <ModalBody>
-        <p className="mb-3">
-          Are you sure you want to stop the <b>{appName}</b> app?
-        </p>
-        <WarnAlert dismissible={false}>
-          <p className="mb-0">
-            Stopping the app scales it down and takes it offline &mdash; its
-            public URL will no longer be reachable. You can publish it again at
-            any time while the project remains public. The app is not deleted.
-          </p>
-        </WarnAlert>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="outline-primary" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
-        </Button>
-        <Button
-          color="primary"
-          data-cy="stop-app-button"
-          onClick={onStop}
-          type="button"
-        >
-          <PauseCircle className={cx("bi", "me-1")} />
-          Stop app
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
-
 export function DeleteAppModal({
   appName,
   isOpen,
   toggle,
   onConfirm,
 }: AppActionModalProps) {
-  const onDelete = useCallback(() => {
+  // "Stop" is the user-facing verb; under the hood this deletes the deployment
+  // (create/delete is the only lifecycle the backend offers), which is why the
+  // owning component still drives a delete mutation.
+  const onStop = useCallback(() => {
     onConfirm();
     toggle();
   }, [onConfirm, toggle]);
@@ -103,17 +59,17 @@ export function DeleteAppModal({
         tag="h2"
         toggle={toggle}
       >
-        Delete app
+        Stop app
       </ModalHeader>
       <ModalBody>
         <p className="mb-3">
-          Are you sure you want to delete the <b>{appName}</b> app?
+          Are you sure you want to stop the <b>{appName}</b> app?
         </p>
         <WarnAlert dismissible={false}>
           <p className="mb-0">
-            This permanently removes the running app and its public URL. The app
-            launcher is kept, so you can publish the app again later. Anyone
-            currently using the app will lose access.
+            This shuts down the running app and frees its public URL. The app
+            launcher is kept, so you can start it again later. Anyone currently
+            using the app will lose access.
           </p>
         </WarnAlert>
       </ModalBody>
@@ -125,11 +81,11 @@ export function DeleteAppModal({
         <Button
           color="danger"
           data-cy="delete-app-button"
-          onClick={onDelete}
+          onClick={onStop}
           type="button"
         >
-          <Trash className={cx("bi", "me-1")} />
-          Delete app
+          <StopCircle className={cx("bi", "me-1")} />
+          Stop app
         </Button>
       </ModalFooter>
     </Modal>

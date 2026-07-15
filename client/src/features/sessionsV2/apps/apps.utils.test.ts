@@ -21,11 +21,10 @@ import { describe, expect, it } from "vitest";
 import type { AppResponse, AppStatus } from "../api/apps.api";
 import {
   findAppForLauncher,
-  getAppStatusDisplay,
-  getAppStatusStyles,
+  getAppIndicatorState,
+  hasAppOnAnotherLauncher,
   hasPendingApp,
   hasReachedAppTarget,
-  isAppHibernated,
   toSecureAppUrl,
 } from "./apps.utils";
 
@@ -63,77 +62,43 @@ describe("findAppForLauncher()", () => {
   });
 });
 
-describe("getAppStatusDisplay()", () => {
-  it("marks a ready app as available", () => {
-    const display = getAppStatusDisplay("ready");
-    expect(display.label).toBe("Available");
-    expect(display.isLive).toBe(true);
+describe("getAppIndicatorState()", () => {
+  it("reports 'not-running' when there is no app", () => {
+    expect(getAppIndicatorState(undefined)).toBe("not-running");
   });
 
   it.each<[AppStatus, string]>([
-    ["pending", "Publishing"],
-    ["failed", "Error"],
-    ["hibernated", "Stopped"],
-  ])("maps %s to the %s label and is not live", (status, label) => {
-    const display = getAppStatusDisplay(status);
-    expect(display.label).toBe(label);
-    expect(display.isLive).toBe(false);
+    ["pending", "starting"],
+    ["ready", "live"],
+    ["failed", "error"],
+    ["hibernated", "not-running"],
+  ])("maps a %s app to '%s'", (status, expected) => {
+    expect(getAppIndicatorState(makeApp({ status }))).toBe(expected);
   });
 
-  it("always provides badge styling classes", () => {
-    for (const status of [
-      "pending",
-      "ready",
-      "failed",
-      "hibernated",
-    ] as AppStatus[]) {
-      expect(getAppStatusDisplay(status).badgeClassName.length).toBeGreaterThan(
-        0,
-      );
-    }
+  it("collapses a platform-hibernated app to 'not-running' (no resume in the UI)", () => {
+    expect(getAppIndicatorState(makeApp({ status: "hibernated" }))).toBe(
+      "not-running",
+    );
   });
 
-  it("provides a non-empty description for every non-live state", () => {
-    for (const status of ["pending", "failed", "hibernated"] as AppStatus[]) {
-      expect(getAppStatusDisplay(status).description.length).toBeGreaterThan(0);
-    }
+  it("forces 'starting' while a publish is in flight, even before the app appears", () => {
+    expect(getAppIndicatorState(undefined, { isStarting: true })).toBe(
+      "starting",
+    );
   });
 
-  it("leaves the live state description empty (the badge says it all)", () => {
-    expect(getAppStatusDisplay("ready").description).toBe("");
+  it("lets an in-flight publish override a stale observed status", () => {
+    // isStarting reflects the caller's intent and takes precedence, so a brief
+    // window where the old app is still 'ready'/'failed' does not flicker away
+    // from the starting indicator.
+    expect(
+      getAppIndicatorState(makeApp({ status: "failed" }), { isStarting: true }),
+    ).toBe("starting");
   });
 
-  it("describes each non-live state distinctly", () => {
-    const pending = getAppStatusDisplay("pending").description;
-    const failed = getAppStatusDisplay("failed").description;
-    const hibernated = getAppStatusDisplay("hibernated").description;
-    expect(new Set([pending, failed, hibernated]).size).toBe(3);
-  });
-
-  it("does not repeat the label word in the description", () => {
-    for (const status of ["pending", "hibernated"] as AppStatus[]) {
-      const { label, description } = getAppStatusDisplay(status);
-      expect(description.toLowerCase()).not.toContain(label.toLowerCase());
-    }
-  });
-
-  it("captions the start time only while the app is live", () => {
-    expect(getAppStatusDisplay("ready").timeCaptionPrefix).toBe("Published");
-  });
-
-  it("suppresses the start-time caption for every non-live state", () => {
-    for (const status of ["pending", "failed", "hibernated"] as AppStatus[]) {
-      expect(getAppStatusDisplay(status).timeCaptionPrefix).toBeNull();
-    }
-  });
-});
-
-describe("isAppHibernated()", () => {
-  it("is true only for a hibernated app", () => {
-    expect(isAppHibernated(makeApp({ status: "hibernated" }))).toBe(true);
-    expect(isAppHibernated(makeApp({ status: "ready" }))).toBe(false);
-    expect(isAppHibernated(makeApp({ status: "pending" }))).toBe(false);
-    expect(isAppHibernated(makeApp({ status: "failed" }))).toBe(false);
+  it("defaults isStarting to false when no options are passed", () => {
+    expect(getAppIndicatorState(makeApp({ status: "ready" }))).toBe("live");
   });
 });
 
@@ -161,23 +126,30 @@ describe("hasPendingApp()", () => {
   });
 });
 
-describe("getAppStatusStyles()", () => {
-  it("uses the success palette for a live app and danger for a failed one", () => {
-    expect(getAppStatusStyles("ready").bgColor).toBe("success");
-    expect(getAppStatusStyles("failed").bgColor).toBe("danger");
-  });
+describe("hasAppOnAnotherLauncher()", () => {
+  it.each<AppStatus>(["pending", "ready", "hibernated", "failed"])(
+    "counts a %s app on another launcher (only one app per project)",
+    (status) => {
+      const apps = [makeApp({ launcher_id: "other", status })];
+      expect(hasAppOnAnotherLauncher(apps, "self")).toBe(true);
+    },
+  );
 
-  it("provides a background tint and emphasis text color for every status", () => {
+  it("ignores this launcher's own app, whatever its status", () => {
     for (const status of [
       "pending",
       "ready",
-      "failed",
       "hibernated",
+      "failed",
     ] as AppStatus[]) {
-      const styles = getAppStatusStyles(status);
-      expect(styles.bgColor.length).toBeGreaterThan(0);
-      expect(styles.textColorCard.length).toBeGreaterThan(0);
+      const apps = [makeApp({ launcher_id: "self", status })];
+      expect(hasAppOnAnotherLauncher(apps, "self")).toBe(false);
     }
+  });
+
+  it("is false for an empty list or undefined", () => {
+    expect(hasAppOnAnotherLauncher([], "self")).toBe(false);
+    expect(hasAppOnAnotherLauncher(undefined, "self")).toBe(false);
   });
 });
 

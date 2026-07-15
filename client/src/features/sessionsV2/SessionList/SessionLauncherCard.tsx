@@ -24,10 +24,7 @@ import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
-import AppCard from "~/features/sessionsV2/apps/AppCard";
-import useAppForLauncher from "~/features/sessionsV2/apps/useAppForLauncher.hook";
 import JobCard from "~/features/sessionsV2/SessionList/JobCard";
-import { SingleButtonWithMenu } from "../../../components/buttons/Button";
 import { Loader } from "../../../components/Loader";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -47,7 +44,6 @@ import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
 import {
   getLauncherCategory,
   getLauncherCategoryDefinition,
-  isAppLauncher,
   sessionLauncherKindToCategory,
 } from "../session.utils";
 import { SESSION_LAUNCHER_KIND, SessionV2 } from "../sessionsV2.types";
@@ -94,16 +90,6 @@ export default function SessionLauncherCard({
 
   const environment = launcher?.environment;
   const hasSession = !!sessions?.length;
-
-  // App launchers are backed by a single deployment from the /apps API rather
-  // than by per-user sessions.
-  const isApp = !!launcher && isAppLauncher(launcher);
-  const { app } = useAppForLauncher({
-    projectId: project.id,
-    launcherId: launcher?.id ?? "",
-    skip: !isApp || !launcher,
-  });
-  const hasApp = !!app;
 
   const sessionType = sessions?.at(0)?.session_type ?? "interactive";
   // Orphan sessions have no launcher; get category from the session itself
@@ -182,7 +168,7 @@ export default function SessionLauncherCard({
     >
       <CardBody className={cx("p-0")}>
         <div
-          className={cx((hasSession || hasApp) && "border-bottom", "p-3")}
+          className={cx(hasSession && "border-bottom", "p-3")}
           onClick={toggleSessionView}
           aria-label={
             toggleSessionView
@@ -330,26 +316,15 @@ export default function SessionLauncherCard({
                     "gap-2",
                   )}
                 >
-                  {isApp && hasApp ? (
-                    // A deployed app shows its runtime controls in the sub-row
-                    // below (AppCard); the header keeps only the launcher-level
-                    // menu, mirroring a session launcher's header.
-                    otherLauncherActions && (
-                      <SingleButtonWithMenu color="outline-primary" size="sm">
-                        {otherLauncherActions}
-                      </SingleButtonWithMenu>
-                    )
-                  ) : (
-                    <LauncherActions
-                      placement="launcher-card"
-                      builds={builds}
-                      hasSession={hasSession}
-                      lastBuild={lastBuild}
-                      launcher={launcher}
-                      otherActions={otherLauncherActions}
-                      project={project}
-                    />
-                  )}
+                  <LauncherActions
+                    placement="launcher-card"
+                    builds={builds}
+                    hasSession={hasSession}
+                    lastBuild={lastBuild}
+                    launcher={launcher}
+                    otherActions={otherLauncherActions}
+                    project={project}
+                  />
                   {useOldImage && lastSuccessfulBuild && (
                     <BuildStatusDescription
                       isOldImage={true}
@@ -367,17 +342,6 @@ export default function SessionLauncherCard({
             </Col>
           </Row>
         </div>
-        {hasApp && app && launcher && (
-          <div className="p-0">
-            <AppCard
-              app={app}
-              launcher={launcher}
-              project={project}
-              builds={builds}
-              lastBuild={lastBuild}
-            />
-          </div>
-        )}
         {hasSession && (
           <div className="p-0">
             {sessions &&

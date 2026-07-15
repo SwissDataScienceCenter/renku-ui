@@ -27,10 +27,9 @@ import {
 } from "react";
 import {
   BoxArrowUpRight,
-  PauseCircle,
-  PlayFill,
-  Rocket,
-  Trash,
+  Link45deg,
+  Power,
+  ToggleOff,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -43,21 +42,20 @@ import {
   ButtonWithMenuV2,
   SingleButtonWithMenu,
 } from "~/components/buttons/Button";
-import { Clipboard } from "~/components/clipboard/Clipboard";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import type { AppStatus } from "~/features/sessionsV2/api/apps.api";
 import {
   useDeleteAppsByAppNameMutation,
-  usePatchAppsByAppNameMutation,
   usePostAppsMutation,
 } from "~/features/sessionsV2/api/apps.api";
+import { DeleteAppModal } from "~/features/sessionsV2/apps/AppActionModals";
+import AppStatusIndicator from "~/features/sessionsV2/apps/AppStatusIndicator";
 import {
-  DeleteAppModal,
-  StopAppModal,
-} from "~/features/sessionsV2/apps/AppActionModals";
-import {
+  APP_ALREADY_EXISTS_MESSAGE,
   APP_PUBLIC_PROJECT_ONLY_MESSAGE,
+  getAppIndicatorState,
+  hasAppOnAnotherLauncher,
   toSecureAppUrl,
 } from "~/features/sessionsV2/apps/apps.utils";
 import useAppForLauncher from "~/features/sessionsV2/apps/useAppForLauncher.hook";
@@ -73,20 +71,10 @@ import BuildLauncherButtons, {
 import CheckingLauncherButton from "../shared/CheckingLauncherButton";
 import type { LauncherCardActionsProps } from "../types";
 
-// Statuses that end a publish/resume wait: the app is up ("ready") or it has
-// settled into a terminal failure. Statuses that end a stop wait: the app is
-// scaled down ("hibernated") or has settled as failed. Kept module-level so the
-// arrays are stable across renders (they feed a query-options object).
+// Statuses that end a publish wait: the app is up ("ready") or it has settled
+// into a terminal failure. Kept module-level so the array is stable across
+// renders (it feeds a query-options object).
 const APP_SPIN_UP_TARGET: AppStatus[] = ["ready", "failed"];
-const APP_STOP_TARGET: AppStatus[] = ["hibernated", "failed"];
-
-// Stop and Resume are temporarily disabled: the backend does not yet apply the
-// stop/resume transitions, so the buttons would appear to do nothing. The
-// supporting code (mutations, wait hooks, modal) is kept behind this flag; set
-// it back to `true` once the backend applies those transitions to restore the
-// actions. Typed as `boolean` (not the literal `false`) so the gated branches
-// stay type-reachable and lint-clean.
-const APP_STOP_RESUME_ENABLED: boolean = false;
 
 export default function AppLauncherActions({
   builds,
@@ -96,16 +84,21 @@ export default function AppLauncherActions({
   project,
   displayBuildActions: displayBuildActionsProp,
 }: LauncherCardActionsProps) {
-  const { renkuToastDanger } = useRenkuToast();
+  const { renkuToastDanger, renkuToastSuccess } = useRenkuToast();
   const { isLoadingPermissions, write } = useProjectPermissions({
     projectId: launcher.project_id,
   });
   const isPublic = project.visibility === "public";
 
-  const { app, isLoading: isLoadingApps } = useAppForLauncher({
+  const {
+    app,
+    data: apps,
+    isLoading: isLoadingApps,
+  } = useAppForLauncher({
     projectId: project.id,
     launcherId: launcher.id,
   });
+  const hasOtherApp = hasAppOnAnotherLauncher(apps, launcher.id);
   const isLive = app?.status === "ready";
   const appUrl = app?.url ? toSecureAppUrl(app.url) : undefined;
   const canOpen = isLive && !!appUrl;
@@ -121,8 +114,6 @@ export default function AppLauncherActions({
   // One mutation instance per action so their life cycles (isLoading /
   // isSuccess / reset) stay independent and can each drive their own wait.
   const [publishApp, publishResult] = usePostAppsMutation();
-  const [resumeApp, resumeResult] = usePatchAppsByAppNameMutation();
-  const [stopApp, stopResult] = usePatchAppsByAppNameMutation();
   const [deleteApp, deleteResult] = useDeleteAppsByAppNameMutation();
 
   // While an action is in flight, poll /apps until the deployment reaches the
@@ -134,13 +125,7 @@ export default function AppLauncherActions({
     projectId: project.id,
     launcherId: launcher.id,
     target: { desiredStatus: APP_SPIN_UP_TARGET },
-    skip: publishResult.isUninitialized && resumeResult.isUninitialized,
-  });
-  const { isWaiting: isStopping } = useWaitForAppStatus({
-    projectId: project.id,
-    launcherId: launcher.id,
-    target: { desiredStatus: APP_STOP_TARGET },
-    skip: stopResult.isUninitialized,
+    skip: publishResult.isUninitialized,
   });
   const { isWaiting: isDeleting } = useWaitForAppStatus({
     projectId: project.id,
@@ -150,54 +135,25 @@ export default function AppLauncherActions({
   });
 
   const { reset: resetPublish } = publishResult;
-  const { reset: resetResume } = resumeResult;
-  const { reset: resetStop } = stopResult;
   const { reset: resetDelete } = deleteResult;
 
-  // Publish / resume: clear once the app has settled (up, or failed), or on error.
+  // Publish: clear once the app has settled (up, or failed), or on error.
   useEffect(() => {
-    if (publishResult.isError || resumeResult.isError) {
+    if (publishResult.isError) {
       renkuToastDanger({
         textHeader: "App",
         textBody: "Unable to start the app.",
       });
       resetPublish();
-      resetResume();
-    } else if (
-      (publishResult.isSuccess || resumeResult.isSuccess) &&
-      !isSpinningUp
-    ) {
+    } else if (publishResult.isSuccess && !isSpinningUp) {
       resetPublish();
-      resetResume();
     }
   }, [
     publishResult.isError,
     publishResult.isSuccess,
-    resumeResult.isError,
-    resumeResult.isSuccess,
     isSpinningUp,
     renkuToastDanger,
     resetPublish,
-    resetResume,
-  ]);
-
-  // Stop: clear once the app is scaled down (or on error).
-  useEffect(() => {
-    if (stopResult.isError) {
-      renkuToastDanger({
-        textHeader: "App",
-        textBody: "Unable to stop the app.",
-      });
-      resetStop();
-    } else if (stopResult.isSuccess && !isStopping) {
-      resetStop();
-    }
-  }, [
-    stopResult.isError,
-    stopResult.isSuccess,
-    isStopping,
-    renkuToastDanger,
-    resetStop,
   ]);
 
   // Delete: clear once the app is gone (or on error).
@@ -205,7 +161,7 @@ export default function AppLauncherActions({
     if (deleteResult.isError) {
       renkuToastDanger({
         textHeader: "App",
-        textBody: "Unable to delete the app.",
+        textBody: "Unable to stop the app.",
       });
       resetDelete();
     } else if (deleteResult.isSuccess && !isDeleting) {
@@ -223,39 +179,47 @@ export default function AppLauncherActions({
   // the button shows progress instead of a stale action the whole time.
   const isBusy =
     publishResult.isLoading ||
-    resumeResult.isLoading ||
-    stopResult.isLoading ||
     deleteResult.isLoading ||
     isSpinningUp ||
-    isStopping ||
     isDeleting;
 
-  const [isStopOpen, setIsStopOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const toggleStop = useCallback(() => setIsStopOpen((open) => !open), []);
   const toggleDelete = useCallback(() => setIsDeleteOpen((open) => !open), []);
 
   const onPublish = useCallback(() => {
     publishApp({ appPostRequest: { launcher_id: launcher.id } });
   }, [publishApp, launcher.id]);
 
-  const onResume = useCallback(() => {
-    if (app) {
-      resumeApp({ appName: app.name, appPatchRequest: { state: "running" } });
-    }
-  }, [app, resumeApp]);
-
-  const onStop = useCallback(() => {
-    if (app) {
-      stopApp({ appName: app.name, appPatchRequest: { state: "hibernated" } });
-    }
-  }, [app, stopApp]);
-
   const onDelete = useCallback(() => {
     if (app) {
       deleteApp({ appName: app.name });
     }
   }, [app, deleteApp]);
+
+  const onCopyUrl = useCallback(() => {
+    if (!appUrl) {
+      return;
+    }
+    window.navigator.clipboard.writeText(appUrl).then(
+      () =>
+        renkuToastSuccess({
+          textHeader: "App",
+          textBody: "The app URL was copied to your clipboard.",
+        }),
+      () =>
+        renkuToastDanger({
+          textHeader: "App",
+          textBody: "Unable to copy the app URL to your clipboard.",
+        }),
+    );
+  }, [appUrl, renkuToastDanger, renkuToastSuccess]);
+
+  // The pill shown next to the primary action. While a publish is in flight but
+  // the deployment has not yet surfaced in the /apps response, force "starting"
+  // so the indicator reflects intent immediately.
+  const indicatorState = getAppIndicatorState(app, {
+    isStarting: isSpinningUp || publishResult.isLoading,
+  });
 
   const displayBuildActions =
     displayBuildActionsProp && isCodeEnvironment && write && !app;
@@ -265,23 +229,28 @@ export default function AppLauncherActions({
   );
 
   const menuItems = [
-    displayBuildActions && !applyDefaultBuildActions && (
-      <RebuildLauncherDropdownItem key="rebuild-launcher" launcher={launcher} />
-    ),
-    APP_STOP_RESUME_ENABLED && write && isLive && (
-      <DropdownItem key="stop-app" data-cy="stop-app-menu" onClick={toggleStop}>
-        <PauseCircle className={cx("bi", "me-1")} />
-        Stop app
-      </DropdownItem>
-    ),
     write && app && (
       <DropdownItem
         key="delete-app"
+        className="text-danger"
         data-cy="app-menu-delete"
         onClick={toggleDelete}
       >
-        <Trash className={cx("bi", "me-1")} />
-        Delete app
+        <ToggleOff className={cx("bi", "me-1")} />
+        Stop app
+      </DropdownItem>
+    ),
+    displayBuildActions && !applyDefaultBuildActions && (
+      <RebuildLauncherDropdownItem key="rebuild-launcher" launcher={launcher} />
+    ),
+    canOpen && appUrl && (
+      <DropdownItem
+        key="copy-app-url"
+        data-cy="app-menu-copy-url"
+        onClick={onCopyUrl}
+      >
+        <Link45deg className={cx("bi", "me-1")} />
+        Copy app URL
       </DropdownItem>
     ),
     write && otherActions && (
@@ -297,19 +266,22 @@ export default function AppLauncherActions({
 
     // No deployment yet (or the previous one failed): offer "Publish".
     if (!app || app.status === "failed") {
-      const publishDisabled = !write || !isPublic || !hasValidImage;
+      const publishDisabled =
+        !write || !isPublic || hasOtherApp || !hasValidImage;
       const tooltip = !write
-        ? "You do not have permission to publish apps in this project."
+        ? "You do not have permission to start apps in this project."
         : !isPublic
           ? APP_PUBLIC_PROJECT_ONLY_MESSAGE
-          : getLaunchActionTooltip(write, imageStatus, "app");
+          : hasOtherApp
+            ? APP_ALREADY_EXISTS_MESSAGE
+            : getLaunchActionTooltip(write, imageStatus, "app");
       const publishButton = (
         <AppActionButton
           color="primary"
           dataCy="publish-app-button"
           disabled={publishDisabled}
-          icon={<Rocket className={cx("bi", "me-1")} />}
-          label={app?.status === "failed" ? "Republish" : "Publish"}
+          icon={<Power className={cx("bi", "me-1")} />}
+          label={app?.status === "failed" ? "Restart" : "Start"}
           onClick={onPublish}
           tooltip={tooltip}
         />
@@ -325,88 +297,44 @@ export default function AppLauncherActions({
       return publishButton;
     }
 
-    // Stopped: normally offers "Resume". Resume is temporarily disabled (see
-    // APP_STOP_RESUME_ENABLED), so a stopped app has no primary action and is
-    // managed through the menu only (Delete); return null and let the caller
-    // render a menu-only control.
+    // Stopped: the UI no longer offers start/resume for a hibernated app (that
+    // only arrives via platform-side hibernation now), so it has no primary
+    // action and is managed through the menu only (Stop app). Return null and
+    // let the caller render a menu-only control.
     if (app.status === "hibernated") {
-      if (!APP_STOP_RESUME_ENABLED) {
-        return null;
-      }
-      return (
-        <AppActionButton
-          color="primary"
-          dataCy="resume-app-button"
-          disabled={!write || !isPublic}
-          icon={<PlayFill className={cx("bi", "me-1")} />}
-          label="Resume"
-          onClick={onResume}
-          tooltip={
-            !write
-              ? "You do not have permission to manage apps in this project."
-              : !isPublic
-                ? "This app cannot be resumed because its project is not public."
-                : undefined
-          }
-        />
-      );
+      return null;
     }
 
-    // Publishing (pending): nothing to open yet. With Stop enabled this is the
-    // "cancel publish in progress" control; while Stop is disabled there is no
-    // action to offer, so show the in-progress indicator instead.
+    // Still starting (pending): nothing to open yet, show the in-progress
+    // indicator until the deployment settles.
     if (!isLive) {
-      if (!APP_STOP_RESUME_ENABLED) {
-        return <CheckingLauncherButton />;
-      }
-      return (
-        <AppActionButton
-          color="outline-primary"
-          dataCy="stop-app-button-action"
-          disabled={!write}
-          icon={<PauseCircle className={cx("bi", "me-1")} />}
-          label="Stop"
-          onClick={toggleStop}
-        />
-      );
+      return <CheckingLauncherButton />;
     }
 
-    // Live: opening the app is the primary action, with a copy-URL button
-    // beside it. Stop/Delete move into the dropdown menu.
+    // Live: opening the app is the only primary action. Stop app / Copy URL
+    // live in the dropdown menu alongside the launcher-level actions.
     return (
-      <ButtonGroup onClick={(event) => event.stopPropagation()}>
-        <Button
-          color="primary"
-          data-cy="open-app-button"
-          disabled={!canOpen}
-          href={canOpen ? appUrl : undefined}
-          rel="noreferrer noopener"
-          size="sm"
-          tag="a"
-          target="_blank"
-        >
-          <BoxArrowUpRight className={cx("bi", "me-1")} />
-          Open app
-        </Button>
-        {canOpen && appUrl && (
-          <Clipboard
-            className={cx(
-              "btn",
-              "btn-outline-primary",
-              "btn-sm",
-              "d-inline-flex",
-              "align-items-center",
-            )}
-            clipboardText={appUrl}
-          />
-        )}
-      </ButtonGroup>
+      <Button
+        color="primary"
+        data-cy="open-app-button"
+        disabled={!canOpen}
+        href={canOpen ? appUrl : undefined}
+        onClick={(event) => event.stopPropagation()}
+        rel="noreferrer noopener"
+        size="sm"
+        tag="a"
+        target="_blank"
+      >
+        <BoxArrowUpRight className={cx("bi", "me-1")} />
+        Open
+      </Button>
     );
   }, [
     app,
     appUrl,
     applyDefaultBuildActions,
     canOpen,
+    hasOtherApp,
     hasValidImage,
     imageStatus,
     isBusy,
@@ -416,51 +344,46 @@ export default function AppLauncherActions({
     isPublic,
     launcher,
     onPublish,
-    onResume,
-    toggleStop,
     write,
   ]);
 
+  const actionControl = isLoadingPermissions ? (
+    <CheckingLauncherButton />
+  ) : !write || !hasMenuItems ? (
+    defaultAction
+  ) : defaultAction ? (
+    <ButtonWithMenuV2
+      color="primary"
+      default={defaultAction}
+      preventPropagation
+      size="sm"
+      dataCy="app-button-with-menu-dropdown"
+    >
+      {menuItems}
+    </ButtonWithMenuV2>
+  ) : (
+    // No primary action (e.g. an app the platform hibernated): show a menu-only
+    // kebab so Stop app stays reachable without a primary button.
+    <div onClick={(event) => event.stopPropagation()}>
+      <SingleButtonWithMenu color="primary" size="sm">
+        {menuItems}
+      </SingleButtonWithMenu>
+    </div>
+  );
+
   return (
     <>
-      {isLoadingPermissions ? (
-        <CheckingLauncherButton />
-      ) : !write || !hasMenuItems ? (
-        defaultAction
-      ) : defaultAction ? (
-        <ButtonWithMenuV2
-          color="primary"
-          default={defaultAction}
-          preventPropagation
-          size="sm"
-          dataCy="app-button-with-menu-dropdown"
-        >
-          {menuItems}
-        </ButtonWithMenuV2>
-      ) : (
-        // No primary action (e.g. a stopped app while Resume is disabled): show
-        // a menu-only kebab so Delete stays reachable without a primary button.
-        <div onClick={(event) => event.stopPropagation()}>
-          <SingleButtonWithMenu color="primary" size="sm">
-            {menuItems}
-          </SingleButtonWithMenu>
-        </div>
-      )}
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        {!isLoadingApps && <AppStatusIndicator state={indicatorState} />}
+        {actionControl}
+      </div>
       {app && (
-        <>
-          <StopAppModal
-            appName={app.name}
-            isOpen={isStopOpen}
-            toggle={toggleStop}
-            onConfirm={onStop}
-          />
-          <DeleteAppModal
-            appName={app.name}
-            isOpen={isDeleteOpen}
-            toggle={toggleDelete}
-            onConfirm={onDelete}
-          />
-        </>
+        <DeleteAppModal
+          appName={app.name}
+          isOpen={isDeleteOpen}
+          toggle={toggleDelete}
+          onConfirm={onDelete}
+        />
       )}
     </>
   );
