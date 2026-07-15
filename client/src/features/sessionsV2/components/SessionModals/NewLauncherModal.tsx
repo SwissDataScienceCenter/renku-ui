@@ -75,6 +75,10 @@ export default function NewLauncherModal({
     ? LAUNCHER_OPTIONS
     : LAUNCHER_OPTIONS.filter((category) => category !== "app");
 
+  // Lay every option out on a single row: split the 12-column grid evenly, so
+  // three options are 4 wide (3-up) and two options stay 6 wide (2-up).
+  const optionColMd = Math.max(1, Math.floor(12 / launcherOptions.length));
+
   const isCategoryDisabled = useCallback(
     (category: LauncherCategory) => category === "app" && !isProjectPublic,
     [isProjectPublic],
@@ -132,7 +136,7 @@ export default function NewLauncherModal({
               const OptionIcon = definition.icon;
               const disabled = isCategoryDisabled(category);
               return (
-                <Col key={category} xs={12} md={6}>
+                <Col key={category} xs={12} md={optionColMd}>
                   <Card
                     className={cx(
                       styles.LauncherOptionCard,
