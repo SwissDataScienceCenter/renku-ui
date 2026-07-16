@@ -19,12 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Fragment, useEffect, useRef, useState } from "react";
-import {
-  BoxArrowUpRight,
-  ExclamationTriangle,
-  ExclamationTriangleFill,
-  XLg,
-} from "react-bootstrap-icons";
+import { Bell, BoxArrowUpRight, XLg } from "react-bootstrap-icons";
 import ReactMarkdown from "react-markdown";
 import { Link } from "react-router";
 import {
@@ -36,6 +31,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { ErrorAlert } from "~/components/Alert";
 import {
   useGetAlertsQuery,
   type Alert,
@@ -85,10 +81,6 @@ function Alerts({ alerts }: AlertsProps) {
   const ref = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const prevAlertIdsRef = useRef<Set<string>>(new Set());
-  const hasAlerts = alerts.length > 0;
-  const tooltipText = hasAlerts
-    ? `${alerts.length} active alert${alerts.length > 1 ? "s" : ""}`
-    : "No active alerts";
 
   useEffect(() => {
     if (!alerts || alerts.length === 0) {
@@ -107,115 +99,138 @@ function Alerts({ alerts }: AlertsProps) {
 
     if (hasNewAlerts) {
       // TODO: fix react-hooks/set-state-in-effect
-
       setIsOpen(true);
     }
 
     prevAlertIdsRef.current = currentAlertIds;
   }, [alerts]);
 
-  const togglePopover = () => setIsOpen(!isOpen);
+  const togglePopover = () => setIsOpen((open) => !open);
   const closePopover = () => setIsOpen(false);
+
+  if (!alerts || alerts.length === 0) {
+    return (
+      <>
+        <span ref={ref}>
+          <Button
+            className={cx(
+              "bg-transparent",
+              "border-0",
+              "no-focus",
+              "p-0",
+              "shadow-none",
+              "text-dark",
+            )}
+            disabled
+            data-cy="session-alerts"
+            aria-label="Session alerts"
+          >
+            <Bell className="bi" />
+          </Button>
+        </span>
+        <UncontrolledTooltip placement="bottom" target={ref}>
+          Session alerts — no alerts
+        </UncontrolledTooltip>
+      </>
+    );
+  }
 
   return (
     <>
-      <div className={cx(hasAlerts && "position-relative")}>
+      <div className="position-relative">
         <Button
           innerRef={ref}
-          onClick={hasAlerts ? togglePopover : undefined}
+          onClick={togglePopover}
           className={cx(
             "bg-transparent",
             "border-0",
             "no-focus",
             "p-0",
             "shadow-none",
-            hasAlerts ? "text-danger" : "text-dark",
+            "text-danger",
           )}
           data-cy="session-alerts"
-          aria-label={tooltipText}
-          aria-expanded={hasAlerts ? isOpen : undefined}
-          aria-haspopup={hasAlerts ? "dialog" : undefined}
+          aria-label="Session alerts"
+          aria-expanded={isOpen}
+          aria-haspopup={"dialog"}
         >
-          {hasAlerts ? (
-            <ExclamationTriangleFill className="bi" />
-          ) : (
-            <ExclamationTriangle className="bi" />
-          )}
-          <span className="visually-hidden">{tooltipText}</span>
+          <Bell className="bi" />
         </Button>
-        {hasAlerts && (
-          <Badge
-            color="dark"
-            pill
-            className="position-absolute"
-            style={{
-              fontSize: "0.65rem",
-              top: "-6px",
-              right: "-12px",
-              minWidth: "20px",
-            }}
-          >
-            {alerts.length}
-          </Badge>
+        <AlertsBadge count={alerts.length} />
+        {!isOpen && (
+          <UncontrolledTooltip placement="bottom" target={ref}>
+            Session alerts - {alerts.length} alerts
+          </UncontrolledTooltip>
         )}
       </div>
-      {!isOpen && (
-        <UncontrolledTooltip placement="bottom" target={ref}>
-          {tooltipText}
-        </UncontrolledTooltip>
-      )}
-      {hasAlerts && (
-        <Popover
-          target={ref}
-          isOpen={isOpen}
-          toggle={togglePopover}
-          trigger="click"
-          placement="auto"
-          popperClassName="session-alerts-popover"
-        >
-          {alerts.map((alert, idx) => (
-            <Fragment key={alert.id}>
-              <PopoverHeader
-                className={cx("text-bg-danger", idx > 0 && "rounded-0")}
-              >
-                <div
-                  className={cx(
-                    "d-flex",
-                    "justify-content-between",
-                    "align-items-center",
-                    "gap-2",
-                  )}
-                >
-                  <span>{alert.title}</span>
-                  <button
-                    type="button"
-                    className={cx(
-                      "align-items-center",
-                      "btn",
-                      "btn-sm",
-                      "border-0",
-                      "d-flex",
-                      "link-light",
-                      "p-0",
-                      "shadow-none",
-                    )}
-                    data-cy="session-alerts-close"
-                    aria-label="Close alerts popover"
-                    onClick={closePopover}
-                  >
-                    <XLg className="bi" />
-                  </button>
-                </div>
-              </PopoverHeader>
-              <PopoverBody className={cx("text-dark", "bg-danger-subtle")}>
+      <Popover
+        target={ref}
+        isOpen={isOpen}
+        toggle={togglePopover}
+        trigger="click"
+        placement="auto"
+        popperClassName="session-alerts-popover"
+      >
+        <PopoverHeader>
+          <div
+            className={cx(
+              "d-flex",
+              "justify-content-between",
+              "align-items-center",
+              "gap-2",
+            )}
+          >
+            <span>Session alerts</span>
+            <button
+              type="button"
+              className={cx(
+                "align-items-center",
+                "btn",
+                "btn-sm",
+                "border-0",
+                "d-flex",
+                "p-0",
+                "shadow-none",
+              )}
+              data-cy="session-alerts-close"
+              aria-label="Close alerts popover"
+              onClick={closePopover}
+            >
+              <XLg className="bi" />
+            </button>
+          </div>
+        </PopoverHeader>
+        {alerts.map((alert) => (
+          <Fragment key={alert.id}>
+            <PopoverBody className="p-0">
+              <ErrorAlert timeout={0} dismissible={false} className="m-2">
+                <span className="fw-bold">{alert.title}</span>
                 <ReactMarkdown components={{ a: LinkRenderer }}>
                   {alert.message}
                 </ReactMarkdown>
-              </PopoverBody>
-            </Fragment>
-          ))}
-        </Popover>
-      )}
+              </ErrorAlert>
+            </PopoverBody>
+          </Fragment>
+        ))}
+      </Popover>
     </>
+  );
+}
+
+function AlertsBadge({ count }: { count: number }) {
+  return (
+    <Badge
+      color="danger"
+      pill
+      className="position-absolute"
+      style={{
+        fontSize: "0.65rem",
+        top: "-6px",
+        right: "-12px",
+        minWidth: "20px",
+      }}
+    >
+      {count}
+    </Badge>
   );
 }

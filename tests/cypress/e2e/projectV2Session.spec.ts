@@ -1164,7 +1164,7 @@ describe("session alerts on session show page", () => {
     cy.wait("@getAlerts");
 
     cy.getDataCy("session-alerts").trigger("mouseover");
-    cy.contains(".tooltip", "No active alerts").should("be.visible");
+    cy.contains(".tooltip", "Session alerts").should("be.visible");
     cy.get(".session-alerts-popover").should("not.exist");
   });
 
@@ -1172,9 +1172,20 @@ describe("session alerts on session show page", () => {
     cy.intercept("GET", "/api/data/alerts*", {
       body: [
         {
-          id: "01J00QXZZZZZZZZZZZZZZZZZZ",
+          id: "01J00QXZ",
           title: "Session warning",
-          message: "A test alert message.",
+          message: "A test alert message. [Link](https://example.com)",
+          event_type: "test",
+          user_id: "user1-uuid",
+          session_name: sessionName,
+          creation_date: "2026-07-10T12:00:00Z",
+          resolved_date: null,
+        },
+        {
+          id: "01J00QXY",
+          title: "Session error",
+          message:
+            "A test error message. [Link](https://example.com) [Link](https://example.com)",
           event_type: "test",
           user_id: "user1-uuid",
           session_name: sessionName,
@@ -1196,7 +1207,7 @@ describe("session alerts on session show page", () => {
 
     cy.getDataCy("session-alerts").click();
     cy.get(".session-alerts-popover").should("be.visible");
-    cy.contains(".popover-header", "Session warning").should("be.visible");
+    cy.contains(".popover-header", "Session alerts").should("be.visible");
     cy.contains(".popover-body", "A test alert message.").should("be.visible");
   });
 });
