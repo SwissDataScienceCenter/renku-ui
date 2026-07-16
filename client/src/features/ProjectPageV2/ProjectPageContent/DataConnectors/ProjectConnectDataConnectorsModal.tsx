@@ -57,13 +57,11 @@ import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
-  useGetProjectsByProjectIdStorageQuery,
-  usePostDataConnectorsStorageMutation,
-} from "~/features/dataConnectorsV2/api/data-connectors.api.ts";
-import {
   useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdStorageQuery,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsGlobalMutation,
+  usePostDataConnectorsStorageMutation,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { normalizeAsDoi } from "~/features/dataConnectorsV2/components/dataConnector.utils";
 import DataConnectorModal, {
@@ -96,6 +94,7 @@ import {
   DC_SEARCH_TYPE,
   DC_SUCCESS_MESSAGE_TIMEOUT_MS,
   PROJECT_STORAGE_DEFAULT_GB,
+  PROJECT_STORAGE_DEFAULT_MOUNT_PATH,
   PROJECT_STORAGE_MAX_GB,
   PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
@@ -492,7 +491,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
                 <div className={cx("form-text", "text-muted")}>
                   This is the name of the folder in the working directory where
                   you will find your project storage in sessions. By default, it
-                  is set to <code>store</code>.
+                  is set to <code>{PROJECT_STORAGE_DEFAULT_MOUNT_PATH}</code>.
                 </div>
               </div>
 
