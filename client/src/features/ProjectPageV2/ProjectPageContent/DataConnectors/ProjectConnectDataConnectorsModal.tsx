@@ -56,6 +56,7 @@ import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import { useGetDataConnectorsStorageAllowByProjectIdQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdStorageQuery,
@@ -231,6 +232,10 @@ export function ProjectConnectDataConnectorModeSwitch({
   project: Project;
 }) {
   const permissions = useProjectPermissions({ projectId: project.id });
+  const { data: storageAllowData } =
+    useGetDataConnectorsStorageAllowByProjectIdQuery({
+      projectId: project.id,
+    });
 
   return (
     <ButtonGroup>
@@ -278,36 +283,38 @@ export function ProjectConnectDataConnectorModeSwitch({
         Create a data connector
       </Label>
 
-      <PermissionsGuard
-        disabled={null}
-        enabled={
-          <>
-            <Input
-              type="radio"
-              className="btn-check"
-              id="project-data-controller-mode-add-storage"
-              value="add-storage"
-              checked={mode === "add-storage"}
-              onChange={() => switchMode("add-storage")}
-            />
-            <Label
-              data-cy="project-data-controller-mode-add-storage"
-              for="project-data-controller-mode-add-storage"
-              className={cx(
-                "align-items-center",
-                "btn-outline-primary",
-                "btn",
-                "d-flex",
-              )}
-            >
-              <Database className={cx("fs-3", "me-1")} />
-              Manage project storage
-            </Label>
-          </>
-        }
-        requestedPermission="delete" // TODO: change to proper permission
-        userPermissions={permissions}
-      />
+      {storageAllowData && (
+        <PermissionsGuard
+          disabled={null}
+          enabled={
+            <>
+              <Input
+                type="radio"
+                className="btn-check"
+                id="project-data-controller-mode-add-storage"
+                value="add-storage"
+                checked={mode === "add-storage"}
+                onChange={() => switchMode("add-storage")}
+              />
+              <Label
+                data-cy="project-data-controller-mode-add-storage"
+                for="project-data-controller-mode-add-storage"
+                className={cx(
+                  "align-items-center",
+                  "btn-outline-primary",
+                  "btn",
+                  "d-flex",
+                )}
+              >
+                <Database className={cx("fs-3", "me-1")} />
+                Manage project storage
+              </Label>
+            </>
+          }
+          requestedPermission="delete" // TODO: change to proper permission
+          userPermissions={permissions}
+        />
+      )}
     </ButtonGroup>
   );
 }
@@ -344,6 +351,12 @@ function ProjectStorageDataConnectorBodyAndFooter({
   });
   const [postDataConnectorsStorageMutation, postDataConnectorsStorageStatus] =
     usePostDataConnectorsStorageMutation();
+  const { data: storageAllowData } =
+    useGetDataConnectorsStorageAllowByProjectIdQuery({
+      projectId: project.id,
+    });
+  const projectStorageMaxSize =
+    storageAllowData?.max_size ?? PROJECT_STORAGE_MAX_GB;
 
   useEffect(() => {
     if (!isOpen) {
@@ -417,7 +430,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
                           className={cx(error && "is-invalid")}
                           type="number"
                           min={PROJECT_STORAGE_MIN_GB}
-                          max={PROJECT_STORAGE_MAX_GB}
+                          max={projectStorageMaxSize}
                           step={PROJECT_STORAGE_STEP_GB}
                           {...field}
                           value={field.value ?? ""}
@@ -442,7 +455,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
                       </div>
                       <FormText>
                         Default: {PROJECT_STORAGE_DEFAULT_GB} GB, max:{" "}
-                        {PROJECT_STORAGE_MAX_GB} GB
+                        {projectStorageMaxSize} GB
                       </FormText>
                     </>
                   )}
@@ -453,8 +466,8 @@ function ProjectStorageDataConnectorBodyAndFooter({
                       message: `Please select a value greater than or equal to ${PROJECT_STORAGE_MIN_GB}.`,
                     },
                     max: {
-                      value: PROJECT_STORAGE_MAX_GB,
-                      message: `Selected project storage exceeds maximum allowed value (${PROJECT_STORAGE_MAX_GB} GB).`,
+                      value: projectStorageMaxSize,
+                      message: `Selected project storage exceeds maximum allowed value (${projectStorageMaxSize} GB).`,
                     },
                     validate: {
                       integer: (value: unknown) =>
