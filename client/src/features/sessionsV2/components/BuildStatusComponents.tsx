@@ -88,9 +88,13 @@ export function BuildStatusBadge({
       <CircleFill className={cx("me-1", "bi")} />
     );
 
-  const { data, isLoading } = useGetRepositoryQuery({
-    url: build.result?.repository_url,
-  });
+  const { data, isLoading } = useGetRepositoryQuery(
+    build.status === "succeeded"
+      ? {
+          url: build.result?.repository_url,
+        }
+      : skipToken,
+  );
 
   let badgeText = "";
   let isCodeAvailable = true;
