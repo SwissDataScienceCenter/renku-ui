@@ -51,10 +51,15 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { InfoAlert } from "~/components/Alert";
+import { InfoAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
+import { Loader } from "~/components/Loader";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import {
+  useGetProjectsByProjectIdStorageQuery,
+  usePostDataConnectorsStorageMutation,
+} from "~/features/dataConnectorsV2/api/data-connectors.api.ts";
 import {
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
@@ -296,8 +301,8 @@ export function ProjectConnectDataConnectorModeSwitch({
                 "d-flex",
               )}
             >
-              <PlusLg className={cx("fs-3", "me-1")} />
-              Add project storage
+              <Database className={cx("fs-3", "me-1")} />
+              Manage project storage
             </Label>
           </>
         }
@@ -331,21 +336,34 @@ function ProjectStorageDataConnectorBodyAndFooter({
     },
   });
 
+  const {
+    data: projectStorage,
+    error,
+    isLoading,
+  } = useGetProjectsByProjectIdStorageQuery({
+    projectId: project.id,
+  });
+  const [postDataConnectorsStorageMutation, postDataConnectorsStorageStatus] =
+    usePostDataConnectorsStorageMutation();
+
   useEffect(() => {
     if (!isOpen) {
       return;
     }
   }, [isOpen]);
 
-  const onSubmit = (values: ProjectStorageForm) => {
-    // TODO: Call api to add project storage with the provided values
-    console.log("Create project storage with values:", {
-      project_id: project.id,
-      size: values.projectStorage,
-      mount_path: values.mountPoint,
+  const onSubmit = async (values: ProjectStorageForm) => {
+    const result = await postDataConnectorsStorageMutation({
+      projectStoragePost: {
+        namespace: `${project.namespace}/${project.slug}`,
+        size: values.projectStorage,
+        mount_path: values.mountPoint,
+      },
     });
 
-    toggle();
+    if (!result.error) {
+      toggle();
+    }
   };
 
   return (
@@ -362,126 +380,142 @@ function ProjectStorageDataConnectorBodyAndFooter({
         )}
 
         <div>
-          <InfoAlert dismissible={false} timeout={0}>
-            This is how project storage is configured... You can only setup 1
-            project storage per project.
-          </InfoAlert>
-          <div className="mb-3">
-            <Label className="form-label" for="projectStorage">
-              Project storage size
-            </Label>
-            <Controller
-              control={control}
-              name="projectStorage"
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <InputGroup className={cx(error && "is-invalid")}>
-                    <Input
-                      id="projectStorage"
-                      className={cx(error && "is-invalid")}
-                      type="number"
-                      min={PROJECT_STORAGE_MIN_GB}
-                      max={PROJECT_STORAGE_MAX_GB}
-                      step={PROJECT_STORAGE_STEP_GB}
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(event) => {
-                        if (isNaN(event.target.valueAsNumber)) {
-                          field.onChange(event.target.value);
-                        } else {
-                          field.onChange(event.target.valueAsNumber);
-                        }
-                      }}
-                    />
-                    <InputGroupText id="configure-project-storage-addon">
-                      GB
-                    </InputGroupText>
-                    <UncontrolledTooltip target="configure-project-storage-addon">
-                      Gigabytes
-                    </UncontrolledTooltip>
-                  </InputGroup>
-                  <div className="invalid-feedback">
-                    {error?.message ||
-                      "Please provide a valid value for project storage."}
-                  </div>
-                  <FormText>
-                    Default: {PROJECT_STORAGE_DEFAULT_GB} GB, max:{" "}
-                    {PROJECT_STORAGE_MAX_GB} GB
-                  </FormText>
-                </>
-              )}
-              rules={{
-                required: true,
-                min: {
-                  value: PROJECT_STORAGE_MIN_GB,
-                  message: `Please select a value greater than or equal to ${PROJECT_STORAGE_MIN_GB}.`,
-                },
-                max: {
-                  value: PROJECT_STORAGE_MAX_GB,
-                  message: `Selected project storage exceeds maximum allowed value (${PROJECT_STORAGE_MAX_GB} GB).`,
-                },
-                validate: {
-                  integer: (value: unknown) =>
-                    value == null ||
-                    value === "" ||
-                    (!isNaN(parseInt(`${value}`, 10)) &&
-                      parseInt(`${value}`, 10) == parseFloat(`${value}`)) ||
-                    "Please provide an integer value.",
-                },
-              }}
-            />
-          </div>
-          <div className="mb-3">
-            <Label className="form-label" for="mountPoint">
-              Mount point
-            </Label>
-            <Controller
-              name="mountPoint"
-              control={control}
-              render={({ field }) => (
-                <input
-                  id="mountPoint"
-                  type="text"
-                  {...field}
-                  className={cx(
-                    "form-control",
-                    errors.mountPoint && "is-invalid",
-                  )}
-                  data-cy="project-storage-form-mount-point-input"
+          {isLoading ? (
+            <Loader />
+          ) : error ? (
+            <RtkOrDataServicesError error={error} dismissible={false} />
+          ) : projectStorage && projectStorage.length > 0 ? (
+            <>
+              <WarnAlert dismissible={false} timeout={0}>
+                Project storage is already configured for this project. You can
+                only setup 1 project storage per project.
+              </WarnAlert>
+            </>
+          ) : (
+            <>
+              {postDataConnectorsStorageStatus.isError && (
+                <RtkOrDataServicesError
+                  error={postDataConnectorsStorageStatus.error}
                 />
               )}
-              rules={{ required: false }}
-            />
-            <div className="invalid-feedback">
-              Please provide a mount point.
-            </div>
-            <div className={cx("form-text", "text-muted")}>
-              By default, the mount point is{" "}
-              <code>
-                store??{/* TODO: Replace with actual default mount point */}
-              </code>
-              . This is the name of the folder where you will find your project
-              storage in sessions.
-            </div>
-          </div>
+              <InfoAlert dismissible={false} timeout={0}>
+                You can add a project storage to this project. This will create
+                a new storage volume that will be mounted in your sessions to
+                avoid data loss on session shutdown.
+              </InfoAlert>
+              <div className="mb-3">
+                <Label className="form-label" for="projectStorage">
+                  Storage size
+                </Label>
+                <Controller
+                  control={control}
+                  name="projectStorage"
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <InputGroup className={cx(error && "is-invalid")}>
+                        <Input
+                          id="projectStorage"
+                          className={cx(error && "is-invalid")}
+                          type="number"
+                          min={PROJECT_STORAGE_MIN_GB}
+                          max={PROJECT_STORAGE_MAX_GB}
+                          step={PROJECT_STORAGE_STEP_GB}
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(event) => {
+                            if (isNaN(event.target.valueAsNumber)) {
+                              field.onChange(event.target.value);
+                            } else {
+                              field.onChange(event.target.valueAsNumber);
+                            }
+                          }}
+                        />
+                        <InputGroupText id="configure-project-storage-addon">
+                          GB
+                        </InputGroupText>
+                        <UncontrolledTooltip target="configure-project-storage-addon">
+                          Gigabytes
+                        </UncontrolledTooltip>
+                      </InputGroup>
+                      <div className="invalid-feedback">
+                        {error?.message ||
+                          "Please provide a valid value for project storage."}
+                      </div>
+                      <FormText>
+                        Default: {PROJECT_STORAGE_DEFAULT_GB} GB, max:{" "}
+                        {PROJECT_STORAGE_MAX_GB} GB
+                      </FormText>
+                    </>
+                  )}
+                  rules={{
+                    required: true,
+                    min: {
+                      value: PROJECT_STORAGE_MIN_GB,
+                      message: `Please select a value greater than or equal to ${PROJECT_STORAGE_MIN_GB}.`,
+                    },
+                    max: {
+                      value: PROJECT_STORAGE_MAX_GB,
+                      message: `Selected project storage exceeds maximum allowed value (${PROJECT_STORAGE_MAX_GB} GB).`,
+                    },
+                    validate: {
+                      integer: (value: unknown) =>
+                        Number.isInteger(Number(value)) ||
+                        "Please provide an integer value.",
+                    },
+                  }}
+                />
+              </div>
+              <div className="mb-3">
+                <Label className="form-label" for="mountPoint">
+                  Mount point
+                </Label>
+                <Controller
+                  name="mountPoint"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      id="mountPoint"
+                      type="text"
+                      {...field}
+                      className={cx(
+                        "form-control",
+                        errors.mountPoint && "is-invalid",
+                      )}
+                      data-cy="project-storage-form-mount-point-input"
+                    />
+                  )}
+                  rules={{ required: false }}
+                />
+                <div className="invalid-feedback">
+                  Please provide a mount point.
+                </div>
+                <div className={cx("form-text", "text-muted")}>
+                  This is the name of the folder in the working directory where
+                  you will find your project storage in sessions. By default, it
+                  is set to <code>store</code>.
+                </div>
+              </div>
 
-          <div className={cx("d-flex", "gap-2", "justify-content-end")}>
-            <Button
-              color="outline-primary"
-              data-cy="project-storage-form-cancel-button"
-              onClick={() => toggle()}
-            >
-              <XLg className={cx("bi", "me-1")} />
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              data-cy="project-storage-form-submit-button"
-              type="submit"
-            >
-              Submit
-            </Button>
-          </div>
+              <div className={cx("d-flex", "gap-2", "justify-content-end")}>
+                <Button
+                  color="outline-primary"
+                  data-cy="project-storage-form-cancel-button"
+                  onClick={() => toggle()}
+                >
+                  <XLg className={cx("bi", "me-1")} />
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  data-cy="project-storage-form-submit-button"
+                  type="submit"
+                >
+                  <PlusLg className={cx("bi", "me-1")} />
+                  Add project storage
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </ModalBody>
     </Form>

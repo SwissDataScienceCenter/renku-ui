@@ -103,6 +103,235 @@
         "tags": ["data_connectors"]
       }
     },
+    "/data_connectors/storage": {
+      "post": {
+        "summary": "Create a new project storage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectStoragePost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The data connector was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorage"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
+    "/data_connectors/storage/allow": {
+      "get": {
+        "summary": "List all projects in the storage allow list",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/ProjectStorageAllowListQuery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of storage allow entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorageAllowList"
+                }
+              }
+            },
+            "headers": {
+              "page": {
+                "description": "The index of the current page (starting at 1).",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "per-page": {
+                "description": "The number of items per page.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total": {
+                "description": "The total number of items.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total-pages": {
+                "description": "The total number of pages.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      },
+      "post": {
+        "summary": "Add a project to the storage allow list",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectStorageAllowPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The project was added to the allow list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorageAllow"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
+    "/data_connectors/storage/allow/{project_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the storage allow entry for a project",
+        "responses": {
+          "200": {
+            "description": "The project storage allow entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorageAllow"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project is not in the storage allow list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      },
+      "delete": {
+        "summary": "Remove a project from the storage allow list",
+        "responses": {
+          "204": {
+            "description": "The project was removed from the allow list"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
+    "/data_connectors/storage/{storage_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "storage_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a project storage for a project id.",
+        "responses": {
+          "200": {
+            "description": "The project storage information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project storage does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      },
+      "delete": {
+        "summary": "Delete a specific project storage",
+        "responses": {
+          "204": {
+            "description": "The project storage was deleted or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
     "/data_connectors/global": {
       "post": {
         "summary": "Create a new data connector",
@@ -133,6 +362,79 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DataConnector"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
+    "/data_connector_links": {
+      "get": {
+        "summary": "Get all data connector links",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "query parameters",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/DataConnectorLinksGetQuery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of data connector links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataConnectorToProjectLinksList"
+                }
+              }
+            },
+            "headers": {
+              "page": {
+                "description": "The index of the current page (starting at 1).",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "per-page": {
+                "description": "The number of items per page.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total": {
+                "description": "The total number of items.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "total-pages": {
+                "description": "The total number of pages.",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The data connector with the given DOI does not exist or user does not have access to it",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -664,6 +966,37 @@
         "tags": ["data_connectors"]
       }
     },
+    "/projects/{project_id}/storage": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the project storage for a given project",
+        "responses": {
+          "200": {
+            "description": "The list of project storages (currently either one or empty).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorage"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
+    },
     "/projects/{project_id}/data_connector_links": {
       "parameters": [
         {
@@ -1051,6 +1384,114 @@
         },
         "required": ["storage"]
       },
+      "ProjectStoragePost": {
+        "description": "A special data connector for associating a shared read+write\nvolume. There can be exactly one such storage per project.\n",
+        "additionalProperties": false,
+        "properties": {
+          "namespace": {
+            "$ref": "#/components/schemas/ProjectSlug"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mount_path": {
+            "type": "string"
+          }
+        },
+        "required": ["namespace", "size", "mount_path"]
+      },
+      "ProjectStorage": {
+        "description": "A stored shared storage configuration for a project.\n",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mount_path": {
+            "type": "str"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/UserId"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/CreationDate"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "size",
+          "mount_path",
+          "creation_date",
+          "created_by",
+          "updated_at"
+        ]
+      },
+      "ProjectStorageAllowPost": {
+        "description": "A project to be added to the storage allow list.\n",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "max_size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Maximum size in GB"
+          }
+        },
+        "required": ["project_id", "max_size"]
+      },
+      "ProjectStorageAllow": {
+        "description": "A project in the storage allow list.\n",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "max_size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Maximum size in GB"
+          }
+        },
+        "required": ["project_id", "max_size"]
+      },
+      "ProjectStorageAllowList": {
+        "description": "A list of project storage allow entries.\n",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ProjectStorageAllow"
+        }
+      },
+      "ProjectStorageAllowListQuery": {
+        "description": "Query params for listing storage allow entries",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          },
+          {
+            "properties": {
+              "project_name": {
+                "description": "Filter by project name (partial match).",
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        ]
+      },
       "DataConnectorPatch": {
         "description": "Patch of a data connector\n",
         "type": "object",
@@ -1205,6 +1646,20 @@
         "items": {
           "$ref": "#/components/schemas/DataConnectorToProjectLink"
         }
+      },
+      "ProjectStorageList": {
+        "description": "A list of project storages.",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ProjectStorage"
+        }
+      },
+      "ProjectSlug": {
+        "type": "string",
+        "description": "The slug used to identify a project",
+        "minLength": 3,
+        "example": "user/my-project",
+        "pattern": "^[a-zA-Z0-9]+([_.\\-/][a-zA-Z0-9]+)*[_.\\-/]?[a-zA-Z0-9]$"
       },
       "DataConnectorToProjectLink": {
         "description": "A link from a data connector to a project in Renku 2.0",
@@ -1524,6 +1979,21 @@
         "type": "string",
         "description": "A DOI.",
         "example": "10.16904/envidat.33"
+      },
+      "DataConnectorLinksGetQuery": {
+        "description": "Query params for data connectors get request",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationRequest"
+          },
+          {
+            "properties": {
+              "doi": {
+                "$ref": "#/components/schemas/DOI"
+              }
+            }
+          }
+        ]
       },
       "DataConnectorsGetQuery": {
         "description": "Query params for data connectors get request",
