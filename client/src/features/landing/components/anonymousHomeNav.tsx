@@ -191,7 +191,7 @@ function TopNav() {
 
   return (
     <>
-      <header className={cx("pt-2", "pb-4", "d-flex", "container")}>
+      <div className={cx("pt-2", "pb-4", "d-flex", "container")}>
         <div className={cx("align-self-center", "flex-grow-1")}>
           <img src={logo} alt="Renku" height="68" className="d-block my-1" />
         </div>
@@ -225,7 +225,7 @@ function TopNav() {
             <List className="m-0 bi" />
           </Button>
         </div>
-      </header>
+      </div>
       <div className="rk-navbar-home">
         <Collapse isOpen={isOpen}>
           <Navbar className={cx("navbar", "container", "px-0")}>
