@@ -33,7 +33,7 @@ import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
-import CopyProjectButton from "~/features/ProjectPageV2/ProjectPageContent/ProjectInformation/CopyProjectButton.tsx";
+import CopyProjectButton from "~/features/ProjectPageV2/ProjectPageContent/ProjectInformation/CopyProjectButton";
 import { useProject } from "~/routes/projects/root";
 import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { Loader } from "../../../../components/Loader";

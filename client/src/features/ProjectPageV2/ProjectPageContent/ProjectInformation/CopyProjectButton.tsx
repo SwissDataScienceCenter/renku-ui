@@ -49,6 +49,7 @@ export default function CopyProjectButton({
         innerRef={ref}
       >
         <BootstrapCopyIcon className="bi" />
+        <span className="visually-hidden">Copy project</span>
       </Button>
       <ProjectCopyModal
         currentUser={currentUser}
