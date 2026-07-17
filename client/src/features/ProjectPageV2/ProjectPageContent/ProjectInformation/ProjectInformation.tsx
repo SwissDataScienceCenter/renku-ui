@@ -33,6 +33,7 @@ import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import CopyProjectButton from "~/features/ProjectPageV2/ProjectPageContent/ProjectInformation/CopyProjectButton.tsx";
 import { useProject } from "~/routes/projects/root";
 import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { Loader } from "../../../../components/Loader";
@@ -50,7 +51,6 @@ import {
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import ProjectInformationButton from "./ProjectInformationButton";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 
@@ -226,7 +226,7 @@ export default function ProjectInformation({
           </h2>
 
           <div>
-            <ProjectInformationButton
+            <CopyProjectButton
               userPermissions={permissions}
               project={project}
             />
