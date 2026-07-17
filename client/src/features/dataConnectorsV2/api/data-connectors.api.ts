@@ -33,6 +33,17 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.globalDataConnectorPost,
       }),
     }),
+    getDataConnectorLinks: build.query<
+      GetDataConnectorLinksApiResponse,
+      GetDataConnectorLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connector_links`,
+        params: {
+          params: queryArg.params,
+        },
+      }),
+    }),
     getDataConnectorsByDataConnectorId: build.query<
       GetDataConnectorsByDataConnectorIdApiResponse,
       GetDataConnectorsByDataConnectorIdApiArg
@@ -255,6 +266,12 @@ export type PostDataConnectorsGlobalApiResponse =
   | /** status 201 The data connector was created */ DataConnectorRead;
 export type PostDataConnectorsGlobalApiArg = {
   globalDataConnectorPost: GlobalDataConnectorPost;
+};
+export type GetDataConnectorLinksApiResponse =
+  /** status 200 The list of data connector links */ DataConnectorToProjectLinksList;
+export type GetDataConnectorLinksApiArg = {
+  /** query parameters */
+  params?: DataConnectorLinksGetQuery;
 };
 export type GetDataConnectorsByDataConnectorIdApiResponse =
   /** status 200 The data connector */ DataConnectorRead;
@@ -585,6 +602,17 @@ export type GlobalDataConnectorPost = {
 export type GlobalDataConnectorPostRead = {
   storage: CloudStorageCorePostRead | CloudStorageUrlV2;
 };
+export type DataConnectorToProjectLink = {
+  id: Ulid;
+  data_connector_id: Ulid;
+  project_id: Ulid;
+  creation_date: CreationDate;
+  created_by: UserId;
+};
+export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
+export type DataConnectorLinksGetQuery = PaginationRequest & {
+  doi?: Doi;
+};
 export type CloudStorageCorePatch = {
   storage_type?: StorageType;
   configuration?: RCloneConfig;
@@ -625,14 +653,6 @@ export type DataConnectorPermissions = {
   /** The user can manage data connector members */
   change_membership?: boolean;
 };
-export type DataConnectorToProjectLink = {
-  id: Ulid;
-  data_connector_id: Ulid;
-  project_id: Ulid;
-  creation_date: CreationDate;
-  created_by: UserId;
-};
-export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
 export type DataConnectorToProjectLinkPost = {
   project_id: Ulid;
 };
@@ -687,6 +707,7 @@ export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
   usePostDataConnectorsGlobalMutation,
+  useGetDataConnectorLinksQuery,
   useGetDataConnectorsByDataConnectorIdQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdMutation,
