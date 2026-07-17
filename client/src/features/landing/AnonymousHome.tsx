@@ -88,23 +88,28 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
     backgroundSize = "cover";
   }
   return (
-    <div
-      id="rk-anon-home-section1"
-      style={{
-        backgroundImage: `url(${backgroundUrl})`,
-        backgroundSize,
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      <HomeHeader />
-      <div className="rk-anon-home-section-content">
-        <Row>
-          <Col className="rk-pt-l rk-w-s">
-            <LazyMarkdown>{content}</LazyMarkdown>
-          </Col>
-        </Row>
+    <>
+      <div id="rk-anon-home-custom-header" className="bg-navy">
+        <HomeHeader />
       </div>
-    </div>
+      <div
+        id="rk-anon-home-section1"
+        style={{
+          backgroundImage: `url(${backgroundUrl})`,
+          backgroundSize,
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="rk-anon-home-section-content">
+          <Row>
+            <Col className="rk-pt-l rk-w-s">
+              <LazyMarkdown sanitize={false}>{content}</LazyMarkdown>
+            </Col>
+          </Row>
+        </div>
+      </div>
+      <BottomNav />
+    </>
   );
 }
 
