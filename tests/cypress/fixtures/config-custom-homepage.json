@@ -35,7 +35,7 @@
     "custom": {
       "enabled": true,
       "main": {
-        "contentMd": "# Custom deployment homepage\n\n<div class=\"custom-home-banner\">This is a white-based custom landing page.</div>",
+        "contentMd": "# Custom deployment homepage\n\n<div class=\"custom-home-banner\" onclick=\"alert('xss')\">This is a white-based custom landing page.</div>",
         "backgroundImage": {
           "url": ""
         }
