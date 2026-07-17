@@ -375,6 +375,7 @@ export default function ActiveSessionButton({
           dismissAction
         ) : (
           <>
+            {hibernateAction}
             {deleteAction}
             {modifyAction}
             {(hibernateAction || deleteAction || modifyAction) &&
