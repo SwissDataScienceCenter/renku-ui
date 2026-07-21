@@ -19,7 +19,13 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
-import { Link45deg, Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
+import {
+  Braces,
+  Link45deg,
+  Pencil,
+  PlayCircle,
+  Trash,
+} from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
@@ -62,6 +68,7 @@ interface SessionLauncherCardProps {
   toggleShareLink?: () => void;
   toggleSessionView?: () => void;
   openSessionViewWithJob?: (submissionId: string) => void;
+  toggleEnvVariables?: () => void;
 }
 export default function SessionLauncherCard({
   launcher,
@@ -74,6 +81,7 @@ export default function SessionLauncherCard({
   toggleSessionView,
   toggleShareLink,
   openSessionViewWithJob,
+  toggleEnvVariables,
 }: SessionLauncherCardProps) {
   const {
     builds,
@@ -118,6 +126,7 @@ export default function SessionLauncherCard({
         toggleUpdate={toggleUpdate}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleShareLink={toggleShareLink}
+        toggleEnvVariables={toggleEnvVariables}
       />
     );
 
@@ -364,6 +373,7 @@ interface LauncherDropdownActionsProps {
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
   toggleShareLink?: () => void;
+  toggleEnvVariables?: () => void;
   project: Project;
 }
 function LauncherDropdownActions({
@@ -372,6 +382,7 @@ function LauncherDropdownActions({
   toggleUpdate,
   toggleUpdateEnvironment,
   toggleShareLink,
+  toggleEnvVariables,
 }: LauncherDropdownActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
@@ -401,6 +412,15 @@ function LauncherDropdownActions({
               >
                 <Pencil className={cx("bi", "me-1")} />
                 Edit launcher
+              </DropdownItem>
+            )}
+            {toggleEnvVariables && (
+              <DropdownItem
+                data-cy="session-launcher-menu-edit-env"
+                onClick={toggleEnvVariables}
+              >
+                <Braces className={cx("bi", "me-1")} />
+                Edit environment variables
               </DropdownItem>
             )}
             {toggleShareLink && launcherCategory === "session" && (
