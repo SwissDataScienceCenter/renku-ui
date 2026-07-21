@@ -42,7 +42,7 @@ export default function CopyProjectButton({
   return (
     <>
       <Button
-        data-cy="add-code-repository"
+        data-cy="info-copy-project-button"
         color="outline-primary"
         onClick={toggleCopyModal}
         size="sm"
