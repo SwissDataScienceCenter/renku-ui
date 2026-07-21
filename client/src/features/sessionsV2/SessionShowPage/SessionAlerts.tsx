@@ -111,7 +111,7 @@ function Alerts({ alerts }: AlertsProps) {
   if (!alerts || alerts.length === 0) {
     return (
       <>
-        <span ref={ref}>
+        <span ref={ref} tabIndex={0}>
           <Button
             className={cx(
               "bg-transparent",
@@ -126,6 +126,7 @@ function Alerts({ alerts }: AlertsProps) {
             aria-label="Session alerts"
           >
             <Bell className="bi" />
+            <span className="visually-hidden">Session alerts</span>
           </Button>
         </span>
         <UncontrolledTooltip placement="bottom" target={ref}>
