@@ -111,7 +111,7 @@ function Alerts({ alerts }: AlertsProps) {
   if (!alerts || alerts.length === 0) {
     return (
       <>
-        <span ref={ref} tabIndex={0}>
+        <span ref={ref} tabIndex={0} data-cy="session-alerts">
           <Button
             className={cx(
               "bg-transparent",
@@ -122,7 +122,6 @@ function Alerts({ alerts }: AlertsProps) {
               "text-dark",
             )}
             disabled
-            data-cy="session-alerts"
             aria-label="Session alerts"
           >
             <Bell className="bi" />
