@@ -37,7 +37,6 @@ import styles from "./Markdown.module.scss";
 type MarkdownProps = Options & {
   children?: string;
   sanitize?: boolean;
-  allowClasses?: boolean;
 };
 type PluggableList = Exclude<Options["rehypePlugins"], null | undefined>;
 type Pluggable = PluggableList[0];
@@ -45,7 +44,6 @@ type Pluggable = PluggableList[0];
 export default function Markdown({
   children,
   sanitize = true,
-  allowClasses = false,
   rehypePlugins,
   remarkPlugins,
   ...props
@@ -60,15 +58,9 @@ export default function Markdown({
         ...defaultSchema.attributes,
         pre: [...(defaultSchema.attributes?.pre ?? []), ["className"]],
         code: [...(defaultSchema.attributes?.code ?? []), ["className"]],
-        // Allow `className` on every element so admin-provided content can
-        // reference custom CSS classes, while still stripping scripts and
-        // event handlers.
-        ...(allowClasses
-          ? { "*": [...(defaultSchema.attributes?.["*"] ?? []), "className"] }
-          : {}),
       },
     };
-  }, [allowClasses]);
+  }, []);
 
   useEffect(() => {
     // Initialize mermaid when needed

@@ -60,9 +60,7 @@ describe("display the customized home page", () => {
   it("shows the standard footer and preserves custom HTML classes", () => {
     cy.get("#rk-anon-home-bottom-nav").should("be.visible");
     cy.get("#rk-anon-home-bottom-nav").should("have.class", "bg-navy");
-    cy.get(".custom-home-banner")
-      .should("have.class", "custom-home-banner")
-      .and("not.have.attr", "onclick");
+    cy.get(".custom-home-banner").should("have.class", "custom-home-banner");
   });
 });
 

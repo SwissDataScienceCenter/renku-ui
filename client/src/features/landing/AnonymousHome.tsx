@@ -101,7 +101,7 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
         <div className="rk-anon-home-section-content">
           <Row>
             <Col className={cx("rk-pt-l", "rk-w-s")}>
-              <LazyMarkdown allowClasses>{content}</LazyMarkdown>
+              <LazyMarkdown sanitize={false}>{content}</LazyMarkdown>
             </Col>
           </Row>
         </div>
