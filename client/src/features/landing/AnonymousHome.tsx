@@ -90,9 +90,6 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
   }
   return (
     <>
-      <div id="rk-anon-home-custom-header" className="bg-navy">
-        <HomeHeader />
-      </div>
       <div
         id="rk-anon-home-section1"
         style={{
