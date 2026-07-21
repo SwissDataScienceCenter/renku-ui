@@ -145,6 +145,7 @@ export function SessionLauncherDisplay({
         toggleUpdate={toggleUpdate}
         toggleDelete={toggleDelete}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
+        toggleEnvVariables={toggleEnvVariables}
       />
       {launcher && (
         <>
