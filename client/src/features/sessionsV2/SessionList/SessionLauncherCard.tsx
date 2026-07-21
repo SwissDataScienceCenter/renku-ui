@@ -29,7 +29,6 @@ import {
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
-import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import JobCard from "~/features/sessionsV2/SessionList/JobCard";
 import { Loader } from "../../../components/Loader";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -96,7 +95,6 @@ export default function SessionLauncherCard({
     containerImage,
   } = useLauncherEnvironmentReadiness({ launcher });
 
-  const environment = launcher?.environment;
   const hasSession = !!sessions?.length;
   const sessionType = sessions?.at(0)?.session_type ?? "interactive";
   // Orphan sessions have no launcher; get category from the session itself
@@ -140,15 +138,6 @@ export default function SessionLauncherCard({
     "small",
     "text-muted",
   ];
-
-  const {
-    data: imageRepositorySource,
-    isLoading: isLoadingImageRepositorySource,
-  } = useGetRepositoryQuery(
-    environment?.environment_image_source === "build"
-      ? { url: environment.build_parameters?.repository }
-      : skipToken,
-  );
 
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
@@ -255,7 +244,6 @@ export default function SessionLauncherCard({
                     {isCodeEnvironment &&
                     (isLoadingBuilds ||
                       isLoadingContainerImage ||
-                      isLoadingImageRepositorySource ||
                       isLoadingResourcePools) ? (
                       <SessionBadge
                         className={cx("border-warning", "bg-warning-subtle")}
@@ -271,9 +259,8 @@ export default function SessionLauncherCard({
                       </SessionBadge>
                     ) : isCodeEnvironment && lastBuild ? (
                       <BuildStatusBadge
-                        buildStatus={lastBuild?.status}
+                        build={lastBuild}
                         imageCheck={containerImage}
-                        imageSourceCheck={imageRepositorySource}
                         resourcePool={resourcePool}
                       />
                     ) : (
