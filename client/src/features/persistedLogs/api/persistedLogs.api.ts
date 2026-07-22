@@ -16,10 +16,57 @@
  * limitations under the License.
  */
 
-import { persistedLogsGeneratedApi } from "./persistedLogs.generated-api";
+import {
+  persistedLogsGeneratedApi,
+  type GetPersistedLogsSessionsByLauncherIdApiArg,
+  type GetPersistedLogsSessionsByLauncherIdApiResponse,
+} from "./persistedLogs.generated-api";
+
+// Fixes some API endpoints
+const withFixedEndpoints = persistedLogsGeneratedApi.injectEndpoints({
+  endpoints: (build) => ({
+    getPersistedLogsSessionsByLauncherId: build.query<
+      GetPersistedLogsSessionsByLauncherIdApiResponse,
+      GetPersistedLogsSessionsByLauncherIdApiArg
+    >({
+      query: ({ launcherId, params }) => ({
+        url: `/persisted_logs/sessions/${launcherId}`,
+        params,
+      }),
+    }),
+  }),
+  overrideExisting: true,
+});
+
+// Adds a data transform for compatibility with logs modal
+const withTransformedEndpoints = withFixedEndpoints.injectEndpoints({
+  endpoints: (build) => ({
+    getPersistedLogsForModal: build.query<
+      Record<string, string>,
+      GetPersistedLogsSessionsByLauncherIdApiArg
+    >({
+      query: ({ launcherId, params }) => ({
+        url: `/persisted_logs/sessions/${launcherId}`,
+        params,
+      }),
+      transformResponse: (
+        result: GetPersistedLogsSessionsByLauncherIdApiResponse,
+      ) => {
+        const asRecord = result.logs.reduce(
+          (prev, { container, logs }) => ({
+            ...prev,
+            [container]: logs.map(({ log_line }) => log_line).join(""),
+          }),
+          {} as Record<string, string>,
+        );
+        return asRecord;
+      },
+    }),
+  }),
+});
 
 // Adds tag handling for cache management
-export const persistedLogsApi = persistedLogsGeneratedApi.enhanceEndpoints({
+export const persistedLogsApi = withTransformedEndpoints.enhanceEndpoints({
   addTagTypes: ["PersistedLogs", "SessionRun"],
   endpoints: {
     getPersistedLogsSessionsByLauncherId: {
@@ -43,5 +90,6 @@ export const persistedLogsApi = persistedLogsGeneratedApi.enhanceEndpoints({
 export const {
   useGetPersistedLogsSessionsByLauncherIdQuery,
   useGetPersistedLogsSessionsByLauncherIdRunsQuery,
+  useGetPersistedLogsForModalQuery,
 } = persistedLogsApi;
 export type * from "./persistedLogs.generated-api";
