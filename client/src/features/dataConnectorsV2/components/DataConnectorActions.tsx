@@ -130,7 +130,7 @@ export function DataConnectorRemoveDeleteModal({
 
   return (
     <Modal
-      data-cy="data-connector-edit-modal"
+      data-cy="data-connector-delete-modal"
       size="lg"
       isOpen={isOpen}
       toggle={toggleModal}
