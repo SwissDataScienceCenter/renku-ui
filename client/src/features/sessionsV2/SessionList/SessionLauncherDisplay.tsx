@@ -18,6 +18,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
+import SessionsPersistedLogsHistoryModal from "~/features/persistedLogs/SessionsPersistedLogsHistoryModal";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
@@ -52,6 +53,7 @@ export function SessionLauncherDisplay({
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isShareLinkOpen, setIsShareLinkOpen] = useState(false);
   const [isEnvVariablesOpen, setEnvVariablesOpen] = useState(false);
+  const [isLogsHistoryOpen, setIsLogsHistoryOpen] = useState(false);
 
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
@@ -67,6 +69,9 @@ export function SessionLauncherDisplay({
   }, []);
   const toggleEnvVariables = useCallback(() => {
     setEnvVariablesOpen((open) => !open);
+  }, []);
+  const toggleLogsHistory = useCallback(() => {
+    setIsLogsHistoryOpen((open) => !open);
   }, []);
 
   const [hash, setHash] = useLocationHash();
@@ -133,6 +138,7 @@ export function SessionLauncherDisplay({
         toggleSessionView={toggleSessionView}
         openSessionViewWithJob={openSessionViewWithJob}
         toggleEnvVariables={toggleEnvVariables}
+        toggleLogsHistory={toggleLogsHistory}
       />
       <SessionView
         id={launcherHash}
@@ -175,6 +181,11 @@ export function SessionLauncherDisplay({
             isOpen={isEnvVariablesOpen}
             launcher={launcher}
             toggle={toggleEnvVariables}
+          />
+          <SessionsPersistedLogsHistoryModal
+            isOpen={isLogsHistoryOpen}
+            launcher={launcher}
+            toggle={toggleLogsHistory}
           />
         </>
       )}
