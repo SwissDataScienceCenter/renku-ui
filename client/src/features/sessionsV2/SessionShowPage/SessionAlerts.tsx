@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { Bell, BoxArrowUpRight, XLg } from "react-bootstrap-icons";
 import ReactMarkdown from "react-markdown";
 import { Link } from "react-router";
@@ -105,8 +105,12 @@ function Alerts({ alerts }: AlertsProps) {
     prevAlertIdsRef.current = currentAlertIds;
   }, [alerts]);
 
-  const togglePopover = () => setIsOpen((open) => !open);
-  const closePopover = () => setIsOpen(false);
+  const togglePopover = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+  const closePopover = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   if (!alerts || alerts.length === 0) {
     return (
