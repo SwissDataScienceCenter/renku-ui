@@ -168,6 +168,7 @@ export default function NavbarV2() {
   return (
     <>
       <header
+        data-cy="header-nav"
         className={cx("navbar-expand-lg", "text-body", "bg-body")}
         data-bs-theme="navy"
       >

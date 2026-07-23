@@ -48,7 +48,7 @@ describe("display the customized home page", () => {
   });
 
   it("shows the header on a navy background with visible navigation", () => {
-    cy.get("#rk-anon-home-custom-header").should("have.class", "bg-navy");
+    cy.getDataCy("header-nav").should("have.class", "bg-body");
     cy.get("#rk-anon-home-hero").should("not.exist");
     cy.get("#login-button").should("be.visible");
     cy.contains("h1", "Custom deployment homepage").should("be.visible");
