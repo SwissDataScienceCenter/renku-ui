@@ -17,11 +17,17 @@
  */
 
 import type { SerializedError } from "@reduxjs/toolkit";
-import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { DateTime, Duration } from "luxon";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRepeat, ClockHistory, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRepeat,
+  ClockHistory,
+  FileEarmarkArrowDown,
+  XLg,
+} from "react-bootstrap-icons";
 import {
   Button,
   ListGroup,
@@ -37,8 +43,11 @@ import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import { toHumanDateTime } from "~/utils/helpers/DateTimeUtils";
 import { toHumanRelativeDuration } from "~/utils/helpers/DurationUtils";
+import { LogsModalBody, useDownloadLogs } from "../logsDisplay/LogsModal";
 import type { SessionLauncher } from "../sessionsV2/api/sessionLaunchersV2.api";
 import {
+  persistedLogsApi,
+  useGetPersistedLogsForModalQuery,
   useGetPersistedLogsSessionsByLauncherIdRunsQuery,
   type SessionRun,
   type SessionRuns,
@@ -65,10 +74,14 @@ export default function SessionsPersistedLogsHistoryModal({
     launcherId: launcher.id,
   });
 
+  const [selectedRunId, setSelectedRunId] = useState("");
+  const onClickBack = useCallback(() => {
+    setSelectedRunId("");
+  }, []);
+
   return (
     <ScrollableModal
       backdrop="static"
-      centered
       fullscreen="lg"
       isOpen={isOpen}
       size="lg"
@@ -82,23 +95,42 @@ export default function SessionsPersistedLogsHistoryModal({
         <LogsHistoryBody
           error={error}
           isLoading={isLoading}
+          selectedRunId={selectedRunId}
           sessionRuns={sessionRuns}
+          setSelectedRunId={setSelectedRunId}
         />
       </ModalBody>
       <ModalFooter>
-        <Button
-          color="outline-primary"
-          data-cy="logs-history-refetch-session-runs"
-          onClick={refetch}
-          disabled={isFetching}
-        >
-          {isFetching ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <ArrowRepeat className={cx("bi", "me-1")} />
-          )}
-          Refresh runs
-        </Button>
+        {selectedRunId ? (
+          <>
+            <Button
+              className="me-auto"
+              color="outline-primary"
+              data-cy="logs-history-back-to-list"
+              onClick={onClickBack}
+            >
+              <ArrowLeft className={cx("bi", "me-1")} /> Back to runs list
+            </Button>
+            <LogsActions
+              selectedRunId={selectedRunId}
+              sessionRuns={sessionRuns}
+            />
+          </>
+        ) : (
+          <Button
+            color="outline-primary"
+            data-cy="logs-history-refetch-session-runs"
+            onClick={refetch}
+            disabled={isFetching}
+          >
+            {isFetching ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <ArrowRepeat className={cx("bi", "me-1")} />
+            )}
+            Refresh runs
+          </Button>
+        )}
         <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
@@ -111,14 +143,32 @@ export default function SessionsPersistedLogsHistoryModal({
 interface LogsHistoryBodyProps {
   error: FetchBaseQueryError | SerializedError | undefined;
   isLoading: boolean;
+  selectedRunId: string;
   sessionRuns: SessionRuns | undefined;
+  setSelectedRunId: (runId: string) => void;
 }
 
 function LogsHistoryBody({
   error,
   isLoading,
+  selectedRunId,
   sessionRuns,
+  setSelectedRunId,
 }: LogsHistoryBodyProps) {
+  const selectedSessionRun = useMemo(
+    () =>
+      selectedRunId
+        ? sessionRuns?.find(({ id }) => id === selectedRunId)
+        : null,
+    [selectedRunId, sessionRuns],
+  );
+
+  useEffect(() => {
+    if (selectedRunId && selectedSessionRun == null) {
+      setSelectedRunId("");
+    }
+  }, [selectedRunId, selectedSessionRun, setSelectedRunId]);
+
   if (isLoading) {
     return <Loader />;
   }
@@ -140,27 +190,18 @@ function LogsHistoryBody({
     );
   }
 
-  //  || data == null) {
-  //     return (
-  //       <p data-cy="logs-unavailable-message" className="mb-0">
-  //         Logs unavailable. Please try to{" "}
-  //         <Button
-  //           color="primary"
-  //           onClick={refetch}
-  //           size="sm"
-  //           disabled={isFetching}
-  //         >
-  //           refresh
-  //         </Button>{" "}
-  //         them again.
-  //       </p>
-  //     );
-  //   }
+  if (selectedSessionRun) {
+    return <LogsDisplay sessionRun={selectedSessionRun} />;
+  }
 
   return (
-    <ListGroup>
+    <ListGroup tag="div">
       {sessionRuns.map((sessionRun) => (
-        <SessionRunItem key={sessionRun.id} sessionRun={sessionRun} />
+        <SessionRunItem
+          key={sessionRun.id}
+          sessionRun={sessionRun}
+          setSelectedRunId={setSelectedRunId}
+        />
       ))}
     </ListGroup>
   );
@@ -168,9 +209,10 @@ function LogsHistoryBody({
 
 interface SessionRunItemProps {
   sessionRun: SessionRun;
+  setSelectedRunId: (runId: string) => void;
 }
 
-function SessionRunItem({ sessionRun }: SessionRunItemProps) {
+function SessionRunItem({ sessionRun, setSelectedRunId }: SessionRunItemProps) {
   const timestamp = useMemo(
     () =>
       isValidULID(sessionRun.id)
@@ -178,6 +220,10 @@ function SessionRunItem({ sessionRun }: SessionRunItemProps) {
         : null,
     [sessionRun.id],
   );
+
+  const onClick = useCallback(() => {
+    setSelectedRunId(sessionRun.id);
+  }, [sessionRun.id, setSelectedRunId]);
 
   const [now, setNow] = useState<DateTime>(DateTime.utc());
   const timeoutRef = useRef<number | null>(null);
@@ -211,7 +257,7 @@ function SessionRunItem({ sessionRun }: SessionRunItemProps) {
   }, [now, timestamp]);
 
   return (
-    <ListGroupItem>
+    <ListGroupItem tag="button" action onClick={onClick}>
       {sessionRun.submission_id && (
         <>
           {sessionRun.submission_id}
@@ -229,5 +275,120 @@ function SessionRunItem({ sessionRun }: SessionRunItemProps) {
         )}
       </>
     </ListGroupItem>
+  );
+}
+
+interface LogsDisplayProps {
+  sessionRun: SessionRun;
+}
+
+function LogsDisplay({ sessionRun }: LogsDisplayProps) {
+  const query = useGetPersistedLogsForModalQuery({
+    launcherId: sessionRun.launcher_id,
+    params: {
+      submission_id: sessionRun.submission_id,
+    },
+  });
+
+  return (
+    <LogsModalBody
+      data={query.data}
+      error={query.error}
+      isFetching={query.isFetching}
+      isLoading={query.isLoading}
+      refetch={query.refetch}
+      // eslint-disable-next-line spellcheck/spell-checker
+      defaultTab="amalthea-session"
+    />
+  );
+}
+
+interface LogsActionsProps {
+  selectedRunId: string;
+  sessionRuns: SessionRuns | undefined;
+}
+
+function LogsActions({ selectedRunId, sessionRuns }: LogsActionsProps) {
+  const sessionRun = useMemo(
+    () =>
+      selectedRunId
+        ? sessionRuns?.find(({ id }) => id === selectedRunId)
+        : null,
+    [selectedRunId, sessionRuns],
+  );
+
+  if (sessionRun == null) {
+    return null;
+  }
+
+  return <LogsActionsInner sessionRun={sessionRun} />;
+}
+
+interface LogsActionsInnerProps {
+  sessionRun: SessionRun;
+}
+
+function LogsActionsInner({ sessionRun }: LogsActionsInnerProps) {
+  const logsName = `${sessionRun.submission_id ? sessionRun.submission_id + "_" : ""}${sessionRun.launcher_id}`;
+
+  const query = useGetPersistedLogsForModalQuery({
+    launcherId: sessionRun.launcher_id,
+    params: {
+      submission_id: sessionRun.submission_id,
+    },
+  });
+
+  const [trigger] =
+    persistedLogsApi.endpoints.getPersistedLogsForModal.useLazyQuery();
+  const downloadQueryTrigger = useCallback(
+    () =>
+      trigger({
+        launcherId: sessionRun.launcher_id,
+        params: { submission_id: sessionRun.submission_id },
+      }),
+    [sessionRun.launcher_id, sessionRun.submission_id, trigger],
+  );
+
+  const [isDownloading, triggerDownload] = useDownloadLogs(
+    logsName,
+    query.refetch,
+    downloadQueryTrigger,
+  );
+  const canDownload =
+    !query.isFetching &&
+    !isDownloading &&
+    query.data != null &&
+    Object.keys(query.data).length >= 1;
+
+  return (
+    <>
+      <Button
+        color="outline-primary"
+        id="session-refresh-logs"
+        onClick={downloadQueryTrigger}
+        disabled={query.isFetching}
+      >
+        {query.isFetching ? (
+          <Loader className="me-1" inline size={16} />
+        ) : (
+          <ArrowRepeat className={cx("bi", "me-1")} />
+        )}
+        Refresh logs
+      </Button>
+
+      <Button
+        data-cy="session-log-download-button"
+        color="outline-primary"
+        onClick={triggerDownload}
+        disabled={!canDownload}
+      >
+        {isDownloading ? (
+          <Loader className="me-1" inline size={16} />
+        ) : (
+          <FileEarmarkArrowDown className={cx("bi", "me-1")} />
+        )}
+        {isDownloading ? "Downloading" : "Download"}
+      </Button>
+    </>
   );
 }

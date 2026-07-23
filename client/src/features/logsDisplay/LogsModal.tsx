@@ -140,7 +140,7 @@ export default function LogsModal({
 
 type LogsModalBodyProps = LogsQuery & Pick<LogsModalModalProps, "defaultTab">;
 
-function LogsModalBody({
+export function LogsModalBody({
   data,
   error,
   isFetching,
@@ -355,7 +355,7 @@ function ModalFooterButtons({
  *
  * NOTE: will download with maxLines = 250, so the logs will be incomplete
  */
-function useDownloadLogs(
+export function useDownloadLogs(
   name: string,
   refetch: LogsQuery["refetch"],
   downloadQueryTrigger: DownloadLogsLazyQueryTrigger | undefined | null,
