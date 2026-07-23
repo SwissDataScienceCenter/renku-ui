@@ -1,6 +1,6 @@
 {
   "name": "renku-ui-server",
-  "version": "4.27.0",
+  "version": "4.27.2",
   "description": "Server for renku API",
   "private": true,
   "main": "dist/index.js",
@@ -31,7 +31,7 @@
     "express-prom-bundle": "^6.6.0",
     "http-proxy-middleware": "^2.0.10",
     "jsonwebtoken": "^9.0.1",
-    "morgan": "^1.10.1",
+    "morgan": "^1.11.0",
     "openid-client": "^4.9.1",
     "uuid": "^14.0.0",
     "winston": "^3.10.0",

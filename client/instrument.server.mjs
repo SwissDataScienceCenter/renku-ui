@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react-router";
+import { isRouteErrorResponse } from "react-router";
 
 const NAMESPACE_DEFAULT = "unknown";
 const VERSION_DEFAULT = "unknown";
@@ -52,6 +53,16 @@ if (process.env.NODE_ENV !== "development") {
       release,
       denyUrls: [...EXCLUDED_URLS],
       tracesSampleRate,
+      beforeSend: (event, hint) => {
+        // Do not send HTTP 405 errors to Sentry
+        if (
+          isRouteErrorResponse(hint.originalException) &&
+          hint.originalException.status == 405
+        ) {
+          return null;
+        }
+        return event;
+      },
     };
     Sentry.init(config);
     Sentry.setTags({
