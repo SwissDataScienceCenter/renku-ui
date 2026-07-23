@@ -129,7 +129,7 @@ export default function ConnectedServicesPage() {
   const [isAddIntegrationModalOpen, setIsAddIntegrationModalOpen] =
     useState(false);
 
-  const { mainListProviders, modalProviders } =
+  const { startedProviders, availableProviders } =
     useConnectedServiceProviderLists({
       providers,
       connections,
@@ -141,7 +141,7 @@ export default function ConnectedServicesPage() {
   const targetedProvider = providers?.find(
     (provider) => provider.id === targetProviderId,
   );
-  const IsTargetedProviderVisible = mainListProviders.some(
+  const IsTargetedProviderVisible = startedProviders.some(
     (provider) => provider.provider.id === targetProviderId,
   );
 
@@ -211,7 +211,7 @@ export default function ConnectedServicesPage() {
           </Button>
         </CardHeader>
         <CardBody>
-          {mainListProviders.length === 0 ? (
+          {startedProviders.length === 0 ? (
             <p className={cx("mb-0", "text-muted")}>
               You have no integrations configured.
               <a
@@ -223,7 +223,7 @@ export default function ConnectedServicesPage() {
             </p>
           ) : (
             <ListGroup flush>
-              {mainListProviders.map(({ provider, connection }) => (
+              {startedProviders.map(({ provider, connection }) => (
                 <ConnectedServiceListItem
                   key={provider.id}
                   data-cy="connected-service-item"
@@ -248,7 +248,7 @@ export default function ConnectedServicesPage() {
       <AddIntegrationModal
         isOpen={isAddIntegrationModalOpen}
         onToggle={toggleAddIntegrationModal}
-        providers={modalProviders}
+        providers={availableProviders}
       />
     </>
   );
@@ -512,7 +512,7 @@ function AddIntegrationModal({
       </ModalHeader>
       <ModalBody>
         {providers.length === 0 ? (
-          <p>There are currently no external services users can connect to.</p>
+          <p>You have already connected to all the available integrations.</p>
         ) : (
           <>
             <p>Add a new code, data, or compute integration.</p>
