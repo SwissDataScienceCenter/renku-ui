@@ -16,18 +16,16 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { useCallback, useState } from "react";
-import { DropdownItem } from "reactstrap";
+import { useCallback, useRef, useState } from "react";
+import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { SingleButtonWithMenu } from "../../../../components/buttons/Button";
 import BootstrapCopyIcon from "../../../../components/icons/BootstrapCopyIcon";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import ProjectCopyModal from "../../ProjectPageHeader/ProjectCopyModal";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
-export default function ProjectInformationButton({
+export default function CopyProjectButton({
   project,
 }: {
   userPermissions: ReturnType<typeof useProjectPermissions>;
@@ -35,6 +33,7 @@ export default function ProjectInformationButton({
 }) {
   const { data: currentUser } = useGetUserQueryState();
   const [isCopyModalOpen, setCopyModalOpen] = useState(false);
+  const ref = useRef<HTMLButtonElement>(null);
   const toggleCopyModal = useCallback(() => {
     setCopyModalOpen((open) => !open);
   }, []);
@@ -42,23 +41,23 @@ export default function ProjectInformationButton({
   if (!isUserLoggedIn) return null;
   return (
     <>
-      <SingleButtonWithMenu color="outline-primary" size="sm">
-        <DropdownItem
-          data-cy="project-copy-menu-item"
-          onClick={toggleCopyModal}
-        >
-          <BootstrapCopyIcon className={cx("bi")} />
-          <span className={cx("ms-2")}>Copy project</span>
-        </DropdownItem>
-      </SingleButtonWithMenu>
-      {
-        <ProjectCopyModal
-          currentUser={currentUser}
-          isOpen={isCopyModalOpen}
-          project={project}
-          toggle={toggleCopyModal}
-        />
-      }
+      <Button
+        data-cy="info-copy-project-button"
+        color="outline-primary"
+        onClick={toggleCopyModal}
+        size="sm"
+        innerRef={ref}
+      >
+        <BootstrapCopyIcon className="bi" />
+        <span className="visually-hidden">Copy project</span>
+      </Button>
+      <ProjectCopyModal
+        currentUser={currentUser}
+        isOpen={isCopyModalOpen}
+        project={project}
+        toggle={toggleCopyModal}
+      />
+      <UncontrolledTooltip target={ref}>Copy project</UncontrolledTooltip>
     </>
   );
 }
