@@ -17,7 +17,7 @@
  */
 
 import type { SerializedError } from "@reduxjs/toolkit";
-import { type FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { DateTime, Duration } from "luxon";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -70,9 +70,13 @@ export default function SessionsPersistedLogsHistoryModal({
     isLoading,
     error,
     refetch,
-  } = useGetPersistedLogsSessionsByLauncherIdRunsQuery({
-    launcherId: launcher.id,
-  });
+  } = useGetPersistedLogsSessionsByLauncherIdRunsQuery(
+    isOpen
+      ? {
+          launcherId: launcher.id,
+        }
+      : skipToken,
+  );
 
   const [selectedRunId, setSelectedRunId] = useState("");
   const onClickBack = useCallback(() => {
@@ -95,13 +99,14 @@ export default function SessionsPersistedLogsHistoryModal({
         <LogsHistoryBody
           error={error}
           isLoading={isLoading}
+          isOpen={isOpen}
           selectedRunId={selectedRunId}
           sessionRuns={sessionRuns}
           setSelectedRunId={setSelectedRunId}
         />
       </ModalBody>
       <ModalFooter>
-        {selectedRunId ? (
+        {isOpen && selectedRunId ? (
           <>
             <Button
               className="me-auto"
@@ -143,6 +148,7 @@ export default function SessionsPersistedLogsHistoryModal({
 interface LogsHistoryBodyProps {
   error: FetchBaseQueryError | SerializedError | undefined;
   isLoading: boolean;
+  isOpen: boolean;
   selectedRunId: string;
   sessionRuns: SessionRuns | undefined;
   setSelectedRunId: (runId: string) => void;
@@ -151,6 +157,7 @@ interface LogsHistoryBodyProps {
 function LogsHistoryBody({
   error,
   isLoading,
+  isOpen,
   selectedRunId,
   sessionRuns,
   setSelectedRunId,
@@ -191,7 +198,7 @@ function LogsHistoryBody({
   }
 
   if (selectedSessionRun) {
-    return <LogsDisplay sessionRun={selectedSessionRun} />;
+    return <LogsDisplay isOpen={isOpen} sessionRun={selectedSessionRun} />;
   }
 
   return (
@@ -279,16 +286,21 @@ function SessionRunItem({ sessionRun, setSelectedRunId }: SessionRunItemProps) {
 }
 
 interface LogsDisplayProps {
+  isOpen: boolean;
   sessionRun: SessionRun;
 }
 
-function LogsDisplay({ sessionRun }: LogsDisplayProps) {
-  const query = useGetPersistedLogsForModalQuery({
-    launcherId: sessionRun.launcher_id,
-    params: {
-      submission_id: sessionRun.submission_id,
-    },
-  });
+function LogsDisplay({ isOpen, sessionRun }: LogsDisplayProps) {
+  const query = useGetPersistedLogsForModalQuery(
+    isOpen
+      ? {
+          launcherId: sessionRun.launcher_id,
+          params: {
+            submission_id: sessionRun.submission_id,
+          },
+        }
+      : skipToken,
+  );
 
   return (
     <LogsModalBody
