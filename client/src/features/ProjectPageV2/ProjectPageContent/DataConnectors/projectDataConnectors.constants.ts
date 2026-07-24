@@ -10,3 +10,9 @@ export const DC_SEARCH_QUERY_DEBOUNCE_MS = 300;
 export const DC_SEARCH_MAX_RESULTS = 10;
 
 export const DC_SUCCESS_MESSAGE_TIMEOUT_MS = 5_000;
+
+export const PROJECT_STORAGE_MIN_GB = 1;
+export const PROJECT_STORAGE_MAX_GB = 10;
+export const PROJECT_STORAGE_STEP_GB = 1;
+export const PROJECT_STORAGE_DEFAULT_GB = 1;
+export const PROJECT_STORAGE_DEFAULT_MOUNT_PATH = "store";

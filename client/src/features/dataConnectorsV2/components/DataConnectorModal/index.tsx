@@ -22,6 +22,7 @@ import { useCallback, useEffect } from "react";
 import { Database, XLg } from "react-bootstrap-icons";
 import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
+import type { ProjectConnectDataConnectorMode } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 import { ErrorAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
@@ -163,7 +164,7 @@ interface DataConnectorModalProps {
   isOpen: boolean;
   namespace?: string;
   project?: Project;
-  switchMode?: () => void;
+  switchMode?: (mode: ProjectConnectDataConnectorMode) => void;
   toggle: (initialStep?: number) => void;
 }
 export default function DataConnectorModal({

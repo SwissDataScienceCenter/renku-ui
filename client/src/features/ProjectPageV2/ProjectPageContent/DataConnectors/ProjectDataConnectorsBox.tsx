@@ -26,17 +26,20 @@ import {
   CardBody,
   CardHeader,
   ListGroup,
+  ListGroupItem,
   UncontrolledTooltip,
 } from "reactstrap";
 
 import {
   type DataConnectorToProjectLink,
   type GetProjectsByProjectIdDataConnectorLinksApiResponse,
+  type ProjectStorage,
 } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
   useGetDataConnectorsByDataConnectorIdQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
+  useGetProjectsByProjectIdStorageQuery,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { ErrorAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
@@ -48,6 +51,7 @@ import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
+import { PROJECT_STORAGE_DEFAULT_MOUNT_PATH } from "./projectDataConnectors.constants";
 
 interface DataConnectorListDisplayProps {
   project: Project;
@@ -68,11 +72,29 @@ export default function ProjectDataConnectorsBox({
     projectId: project.id,
   });
 
-  if (isLoading || inaccessibleDataConnectorsIsLoading)
+  const {
+    data: projectStorageData,
+    error: projectStorageError,
+    isLoading: projectStorageIsLoading,
+  } = useGetProjectsByProjectIdStorageQuery({
+    projectId: project.id,
+  });
+
+  if (
+    isLoading ||
+    inaccessibleDataConnectorsIsLoading ||
+    projectStorageIsLoading
+  )
     return <DataConnectorLoadingBoxContent />;
 
   if (error) {
     return <RtkOrDataServicesError error={error} dismissible={false} />;
+  }
+
+  if (projectStorageError) {
+    return (
+      <RtkOrDataServicesError error={projectStorageError} dismissible={false} />
+    );
   }
 
   if (data == null) {
@@ -91,6 +113,7 @@ export default function ProjectDataConnectorsBox({
       inaccessibleDataConnectorsCount={
         inaccessibleDataConnectorsData?.count || 0
       }
+      projectStorageData={projectStorageData}
     />
   );
 }
@@ -98,27 +121,32 @@ export default function ProjectDataConnectorsBox({
 interface ProjectDataConnectorBoxContentProps extends DataConnectorListDisplayProps {
   data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
   inaccessibleDataConnectorsCount: number;
+  projectStorageData?: ProjectStorage[];
 }
 function ProjectDataConnectorBoxContent({
   data,
   project,
   inaccessibleDataConnectorsCount,
+  projectStorageData,
 }: ProjectDataConnectorBoxContentProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const toggleOpen = useCallback(() => {
     setModalOpen((open) => !open);
   }, []);
+  const accessibleDataConnectorsCount =
+    data.length + (projectStorageData ? projectStorageData.length : 0);
+
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Card className="h-100" data-cy="data-connector-box">
         <ProjectDataConnectorBoxHeader
           projectId={project.id}
           toggleOpen={toggleOpen}
-          accessibleDataConnectorsCount={data.length}
+          accessibleDataConnectorsCount={accessibleDataConnectorsCount}
           inaccessibleDataConnectorsCount={inaccessibleDataConnectorsCount}
         />
         <CardBody>
-          {data.length === 0 && (
+          {accessibleDataConnectorsCount === 0 && (
             <p className={cx("m-0", "text-body-secondary")}>
               Add published datasets from data repositories, and connect to
               cloud storage to read and write custom data.
@@ -135,6 +163,17 @@ function ProjectDataConnectorBoxContent({
               ))}
             </ListGroup>
           )}
+          {projectStorageData && projectStorageData.length > 0 && (
+            <ListGroup flush>
+              {projectStorageData.map((ps, index) => (
+                <ProjectStorageLinkDisplay
+                  key={index}
+                  projectStorage={ps}
+                  name={`Project storage ${projectStorageData.length > 1 ? index + 1 : ""}`}
+                />
+              ))}
+            </ListGroup>
+          )}
         </CardBody>
       </Card>
       {isModalOpen && (
@@ -146,6 +185,49 @@ function ProjectDataConnectorBoxContent({
         />
       )}
     </div>
+  );
+}
+
+function ProjectStorageLinkDisplay({
+  projectStorage,
+  name,
+}: {
+  projectStorage: ProjectStorage;
+  name: string;
+}) {
+  return (
+    <ListGroupItem
+      action
+      className={cx("position-relative", "p-0")}
+      data-cy="data-connector-item"
+    >
+      <div
+        className={cx(
+          "d-block",
+          "link-primary",
+          "py-3",
+          "text-body",
+          "text-decoration-none",
+        )}
+      >
+        <div
+          className={cx("align-items-center", "d-flex", "flex-wrap", "gap-2")}
+        >
+          <span className="fw-bold" data-cy="data-connector-name">
+            {name}
+          </span>
+        </div>
+        <div>Size: {projectStorage.size} GB</div>
+        <div>
+          Mount point:{" "}
+          <code>
+            {projectStorage.mount_path && projectStorage.mount_path !== ""
+              ? projectStorage.mount_path
+              : PROJECT_STORAGE_DEFAULT_MOUNT_PATH}
+          </code>
+        </div>
+      </div>
+    </ListGroupItem>
   );
 }
 

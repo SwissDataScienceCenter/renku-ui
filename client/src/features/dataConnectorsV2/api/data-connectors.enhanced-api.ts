@@ -158,6 +158,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "DataConnectors",
     "DataConnectorsProjectLinks",
     "DataConnectorSecrets",
+    "ProjectStorage",
   ],
   endpoints: {
     deleteDataConnectorsByDataConnectorId: {
@@ -268,6 +269,12 @@ const enhancedApi = injectedApi.enhanceEndpoints({
           ? [{ id: depositId, type: "Deposits" }, "Deposits"]
           : ["Deposits"],
     },
+    getProjectsByProjectIdStorage: {
+      providesTags: ["ProjectStorage"],
+    },
+    postDataConnectorsStorage: {
+      invalidatesTags: ["ProjectStorage"],
+    },
   },
 });
 
@@ -300,4 +307,6 @@ export const {
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
+  useGetProjectsByProjectIdStorageQuery,
+  usePostDataConnectorsStorageMutation,
 } = enhancedApi;

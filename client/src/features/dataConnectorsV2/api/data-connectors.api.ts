@@ -23,6 +23,71 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.dataConnectorPost,
       }),
     }),
+    postDataConnectorsStorage: build.mutation<
+      PostDataConnectorsStorageApiResponse,
+      PostDataConnectorsStorageApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage`,
+        method: "POST",
+        body: queryArg.projectStoragePost,
+      }),
+    }),
+    getDataConnectorsStorageAllow: build.query<
+      GetDataConnectorsStorageAllowApiResponse,
+      GetDataConnectorsStorageAllowApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage/allow`,
+        params: {
+          params: queryArg.params,
+        },
+      }),
+    }),
+    postDataConnectorsStorageAllow: build.mutation<
+      PostDataConnectorsStorageAllowApiResponse,
+      PostDataConnectorsStorageAllowApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage/allow`,
+        method: "POST",
+        body: queryArg.projectStorageAllowPost,
+      }),
+    }),
+    getDataConnectorsStorageAllowByProjectId: build.query<
+      GetDataConnectorsStorageAllowByProjectIdApiResponse,
+      GetDataConnectorsStorageAllowByProjectIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage/allow/${queryArg.projectId}`,
+      }),
+    }),
+    deleteDataConnectorsStorageAllowByProjectId: build.mutation<
+      DeleteDataConnectorsStorageAllowByProjectIdApiResponse,
+      DeleteDataConnectorsStorageAllowByProjectIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage/allow/${queryArg.projectId}`,
+        method: "DELETE",
+      }),
+    }),
+    getDataConnectorsStorageByStorageId: build.query<
+      GetDataConnectorsStorageByStorageIdApiResponse,
+      GetDataConnectorsStorageByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage/${queryArg.storageId}`,
+      }),
+    }),
+    deleteDataConnectorsStorageByStorageId: build.mutation<
+      DeleteDataConnectorsStorageByStorageIdApiResponse,
+      DeleteDataConnectorsStorageByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage/${queryArg.storageId}`,
+        method: "DELETE",
+      }),
+    }),
     postDataConnectorsGlobal: build.mutation<
       PostDataConnectorsGlobalApiResponse,
       PostDataConnectorsGlobalApiArg
@@ -171,6 +236,12 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getProjectsByProjectIdStorage: build.query<
+      GetProjectsByProjectIdStorageApiResponse,
+      GetProjectsByProjectIdStorageApiArg
+    >({
+      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/storage` }),
+    }),
     getProjectsByProjectIdDataConnectorLinks: build.query<
       GetProjectsByProjectIdDataConnectorLinksApiResponse,
       GetProjectsByProjectIdDataConnectorLinksApiArg
@@ -259,6 +330,40 @@ export type PostDataConnectorsApiResponse =
   /** status 201 The data connector was created */ DataConnectorRead;
 export type PostDataConnectorsApiArg = {
   dataConnectorPost: DataConnectorPost;
+};
+export type PostDataConnectorsStorageApiResponse =
+  /** status 201 The data connector was created */ ProjectStorage;
+export type PostDataConnectorsStorageApiArg = {
+  projectStoragePost: ProjectStoragePost;
+};
+export type GetDataConnectorsStorageAllowApiResponse =
+  /** status 200 List of storage allow entries */ ProjectStorageAllowList;
+export type GetDataConnectorsStorageAllowApiArg = {
+  /** query parameters */
+  params?: ProjectStorageAllowListQuery;
+};
+export type PostDataConnectorsStorageAllowApiResponse =
+  /** status 201 The project was added to the allow list */ ProjectStorageAllow;
+export type PostDataConnectorsStorageAllowApiArg = {
+  projectStorageAllowPost: ProjectStorageAllowPost;
+};
+export type GetDataConnectorsStorageAllowByProjectIdApiResponse =
+  /** status 200 The project storage allow entry */ ProjectStorageAllow;
+export type GetDataConnectorsStorageAllowByProjectIdApiArg = {
+  projectId: Ulid;
+};
+export type DeleteDataConnectorsStorageAllowByProjectIdApiResponse = unknown;
+export type DeleteDataConnectorsStorageAllowByProjectIdApiArg = {
+  projectId: Ulid;
+};
+export type GetDataConnectorsStorageByStorageIdApiResponse =
+  /** status 200 The project storage information */ ProjectStorage;
+export type GetDataConnectorsStorageByStorageIdApiArg = {
+  storageId: Ulid;
+};
+export type DeleteDataConnectorsStorageByStorageIdApiResponse = unknown;
+export type DeleteDataConnectorsStorageByStorageIdApiArg = {
+  storageId: Ulid;
 };
 export type PostDataConnectorsGlobalApiResponse =
   /** status 200 The data connector already exists */
@@ -364,6 +469,11 @@ export type GetDataConnectorsByDataConnectorIdDepositsApiArg = {
   dataConnectorId: Ulid;
   /** Query parameters */
   params?: PaginationRequest;
+};
+export type GetProjectsByProjectIdStorageApiResponse =
+  /** status 200 The list of project storages (currently either one or empty). */ ProjectStorage[];
+export type GetProjectsByProjectIdStorageApiArg = {
+  projectId: Ulid;
 };
 export type GetProjectsByProjectIdDataConnectorLinksApiResponse =
   /** status 200 List of data connector to project links */ DataConnectorToProjectLinksList;
@@ -596,6 +706,36 @@ export type DataConnectorPostRead = {
   description?: Description;
   keywords?: KeywordsList;
 };
+export type ProjectStorage = {
+  id: Ulid;
+  project_id: Ulid;
+  size: number;
+  mount_path: any;
+  creation_date: CreationDate;
+  created_by: UserId;
+  updated_at: CreationDate;
+};
+export type ProjectSlug = string;
+export type ProjectStoragePost = {
+  namespace: ProjectSlug;
+  size: number;
+  mount_path: string;
+};
+export type ProjectStorageAllow = {
+  project_id: Ulid;
+  /** Maximum size in GB */
+  max_size: number;
+};
+export type ProjectStorageAllowList = ProjectStorageAllow[];
+export type ProjectStorageAllowListQuery = PaginationRequest & {
+  /** Filter by project name (partial match). */
+  project_name?: string;
+};
+export type ProjectStorageAllowPost = {
+  project_id: Ulid;
+  /** Maximum size in GB */
+  max_size: number;
+};
 export type GlobalDataConnectorPost = {
   storage: CloudStorageCorePost | CloudStorageUrlV2;
 };
@@ -706,6 +846,13 @@ export type DepositLogs = {
 export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
+  usePostDataConnectorsStorageMutation,
+  useGetDataConnectorsStorageAllowQuery,
+  usePostDataConnectorsStorageAllowMutation,
+  useGetDataConnectorsStorageAllowByProjectIdQuery,
+  useDeleteDataConnectorsStorageAllowByProjectIdMutation,
+  useGetDataConnectorsStorageByStorageIdQuery,
+  useDeleteDataConnectorsStorageByStorageIdMutation,
   usePostDataConnectorsGlobalMutation,
   useGetDataConnectorLinksQuery,
   useGetDataConnectorsByDataConnectorIdQuery,
@@ -722,6 +869,7 @@ export const {
   usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   useDeleteDataConnectorsByDataConnectorIdSecretsMutation,
   useGetDataConnectorsByDataConnectorIdDepositsQuery,
+  useGetProjectsByProjectIdStorageQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
   usePostDepositsMutation,
