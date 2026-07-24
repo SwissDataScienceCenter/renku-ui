@@ -94,6 +94,8 @@ const jsRules = {
         "dropdown",
         "dropzone",
         "enum",
+        "envi",
+        "envidat",
         "etag",
         "favicon",
         "fetchable",
