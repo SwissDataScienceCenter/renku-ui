@@ -294,7 +294,7 @@ export const LAUNCHER_BY_CATEGORY: Record<
     text: {
       display: "App",
       inline: "app",
-      action: "publish",
+      action: "start",
       state: {
         running: "Live",
         starting: "Starting",
