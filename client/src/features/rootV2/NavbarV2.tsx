@@ -36,6 +36,7 @@ import {
   NavItem,
 } from "reactstrap";
 
+import { HomeHeader } from "~/features/landing/AnonymousHome";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
@@ -159,12 +160,10 @@ export default function NavbarV2() {
     ABSOLUTE_ROUTES.v2.projects.show.sessions.show,
   );
 
-  if (
-    (!user?.isLoggedIn && pathname === ABSOLUTE_ROUTES.root) ||
-    matchesShowSessionPage
-  ) {
-    return null;
-  }
+  if (matchesShowSessionPage) return null;
+
+  const isUnauthenticatedHomePage =
+    !user?.isLoggedIn && pathname === ABSOLUTE_ROUTES.root;
 
   return (
     <>
@@ -172,75 +171,82 @@ export default function NavbarV2() {
         className={cx("navbar-expand-lg", "text-body", "bg-body")}
         data-bs-theme="navy"
       >
-        <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
-          <div
-            className={cx(
-              "align-items-center",
-              "d-flex",
-              "flex-wrap",
-              "gap-3",
-              "text-white",
-            )}
-          >
-            <RenkuNavLinkV2
-              id="link-home"
-              data-cy="link-home"
-              to={ABSOLUTE_ROUTES.v2.index}
-            >
-              <img src={RENKU_LOGO} alt="Renku" height="50" />
-            </RenkuNavLinkV2>
-          </div>
-          <div className="ms-auto">
-            <NavbarToggler onClick={onToggle} className={cx("border-0", "p-2")}>
-              <List className="bi" />
-            </NavbarToggler>
-          </div>
-          <Collapse isOpen={isOpen} navbar>
-            <Nav
+        {isUnauthenticatedHomePage ? (
+          <HomeHeader />
+        ) : (
+          <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
+            <div
               className={cx(
                 "align-items-center",
-                "flex-row",
+                "d-flex",
+                "flex-wrap",
                 "gap-3",
-                "gap-lg-0",
-                "justify-content-end",
-                "ms-lg-auto",
-                "pe-2",
-                "pe-lg-0",
+                "text-white",
               )}
-              navbar
             >
-              <NavItem>
-                <RenkuNavLinkV2
-                  data-cy="navbar-link-search"
-                  end
-                  title="Search"
-                  to={ABSOLUTE_ROUTES.v2.search}
-                >
-                  <Search className="bi" /> Search
-                </RenkuNavLinkV2>
-              </NavItem>
-              <NavItem>
-                <RenkuNavLinkV2
-                  data-cy="navbar-link-dashboard"
-                  end
-                  title="Dashboard"
-                  to={ABSOLUTE_ROUTES.v2.index}
-                >
-                  {user?.isLoggedIn ? "Dashboard" : "Home"}
-                </RenkuNavLinkV2>
-              </NavItem>
-              <NavItem>
-                <NavbarItemPlus />
-              </NavItem>
-              <NavItem>
-                <NavbarItemHelp />
-              </NavItem>
-              <NavItem>
-                <RenkuToolbarItemUser params={params!} />
-              </NavItem>
-            </Nav>
-          </Collapse>
-        </div>
+              <RenkuNavLinkV2
+                id="link-home"
+                data-cy="link-home"
+                to={ABSOLUTE_ROUTES.v2.index}
+              >
+                <img src={RENKU_LOGO} alt="Renku" height="50" />
+              </RenkuNavLinkV2>
+            </div>
+            <div className="ms-auto">
+              <NavbarToggler
+                onClick={onToggle}
+                className={cx("border-0", "p-2")}
+              >
+                <List className="bi" />
+              </NavbarToggler>
+            </div>
+            <Collapse isOpen={isOpen} navbar>
+              <Nav
+                className={cx(
+                  "align-items-center",
+                  "flex-row",
+                  "gap-3",
+                  "gap-lg-0",
+                  "justify-content-end",
+                  "ms-lg-auto",
+                  "pe-2",
+                  "pe-lg-0",
+                )}
+                navbar
+              >
+                <NavItem>
+                  <RenkuNavLinkV2
+                    data-cy="navbar-link-search"
+                    end
+                    title="Search"
+                    to={ABSOLUTE_ROUTES.v2.search}
+                  >
+                    <Search className="bi" /> Search
+                  </RenkuNavLinkV2>
+                </NavItem>
+                <NavItem>
+                  <RenkuNavLinkV2
+                    data-cy="navbar-link-dashboard"
+                    end
+                    title="Dashboard"
+                    to={ABSOLUTE_ROUTES.v2.index}
+                  >
+                    {user?.isLoggedIn ? "Dashboard" : "Home"}
+                  </RenkuNavLinkV2>
+                </NavItem>
+                <NavItem>
+                  <NavbarItemPlus />
+                </NavItem>
+                <NavItem>
+                  <NavbarItemHelp />
+                </NavItem>
+                <NavItem>
+                  <RenkuToolbarItemUser params={params!} />
+                </NavItem>
+              </Nav>
+            </Collapse>
+          </div>
+        )}
       </header>
       <StatusBanner params={params} />
     </>
