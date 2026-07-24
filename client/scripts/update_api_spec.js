@@ -24,7 +24,7 @@ import { parseDocument } from "yaml";
 
 const GH_BASE_URL = "https://raw.githubusercontent.com";
 const DATA_SERVICES_REPO = "SwissDataScienceCenter/renku-data-services";
-const DATA_SERVICES_RELEASE = "main";
+const DATA_SERVICES_RELEASE = "leafty/feat-peristed-logs";
 
 async function main() {
   argv.forEach((arg) => {
@@ -54,6 +54,8 @@ async function main() {
       updateSessionsV2Api();
     } else if (arg.trim() === "users") {
       updateUsersApi();
+    } else if (arg.trim() === "persistedLogs") {
+      updatePersistedLogsApi();
     }
   });
 }
@@ -147,6 +149,13 @@ async function updateUsersApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/users/api.spec.yaml",
     destFile: "src/features/usersV2/api/users.openapi.json",
+  });
+}
+
+async function updatePersistedLogsApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/persisted_logs/api.spec.yaml",
+    destFile: "src/features/persistedLogs/api/persistedLogs.openapi.json",
   });
 }
 

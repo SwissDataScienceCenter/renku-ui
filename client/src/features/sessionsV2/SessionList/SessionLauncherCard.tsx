@@ -21,6 +21,7 @@ import cx from "classnames";
 import { useMemo } from "react";
 import {
   Braces,
+  ClockHistory,
   Link45deg,
   Pencil,
   PlayCircle,
@@ -69,6 +70,7 @@ interface SessionLauncherCardProps {
   toggleSessionView?: () => void;
   openSessionViewWithJob?: (submissionId: string) => void;
   toggleEnvVariables?: () => void;
+  toggleLogsHistory?: () => void;
 }
 export default function SessionLauncherCard({
   launcher,
@@ -82,6 +84,7 @@ export default function SessionLauncherCard({
   toggleShareLink,
   openSessionViewWithJob,
   toggleEnvVariables,
+  toggleLogsHistory,
 }: SessionLauncherCardProps) {
   const {
     builds,
@@ -118,7 +121,8 @@ export default function SessionLauncherCard({
     (toggleUpdate ||
       toggleDelete ||
       toggleShareLink ||
-      toggleUpdateEnvironment) && (
+      toggleUpdateEnvironment ||
+      toggleLogsHistory) && (
       <LauncherDropdownActions
         project={project}
         launcher={launcher}
@@ -127,6 +131,7 @@ export default function SessionLauncherCard({
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleShareLink={toggleShareLink}
         toggleEnvVariables={toggleEnvVariables}
+        toggleLogsHistory={toggleLogsHistory}
       />
     );
 
@@ -374,6 +379,7 @@ interface LauncherDropdownActionsProps {
   toggleUpdateEnvironment?: () => void;
   toggleShareLink?: () => void;
   toggleEnvVariables?: () => void;
+  toggleLogsHistory?: () => void;
   project: Project;
 }
 function LauncherDropdownActions({
@@ -383,6 +389,7 @@ function LauncherDropdownActions({
   toggleUpdateEnvironment,
   toggleShareLink,
   toggleEnvVariables,
+  toggleLogsHistory,
 }: LauncherDropdownActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
@@ -430,6 +437,15 @@ function LauncherDropdownActions({
               >
                 <Link45deg className={cx("bi", "me-1")} />
                 Share session launch link
+              </DropdownItem>
+            )}
+            {toggleLogsHistory && (
+              <DropdownItem
+                data-cy="session-launcher-menu-logs-history"
+                onClick={toggleLogsHistory}
+              >
+                <ClockHistory className={cx("bi", "me-1")} />
+                View logs history
               </DropdownItem>
             )}
             {toggleDelete && (

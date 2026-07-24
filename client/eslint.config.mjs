@@ -294,6 +294,7 @@ export default defineConfig([
     "src/features/dataConnectorsV2/api/data-connectors.api.ts",
     "src/features/dataConnectorsV2/api/doiResolver.generated-api.ts",
     "src/features/notifications/api/notifications.generated-api.ts",
+    "src/features/persistedLogs/api/persistedLogs.generated-api.ts",
     "src/features/platform/api/platform.generated-api.ts",
     "src/features/projectsV2/api/projectV2.api.ts",
     "src/features/searchV2/api/searchV2Api.generated-api.ts",

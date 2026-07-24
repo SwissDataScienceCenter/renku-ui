@@ -1,0 +1,254 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Renku Data Services API",
+    "description": "This service is the main backend for Renku. It provides information about users, projects,\ncloud storage, access to compute resources and many other things.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api/data"
+    }
+  ],
+  "paths": {
+    "/persisted_logs/sessions/{launcher_id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "launcher_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/PersistedLogsGetQuery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The session logs from the corresponding run and container, paginated.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersistedSessionLogs"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The session launcher does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["persisted_logs"]
+      }
+    },
+    "/persisted_logs/sessions/{launcher_id}/runs": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "launcher_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The session runs for which logs exist.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionRuns"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The session launcher does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["persisted_logs"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PersistedSessionLogs": {
+        "description": "Logs for a session",
+        "type": "object",
+        "properties": {
+          "run": {
+            "$ref": "#/components/schemas/SessionRun"
+          },
+          "logs": {
+            "$ref": "#/components/schemas/SessionRunLogs"
+          }
+        },
+        "required": ["run", "logs"]
+      },
+      "SessionRuns": {
+        "description": "A list of session runs",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionRun"
+        }
+      },
+      "SessionRun": {
+        "description": "A session run",
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "session_uid": {
+            "type": "string"
+          },
+          "launcher_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "submission_id": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "launcher_id"]
+      },
+      "SessionRunLogs": {
+        "description": "Logs of a session run, organized by pod container",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionRunLog"
+        }
+      },
+      "SessionRunLog": {
+        "description": "Logs of a single container",
+        "type": "object",
+        "properties": {
+          "container": {
+            "type": "string"
+          },
+          "logs": {
+            "$ref": "#/components/schemas/PersistedLogLines"
+          }
+        },
+        "required": ["container", "logs"]
+      },
+      "PersistedLogLines": {
+        "description": "Stream of log lines",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PersistedLogLine"
+        }
+      },
+      "PersistedLogLine": {
+        "description": "A timestamped log line",
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "$ref": "#/components/schemas/NanoTimestamp"
+          },
+          "log_line": {
+            "type": "string"
+          }
+        },
+        "required": ["timestamp", "log_line"]
+      },
+      "Ulid": {
+        "description": "ULID identifier",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      },
+      "NanoTimestamp": {
+        "description": "UNIX timestamp in nanoseconds",
+        "type": "string",
+        "pattern": "[0-9]+"
+      },
+      "PersistedLogsGetQuery": {
+        "description": "Query params for querying persisted logs",
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "submission_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true,
+                "example": 1404
+              },
+              "detail": {
+                "type": "string",
+                "example": "A more detailed optional message showing what the problem was"
+              },
+              "message": {
+                "type": "string",
+                "example": "Something went wrong - please try again later"
+              },
+              "trace_id": {
+                "type": "string",
+                "example": "ac93950e9e114a55c67fb8e5ef519bbe",
+                "description": "Sentry trace ID for linking to corresponding log entries"
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "The schema for all 4xx and 5xx responses",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}

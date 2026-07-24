@@ -29,6 +29,7 @@ import dataConnectorFormSlice from "~/features/dataConnectorsV2/state/dataConnec
 import { displaySlice } from "~/features/display/displaySlice";
 import { loginStateSlice } from "~/features/loginHandler/loginState.slice";
 import { notificationsEmptyApi as notificationsApi } from "~/features/notifications/api/notifications.empty-api";
+import { persistedLogsEmptyApi as persistedLogsApi } from "~/features/persistedLogs/api/persistedLogs.empty-api";
 import { platformEmptyApi as platformApi } from "~/features/platform/api/platform-empty.api";
 import { statuspageEmptyApi as statuspageApi } from "~/features/platform/statuspage-api/statuspage-empty.api";
 import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
@@ -63,6 +64,7 @@ export const store = configureStore({
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
     [doiResolverApi.reducerPath]: doiResolverApi.reducer,
     [notificationsApi.reducerPath]: notificationsApi.reducer,
+    [persistedLogsApi.reducerPath]: persistedLogsApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
@@ -87,6 +89,7 @@ export const store = configureStore({
       .concat(dataConnectorsApi.middleware)
       .concat(doiResolverApi.middleware)
       .concat(notificationsApi.middleware)
+      .concat(persistedLogsApi.middleware)
       .concat(platformApi.middleware)
       .concat(projectCloudStorageApi.middleware)
       .concat(projectV2Api.middleware)

@@ -237,6 +237,7 @@ interface SessionViewProps {
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
   toggleEnvVariables?: () => void;
+  toggleLogsHistory?: () => void;
 }
 export function SessionView({
   id,
@@ -250,6 +251,7 @@ export function SessionView({
   toggleUpdate,
   toggleUpdateEnvironment,
   toggleEnvVariables,
+  // toggleLogsHistory,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);

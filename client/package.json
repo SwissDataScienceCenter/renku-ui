@@ -36,6 +36,7 @@
     "generate-api:sessionLaunchersV2": "rtk-query-codegen-openapi src/features/sessionsV2/api/sessionLaunchersV2.api-config.ts",
     "generate-api:sessionsV2": "rtk-query-codegen-openapi src/features/sessionsV2/api/sessionsV2.api-config.ts",
     "generate-api:users": "rtk-query-codegen-openapi src/features/usersV2/api/users.api-config.ts",
+    "generate-api:persistedLogs": "rtk-query-codegen-openapi src/features/persistedLogs/api/persistedLogs.api-config.ts",
     "update-api": "node scripts/update_api_spec.js computeResources connectedServices dataConnectors namespaceV2 notifications platform projectCloudStorage projectV2 repositories searchV2 sessionLaunchersV2 sessionsV2 users",
     "update-api:computeResources": "node scripts/update_api_spec.js computeResources",
     "update-api:connectedServices": "node scripts/update_api_spec.js connectedServices",
@@ -49,7 +50,8 @@
     "update-api:searchV2": "node scripts/update_api_spec.js searchV2",
     "update-api:sessionLaunchersV2": "node scripts/update_api_spec.js sessionLaunchersV2",
     "update-api:sessionsV2": "node scripts/update_api_spec.js sessionsV2",
-    "update-api:users": "node scripts/update_api_spec.js users"
+    "update-api:users": "node scripts/update_api_spec.js users",
+    "update-api:persistedLogs": "node scripts/update_api_spec.js persistedLogs"
   },
   "type": "module",
   "dependencies": {
@@ -103,7 +105,8 @@
     "remark-gemoji": "^8.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
-    "sass": "^1.64.1"
+    "sass": "^1.64.1",
+    "ulid": "^3.0.2"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.2",
