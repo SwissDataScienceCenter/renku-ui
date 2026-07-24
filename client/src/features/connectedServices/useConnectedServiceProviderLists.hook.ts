@@ -45,7 +45,7 @@ export function useConnectedServiceProviderLists({
     if (!targetProvider) return providers;
     return [targetProvider, ...providers.filter((p) => p !== targetProvider)];
   }, [providers, targetProvider]);
-  const providersWithConnection = useMemo<ProviderWithConnection[]>(
+  const providerConnectionPairs = useMemo<ProviderWithConnection[]>(
     () =>
       sortedProviders.map((provider) => ({
         provider,
@@ -55,20 +55,20 @@ export function useConnectedServiceProviderLists({
       })),
     [connections, sortedProviders],
   );
-  const mainListProviders = useMemo(
+  const startedProviders = useMemo(
     () =>
-      providersWithConnection.filter(
+      providerConnectionPairs.filter(
         ({ connection }) =>
           connection?.status === "connected" ||
           connection?.status === "pending",
       ),
-    [providersWithConnection],
+    [providerConnectionPairs],
   );
-  const modalProviders = useMemo(
+  const availableProviders = useMemo(
     () =>
-      providersWithConnection.filter(({ connection }) => connection == null),
-    [providersWithConnection],
+      providerConnectionPairs.filter(({ connection }) => connection == null),
+    [providerConnectionPairs],
   );
 
-  return { mainListProviders, modalProviders };
+  return { startedProviders, availableProviders };
 }
