@@ -161,7 +161,8 @@ const enhancedApi = injectedApi.enhanceEndpoints({
   ],
   endpoints: {
     deleteDataConnectorsByDataConnectorId: {
-      invalidatesTags: (_result, error) => (error ? [] : ["DataConnectors"]),
+      invalidatesTags: (_result, error) =>
+        error ? [] : ["DataConnectors", "DataConnectorsProjectLinks"],
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           if (_arg.dataConnectorId) {
