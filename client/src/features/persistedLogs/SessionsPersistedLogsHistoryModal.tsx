@@ -296,6 +296,7 @@ function LogsDisplay({ isOpen, sessionRun }: LogsDisplayProps) {
       ? {
           launcherId: sessionRun.launcher_id,
           params: {
+            run_id: sessionRun.id,
             submission_id: sessionRun.submission_id,
           },
         }
@@ -346,6 +347,7 @@ function LogsActionsInner({ sessionRun }: LogsActionsInnerProps) {
   const query = useGetPersistedLogsForModalQuery({
     launcherId: sessionRun.launcher_id,
     params: {
+      run_id: sessionRun.id,
       submission_id: sessionRun.submission_id,
     },
   });
