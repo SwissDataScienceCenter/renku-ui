@@ -447,7 +447,7 @@ describe("Data connector page", () => {
 
     // Delete the data connector
     cy.getDataCy("data-connector-delete-settings-button").click();
-    cy.getDataCy("data-connector-edit-modal").should("be.visible");
+    cy.getDataCy("data-connector-delete-modal").should("be.visible");
     cy.getDataCy("delete-data-connector-modal-button").should("not.be.enabled");
 
     cy.getDataCy("delete-confirmation-input").type(dataConnectorSlug);

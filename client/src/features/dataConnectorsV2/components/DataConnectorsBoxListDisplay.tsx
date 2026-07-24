@@ -299,6 +299,7 @@ export default function DataConnectorBoxListDisplay({
             dataConnector={dataConnector}
             dataConnectorLink={dataConnectorLink}
             toggleEdit={toggleEdit}
+            toggleView={showOffCanvas ? toggleOffCanvas : undefined}
           />
         </div>
       </ListGroupItem>
