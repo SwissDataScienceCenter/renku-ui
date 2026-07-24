@@ -90,7 +90,7 @@ function heartbeatRequestSessionStatusV2({
       }
     })
     .catch((error) => {
-      logger.warn("There was a problem while trying to fetch sessions");
+      logger.warn("There was a problem while trying to fetch sessions.");
       if (error.message) logger.warn(error.message);
     });
 }
