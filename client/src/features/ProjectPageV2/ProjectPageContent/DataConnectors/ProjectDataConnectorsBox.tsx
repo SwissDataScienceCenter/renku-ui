@@ -51,7 +51,6 @@ import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
-import { PROJECT_STORAGE_DEFAULT_MOUNT_PATH } from "./projectDataConnectors.constants";
 
 interface DataConnectorListDisplayProps {
   project: Project;
@@ -219,12 +218,7 @@ function ProjectStorageLinkDisplay({
         </div>
         <div>Size: {projectStorage.size} GB</div>
         <div>
-          Mount point:{" "}
-          <code>
-            {projectStorage.mount_path && projectStorage.mount_path !== ""
-              ? projectStorage.mount_path
-              : PROJECT_STORAGE_DEFAULT_MOUNT_PATH}
-          </code>
+          Mount point: <code>{projectStorage.mount_path}</code>
         </div>
       </div>
     </ListGroupItem>

@@ -320,8 +320,8 @@ export function ProjectConnectDataConnectorModeSwitch({
 }
 
 interface ProjectStorageForm {
-  projectStorage: number;
-  mountPoint: string;
+  size: number;
+  mountPath: string;
 }
 
 function ProjectStorageDataConnectorBodyAndFooter({
@@ -337,8 +337,8 @@ function ProjectStorageDataConnectorBodyAndFooter({
   } = useForm<ProjectStorageForm>({
     mode: "onChange",
     defaultValues: {
-      projectStorage: PROJECT_STORAGE_DEFAULT_GB,
-      mountPoint: "",
+      size: PROJECT_STORAGE_DEFAULT_GB,
+      mountPath: PROJECT_STORAGE_DEFAULT_MOUNT_PATH,
     },
   });
 
@@ -368,8 +368,8 @@ function ProjectStorageDataConnectorBodyAndFooter({
     const result = await postDataConnectorsStorageMutation({
       projectStoragePost: {
         namespace: `${project.namespace}/${project.slug}`,
-        size: values.projectStorage,
-        mount_path: values.mountPoint,
+        size: values.size,
+        mount_path: values.mountPath,
       },
     });
 
@@ -416,17 +416,17 @@ function ProjectStorageDataConnectorBodyAndFooter({
                 avoid data loss on session shutdown.
               </InfoAlert>
               <div className="mb-3">
-                <Label className="form-label" for="projectStorage">
+                <Label className="form-label" for="size">
                   Storage size
                 </Label>
                 <Controller
                   control={control}
-                  name="projectStorage"
+                  name="size"
                   render={({ field, fieldState: { error } }) => (
                     <>
                       <InputGroup className={cx(error && "is-invalid")}>
                         <Input
-                          id="projectStorage"
+                          id="size"
                           className={cx(error && "is-invalid")}
                           type="number"
                           min={PROJECT_STORAGE_MIN_GB}
@@ -478,33 +478,32 @@ function ProjectStorageDataConnectorBodyAndFooter({
                 />
               </div>
               <div className="mb-3">
-                <Label className="form-label" for="mountPoint">
+                <Label className="form-label" for="mountPath">
                   Mount point
                 </Label>
                 <Controller
-                  name="mountPoint"
+                  name="mountPath"
                   control={control}
                   render={({ field }) => (
                     <input
-                      id="mountPoint"
+                      id="mountPath"
                       type="text"
                       {...field}
                       className={cx(
                         "form-control",
-                        errors.mountPoint && "is-invalid",
+                        errors.mountPath && "is-invalid",
                       )}
                       data-cy="project-storage-form-mount-point-input"
                     />
                   )}
-                  rules={{ required: false }}
+                  rules={{ required: true }}
                 />
                 <div className="invalid-feedback">
                   Please provide a mount point.
                 </div>
                 <div className={cx("form-text", "text-muted")}>
                   This is the name of the folder in the working directory where
-                  you will find your project storage in sessions. By default, it
-                  is set to <code>{PROJECT_STORAGE_DEFAULT_MOUNT_PATH}</code>.
+                  you will find your project storage in sessions.
                 </div>
               </div>
 

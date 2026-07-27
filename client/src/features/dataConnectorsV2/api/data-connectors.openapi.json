@@ -985,7 +985,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectStorage"
+                  "$ref": "#/components/schemas/ProjectStorageList"
                 }
               }
             }
@@ -1416,7 +1416,7 @@
             "format": "int32"
           },
           "mount_path": {
-            "type": "str"
+            "type": "string"
           },
           "creation_date": {
             "$ref": "#/components/schemas/CreationDate"
@@ -2093,7 +2093,7 @@
       },
       "DepositProvider": {
         "type": "string",
-        "enum": ["zenodo"]
+        "enum": ["zenodo", "envidat"]
       },
       "DepositStatus": {
         "type": "string",

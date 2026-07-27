@@ -471,7 +471,7 @@ export type GetDataConnectorsByDataConnectorIdDepositsApiArg = {
   params?: PaginationRequest;
 };
 export type GetProjectsByProjectIdStorageApiResponse =
-  /** status 200 The list of project storages (currently either one or empty). */ ProjectStorage[];
+  /** status 200 The list of project storages (currently either one or empty). */ ProjectStorageList;
 export type GetProjectsByProjectIdStorageApiArg = {
   projectId: Ulid;
 };
@@ -710,7 +710,7 @@ export type ProjectStorage = {
   id: Ulid;
   project_id: Ulid;
   size: number;
-  mount_path: any;
+  mount_path: string;
   creation_date: CreationDate;
   created_by: UserId;
   updated_at: CreationDate;
@@ -808,7 +808,7 @@ export type DataConnectorSecretPatch = {
   value: SecretValueNullable;
 };
 export type DataConnectorSecretPatchList = DataConnectorSecretPatch[];
-export type DepositProvider = "zenodo";
+export type DepositProvider = "zenodo" | "envidat";
 export type DepositSourcePath = string;
 export type DepositPost = {
   name: DataConnectorName;
@@ -831,6 +831,7 @@ export type Deposit = DepositPost & {
   etag: ETag;
 };
 export type DepositList = Deposit[];
+export type ProjectStorageList = ProjectStorage[];
 export type InaccessibleDataConnectorLinks = {
   /** The number of data links the user does not have access to */
   count?: number;
