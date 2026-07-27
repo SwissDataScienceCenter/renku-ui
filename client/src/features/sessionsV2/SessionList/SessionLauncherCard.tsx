@@ -19,11 +19,16 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
-import { Link45deg, Pencil, PlayCircle, Trash } from "react-bootstrap-icons";
+import {
+  Braces,
+  Link45deg,
+  Pencil,
+  PlayCircle,
+  Trash,
+} from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
-import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import JobCard from "~/features/sessionsV2/SessionList/JobCard";
 import { Loader } from "../../../components/Loader";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -63,6 +68,7 @@ interface SessionLauncherCardProps {
   toggleShareLink?: () => void;
   toggleSessionView?: () => void;
   openSessionViewWithJob?: (submissionId: string) => void;
+  toggleEnvVariables?: () => void;
 }
 export default function SessionLauncherCard({
   launcher,
@@ -75,6 +81,7 @@ export default function SessionLauncherCard({
   toggleSessionView,
   toggleShareLink,
   openSessionViewWithJob,
+  toggleEnvVariables,
 }: SessionLauncherCardProps) {
   const {
     builds,
@@ -88,7 +95,6 @@ export default function SessionLauncherCard({
     containerImage,
   } = useLauncherEnvironmentReadiness({ launcher });
 
-  const environment = launcher?.environment;
   const hasSession = !!sessions?.length;
   const sessionType = sessions?.at(0)?.session_type ?? "interactive";
   // Orphan sessions have no launcher; get category from the session itself
@@ -120,6 +126,7 @@ export default function SessionLauncherCard({
         toggleUpdate={toggleUpdate}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleShareLink={toggleShareLink}
+        toggleEnvVariables={toggleEnvVariables}
       />
     );
 
@@ -131,15 +138,6 @@ export default function SessionLauncherCard({
     "small",
     "text-muted",
   ];
-
-  const {
-    data: imageRepositorySource,
-    isLoading: isLoadingImageRepositorySource,
-  } = useGetRepositoryQuery(
-    environment?.environment_image_source === "build"
-      ? { url: environment.build_parameters?.repository }
-      : skipToken,
-  );
 
   const { data: resourcePools, isLoading: isLoadingResourcePools } =
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
@@ -246,7 +244,6 @@ export default function SessionLauncherCard({
                     {isCodeEnvironment &&
                     (isLoadingBuilds ||
                       isLoadingContainerImage ||
-                      isLoadingImageRepositorySource ||
                       isLoadingResourcePools) ? (
                       <SessionBadge
                         className={cx("border-warning", "bg-warning-subtle")}
@@ -262,9 +259,8 @@ export default function SessionLauncherCard({
                       </SessionBadge>
                     ) : isCodeEnvironment && lastBuild ? (
                       <BuildStatusBadge
-                        buildStatus={lastBuild?.status}
+                        build={lastBuild}
                         imageCheck={containerImage}
-                        imageSourceCheck={imageRepositorySource}
                         resourcePool={resourcePool}
                       />
                     ) : (
@@ -377,6 +373,7 @@ interface LauncherDropdownActionsProps {
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
   toggleShareLink?: () => void;
+  toggleEnvVariables?: () => void;
   project: Project;
 }
 function LauncherDropdownActions({
@@ -385,6 +382,7 @@ function LauncherDropdownActions({
   toggleUpdate,
   toggleUpdateEnvironment,
   toggleShareLink,
+  toggleEnvVariables,
 }: LauncherDropdownActionsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
@@ -414,6 +412,15 @@ function LauncherDropdownActions({
               >
                 <Pencil className={cx("bi", "me-1")} />
                 Edit launcher
+              </DropdownItem>
+            )}
+            {toggleEnvVariables && (
+              <DropdownItem
+                data-cy="session-launcher-menu-edit-env"
+                onClick={toggleEnvVariables}
+              >
+                <Braces className={cx("bi", "me-1")} />
+                Edit environment variables
               </DropdownItem>
             )}
             {toggleShareLink && launcherCategory === "session" && (

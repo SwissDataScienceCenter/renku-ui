@@ -314,7 +314,7 @@ function PauseSessionModalContent({
         <Button
           color="primary"
           data-cy="pause-session-modal-button"
-          disabled={isStopping || session?.status.state === "starting"}
+          disabled={isStopping}
           type="submit"
           onClick={onHibernateSession}
         >

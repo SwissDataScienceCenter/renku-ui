@@ -543,7 +543,7 @@ function CustomBuildEnvironmentValues({
               Last build status:
             </label>
             <span>
-              <BuildStatusBadge buildStatus={lastBuild.status} />
+              <BuildStatusBadge build={lastBuild} />
             </span>
           </div>
         )}
