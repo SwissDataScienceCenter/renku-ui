@@ -28,7 +28,9 @@ const DATA_SERVICES_RELEASE = "main";
 
 async function main() {
   argv.forEach((arg) => {
-    if (arg.trim() === "computeResources") {
+    if (arg.trim() === "apps") {
+      updateAppsApi();
+    } else if (arg.trim() === "computeResources") {
       updateComputeResourcesApi();
     } else if (arg.trim() === "connectedServices") {
       updateConnectedServicesApi();
@@ -55,6 +57,17 @@ async function main() {
     } else if (arg.trim() === "users") {
       updateUsersApi();
     }
+  });
+}
+
+// NOTE: renku_apps is still on a feature branch in renku-data-services, so this
+// will 404 against DATA_SERVICES_RELEASE ("main") until that branch is merged.
+// It is also deliberately left out of the aggregate "update-api" script for the
+// same reason — add it there once the backend lands on main.
+async function updateAppsApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/renku_apps/api.spec.yaml",
+    destFile: "src/features/sessionsV2/api/apps.openapi.json",
   });
 }
 

@@ -304,14 +304,6 @@ export default function AppLauncherActions({
       return publishButton;
     }
 
-    // Stopped: the UI no longer offers start/resume for a hibernated app (that
-    // only arrives via platform-side hibernation now), so it has no primary
-    // action and is managed through the menu only (Stop app). Return null and
-    // let the caller render a menu-only control.
-    if (app.status === "hibernated") {
-      return null;
-    }
-
     // Still starting (pending): nothing to open yet. Let the status indicator
     // (and the kebab menu) carry it rather than the "Checking launcher" spinner.
     if (!isLive) {
@@ -369,8 +361,9 @@ export default function AppLauncherActions({
       {menuItems}
     </ButtonWithMenuV2>
   ) : (
-    // No primary action (e.g. an app the platform hibernated): show a menu-only
-    // kebab so Stop app stays reachable without a primary button.
+    // No primary action (an app that is still starting, or one whose start/stop
+    // is in flight): show a menu-only kebab so Stop app stays reachable without
+    // a primary button.
     <div onClick={(event) => event.stopPropagation()}>
       <SingleButtonWithMenu color="primary" size="sm">
         {menuItems}

@@ -131,6 +131,7 @@ const jsRules = {
         "katex",
         "kernelspec",
         "Keycloak",
+        "Knative",
         "kubernetes",
         "Lausanne",
         "linkify",

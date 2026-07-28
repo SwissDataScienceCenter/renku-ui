@@ -23,16 +23,6 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({ url: `/apps/${queryArg.appName}` }),
     }),
-    patchAppsByAppName: build.mutation<
-      PatchAppsByAppNameApiResponse,
-      PatchAppsByAppNameApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/apps/${queryArg.appName}`,
-        method: "PATCH",
-        body: queryArg.appPatchRequest,
-      }),
-    }),
     deleteAppsByAppName: build.mutation<
       DeleteAppsByAppNameApiResponse,
       DeleteAppsByAppNameApiArg
@@ -63,13 +53,6 @@ export type GetAppsByAppNameApiArg = {
   /** The name of the app to retrieve */
   appName: AppName;
 };
-export type PatchAppsByAppNameApiResponse =
-  /** status 200 The updated app */ AppResponse;
-export type PatchAppsByAppNameApiArg = {
-  /** The name of the app to update */
-  appName: AppName;
-  appPatchRequest: AppPatchRequest;
-};
 export type DeleteAppsByAppNameApiResponse = unknown;
 export type DeleteAppsByAppNameApiArg = {
   /** The name of the app to delete */
@@ -77,7 +60,7 @@ export type DeleteAppsByAppNameApiArg = {
 };
 export type AppName = string;
 export type Ulid = string;
-export type AppStatus = "pending" | "ready" | "failed" | "hibernated";
+export type AppStatus = "pending" | "ready" | "failed";
 export type AppResponse = {
   name: AppName;
   launcher_id: Ulid;
@@ -100,14 +83,9 @@ export type ErrorResponse = {
 export type AppPostRequest = {
   launcher_id: Ulid;
 };
-export type AppState = "running" | "hibernated";
-export type AppPatchRequest = {
-  state?: AppState;
-};
 export const {
   useGetAppsQuery,
   usePostAppsMutation,
   useGetAppsByAppNameQuery,
-  usePatchAppsByAppNameMutation,
   useDeleteAppsByAppNameMutation,
 } = injectedRtkApi;

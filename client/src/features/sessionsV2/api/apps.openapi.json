@@ -2,10 +2,14 @@
   "openapi": "3.0.2",
   "info": {
     "title": "Renku Data Services API",
-    "description": "A service that allows users to manage apps on Renku.",
+    "description": "A service that allows users to manage apps on Renku.\n",
     "version": "v1"
   },
-  "servers": [{ "url": "/api/data" }],
+  "servers": [
+    {
+      "url": "/api/data"
+    }
+  ],
   "paths": {
     "/apps": {
       "get": {
@@ -15,7 +19,9 @@
             "in": "query",
             "name": "project_id",
             "required": false,
-            "schema": { "$ref": "#/components/schemas/Ulid" },
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            },
             "description": "If set, only return apps belonging to this project"
           }
         ],
@@ -24,11 +30,15 @@
             "description": "The list of apps the caller can see",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AppListResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AppListResponse"
+                }
               }
             }
           },
-          "default": { "$ref": "#/components/responses/Error" }
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
         },
         "tags": ["apps"]
       },
@@ -38,7 +48,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/AppPostRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/AppPostRequest"
+              }
             }
           }
         },
@@ -47,11 +59,15 @@
             "description": "The app was created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AppResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AppResponse"
+                }
               }
             }
           },
-          "default": { "$ref": "#/components/responses/Error" }
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
         },
         "tags": ["apps"]
       }
@@ -64,7 +80,9 @@
             "in": "path",
             "name": "app_name",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/AppName" },
+            "schema": {
+              "$ref": "#/components/schemas/AppName"
+            },
             "description": "The name of the app to retrieve"
           }
         ],
@@ -73,43 +91,15 @@
             "description": "The app for the given name",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AppResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AppResponse"
+                }
               }
             }
           },
-          "default": { "$ref": "#/components/responses/Error" }
-        },
-        "tags": ["apps"]
-      },
-      "patch": {
-        "summary": "Update an app",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "app_name",
-            "required": true,
-            "schema": { "$ref": "#/components/schemas/AppName" },
-            "description": "The name of the app to update"
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/AppPatchRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The updated app",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AppResponse" }
-              }
-            }
-          },
-          "default": { "$ref": "#/components/responses/Error" }
         },
         "tags": ["apps"]
       },
@@ -120,7 +110,9 @@
             "in": "path",
             "name": "app_name",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/AppName" },
+            "schema": {
+              "$ref": "#/components/schemas/AppName"
+            },
             "description": "The name of the app to delete"
           }
         ],
@@ -128,7 +120,9 @@
           "204": {
             "description": "The app was successfully deleted or did not exist"
           },
-          "default": { "$ref": "#/components/responses/Error" }
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
         },
         "tags": ["apps"]
       }
@@ -145,12 +139,7 @@
       },
       "AppStatus": {
         "type": "string",
-        "enum": ["pending", "ready", "failed", "hibernated"]
-      },
-      "AppState": {
-        "description": "The desired state of an app. `hibernated` scales the deployment to zero.",
-        "type": "string",
-        "enum": ["running", "hibernated"]
+        "enum": ["pending", "ready", "failed"]
       },
       "AppName": {
         "type": "string",
@@ -162,36 +151,48 @@
       "AppResponse": {
         "type": "object",
         "properties": {
-          "name": { "$ref": "#/components/schemas/AppName" },
-          "launcher_id": { "$ref": "#/components/schemas/Ulid" },
-          "status": { "$ref": "#/components/schemas/AppStatus" },
-          "url": { "type": "string", "nullable": true },
-          "project_id": { "$ref": "#/components/schemas/Ulid" },
+          "name": {
+            "$ref": "#/components/schemas/AppName"
+          },
+          "launcher_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AppStatus"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
           "started": {
             "type": "string",
             "format": "date-time",
             "nullable": true
           },
-          "image": { "type": "string", "nullable": true }
+          "image": {
+            "type": "string",
+            "nullable": true
+          }
         },
         "required": ["name", "launcher_id", "status", "project_id"]
       },
       "AppListResponse": {
         "type": "array",
-        "items": { "$ref": "#/components/schemas/AppResponse" }
+        "items": {
+          "$ref": "#/components/schemas/AppResponse"
+        }
       },
       "AppPostRequest": {
         "type": "object",
         "properties": {
-          "launcher_id": { "$ref": "#/components/schemas/Ulid" }
+          "launcher_id": {
+            "$ref": "#/components/schemas/Ulid"
+          }
         },
         "required": ["launcher_id"]
-      },
-      "AppPatchRequest": {
-        "type": "object",
-        "properties": {
-          "state": { "$ref": "#/components/schemas/AppState" }
-        }
       },
       "ErrorResponse": {
         "type": "object",
@@ -230,7 +231,9 @@
         "description": "The schema for all 4xx and 5xx responses",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
           }
         }
       }

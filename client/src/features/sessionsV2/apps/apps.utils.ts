@@ -44,7 +44,7 @@ export function findAppForLauncher(
  * Whether the project already has an app on some launcher other than the given
  * one. The backend enforces at most one app deployment per project (matched by
  * the project-id label, independent of the app's status), so any existing app on
- * another launcher — including a failed or stopped one — blocks publishing here.
+ * another launcher — including a failed one — blocks publishing here.
  */
 export function hasAppOnAnotherLauncher(
   apps: AppResponse[] | undefined,
@@ -56,12 +56,15 @@ export function hasAppOnAnotherLauncher(
 /**
  * The state shown by the app status indicator next to a launcher's primary
  * action. This is the user-facing collapse of the backend AppStatus (`pending |
- * ready | failed | hibernated`) plus the "no deployment yet" case:
- *   - not-running — no app, or one the platform has hibernated (the UI offers
- *     no resume, so from the user's side it simply isn't running)
+ * ready | failed`) plus the "no deployment yet" case:
+ *   - not-running — no deployment exists for this launcher
  *   - starting    — a deployment is being created or is still pending
  *   - live        — the app is up and reachable
  *   - error       — the deployment failed
+ *
+ * Note that "live" only means a deployment exists and Knative reports it Ready.
+ * Apps run with min-scale 0, and a scaled-to-zero service still reports Ready,
+ * so a live app may still need a cold start before it answers a request.
  */
 export type AppIndicatorState = "not-running" | "starting" | "live" | "error";
 
@@ -81,7 +84,7 @@ export function getAppIndicatorState(
   if (isStarting || app?.status === "pending") {
     return "starting";
   }
-  if (app == null || app.status === "hibernated") {
+  if (app == null) {
     return "not-running";
   }
   if (app.status === "ready") {
@@ -105,9 +108,9 @@ export const APP_STATUS_POLLING_INTERVAL_MS = 5_000;
 
 /**
  * The state an in-flight app action is waiting for the deployment to reach.
- * Either the app should settle into one of a set of statuses (publish / resume →
- * ready; stop → hibernated), or the app should disappear from the project
- * (delete). Server-side these transitions are asynchronous, so a single
+ * Either the app should settle into one of a set of statuses (start → ready, or
+ * failed), or the app should disappear from the project (stop / delete).
+ * Server-side these transitions are asynchronous, so a single
  * cache-invalidation refetch cannot capture the settled state; the caller polls
  * until the target is reached (see useWaitForAppStatus).
  */

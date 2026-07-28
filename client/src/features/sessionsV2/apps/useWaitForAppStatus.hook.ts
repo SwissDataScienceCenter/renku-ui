@@ -39,13 +39,13 @@ interface UseWaitForAppStatusArgs {
 
 /**
  * Poll the /apps query while an app action is in flight, until the deployment
- * reaches the action's target (ready / hibernated / gone), then stop.
+ * reaches the action's target (ready / failed / gone), then stop.
  *
  * This is the apps analog of useWaitForSessionStatus. The transitions are
  * server-driven and asynchronous — Knative scales up and down after the
  * mutation returns — so the single cache-invalidation refetch that a mutation
  * triggers is not enough on its own: it captures a snapshot that is often still
- * mid-transition (a stopped app briefly still reads "ready"; a deleted app is
+ * mid-transition (a starting app is briefly still "pending"; a stopped app is
  * briefly still present). The caller flips `skip` off when it fires a mutation
  * and reads `isWaiting` to know when the transition has settled.
  *

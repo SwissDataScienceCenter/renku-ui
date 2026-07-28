@@ -41,10 +41,6 @@ const withTagHandling = appsGeneratedApi.enhanceEndpoints({
     postApps: {
       invalidatesTags: ["App"],
     },
-    patchAppsByAppName: {
-      invalidatesTags: (result) =>
-        result ? [{ id: result.name, type: "App" }] : ["App"],
-    },
     deleteAppsByAppName: {
       invalidatesTags: ["App"],
     },
@@ -66,7 +62,6 @@ export const {
   useGetAppsQuery,
   useGetAppsByAppNameQuery,
   usePostAppsMutation,
-  usePatchAppsByAppNameMutation,
   useDeleteAppsByAppNameMutation,
   useInvalidateAppsMutation,
 } = appsApi;

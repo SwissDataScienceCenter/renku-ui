@@ -38,6 +38,7 @@
     "generate-api:sessionsV2": "rtk-query-codegen-openapi src/features/sessionsV2/api/sessionsV2.api-config.ts",
     "generate-api:users": "rtk-query-codegen-openapi src/features/usersV2/api/users.api-config.ts",
     "update-api": "node scripts/update_api_spec.js computeResources connectedServices dataConnectors namespaceV2 notifications platform projectCloudStorage projectV2 repositories searchV2 sessionLaunchersV2 sessionsV2 users",
+    "update-api:apps": "node scripts/update_api_spec.js apps",
     "update-api:computeResources": "node scripts/update_api_spec.js computeResources",
     "update-api:connectedServices": "node scripts/update_api_spec.js connectedServices",
     "update-api:dataConnectors": "node scripts/update_api_spec.js dataConnectors",
