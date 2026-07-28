@@ -260,7 +260,14 @@ export default function AppLauncherActions({
   const hasMenuItems = menuItems.length > 0;
 
   const defaultAction = useMemo(() => {
-    if (isLoadingApps || isLoadingContainerImage || isBusy) {
+    // A start/stop is in flight: don't show the "Checking launcher" spinner.
+    // The AppStatusIndicator already reflects the transition, and returning null
+    // lets the kebab menu (Stop app) carry the action while it settles.
+    if (isBusy) {
+      return null;
+    }
+
+    if (isLoadingApps || isLoadingContainerImage) {
       return <CheckingLauncherButton />;
     }
 
@@ -305,10 +312,10 @@ export default function AppLauncherActions({
       return null;
     }
 
-    // Still starting (pending): nothing to open yet, show the in-progress
-    // indicator until the deployment settles.
+    // Still starting (pending): nothing to open yet. Let the status indicator
+    // (and the kebab menu) carry it rather than the "Checking launcher" spinner.
     if (!isLive) {
-      return <CheckingLauncherButton />;
+      return null;
     }
 
     // Live: opening the app is the only primary action. Stop app / Copy URL
