@@ -8,7 +8,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 // import { sentryReactRouter } from "@sentry/react-router";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ isSsrBuild }) => ({
+export default defineConfig(({ command, isSsrBuild }) => ({
   build: {
     outDir: "build",
     sourcemap: true,
@@ -17,7 +17,12 @@ export default defineConfig(({ isSsrBuild }) => ({
   server: {
     allowedHosts: [".dev.renku.ch"],
   },
-  plugins: [reactRouter(), eslintPlugin(), tsconfigPaths(), envOnlyMacros()],
+  plugins: [
+    reactRouter(),
+    ...(command === "serve" ? [eslintPlugin()] : []),
+    tsconfigPaths(),
+    envOnlyMacros(),
+  ],
 
   // TODO: configure Sentry integration for source maps
   // TODO: Reference: https://docs.sentry.io/platforms/javascript/guides/react-router/manual-setup/#step-3-add-readable-stack-traces-with-source-maps-optional

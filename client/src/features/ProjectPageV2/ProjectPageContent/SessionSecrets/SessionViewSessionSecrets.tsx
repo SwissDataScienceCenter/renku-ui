@@ -21,7 +21,7 @@ import cx from "classnames";
 import { useMemo } from "react";
 import { ShieldLock } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
-import { Badge, ListGroup } from "reactstrap";
+import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { useProject } from "~/routes/projects/root";
@@ -84,35 +84,37 @@ export default function SessionViewSessionSecrets() {
   );
 
   return (
-    <div>
-      <div className={cx("align-items-center", "d-flex", "mb-2")}>
+    <Card>
+      <CardHeader className={cx("align-items-center", "d-flex")}>
         <h3 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-          <ShieldLock className={cx("me-1", "bi")} />
+          <ShieldLock className="me-1" />
           Session Secrets
         </h3>
         {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
-      </div>
+      </CardHeader>
 
-      {!isUserLoggedIn &&
-        sessionSecretSlots &&
-        sessionSecretSlots.length > 0 && (
-          <InfoAlert className="mb-2" dismissible={false} timeout={0}>
-            <p className="mb-0">
-              As an anonymous user, you cannot use session secrets.
-            </p>
-          </InfoAlert>
-        )}
+      <CardBody>
+        {!isUserLoggedIn &&
+          sessionSecretSlots &&
+          sessionSecretSlots.length > 0 && (
+            <InfoAlert className="mb-2" dismissible={false} timeout={0}>
+              <p className="mb-0">
+                As an anonymous user, you cannot use session secrets.
+              </p>
+            </InfoAlert>
+          )}
 
-      <p className="mb-2">
-        To modify session secrets, go to{" "}
-        <Link to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}>
-          the project&apos;s settings
-        </Link>
-        .
-      </p>
+        <p className="mb-2">
+          To modify session secrets, go to{" "}
+          <Link to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}>
+            the project&apos;s settings
+          </Link>
+          .
+        </p>
 
-      {content}
-    </div>
+        {content}
+      </CardBody>
+    </Card>
   );
 }
 

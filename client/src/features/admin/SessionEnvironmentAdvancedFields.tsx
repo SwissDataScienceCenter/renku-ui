@@ -70,6 +70,7 @@ export default function SessionEnvironmentAdvancedFields({
             <AdvancedSettingsFields<SessionEnvironmentForm>
               control={control}
               errors={errors}
+              launcherCategory="session"
             />
           </CollapseBody>
         </Collapse>

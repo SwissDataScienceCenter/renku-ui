@@ -23,6 +23,7 @@ import {
   CircleFill,
   FileCode,
   Pencil,
+  PersonGear,
   Plugin,
   Send,
   Trash,
@@ -32,6 +33,9 @@ import { Controller, useForm } from "react-hook-form";
 import { Link, useLocation } from "react-router";
 import {
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   Col,
   DropdownItem,
   Form,
@@ -51,6 +55,8 @@ import {
 import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import ExternalLink from "~/components/ExternalLink";
+import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
+import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
   useGetOauth2ProvidersQuery,
@@ -602,125 +608,118 @@ function RepositoryView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="code-repository-details">
-        <div className="mb-3">
-          <button
-            aria-label="Close"
-            className="btn-close"
-            data-bs-dismiss="offcanvas"
-            onClick={toggleDetails}
-          ></button>
-        </div>
+        <OffcanvasTopButtons
+          entityType="code-repository"
+          toggleView={toggleDetails}
+        />
 
         <div>
-          <div className="mb-4">
-            <div>
-              <div className={cx("float-end", "mt-1", "ms-1")}>
-                <CodeRepositoryActions project={project} url={repositoryUrl} />
-              </div>
-              <div className={cx("d-flex", "flex-column")}>
-                <span className={cx("small", "text-muted", "me-3")}>
-                  Code repository
-                </span>
-                <h2
-                  className={cx("m-0", "text-break")}
-                  data-cy="code-repository-title"
-                >
-                  {title}
-                </h2>
-              </div>
-            </div>
+          <div className="mb-3">
+            <OffcanvasHeaderWithType entityType="code-repository" title={title}>
+              <CodeRepositoryActions project={project} url={repositoryUrl} />
+            </OffcanvasHeaderWithType>
           </div>
 
           {isLoading ? (
             <Loader />
           ) : (
-            <div>
-              <div className="mb-4">
-                <h3>Repository</h3>
-                <p>
-                  URL: <ExternalLink href={webUrl}>{webUrl}</ExternalLink>
-                </p>
-                {data?.metadata?.git_url && (
-                  <div>
-                    <span>Git command: </span>
-                    <CommandCopy
-                      command={`git clone ${data.metadata.git_url}`}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <h3>Permissions</h3>
-                {error ? (
-                  <RtkOrDataServicesError error={error} dismissible={false} />
-                ) : (
-                  <>
-                    <div
-                      className={cx("d-flex", "flex-column", "gap-2", "mb-3")}
-                    >
-                      <div>
-                        <RepositoryPermissionsBadge
-                          hasWriteAccess={projectPermissions?.write}
-                          repositoryUrl={repositoryUrl}
-                        />
-                      </div>
-                      <RepositoryCallToActionAlert
-                        hasWriteAccess={projectPermissions?.write}
-                        repositoryUrl={repositoryUrl}
-                        project={project}
+            <div className={cx("d-flex", "flex-column", "gap-3")}>
+              <Card>
+                <CardHeader tag="h3">
+                  <FileCode className="me-1" />
+                  Repository
+                </CardHeader>
+                <CardBody>
+                  <p>
+                    URL: <ExternalLink href={webUrl}>{webUrl}</ExternalLink>
+                  </p>
+                  {data?.metadata?.git_url && (
+                    <div>
+                      <span>Git command: </span>
+                      <CommandCopy
+                        command={`git clone ${data.metadata.git_url}`}
                       />
                     </div>
+                  )}
+                </CardBody>
+              </Card>
 
-                    <div
-                      className="mb-3"
-                      data-cy="code-repository-pull-permission"
-                    >
-                      <span>
-                        Pull:{" "}
-                        <YesNoBadge
-                          value={data?.metadata?.pull_permission ?? false}
+              <Card>
+                <CardHeader tag="h3">
+                  <PersonGear className="me-1" />
+                  Permissions
+                </CardHeader>
+                <CardBody>
+                  {error ? (
+                    <RtkOrDataServicesError error={error} dismissible={false} />
+                  ) : (
+                    <>
+                      <div
+                        className={cx("d-flex", "flex-column", "gap-2", "mb-3")}
+                      >
+                        <div>
+                          <RepositoryPermissionsBadge
+                            hasWriteAccess={projectPermissions?.write}
+                            repositoryUrl={repositoryUrl}
+                          />
+                        </div>
+                        <RepositoryCallToActionAlert
+                          hasWriteAccess={projectPermissions?.write}
+                          repositoryUrl={repositoryUrl}
+                          project={project}
                         />
-                      </span>
-                    </div>
+                      </div>
 
-                    <div
-                      className="mb-3"
-                      data-cy="code-repository-push-permission"
-                    >
-                      <span>
-                        Push:{" "}
-                        <YesNoBadge
-                          value={data?.metadata?.push_permission ?? false}
-                        />
-                      </span>
-                    </div>
-
-                    <p>
-                      Integration:{" "}
-                      {!data?.provider?.id ? (
-                        "None"
-                      ) : (
+                      <div
+                        className="mb-3"
+                        data-cy="code-repository-pull-permission"
+                      >
                         <span>
-                          {data?.connection?.status === "connected"
-                            ? "connected"
-                            : "not connected"}{" "}
-                          (
-                          <Link
-                            to={{
-                              pathname: ABSOLUTE_ROUTES.v2.integrations.root,
-                              search,
-                            }}
-                          >
-                            check details
-                          </Link>
-                          )
+                          Pull:{" "}
+                          <YesNoBadge
+                            value={data?.metadata?.pull_permission ?? false}
+                          />
                         </span>
-                      )}
-                    </p>
-                  </>
-                )}
-              </div>
+                      </div>
+
+                      <div
+                        className="mb-3"
+                        data-cy="code-repository-push-permission"
+                      >
+                        <span>
+                          Push:{" "}
+                          <YesNoBadge
+                            value={data?.metadata?.push_permission ?? false}
+                          />
+                        </span>
+                      </div>
+
+                      <p className="mb-0">
+                        Integration:{" "}
+                        {!data?.provider?.id ? (
+                          "None"
+                        ) : (
+                          <span>
+                            {data?.connection?.status === "connected"
+                              ? "connected"
+                              : "not connected"}{" "}
+                            (
+                            <Link
+                              to={{
+                                pathname: ABSOLUTE_ROUTES.v2.integrations.root,
+                                search,
+                              }}
+                            >
+                              check details
+                            </Link>
+                            )
+                          </span>
+                        )}
+                      </p>
+                    </>
+                  )}
+                </CardBody>
+              </Card>
             </div>
           )}
         </div>

@@ -16,18 +16,7 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { ReactNode } from "react";
-import { Route, Routes } from "react-router";
-
-import LazyAdminPage from "./features/admin/LazyAdminPage";
-import LegacyDatasetAddToProject from "./features/legacy/LegacyDatasetAddToProject";
-import LegacyDatasets from "./features/legacy/LegacyDatasets";
-import LegacyRoot from "./features/legacy/LegacyRoot";
-import LegacyShowDataset from "./features/legacy/LegacyShowDataset";
-import LazyRootV2 from "./features/rootV2/LazyRootV2";
-import { useGetUserQueryState } from "./features/usersV2/api/users.api";
-import { RELATIVE_ROUTES } from "./routing/routes.constants";
+import RootV2 from "./features/rootV2/RootV2";
 
 /**
  * "Catch all" component
@@ -35,38 +24,5 @@ import { RELATIVE_ROUTES } from "./routing/routes.constants";
  * Renders pages with client-side routing.
  */
 export default function CatchallApp() {
-  const { data: user } = useGetUserQueryState();
-  return (
-    <Routes>
-      <Route
-        path="/datasets/:identifier/add"
-        element={<LegacyDatasetAddToProject />}
-      />
-      <Route path="/datasets/:identifier" element={<LegacyShowDataset />} />
-      <Route path="/datasets" element={<LegacyDatasets />} />
-      <Route path={RELATIVE_ROUTES.v1.splat} element={<LegacyRoot />} />
-      {user?.isLoggedIn && user.is_admin && (
-        <Route
-          path="/admin"
-          element={
-            <ContainerWrap>
-              <LazyAdminPage />
-            </ContainerWrap>
-          }
-        />
-      )}
-      <Route path="*" element={<LazyRootV2 />} />
-    </Routes>
-  );
-}
-
-interface ContainerWrapProps {
-  children?: ReactNode;
-  fullSize?: boolean;
-}
-function ContainerWrap({ children, fullSize = false }: ContainerWrapProps) {
-  const classContainer = fullSize
-    ? "w-100"
-    : cx("container-xxl", "py-4", "mt-2", "renku-container");
-  return <div className={classContainer}>{children}</div>;
+  return <RootV2 />;
 }

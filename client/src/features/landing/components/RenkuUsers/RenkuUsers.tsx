@@ -21,10 +21,10 @@ import { ReactNode } from "react";
 import { Card, Col, Row } from "reactstrap";
 
 import {
+  NEW_DOCS_RENKU_EVENTS,
   NEW_DOCS_RESEARCH,
   NEW_DOCS_TEACHING,
 } from "~/utils/constants/NewDocs";
-import { Links } from "../../../../utils/constants/Docs.js";
 import educatorIcon from "../../assets/educatorIcon.svg";
 import organizerIcon from "../../assets/organizerIcon.svg";
 import researcherIcon from "../../assets/researcherIcon.svg";
@@ -112,7 +112,7 @@ export function RenkuUsers() {
       title: "Seamless Events",
       description:
         "Focus on innovation, not setup and infrastructure. Provide a consistent environment for all teams, and get participants coding and collaborating right away.",
-      link: Links.RENKU_2_EVENTS,
+      link: NEW_DOCS_RENKU_EVENTS,
       icon: (
         <img
           src={organizerIcon}

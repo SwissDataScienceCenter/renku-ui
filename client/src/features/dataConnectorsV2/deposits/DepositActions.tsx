@@ -190,7 +190,7 @@ interface DepositRemovalModalProps {
   onDelete: () => void;
   toggleModal: () => void;
 }
-function DepositRemovalModal({
+export function DepositRemovalModal({
   deposit,
   onDelete,
   toggleModal,
@@ -284,7 +284,7 @@ interface DepositLogsModalProps {
   isOpen: boolean;
   toggleModal: () => void;
 }
-function DepositLogsModal({
+export function DepositLogsModal({
   deposit,
   toggleModal,
   isOpen,

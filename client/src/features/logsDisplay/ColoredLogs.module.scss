@@ -1,0 +1,58 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+// NOTE: not all styles are handled
+.logLine {
+  // Decorations
+  &:global(-decorations-bold) {
+    font-weight: $font-weight-bold;
+  }
+
+  // Foreground colors
+  &:global(-fg-ansi-black) {
+    color: rgb(0, 0, 0);
+  }
+  &:global(-fg-ansi-red) {
+    color: rgb(187, 0, 0);
+  }
+  &:global(-fg-ansi-green) {
+    color: rgb(0, 187, 0);
+  }
+  &:global(-fg-ansi-yellow) {
+    color: rgb(187, 187, 0);
+  }
+  &:global(-fg-ansi-blue) {
+    color: rgb(0, 0, 187);
+  }
+  &:global(-fg-ansi-magenta) {
+    color: rgb(187, 0, 187);
+  }
+  &:global(-fg-ansi-cyan) {
+    color: rgb(0, 187, 187);
+  }
+
+  &:global(-fg-ansi-bright-black) {
+    color: rgb(0, 0, 0);
+  }
+  &:global(-fg-ansi-bright-red) {
+    color: rgb(255, 0, 0);
+  }
+  &:global(-fg-ansi-bright-green) {
+    color: rgb(0, 255, 0);
+  }
+  &:global(-fg-ansi-bright-yellow) {
+    color: rgb(255, 255, 0);
+  }
+  &:global(-fg-ansi-bright-blue) {
+    color: rgb(0, 0, 255);
+  }
+  &:global(-fg-ansi-bright-magenta) {
+    color: rgb(255, 0, 255);
+  }
+  &:global(-fg-ansi-bright-cyan) {
+    color: rgb(0, 255, 255);
+  }
+
+  // Background colors: not handled for now
+}

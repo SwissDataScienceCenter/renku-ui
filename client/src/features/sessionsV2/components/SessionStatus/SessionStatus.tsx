@@ -23,7 +23,15 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ReactNode, useRef } from "react";
-import { CircleFill, Clock, Hourglass } from "react-bootstrap-icons";
+import {
+  CheckCircleFill,
+  CircleFill,
+  Clock,
+  ExclamationDiamondFill,
+  GearFill,
+  Hourglass,
+  Icon,
+} from "react-bootstrap-icons";
 import {
   Badge,
   PopoverBody,
@@ -31,18 +39,34 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 
+import {
+  getLauncherCategoryDefinition,
+  JOB_STOPPING_BUTTON_LABEL,
+  JOB_STOPPING_TITLE,
+  sessionLauncherKindToCategory,
+} from "~/features/sessionsV2/session.utils";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import { UsageAvailable } from "../../session.utils";
 import {
+  JOB_TITLE,
   SESSION_STATES,
   SESSION_STYLES,
   SESSION_TITLE,
   SESSION_TITLE_DASHBOARD,
 } from "../../SessionStyles.constants";
-import { SessionStatus, SessionV2 } from "../../sessionsV2.types";
+import {
+  LauncherCategory,
+  LauncherCategoryDefinition,
+  SessionLauncherKind,
+  SessionStatus,
+  SessionStatusState,
+  SessionV2,
+} from "../../sessionsV2.types";
+
+import statusStyles from "./SessionStatus.module.scss";
 
 interface PrettySessionErrorMessageProps {
   message: string | null | undefined;
@@ -117,6 +141,7 @@ export function SessionBadge({
 interface ActiveSessionV2Props {
   session: SessionV2;
   variant?: "card" | "list";
+  includeIcon?: boolean;
 }
 interface ActiveSessionDescV2Props extends ActiveSessionV2Props {
   showInfoDetails?: boolean;
@@ -125,64 +150,205 @@ interface ActiveSessionTitleV2Props {
   session: SessionV2;
   launcher?: SessionLauncher;
 }
+
+function UnknownStatusBadge() {
+  return (
+    <SessionBadge
+      className={cx(
+        "border-warning",
+        "bg-warning-subtle",
+        "text-warning-emphasis",
+      )}
+    >
+      <ExclamationDiamondFill
+        className={cx("bi", "me-1", "text-warning-emphasis")}
+      />
+      Unknown status
+    </SessionBadge>
+  );
+}
+
+function WarningStatusBadge({
+  icon,
+  label,
+}: {
+  icon: "circle" | "icon" | "loader";
+  label: string;
+}) {
+  return (
+    <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
+      {icon === "loader" && (
+        <Loader
+          size={14}
+          className={cx("bi", "me-1", "text-warning-emphasis")}
+          inline
+        />
+      )}
+      {icon === "icon" && (
+        <GearFill
+          fontSize={16}
+          className={cx(
+            "bi",
+            "me-1",
+            "text-warning-emphasis",
+            statusStyles.spinIcon,
+          )}
+        />
+      )}
+      {icon === "circle" && (
+        <CircleFill
+          fontSize={14}
+          className={cx("bi", "me-1", "text-warning-emphasis")}
+        />
+      )}
+      <span className="text-warning-emphasis">{label}</span>
+    </SessionBadge>
+  );
+}
+
+function LoaderStatusBadge({ label }: { label: string }) {
+  return <WarningStatusBadge icon="loader" label={label} />;
+}
+
+function HibernatedStatusBadge({ label }: { label: string }) {
+  return (
+    <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
+      <CircleFill
+        className={cx("bi", "me-1", "text-light-emphasis")}
+        fontSize={14}
+      />
+      <span className="text-dark-emphasis">{label}</span>
+    </SessionBadge>
+  );
+}
+
+function FailedStatusBadge({ label }: { label: string }) {
+  return (
+    <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
+      <ExclamationDiamondFill
+        className={cx("bi", "me-1", "text-danger-emphasis")}
+        fontSize={16}
+      />
+      <span className="text-danger-emphasis">{label}</span>
+    </SessionBadge>
+  );
+}
+
+function SuccessStatusBadge({ label }: { label: string }) {
+  return (
+    <SessionBadge className={cx("border-success", "bg-success-subtle")}>
+      <CheckCircleFill
+        fontSize={16}
+        className={cx("bi", "me-1", "text-success-emphasis")}
+      />
+      <span className="text-success-emphasis">{label}</span>
+    </SessionBadge>
+  );
+}
+
+interface BuildSessionStatusBadgeProps {
+  state: SessionStatusState;
+  launcherCategory: LauncherCategory;
+  launcherDefinition: LauncherCategoryDefinition;
+  image?: string;
+  jobStoppingBadgeLabel: string;
+}
+
+function BuildSessionStatusBadge({
+  state,
+  launcherCategory,
+  launcherDefinition,
+  image,
+  jobStoppingBadgeLabel,
+}: BuildSessionStatusBadgeProps) {
+  const { text } = launcherDefinition;
+
+  switch (state) {
+    case "starting":
+      return (
+        <LoaderStatusBadge
+          label={`${text.state.starting} ${launcherCategory === "session" ? text.inline : ""}`}
+        />
+      );
+
+    case "stopping":
+      return (
+        <LoaderStatusBadge
+          label={
+            launcherCategory === "job"
+              ? jobStoppingBadgeLabel
+              : text.delete.action
+          }
+        />
+      );
+    case "hibernated":
+      return <HibernatedStatusBadge label={text.state.hibernated} />;
+    case "failed":
+      return <FailedStatusBadge label={text.state.failed} />;
+    case "running":
+      if (launcherCategory === "job") {
+        return <WarningStatusBadge icon="icon" label="Running" />;
+      }
+      if (image) {
+        return <SuccessStatusBadge label={`Running ${text.display}`} />;
+      }
+      return (
+        <WarningStatusBadge icon="circle" label={`Running ${text.display}`} />
+      );
+    case "succeeded":
+      if (launcherCategory !== "job") {
+        return <UnknownStatusBadge />;
+      }
+      return <SuccessStatusBadge label="Completed" />;
+    default:
+      return <UnknownStatusBadge />;
+  }
+}
+
 export function SessionStatusV2Badge({ session }: ActiveSessionV2Props) {
   const { status, image } = session;
   const state = status.state;
-
-  const badge =
-    state === "running" && !image ? (
-      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <CircleFill className={cx("bi", "me-1", "text-warning-emphasis")} />
-        <span className="text-warning-emphasis">Running Session</span>
-      </SessionBadge>
-    ) : state === "running" ? (
-      <SessionBadge className={cx("border-success", "bg-success-subtle")}>
-        <CircleFill className={cx("bi", "me-1", "text-success-emphasis")} />
-        <span className="text-success-emphasis">Running Session</span>
-      </SessionBadge>
-    ) : state === "starting" ? (
-      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <Loader
-          size={12}
-          className={cx("me-1", "text-warning-emphasis")}
-          inline
-        />
-        <span className="text-warning-emphasis">Launching Session</span>
-      </SessionBadge>
-    ) : state === "stopping" ? (
-      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <Loader
-          size={12}
-          className={cx("me-1", "text-warning-emphasis")}
-          inline
-        />
-        <span className="text-warning-emphasis">Shutting down session</span>
-      </SessionBadge>
-    ) : state === "hibernated" ? (
-      <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-        <CircleFill className={cx("bi", "me-1", "text-light-emphasis")} />
-        <span className="text-dark-emphasis">Paused Session</span>
-      </SessionBadge>
-    ) : state === "failed" ? (
-      <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
-        <CircleFill
-          className={cx("bi", "me-1", "text-danger-emphasis")}
-          fontSize={16}
-        />
-        <span className="text-danger-emphasis">Error in Session</span>
-      </SessionBadge>
-    ) : (
-      <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-        <CircleFill className={cx("bi", "me-1", "text-warning")} />
-        <span className="text-warning">Unknown status</span>
-      </SessionBadge>
-    );
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
-      {badge}
+      <BuildSessionStatusBadge
+        state={state}
+        launcherCategory={launcherCategory}
+        launcherDefinition={launcherDefinition}
+        image={image}
+        jobStoppingBadgeLabel={JOB_STOPPING_BUTTON_LABEL}
+      />
     </div>
   );
+}
+
+function resolveSessionStatusLabel({
+  state,
+  variant,
+  sessionType,
+}: {
+  state: SessionStatusState;
+  variant: "card" | "list";
+  sessionType: SessionLauncherKind;
+}): string {
+  const launcherCategory = sessionLauncherKindToCategory(sessionType);
+
+  if (state === "stopping" && launcherCategory === "job") {
+    return JOB_STOPPING_TITLE[variant];
+  }
+
+  const isSessionLauncher = launcherCategory === "session";
+  const isListVariant = variant === "list";
+
+  const titles = isSessionLauncher
+    ? isListVariant
+      ? SESSION_TITLE_DASHBOARD
+      : SESSION_TITLE
+    : JOB_TITLE;
+
+  return titles[state] ?? titles.default;
 }
 
 interface SessionStatusStyles {
@@ -193,17 +359,25 @@ interface SessionStatusStyles {
   borderColor: string;
   sessionLine: string;
   sessionIcon: string;
+  jobIcon: Icon;
 }
 
-export function getSessionStatusStyles(session: {
-  status: { state: string };
-  image?: string;
-}): SessionStatusStyles {
+export function getSessionStatusStyles(
+  session: {
+    status: { state: string };
+    image?: string;
+  },
+  launcherCategory: LauncherCategory,
+): SessionStatusStyles {
   const { status, image } = session;
   const state = status.state;
 
-  if (state === SESSION_STATES.RUNNING) {
+  if (state === SESSION_STATES.RUNNING && launcherCategory === "session") {
     return image ? SESSION_STYLES.SUCCESS : SESSION_STYLES.WARNING;
+  }
+
+  if (state === SESSION_STATES.RUNNING && launcherCategory === "job") {
+    return SESSION_STYLES.RUNNING_JOB;
   }
 
   const stateStyleMap: Record<string, SessionStatusStyles> = {
@@ -211,6 +385,7 @@ export function getSessionStatusStyles(session: {
     [SESSION_STATES.STOPPING]: SESSION_STYLES.STOPPING,
     [SESSION_STATES.HIBERNATED]: SESSION_STYLES.HIBERNATED,
     [SESSION_STATES.FAILED]: SESSION_STYLES.FAILED,
+    [SESSION_STATES.SUCCEEDED]: SESSION_STYLES.SUCCESS,
   };
 
   return stateStyleMap[state] ?? SESSION_STYLES.DEFAULT;
@@ -221,28 +396,32 @@ export function SessionStatusV2Label({
   variant = "card",
 }: ActiveSessionV2Props) {
   const { status, image } = session;
-  const styles = getSessionStatusStyles({ status, image });
-
-  const getStatusMessage = (
-    state: "running" | "starting" | "stopping" | "failed" | "hibernated",
-    variant?: "card" | "list",
-  ) => {
-    return variant === "list"
-      ? SESSION_TITLE_DASHBOARD[state]
-      : SESSION_TITLE[state];
-  };
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const styles = getSessionStatusStyles({ status, image }, launcherCategory);
+  const statusLabel = resolveSessionStatusLabel({
+    state: status.state,
+    variant,
+    sessionType: session.session_type,
+  });
 
   return (
-    <div className={cx("d-flex", "flex-row", "gap-2", "align-items-center")}>
-      <div className={cx("fs-4", "fw-bold")}>
-        <span
-          className={
-            variant === "list" ? styles.textColorList : styles.textColorCard
-          }
-        >
-          {getStatusMessage(status.state, variant)}
-        </span>
-      </div>
+    <div
+      className={cx(
+        "d-flex",
+        "flex-row",
+        "gap-2",
+        "align-items-center",
+        "fs-4",
+        "fw-bold",
+      )}
+    >
+      <span
+        className={
+          variant === "list" ? styles.textColorList : styles.textColorCard
+        }
+      >
+        {statusLabel}
+      </span>
     </div>
   );
 }
@@ -250,8 +429,11 @@ export function SessionStatusV2Label({
 export function SessionStatusV2Description({
   session,
   showInfoDetails = true,
+  includeIcon = true,
 }: ActiveSessionDescV2Props) {
-  const { resource_class_id, started, status } = session;
+  const { started, status, resource_class_id, session_type, job_completed_at } =
+    session;
+  const launcherCategory = sessionLauncherKindToCategory(session_type);
   return (
     <div
       className={cx(
@@ -262,11 +444,14 @@ export function SessionStatusV2Description({
         "align-items-center",
       )}
     >
-      {started && (
+      {(started || status.state === "succeeded") && (
         <SessionStatusV2Text
-          resourceClassId={resource_class_id}
-          startTimestamp={started}
+          startTimestamp={started ?? ""}
+          jobCompletedAt={job_completed_at}
           status={status}
+          resourceClassId={resource_class_id}
+          launcherCategory={launcherCategory}
+          includeIcon={includeIcon}
         />
       )}
       {showInfoDetails && (
@@ -304,7 +489,6 @@ function SessionListRowStatusExtraDetailsV2({
   if (status.state == "failed")
     return (
       <>
-        {" "}
         <span
           ref={ref}
           className={cx("text-muted", "cursor-pointer")}
@@ -320,7 +504,6 @@ function SessionListRowStatusExtraDetailsV2({
     );
   return (
     <>
-      {" "}
       <span ref={ref}>
         <FontAwesomeIcon icon={faInfoCircle} />
       </span>
@@ -328,137 +511,232 @@ function SessionListRowStatusExtraDetailsV2({
     </>
   );
 }
+
 export function SessionStatusV2Title({
   session,
   launcher,
 }: ActiveSessionTitleV2Props) {
-  const { status } = session;
-  const state = status.state;
+  const { state } = session.status;
+  const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
+  const launcherText = launcherDefinition.text.inline;
 
-  const text =
-    state === "running" && !launcher
-      ? "You are currently running a orphan session"
-      : state === "running"
-        ? "You are currently running a session from this launcher"
-        : state === "starting"
-          ? "You are currently starting a session from this launcher"
-          : state === "stopping"
-            ? "You are currently deleting a session from this launcher"
-            : state === "hibernated"
-              ? "You have a paused session from this launcher"
-              : state === "failed"
-                ? "An error was encountered while attempting to launch this session."
-                : null;
+  const text = getSessionStatusText(state, launcherText, !!launcher);
 
   return text ? <p className={cx("fst-italic", "mb-2")}>{text}</p> : null;
+}
+
+function getSessionStatusText(
+  state:
+    | "running"
+    | "starting"
+    | "stopping"
+    | "failed"
+    | "hibernated"
+    | "succeeded",
+  launcherText: string,
+  hasLauncher: boolean,
+): string | null {
+  switch (state) {
+    case "running":
+      return hasLauncher
+        ? `You are currently running a ${launcherText} from this launcher`
+        : `You are currently running an orphan ${launcherText}`;
+    case "starting":
+      return `You are currently starting a ${launcherText} from this launcher`;
+    case "stopping":
+      return `You are currently deleting a ${launcherText} from this launcher`;
+    case "hibernated":
+      return `You have a paused ${launcherText} from this launcher`;
+    case "failed":
+      return `An error was encountered while attempting to launch this ${launcherText}.`;
+    case "succeeded":
+      return `You have a completed ${launcherText} from this launcher`;
+    default:
+      return null;
+  }
 }
 interface SessionStatusV2TextProps {
   resourceClassId: number;
   startTimestamp: string;
+  jobCompletedAt?: string | null;
   status: SessionStatus;
+  launcherCategory: LauncherCategory;
+  includeIcon?: boolean;
 }
+
+interface SessionStatusTextPartsProps {
+  state: SessionStatusState;
+  launcherCategory: LauncherCategory;
+  launcherCategoryDefinition: LauncherCategoryDefinition;
+  status: SessionStatus;
+  startTimestamp: string;
+  jobCompletedAt?: string | null;
+  startTimeText: ReactNode;
+  elapsedTimeText: ReactNode;
+}
+
+function GetSessionStatusTextIcon({
+  state,
+  status,
+  startTimestamp,
+  jobCompletedAt,
+}: Pick<
+  SessionStatusTextPartsProps,
+  "state" | "status" | "startTimestamp" | "jobCompletedAt"
+>) {
+  switch (state) {
+    case "running":
+    case "starting":
+    case "failed":
+      return <Clock fontSize={16} className="flex-shrink-0" />;
+    case "hibernated":
+      return status.will_delete_at ? (
+        <Hourglass fontSize={16} className="flex-shrink-0" />
+      ) : (
+        <Clock fontSize={16} className="flex-shrink-0" />
+      );
+    case "succeeded":
+      return startTimestamp && jobCompletedAt ? (
+        <Clock fontSize={16} className="flex-shrink-0" />
+      ) : (
+        <CheckCircleFill fontSize={16} className="flex-shrink-0" />
+      );
+    default:
+      return null;
+  }
+}
+
+function GetSessionStatusTextContent({
+  state,
+  launcherCategory,
+  launcherCategoryDefinition,
+  status,
+  startTimeText,
+  elapsedTimeText,
+}: SessionStatusTextPartsProps) {
+  const { text } = launcherCategoryDefinition;
+
+  switch (state) {
+    case "running":
+      return launcherCategory === "session" ? (
+        <>
+          {text.state.running} {startTimeText}
+        </>
+      ) : (
+        <>
+          {text.state.running} for {elapsedTimeText}
+        </>
+      );
+    case "starting":
+      return (
+        <>
+          {text.state.starting} since {startTimeText}
+        </>
+      );
+    case "hibernated": {
+      const { will_delete_at, will_hibernate_at } = status;
+
+      if (will_delete_at) {
+        return (
+          <>
+            {text.state.hibernatedAndDelete}{" "}
+            <TimeCaption
+              datetime={will_delete_at}
+              enableTooltip
+              noCaption
+              suffix=" "
+              prefix=""
+              removeRelativeSuffix="future"
+            />
+          </>
+        );
+      }
+
+      const hibernationTimestamp = will_hibernate_at ?? "";
+      if (hibernationTimestamp) {
+        return (
+          <>
+            {text.state.hibernated}
+            {" for "}
+            <TimeCaption
+              datetime={hibernationTimestamp}
+              enableTooltip
+              noCaption
+            />
+          </>
+        );
+      }
+
+      return (
+        <>
+          {text.state.hibernated} <MissingHibernationInfo />
+        </>
+      );
+    }
+    case "failed":
+      return launcherCategory === "session" ? (
+        <>
+          {text.state.failed} {"("}created {startTimeText}
+          {")"}
+        </>
+      ) : (
+        <>
+          {text.state.failed} {startTimeText}
+        </>
+      );
+    case "succeeded":
+      return <>Completed {startTimeText}</>;
+    default:
+      return null;
+  }
+}
+
 function SessionStatusV2Text({
   resourceClassId,
   startTimestamp,
+  jobCompletedAt,
   status,
+  launcherCategory,
+  includeIcon = true,
 }: SessionStatusV2TextProps) {
-  const { state, will_hibernate_at, will_delete_at } = status;
+  const { state } = status;
+  const launcherCategoryDefinition =
+    getLauncherCategoryDefinition(launcherCategory);
   const startTimeText = (
     <TimeCaption datetime={startTimestamp} enableTooltip noCaption />
   );
-  const hibernationTimestamp =
-    state === "hibernated" ? (will_hibernate_at ?? "") : null;
-
-  if (state === "stopping") return null;
-  if (state === "failed")
-    return (
-      <div className={cx("d-flex", "align-items-center", "gap-2")}>
-        <Clock fontSize={16} className="flex-shrink-0" />
-        <span>
-          Error {"("}created {startTimeText}
-          {")"}
-        </span>
-      </div>
-    );
-
-  const sessionStatus =
-    state === "running" ? (
-      <div className={cx("d-flex", "align-items-center", "gap-2")}>
-        <Clock fontSize={16} className="flex-shrink-0" />
-        <span>Launched {startTimeText}</span>
-      </div>
-    ) : state === "starting" ? (
-      <div className={cx("d-flex", "align-items-center", "gap-2")}>
-        <Clock fontSize={16} className="flex-shrink-0" />
-        <span>Launching since {startTimeText}</span>
-      </div>
-    ) : state === "hibernated" && will_delete_at ? (
-      <div className={cx("d-flex", "align-items-center", "gap-2")}>
-        <Hourglass fontSize={16} className="flex-shrink-0" />
-        <span>
-          Session will be deleted{" "}
-          <TimeCaption
-            datetime={will_delete_at}
-            enableTooltip
-            noCaption
-            suffix=" "
-          />
-        </span>
-      </div>
-    ) : state === "hibernated" && hibernationTimestamp ? (
-      <div className={cx("d-flex", "align-items-center", "gap-2")}>
-        <Clock fontSize={16} className="flex-shrink-0" />
-        <span>
-          Paused
-          <TimeCaption
-            datetime={hibernationTimestamp}
-            enableTooltip
-            noCaption
-          />
-        </span>
-      </div>
-    ) : (
-      <div className={cx("d-flex", "align-items-center", "gap-2")}>
-        <Clock fontSize={16} className="flex-shrink-0" />
-        <span>
-          Paused
-          <MissingHibernationInfo />
-        </span>
-      </div>
-    );
-  return (
-    <div className={cx("d-flex", "flex-column", "gap-1")}>
-      {sessionStatus}
-      <div>
-        <SessionStatusV2TextQuotaInformation
-          resourceClassId={resourceClassId}
-        />
-      </div>
-    </div>
+  const elapsedTimeText = (
+    <TimeCaption
+      datetime={startTimestamp}
+      enableTooltip
+      noCaption
+      removeRelativeSuffix="past"
+    />
   );
-}
 
-function SessionStatusV2TextQuotaInformation({
-  resourceClassId,
-}: {
-  resourceClassId: SessionStatusV2TextProps["resourceClassId"];
-}) {
-  const pollingInterval = 60 * 1000; // 1 minute
-  const { data: resourcePools } = useGetResourcePoolsQuery(
-    {},
-    { pollingInterval },
-  );
-  const resourceClass = resourcePools
-    ?.flatMap((pool) => pool.classes)
-    .find((cls) => cls.id === resourceClassId);
-  if (!resourceClass || resourceClass.usage_hours_remaining == null)
+  const textParts: SessionStatusTextPartsProps = {
+    state,
+    launcherCategory,
+    launcherCategoryDefinition,
+    status,
+    startTimestamp,
+    jobCompletedAt,
+    startTimeText,
+    elapsedTimeText,
+  };
+
+  const content = <GetSessionStatusTextContent {...textParts} />;
+  if (!content) {
     return null;
+  }
+
+  const icon = <GetSessionStatusTextIcon {...textParts} />;
 
   return (
-    <span className={cx("text-muted")}>
-      <UsageAvailable
-        usageAvailableHours={resourceClass.usage_hours_remaining}
-      />
-    </span>
+    <div className={cx("d-flex", "align-items-center", "gap-2")}>
+      {includeIcon && icon}
+      <span>{content}</span>
+    </div>
   );
 }

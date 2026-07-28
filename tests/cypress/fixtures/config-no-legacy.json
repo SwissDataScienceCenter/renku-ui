@@ -69,6 +69,7 @@
   },
   "USER_PREFERENCES_MAX_PINNED_PROJECTS": 5,
   "IMAGE_BUILDERS_ENABLED": true,
+  "BUILD_PRIVATE_REPO_BUILDS_ENABLED": true,
   "LEGACY_SUPPORT": {
     "enabled": false
   },

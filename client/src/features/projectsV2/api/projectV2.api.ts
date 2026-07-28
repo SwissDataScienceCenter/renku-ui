@@ -5,7 +5,9 @@ const injectedRtkApi = api.injectEndpoints({
     getProjects: build.query<GetProjectsApiResponse, GetProjectsApiArg>({
       query: (queryArg) => ({
         url: `/projects`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     postProjects: build.mutation<PostProjectsApiResponse, PostProjectsApiArg>({
@@ -21,7 +23,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/projects/${queryArg.projectId}`,
-        params: { with_documentation: queryArg.withDocumentation },
+        params: {
+          with_documentation: queryArg.withDocumentation,
+        },
       }),
     }),
     patchProjectsByProjectId: build.mutation<
@@ -32,7 +36,9 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/projects/${queryArg.projectId}`,
         method: "PATCH",
         body: queryArg.projectPatch,
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     deleteProjectsByProjectId: build.mutation<
@@ -74,7 +80,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/namespaces/${queryArg["namespace"]}/projects/${queryArg.slug}`,
-        params: { with_documentation: queryArg.withDocumentation },
+        params: {
+          with_documentation: queryArg.withDocumentation,
+        },
       }),
     }),
     getProjectsByProjectIdCopies: build.query<
@@ -83,7 +91,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/projects/${queryArg.projectId}/copies`,
-        params: { writable: queryArg.writable },
+        params: {
+          writable: queryArg.writable,
+        },
       }),
     }),
     postProjectsByProjectIdCopies: build.mutation<
@@ -198,7 +208,9 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/session_secret_slots/${queryArg.slotId}`,
         method: "PATCH",
         body: queryArg.sessionSecretSlotPatch,
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     deleteSessionSecretSlotsBySlotId: build.mutation<
@@ -239,8 +251,7 @@ export type PatchProjectsByProjectIdApiArg = {
   "If-Match": ETag;
   projectPatch: ProjectPatch;
 };
-export type DeleteProjectsByProjectIdApiResponse =
-  /** status 204 The project was removed or did not exist in the first place */ void;
+export type DeleteProjectsByProjectIdApiResponse = unknown;
 export type DeleteProjectsByProjectIdApiArg = {
   projectId: Ulid;
 };
@@ -290,14 +301,12 @@ export type GetProjectsByProjectIdMembersApiResponse =
 export type GetProjectsByProjectIdMembersApiArg = {
   projectId: Ulid;
 };
-export type PatchProjectsByProjectIdMembersApiResponse =
-  /** status 200 The project's members were updated */ void;
+export type PatchProjectsByProjectIdMembersApiResponse = unknown;
 export type PatchProjectsByProjectIdMembersApiArg = {
   projectId: Ulid;
   projectMemberListPatchRequest: ProjectMemberListPatchRequest;
 };
-export type DeleteProjectsByProjectIdMembersAndMemberIdApiResponse =
-  /** status 204 The member was removed or wasn't part of project's members. */ void;
+export type DeleteProjectsByProjectIdMembersAndMemberIdApiResponse = unknown;
 export type DeleteProjectsByProjectIdMembersAndMemberIdApiArg = {
   projectId: Ulid;
   /** This is user's KeyCloak ID */
@@ -324,8 +333,7 @@ export type PatchProjectsByProjectIdSessionSecretsApiArg = {
   projectId: Ulid;
   sessionSecretPatchList: SessionSecretPatchList;
 };
-export type DeleteProjectsByProjectIdSessionSecretsApiResponse =
-  /** status 204 The secrets were removed or did not exist in the first place or the project doesn't exist */ void;
+export type DeleteProjectsByProjectIdSessionSecretsApiResponse = unknown;
 export type DeleteProjectsByProjectIdSessionSecretsApiArg = {
   projectId: Ulid;
 };
@@ -347,8 +355,7 @@ export type PatchSessionSecretSlotsBySlotIdApiArg = {
   "If-Match": ETag;
   sessionSecretSlotPatch: SessionSecretSlotPatch;
 };
-export type DeleteSessionSecretSlotsBySlotIdApiResponse =
-  /** status 204 The session secret slot was removed or did not exist in the first place */ void;
+export type DeleteSessionSecretSlotsBySlotIdApiResponse = unknown;
 export type DeleteSessionSecretSlotsBySlotIdApiArg = {
   slotId: Ulid;
 };

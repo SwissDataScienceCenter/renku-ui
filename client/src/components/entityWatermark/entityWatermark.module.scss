@@ -1,5 +1,16 @@
 .EntityWatermark {
-  font-size: 150px;
-  line-height: 0;
-  color: rgba(0, 0, 0, 0.1);
+  font-size: 100px;
+}
+
+// All icons have the same size but only the footprint of the database fills the very bottom
+.EntityWatermarkDatabase {
+  font-size: 90px;
+}
+
+.EntityWatermarkPlaceholder {
+  width: 100px;
+}
+
+.EntityWatermarkDatabasePlaceholder {
+  width: 90px;
 }

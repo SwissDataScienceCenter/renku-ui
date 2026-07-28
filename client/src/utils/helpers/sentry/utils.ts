@@ -32,6 +32,8 @@ export const EXCLUDED_URLS = [
   /^chrome:\/\//i, // Chrome extensions 2
 ];
 
+const REPEATED_REQUEST_THRESHOLD = 5;
+
 export function initClientSideSentry(params: AppParams) {
   const dsn = params.SENTRY_URL;
   const environment = params.SENTRY_NAMESPACE || NAMESPACE_DEFAULT;
@@ -55,6 +57,55 @@ export function initClientSideSentry(params: AppParams) {
   Sentry.setTags({
     component: UI_COMPONENT,
   });
+
+  // Handle repeated API queries: indicate repeated queries so that
+  // the backend stops Sentry distributed tracing.
+  const GATEWAY_ORIGIN = (function () {
+    try {
+      return new URL(params.GATEWAY_URL).origin;
+    } catch {
+      return "";
+    }
+  })();
+  let currentTraceId = "";
+  let requestCounts: Map<string, number> = new Map();
+  const origFetch = window.fetch;
+  window.fetch = function wrappedFetch(
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> {
+    if (!isGatewayOrigin(input, GATEWAY_ORIGIN)) {
+      return origFetch(input, init);
+    }
+
+    const span = Sentry.getActiveSpan();
+    const traceId = span?.spanContext().traceId ?? "unknown";
+    if (currentTraceId !== traceId) {
+      currentTraceId = traceId;
+      requestCounts = new Map();
+    }
+
+    const href = window.location.href;
+    const url = new URL(input instanceof Request ? input.url : input, href);
+    const method =
+      input instanceof Request ? input.method : (init?.method ?? "GET");
+    const key = `${method.toUpperCase()}|${url.toString()}`;
+    const count = (requestCounts.get(key) ?? 0) + 1;
+    requestCounts.set(key, count);
+
+    if (count <= REPEATED_REQUEST_THRESHOLD) {
+      return origFetch(input, init);
+    }
+
+    const headers = new Headers(
+      init?.headers ??
+        (input instanceof Request ? (input as Request).headers : {}),
+    );
+    headers.set("Renku-Repeated-Request", "true");
+    const _init = init ?? {};
+    _init.headers = headers;
+    return origFetch(input, _init);
+  };
 }
 
 export function getRelease(version: string): string {
@@ -97,4 +148,21 @@ function beforeSend(event: Sentry.ErrorEvent) {
     return null;
 
   return event;
+}
+
+function isGatewayOrigin(
+  input: RequestInfo | URL,
+  gatewayOrigin: string,
+): boolean {
+  try {
+    const href = window.location.href;
+    const windowOrigin = new URL(href).origin;
+    const targetOrigin = new URL(
+      input instanceof Request ? input.url : input,
+      href,
+    ).origin;
+    return targetOrigin === windowOrigin || targetOrigin === gatewayOrigin;
+  } catch {
+    return false;
+  }
 }

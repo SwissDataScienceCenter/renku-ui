@@ -30,10 +30,12 @@ import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
 interface UseSessionSecretsArgs {
   projectId: string;
+  autoMarkReady?: boolean;
 }
 
 export default function useSessionSecrets({
   projectId,
+  autoMarkReady = true,
 }: UseSessionSecretsArgs) {
   const { data: user } = useGetUserQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
@@ -42,7 +44,9 @@ export default function useSessionSecrets({
     currentData: sessionSecretSlots,
     isFetching: isFetchingSessionSecretSlots,
     error: sessionSecretSlotsError,
-  } = useGetProjectsByProjectIdSessionSecretSlotsQuery({ projectId });
+  } = useGetProjectsByProjectIdSessionSecretSlotsQuery(
+    projectId ? { projectId } : skipToken,
+  );
   const {
     currentData: sessionSecrets,
     isFetching: isFetchingSessionSecrets,
@@ -67,10 +71,13 @@ export default function useSessionSecrets({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (sessionSecretSlotsWithSecrets?.every(({ secretId }) => secretId)) {
+    if (
+      autoMarkReady &&
+      sessionSecretSlotsWithSecrets?.every(({ secretId }) => secretId)
+    ) {
       dispatch(startSessionOptionsV2Slice.actions.setUserSecretsReady(true));
     }
-  }, [dispatch, sessionSecretSlotsWithSecrets, isUserLoggedIn]);
+  }, [autoMarkReady, dispatch, sessionSecretSlotsWithSecrets, isUserLoggedIn]);
 
   return {
     sessionSecretSlotsWithSecrets,

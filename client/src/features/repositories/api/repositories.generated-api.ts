@@ -5,7 +5,9 @@ const injectedRtkApi = api.injectEndpoints({
     getRepository: build.query<GetRepositoryApiResponse, GetRepositoryApiArg>({
       query: (queryArg) => ({
         url: `/repository`,
-        params: { url: queryArg.url },
+        params: {
+          url: queryArg.url,
+        },
       }),
     }),
   }),

@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-import { UsageAvailable } from "../session.utils";
-import type { SessionLauncherResourceUsageLimit } from "../sessionsV2.types";
-
 interface SessionLauncherResources {
   poolName?: string;
   name?: string;
@@ -35,24 +32,25 @@ interface SessionResources {
 
 interface SessionRowResourceRequestsProps {
   resourceRequests: SessionResources["requests"] | SessionLauncherResources;
-  usageLimit: SessionLauncherResourceUsageLimit;
 }
 
 export function SessionRowResourceRequests({
   resourceRequests,
-  usageLimit,
 }: SessionRowResourceRequestsProps) {
   if (!resourceRequests) {
     return null;
   }
-  if (Object.entries(resourceRequests).length == 0) {
+
+  if (Object.entries(resourceRequests).length === 0) {
     return null;
   }
 
   const numericEntries = Object.entries(resourceRequests).filter(
     ([name]) => name !== "name" && name !== "poolName",
   );
+
   const { poolName, name } = resourceRequests as SessionLauncherResources;
+
   const resourceClassName =
     poolName && name ? (
       <>
@@ -66,39 +64,25 @@ export function SessionRowResourceRequests({
     ) : null;
 
   return (
-    <>
-      <div data-cy="session-view-resource-class-description">
-        {resourceClassName && (
-          <span key="name">
-            <span className="text-nowrap">{resourceClassName}</span>
-            {" | "}
-          </span>
-        )}
-        {numericEntries.map(([key, value], index) => (
-          <span key={key}>
-            <span className="text-nowrap">
-              <span className="fw-bold">
-                {value} {(key === "memory" || key === "storage") && "GB "}
-              </span>
-              {key}
-            </span>
-            {numericEntries.length - 1 === index ? " " : " | "}
-          </span>
-        ))}
-      </div>
-      {usageLimit.resourceClass?.usage_hours_remaining != null && (
-        <div data-cy="session-view-resource-class-availability">
-          <span key="available">
-            <span className="text-nowrap">
-              <UsageAvailable
-                usageAvailableHours={
-                  usageLimit.resourceClass.usage_hours_remaining
-                }
-              />
-            </span>
-          </span>
-        </div>
+    <div data-cy="session-view-resource-class-description">
+      {resourceClassName && (
+        <span key="name">
+          <span className="text-nowrap">{resourceClassName}</span>
+          {" | "}
+        </span>
       )}
-    </>
+
+      {numericEntries.map(([key, value], index) => (
+        <span key={key}>
+          <span className="text-nowrap">
+            <span className="fw-bold">
+              {value} {(key === "memory" || key === "storage") && "GB "}
+            </span>
+            {key}
+          </span>
+          {numericEntries.length - 1 === index ? " " : " | "}
+        </span>
+      ))}
+    </div>
   );
 }

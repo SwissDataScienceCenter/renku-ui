@@ -5,7 +5,7 @@ import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
 import type { EntryContext, RouterContextProvider } from "react-router";
-import { ServerRouter } from "react-router";
+import { isRouteErrorResponse, ServerRouter } from "react-router";
 
 import {
   EXCLUDED_URLS,
@@ -123,15 +123,22 @@ if (process.env.NODE_ENV === "development") {
       if (tracesSampleRate > 1) {
         tracesSampleRate = 1;
       }
-      /**
-       * @type { Sentry.NodeOptions }
-       */
-      const config = {
+      const config: Sentry.NodeOptions = {
         dsn,
         environment,
         release,
         denyUrls: [...EXCLUDED_URLS],
         tracesSampleRate,
+        beforeSend: (event, hint) => {
+          // Do not send HTTP 405 errors to Sentry
+          if (
+            isRouteErrorResponse(hint.originalException) &&
+            hint.originalException.status == 405
+          ) {
+            return null;
+          }
+          return event;
+        },
       };
       Sentry.init(config);
       Sentry.setTags({

@@ -16,7 +16,28 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/platform/config`,
         method: "PATCH",
         body: queryArg.platformConfigPatch,
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
+    getPlatformAuthorizationConfig: build.query<
+      GetPlatformAuthorizationConfigApiResponse,
+      GetPlatformAuthorizationConfigApiArg
+    >({
+      query: () => ({ url: `/platform/authorization_config` }),
+    }),
+    patchPlatformAuthorizationConfig: build.mutation<
+      PatchPlatformAuthorizationConfigApiResponse,
+      PatchPlatformAuthorizationConfigApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/platform/authorization_config`,
+        method: "PATCH",
+        body: queryArg.authzConfigPatch,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     getPlatformRedirects: build.query<
@@ -25,7 +46,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/platform/redirects`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     postPlatformRedirects: build.mutation<
@@ -54,7 +77,9 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/platform/redirects/${queryArg.sourceUrl}`,
         method: "PATCH",
         body: queryArg.urlRedirectPlanPatch,
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     deletePlatformRedirectsBySourceUrl: build.mutation<
@@ -64,7 +89,9 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/platform/redirects/${queryArg.sourceUrl}`,
         method: "DELETE",
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
   }),
@@ -80,6 +107,16 @@ export type PatchPlatformConfigApiArg = {
   /** If-Match header, for avoiding mid-air collisions */
   "If-Match": ETag;
   platformConfigPatch: PlatformConfigPatch;
+};
+export type GetPlatformAuthorizationConfigApiResponse =
+  /** status 200 The authorization configuration */ AuthzConfig;
+export type GetPlatformAuthorizationConfigApiArg = void;
+export type PatchPlatformAuthorizationConfigApiResponse =
+  /** status 200 The updated platform configuration */ AuthzConfig;
+export type PatchPlatformAuthorizationConfigApiArg = {
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  authzConfigPatch: AuthzConfigPatch;
 };
 export type GetPlatformRedirectsApiResponse =
   /** status 200 A list of redirect plans */ UrlRedirectPlanList;
@@ -107,8 +144,7 @@ export type PatchPlatformRedirectsBySourceUrlApiArg = {
   "If-Match": ETag;
   urlRedirectPlanPatch: UrlRedirectPlanPatch;
 };
-export type DeletePlatformRedirectsBySourceUrlApiResponse =
-  /** status 204 The redirect plan was removed or did not exist in the first place */ void;
+export type DeletePlatformRedirectsBySourceUrlApiResponse = unknown;
 export type DeletePlatformRedirectsBySourceUrlApiArg = {
   /** The url-encoded (original) source URL */
   sourceUrl: string;
@@ -132,6 +168,16 @@ export type ErrorResponse = {
 };
 export type PlatformConfigPatch = {
   incident_banner?: IncidentBanner;
+};
+export type AuthzFlag = "admins_only" | "registered_users";
+export type AuthzConfig = {
+  etag: ETag;
+  create_projects: AuthzFlag;
+  create_groups: AuthzFlag;
+};
+export type AuthzConfigPatch = {
+  create_projects?: AuthzFlag;
+  create_groups?: AuthzFlag;
 };
 export type SourceUrl = string;
 export type TargetUrl = string;
@@ -158,6 +204,8 @@ export type UrlRedirectPlanPatch = {
 export const {
   useGetPlatformConfigQuery,
   usePatchPlatformConfigMutation,
+  useGetPlatformAuthorizationConfigQuery,
+  usePatchPlatformAuthorizationConfigMutation,
   useGetPlatformRedirectsQuery,
   usePostPlatformRedirectsMutation,
   useGetPlatformRedirectsBySourceUrlQuery,

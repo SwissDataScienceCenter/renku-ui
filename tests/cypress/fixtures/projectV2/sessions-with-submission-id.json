@@ -1,0 +1,25 @@
+[
+  {
+    "image": "renku/renkulab-py:latest",
+    "name": "job-session-01",
+    "resources": {
+      "requests": {
+        "cpu": 0.5,
+        "memory": "1G",
+        "storage": "1G"
+      }
+    },
+    "started": "2024-05-23T10:00:00Z",
+    "status": {
+      "state": "running",
+      "ready_containers": 1,
+      "total_containers": 1
+    },
+    "url": "https://example.com",
+    "project_id": "01HYJE5FR1JV4CWFMBFJQFQ4RM",
+    "launcher_id": "01HYJE99XEKWNKPYN8WRB6QA8Z",
+    "resource_class_id": 2,
+    "session_type": "non_interactive",
+    "submission_id": "run01"
+  }
+]

@@ -43,7 +43,14 @@ export const SITEMAP = `<?xml version="1.0" encoding="UTF-8"?>
     <loc>${BASE_URL}/help/release</loc>
   </url>
 </urlset>`;
-export const ROBOTS = `Sitemap: ${BASE_URL} /sitemap.xml`;
+export const ROBOTS = `User-agent: Applebot
+User-agent: AhrefsBot
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+Disallow: /p/*/sessions/*/start
+
+Sitemap: ${BASE_URL}/sitemap.xml`;
 export const CONFIG_JSON = {
   UI_VERSION: process.env.UI_VERSION || "",
   RENKU_CHART_VERSION: process.env.RENKU_CHART_VERSION,
@@ -76,6 +83,8 @@ export const CONFIG_JSON = {
     process.env.USER_PREFERENCES_MAX_PINNED_PROJECTS,
   SESSION_CLASS_EMAIL_US: safeJsonToObject(process.env.SESSION_CLASS_EMAIL_US),
   IMAGE_BUILDERS_ENABLED: process.env.IMAGE_BUILDERS_ENABLED,
+  BUILD_PRIVATE_REPO_BUILDS_ENABLED:
+    process.env.BUILD_PRIVATE_REPO_BUILDS_ENABLED,
   CONTACT_EMAIL: process.env.CONTACT_EMAIL || "hello@renku.io",
 };
 

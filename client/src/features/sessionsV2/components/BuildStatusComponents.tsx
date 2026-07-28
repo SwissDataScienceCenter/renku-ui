@@ -42,6 +42,7 @@ import {
 } from "reactstrap";
 
 import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
+import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../components/LegacyExternalLinks";
@@ -63,13 +64,13 @@ import { IMAGE_BUILD_DOCS } from "../session.constants";
 import { isImageCompatibleWith } from "../session.utils";
 
 interface BuildStatusBadgeProps {
-  buildStatus: Build["status"];
+  build: Build;
   imageCheck?: ImageCheckResponse | null;
   resourcePool?: ResourcePoolWithId;
 }
 
 export function BuildStatusBadge({
-  buildStatus,
+  build,
   imageCheck,
   resourcePool,
 }: BuildStatusBadgeProps) {
@@ -81,29 +82,54 @@ export function BuildStatusBadge({
   }, [imageCheck, resourcePool]);
 
   const badgeIcon =
-    buildStatus === "in_progress" ? (
+    build.status === "in_progress" ? (
       <Loader className="me-1" inline size={12} />
     ) : (
       <CircleFill className={cx("me-1", "bi")} />
     );
 
-  const badgeText =
-    isCompatible === false
-      ? "Image incompatible"
-      : buildStatus === "in_progress"
-        ? "Build in progress"
-        : buildStatus === "cancelled"
-          ? "Build cancelled"
-          : buildStatus === "succeeded"
-            ? "Build succeeded"
-            : "Build failed";
+  const { data, isLoading } = useGetRepositoryQuery(
+    build.status === "succeeded"
+      ? {
+          url: build.result?.repository_url,
+        }
+      : skipToken,
+  );
+
+  let badgeText = "";
+  let isCodeAvailable = true;
+
+  if (isCompatible === false) {
+    badgeText = "Image incompatible";
+  } else {
+    switch (build.status) {
+      case "in_progress":
+        badgeText = "Build in progress";
+        break;
+      case "cancelled":
+        badgeText = "Build cancelled";
+        break;
+      case "succeeded":
+        if (isLoading) {
+          badgeText = "Loading";
+        } else if (data?.metadata?.pull_permission) {
+          badgeText = "Build succeeded";
+        } else {
+          badgeText = "Image not accessible";
+          isCodeAvailable = false;
+        }
+        break;
+      default:
+        badgeText = "Build failed";
+    }
+  }
 
   const badgeColorClasses =
-    isCompatible === false
+    isCompatible === false || isCodeAvailable === false
       ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
-      : buildStatus === "in_progress"
+      : build.status === "in_progress"
         ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
-        : buildStatus === "succeeded"
+        : build.status === "succeeded"
           ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
           : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
 
@@ -128,6 +154,15 @@ export function BuildStatusDescription({
   isOldImage,
 }: BuildStatusDescriptionProps) {
   if (!status) return null;
+
+  const startTimeTextWithoutSuffix = (
+    <TimeCaption
+      datetime={createdAt}
+      enableTooltip
+      noCaption
+      removeRelativeSuffix={"past"}
+    />
+  );
 
   const startTimeText = (
     <TimeCaption datetime={createdAt} enableTooltip noCaption />
@@ -159,7 +194,7 @@ export function BuildStatusDescription({
       className={cx("d-flex", "align-items-center", "gap-2", "time-caption")}
     >
       <Clock fontSize={16} className="flex-shrink-0" />
-      <span>Building since {startTimeText}</span>
+      <span>Building for {startTimeTextWithoutSuffix}</span>
     </div>
   ) : status === "failed" ? (
     <div
@@ -344,7 +379,7 @@ export function BuildActions({ launcher }: BuildActionsProps) {
           onClick={toggleLogs}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
-          Show logs
+          View logs
         </DropdownItem>
       </ButtonWithMenuV2>
     ) : (

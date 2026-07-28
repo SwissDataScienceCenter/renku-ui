@@ -317,7 +317,11 @@ describe("Work with group data connectors", () => {
     cy.wait("@listDataConnectorProjectLinks");
     cy.wait("@readProject1");
     cy.wait("@readProject2");
-    cy.contains("user1-uuid/test-2-v2-project").should("be.visible");
+    cy.getDataCy("linked-project-list").within(() => {
+      cy.getDataCy("project-link")
+        .filter(`[href*="user1-uuid/test-2-v2-project"]`)
+        .should("exist");
+    });
   });
 
   it("add a group data connector", () => {
@@ -403,11 +407,10 @@ describe("Work with group data connectors", () => {
       .click();
     cy.getDataCy("data-connector-view")
       .find('[data-cy="data-connector-delete"]')
+      .scrollIntoView()
       .should("be.visible")
       .click();
-    cy.contains("Are you sure you want to delete this data connector").should(
-      "be.visible",
-    );
+    cy.getDataCy("data-connector-delete-modal").should("be.visible");
     cy.getDataCy("delete-confirmation-input").clear().type("public-storage");
     cy.getDataCy("delete-data-connector-modal-button")
       .should("be.visible")
@@ -468,7 +471,11 @@ describe("Work with group data connectors, missing permissions", () => {
     cy.wait("@listDataConnectorProjectLinks");
     cy.wait("@readProject1");
     cy.wait("@readProject2");
-    cy.contains("user1-uuid/test-2-v2-project").should("be.visible");
+    cy.getDataCy("linked-project-list").within(() => {
+      cy.getDataCy("project-link")
+        .filter(`[href*="user1-uuid/test-2-v2-project"]`)
+        .should("exist");
+    });
   });
 
   it("add a group data connector", () => {

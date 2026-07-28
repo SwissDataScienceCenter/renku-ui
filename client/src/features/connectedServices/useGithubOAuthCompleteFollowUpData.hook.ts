@@ -92,17 +92,10 @@ export function shouldAutoCloseAfterOAuth(
   hasError: boolean,
   data: GithubOAuthCompleteFollowUpData,
 ): boolean {
-  const {
-    checkId,
-    skipData,
-    isGithubAppFollowUp,
-    isLoadingProviders,
-    isLoadingConnections,
-  } = data;
+  const { isLoadingProviders, isLoadingConnections, isGithubAppFollowUp } =
+    data;
 
   if (hasError) return false;
-  if (!checkId) return true;
   if (isLoadingProviders || isLoadingConnections) return false;
-  if (!isGithubAppFollowUp) return true;
-  return skipData;
+  return !isGithubAppFollowUp;
 }

@@ -84,7 +84,7 @@ function ProjectTemplateEditorBanner({ project }: { project: Project }) {
   if (project.template_id === null) return null;
   return (
     <>
-      <PrimaryAlert className="p-2" icon={null}>
+      <PrimaryAlert className={cx("mb-0", "p-2")} icon={null}>
         <div className="py-0">
           <Diagram3Fill className={cx("bi", "me-1")} />
           This project is a template.{" "}

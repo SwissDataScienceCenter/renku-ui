@@ -8,7 +8,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/environments`,
-        params: { get_environment_params: queryArg.getEnvironmentParams },
+        params: {
+          get_environment_params: queryArg.getEnvironmentParams,
+        },
       }),
     }),
     postEnvironments: build.mutation<
@@ -119,7 +121,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/builds/${queryArg.buildId}/logs`,
-        params: { max_lines: queryArg.maxLines },
+        params: {
+          max_lines: queryArg.maxLines,
+        },
       }),
     }),
     getEnvironmentsByEnvironmentIdBuilds: build.query<
@@ -167,8 +171,7 @@ export type PatchEnvironmentsByEnvironmentIdApiArg = {
   environmentId: Ulid;
   environmentPatch: EnvironmentPatch;
 };
-export type DeleteEnvironmentsByEnvironmentIdApiResponse =
-  /** status 204 The session environment was removed or did not exist in the first place */ void;
+export type DeleteEnvironmentsByEnvironmentIdApiResponse = unknown;
 export type DeleteEnvironmentsByEnvironmentIdApiArg = {
   environmentId: Ulid;
 };
@@ -191,8 +194,7 @@ export type PatchSessionLaunchersByLauncherIdApiArg = {
   launcherId: Ulid;
   sessionLauncherPatch: SessionLauncherPatch;
 };
-export type DeleteSessionLaunchersByLauncherIdApiResponse =
-  /** status 204 The session was removed or did not exist in the first place */ void;
+export type DeleteSessionLaunchersByLauncherIdApiResponse = unknown;
 export type DeleteSessionLaunchersByLauncherIdApiArg = {
   launcherId: Ulid;
 };
@@ -273,8 +275,12 @@ export type ErrorResponse = {
     trace_id?: string;
   };
 };
+export type CommandAndArgs = {
+  command?: EnvironmentCommand;
+  args?: EnvironmentArgs;
+};
 export type EnvironmentImageSourceImage = "image";
-export type EnvironmentPost = {
+export type EnvironmentPost = CommandAndArgs & {
   name: SessionName;
   description?: Description;
   container_image: ContainerImage;
@@ -284,19 +290,15 @@ export type EnvironmentPost = {
   working_directory?: EnvironmentWorkingDirectory;
   mount_directory?: EnvironmentMountDirectory;
   port?: EnvironmentPort;
-  command?: EnvironmentCommand;
-  args?: EnvironmentArgs;
   is_archived?: IsArchived;
   environment_image_source: EnvironmentImageSourceImage;
   strip_path_prefix?: StripPathPrefix;
 };
 export type EnvironmentWorkingDirectoryPatch = string;
 export type EnvironmentMountDirectoryPatch = string;
-export type EnvironmentPatchCommand = string[] | null;
-export type EnvironmentPatchArgs = string[] | null;
 export type IsArchivedPatch = boolean;
 export type StripPathPrefixPatch = boolean;
-export type EnvironmentPatch = {
+export type EnvironmentPatch = CommandAndArgs & {
   name?: SessionName;
   description?: Description;
   container_image?: ContainerImage;
@@ -306,8 +308,6 @@ export type EnvironmentPatch = {
   working_directory?: EnvironmentWorkingDirectoryPatch;
   mount_directory?: EnvironmentMountDirectoryPatch;
   port?: EnvironmentPort;
-  command?: EnvironmentPatchCommand;
-  args?: EnvironmentPatchArgs;
   is_archived?: IsArchivedPatch;
   strip_path_prefix?: StripPathPrefixPatch;
 };
@@ -323,7 +323,7 @@ export type BuilderVariant = string;
 export type FrontendVariant = string;
 export type RepositoryRevision = string;
 export type BuildContextDir = string;
-export type BuildParameters = {
+export type BuildParameters = any & {
   repository: Repository;
   platforms?: BuildPlatforms;
   builder_variant: BuilderVariant;
@@ -348,6 +348,7 @@ export type EnvVar = {
   value?: string;
 };
 export type EnvVariables = EnvVar[];
+export type LauncherType = "interactive" | "non-interactive";
 export type SessionLauncher = {
   id: Ulid;
   project_id: Ulid;
@@ -358,14 +359,16 @@ export type SessionLauncher = {
   resource_class_id: ResourceClassId;
   disk_storage?: DiskStorage;
   env_variables?: EnvVariables;
+  launcher_type: LauncherType;
 };
 export type SessionLaunchersList = SessionLauncher[];
 export type EnvironmentPostInLauncherHelper = EnvironmentPost & {
   environment_kind: EnvironmentKind;
 };
-export type BuildParametersPost = BuildParameters & {
-  environment_image_source: EnvironmentImageSourceBuild;
-};
+export type BuildParametersPost = BuildParameters &
+  CommandAndArgs & {
+    environment_image_source: EnvironmentImageSourceBuild;
+  };
 export type EnvironmentPostInLauncher =
   | EnvironmentPostInLauncherHelper
   | BuildParametersPost;
@@ -380,6 +383,7 @@ export type SessionLauncherPost = {
   resource_class_id?: ResourceClassId;
   disk_storage?: DiskStorage;
   env_variables?: EnvVariables;
+  launcher_type: LauncherType;
   environment: EnvironmentPostInLauncher | EnvironmentIdOnlyPost;
 };
 export type DiskStoragePatch = number | null;

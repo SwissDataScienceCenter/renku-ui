@@ -25,6 +25,15 @@ import { useGetSessionsQuery as useGetSessionsQueryV2 } from "../api/sessionsV2.
 import UpdateSessionLauncherMetadataModal from "../components/SessionModals/UpdateSessionLauncherMetadataModal";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import DeleteSessionV2Modal from "../DeleteSessionLauncherModal";
+import {
+  buildLauncherHash,
+  buildLauncherJobHash,
+  isLauncherHashOpen,
+  parseLauncherHash,
+  toggleLauncherHash,
+} from "../session.utils";
+import { SESSION_LAUNCHER_KIND } from "../sessionsV2.types";
+import EnvVariablesModal from "../SessionView/EnvVariablesModal";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherCard from "./SessionLauncherCard";
@@ -42,6 +51,7 @@ export function SessionLauncherDisplay({
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isShareLinkOpen, setIsShareLinkOpen] = useState(false);
+  const [isEnvVariablesOpen, setEnvVariablesOpen] = useState(false);
 
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
@@ -55,21 +65,42 @@ export function SessionLauncherDisplay({
   const toggleShareLink = useCallback(() => {
     setIsShareLinkOpen((open) => !open);
   }, []);
+  const toggleEnvVariables = useCallback(() => {
+    setEnvVariablesOpen((open) => !open);
+  }, []);
 
   const [hash, setHash] = useLocationHash();
-  const launcherHash = useMemo(() => `launcher-${launcher.id}`, [launcher.id]);
-  const isSessionViewOpen = useMemo(
-    () => hash === launcherHash,
-    [hash, launcherHash],
+  const launcherHash = useMemo(
+    () => buildLauncherHash(launcher.id),
+    [launcher.id],
   );
+  const isSessionViewOpen = useMemo(
+    () => isLauncherHashOpen(hash, launcher.id),
+    [hash, launcher.id],
+  );
+  const openJobSubmissionId = useMemo(() => {
+    const parsed = parseLauncherHash(hash);
+    if (parsed.launcherId !== launcher.id) {
+      return undefined;
+    }
+    return parsed.submissionId;
+  }, [hash, launcher.id]);
   const toggleSessionView = useCallback(() => {
-    setHash((prev) => {
-      const isOpen = prev === launcherHash;
-      return isOpen ? "" : launcherHash;
-    });
-  }, [launcherHash, setHash]);
+    setHash((prev) => toggleLauncherHash(prev, launcher.id));
+  }, [launcher.id, setHash]);
+  const closeSessionView = useCallback(() => {
+    setHash((prev) => (isLauncherHashOpen(prev, launcher.id) ? "" : prev));
+  }, [launcher.id, setHash]);
+  const openSessionViewWithJob = useCallback(
+    (submissionId: string) => {
+      setHash(buildLauncherJobHash(launcher.id, submissionId));
+    },
+    [launcher.id, setHash],
+  );
 
-  const { data: sessions } = useGetSessionsQueryV2();
+  const { data: sessions } = useGetSessionsQueryV2({
+    sessionType: launcher.launcher_type,
+  });
 
   const filteredSessions = useMemo(
     () =>
@@ -94,19 +125,27 @@ export function SessionLauncherDisplay({
         toggleUpdate={toggleUpdate}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleDelete={toggleDelete}
-        toggleShareLink={toggleShareLink}
+        toggleShareLink={
+          launcher.launcher_type === SESSION_LAUNCHER_KIND.INTERACTIVE
+            ? toggleShareLink
+            : undefined
+        }
         toggleSessionView={toggleSessionView}
+        openSessionViewWithJob={openSessionViewWithJob}
+        toggleEnvVariables={toggleEnvVariables}
       />
       <SessionView
         id={launcherHash}
         launcher={launcher}
         project={project}
         sessions={filteredSessions}
-        toggle={toggleSessionView}
+        toggle={closeSessionView}
         isOpen={isSessionViewOpen}
+        openJobSubmissionId={openJobSubmissionId}
         toggleUpdate={toggleUpdate}
         toggleDelete={toggleDelete}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
+        toggleEnvVariables={toggleEnvVariables}
       />
       {launcher && (
         <>
@@ -131,6 +170,11 @@ export function SessionLauncherDisplay({
             launcher={launcher}
             project={project}
             toggle={toggleShareLink}
+          />
+          <EnvVariablesModal
+            isOpen={isEnvVariablesOpen}
+            launcher={launcher}
+            toggle={toggleEnvVariables}
           />
         </>
       )}

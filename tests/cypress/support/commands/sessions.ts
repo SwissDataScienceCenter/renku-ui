@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -32,9 +32,26 @@ function openSession() {
     .click();
 }
 
+function openSessionLauncherCreateFlow() {
+  cy.getDataCy("add-launcher").should("be.visible").click();
+  cy.getDataCy("launcher-type-selector-modal").should("be.visible");
+  cy.getDataCy("launcher-option-session").click();
+}
+
+function openJobLauncherCreateFlow() {
+  cy.getDataCy("add-launcher").should("be.visible").click();
+  cy.getDataCy("launcher-type-selector-modal").should("be.visible");
+  cy.getDataCy("launcher-option-job").click();
+}
+
 export default function registerSessionsCommands() {
   Cypress.Commands.add("openLogs", openLogs);
   Cypress.Commands.add("openSession", openSession);
+  Cypress.Commands.add(
+    "openSessionLauncherCreateFlow",
+    openSessionLauncherCreateFlow,
+  );
+  Cypress.Commands.add("openJobLauncherCreateFlow", openJobLauncherCreateFlow);
 }
 
 declare global {
@@ -43,6 +60,8 @@ declare global {
     interface Chainable {
       openLogs: typeof openLogs;
       openSession: typeof openSession;
+      openSessionLauncherCreateFlow: typeof openSessionLauncherCreateFlow;
+      openJobLauncherCreateFlow: typeof openJobLauncherCreateFlow;
     }
   }
 }

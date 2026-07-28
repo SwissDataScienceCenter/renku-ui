@@ -18,10 +18,20 @@
 
 import { useOutletContext } from "react-router";
 
+import { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import type { GroupResponse } from "~/features/projectsV2/api/namespace.api";
 import type { UserWithId } from "~/features/usersV2/api/users.api";
 
 export type NamespaceContextType =
+  | {
+      dataConnector: DataConnectorRead;
+      namespace: string;
+      kind: "dataConnector";
+    }
+  | {
+      kind: "global";
+      namespace: undefined;
+    }
   | {
       kind: "group";
       namespace: string;
@@ -31,19 +41,16 @@ export type NamespaceContextType =
       kind: "user";
       namespace: string;
       user: UserWithId;
-    }
-  | {
-      kind: "global";
-      namespace: undefined;
     };
 
 export function useNamespaceContext() {
   const ctx = useOutletContext<NamespaceContextType | undefined>();
   if (!ctx) {
     return {
+      dataConnector: undefined,
+      group: undefined,
       kind: "global",
       namespace: undefined,
-      group: undefined,
       user: undefined,
     };
   }

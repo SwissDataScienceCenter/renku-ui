@@ -27,7 +27,8 @@
         "name": "VAR_WITH_LONGER_NAME",
         "value": "value2"
       }
-    ]
+    ],
+    "launcher_type": "interactive"
   },
   {
     "id": "01HYJE99XEKWNKPYN8WRB6QA8Y",
@@ -47,6 +48,7 @@
       "port": 8080,
       "environment_kind": "CUSTOM"
     },
-    "resource_class_id": 2
+    "resource_class_id": 2,
+    "launcher_type": "interactive"
   }
 ]

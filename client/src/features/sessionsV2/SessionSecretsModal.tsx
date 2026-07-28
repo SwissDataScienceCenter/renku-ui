@@ -65,29 +65,37 @@ interface SessionSecretsModalProps {
   isOpen: boolean;
   project: Project;
   sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[];
+  onSkip?: () => void;
+  onCancel?: () => void;
+  title?: string;
 }
 
 export default function SessionSecretsModal({
   isOpen,
   project,
   sessionSecretSlotsWithSecrets,
+  onSkip: onSkipProp,
+  onCancel: onCancelProp,
+  title = "Session secrets",
 }: SessionSecretsModalProps) {
   const { data: user } = useGetUserQueryState();
 
   const navigate = useNavigate();
-  const onCancel = useCallback(() => {
+  const defaultOnCancel = useCallback(() => {
     const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
       namespace: project.namespace,
       slug: project.slug,
     });
     navigate(url);
   }, [navigate, project.namespace, project.slug]);
+  const onCancel = onCancelProp ?? defaultOnCancel;
 
   const dispatch = useAppDispatch();
 
-  const onSkip = useCallback(() => {
+  const defaultOnSkip = useCallback(() => {
     dispatch(startSessionOptionsV2Slice.actions.setUserSecretsReady(true));
   }, [dispatch]);
+  const onSkip = onSkipProp ?? defaultOnSkip;
 
   const loginUrl = useLoginUrl();
   const content = user?.isLoggedIn ? (
@@ -135,7 +143,7 @@ export default function SessionSecretsModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader tag="h2">Session secrets</ModalHeader>
+      <ModalHeader tag="h2">{title}</ModalHeader>
       <ModalBody>{content}</ModalBody>
       <ModalFooter>
         <Button

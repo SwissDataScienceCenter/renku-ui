@@ -161,10 +161,13 @@ const enhancedApi = injectedApi.enhanceEndpoints({
   ],
   endpoints: {
     deleteDataConnectorsByDataConnectorId: {
-      invalidatesTags: ["DataConnectors"],
+      invalidatesTags: (_result, error) =>
+        error ? [] : ["DataConnectors", "DataConnectorsProjectLinks"],
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
-        queryFulfilled.finally(() => {
-          dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+        queryFulfilled.then(() => {
+          if (_arg.dataConnectorId) {
+            dispatch(searchV2Api.util.invalidateTags(["SearchV2"]));
+          }
         });
       },
     },

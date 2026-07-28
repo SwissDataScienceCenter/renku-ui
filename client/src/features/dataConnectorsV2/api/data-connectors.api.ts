@@ -8,7 +8,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/data_connectors`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     postDataConnectors: build.mutation<
@@ -31,6 +33,17 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.globalDataConnectorPost,
       }),
     }),
+    getDataConnectorLinks: build.query<
+      GetDataConnectorLinksApiResponse,
+      GetDataConnectorLinksApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connector_links`,
+        params: {
+          params: queryArg.params,
+        },
+      }),
+    }),
     getDataConnectorsByDataConnectorId: build.query<
       GetDataConnectorsByDataConnectorIdApiResponse,
       GetDataConnectorsByDataConnectorIdApiArg
@@ -47,7 +60,9 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/data_connectors/${queryArg.dataConnectorId}`,
         method: "PATCH",
         body: queryArg.dataConnectorPatch,
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     deleteDataConnectorsByDataConnectorId: build.mutation<
@@ -151,7 +166,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/data_connectors/${queryArg.dataConnectorId}/deposits`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     getProjectsByProjectIdDataConnectorLinks: build.query<
@@ -180,7 +197,9 @@ const injectedRtkApi = api.injectEndpoints({
     getDeposits: build.query<GetDepositsApiResponse, GetDepositsApiArg>({
       query: (queryArg) => ({
         url: `/deposits`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     getDepositsByDepositId: build.query<
@@ -197,7 +216,9 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/deposits/${queryArg.depositId}`,
         method: "PATCH",
         body: queryArg.depositPatch,
-        headers: { "If-Match": queryArg["If-Match"] },
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     deleteDepositsByDepositId: build.mutation<
@@ -246,6 +267,12 @@ export type PostDataConnectorsGlobalApiResponse =
 export type PostDataConnectorsGlobalApiArg = {
   globalDataConnectorPost: GlobalDataConnectorPost;
 };
+export type GetDataConnectorLinksApiResponse =
+  /** status 200 The list of data connector links */ DataConnectorToProjectLinksList;
+export type GetDataConnectorLinksApiArg = {
+  /** query parameters */
+  params?: DataConnectorLinksGetQuery;
+};
 export type GetDataConnectorsByDataConnectorIdApiResponse =
   /** status 200 The data connector */ DataConnectorRead;
 export type GetDataConnectorsByDataConnectorIdApiArg = {
@@ -261,8 +288,7 @@ export type PatchDataConnectorsByDataConnectorIdApiArg = {
   "If-Match": ETag;
   dataConnectorPatch: DataConnectorPatch;
 };
-export type DeleteDataConnectorsByDataConnectorIdApiResponse =
-  /** status 204 The data connector was removed or did not exist in the first place */ void;
+export type DeleteDataConnectorsByDataConnectorIdApiResponse = unknown;
 export type DeleteDataConnectorsByDataConnectorIdApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
@@ -306,7 +332,7 @@ export type PostDataConnectorsByDataConnectorIdProjectLinksApiArg = {
   dataConnectorToProjectLinkPost: DataConnectorToProjectLinkPost;
 };
 export type DeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdApiResponse =
-  /** status 204 The data connector was removed or did not exist in the first place */ void;
+  unknown;
 export type DeleteDataConnectorsByDataConnectorIdProjectLinksAndLinkIdApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
@@ -326,8 +352,7 @@ export type PatchDataConnectorsByDataConnectorIdSecretsApiArg = {
   dataConnectorId: Ulid;
   dataConnectorSecretPatchList: DataConnectorSecretPatchList;
 };
-export type DeleteDataConnectorsByDataConnectorIdSecretsApiResponse =
-  /** status 204 The secrets were removed or did not exist in the first place or the storage doesn't exist */ void;
+export type DeleteDataConnectorsByDataConnectorIdSecretsApiResponse = unknown;
 export type DeleteDataConnectorsByDataConnectorIdSecretsApiArg = {
   /** the ID of the data connector */
   dataConnectorId: Ulid;
@@ -378,8 +403,7 @@ export type PatchDepositsByDepositIdApiArg = {
   "If-Match": ETag;
   depositPatch: DepositPatch;
 };
-export type DeleteDepositsByDepositIdApiResponse =
-  /** status 204 The data deposit was deleted */ void;
+export type DeleteDepositsByDepositIdApiResponse = unknown;
 export type DeleteDepositsByDepositIdApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
@@ -390,8 +414,7 @@ export type GetDepositsByDepositIdLogsApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
 };
-export type PostDepositsByDepositIdJobApiResponse =
-  /** status 201 The data deposit job has been recreated */ void;
+export type PostDepositsByDepositIdJobApiResponse = unknown;
 export type PostDepositsByDepositIdJobApiArg = {
   /** the ID of the data deposit */
   depositId: Ulid;
@@ -579,6 +602,17 @@ export type GlobalDataConnectorPost = {
 export type GlobalDataConnectorPostRead = {
   storage: CloudStorageCorePostRead | CloudStorageUrlV2;
 };
+export type DataConnectorToProjectLink = {
+  id: Ulid;
+  data_connector_id: Ulid;
+  project_id: Ulid;
+  creation_date: CreationDate;
+  created_by: UserId;
+};
+export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
+export type DataConnectorLinksGetQuery = PaginationRequest & {
+  doi?: Doi;
+};
 export type CloudStorageCorePatch = {
   storage_type?: StorageType;
   configuration?: RCloneConfig;
@@ -619,14 +653,6 @@ export type DataConnectorPermissions = {
   /** The user can manage data connector members */
   change_membership?: boolean;
 };
-export type DataConnectorToProjectLink = {
-  id: Ulid;
-  data_connector_id: Ulid;
-  project_id: Ulid;
-  creation_date: CreationDate;
-  created_by: UserId;
-};
-export type DataConnectorToProjectLinksList = DataConnectorToProjectLink[];
 export type DataConnectorToProjectLinkPost = {
   project_id: Ulid;
 };
@@ -656,13 +682,13 @@ export type DepositStatus =
   | "failed"
   | "upload_complete";
 export type Deposit = DepositPost & {
-  id?: Ulid;
-  status?: DepositStatus;
+  id: Ulid;
+  status: DepositStatus;
   /** The URL from the provider where the deposit can be accessed */
-  external_url?: string;
-  creation_date?: CreationDate;
-  updated_at?: CreationDate;
-  etag?: ETag;
+  external_url: string;
+  creation_date: CreationDate;
+  updated_at: CreationDate;
+  etag: ETag;
 };
 export type DepositList = Deposit[];
 export type InaccessibleDataConnectorLinks = {
@@ -681,6 +707,7 @@ export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
   usePostDataConnectorsGlobalMutation,
+  useGetDataConnectorLinksQuery,
   useGetDataConnectorsByDataConnectorIdQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
   useDeleteDataConnectorsByDataConnectorIdMutation,

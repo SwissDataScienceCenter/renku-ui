@@ -17,6 +17,7 @@
       "mount_directory": "",
       "port": 8080,
       "environment_kind": "GLOBAL"
-    }
+    },
+    "launcher_type": "interactive"
   }
 ]

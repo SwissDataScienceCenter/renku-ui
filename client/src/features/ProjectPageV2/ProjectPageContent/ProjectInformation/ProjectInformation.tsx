@@ -33,12 +33,12 @@ import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
+import CopyProjectButton from "~/features/ProjectPageV2/ProjectPageContent/ProjectInformation/CopyProjectButton";
 import { useProject } from "~/routes/projects/root";
 import { UnderlineArrowLink } from "../../../../components/buttons/Button";
 import { Loader } from "../../../../components/Loader";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import projectPreviewImg from "../../../../styles/assets/projectImagePreview.svg";
 import type {
   Project,
   ProjectMemberListResponse,
@@ -51,9 +51,6 @@ import {
 } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import ProjectInformationButton from "./ProjectInformationButton";
-
-import styles from "./ProjectInformation.module.scss";
 
 const MAX_MEMBERS_DISPLAYED = 5;
 
@@ -229,7 +226,7 @@ export default function ProjectInformation({
           </h2>
 
           <div>
-            <ProjectInformationButton
+            <CopyProjectButton
               userPermissions={permissions}
               project={project}
             />
@@ -238,18 +235,6 @@ export default function ProjectInformation({
       </CardHeader>
       <CardBody>{information}</CardBody>
     </Card>
-  );
-}
-
-export function ProjectImageView() {
-  return (
-    <div className={cx(styles.projectPageImgPlaceholder)}>
-      <img
-        src={projectPreviewImg}
-        className={cx("mb-3", "rounded-2")}
-        alt="Project image preview"
-      />
-    </div>
   );
 }
 

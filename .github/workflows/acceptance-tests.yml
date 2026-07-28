@@ -54,7 +54,7 @@ jobs:
     #   url: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     steps:
       - name: Checkout renku repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: SwissDataScienceCenter/renku
           sparse-checkout: |
@@ -106,7 +106,7 @@ jobs:
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
           RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
           RENKU_VALUES_FILE: ${{ github.workspace }}/values.yaml
-          RENKU_VALUES: minimal-deployment/minimal-deployment-values.yaml
+          RENKU_VALUES: minimal-deployment/sdsc-azure-ci-deployment-values.yaml
           TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
           KUBERNETES_CLUSTER_FQDN: "dev.renku.ch"
           RENKU_ANONYMOUS_SESSIONS: "true"

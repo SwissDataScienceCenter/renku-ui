@@ -51,7 +51,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/oauth2/providers/${queryArg.providerId}/authorize`,
-        params: { authorize_params: queryArg.authorizeParams },
+        params: {
+          authorize_params: queryArg.authorizeParams,
+        },
       }),
     }),
     getOauth2Connections: build.query<
@@ -99,7 +101,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/oauth2/connections/${queryArg.connectionId}/installations`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     postOauth2ConnectionsByConnectionIdTokenEndpoint: build.mutation<
@@ -135,8 +139,7 @@ export type PatchOauth2ProvidersByProviderIdApiArg = {
   providerId: string;
   providerPatch: ProviderPatch;
 };
-export type DeleteOauth2ProvidersByProviderIdApiResponse =
-  /** status 204 The OAuth2 Client was removed or did not exist in the first place */ void;
+export type DeleteOauth2ProvidersByProviderIdApiResponse = unknown;
 export type DeleteOauth2ProvidersByProviderIdApiArg = {
   providerId: string;
 };
@@ -157,8 +160,7 @@ export type GetOauth2ConnectionsByConnectionIdApiResponse =
 export type GetOauth2ConnectionsByConnectionIdApiArg = {
   connectionId: string;
 };
-export type DeleteOauth2ConnectionsByConnectionIdApiResponse =
-  /** status 204 If deleted successfully */ void;
+export type DeleteOauth2ConnectionsByConnectionIdApiResponse = unknown;
 export type DeleteOauth2ConnectionsByConnectionIdApiArg = {
   connectionId: string;
 };

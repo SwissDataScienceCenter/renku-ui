@@ -18,6 +18,7 @@
       "environment_kind": "CUSTOM"
     },
     "resource_class_id": 2,
-    "env_variables": []
+    "env_variables": [],
+    "launcher_type": "interactive"
   }
 ]

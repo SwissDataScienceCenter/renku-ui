@@ -8,7 +8,9 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/search/query`,
-        params: { params: queryArg.params },
+        params: {
+          params: queryArg.params,
+        },
       }),
     }),
     postSearchReprovision: build.mutation<
@@ -45,8 +47,7 @@ export type PostSearchReprovisionApiArg = void;
 export type GetSearchReprovisionApiResponse =
   /** status 200 Status of reprovisioning if there's one in progress */ ReprovisioningStatus;
 export type GetSearchReprovisionApiArg = void;
-export type DeleteSearchReprovisionApiResponse =
-  /** status 204 The reprovisioning was stopped or there was no one in progress */ void;
+export type DeleteSearchReprovisionApiResponse = unknown;
 export type DeleteSearchReprovisionApiArg = void;
 export type SearchGroup = {
   id: string;
