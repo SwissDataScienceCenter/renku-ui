@@ -1228,7 +1228,7 @@ describe("launch sessions with resource quotas", () => {
       "contain.text",
       "Usage quota for this resource pool has been reached",
     );
-    cy.getDataCy("get-back-session-view").click();
+    cy.getDataCy("session-launcher-close-offcanvas-button").click();
 
     // start session
     cy.fixture("sessions/sessionV2.json").then((session) => {
