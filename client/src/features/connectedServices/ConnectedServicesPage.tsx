@@ -512,7 +512,11 @@ function AddIntegrationModal({
       </ModalHeader>
       <ModalBody>
         {providers.length === 0 ? (
-          <p>You have already connected to all the available integrations.</p>
+          <p>
+            There are no other integrations to activate. If you want to change
+            an existing integration, click <b>Remove</b> or <b>Disconnect</b>,
+            then connect it again.
+          </p>
         ) : (
           <>
             <p>Add a new code, data, or compute integration.</p>
