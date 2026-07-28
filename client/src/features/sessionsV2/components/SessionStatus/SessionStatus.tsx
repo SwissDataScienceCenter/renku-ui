@@ -732,11 +732,47 @@ function SessionStatusV2Text({
   }
 
   const icon = <GetSessionStatusTextIcon {...textParts} />;
+  const showQuotaInformation =
+    state === "running" || state === "starting" || state === "hibernated";
 
   return (
-    <div className={cx("d-flex", "align-items-center", "gap-2")}>
-      {includeIcon && icon}
-      <span>{content}</span>
+    <div className={cx("d-flex", "flex-column", "gap-1")}>
+      <div className={cx("d-flex", "align-items-center", "gap-2")}>
+        {includeIcon && icon}
+        <span>{content}</span>
+      </div>
+      {showQuotaInformation && (
+        <div>
+          <SessionStatusV2TextQuotaInformation
+            resourceClassId={resourceClassId}
+          />
+        </div>
+      )}
     </div>
+  );
+}
+
+function SessionStatusV2TextQuotaInformation({
+  resourceClassId,
+}: {
+  resourceClassId: SessionStatusV2TextProps["resourceClassId"];
+}) {
+  const pollingInterval = 60 * 1000; // 1 minute
+  const { data: resourcePools } = useGetResourcePoolsQuery(
+    {},
+    { pollingInterval },
+  );
+  const resourceClass = resourcePools
+    ?.flatMap((pool) => pool.classes)
+    .find((cls) => cls.id === resourceClassId);
+  if (!resourceClass || resourceClass.usage_hours_remaining == null)
+    return null;
+
+  return (
+    <span className="text-muted">
+      <UsageAvailable
+        usageAvailableHours={resourceClass.usage_hours_remaining}
+      />
+    </span>
   );
 }

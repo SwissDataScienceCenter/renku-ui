@@ -143,17 +143,13 @@ export default function SessionLauncherCard({
     computeResourcesApi.endpoints.getResourcePools.useQueryState({});
   // Ref: https://github.com/facebook/react/issues/35577
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
-  const { resourcePool, resourceClass } = useMemo(() => {
+  const resourcePool = useMemo(() => {
     if (launcher?.resource_class_id == null || resourcePools == null) {
-      return { resourcePool: undefined, resourceClass: undefined };
+      return undefined;
     }
-    const resourcePool = resourcePools.find(({ classes }) =>
+    return resourcePools.find(({ classes }) =>
       classes.some(({ id }) => id === launcher.resource_class_id),
     );
-    const resourceClass = resourcePool?.classes.find(
-      ({ id }) => id === launcher.resource_class_id,
-    );
-    return { resourcePool, resourceClass };
   }, [launcher?.resource_class_id, resourcePools]);
 
   return (
@@ -322,13 +318,6 @@ export default function SessionLauncherCard({
                     lastBuild={lastBuild}
                     launcher={launcher}
                     otherActions={otherLauncherActions}
-                    resourceClass={resourceClass}
-                    slug={project.slug}
-                    useOldImage={
-                      isCodeEnvironment &&
-                      lastBuild?.status !== "succeeded" &&
-                      !!lastSuccessfulBuild
-                    }
                     project={project}
                   />
                   {useOldImage && lastSuccessfulBuild && (

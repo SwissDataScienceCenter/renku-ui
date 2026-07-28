@@ -19,7 +19,6 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError, skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo } from "react";
 import { generatePath, Link } from "react-router";
 import { Col, ListGroup, Row } from "reactstrap";
 
@@ -28,7 +27,6 @@ import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesErr
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import { useGetProjectsByProjectIdQuery } from "../projectsV2/api/projectV2.enhanced-api";
-import { useGetResourcePoolsQuery } from "../sessionsV2/api/computeResources.api";
 import { useGetSessionLaunchersByLauncherIdQuery as useGetProjectSessionLauncherQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
 import ActiveSessionButton from "../sessionsV2/components/SessionButton/ActiveSessionButton";
 import {
@@ -148,17 +146,6 @@ function DashboardSessionStatusRow({ session }: { session: SessionV2 }) {
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
   const sessionStyles = getSessionStatusStyles(session, launcherCategory);
   const state = session.status.state;
-  const { data: resourcePools } = useGetResourcePoolsQuery(
-    session ? {} : skipToken,
-  );
-  const currentSessionClassId = session?.resource_class_id;
-  const userLauncherClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == currentSessionClassId),
-    [currentSessionClassId, resourcePools],
-  );
 
   return (
     <div className={cx("d-flex", "gap-2", "align-items-center")}>
@@ -268,10 +255,6 @@ function DashboardSessionListItem({ session }: { session: SessionV2 }) {
       <div className={cx(styles.sessionButton, "position-absolute")}>
         <ActiveSessionButton
           className="my-auto"
-          usageLimit={{
-            resourceClass: userLauncherClass,
-            quotaEnforced: false, // TODO: Pass the actual value when available from the API
-          }}
           session={session}
           showSessionUrl={showSessionUrl}
         />
