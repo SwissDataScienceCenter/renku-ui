@@ -23,9 +23,7 @@
  *  Presentational components.
  */
 
-import cx from "classnames";
 import { useContext } from "react";
-import { Col, Row } from "reactstrap";
 
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import AppContext from "../../utils/context/appContext";
@@ -91,20 +89,13 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
   return (
     <>
       <div
-        id="rk-anon-home-section1"
         style={{
           backgroundImage: `url(${backgroundUrl})`,
           backgroundSize,
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="rk-anon-home-section-content">
-          <Row>
-            <Col className={cx("rk-pt-l", "rk-w-s")}>
-              <LazyMarkdown sanitize={false}>{content}</LazyMarkdown>
-            </Col>
-          </Row>
-        </div>
+        <LazyMarkdown sanitize={false}>{content}</LazyMarkdown>
       </div>
       <BottomNav />
     </>
