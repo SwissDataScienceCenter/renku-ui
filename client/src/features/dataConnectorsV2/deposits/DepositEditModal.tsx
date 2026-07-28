@@ -144,6 +144,9 @@ export default function DepositEditModal({
   const isModified =
     watchNewName !== deposit?.name || watchNewPath !== deposit?.path;
 
+  // Disable fields for specific providers
+  const disableEdit = deposit?.provider === "envidat";
+
   return (
     <Modal centered data-cy="deposit-creation-modal" isOpen={isOpen} size="lg">
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -168,10 +171,11 @@ export default function DepositEditModal({
                 render={({ field, fieldState }) => (
                   <>
                     <Input
+                      disabled={disableEdit}
                       id="name"
-                      type="text"
-                      placeholder="Name"
                       invalid={!!fieldState.error}
+                      placeholder="Name"
+                      type="text"
                       {...field}
                     />
                     <div className="invalid-feedback">
@@ -197,10 +201,11 @@ export default function DepositEditModal({
                 render={({ field, fieldState }) => (
                   <>
                     <Input
+                      disabled={disableEdit}
                       id="path"
-                      type="text"
-                      placeholder="Folder (e.g. /data/processed)"
                       invalid={!!fieldState.error}
+                      placeholder="Folder (e.g. /data/processed)"
+                      type="text"
                       {...field}
                     />
                     <div className="invalid-feedback">Please enter a path.</div>
