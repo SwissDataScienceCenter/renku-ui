@@ -311,8 +311,7 @@ export const LAUNCHER_BY_CATEGORY: Record<
       },
     },
     icon: CircleSquare,
-    description:
-      "Start a long-running web app that anyone can open via a public URL. Only available in public projects.",
+    description: "Create and share a dashboard or app",
     allowedEnvironmentSelects: ["custom + build", "custom + image"],
   },
 };
