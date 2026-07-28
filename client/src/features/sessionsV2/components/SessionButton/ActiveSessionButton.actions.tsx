@@ -30,7 +30,7 @@ import { Link } from "react-router";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
-import { JOB_STOPPING_BUTTON_LABEL } from "~/features/sessionsV2/session.utils.ts";
+import { JOB_STOPPING_BUTTON_LABEL } from "~/features/sessionsV2/session.utils";
 import { SessionStatusState } from "../../sessionsV2.types";
 
 export interface ActiveSessionActionContext {
