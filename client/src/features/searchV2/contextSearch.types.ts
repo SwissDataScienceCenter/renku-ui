@@ -25,8 +25,9 @@ export type GroupSearchEntity = Exclude<
   { type: "Group" | "User" }
 >;
 
-interface FilterValue {
-  label: ReactNode;
+export interface FilterValue {
+  label: string | ReactNode;
+  icon?: ReactNode;
   quantity?: number;
   value: string;
   id?: string;

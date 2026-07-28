@@ -51,39 +51,23 @@ export const FILTER_CONTENT: EnumFilter = {
   allowedValues: [
     {
       value: "Project",
-      label: (
-        <>
-          <Folder className={cx("bi", "me-1")} />
-          Project
-        </>
-      ),
+      label: "Project",
+      icon: <Folder className={cx("bi", "me-1")} />,
     },
     {
       value: "DataConnector",
-      label: (
-        <>
-          <Database className={cx("bi", "me-1")} />
-          Data
-        </>
-      ),
+      label: "Data",
+      icon: <Database className={cx("bi", "me-1")} />,
     },
     {
       value: "User",
-      label: (
-        <>
-          <Person className={cx("bi", "me-1")} />
-          User
-        </>
-      ),
+      label: "User",
+      icon: <Person className={cx("bi", "me-1")} />,
     },
     {
       value: "Group",
-      label: (
-        <>
-          <People className={cx("bi", "me-1")} />
-          Group
-        </>
-      ),
+      label: "Group",
+      icon: <People className={cx("bi", "me-1")} />,
     },
   ],
   allowSelectMany: false,
@@ -102,21 +86,13 @@ export const FILTER_CONTENT_NAMESPACE: EnumFilter = {
   allowedValues: [
     {
       value: "Project",
-      label: (
-        <>
-          <Folder className={cx("bi", "me-1")} />
-          Project
-        </>
-      ),
+      icon: <Folder className={cx("bi", "me-1")} />,
+      label: "Project",
     },
     {
       value: "DataConnector",
-      label: (
-        <>
-          <Database className={cx("bi", "me-1")} />
-          Data
-        </>
-      ),
+      icon: <Database className={cx("bi", "me-1")} />,
+      label: "Data",
     },
   ],
   allowSelectMany: false,
@@ -167,21 +143,13 @@ export const FILTER_VISIBILITY: EnumFilter = {
     { value: "", label: "Any visibility" },
     {
       value: "public",
-      label: (
-        <>
-          <Globe className={cx("bi", "me-1")} />
-          Public
-        </>
-      ),
+      icon: <Globe className={cx("bi", "me-1")} />,
+      label: "Public",
     },
     {
       value: "private",
-      label: (
-        <>
-          <Lock className={cx("bi", "me-1")} />
-          Private
-        </>
-      ),
+      icon: <Lock className={cx("bi", "me-1")} />,
+      label: "Private",
     },
   ],
   allowSelectMany: false,
@@ -201,15 +169,15 @@ export const FILTER_MY_ROLE: EnumFilter = {
   allowedValues: [
     {
       value: "owner",
-      label: <>Owner</>,
+      label: "Owner",
     },
     {
       value: "editor",
-      label: <>Editor</>,
+      label: "Editor",
     },
     {
       value: "viewer",
-      label: <>Viewer</>,
+      label: "Viewer",
     },
   ],
   allowSelectMany: true,
@@ -236,27 +204,27 @@ export const FILTER_DATE: EnumFilter = {
   allowedValues: [
     {
       value: "",
-      label: <>All</>,
+      label: "All",
       id: "any",
     },
     {
       value: ">today-7d",
-      label: <>Last week</>,
+      label: "Last week",
       id: "last-week",
     },
     {
       value: ">today-31d",
-      label: <>Last month</>,
+      label: "Last month",
       id: "last-month",
     },
     {
       value: ">today-90d",
-      label: <>Last 90 days</>,
+      label: "Last 90 days",
       id: "last-90-days",
     },
     {
       value: "<today-90d",
-      label: <>Older than 90 days</>,
+      label: "Older than 90 days",
       id: "older-than-90-days",
     },
   ],
