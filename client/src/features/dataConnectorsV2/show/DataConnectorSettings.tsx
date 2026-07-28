@@ -287,6 +287,16 @@ export default function DataConnectorSettings() {
                       Delete
                     </Button>
                   )}
+                  {lastDeposit && (
+                    <Button
+                      color="outline-primary"
+                      data-cy="data-connector-deposits-show-logs-button"
+                      onClick={toggleShowDepositLogsOpen}
+                    >
+                      <FileEarmarkText className={cx("bi", "me-1")} />
+                      Show logs
+                    </Button>
+                  )}
                   {lastDeposit && lastDeposit.status !== "complete" && (
                     <Button
                       color={
@@ -303,14 +313,6 @@ export default function DataConnectorSettings() {
                   )}
                   {lastDeposit && lastDeposit.status === "upload_complete" && (
                     <>
-                      <Button
-                        color="outline-primary"
-                        data-cy="data-connector-deposits-show-logs-button"
-                        onClick={toggleShowDepositLogsOpen}
-                      >
-                        <FileEarmarkText className={cx("bi", "me-1")} />
-                        Show logs
-                      </Button>
                       <Button
                         color="primary"
                         data-cy="data-connector-deposits-finalize-button"
