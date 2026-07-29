@@ -4,7 +4,6 @@ import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
-import jest from "eslint-plugin-jest";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import spellcheck from "eslint-plugin-spellcheck";
@@ -21,7 +20,6 @@ const jsRules = {
   "max-nested-callbacks": ["warn", 3],
   "no-alert": "error",
   "no-else-return": "warn",
-  "jest/expect-expect": "off",
   "no-unsafe-finally": "off",
   "react-hooks/rules-of-hooks": "error",
   "react-hooks/exhaustive-deps": "warn",
@@ -311,21 +309,18 @@ export default defineConfig([
       ...compat.extends(
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
-        "plugin:jest/recommended",
         "prettier",
       ),
     ],
     plugins: {
       react,
       "react-hooks": reactHooks,
-      jest,
       spellcheck,
     },
     languageOptions: {
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...jest.environments.globals.globals,
       },
       parser: tsParser,
       ecmaVersion: 2022,
@@ -352,7 +347,6 @@ export default defineConfig([
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
         "plugin:react-hooks/recommended",
-        "plugin:jest/recommended",
         "prettier",
       ),
     ],
@@ -360,14 +354,12 @@ export default defineConfig([
       "@typescript-eslint": typescriptEslint,
       react,
       "react-hooks": reactHooks,
-      jest,
       spellcheck,
     },
     languageOptions: {
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...jest.environments.globals.globals,
       },
       parser: tsParser,
       ecmaVersion: 2022,
