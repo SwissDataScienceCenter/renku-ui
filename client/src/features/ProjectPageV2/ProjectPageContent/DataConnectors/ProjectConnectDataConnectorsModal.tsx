@@ -23,7 +23,6 @@ import {
   Bullseye, // eslint-disable-line spellcheck/spell-checker
   CheckLg,
   Database,
-  DatabaseAdd,
   Globe,
   Journals,
   Link45deg,
@@ -49,6 +48,7 @@ import {
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
+import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { useGetDataConnectorsStorageAllowByProjectIdQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
@@ -296,7 +296,7 @@ export function ProjectConnectDataConnectorModeSwitch({
               "d-flex",
             )}
           >
-            <DatabaseAdd className={cx("fs-3", "me-1")} />
+            <RenkuStorageIcon className={cx("fs-3", "me-1")} />
             Add project storage
           </Label>
         </>

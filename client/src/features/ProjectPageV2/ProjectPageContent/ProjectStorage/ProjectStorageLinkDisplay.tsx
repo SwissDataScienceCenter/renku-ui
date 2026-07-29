@@ -35,6 +35,7 @@ import {
 import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import { type ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useDeleteDataConnectorsStorageByStorageIdMutation } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
@@ -106,6 +107,17 @@ export default function ProjectStorageLinkDisplay({
                 <span className="fw-bold" data-cy="project-storage-name">
                   Project storage
                 </span>
+              </div>
+              <div
+                className={cx(
+                  "align-items-center",
+                  "d-flex",
+                  "flex-row",
+                  "gap-1",
+                )}
+              >
+                <RenkuStorageIcon />
+                <p className={cx("mb-0", "text-break")}>Renku storage</p>
               </div>
             </Col>
             {/* This column is a placeholder to reserve the space for the action button */}

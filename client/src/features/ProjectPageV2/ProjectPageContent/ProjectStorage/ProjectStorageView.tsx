@@ -62,7 +62,10 @@ export default function ProjectStorageView({
       backdrop={true}
     >
       <OffcanvasBody data-cy="project-storage-view">
-        <OffcanvasTopButtons toggleView={toggleView} />
+        <OffcanvasTopButtons
+          entityType="renku-storage"
+          toggleView={toggleView}
+        />
 
         <div className={cx("d-flex", "flex-column", "gap-3")}>
           <ProjectStorageViewHeader
@@ -96,11 +99,7 @@ function ProjectStorageViewHeader({
   toggleEdit: () => void;
 }) {
   return (
-    <OffcanvasHeaderWithType
-      entityIcon={<div />}
-      entityName=" "
-      title="Project Storage"
-    >
+    <OffcanvasHeaderWithType entityType="renku-storage" title="Project storage">
       <ProjectStorageActions
         projectStorage={projectStorage}
         toggleView={toggleView}
