@@ -21,6 +21,14 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/persisted_logs/sessions/${queryArg.launcherId}/runs`,
       }),
     }),
+    getPersistedLogsBuildsByBuildId: build.query<
+      GetPersistedLogsBuildsByBuildIdApiResponse,
+      GetPersistedLogsBuildsByBuildIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/persisted_logs/builds/${queryArg.buildId}`,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -37,6 +45,12 @@ export type GetPersistedLogsSessionsByLauncherIdRunsApiResponse =
    */ SessionRuns;
 export type GetPersistedLogsSessionsByLauncherIdRunsApiArg = {
   launcherId: Ulid;
+};
+export type GetPersistedLogsBuildsByBuildIdApiResponse =
+  /** status 200 The image build logs from the corresponding image build.
+   */ PersistedBuildLogs;
+export type GetPersistedLogsBuildsByBuildIdApiArg = {
+  buildId: Ulid;
 };
 export type Ulid = string;
 export type SessionRun = {
@@ -74,3 +88,6 @@ export type PersistedLogsGetQuery = {
   submission_id?: string;
 };
 export type SessionRuns = SessionRun[];
+export type PersistedBuildLogs = {
+  logs: SessionRunLogs;
+};

@@ -20,14 +20,14 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useCallback, useMemo } from "react";
 
 import {
-  sessionLaunchersV2Api,
-  useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
+  persistedLogsApi,
+  useGetPersistedBuildLogsForModalQuery,
+} from "../persistedLogs/api/persistedLogs.api";
+import {
   type Build,
   type BuildList,
 } from "../sessionsV2/api/sessionLaunchersV2.api";
 import LogsModal from "./LogsModal";
-
-const BUILD_LOGS_MAX_LINES = 250;
 
 interface BuildLogsModalProps {
   builds: BuildList | undefined;
@@ -74,17 +74,16 @@ function BuildLogsModalInner({
   isOpen,
   toggle,
 }: BuildLogsModalInnerProps) {
-  const query = useGetBuildLogsQuery(
+  const query = useGetPersistedBuildLogsForModalQuery(
     isOpen
       ? {
           buildId: build.id,
-          maxLines: BUILD_LOGS_MAX_LINES,
         }
       : skipToken,
   );
 
   const [trigger] =
-    sessionLaunchersV2Api.endpoints.getBuildsByBuildIdLogs.useLazyQuery();
+    persistedLogsApi.endpoints.getPersistedBuildLogsForModal.useLazyQuery();
   const downloadQueryTrigger = useCallback(
     () => trigger({ buildId: build.id }),
     [build.id, trigger],

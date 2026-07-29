@@ -99,6 +99,46 @@
         },
         "tags": ["persisted_logs"]
       }
+    },
+    "/persisted_logs/builds/{build_id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "build_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The image build logs from the corresponding image build.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersistedBuildLogs"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The image build does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["persisted_logs"]
+      }
     }
   },
   "components": {
@@ -141,6 +181,16 @@
           }
         },
         "required": ["id", "launcher_id"]
+      },
+      "PersistedBuildLogs": {
+        "description": "Logs for an image build",
+        "type": "object",
+        "properties": {
+          "logs": {
+            "$ref": "#/components/schemas/SessionRunLogs"
+          }
+        },
+        "required": ["logs"]
       },
       "SessionRunLogs": {
         "description": "Logs of a session run, organized by pod container",

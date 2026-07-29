@@ -17,6 +17,8 @@
  */
 
 import {
+  GetPersistedLogsBuildsByBuildIdApiArg,
+  GetPersistedLogsBuildsByBuildIdApiResponse,
   persistedLogsGeneratedApi,
   type GetPersistedLogsSessionsByLauncherIdApiArg,
   type GetPersistedLogsSessionsByLauncherIdApiResponse,
@@ -62,6 +64,26 @@ const withTransformedEndpoints = withFixedEndpoints.injectEndpoints({
         return asRecord;
       },
     }),
+    getPersistedBuildLogsForModal: build.query<
+      Record<string, string>,
+      GetPersistedLogsBuildsByBuildIdApiArg
+    >({
+      query: ({ buildId }) => ({
+        url: `/persisted_logs/builds/${buildId}`,
+      }),
+      transformResponse: (
+        result: GetPersistedLogsBuildsByBuildIdApiResponse,
+      ) => {
+        const asRecord = result.logs.reduce(
+          (prev, { container, logs }) => ({
+            ...prev,
+            [container]: logs.map(({ log_line }) => log_line).join(""),
+          }),
+          {} as Record<string, string>,
+        );
+        return asRecord;
+      },
+    }),
   }),
 });
 
@@ -91,5 +113,7 @@ export const {
   useGetPersistedLogsSessionsByLauncherIdQuery,
   useGetPersistedLogsSessionsByLauncherIdRunsQuery,
   useGetPersistedLogsForModalQuery,
+  useGetPersistedLogsBuildsByBuildIdQuery,
+  useGetPersistedBuildLogsForModalQuery,
 } = persistedLogsApi;
 export type * from "./persistedLogs.generated-api";
