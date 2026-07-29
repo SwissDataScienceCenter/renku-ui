@@ -26,7 +26,6 @@ import {
   CardBody,
   CardHeader,
   ListGroup,
-  ListGroupItem,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -50,6 +49,7 @@ import DataConnectorBoxListDisplay, {
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import ProjectStorageLinkDisplay from "../ProjectStorage/ProjectStorageLinkDisplay";
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
 
 interface DataConnectorListDisplayProps {
@@ -165,11 +165,7 @@ function ProjectDataConnectorBoxContent({
           {projectStorageData && projectStorageData.length > 0 && (
             <ListGroup flush>
               {projectStorageData.map((ps, index) => (
-                <ProjectStorageLinkDisplay
-                  key={index}
-                  projectStorage={ps}
-                  name={`Project storage ${projectStorageData.length > 1 ? index + 1 : ""}`}
-                />
+                <ProjectStorageLinkDisplay key={index} projectStorage={ps} />
               ))}
             </ListGroup>
           )}
@@ -184,44 +180,6 @@ function ProjectDataConnectorBoxContent({
         />
       )}
     </div>
-  );
-}
-
-function ProjectStorageLinkDisplay({
-  projectStorage,
-  name,
-}: {
-  projectStorage: ProjectStorage;
-  name: string;
-}) {
-  return (
-    <ListGroupItem
-      action
-      className={cx("position-relative", "p-0")}
-      data-cy="data-connector-item"
-    >
-      <div
-        className={cx(
-          "d-block",
-          "link-primary",
-          "py-3",
-          "text-body",
-          "text-decoration-none",
-        )}
-      >
-        <div
-          className={cx("align-items-center", "d-flex", "flex-wrap", "gap-2")}
-        >
-          <span className="fw-bold" data-cy="data-connector-name">
-            {name}
-          </span>
-        </div>
-        <div>Size: {projectStorage.size} GB</div>
-        <div>
-          Mount point: <code>{projectStorage.mount_path}</code>
-        </div>
-      </div>
-    </ListGroupItem>
   );
 }
 

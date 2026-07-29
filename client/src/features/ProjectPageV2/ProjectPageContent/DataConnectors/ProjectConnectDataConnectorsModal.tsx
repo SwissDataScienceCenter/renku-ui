@@ -23,6 +23,7 @@ import {
   Bullseye, // eslint-disable-line spellcheck/spell-checker
   CheckLg,
   Database,
+  DatabaseAdd,
   Globe,
   Journals,
   Link45deg,
@@ -52,6 +53,7 @@ import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { useGetDataConnectorsStorageAllowByProjectIdQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
   useGetProjectsByProjectIdDataConnectorLinksQuery,
+  useGetProjectsByProjectIdStorageQuery,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsGlobalMutation,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -75,6 +77,7 @@ import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { doiFromUrl } from "../../utils/dataConnectorUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import ProjectStorageForm from "../ProjectStorage/ProjectStorageForm";
 import {
   DC_LIKELY_DOI_ID,
   DC_SEARCH_DOI_PREFIX,
@@ -86,7 +89,6 @@ import {
   DC_SEARCH_TYPE,
   DC_SUCCESS_MESSAGE_TIMEOUT_MS,
 } from "./projectDataConnectors.constants";
-import ProjectStorageDataConnectorForm from "./ProjectStorageDataConnectorForm";
 
 interface ProjectConnectDataConnectorsModalProps extends Omit<
   Parameters<typeof DataConnectorModal>[0],
@@ -223,6 +225,9 @@ export function ProjectConnectDataConnectorModeSwitch({
     useGetDataConnectorsStorageAllowByProjectIdQuery({
       projectId: project.id,
     });
+  const { data: projectStorage } = useGetProjectsByProjectIdStorageQuery({
+    projectId: project.id,
+  });
 
   return (
     <ButtonGroup>
@@ -270,7 +275,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         Create a data connector
       </Label>
 
-      {storageAllowData && (
+      {storageAllowData && projectStorage && projectStorage.length == 0 && (
         <PermissionsGuard
           disabled={null}
           enabled={
@@ -293,8 +298,8 @@ export function ProjectConnectDataConnectorModeSwitch({
                   "d-flex",
                 )}
               >
-                <Database className={cx("fs-3", "me-1")} />
-                Manage project storage
+                <DatabaseAdd className={cx("fs-3", "me-1")} />
+                Add project storage
               </Label>
             </>
           }
@@ -329,7 +334,11 @@ function ProjectStorageDataConnectorBodyAndFooter({
           />
         </div>
       )}
-      <ProjectStorageDataConnectorForm project={project} toggle={toggle} />
+      <ProjectStorageForm
+        projectId={project.id}
+        namespace={`${project.namespace}/${project.slug}`}
+        toggle={toggle}
+      />
     </ModalBody>
   );
 }
