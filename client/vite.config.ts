@@ -7,11 +7,19 @@ import { envOnlyMacros } from "vite-env-only";
 // import { sentryReactRouter } from "@sentry/react-router";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, isSsrBuild }) => ({
+export default defineConfig(({ command }) => ({
   build: {
     outDir: "build",
     sourcemap: true,
-    rollupOptions: isSsrBuild ? { input: "./server/app.ts" } : undefined,
+  },
+  environments: {
+    ssr: {
+      build: {
+        rolldownOptions: {
+          input: "./server/app.ts",
+        },
+      },
+    },
   },
   server: {
     allowedHosts: [".dev.renku.ch"],
