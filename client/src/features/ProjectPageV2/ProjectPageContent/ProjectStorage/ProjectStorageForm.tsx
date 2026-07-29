@@ -38,7 +38,10 @@ import {
   useGetDataConnectorsStorageAllowByProjectIdQuery,
   type ProjectStorage,
 } from "~/features/dataConnectorsV2/api/data-connectors.api";
-import { usePostDataConnectorsStorageMutation } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import {
+  usePatchDataConnectorsStorageByStorageIdMutation,
+  usePostDataConnectorsStorageMutation,
+} from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import {
   PROJECT_STORAGE_DEFAULT_GB,
   PROJECT_STORAGE_DEFAULT_MOUNT_PATH,
@@ -80,6 +83,10 @@ export default function ProjectStorageForm({
 
   const [postDataConnectorsStorageMutation, postDataConnectorsStorageStatus] =
     usePostDataConnectorsStorageMutation();
+  const [
+    patchDataConnectorsStorageByStorageIdMutation,
+    patchDataConnectorsStorageByStorageIdStatus,
+  ] = usePatchDataConnectorsStorageByStorageIdMutation();
   const { data: storageAllowData } =
     useGetDataConnectorsStorageAllowByProjectIdQuery({
       projectId: projectId,
@@ -101,20 +108,30 @@ export default function ProjectStorageForm({
         toggle();
       }
     } else {
-      // TODO: Implement update project storage API call when available
-      console.log("Update project storage API call not implemented yet");
-      toggle();
+      // Update existing project storage
+      const result = await patchDataConnectorsStorageByStorageIdMutation({
+        storageId: projectStorage.id,
+        "If-Match": projectStorage.etag ?? "",
+        projectStoragePatch: {
+          size: values.size,
+          mount_path: values.mountPath,
+        },
+      });
+      if (!result.error) {
+        toggle();
+      }
     }
   };
 
   return (
     <Form noValidate onSubmit={handleSubmit(onSubmit)}>
       <>
-        {postDataConnectorsStorageStatus.isError && (
-          <RtkOrDataServicesError
-            error={postDataConnectorsStorageStatus.error}
-          />
-        )}
+        <RtkOrDataServicesError
+          error={
+            postDataConnectorsStorageStatus.error ||
+            patchDataConnectorsStorageByStorageIdStatus.error
+          }
+        />
         {!projectStorage && (
           <InfoAlert dismissible={false} timeout={0}>
             You can add a project storage to this project. This will create a

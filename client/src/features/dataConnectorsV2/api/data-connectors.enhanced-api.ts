@@ -275,6 +275,12 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     postDataConnectorsStorage: {
       invalidatesTags: ["ProjectStorage"],
     },
+    deleteDataConnectorsStorageByStorageId: {
+      invalidatesTags: ["ProjectStorage"],
+    },
+    patchDataConnectorsStorageByStorageId: {
+      invalidatesTags: ["ProjectStorage"],
+    },
   },
 });
 
@@ -309,4 +315,6 @@ export const {
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
   useGetProjectsByProjectIdStorageQuery,
   usePostDataConnectorsStorageMutation,
+  useDeleteDataConnectorsStorageByStorageIdMutation,
+  usePatchDataConnectorsStorageByStorageIdMutation,
 } = enhancedApi;

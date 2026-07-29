@@ -62,6 +62,19 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/data_connectors/storage/allow/${queryArg.projectId}`,
       }),
     }),
+    patchDataConnectorsStorageAllowByProjectId: build.mutation<
+      PatchDataConnectorsStorageAllowByProjectIdApiResponse,
+      PatchDataConnectorsStorageAllowByProjectIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage/allow/${queryArg.projectId}`,
+        method: "PATCH",
+        body: queryArg.projectStorageAllowPatch,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
     deleteDataConnectorsStorageAllowByProjectId: build.mutation<
       DeleteDataConnectorsStorageAllowByProjectIdApiResponse,
       DeleteDataConnectorsStorageAllowByProjectIdApiArg
@@ -77,6 +90,19 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/data_connectors/storage/${queryArg.storageId}`,
+      }),
+    }),
+    patchDataConnectorsStorageByStorageId: build.mutation<
+      PatchDataConnectorsStorageByStorageIdApiResponse,
+      PatchDataConnectorsStorageByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/data_connectors/storage/${queryArg.storageId}`,
+        method: "PATCH",
+        body: queryArg.projectStoragePatch,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
       }),
     }),
     deleteDataConnectorsStorageByStorageId: build.mutation<
@@ -343,7 +369,7 @@ export type GetDataConnectorsStorageAllowApiArg = {
   params?: ProjectStorageAllowListQuery;
 };
 export type PostDataConnectorsStorageAllowApiResponse =
-  /** status 201 The project was added to the allow list */ ProjectStorageAllow;
+  /** status 201 The project was added to the allow list */ ProjectStorageAllowPost;
 export type PostDataConnectorsStorageAllowApiArg = {
   projectStorageAllowPost: ProjectStorageAllowPost;
 };
@@ -351,6 +377,14 @@ export type GetDataConnectorsStorageAllowByProjectIdApiResponse =
   /** status 200 The project storage allow entry */ ProjectStorageAllow;
 export type GetDataConnectorsStorageAllowByProjectIdApiArg = {
   projectId: Ulid;
+};
+export type PatchDataConnectorsStorageAllowByProjectIdApiResponse =
+  /** status 200 The patched project storage allow entry */ ProjectStorageAllow;
+export type PatchDataConnectorsStorageAllowByProjectIdApiArg = {
+  projectId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  projectStorageAllowPatch: ProjectStorageAllowPatch;
 };
 export type DeleteDataConnectorsStorageAllowByProjectIdApiResponse = unknown;
 export type DeleteDataConnectorsStorageAllowByProjectIdApiArg = {
@@ -360,6 +394,14 @@ export type GetDataConnectorsStorageByStorageIdApiResponse =
   /** status 200 The project storage information */ ProjectStorage;
 export type GetDataConnectorsStorageByStorageIdApiArg = {
   storageId: Ulid;
+};
+export type PatchDataConnectorsStorageByStorageIdApiResponse =
+  /** status 200 The patched project storage entry */ ProjectStorage;
+export type PatchDataConnectorsStorageByStorageIdApiArg = {
+  storageId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  projectStoragePatch: ProjectStoragePatch;
 };
 export type DeleteDataConnectorsStorageByStorageIdApiResponse = unknown;
 export type DeleteDataConnectorsStorageByStorageIdApiArg = {
@@ -723,6 +765,8 @@ export type ProjectStoragePost = {
 };
 export type ProjectStorageAllow = {
   project_id: Ulid;
+  name: string;
+  namespace: string;
   /** Maximum size in GB */
   max_size: number;
 };
@@ -735,6 +779,16 @@ export type ProjectStorageAllowPost = {
   project_id: Ulid;
   /** Maximum size in GB */
   max_size: number;
+};
+export type ProjectStorageAllowPatch = {
+  /** The maximum size in GB */
+  max_size?: number;
+};
+export type ProjectStoragePatch = {
+  /** The maximum size in GB */
+  size?: number;
+  /** The mount path for the storage */
+  mount_path?: string;
 };
 export type GlobalDataConnectorPost = {
   storage: CloudStorageCorePost | CloudStorageUrlV2;
@@ -851,8 +905,10 @@ export const {
   useGetDataConnectorsStorageAllowQuery,
   usePostDataConnectorsStorageAllowMutation,
   useGetDataConnectorsStorageAllowByProjectIdQuery,
+  usePatchDataConnectorsStorageAllowByProjectIdMutation,
   useDeleteDataConnectorsStorageAllowByProjectIdMutation,
   useGetDataConnectorsStorageByStorageIdQuery,
+  usePatchDataConnectorsStorageByStorageIdMutation,
   useDeleteDataConnectorsStorageByStorageIdMutation,
   usePostDataConnectorsGlobalMutation,
   useGetDataConnectorLinksQuery,

@@ -214,7 +214,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageAllow"
+                  "$ref": "#/components/schemas/ProjectStorageAllowPost"
                 }
               }
             }
@@ -266,6 +266,50 @@
         },
         "tags": ["data_connectors"]
       },
+      "patch": {
+        "summary": "Change the maximum size for a project storage",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectStorageAllowPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The patched project storage allow entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorageAllow"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project storage allow entry doesn't exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      },
       "delete": {
         "summary": "Remove a project from the storage allow list",
         "responses": {
@@ -295,6 +339,50 @@
         "responses": {
           "200": {
             "description": "The project storage information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project storage does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      },
+      "patch": {
+        "summary": "Change the size or mount path of a project storage",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectStoragePatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The patched project storage entry",
             "content": {
               "application/json": {
                 "schema": {
@@ -1261,6 +1349,13 @@
   },
   "components": {
     "schemas": {
+      "ProjectSlug": {
+        "type": "string",
+        "description": "The slug used to identify a project",
+        "minLength": 3,
+        "example": "user/my-project",
+        "pattern": "^[a-zA-Z0-9]+([_.\\-/][a-zA-Z0-9]+)*[_.\\-/]?[a-zA-Z0-9]$"
+      },
       "DataConnectorsList": {
         "description": "A list of data connectors",
         "type": "array",
@@ -1438,6 +1533,34 @@
           "updated_at"
         ]
       },
+      "ProjectStoragePatch": {
+        "description": "Data that can be updated on a project storage entry\n",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The maximum size in GB"
+          },
+          "mount_path": {
+            "type": "string",
+            "description": "The mount path for the storage"
+          }
+        }
+      },
+      "ProjectStorageAllowPatch": {
+        "description": "Data that can be updated on a project storage allow entry\n",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "max_size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The maximum size in GB"
+          }
+        }
+      },
       "ProjectStorageAllowPost": {
         "description": "A project to be added to the storage allow list.\n",
         "additionalProperties": false,
@@ -1460,13 +1583,19 @@
           "project_id": {
             "$ref": "#/components/schemas/Ulid"
           },
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
           "max_size": {
             "type": "integer",
             "format": "int64",
             "description": "Maximum size in GB"
           }
         },
-        "required": ["project_id", "max_size"]
+        "required": ["project_id", "max_size", "name", "namespace"]
       },
       "ProjectStorageAllowList": {
         "description": "A list of project storage allow entries.\n",
@@ -1653,13 +1782,6 @@
         "items": {
           "$ref": "#/components/schemas/ProjectStorage"
         }
-      },
-      "ProjectSlug": {
-        "type": "string",
-        "description": "The slug used to identify a project",
-        "minLength": 3,
-        "example": "user/my-project",
-        "pattern": "^[a-zA-Z0-9]+([_.\\-/][a-zA-Z0-9]+)*[_.\\-/]?[a-zA-Z0-9]$"
       },
       "DataConnectorToProjectLink": {
         "description": "A link from a data connector to a project in Renku 2.0",

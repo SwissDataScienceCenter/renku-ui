@@ -303,7 +303,7 @@ export function ProjectConnectDataConnectorModeSwitch({
               </Label>
             </>
           }
-          requestedPermission="delete" // TODO: change to proper permission
+          requestedPermission="delete" // User needs to be project owner
           userPermissions={permissions}
         />
       )}

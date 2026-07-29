@@ -17,19 +17,26 @@
  */
 
 import cx from "classnames";
-import { useState } from "react";
-import { Pencil } from "react-bootstrap-icons";
+import { useCallback, useEffect, useState } from "react";
+import { Pencil, Trash, TrashFill, XLg } from "react-bootstrap-icons";
 import {
   Button,
   Col,
+  DropdownItem,
   ListGroupItem,
   Modal,
   ModalBody,
+  ModalFooter,
   ModalHeader,
   Row,
 } from "reactstrap";
 
+import { WarnAlert } from "~/components/Alert";
+import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { type ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
+import { useDeleteDataConnectorsStorageByStorageIdMutation } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectStorageForm from "./ProjectStorageForm";
 
 export default function ProjectStorageLinkDisplay({
@@ -92,15 +99,10 @@ export default function ProjectStorageLinkDisplay({
       </div>
       {/* The action button is visually positioned over the previous placeholder column */}
       <div className={cx("end-0", "mt-3", "position-absolute", "top-0", "z-5")}>
-        <Button
-          color="outline-primary"
-          data-cy="project-storage-edit-button"
-          onClick={toggleModal}
-          size="sm"
-        >
-          <Pencil className={cx("bi", "me-1")} />
-          Edit
-        </Button>
+        <ProjectStorageActions
+          toggleEdit={toggleModal}
+          projectStorage={projectStorage}
+        />
       </div>
       <ProjectStorageModal
         isOpen={isModalOpen}
@@ -108,6 +110,156 @@ export default function ProjectStorageLinkDisplay({
         projectStorage={projectStorage}
       />
     </ListGroupItem>
+  );
+}
+
+function ProjectStorageActions({
+  toggleEdit,
+  projectStorage,
+}: {
+  toggleEdit: () => void;
+  projectStorage: ProjectStorage;
+}) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const toggleDelete = useCallback(() => {
+    setIsDeleteModalOpen((open) => !open);
+  }, []);
+  const permissions = useProjectPermissions({
+    projectId: projectStorage.project_id,
+  });
+
+  // Display actions only if user is project owner
+  if (!permissions.delete) {
+    return null;
+  }
+
+  const actions = [
+    {
+      key: "edit",
+      onClick: toggleEdit,
+      content: (
+        <>
+          <Pencil className={cx("bi", "me-1")} />
+          Edit
+        </>
+      ),
+    },
+    {
+      key: "delete",
+      onClick: toggleDelete,
+      content: (
+        <>
+          <Trash className={cx("bi", "me-1")} />
+          Delete
+        </>
+      ),
+    },
+  ];
+
+  const actionsContent =
+    actions.length == 0 ? null : actions.length == 1 ? (
+      <Button
+        color="outline-primary"
+        data-cy={actions[0].key}
+        onClick={actions[0].onClick}
+        size="sm"
+      >
+        {actions[0].content}
+      </Button>
+    ) : (
+      <ButtonWithMenuV2
+        color="outline-primary"
+        dataCy="data-connector-menu-dropdown"
+        default={
+          <Button
+            color="outline-primary"
+            data-cy={actions[0].key}
+            onClick={actions[0].onClick}
+            size="sm"
+          >
+            {actions[0].content}
+          </Button>
+        }
+        size="sm"
+      >
+        {actions.slice(1).map(({ key, onClick, content }) => (
+          <DropdownItem key={key} data-cy={key} onClick={onClick}>
+            {content}
+          </DropdownItem>
+        ))}
+      </ButtonWithMenuV2>
+    );
+
+  return (
+    <>
+      {actionsContent}
+      <DeleteProjectStorageModal
+        isOpen={isDeleteModalOpen}
+        storageId={projectStorage.id}
+        toggle={toggleDelete}
+      />
+    </>
+  );
+}
+
+interface DeleteProjectStorageModalProps {
+  isOpen: boolean;
+  storageId: string;
+  toggle: () => void;
+}
+
+function DeleteProjectStorageModal({
+  isOpen,
+  storageId,
+  toggle,
+}: DeleteProjectStorageModalProps) {
+  const [deleteStorage, result] =
+    useDeleteDataConnectorsStorageByStorageIdMutation();
+  const onDelete = useCallback(() => {
+    deleteStorage({ storageId });
+  }, [deleteStorage, storageId]);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggle();
+    }
+  }, [result.isSuccess, toggle]);
+
+  return (
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
+        Are you sure?
+      </ModalHeader>
+      <ModalBody>
+        {result.error && <RtkOrDataServicesError error={result.error} />}
+
+        <p className="mb-0">
+          Please confirm that you want to remove this project storage.
+        </p>
+        <WarnAlert className={cx("mt-3")} dismissible={false} color="danger">
+          <p className="mb-0">
+            This action cannot be undone. All data stored in this project
+            storage will be permanently deleted.
+          </p>
+        </WarnAlert>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="outline-danger" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="danger"
+          disabled={result.isLoading}
+          onClick={onDelete}
+          type="button"
+          role="button"
+        >
+          <TrashFill className={cx("bi", "me-1")} />
+          Remove project storage
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 }
 
