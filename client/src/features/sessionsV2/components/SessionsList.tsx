@@ -73,7 +73,7 @@ export function SessionRowResourceRequests({
       <div data-cy="session-view-resource-class-description">
         {resourceClassName && (
           <span key="name">
-            <span className="text-nowrap">{resourceClassName}</span>
+            <span>{resourceClassName}</span>
             {" | "}
           </span>
         )}
