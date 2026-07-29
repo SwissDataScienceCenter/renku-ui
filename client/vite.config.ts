@@ -3,7 +3,6 @@ import eslintPlugin from "@nabla/vite-plugin-eslint";
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import { envOnlyMacros } from "vite-env-only";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 // import { sentryReactRouter } from "@sentry/react-router";
 
@@ -20,7 +19,6 @@ export default defineConfig(({ command, isSsrBuild }) => ({
   plugins: [
     reactRouter(),
     ...(command === "serve" ? [eslintPlugin()] : []),
-    tsconfigPaths(),
     envOnlyMacros(),
   ],
 
@@ -44,6 +42,7 @@ export default defineConfig(({ command, isSsrBuild }) => ({
     alias: {
       "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),
     },
+    tsconfigPaths: true,
   },
   css: {
     preprocessorOptions: {
