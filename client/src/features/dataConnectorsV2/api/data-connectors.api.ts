@@ -33,6 +33,12 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.projectStoragePost,
       }),
     }),
+    getDataConnectorsStorageConfig: build.query<
+      GetDataConnectorsStorageConfigApiResponse,
+      GetDataConnectorsStorageConfigApiArg
+    >({
+      query: () => ({ url: `/data_connectors/storage/config` }),
+    }),
     getDataConnectorsStorageAllow: build.query<
       GetDataConnectorsStorageAllowApiResponse,
       GetDataConnectorsStorageAllowApiArg
@@ -362,6 +368,9 @@ export type PostDataConnectorsStorageApiResponse =
 export type PostDataConnectorsStorageApiArg = {
   projectStoragePost: ProjectStoragePost;
 };
+export type GetDataConnectorsStorageConfigApiResponse =
+  /** status 200 The configuration data */ ProjectStorageConfig;
+export type GetDataConnectorsStorageConfigApiArg = void;
 export type GetDataConnectorsStorageAllowApiResponse =
   /** status 200 List of storage allow entries */ ProjectStorageAllowList;
 export type GetDataConnectorsStorageAllowApiArg = {
@@ -764,6 +773,11 @@ export type ProjectStoragePost = {
   size: number;
   mount_path: string;
 };
+export type ProjectStorageConfig = {
+  enabled: boolean;
+  /** The maximum size in GB */
+  max_size: number;
+};
 export type ProjectStorageAllow = {
   project_id: Ulid;
   name: string;
@@ -904,6 +918,7 @@ export const {
   useGetDataConnectorsQuery,
   usePostDataConnectorsMutation,
   usePostDataConnectorsStorageMutation,
+  useGetDataConnectorsStorageConfigQuery,
   useGetDataConnectorsStorageAllowQuery,
   usePostDataConnectorsStorageAllowMutation,
   useGetDataConnectorsStorageAllowByProjectIdQuery,

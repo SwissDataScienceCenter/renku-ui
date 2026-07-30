@@ -275,7 +275,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         Create a data connector
       </Label>
 
-      {storageAllowData && projectStorage && projectStorage.length == 0 && (
+      {storageAllowData && projectStorage?.length === 0 && (
         <PermissionsGuard
           disabled={null}
           enabled={
@@ -324,7 +324,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
   }, [isOpen]);
 
   return (
-    <ModalBody data-cy="data-connector-search-body" toggle={toggle}>
+    <ModalBody data-cy="data-connector-add-storage-body" toggle={toggle}>
       {switchMode && (
         <div className="mb-3">
           <ProjectConnectDataConnectorModeSwitch

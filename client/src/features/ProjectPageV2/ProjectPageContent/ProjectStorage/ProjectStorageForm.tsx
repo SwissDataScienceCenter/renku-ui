@@ -32,8 +32,6 @@ import {
 
 import { InfoAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
-import LazyMarkdown from "~/components/markdown/LazyMarkdown";
-import { MoreInfo } from "~/components/MoreInfo";
 import {
   useGetDataConnectorsStorageAllowByProjectIdQuery,
   type ProjectStorage,
@@ -50,12 +48,12 @@ import {
   PROJECT_STORAGE_STEP_GB,
 } from "./projectStorage.constants";
 
-interface ProjectStorageForm {
+interface ProjectStorageFormValues {
   size: number;
   mountPath: string;
 }
 
-interface ProjectConnectDataConnectorsFormProps {
+interface ProjectStorageFormProps {
   projectId: string;
   namespace?: string;
   projectStorage?: ProjectStorage;
@@ -67,12 +65,12 @@ export default function ProjectStorageForm({
   namespace,
   projectStorage,
   toggle,
-}: ProjectConnectDataConnectorsFormProps) {
+}: ProjectStorageFormProps) {
   const {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm<ProjectStorageForm>({
+  } = useForm<ProjectStorageFormValues>({
     mode: "onChange",
     defaultValues: {
       size: projectStorage?.size ?? PROJECT_STORAGE_DEFAULT_GB,
@@ -94,7 +92,7 @@ export default function ProjectStorageForm({
   const projectStorageMaxSize =
     storageAllowData?.max_size ?? PROJECT_STORAGE_MAX_GB;
 
-  const onSubmit = async (values: ProjectStorageForm) => {
+  const onSubmit = async (values: ProjectStorageFormValues) => {
     if (!projectStorage) {
       // Create new project storage
       const result = await postDataConnectorsStorageMutation({
@@ -206,13 +204,6 @@ export default function ProjectStorageForm({
             <Label className="form-label" for="mountPath">
               Mount point
             </Label>
-            <MoreInfo>
-              <LazyMarkdown>
-                You can either enter an absolute path (starting with `/`) or a
-                relative path (relative to your session&apos;s working
-                directory).
-              </LazyMarkdown>
-            </MoreInfo>
           </div>
           <Controller
             name="mountPath"
@@ -231,7 +222,9 @@ export default function ProjectStorageForm({
           <div className="invalid-feedback">Please provide a mount point.</div>
           <div className={cx("form-text", "text-muted")}>
             This is the name of the folder in the working directory where you
-            will find your project storage in sessions.
+            will find your project storage in sessions. You can either specify
+            an absolute path (starting with `/`) or a relative path (relative to
+            your session&apos;s working directory).
           </div>
         </div>
 

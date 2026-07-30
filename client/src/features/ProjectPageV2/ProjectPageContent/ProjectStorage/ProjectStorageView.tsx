@@ -33,8 +33,8 @@ import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import type { ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { InfoEntry } from "~/features/dataConnectorsV2/components/DataConnectorInfoBox";
 import {
+  EditProjectStorageModal,
   ProjectStorageActions,
-  ProjectStorageModal,
 } from "./ProjectStorageLinkDisplay";
 
 interface ProjectStorageViewProps {
@@ -77,7 +77,7 @@ export default function ProjectStorageView({
           />
         </div>
       </OffcanvasBody>
-      <ProjectStorageModal
+      <EditProjectStorageModal
         isOpen={isEditOpen}
         toggle={toggleEdit}
         projectStorage={projectStorage}
@@ -118,7 +118,7 @@ function ProjectStorageInfoBox({
   headerTag?: "h2" | "h3" | "h4";
 }) {
   return (
-    <Card data-cy="data-connector-info-box">
+    <Card data-cy="project-storage-info-box">
       <CardHeader tag={headerTag}>
         <span className={cx("align-items-center", "d-flex")}>
           <InfoCircle className="me-1" />

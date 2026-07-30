@@ -103,7 +103,7 @@ export default function ProjectStorageLinkDisplay({
                   "gap-2",
                 )}
               >
-                <span className="fw-bold" data-cy="data-connector-name">
+                <span className="fw-bold" data-cy="project-storage-name">
                   Project storage
                 </span>
               </div>
@@ -140,7 +140,7 @@ export default function ProjectStorageLinkDisplay({
         showView={showOffCanvas}
         toggleView={toggleOffCanvas}
       />
-      <ProjectStorageModal
+      <EditProjectStorageModal
         isOpen={isEditOpen}
         toggle={toggleEdit}
         projectStorage={projectStorage}
@@ -180,7 +180,7 @@ export function ProjectStorageActions({
 
   const actions = [
     {
-      key: "edit",
+      key: "project-storage-edit",
       onClick: toggleEdit,
       content: (
         <>
@@ -190,7 +190,7 @@ export function ProjectStorageActions({
       ),
     },
     {
-      key: "delete",
+      key: "project-storage-delete",
       onClick: toggleDelete,
       content: (
         <>
@@ -202,7 +202,7 @@ export function ProjectStorageActions({
   ];
 
   const actionsContent =
-    actions.length == 0 ? null : actions.length == 1 ? (
+    actions.length === 0 ? null : actions.length === 1 ? (
       <Button
         color="outline-primary"
         data-cy={actions[0].key}
@@ -311,17 +311,17 @@ function DeleteProjectStorageModal({
   );
 }
 
-interface ProjectStorageModalProps {
+interface EditProjectStorageModalProps {
   isOpen: boolean;
   toggle: () => void;
   projectStorage: ProjectStorage;
 }
 
-export function ProjectStorageModal({
+export function EditProjectStorageModal({
   isOpen,
   toggle,
   projectStorage,
-}: ProjectStorageModalProps) {
+}: EditProjectStorageModalProps) {
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} centered>
       <ModalHeader toggle={toggle} tag="h2">

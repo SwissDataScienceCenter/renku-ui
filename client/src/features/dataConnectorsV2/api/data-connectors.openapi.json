@@ -134,6 +134,27 @@
         "tags": ["data_connectors"]
       }
     },
+    "/data_connectors/storage/config": {
+      "get": {
+        "summary": "Get the current configuration for project storage",
+        "responses": {
+          "200": {
+            "description": "The configuration data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorageConfig"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["data_connectors"]
+      }
+    },
     "/data_connectors/storage/allow": {
       "get": {
         "summary": "List all projects in the storage allow list",
@@ -1627,6 +1648,22 @@
             }
           }
         ]
+      },
+      "ProjectStorageConfig": {
+        "description": "The current configuration for project storage as defined by admins.\n",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "max_size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The maximum size in GB"
+          }
+        },
+        "required": ["enabled", "max_size"]
       },
       "DataConnectorPatch": {
         "description": "Patch of a data connector\n",
