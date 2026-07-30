@@ -1521,6 +1521,9 @@
           },
           "updated_at": {
             "$ref": "#/components/schemas/CreationDate"
+          },
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
           }
         },
         "required": [
@@ -1530,7 +1533,8 @@
           "mount_path",
           "creation_date",
           "created_by",
-          "updated_at"
+          "updated_at",
+          "etag"
         ]
       },
       "ProjectStoragePatch": {
@@ -1593,9 +1597,12 @@
             "type": "integer",
             "format": "int64",
             "description": "Maximum size in GB"
+          },
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
           }
         },
-        "required": ["project_id", "max_size", "name", "namespace"]
+        "required": ["project_id", "max_size", "name", "namespace", "etag"]
       },
       "ProjectStorageAllowList": {
         "description": "A list of project storage allow entries.\n",

@@ -756,6 +756,7 @@ export type ProjectStorage = {
   creation_date: CreationDate;
   created_by: UserId;
   updated_at: CreationDate;
+  etag: ETag;
 };
 export type ProjectSlug = string;
 export type ProjectStoragePost = {
@@ -769,6 +770,7 @@ export type ProjectStorageAllow = {
   namespace: string;
   /** Maximum size in GB */
   max_size: number;
+  etag: ETag;
 };
 export type ProjectStorageAllowList = ProjectStorageAllow[];
 export type ProjectStorageAllowListQuery = PaginationRequest & {

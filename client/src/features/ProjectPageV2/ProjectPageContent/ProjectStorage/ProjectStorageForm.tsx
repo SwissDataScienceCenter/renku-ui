@@ -111,7 +111,7 @@ export default function ProjectStorageForm({
       // Update existing project storage
       const result = await patchDataConnectorsStorageByStorageIdMutation({
         storageId: projectStorage.id,
-        "If-Match": "", // TODO: projectStorage.etag ?? "",
+        "If-Match": projectStorage.etag ?? "",
         projectStoragePatch: {
           size: values.size,
           mount_path: values.mountPath,
