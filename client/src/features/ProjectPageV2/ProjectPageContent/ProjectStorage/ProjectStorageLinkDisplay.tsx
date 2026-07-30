@@ -17,8 +17,9 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pencil, Trash, TrashFill, XLg } from "react-bootstrap-icons";
+import { Link, To, useLocation } from "react-router";
 import {
   Button,
   Col,
@@ -36,94 +37,138 @@ import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { type ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useDeleteDataConnectorsStorageByStorageIdMutation } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectStorageForm from "./ProjectStorageForm";
+import ProjectStorageView from "./ProjectStorageView";
 
 export default function ProjectStorageLinkDisplay({
   projectStorage,
 }: {
   projectStorage: ProjectStorage;
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Handle hash
+  const [hash, setHash] = useLocationHash();
+  const dcHash = useMemo(
+    () => `project-storage-${projectStorage.id}`,
+    [projectStorage.id],
+  );
+  const showOffCanvas = useMemo(() => hash === dcHash, [dcHash, hash]);
+  const toggleOffCanvas = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === dcHash;
+      return isOpen ? "" : dcHash;
+    });
+  }, [dcHash, setHash]);
 
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
+  // Handle url with Hash
+  const location = useLocation();
+  const targetOffcanvasLocation: To = {
+    pathname: location.pathname,
+    search: location.search,
+    hash: `#${dcHash}`,
   };
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const toggleEdit = useCallback(() => {
+    setIsEditOpen((open) => !open);
+  }, []);
+
   return (
-    <ListGroupItem
-      action
-      className={cx("position-relative", "p-0")}
-      data-cy="data-connector-item"
-    >
-      <div
-        className={cx(
-          "d-block",
-          "link-primary",
-          "py-3",
-          "text-body",
-          "text-decoration-none",
-        )}
+    <>
+      <ListGroupItem
+        action
+        className={cx("position-relative", "p-0")}
+        data-cy="project-storage-item"
       >
-        <Row className={cx("align-items-center", "flex-nowrap", "g-3", "mx-0")}>
-          <Col className={cx("d-flex", "flex-column", "min-w-0", "px-0")}>
-            <div
-              className={cx(
-                "align-items-center",
-                "d-flex",
-                "flex-wrap",
-                "gap-2",
-              )}
-            >
-              <span className="fw-bold" data-cy="data-connector-name">
-                Project storage
-              </span>
-            </div>
-          </Col>
-          {/* This column is a placeholder to reserve the space for the action button */}
-          <Col xs="auto" className="flex-shrink-0">
-            <div
-              aria-hidden="true"
-              className={cx(
-                "btn",
-                "btn-sm",
-                "opacity-0",
-                "pe-none",
-                "text-nowrap",
-              )}
-            >
-              FakeButton123
-            </div>
-          </Col>
-        </Row>
-      </div>
-      {/* The action button is visually positioned over the previous placeholder column */}
-      <div className={cx("end-0", "mt-3", "position-absolute", "top-0", "z-5")}>
-        <ProjectStorageActions
-          toggleEdit={toggleModal}
-          projectStorage={projectStorage}
-        />
-      </div>
+        <Link
+          className={cx(
+            "d-block",
+            "link-primary",
+            "py-3",
+            "text-body",
+            "text-decoration-none",
+          )}
+          to={targetOffcanvasLocation}
+        >
+          <Row
+            className={cx("align-items-center", "flex-nowrap", "g-3", "mx-0")}
+          >
+            <Col className={cx("d-flex", "flex-column", "min-w-0", "px-0")}>
+              <div
+                className={cx(
+                  "align-items-center",
+                  "d-flex",
+                  "flex-wrap",
+                  "gap-2",
+                )}
+              >
+                <span className="fw-bold" data-cy="data-connector-name">
+                  Project storage
+                </span>
+              </div>
+            </Col>
+            {/* This column is a placeholder to reserve the space for the action button */}
+            <Col xs="auto" className="flex-shrink-0">
+              <div
+                aria-hidden="true"
+                className={cx(
+                  "btn",
+                  "btn-sm",
+                  "opacity-0",
+                  "pe-none",
+                  "text-nowrap",
+                )}
+              >
+                FakeButton123
+              </div>
+            </Col>
+          </Row>
+        </Link>
+        {/* The action button is visually positioned over the previous placeholder column */}
+        <div
+          className={cx("end-0", "mt-3", "position-absolute", "top-0", "z-5")}
+        >
+          <ProjectStorageActions
+            projectStorage={projectStorage}
+            toggleEdit={toggleEdit}
+          />
+        </div>
+      </ListGroupItem>
+      <ProjectStorageView
+        projectStorage={projectStorage}
+        showView={showOffCanvas}
+        toggleView={toggleOffCanvas}
+      />
       <ProjectStorageModal
-        isOpen={isModalOpen}
-        toggle={toggleModal}
+        isOpen={isEditOpen}
+        toggle={toggleEdit}
         projectStorage={projectStorage}
       />
-    </ListGroupItem>
+    </>
   );
 }
 
-function ProjectStorageActions({
-  toggleEdit,
-  projectStorage,
-}: {
-  toggleEdit: () => void;
+interface ProjectStorageActionsProps {
   projectStorage: ProjectStorage;
-}) {
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  toggleView?: () => void;
+  toggleEdit: () => void;
+}
+
+export function ProjectStorageActions({
+  projectStorage,
+  toggleView,
+  toggleEdit,
+}: ProjectStorageActionsProps) {
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const toggleDelete = useCallback(() => {
-    setIsDeleteModalOpen((open) => !open);
+    setIsDeleteOpen((open) => !open);
   }, []);
+  const onDeleteSuccess = useCallback(() => {
+    if (toggleView) toggleView();
+    setIsDeleteOpen(false);
+  }, [toggleView]);
+
   const permissions = useProjectPermissions({
     projectId: projectStorage.project_id,
   });
@@ -169,7 +214,7 @@ function ProjectStorageActions({
     ) : (
       <ButtonWithMenuV2
         color="outline-primary"
-        dataCy="data-connector-menu-dropdown"
+        dataCy="project-storage-menu-dropdown"
         default={
           <Button
             color="outline-primary"
@@ -194,9 +239,10 @@ function ProjectStorageActions({
     <>
       {actionsContent}
       <DeleteProjectStorageModal
-        isOpen={isDeleteModalOpen}
+        isOpen={isDeleteOpen}
         storageId={projectStorage.id}
         toggle={toggleDelete}
+        executeOnSuccess={onDeleteSuccess}
       />
     </>
   );
@@ -206,12 +252,14 @@ interface DeleteProjectStorageModalProps {
   isOpen: boolean;
   storageId: string;
   toggle: () => void;
+  executeOnSuccess: () => void;
 }
 
 function DeleteProjectStorageModal({
   isOpen,
   storageId,
   toggle,
+  executeOnSuccess,
 }: DeleteProjectStorageModalProps) {
   const [deleteStorage, result] =
     useDeleteDataConnectorsStorageByStorageIdMutation();
@@ -221,9 +269,9 @@ function DeleteProjectStorageModal({
 
   useEffect(() => {
     if (result.isSuccess) {
-      toggle();
+      executeOnSuccess();
     }
-  }, [result.isSuccess, toggle]);
+  }, [result.isSuccess, executeOnSuccess]);
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
@@ -269,7 +317,7 @@ interface ProjectStorageModalProps {
   projectStorage: ProjectStorage;
 }
 
-function ProjectStorageModal({
+export function ProjectStorageModal({
   isOpen,
   toggle,
   projectStorage,
