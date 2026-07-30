@@ -3,16 +3,23 @@ import eslintPlugin from "@nabla/vite-plugin-eslint";
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import { envOnlyMacros } from "vite-env-only";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 // import { sentryReactRouter } from "@sentry/react-router";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, isSsrBuild }) => ({
+export default defineConfig(({ command }) => ({
   build: {
     outDir: "build",
     sourcemap: true,
-    rollupOptions: isSsrBuild ? { input: "./server/app.ts" } : undefined,
+  },
+  environments: {
+    ssr: {
+      build: {
+        rolldownOptions: {
+          input: "./server/app.ts",
+        },
+      },
+    },
   },
   server: {
     allowedHosts: [".dev.renku.ch"],
@@ -20,7 +27,6 @@ export default defineConfig(({ command, isSsrBuild }) => ({
   plugins: [
     reactRouter(),
     ...(command === "serve" ? [eslintPlugin()] : []),
-    tsconfigPaths(),
     envOnlyMacros(),
   ],
 
@@ -44,6 +50,7 @@ export default defineConfig(({ command, isSsrBuild }) => ({
     alias: {
       "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),
     },
+    tsconfigPaths: true,
   },
   css: {
     preprocessorOptions: {

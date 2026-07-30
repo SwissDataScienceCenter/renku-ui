@@ -3,7 +3,6 @@ import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import { useLoginUrl } from "../../../../authentication/useLoginUrl.hook";
-import { HomeHeader } from "../../AnonymousHome";
 import heroGraphic from "../../assets/heroBoxes.svg";
 import { useCustomHomePageProjectUrl } from "../../hooks/useCustomHomePageProjectUrl.hook";
 
@@ -13,7 +12,6 @@ export default function HeroLanding() {
 
   return (
     <div id="rk-anon-home-hero" className="bg-navy">
-      <HomeHeader />
       <div className={cx("container", "py-5", "px-3")}>
         <Row>
           <Col xs={12} lg={7}>
