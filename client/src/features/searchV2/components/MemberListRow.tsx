@@ -37,13 +37,25 @@ export default function MemberListRow({ members }: MemberListRowProps) {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const measuredWidths = useRef<number[]>([]);
   const [visibleCount, setVisibleCount] = useState(members.length);
+  // When the first member does not fit at full width, constrain it so the name can truncate.
+  const [truncateMaxWidth, setTruncateMaxWidth] = useState<number | null>(null);
 
   const measureItemWidths = useCallback(() => {
     for (let i = 0; i < members.length; i++) {
       const el = itemRefs.current[i];
-      if (el) {
-        measuredWidths.current[i] = el.offsetWidth;
-      }
+      if (!el) continue;
+      // Sum children so a truncated item still reports its natural width
+      // (the item's own scrollWidth collapses to maxWidth when truncating).
+      const avatar = el.children[0] as HTMLElement | undefined;
+      const name = el.children[1] as HTMLElement | undefined;
+      const innerGap =
+        avatar && name
+          ? parseFloat(
+              getComputedStyle(el).columnGap || getComputedStyle(el).gap,
+            ) || 0
+          : 0;
+      measuredWidths.current[i] =
+        (avatar?.offsetWidth ?? 0) + innerGap + (name?.scrollWidth ?? 0);
     }
   }, [members.length]);
 
@@ -78,20 +90,33 @@ export default function MemberListRow({ members }: MemberListRowProps) {
       count++;
     }
 
-    setVisibleCount(Math.max(1, count));
+    if (count === 0 && total > 0) {
+      // Always show at least one member; cap width so text-truncate
+      const reservedForBadge =
+        total > 1 ? OVERFLOW_BADGE_WIDTH + MEMBER_GAP : 0;
+      setVisibleCount(1);
+      setTruncateMaxWidth(Math.max(0, containerWidth - reservedForBadge));
+      return;
+    }
+
+    setVisibleCount(count);
+    setTruncateMaxWidth(null);
   }, [members.length]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    measureItemWidths();
+    const updateVisibleMembers = () => {
+      measureItemWidths();
+      recalculate();
+    };
+
     // TODO: fix react-hooks/set-state-in-effect
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    recalculate();
+    updateVisibleMembers();
 
     const observer = new ResizeObserver(() => {
-      recalculate();
+      updateVisibleMembers();
     });
     observer.observe(container);
 
@@ -112,9 +137,12 @@ export default function MemberListRow({ members }: MemberListRowProps) {
         "overflow-hidden",
         "position-relative",
       )}
+      data-cy="member-list-row"
     >
       {members.map((member, index) => {
         const isHidden = index >= visibleCount;
+        const shouldTruncate =
+          !isHidden && truncateMaxWidth != null && index === 0;
         return (
           <div
             key={member.id}
@@ -125,7 +153,7 @@ export default function MemberListRow({ members }: MemberListRowProps) {
               "align-items-center",
               "d-flex",
               "gap-1",
-              isHidden ? "flex-shrink-0" : "overflow-hidden",
+              shouldTruncate ? "overflow-hidden" : "flex-shrink-0",
             )}
             style={
               isHidden
@@ -134,11 +162,13 @@ export default function MemberListRow({ members }: MemberListRowProps) {
                     position: "absolute",
                     pointerEvents: "none",
                   }
-                : { minWidth: 0 }
+                : shouldTruncate
+                  ? { maxWidth: truncateMaxWidth, minWidth: 0 }
+                  : undefined
             }
           >
             <UserAvatar namespace={member.namespace ?? ""} />
-            <span className="text-truncate">
+            <span className={cx("text-truncate", "min-w-0")}>
               {member.first_name} {member.last_name}
             </span>
           </div>
