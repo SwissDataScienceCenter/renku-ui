@@ -51,7 +51,7 @@ function makeCustomBuildForm(
   return {
     environmentSelect: "custom + build",
     builder_variant: "python",
-    frontend_variant: "custom",
+    frontend_variant: "none",
     repository: "https://example.com/owner/repo.git",
     platform: "linux/amd64",
     ...overrides,
@@ -107,25 +107,25 @@ describe("showsSessionLauncherFields()", () => {
   });
 });
 
-describe("custom frontend (bring-your-own app)", () => {
+describe("bring-your-own app frontend", () => {
   it("is offered for both python and r builders", () => {
-    expect(BUILDER_FRONTEND_COMBINATIONS.python).toContain("custom");
-    expect(BUILDER_FRONTEND_COMBINATIONS.r).toContain("custom");
-    expect(getCompatibleFrontends("python")).toContain("custom");
-    expect(getCompatibleFrontends("r")).toContain("custom");
+    expect(BUILDER_FRONTEND_COMBINATIONS.python).toContain("none");
+    expect(BUILDER_FRONTEND_COMBINATIONS.r).toContain("none");
+    expect(getCompatibleFrontends("python")).toContain("none");
+    expect(getCompatibleFrontends("r")).toContain("none");
   });
 
-  it("preserves the custom frontend in the build payload", () => {
+  it("preserves the no-frontend choice in the build payload", () => {
     const result = getFormattedEnvironmentValues(makeCustomBuildForm(), "app");
     expect(result.success).toBe(true);
     expect(result.data).toMatchObject({
       environment_image_source: "build",
       builder_variant: "python",
-      frontend_variant: "custom",
+      frontend_variant: "none",
     });
   });
 
-  it("does not send command/args for a custom app launcher", () => {
+  it("does not send command/args for an app launcher", () => {
     /* eslint-disable spellcheck/spell-checker */
     // Approach (a): the start command comes from the repository Procfile, not
     // from the form, so an app launcher must not serialize command/args.
@@ -144,10 +144,10 @@ describe("custom frontend (bring-your-own app)", () => {
 });
 
 describe("getNewLauncherFormDefaultValues() frontend default", () => {
-  it("defaults an app launcher to the custom (bring-your-own) frontend", () => {
+  it("defaults an app launcher to the bring-your-own (none) frontend", () => {
     expect(
       getNewLauncherFormDefaultValues("custom + build", "app").frontend_variant,
-    ).toBe("custom");
+    ).toBe("none");
   });
 
   it("keeps the interactive default for session and job launchers", () => {

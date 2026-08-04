@@ -171,24 +171,16 @@ export const BUILDER_FRONTENDS = [
     value: "none",
     label: "Custom / No Frontend",
     description:
-      "Renku does not add a frontend. For a custom frontend, define an entrypoint in a Procfile.",
-    /* eslint-enable spellcheck/spell-checker */
-  },
-  {
-    /* eslint-disable spellcheck/spell-checker */
-    value: "custom",
-    label: "Custom app",
-    description:
-      "Run your own web app. Add a Procfile with a “web” process to your " +
-      "repository and make the app listen on $RENKU_SESSION_PORT.",
+      "Renku does not add a frontend. Define an entrypoint in a Procfile with a " +
+      "“web” process, and make it listen on $RENKU_SESSION_PORT.",
     /* eslint-enable spellcheck/spell-checker */
   },
 ] as readonly BuilderSelectorOption[];
 
 /* eslint-disable spellcheck/spell-checker */
 export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
-  python: ["vscodium", "jupyterlab", "ttyd", "infer", "none", "custom"],
-  r: ["rstudio", "none", "custom"],
+  python: ["vscodium", "jupyterlab", "ttyd", "infer", "none"],
+  r: ["rstudio", "none"],
 };
 
 export const getCompatibleFrontends = (builderVariant: string) => {

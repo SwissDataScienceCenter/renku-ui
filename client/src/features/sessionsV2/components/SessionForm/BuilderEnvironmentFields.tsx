@@ -172,13 +172,13 @@ export default function BuilderEnvironmentFields({
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
       {/* Apps have no user-interface choice: they always bring their own web
-          app ("custom"), so the picker is only shown for sessions. */}
+          app (frontend "none"), so the picker is only shown for sessions. */}
       {launcherCategory === "session" && (
         <BuilderFrontendSelector name="frontend_variant" control={control} />
       )}
       {(launcherCategory === "app" ||
         (showsSessionLauncherFields(launcherCategory) &&
-          selectedFrontend === "custom")) && (
+          selectedFrontend === "none")) && (
         <InfoAlert dismissible={false} timeout={0}>
           <p className="mb-1">
             RenkuLab won&apos;t add a user interface to this environment.

@@ -173,9 +173,7 @@ export function getNewLauncherFormDefaultValues(
     repository: "",
     platform: "",
     builder_variant: "python",
-    // Apps always bring their own web app frontend ("custom"): there is no UI
-    // picker for them, so the default must be custom rather than an interface.
-    frontend_variant: launcherCategory === "app" ? "custom" : "jupyterlab", // eslint-disable-line spellcheck/spell-checker
+    frontend_variant: launcherCategory === "app" ? "none" : "jupyterlab", // eslint-disable-line spellcheck/spell-checker
     command: "",
     args: "",
     gid: 1000,
