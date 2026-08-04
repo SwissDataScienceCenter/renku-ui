@@ -22,6 +22,8 @@ import type { AppResponse, AppStatus } from "../api/apps.api";
 import {
   findAppForLauncher,
   getAppIndicatorState,
+  getAppLobbyPath,
+  getAppLobbyUrl,
   hasAppOnAnotherLauncher,
   hasPendingApp,
   hasReachedAppTarget,
@@ -71,15 +73,8 @@ describe("getAppIndicatorState()", () => {
     ["pending", "starting"],
     ["ready", "live"],
     ["failed", "error"],
-    ["hibernated", "not-running"],
   ])("maps a %s app to '%s'", (status, expected) => {
     expect(getAppIndicatorState(makeApp({ status }))).toBe(expected);
-  });
-
-  it("collapses a platform-hibernated app to 'not-running' (no resume in the UI)", () => {
-    expect(getAppIndicatorState(makeApp({ status: "hibernated" }))).toBe(
-      "not-running",
-    );
   });
 
   it("forces 'starting' while a publish is in flight, even before the app appears", () => {
@@ -114,8 +109,7 @@ describe("hasPendingApp()", () => {
   it("is false when every app has settled", () => {
     const apps = [
       makeApp({ name: "a", status: "ready" }),
-      makeApp({ name: "b", status: "hibernated" }),
-      makeApp({ name: "c", status: "failed" }),
+      makeApp({ name: "b", status: "failed" }),
     ];
     expect(hasPendingApp(apps)).toBe(false);
   });
@@ -127,7 +121,7 @@ describe("hasPendingApp()", () => {
 });
 
 describe("hasAppOnAnotherLauncher()", () => {
-  it.each<AppStatus>(["pending", "ready", "hibernated", "failed"])(
+  it.each<AppStatus>(["pending", "ready", "failed"])(
     "counts a %s app on another launcher (only one app per project)",
     (status) => {
       const apps = [makeApp({ launcher_id: "other", status })];
@@ -136,12 +130,7 @@ describe("hasAppOnAnotherLauncher()", () => {
   );
 
   it("ignores this launcher's own app, whatever its status", () => {
-    for (const status of [
-      "pending",
-      "ready",
-      "hibernated",
-      "failed",
-    ] as AppStatus[]) {
+    for (const status of ["pending", "ready", "failed"] as AppStatus[]) {
       const apps = [makeApp({ launcher_id: "self", status })];
       expect(hasAppOnAnotherLauncher(apps, "self")).toBe(false);
     }
@@ -170,9 +159,6 @@ describe("hasReachedAppTarget()", () => {
       expect(hasReachedAppTarget(makeApp({ status: "pending" }), target)).toBe(
         false,
       );
-      expect(
-        hasReachedAppTarget(makeApp({ status: "hibernated" }), target),
-      ).toBe(false);
     });
 
     it("is not reached when the app is absent (e.g. publish not registered yet)", () => {
@@ -188,12 +174,7 @@ describe("hasReachedAppTarget()", () => {
     });
 
     it("is not reached while the app is still present, whatever its status", () => {
-      for (const status of [
-        "pending",
-        "ready",
-        "failed",
-        "hibernated",
-      ] as AppStatus[]) {
+      for (const status of ["pending", "ready", "failed"] as AppStatus[]) {
         expect(hasReachedAppTarget(makeApp({ status }), target)).toBe(false);
       }
     });
@@ -227,5 +208,57 @@ describe("toSecureAppUrl()", () => {
 
   it("passes values without a scheme through unchanged", () => {
     expect(toSecureAppUrl("app.renkulab.io/foo")).toBe("app.renkulab.io/foo");
+  });
+});
+
+describe("getAppLobbyPath()", () => {
+  const location = {
+    namespace: "my-group",
+    slug: "my-project",
+    launcherId: "01AN4Z79ZS5XN0F25N3DB94T4R",
+  };
+
+  it("addresses the lobby by launcher, not by app", () => {
+    expect(getAppLobbyPath(location)).toBe(
+      "/p/my-group/my-project/apps/01AN4Z79ZS5XN0F25N3DB94T4R",
+    );
+  });
+
+  it("does not depend on an app existing", () => {
+    // The path is derived purely from the launcher, which is what lets a shared
+    // link keep working across a stop and re-publish.
+    expect(getAppLobbyPath({ ...location, launcherId: "other" })).toBe(
+      "/p/my-group/my-project/apps/other",
+    );
+  });
+});
+
+describe("getAppLobbyUrl()", () => {
+  const location = {
+    namespace: "my-group",
+    slug: "my-project",
+    launcherId: "01AN4Z79ZS5XN0F25N3DB94T4R",
+  };
+
+  it("prefixes the lobby path with the given origin", () => {
+    expect(getAppLobbyUrl({ ...location, origin: "https://renkulab.io" })).toBe(
+      "https://renkulab.io/p/my-group/my-project/apps/01AN4Z79ZS5XN0F25N3DB94T4R",
+    );
+  });
+
+  it("does not double the separator when the origin has a trailing slash", () => {
+    expect(
+      getAppLobbyUrl({ ...location, origin: "https://renkulab.io/" }),
+    ).toBe(
+      "https://renkulab.io/p/my-group/my-project/apps/01AN4Z79ZS5XN0F25N3DB94T4R",
+    );
+  });
+
+  it("keeps a port and a non-default scheme intact", () => {
+    expect(
+      getAppLobbyUrl({ ...location, origin: "http://localhost:3000" }),
+    ).toBe(
+      "http://localhost:3000/p/my-group/my-project/apps/01AN4Z79ZS5XN0F25N3DB94T4R",
+    );
   });
 });

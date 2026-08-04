@@ -27,6 +27,7 @@ import {
   getFormattedEnvironmentValues,
   getLauncherApiType,
   getLauncherCategory,
+  getLauncherChangeEffectMessage,
   getNewLauncherFormDefaultValues,
   isAppLauncher,
   isJobLauncher,
@@ -175,4 +176,41 @@ describe("getLauncherApiType() round-trips the app category", () => {
     expect(getLauncherApiType(category)).toBe(apiType);
     expect(sessionLauncherKindToCategory(apiType)).toBe(category);
   });
+});
+
+describe("getLauncherChangeEffectMessage()", () => {
+  // A launcher has at most one app, so "next time you start a new app" is wrong
+  // twice: there is no next one to start, and it reads as "already done" while
+  // the live app still serves the old definition.
+  it("does not promise app owners a next new app", () => {
+    const message = getLauncherChangeEffectMessage("app");
+
+    expect(message).toContain("the next time the app is started");
+    expect(message).not.toContain("a new app");
+  });
+
+  // The restart is what actually applies the change to a live app, so it has to
+  // be spelled out rather than left as "will not be affected".
+  it("tells app owners how to apply the change to a running app", () => {
+    const message = getLauncherChangeEffectMessage("app");
+
+    expect(message).toContain("currently running");
+    expect(message).toContain("stopped and started again");
+  });
+
+  it.each<[LauncherCategory, string]>([
+    ["session", "the next time you launch a session with this launcher"],
+    ["job", "the next time you submit a job with this launcher"],
+  ])("tells %s owners the next run picks the change up", (category, phrase) => {
+    expect(getLauncherChangeEffectMessage(category)).toContain(phrase);
+  });
+
+  // Every category has to produce something; a missing case would render the
+  // literal "undefined" into a success alert.
+  it.each<LauncherCategory>(["app", "job", "session"])(
+    "returns a non-empty sentence for %s",
+    (category) => {
+      expect(getLauncherChangeEffectMessage(category)).toMatch(/\w.*\.$/);
+    },
+  );
 });
