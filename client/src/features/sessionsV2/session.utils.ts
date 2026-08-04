@@ -105,6 +105,17 @@ export function isGlobalEnvironmentIncluded(allowedEnvironments: string[]) {
   return allowedEnvironments.includes("global");
 }
 
+export function getLauncherChangeEffectMessage(
+  category: LauncherCategory,
+): string {
+  if (category === "app") {
+    return "The changes will take effect the next time the app is started. A currently running app is not affected until it is stopped and started again.";
+  }
+
+  const { text } = getLauncherCategoryDefinition(category);
+  return `The changes will take effect the next time you ${text.action} a ${text.inline} with this launcher. Current ${text.inline}s will not be affected.`;
+}
+
 /**
  * Whether a launcher category exposes the full set of session-style launcher
  * form fields — Default URL, port, mount/working directory, UID/GID,
