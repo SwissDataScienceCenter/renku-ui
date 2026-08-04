@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Database, PlusLg } from "react-bootstrap-icons";
 import {
   Badge,
@@ -29,6 +29,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import useRenkuToast from "~/components/toast/useRenkuToast";
 import {
   type DataConnectorToProjectLink,
   type GetProjectsByProjectIdDataConnectorLinksApiResponse,
@@ -79,6 +80,21 @@ export default function ProjectDataConnectorsBox({
     projectId: project.id,
   });
 
+  const { renkuToastDanger } = useRenkuToast();
+
+  useEffect(() => {
+    if (projectStorageError) {
+      renkuToastDanger(
+        {
+          textHeader: "There was an error loading the project storage.",
+        },
+        {
+          toastId: "project-storage-error",
+        },
+      );
+    }
+  }, [projectStorageError, renkuToastDanger]);
+
   if (
     isLoading ||
     inaccessibleDataConnectorsIsLoading ||
@@ -88,12 +104,6 @@ export default function ProjectDataConnectorsBox({
 
   if (error) {
     return <RtkOrDataServicesError error={error} dismissible={false} />;
-  }
-
-  if (projectStorageError) {
-    return (
-      <RtkOrDataServicesError error={projectStorageError} dismissible={false} />
-    );
   }
 
   if (data == null) {

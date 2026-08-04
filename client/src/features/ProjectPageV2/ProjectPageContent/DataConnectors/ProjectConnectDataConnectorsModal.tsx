@@ -73,7 +73,6 @@ import ScrollableModal from "../../../../components/modal/ScrollableModal";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
-import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { doiFromUrl } from "../../utils/dataConnectorUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
@@ -228,6 +227,8 @@ export function ProjectConnectDataConnectorModeSwitch({
   const { data: projectStorage } = useGetProjectsByProjectIdStorageQuery({
     projectId: project.id,
   });
+  const canAddProjectStorage =
+    storageAllowData && projectStorage?.length === 0 && permissions.delete; // User needs to be project owner
 
   return (
     <ButtonGroup>
@@ -275,37 +276,30 @@ export function ProjectConnectDataConnectorModeSwitch({
         Create a data connector
       </Label>
 
-      {storageAllowData && projectStorage?.length === 0 && (
-        <PermissionsGuard
-          disabled={null}
-          enabled={
-            <>
-              <Input
-                type="radio"
-                className="btn-check"
-                id="project-data-controller-mode-add-storage"
-                value="add-storage"
-                checked={mode === "add-storage"}
-                onChange={() => switchMode("add-storage")}
-              />
-              <Label
-                data-cy="project-data-controller-mode-add-storage"
-                for="project-data-controller-mode-add-storage"
-                className={cx(
-                  "align-items-center",
-                  "btn-outline-primary",
-                  "btn",
-                  "d-flex",
-                )}
-              >
-                <DatabaseAdd className={cx("fs-3", "me-1")} />
-                Add project storage
-              </Label>
-            </>
-          }
-          requestedPermission="delete" // User needs to be project owner
-          userPermissions={permissions}
-        />
+      {canAddProjectStorage && (
+        <>
+          <Input
+            type="radio"
+            className="btn-check"
+            id="project-data-controller-mode-add-storage"
+            value="add-storage"
+            checked={mode === "add-storage"}
+            onChange={() => switchMode("add-storage")}
+          />
+          <Label
+            data-cy="project-data-controller-mode-add-storage"
+            for="project-data-controller-mode-add-storage"
+            className={cx(
+              "align-items-center",
+              "btn-outline-primary",
+              "btn",
+              "d-flex",
+            )}
+          >
+            <DatabaseAdd className={cx("fs-3", "me-1")} />
+            Add project storage
+          </Label>
+        </>
       )}
     </ButtonGroup>
   );

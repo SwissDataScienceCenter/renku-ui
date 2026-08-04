@@ -221,10 +221,9 @@ export default function ProjectStorageForm({
           />
           <div className="invalid-feedback">Please provide a mount point.</div>
           <div className={cx("form-text", "text-muted")}>
-            This is the name of the folder in the working directory where you
-            will find your project storage in sessions. You can either specify
-            an absolute path (starting with `/`) or a relative path (relative to
-            your session&apos;s working directory).
+            This is where the project storage will be mounted during sessions.
+            You can either specify an absolute path (starting with `/`) or a
+            relative path (relative to your session&apos;s working directory).
           </div>
         </div>
 
