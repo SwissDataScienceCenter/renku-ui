@@ -27,7 +27,7 @@ import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 import { LauncherActions } from "~/features/sessionsV2/components/launcherActions/LauncherActions";
 import AppContext from "~/utils/context/appContext";
-import { getAppLobbyUrl } from "./apps.utils";
+import { getAppLobbyUrl, toSecureAppUrl } from "./apps.utils";
 import useAppForLauncher from "./useAppForLauncher.hook";
 
 interface AppRuntimeCardProps {
@@ -37,8 +37,8 @@ interface AppRuntimeCardProps {
 
 /**
  * The running-deployment card for an app launcher — the app-shaped counterpart
- * to SessionView's "Launched session" card. Shows the deployment's public URL,
- * start time, and image when one exists, and always renders the status
+ * to SessionView's "Launched session" card. Shows the app's share link and
+ * direct URL, start time, and image when one exists, and always renders the status
  * indicator + primary action (Open / Start / Stop) via the shared
  * LauncherActions dispatcher (which routes apps to AppLauncherActions). The app
  * is read through the shared useAppForLauncher query, so this does not add a
@@ -71,11 +71,29 @@ export default function AppRuntimeCard({
         {app ? (
           <dl className={cx("mb-0", "row", "g-2")}>
             <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>
-              Public URL
+              Share link
             </dt>
             <dd className={cx("col-sm-9", "mb-0")}>
               <CommandCopy command={lobbyUrl} noMargin />
+              <p className={cx("form-text", "mb-0")}>
+                Send this to people. It waits for the app to wake up before
+                handing the visitor over.
+              </p>
             </dd>
+            {app.url && (
+              <>
+                <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>
+                  Direct URL
+                </dt>
+                <dd className={cx("col-sm-9", "mb-0")}>
+                  <CommandCopy command={toSecureAppUrl(app.url)} noMargin />
+                  <p className={cx("form-text", "mb-0")}>
+                    The app itself, with no wake-up page. Use this for API
+                    clients; a sleeping app may take a moment to answer.
+                  </p>
+                </dd>
+              </>
+            )}
             {app.started && (
               <>
                 <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>

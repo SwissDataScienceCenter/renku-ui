@@ -204,23 +204,23 @@ export default function AppLauncherActions({
     }
   }, [app, deleteApp]);
 
-  const onCopyUrl = useCallback(() => {
-    const shareableUrl = getAppLobbyUrl({
+  const onCopyShareLink = useCallback(() => {
+    const shareLink = getAppLobbyUrl({
       origin: params?.BASE_URL || window.location.origin,
       namespace: project.namespace,
       slug: project.slug,
       launcherId: launcher.id,
     });
-    window.navigator.clipboard.writeText(shareableUrl).then(
+    window.navigator.clipboard.writeText(shareLink).then(
       () =>
         renkuToastSuccess({
           textHeader: "App",
-          textBody: "The app URL was copied to your clipboard.",
+          textBody: "The share link was copied to your clipboard.",
         }),
       () =>
         renkuToastDanger({
           textHeader: "App",
-          textBody: "Unable to copy the app URL to your clipboard.",
+          textBody: "Unable to copy the share link to your clipboard.",
         }),
     );
   }, [
@@ -260,12 +260,12 @@ export default function AppLauncherActions({
     ),
     isLive && (
       <DropdownItem
-        key="copy-app-url"
-        data-cy="app-menu-copy-url"
-        onClick={onCopyUrl}
+        key="copy-share-link"
+        data-cy="app-menu-copy-share-link"
+        onClick={onCopyShareLink}
       >
         <Link45deg className={cx("bi", "me-1")} />
-        Copy app URL
+        Copy share link
       </DropdownItem>
     ),
     write && otherActions && (
@@ -357,7 +357,7 @@ export default function AppLauncherActions({
 
   const actionControl = isLoadingPermissions ? (
     <CheckingLauncherButton />
-  ) : !write || !hasMenuItems ? (
+  ) : !hasMenuItems ? (
     defaultAction
   ) : defaultAction ? (
     <ButtonWithMenuV2
