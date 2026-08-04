@@ -32,6 +32,7 @@ import { useNavigate } from "react-router";
 import { SingleValue } from "react-select";
 import {
   Button,
+  ButtonGroup,
   Col,
   DropdownItem,
   Modal,
@@ -58,6 +59,7 @@ import {
 } from "../../api/sessionsV2.api";
 import {
   getLauncherCategoryDefinition,
+  JOB_STOPPING_BUTTON_LABEL,
   sessionLauncherKindToCategory,
 } from "../../session.utils";
 import {
@@ -76,8 +78,10 @@ import {
 import ShutdownSessionContent from "../SessionModals/ShoutdownSessionContent";
 import { SessionRowResourceRequests } from "../SessionsList";
 import {
+  DismissJobButton,
   getInteractiveSessionDefaultAction,
   getJobDefaultAction,
+  StoppingStatusButton,
 } from "./ActiveSessionButton.actions";
 
 interface ActiveSessionButtonProps {
@@ -322,15 +326,16 @@ export default function ActiveSessionButton({
     </DropdownItem>
   );
 
-  const dismissAction = launcherCategory === "job" && (
-    <DropdownItem
-      data-cy="delete-session-button"
-      onClick={isRunning ? toggleStopSession : onStopSession}
-    >
-      <Trash className={cx("bi", "me-1")} />
-      {isRunning ? "Cancel" : "Dismiss"}
-    </DropdownItem>
-  );
+  const dismissAction =
+    launcherCategory === "job" &&
+    (status === "stopping" || isStopping ? (
+      <StoppingStatusButton label={JOB_STOPPING_BUTTON_LABEL} />
+    ) : (
+      <DismissJobButton
+        isRunning={isRunning}
+        onDismiss={isRunning ? toggleStopSession : onStopSession}
+      />
+    ));
 
   const modifyAction = (status === "hibernated" || status === "failed") &&
     !isStopping &&
@@ -362,28 +367,30 @@ export default function ActiveSessionButton({
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2")}>
-      <ButtonWithMenuV2
-        className={cx(className)}
-        color={launcherCategory === "job" ? "outline-primary" : "primary"}
-        default={defaultAction}
-        preventPropagation
-        size="sm"
-      >
-        {launcherCategory === "job" ? (
-          dismissAction
-        ) : (
-          <>
-            {hibernateAction}
-            {deleteAction}
-            {modifyAction}
-            {(hibernateAction || deleteAction || modifyAction) &&
-              (openInNewTabAction || logsAction) && <DropdownItem divider />}
+      {launcherCategory === "job" && (
+        <ButtonGroup size="sm">
+          {dismissAction}
+          {defaultAction}
+        </ButtonGroup>
+      )}
+      {launcherCategory === "session" && (
+        <ButtonWithMenuV2
+          className={cx(className)}
+          color="primary"
+          default={defaultAction}
+          preventPropagation
+          size="sm"
+        >
+          {hibernateAction}
+          {deleteAction}
+          {modifyAction}
+          {(hibernateAction || deleteAction || modifyAction) &&
+            (openInNewTabAction || logsAction) && <DropdownItem divider />}
 
-            {openInNewTabAction}
-            {logsAction}
-          </>
-        )}
-      </ButtonWithMenuV2>
+          {openInNewTabAction}
+          {logsAction}
+        </ButtonWithMenuV2>
+      )}
       <ConfirmDeleteModal
         isOpen={showModalStopSession}
         isStopping={isStopping}
