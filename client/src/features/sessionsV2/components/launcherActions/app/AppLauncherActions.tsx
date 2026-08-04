@@ -20,6 +20,7 @@ import cx from "classnames";
 import {
   Fragment,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -50,14 +51,15 @@ import {
   usePostAppsMutation,
 } from "~/features/sessionsV2/api/apps.api";
 import { DeleteAppModal } from "~/features/sessionsV2/apps/AppActionModals";
-import AppStatusIndicator from "~/features/sessionsV2/apps/AppStatusIndicator";
 import {
   APP_ALREADY_EXISTS_MESSAGE,
   APP_PUBLIC_PROJECT_ONLY_MESSAGE,
   getAppIndicatorState,
+  getAppLobbyPath,
+  getAppLobbyUrl,
   hasAppOnAnotherLauncher,
-  toSecureAppUrl,
 } from "~/features/sessionsV2/apps/apps.utils";
+import AppStatusIndicator from "~/features/sessionsV2/apps/AppStatusIndicator";
 import useAppForLauncher from "~/features/sessionsV2/apps/useAppForLauncher.hook";
 import useWaitForAppStatus from "~/features/sessionsV2/apps/useWaitForAppStatus.hook";
 import {
@@ -65,6 +67,7 @@ import {
   isTruthy,
 } from "~/features/sessionsV2/session.utils";
 import useLauncherEnvironmentReadiness from "~/features/sessionsV2/useLauncherEnvironmentReadiness.hook";
+import AppContext from "~/utils/context/appContext";
 import BuildLauncherButtons, {
   RebuildLauncherDropdownItem,
 } from "../../BuildLauncherButtons";
@@ -85,6 +88,7 @@ export default function AppLauncherActions({
   displayBuildActions: displayBuildActionsProp,
 }: LauncherCardActionsProps) {
   const { renkuToastDanger, renkuToastSuccess } = useRenkuToast();
+  const { params } = useContext(AppContext);
   const { isLoadingPermissions, write } = useProjectPermissions({
     projectId: launcher.project_id,
   });
@@ -100,8 +104,12 @@ export default function AppLauncherActions({
   });
   const hasOtherApp = hasAppOnAnotherLauncher(apps, launcher.id);
   const isLive = app?.status === "ready";
-  const appUrl = app?.url ? toSecureAppUrl(app.url) : undefined;
-  const canOpen = isLive && !!appUrl;
+
+  const lobbyPath = getAppLobbyPath({
+    namespace: project.namespace,
+    slug: project.slug,
+    launcherId: launcher.id,
+  });
 
   const {
     isCodeEnvironment,
@@ -197,10 +205,13 @@ export default function AppLauncherActions({
   }, [app, deleteApp]);
 
   const onCopyUrl = useCallback(() => {
-    if (!appUrl) {
-      return;
-    }
-    window.navigator.clipboard.writeText(appUrl).then(
+    const shareableUrl = getAppLobbyUrl({
+      origin: params?.BASE_URL || window.location.origin,
+      namespace: project.namespace,
+      slug: project.slug,
+      launcherId: launcher.id,
+    });
+    window.navigator.clipboard.writeText(shareableUrl).then(
       () =>
         renkuToastSuccess({
           textHeader: "App",
@@ -212,11 +223,15 @@ export default function AppLauncherActions({
           textBody: "Unable to copy the app URL to your clipboard.",
         }),
     );
-  }, [appUrl, renkuToastDanger, renkuToastSuccess]);
+  }, [
+    launcher.id,
+    params?.BASE_URL,
+    project.namespace,
+    project.slug,
+    renkuToastDanger,
+    renkuToastSuccess,
+  ]);
 
-  // The pill shown next to the primary action. While a publish is in flight but
-  // the deployment has not yet surfaced in the /apps response, force "starting"
-  // so the indicator reflects intent immediately.
   const indicatorState = getAppIndicatorState(app, {
     isStarting: isSpinningUp || publishResult.isLoading,
   });
@@ -243,7 +258,7 @@ export default function AppLauncherActions({
     displayBuildActions && !applyDefaultBuildActions && (
       <RebuildLauncherDropdownItem key="rebuild-launcher" launcher={launcher} />
     ),
-    canOpen && appUrl && (
+    isLive && (
       <DropdownItem
         key="copy-app-url"
         data-cy="app-menu-copy-url"
@@ -304,20 +319,15 @@ export default function AppLauncherActions({
       return publishButton;
     }
 
-    // Still starting (pending): nothing to open yet. Let the status indicator
-    // (and the kebab menu) carry it rather than the "Checking launcher" spinner.
     if (!isLive) {
       return null;
     }
 
-    // Live: opening the app is the only primary action. Stop app / Copy URL
-    // live in the dropdown menu alongside the launcher-level actions.
     return (
       <Button
         color="primary"
         data-cy="open-app-button"
-        disabled={!canOpen}
-        href={canOpen ? appUrl : undefined}
+        href={lobbyPath}
         onClick={(event) => event.stopPropagation()}
         rel="noreferrer noopener"
         size="sm"
@@ -330,9 +340,8 @@ export default function AppLauncherActions({
     );
   }, [
     app,
-    appUrl,
     applyDefaultBuildActions,
-    canOpen,
+    lobbyPath,
     hasOtherApp,
     hasValidImage,
     imageStatus,

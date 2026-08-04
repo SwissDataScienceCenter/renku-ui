@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { useContext } from "react";
 import { CircleSquare } from "react-bootstrap-icons";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
@@ -25,7 +26,8 @@ import { TimeCaption } from "~/components/TimeCaption";
 import type { Project } from "~/features/projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "~/features/sessionsV2/api/sessionLaunchersV2.api";
 import { LauncherActions } from "~/features/sessionsV2/components/launcherActions/LauncherActions";
-import { toSecureAppUrl } from "./apps.utils";
+import AppContext from "~/utils/context/appContext";
+import { getAppLobbyUrl } from "./apps.utils";
 import useAppForLauncher from "./useAppForLauncher.hook";
 
 interface AppRuntimeCardProps {
@@ -50,7 +52,14 @@ export default function AppRuntimeCard({
     projectId: project.id,
     launcherId: launcher.id,
   });
-  const appUrl = app?.url ? toSecureAppUrl(app.url) : undefined;
+
+  const { params } = useContext(AppContext);
+  const lobbyUrl = getAppLobbyUrl({
+    origin: params?.BASE_URL || window.location.origin,
+    namespace: project.namespace,
+    slug: project.slug,
+    launcherId: launcher.id,
+  });
 
   return (
     <Card data-cy="app-runtime-card">
@@ -61,16 +70,12 @@ export default function AppRuntimeCard({
       <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
         {app ? (
           <dl className={cx("mb-0", "row", "g-2")}>
-            {appUrl && (
-              <>
-                <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>
-                  Public URL
-                </dt>
-                <dd className={cx("col-sm-9", "mb-0")}>
-                  <CommandCopy command={appUrl} noMargin />
-                </dd>
-              </>
-            )}
+            <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>
+              Public URL
+            </dt>
+            <dd className={cx("col-sm-9", "mb-0")}>
+              <CommandCopy command={lobbyUrl} noMargin />
+            </dd>
             {app.started && (
               <>
                 <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>

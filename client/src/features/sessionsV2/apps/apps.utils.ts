@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import { generatePath } from "react-router";
+
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import type { AppResponse, AppStatus } from "../api/apps.api";
 
 /** Error messages returned verbatim by the backend for app operations. */
@@ -114,9 +117,7 @@ export const APP_STATUS_POLLING_INTERVAL_MS = 5_000;
  * cache-invalidation refetch cannot capture the settled state; the caller polls
  * until the target is reached (see useWaitForAppStatus).
  */
-export type AppWaitTarget =
-  | { desiredStatus: AppStatus[] }
-  | { deletion: true };
+export type AppWaitTarget = { desiredStatus: AppStatus[] } | { deletion: true };
 
 /**
  * Whether an observed app has reached the target that ends an action's wait.
@@ -145,4 +146,48 @@ export function hasReachedAppTarget(
  */
 export function toSecureAppUrl(url: string): string {
   return url.replace(/^http:\/\//i, "https://");
+}
+
+/** Everything needed to address a launcher's lobby. */
+interface AppLobbyLocation {
+  namespace: string;
+  slug: string;
+  launcherId: string;
+}
+
+/**
+ * The in-app path of the lobby for a launcher.
+ *
+ * This — not the app's own URL — is what we hand out. Apps run with min-scale 0
+ * and a scaled-to-zero service still reports Ready, so sending someone straight
+ * to the app's URL means they wait on a blank tab with no indication that
+ * anything is happening. The lobby absorbs that cold start.
+ *
+ * Keyed by launcher rather than by app so the link survives the app being
+ * stopped and re-published, and so it still resolves to something meaningful
+ * when no app is deployed.
+ */
+export function getAppLobbyPath({
+  namespace,
+  slug,
+  launcherId,
+}: AppLobbyLocation): string {
+  return generatePath(ABSOLUTE_ROUTES.v2.projects.show.apps.show, {
+    namespace,
+    slug,
+    launcherId,
+  });
+}
+
+/**
+ * The absolute lobby URL, for sharing and for copying to the clipboard.
+ *
+ * The origin is passed in rather than read from `window` so the URL can be
+ * built (and tested) without a browser.
+ */
+export function getAppLobbyUrl({
+  origin,
+  ...location
+}: AppLobbyLocation & { origin: string }): string {
+  return `${origin.replace(/\/+$/, "")}${getAppLobbyPath(location)}`;
 }
