@@ -52,10 +52,12 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ErrorAlert } from "~/components/Alert";
+import { ErrorAlert, InfoAlert } from "~/components/Alert";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
+import type { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import { partitionDataConnectorsForApp } from "~/features/sessionsV2/apps/appDataConnectors.utils";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -289,7 +291,18 @@ export function SessionView({
     useGetDataConnectorsListByDataConnectorIdsQuery(
       dataConnectorIds ? { dataConnectorIds } : skipToken,
     );
-  const dataConnectors = Object.values(dataConnectorsMap ?? {});
+
+  const dataConnectors = useMemo(
+    () => Object.values(dataConnectorsMap ?? {}),
+    [dataConnectorsMap],
+  );
+
+  const isApp = launcherCategory === "app";
+  const { mounted: appDataConnectors, skipped: skippedDataConnectors } =
+    useMemo(
+      () => partitionDataConnectorsForApp(dataConnectors),
+      [dataConnectors],
+    );
 
   const {
     resourceClass: launcherResourceClass,
@@ -358,9 +371,9 @@ export function SessionView({
 
           {description && <p className="m-0">{description}</p>}
 
-          {launcher != null && launcherCategory === "app" ? (
-            // Apps have no per-user sessions; show the running deployment
-            // (status, URL, actions) in place of the launched-session card.
+          {isApp && <AppContentsNotice />}
+
+          {launcher != null && isApp ? (
             <AppRuntimeCard launcher={launcher} project={project} />
           ) : (
             <Card>
@@ -611,66 +624,53 @@ export function SessionView({
             </Card>
           )}
 
-          <Card>
-            <CardHeader className={cx("align-items-center", "d-flex")}>
-              <h3 className={cx("mb-0", "me-2")}>
-                <Database className={cx("me-1", "bi")} />
-                Data Connectors
-              </h3>
-              <Badge>{dataConnectors?.length || 0}</Badge>
-            </CardHeader>
-            <CardBody>
-              {dataConnectors && dataConnectors.length > 0 ? (
-                <ListGroup flush>
-                  {dataConnectors.map((storage, index) => (
-                    <ListGroupItem key={`storage-${index}`}>
-                      <div>Name: {storage.name}</div>
-                      <div>Type: {storage.storage.storage_type}</div>
-                    </ListGroupItem>
-                  ))}
-                </ListGroup>
-              ) : (
-                <p className={cx("mb-0", "fst-italic")}>
-                  No data connectors included
-                </p>
-              )}
-            </CardBody>
-          </Card>
+          <DataConnectorsCard
+            dataConnectors={isApp ? appDataConnectors : dataConnectors}
+            skippedCount={isApp ? skippedDataConnectors.length : 0}
+          />
 
-          <Card>
-            <CardHeader className={cx("align-items-center", "d-flex")}>
-              <h3
-                className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
-              >
-                <FileCode className="me-1" />
-                Code Repositories
-              </h3>
-              {project?.repositories?.length != null && (
-                <Badge>{project?.repositories?.length}</Badge>
-              )}
-            </CardHeader>
-            <CardBody>
-              {project.repositories && project.repositories.length > 0 ? (
-                <ListGroup flush>
-                  {project.repositories.map((repositoryUrl, index) => (
-                    <RepositoryItem
-                      key={`storage-${index}`}
-                      project={project}
-                      readonly={true}
-                      url={repositoryUrl}
-                    />
-                  ))}
-                </ListGroup>
-              ) : (
-                <p className={cx("mb-0", "fst-italic")}>
-                  No repositories included
-                </p>
-              )}
-            </CardBody>
-          </Card>
+          {!isApp && (
+            <>
+              <Card>
+                <CardHeader className={cx("align-items-center", "d-flex")}>
+                  <h3
+                    className={cx(
+                      "align-items-center",
+                      "d-flex",
+                      "mb-0",
+                      "me-2",
+                    )}
+                  >
+                    <FileCode className="me-1" />
+                    Code Repositories
+                  </h3>
+                  {project?.repositories?.length != null && (
+                    <Badge>{project?.repositories?.length}</Badge>
+                  )}
+                </CardHeader>
+                <CardBody>
+                  {project.repositories && project.repositories.length > 0 ? (
+                    <ListGroup flush>
+                      {project.repositories.map((repositoryUrl, index) => (
+                        <RepositoryItem
+                          key={`storage-${index}`}
+                          project={project}
+                          readonly={true}
+                          url={repositoryUrl}
+                        />
+                      ))}
+                    </ListGroup>
+                  ) : (
+                    <p className={cx("mb-0", "fst-italic")}>
+                      No repositories included
+                    </p>
+                  )}
+                </CardBody>
+              </Card>
 
-          {/* Session secrets do not apply to apps. */}
-          {launcherCategory !== "app" && <SessionViewSessionSecrets />}
+              <SessionViewSessionSecrets />
+            </>
+          )}
 
           {launcher && (
             <Card>
@@ -724,6 +724,77 @@ export function SessionView({
         </div>
       </OffcanvasBody>
     </Offcanvas>
+  );
+}
+
+interface DataConnectorsCardProps {
+  dataConnectors: DataConnectorRead[];
+  skippedCount: number;
+}
+
+function DataConnectorsCard({
+  dataConnectors,
+  skippedCount,
+}: DataConnectorsCardProps) {
+  const skippedLabel = `${skippedCount} data connector${
+    skippedCount === 1 ? "" : "s"
+  } not mounted`;
+
+  return (
+    <Card>
+      <CardHeader className={cx("align-items-center", "d-flex")}>
+        <h3 className={cx("mb-0", "me-2")}>
+          <Database className={cx("me-1", "bi")} />
+          Data Connectors
+        </h3>
+        <Badge>{dataConnectors.length}</Badge>
+      </CardHeader>
+      <CardBody>
+        {dataConnectors.length > 0 ? (
+          <ListGroup flush>
+            {dataConnectors.map((storage, index) => (
+              <ListGroupItem key={`storage-${index}`}>
+                <div>Name: {storage.name}</div>
+                <div>Type: {storage.storage.storage_type}</div>
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        ) : (
+          <p
+            className={cx("mb-0", "fst-italic")}
+            data-cy={
+              skippedCount > 0 ? "app-data-connectors-skipped" : undefined
+            }
+          >
+            {skippedCount > 0 ? skippedLabel : "No data connectors included"}
+          </p>
+        )}
+        {skippedCount > 0 && dataConnectors.length > 0 && (
+          <p
+            className={cx("mb-0", "mt-2", "small", "text-body-secondary")}
+            data-cy="app-data-connectors-skipped"
+          >
+            {skippedLabel}
+          </p>
+        )}
+      </CardBody>
+    </Card>
+  );
+}
+
+function AppContentsNotice() {
+  return (
+    <InfoAlert
+      className="mb-0"
+      data-cy="app-contents-notice"
+      dismissible={false}
+      timeout={0}
+    >
+      <p className="mb-0">
+        Repositories and session secrets are not mounted. Only public,
+        credential-free data connectors are mounted.
+      </p>
+    </InfoAlert>
   );
 }
 
