@@ -85,9 +85,8 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
     deleteSessionLaunchersByLauncherId: {
       invalidatesTags: ["Launcher"],
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
-        queryFulfilled.finally(() => {
-          dispatch(appsApi.endpoints.invalidateApps.initiate());
-        });
+        await queryFulfilled.catch(() => undefined);
+        dispatch(appsApi.endpoints.invalidateApps.initiate());
       },
     },
     getProjectsByProjectIdSessionLaunchers: {
