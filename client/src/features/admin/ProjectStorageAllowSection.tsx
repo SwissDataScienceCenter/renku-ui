@@ -23,6 +23,7 @@ import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
+  FormText,
   Input,
   InputGroup,
   InputGroupText,
@@ -83,9 +84,7 @@ export default function ProjectStorageAllowSection() {
                     </div>
                     <div className={cx("d-flex", "gap-2")}>
                       <EditProjectStorageAllowButton project={e} />
-                      <RemoveProjectStorageAllowButton
-                        projectId={e.project_id}
-                      />
+                      <RemoveProjectStorageAllowButton project={e} />
                     </div>
                   </div>
                 </ListGroupItem>
@@ -160,7 +159,7 @@ function AddOrEditProjectStorageAllowModal({
     mode: "onChange",
     defaultValues: {
       project_id: project?.project_id ?? "",
-      max_size: project?.max_size ?? 10,
+      max_size: project?.max_size ?? PROJECT_STORAGE_MAX_GB,
     },
   });
   const [postDataConnectorsStorageAllowMutation, result] =
@@ -202,18 +201,28 @@ function AddOrEditProjectStorageAllowModal({
     if (isOpen) {
       control._reset({
         project_id: project?.project_id ?? "",
-        max_size: project?.max_size ?? 10,
+        max_size: project?.max_size ?? PROJECT_STORAGE_MAX_GB,
       });
-      result.reset();
-      patchResult.reset();
     }
-  }, [control, isOpen]);
+  }, [control, isOpen, project]);
+
+  const onClose = useCallback(() => {
+    result.reset();
+    patchResult.reset();
+    toggle();
+  }, [toggle, result, patchResult]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader tag="h2" toggle={toggle}>
+    <Modal
+      backdrop="static"
+      centered
+      isOpen={isOpen}
+      size="lg"
+      toggle={onClose}
+    >
+      <ModalHeader tag="h2" toggle={onClose}>
         {project
-          ? `Edit Project Storage Allow Entry`
+          ? "Edit Project Storage Allow Entry"
           : "Add Project to Storage Allow List"}
       </ModalHeader>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -222,9 +231,19 @@ function AddOrEditProjectStorageAllowModal({
           {patchResult.error && (
             <RtkOrDataServicesError error={patchResult.error} />
           )}
-          {!project && (
+          {project ? (
             <div className="mb-3">
-              <Label for="project_id">Project</Label>
+              <Label for="project">Project</Label>
+              <Input
+                id="project"
+                type="text"
+                value={project.namespace}
+                disabled
+              />
+            </div>
+          ) : (
+            <div className="mb-3">
+              <Label for="project_id">Project Id</Label>
               <Controller
                 control={control}
                 name="project_id"
@@ -281,6 +300,7 @@ function AddOrEditProjectStorageAllowModal({
                   <div className="invalid-feedback">
                     {error?.message || "Please provide a valid value."}
                   </div>
+                  <FormText>Max: {PROJECT_STORAGE_MAX_GB} GB</FormText>
                 </>
               )}
               rules={{
@@ -303,7 +323,7 @@ function AddOrEditProjectStorageAllowModal({
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="outline-danger" onClick={toggle}>
+          <Button color="outline-danger" onClick={onClose}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
@@ -324,11 +344,11 @@ function AddOrEditProjectStorageAllowModal({
 }
 
 interface RemoveProjectStorageAllowButtonProps {
-  projectId: string;
+  project: ProjectStorageAllow;
 }
 
 function RemoveProjectStorageAllowButton({
-  projectId,
+  project,
 }: RemoveProjectStorageAllowButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
@@ -342,7 +362,7 @@ function RemoveProjectStorageAllowButton({
         Remove
       </Button>
       <DeleteProjectStorageAllowModal
-        projectId={projectId}
+        project={project}
         isOpen={isOpen}
         toggle={toggle}
       />
@@ -352,20 +372,20 @@ function RemoveProjectStorageAllowButton({
 
 interface DeleteProjectStorageAllowModalProps {
   isOpen: boolean;
-  projectId: string;
+  project: ProjectStorageAllow;
   toggle: () => void;
 }
 
 function DeleteProjectStorageAllowModal({
   isOpen,
-  projectId,
+  project,
   toggle,
 }: DeleteProjectStorageAllowModalProps) {
   const [deleteStorageAllow, result] =
     useDeleteDataConnectorsStorageAllowByProjectIdMutation();
   const onDelete = useCallback(() => {
-    deleteStorageAllow({ projectId });
-  }, [deleteStorageAllow, projectId]);
+    deleteStorageAllow({ projectId: project.project_id });
+  }, [deleteStorageAllow, project.project_id]);
 
   useEffect(() => {
     if (result.isSuccess || result.isError) {
@@ -382,7 +402,7 @@ function DeleteProjectStorageAllowModal({
         {result.error && <RtkOrDataServicesError error={result.error} />}
         <p className="mb-0">
           Please confirm that you want to remove project{" "}
-          <strong>{projectId}</strong> from the storage allow list.
+          <strong>{project.namespace}</strong> from the storage allow list.
         </p>
         <WarnAlert className={cx("mt-3")} dismissible={false} color="danger">
           <p className="mb-0">
