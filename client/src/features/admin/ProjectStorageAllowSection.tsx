@@ -17,10 +17,9 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect, useState } from "react";
+import { Pencil, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import Select, { ClassNamesConfig, SingleValue } from "react-select";
 import {
   Button,
   Form,
@@ -37,23 +36,21 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ErrorAlert } from "~/components/Alert";
+import { ErrorAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
+import type { ProjectStorageAllow } from "../dataConnectorsV2/api/data-connectors.api.ts";
 import {
   useDeleteDataConnectorsStorageAllowByProjectIdMutation,
   useGetDataConnectorsStorageAllowQuery,
   usePostDataConnectorsStorageAllowMutation,
 } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
+import { usePatchDataConnectorsStorageAllowByProjectIdMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api.ts";
 import {
   PROJECT_STORAGE_MAX_GB,
   PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
-} from "../ProjectPageV2/ProjectPageContent/DataConnectors/projectDataConnectors.constants.ts";
-import { type Project } from "../projectsV2/api/projectV2.api";
-import { useGetProjectsQuery } from "../projectsV2/api/projectV2.enhanced-api";
-
-import styles from "~/features/projectsV2/fields/ProjectNamespaceFormField.module.scss";
+} from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants.ts";
 
 export default function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetDataConnectorsStorageAllowQuery({});
@@ -82,10 +79,14 @@ export default function ProjectStorageAllowSection() {
                     )}
                   >
                     <div>
-                      <strong>Project {e.project_id}</strong>
+                      <strong>{e.namespace}</strong> (max {e.max_size} GB)
                     </div>
-                    <div>max {e.max_size} GB</div>
-                    <RemoveProjectStorageAllowButton projectId={e.project_id} />
+                    <div className={cx("d-flex", "gap-2")}>
+                      <EditProjectStorageAllowButton project={e} />
+                      <RemoveProjectStorageAllowButton
+                        projectId={e.project_id}
+                      />
+                    </div>
                   </div>
                 </ListGroupItem>
               ))}
@@ -109,123 +110,33 @@ function AddProjectStorageAllowButton() {
         <PlusLg className={cx("bi", "me-1")} />
         Add Project to Storage Allow List
       </Button>
-      <AddProjectStorageAllowModal isOpen={isOpen} toggle={toggle} />
+      <AddOrEditProjectStorageAllowModal isOpen={isOpen} toggle={toggle} />
     </div>
   );
 }
 
-const selectClassNames: ClassNamesConfig<Project, false> = {
-  control: ({ menuIsOpen }) =>
-    cx(menuIsOpen ? "rounded-top" : "rounded", "border", styles.control),
-  dropdownIndicator: () => cx("pe-3"),
-  input: () => cx("px-3"),
-  menu: () => cx("bg-white", "rounded-bottom", "border"),
-  menuList: () => cx("d-grid"),
-  option: ({ isFocused, isSelected }) =>
-    cx(
-      "d-flex",
-      "flex-column",
-      "flex-sm-row",
-      "column-gap-3",
-      "px-3",
-      "py-2",
-      styles.option,
-      isFocused && styles.optionIsFocused,
-      !isFocused && isSelected && styles.optionIsSelected,
-    ),
-  placeholder: () => cx("px-3"),
-  loadingMessage: () => cx("p-3"),
-  singleValue: () =>
-    cx("d-flex", "flex-column", "flex-sm-row", "column-gap-3", "px-3"),
-};
-
-interface ProjectSelectorProps {
-  currentProject?: string;
-  isFetchingMore?: boolean;
-  projects?: Project[];
-  onChange?: (newValue: SingleValue<Project>) => void;
-  onSetQuery: (q: string) => void;
-  query: string;
-}
-
-function ProjectSelector({
-  currentProject,
-  isFetchingMore,
-  projects,
-  onChange,
-  onSetQuery,
-  query,
-}: ProjectSelectorProps) {
-  const currentValue = useMemo(
-    () => projects?.find(({ id }) => currentProject === id),
-    [projects, currentProject],
-  );
-
-  // const components = useMemo(
-  //   () => ({
-  //     ...selectComponents,
-  //     NoOptionsMessage: CustomNoOptionsMessage({ query }),
-  //   }),
-  //   [query],
-  // );
+function EditProjectStorageAllowButton({
+  project,
+}: {
+  project: ProjectStorageAllow;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
 
   return (
-    <Select
-      options={projects}
-      value={currentValue}
-      unstyled
-      getOptionValue={(option) => option.id}
-      getOptionLabel={(option) => option.name}
-      onChange={onChange}
-      classNames={selectClassNames}
-      classNamePrefix="namespace-select"
-      // components={components}
-      isClearable={true}
-      isSearchable={true}
-      isLoading={isFetchingMore}
-      onInputChange={onSetQuery}
-    />
-  );
-}
-
-interface ProjectControlProps {
-  className: string;
-  "data-cy": string;
-  id: string;
-  onChange: (newValue: SingleValue<Project>) => void;
-  value?: string;
-}
-
-export function ProjectControl(props: ProjectControlProps) {
-  const [lookupQuery, setLookupQuery] = useState<string | undefined>(undefined);
-  const { className, id, onChange, value } = props;
-  const dataCy = props["data-cy"];
-
-  // TODO: implement pagination and search for projects
-  const { data, error, isLoading } = useGetProjectsQuery({
-    params: {
-      page: 1,
-      per_page: 20,
-      direct_member: false,
-      namespace: "",
-    },
-  });
-
-  if (error || data == null) {
-    return <RtkOrDataServicesError error={error} dismissible={false} />;
-  }
-
-  return (
-    <div className={className} data-cy={dataCy} id={id}>
-      <ProjectSelector
-        currentProject={value}
-        isFetchingMore={isLoading}
-        query={lookupQuery || ""}
-        projects={data?.projects as Project[]}
-        onChange={onChange}
-        onSetQuery={(query: string) => setLookupQuery(query)}
+    <>
+      <Button color="primary" onClick={toggle}>
+        <Pencil className={cx("bi", "me-1")} />
+        Edit
+      </Button>
+      <AddOrEditProjectStorageAllowModal
+        isOpen={isOpen}
+        toggle={toggle}
+        project={project}
       />
-    </div>
+    </>
   );
 }
 
@@ -234,26 +145,47 @@ interface ProjectStorageAllowForm {
   max_size: number;
 }
 
-interface AddProjectStorageAllowModalProps {
+interface AddOrEditProjectStorageAllowModalProps {
   isOpen: boolean;
   toggle: () => void;
+  project?: ProjectStorageAllow;
 }
 
-function AddProjectStorageAllowModal({
+function AddOrEditProjectStorageAllowModal({
   isOpen,
   toggle,
-}: AddProjectStorageAllowModalProps) {
+  project,
+}: AddOrEditProjectStorageAllowModalProps) {
   const { control, handleSubmit } = useForm<ProjectStorageAllowForm>({
     mode: "onChange",
     defaultValues: {
-      project_id: "",
-      max_size: 10,
+      project_id: project?.project_id ?? "",
+      max_size: project?.max_size ?? 10,
     },
   });
   const [postDataConnectorsStorageAllowMutation, result] =
     usePostDataConnectorsStorageAllowMutation();
 
+  const [patchDataConnectorsStorageAllowByProjectIdMutation, patchResult] =
+    usePatchDataConnectorsStorageAllowByProjectIdMutation();
+
   const onSubmit = async (values: ProjectStorageAllowForm) => {
+    if (project) {
+      // Update existing project storage allow entry
+      const result = await patchDataConnectorsStorageAllowByProjectIdMutation({
+        projectId: project.project_id,
+        "If-Match": project.etag ?? "",
+        projectStorageAllowPatch: {
+          max_size: values.max_size,
+        },
+      });
+      if (!result.error) {
+        toggle();
+      }
+      return;
+    }
+
+    // Create new project storage allow entry
     const result = await postDataConnectorsStorageAllowMutation({
       projectStorageAllowPost: {
         project_id: values.project_id,
@@ -269,45 +201,50 @@ function AddProjectStorageAllowModal({
   useEffect(() => {
     if (isOpen) {
       control._reset({
-        project_id: "",
-        max_size: 10,
+        project_id: project?.project_id ?? "",
+        max_size: project?.max_size ?? 10,
       });
       result.reset();
+      patchResult.reset();
     }
   }, [control, isOpen]);
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader tag="h2" toggle={toggle}>
-        Add Project to Storage Allow List
+        {project
+          ? `Edit Project Storage Allow Entry`
+          : "Add Project to Storage Allow List"}
       </ModalHeader>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
           {result.error && <RtkOrDataServicesError error={result.error} />}
-          <div className="mb-3">
-            <Label for="project_id">Project</Label>
-            <Controller
-              control={control}
-              name="project_id"
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <ProjectControl
-                    className={cx(error && "is-invalid")}
-                    data-cy="project-select"
-                    id="project_id"
-                    onChange={(newValue: SingleValue<Project>) =>
-                      field.onChange(newValue?.id)
-                    }
-                    value={field.value}
-                  />
-                  <div className="invalid-feedback">
-                    {error?.message || "Please select a project."}
-                  </div>
-                </>
-              )}
-              rules={{ required: "Please select a project." }}
-            />
-          </div>
+          {patchResult.error && (
+            <RtkOrDataServicesError error={patchResult.error} />
+          )}
+          {!project && (
+            <div className="mb-3">
+              <Label for="project_id">Project</Label>
+              <Controller
+                control={control}
+                name="project_id"
+                render={({ field, fieldState: { error } }) => (
+                  <>
+                    <Input
+                      id="project_id"
+                      className={cx(error && "is-invalid")}
+                      type="text"
+                      {...field}
+                    />
+                    <div className="invalid-feedback">
+                      {error?.message || "Please enter a valid project id."}
+                    </div>
+                  </>
+                )}
+                rules={{ required: true }}
+              />
+            </div>
+          )}
           <div className="mb-3">
             <Label className="form-label" for="max_size">
               Max Size
@@ -371,8 +308,14 @@ function AddProjectStorageAllowModal({
             Cancel
           </Button>
           <Button color="primary" disabled={result.isLoading} type="submit">
-            <PlusLg className={cx("bi", "me-1")} />
-            Add
+            {project ? (
+              "Edit"
+            ) : (
+              <>
+                <PlusLg className={cx("bi", "me-1")} />
+                Add
+              </>
+            )}
           </Button>
         </ModalFooter>
       </Form>
@@ -437,11 +380,16 @@ function DeleteProjectStorageAllowModal({
       </ModalHeader>
       <ModalBody>
         {result.error && <RtkOrDataServicesError error={result.error} />}
-
         <p className="mb-0">
           Please confirm that you want to remove project{" "}
           <strong>{projectId}</strong> from the storage allow list.
         </p>
+        <WarnAlert className={cx("mt-3")} dismissible={false} color="danger">
+          <p className="mb-0">
+            This action cannot be undone. All data stored in the project storage
+            will be permanently deleted.
+          </p>
+        </WarnAlert>
       </ModalBody>
       <ModalFooter>
         <Button color="outline-danger" onClick={toggle}>

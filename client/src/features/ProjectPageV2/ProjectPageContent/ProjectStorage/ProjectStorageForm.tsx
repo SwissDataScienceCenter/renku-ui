@@ -33,11 +33,9 @@ import {
 
 import { InfoAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import { type ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
   useGetDataConnectorsStorageAllowByProjectIdQuery,
-  type ProjectStorage,
-} from "~/features/dataConnectorsV2/api/data-connectors.api";
-import {
   usePatchDataConnectorsStorageByStorageIdMutation,
   usePostDataConnectorsStorageMutation,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
