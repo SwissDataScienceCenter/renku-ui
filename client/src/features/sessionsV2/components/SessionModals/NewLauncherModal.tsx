@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { RocketTakeoff } from "react-bootstrap-icons";
 import { useParams } from "react-router";
@@ -32,10 +32,9 @@ import {
   Row,
 } from "reactstrap";
 
+import useAppsEnabled from "~/features/sessionsV2/apps/useAppsEnabled.hook";
 import { LauncherCategoryIcon } from "~/features/sessionsV2/components/SessionForm/LauncherCategoryIcon";
 import { getLauncherCategoryDefinition } from "~/features/sessionsV2/session.utils";
-import AppContext from "~/utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../../../projectsV2/api/projectV2.enhanced-api";
 import { LAUNCHER_OPTIONS } from "../../session.constants";
 import type { LauncherCategory } from "../../sessionsV2.types";
@@ -55,13 +54,7 @@ export default function NewLauncherModal({
   const [selectedCategory, setSelectedCategory] =
     useState<LauncherCategory | null>(null);
 
-  // Apps are gated by a deployment-level config value (APPS_ENABLED), delivered
-  // via /config.json → AppParams, and driven by the `apps.enabled` value of the
-  // renku Helm chart (the same value that sets APPS_ENABLED on the backend
-  // data-service). This keeps the UI and backend gate in sync per-deployment,
-  // rather than relying on a per-browser localStorage flag.
-  const { params } = useContext(AppContext);
-  const appsEnabled = params?.APPS_ENABLED ?? DEFAULT_APP_PARAMS.APPS_ENABLED;
+  const appsEnabled = useAppsEnabled();
 
   const { namespace, slug } = useParams<{ namespace: string; slug: string }>();
   const { data: project } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
