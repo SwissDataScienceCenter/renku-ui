@@ -68,7 +68,9 @@ function IndicatorIcon({ state }: { state: AppIndicatorState }) {
     case "starting":
       return <Loader className="me-1" inline size={14} />;
     case "error":
-      return <ExclamationTriangleFill className={cx("bi", "me-1")} fontSize={14} />;
+      return (
+        <ExclamationTriangleFill className={cx("bi", "me-1")} fontSize={14} />
+      );
     case "not-running":
     default:
       return <SlashCircle className={cx("bi", "me-1")} fontSize={14} />;

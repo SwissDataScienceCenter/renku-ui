@@ -1121,3 +1121,93 @@ describe("view autostart link", () => {
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
 });
+
+describe("session alerts on session show page", () => {
+  const sessionName = "renku-2-86688c93091df68dffdc594bfd022ce3";
+  const sessionShowPagePath = `/p/user1-uuid/test-2-v2-project/sessions/show/${sessionName}`;
+
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .projects()
+      .readGroupV2Namespace({ groupSlug: "user1-uuid" })
+      .landingUserProjects()
+      .readProjectV2()
+      .readProjectV2WithoutDocumentation()
+      .resourcePoolsTest()
+      .listProjectV2Members()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+      })
+      .getSessionsV2({ fixture: "sessions/sessionsV2.json" })
+      .sessionImage()
+      .newLauncher()
+      .environments();
+  });
+
+  it("shows tooltip when there are no active alerts", () => {
+    cy.intercept("GET", "/api/data/alerts*", { body: [] }).as("getAlerts");
+
+    cy.visit(sessionShowPagePath);
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@getSessionsV2");
+    cy.wait("@getAlerts");
+
+    cy.getDataCy("session-alerts").trigger("mouseover");
+    cy.contains(".tooltip", "Session alerts").should("be.visible");
+    cy.get(".session-alerts-popover").should("not.exist");
+  });
+
+  it("shows active alert status and closes popover with the close button", () => {
+    cy.intercept("GET", "/api/data/alerts*", {
+      body: [
+        {
+          id: "01J00QXZ",
+          title: "Session warning",
+          message: "A test alert message. [Link](https://example.com)",
+          event_type: "test",
+          user_id: "user1-uuid",
+          session_name: sessionName,
+          creation_date: "2026-07-10T12:00:00Z",
+          resolved_date: null,
+        },
+        {
+          id: "01J00QXY",
+          title: "Session error",
+          message:
+            "A test error message. [Link](https://example.com) [Link](https://example.com)",
+          event_type: "test",
+          user_id: "user1-uuid",
+          session_name: sessionName,
+          creation_date: "2026-07-10T12:00:00Z",
+          resolved_date: null,
+        },
+      ],
+    }).as("getAlerts");
+
+    cy.visit(sessionShowPagePath);
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@getSessionsV2");
+    cy.wait("@getAlerts");
+
+    cy.get(".session-alerts-popover").should("be.visible");
+    cy.getDataCy("session-alerts-close").should("be.visible").click();
+    cy.get(".session-alerts-popover").should("not.exist");
+
+    cy.getDataCy("session-alerts").click();
+    cy.get(".session-alerts-popover").should("be.visible");
+    cy.contains(".popover-header", "Session alerts").should("be.visible");
+    cy.contains(".popover-body", "A test alert message.").should("be.visible");
+  });
+});

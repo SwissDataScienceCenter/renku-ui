@@ -159,6 +159,8 @@ export function getNewLauncherFormDefaultValues(
   | "frontend_variant"
   | "command"
   | "args"
+  | "gid"
+  | "uid"
 > {
   return {
     name: "",
@@ -176,6 +178,8 @@ export function getNewLauncherFormDefaultValues(
     frontend_variant: launcherCategory === "app" ? "custom" : "jupyterlab", // eslint-disable-line spellcheck/spell-checker
     command: "",
     args: "",
+    gid: 1000,
+    uid: 1000,
   };
 }
 
@@ -228,6 +232,7 @@ export function prioritizeSelectedEnvironment(
  *
  * @param {SessionLauncherForm} data - The form data used to configure the environment for a session launcher.
  *
+ * @param launcherCategory
  * @returns {{ success: boolean; data?: SessionLauncherEnvironmentParams; error?: string }} -
  *  Returns an object with the following structure:
  *   - `success`: A boolean indicating whether the function executed successfully.

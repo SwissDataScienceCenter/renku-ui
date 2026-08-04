@@ -16,7 +16,7 @@
  * limitations under the License
  */
 
-import { Gear, CircleSquare, PlayCircle } from "react-bootstrap-icons";
+import { CircleSquare, Gear, PlayCircle } from "react-bootstrap-icons";
 
 import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
@@ -160,6 +160,22 @@ export const BUILDER_FRONTENDS = [
   },
   {
     /* eslint-disable spellcheck/spell-checker */
+    value: "infer",
+    label: "Auto-Detect",
+    description:
+      "Auto-detect the frontend from dependencies. Currently only Marimo is supported.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
+  {
+    /* eslint-disable spellcheck/spell-checker */
+    value: "none",
+    label: "Custom / No Frontend",
+    description:
+      "Renku does not add a frontend. For a custom frontend, define an entrypoint in a Procfile.",
+    /* eslint-enable spellcheck/spell-checker */
+  },
+  {
+    /* eslint-disable spellcheck/spell-checker */
     value: "custom",
     label: "Custom app",
     description:
@@ -171,8 +187,8 @@ export const BUILDER_FRONTENDS = [
 
 /* eslint-disable spellcheck/spell-checker */
 export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
-  python: ["vscodium", "jupyterlab", "ttyd", "custom"],
-  r: ["rstudio", "custom"],
+  python: ["vscodium", "jupyterlab", "ttyd", "infer", "none", "custom"],
+  r: ["rstudio", "none", "custom"],
 };
 
 export const getCompatibleFrontends = (builderVariant: string) => {

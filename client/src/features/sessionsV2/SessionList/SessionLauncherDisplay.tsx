@@ -36,6 +36,7 @@ import {
   toggleLauncherHash,
 } from "../session.utils";
 import { SESSION_LAUNCHER_KIND } from "../sessionsV2.types";
+import EnvVariablesModal from "../SessionView/EnvVariablesModal";
 import SessionLaunchLinkModal from "../SessionView/SessionLaunchLinkModal";
 import { SessionView } from "../SessionView/SessionView";
 import SessionLauncherCard from "./SessionLauncherCard";
@@ -53,6 +54,7 @@ export function SessionLauncherDisplay({
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isShareLinkOpen, setIsShareLinkOpen] = useState(false);
+  const [isEnvVariablesOpen, setEnvVariablesOpen] = useState(false);
 
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
@@ -65,6 +67,9 @@ export function SessionLauncherDisplay({
   }, []);
   const toggleShareLink = useCallback(() => {
     setIsShareLinkOpen((open) => !open);
+  }, []);
+  const toggleEnvVariables = useCallback(() => {
+    setEnvVariablesOpen((open) => !open);
   }, []);
 
   const [hash, setHash] = useLocationHash();
@@ -137,6 +142,7 @@ export function SessionLauncherDisplay({
         }
         toggleSessionView={toggleSessionView}
         openSessionViewWithJob={openSessionViewWithJob}
+        toggleEnvVariables={toggleEnvVariables}
       />
       <SessionView
         id={launcherHash}
@@ -149,6 +155,7 @@ export function SessionLauncherDisplay({
         toggleUpdate={toggleUpdate}
         toggleDelete={toggleDelete}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
+        toggleEnvVariables={toggleEnvVariables}
       />
       {launcher && (
         <>
@@ -173,6 +180,11 @@ export function SessionLauncherDisplay({
             launcher={launcher}
             project={project}
             toggle={toggleShareLink}
+          />
+          <EnvVariablesModal
+            isOpen={isEnvVariablesOpen}
+            launcher={launcher}
+            toggle={toggleEnvVariables}
           />
         </>
       )}

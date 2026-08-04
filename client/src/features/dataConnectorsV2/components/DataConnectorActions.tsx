@@ -95,7 +95,7 @@ export function DataConnectorRemoveDeleteModal({
   } = useGetDataConnectorsByDataConnectorIdProjectLinksQuery({
     dataConnectorId: dataConnector?.id ?? "",
   });
-  const [deleteDataConnector, { error, isLoading, isSuccess }] =
+  const [deleteDataConnector, { error, isLoading }] =
     useDeleteDataConnectorsByDataConnectorIdMutation();
 
   const [typedName, setTypedName] = useState("");
@@ -108,11 +108,6 @@ export function DataConnectorRemoveDeleteModal({
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isSuccess && executeOnSuccess) {
-      executeOnSuccess();
-    }
-  }, [isSuccess, executeOnSuccess]);
   const onDeleteDataConnector = useCallback(async () => {
     if (!dataConnector?.id) return;
 
@@ -120,15 +115,22 @@ export function DataConnectorRemoveDeleteModal({
       await deleteDataConnector({
         dataConnectorId: dataConnector.id,
       }).unwrap();
+      executeOnSuccess?.();
       if (redirectOnSuccess) navigate(redirectOnSuccess);
     } catch {
       // keep existing `error` rendering from the mutation result
     }
-  }, [dataConnector, deleteDataConnector, redirectOnSuccess, navigate]);
+  }, [
+    dataConnector,
+    deleteDataConnector,
+    executeOnSuccess,
+    redirectOnSuccess,
+    navigate,
+  ]);
 
   return (
     <Modal
-      data-cy="data-connector-edit-modal"
+      data-cy="data-connector-delete-modal"
       size="lg"
       isOpen={isOpen}
       toggle={toggleModal}
@@ -157,8 +159,9 @@ export function DataConnectorRemoveDeleteModal({
                 <Row>
                   <Col>
                     <p>
-                      Are you sure you want to delete this data connector? It is
-                      possible that it is used in some projects.
+                      Are you sure you want to permanently delete this data
+                      connector? It is possible that it is used in some
+                      projects.
                     </p>
                     <p>
                       Please type <strong>{dataConnector?.slug}</strong>, the
@@ -175,7 +178,8 @@ export function DataConnectorRemoveDeleteModal({
                 <Row>
                   <Col>
                     <p>
-                      Are you sure you want to delete this data connector?{" "}
+                      Are you sure you want to permanently delete this data
+                      connector?{" "}
                       {dataConnectorLinks.length < 1 ? (
                         <>
                           It is not used in any projects that are visible to
@@ -462,13 +466,6 @@ function DataConnectorActionsInner({
   );
   const namespace = pathMatch?.params?.namespace;
   const slug = pathMatch?.params?.slug;
-  const removeMode =
-    pathMatch == null ||
-    namespace == null ||
-    slug == null ||
-    dataConnectorLink == null
-      ? "delete"
-      : "unlink";
   const requiresCredentials =
     dataConnector.storage.sensitive_fields?.length > 0;
   const lastDeposit = useMemo(() => {
@@ -552,21 +549,7 @@ function DataConnectorActionsInner({
           },
         ]
       : []),
-    ...(permissions.delete && removeMode === "delete" && scope !== "global"
-      ? [
-          {
-            key: "data-connector-delete",
-            onClick: toggleDelete,
-            content: (
-              <>
-                <Trash className={cx("bi", "me-1")} />
-                Remove
-              </>
-            ),
-          },
-        ]
-      : []),
-    ...(projectPermissions.write && removeMode === "unlink"
+    ...(projectPermissions.write
       ? [
           {
             key: "data-connector-unlink",
@@ -575,6 +558,20 @@ function DataConnectorActionsInner({
               <>
                 <NodeMinus className={cx("bi", "me-1")} />
                 Unlink
+              </>
+            ),
+          },
+        ]
+      : []),
+    ...(permissions.delete && scope !== "global"
+      ? [
+          {
+            key: "data-connector-delete",
+            onClick: toggleDelete,
+            content: (
+              <>
+                <Trash className={cx("bi", "me-1")} />
+                Delete
               </>
             ),
           },

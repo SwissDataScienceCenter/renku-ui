@@ -300,15 +300,13 @@ export default function ActiveSessionButton({
   const isRunning = status === "running" || status === "starting";
 
   const hibernateAction = status !== "stopping" &&
+    status !== "running" && // when running the pause button is already visible as main action
     (status !== "failed" || failedScheduling) &&
     status !== "hibernated" &&
     !isStopping &&
     !isHibernating &&
     isUserLoggedIn && (
-      <DropdownItem
-        disabled={status === "starting"}
-        onClick={onHibernateSession}
-      >
+      <DropdownItem onClick={onHibernateSession}>
         <PauseCircle className={cx("bi", "me-1")} />
         Pause session
       </DropdownItem>
@@ -372,13 +370,10 @@ export default function ActiveSessionButton({
         size="sm"
       >
         {launcherCategory === "job" ? (
-          status === "succeeded" ? (
-            logsAction
-          ) : (
-            dismissAction
-          )
+          dismissAction
         ) : (
           <>
+            {hibernateAction}
             {deleteAction}
             {modifyAction}
             {(hibernateAction || deleteAction || modifyAction) &&

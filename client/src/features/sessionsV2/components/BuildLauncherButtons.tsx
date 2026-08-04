@@ -80,9 +80,7 @@ export default function BuildLauncherButtons({
   const hasInProgressBuild = !!inProgressBuild;
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
-    hasInProgressBuild
-      ? { environmentId: launcher.environment.id }
-      : skipToken,
+    hasInProgressBuild ? { environmentId: launcher.environment.id } : skipToken,
     { pollingInterval: 1_000 },
   );
 

@@ -54,6 +54,10 @@ export default function CodeRepositorySelector<T extends FieldValues>({
   repositoriesDetails,
   ...controllerProps
 }: CodeRepositorySelectorProps<T>) {
+  const { params } = useContext(AppContext);
+  const privateRepoBuildEnabled =
+    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
+    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
   const defaultValue = useMemo(
     () =>
       controllerProps.defaultValue
@@ -61,9 +65,15 @@ export default function CodeRepositorySelector<T extends FieldValues>({
         : repositoriesDetails.find(
             (repo) =>
               repo.data?.status === "valid" &&
-              repo.data.metadata?.pull_permission,
+              repo.data.metadata?.pull_permission &&
+              (privateRepoBuildEnabled ||
+                repo.data.metadata.visibility === "public"),
           )?.url,
-    [controllerProps.defaultValue, repositoriesDetails],
+    [
+      controllerProps.defaultValue,
+      privateRepoBuildEnabled,
+      repositoriesDetails,
+    ],
   );
 
   return (

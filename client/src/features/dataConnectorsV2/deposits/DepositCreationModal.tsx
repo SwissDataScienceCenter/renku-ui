@@ -16,7 +16,9 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import {
   useGetOauth2ConnectionsQuery,
@@ -25,7 +27,7 @@ import {
 import { DataConnectorRead } from "../api/data-connectors.api";
 import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
 import DepositIntegrationInfo from "./DepositIntegrationInfo";
-import { PROVIDER_OPTIONS } from "./deposits.constants";
+import { ENVIDAT_DASHBOARD_URL, PROVIDER_OPTIONS } from "./deposits.constants";
 import { CreateDepositionForm } from "./deposits.types";
 
 interface DepositCreationModalProps {
@@ -50,26 +52,29 @@ export default function DepositCreationModal({
   });
   const [postDeposit, result] = usePostDepositsMutation();
 
-  // Fetch connection information for the selected provider
+  // Fetch connection information for the selected provider if necessary
   const userSelectedProvider = useWatch({
     control,
     name: "provider",
   });
-  const targetProviderString = ["zenodo"].includes(userSelectedProvider)
-    ? userSelectedProvider
-    : null;
+  const targetProviderIntegration = PROVIDER_OPTIONS.find(
+    (provider) =>
+      provider.value === userSelectedProvider && provider.integration,
+  )?.integration;
 
   const {
     data: providers,
     error: providersError,
     isLoading: isLoadingProviders,
-  } = useGetOauth2ProvidersQuery(targetProviderString ? undefined : skipToken);
+  } = useGetOauth2ProvidersQuery(
+    targetProviderIntegration ? undefined : skipToken,
+  );
 
   const targetProvider = useMemo(() => {
     return providers?.find(
-      (provider) => provider.kind === targetProviderString,
+      (provider) => provider.kind === targetProviderIntegration,
     );
-  }, [providers, targetProviderString]);
+  }, [providers, targetProviderIntegration]);
 
   const {
     data: connections,
@@ -216,14 +221,21 @@ export default function DepositCreationModal({
                 Different platforms might have different
                 limitations/requirements.
               </FormText>
-              <div className="mt-1">
-                <DepositIntegrationInfo
-                  connection={targetConnection}
-                  isError={!!error}
-                  isLoading={isLoading}
-                  provider={targetProvider}
-                />
-              </div>
+              {targetProviderIntegration && (
+                <div className="mt-1">
+                  <DepositIntegrationInfo
+                    connection={targetConnection}
+                    isError={!!error}
+                    isLoading={isLoading}
+                    provider={targetProvider}
+                  />
+                </div>
+              )}
+              {userSelectedProvider === "envidat" && (
+                <div className="mt-1">
+                  <EnviDatWarning />
+                </div>
+              )}
             </div>
           </FormGroup>
 
@@ -257,5 +269,20 @@ export default function DepositCreationModal({
         </ModalFooter>
       </Form>
     </Modal>
+  );
+}
+
+function EnviDatWarning() {
+  return (
+    <WarnAlert dismissible={false}>
+      <p className="mb-0">
+        You need an account with <code>Editor</code> permissions on the{" "}
+        <ExternalLink href={ENVIDAT_DASHBOARD_URL}>
+          EnviDat platform
+        </ExternalLink>{" "}
+        to publish Datasets. Please check your account before starting the
+        export.
+      </p>
+    </WarnAlert>
   );
 }

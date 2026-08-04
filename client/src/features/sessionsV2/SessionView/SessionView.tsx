@@ -95,7 +95,6 @@ import EnvironmentItem, {
   EnvironmentJSONArrayRowWithLabel,
 } from "./EnvironmentItem";
 import EnvVariablesCard from "./EnvVariablesCard";
-import EnvVariablesModal from "./EnvVariablesModal";
 
 import styles from "./SessionView.module.scss";
 
@@ -240,6 +239,7 @@ interface SessionViewProps {
   toggleUpdate?: () => void;
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
+  toggleEnvVariables?: () => void;
 }
 export function SessionView({
   id,
@@ -252,18 +252,15 @@ export function SessionView({
   toggleDelete,
   toggleUpdate,
   toggleUpdateEnvironment,
+  toggleEnvVariables,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
-  const [isEnvVariablesModalOpen, setEnvVariablesModalOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsUpdateOpen((open) => !open);
   }, []);
   const toggleModifyResources = useCallback(() => {
     setModifyResourcesOpen((open) => !open);
-  }, []);
-  const toggleEnvVariables = useCallback(() => {
-    setEnvVariablesModalOpen((open) => !open);
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
@@ -713,11 +710,6 @@ export function SessionView({
                   {launcherCategory === "app" ? "app" : "session"}.
                 </p>
                 <EnvVariablesCard launcher={launcher} />
-                <EnvVariablesModal
-                  isOpen={isEnvVariablesModalOpen}
-                  launcher={launcher}
-                  toggle={toggleEnvVariables}
-                />
               </CardBody>
             </Card>
           )}
