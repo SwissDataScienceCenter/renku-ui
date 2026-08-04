@@ -118,8 +118,8 @@ export default function JobLauncherActions({
     if (applyDefaultBuildActions) {
       return (
         <ButtonGroup onClick={(e) => e.stopPropagation()}>
-          <BuildLauncherButtons launcher={launcher} isMainButton={false} />
-          {submitAction}
+          <BuildLauncherButtons launcher={launcher} isMainButton={true} />
+          {hasValidImage && submitAction}
         </ButtonGroup>
       );
     }
