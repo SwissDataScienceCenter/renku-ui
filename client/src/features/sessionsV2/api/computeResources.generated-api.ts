@@ -751,6 +751,7 @@ export type HibernationThreshold = number;
 export type HibernationWarningPeriod = number;
 export type RuntimePlatform = "linux/amd64" | "linux/arm64";
 export type CreditsUsed = number;
+export type CpuLimitFactor = number;
 export type ResourcePoolWithIdFiltered = {
   quota?: QuotaWithId;
   classes: ResourceClassWithIdFiltered[];
@@ -765,6 +766,7 @@ export type ResourcePoolWithIdFiltered = {
   cluster_id?: Ulid;
   platform: RuntimePlatform;
   credits_used?: CreditsUsed;
+  cpu_limit_factor?: CpuLimitFactor;
 };
 export type ResourcePoolsWithIdFiltered = ResourcePoolWithIdFiltered[];
 export type CpuFilter = number;
@@ -785,6 +787,7 @@ export type ResourcePoolWithId = {
     id: Ulid;
   };
   platform: RuntimePlatform;
+  cpu_limit_factor?: CpuLimitFactor;
 };
 export type QuotaWithOptionalId = {
   cpu: Cpu;
@@ -817,8 +820,10 @@ export type ResourcePool = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform?: RuntimePlatform;
+  cpu_limit_factor?: CpuLimitFactor;
 };
 export type ResourceClassesWithId = ResourceClassWithId[];
+export type RemoveCpuLimitFactor = number;
 export type ResourcePoolPut = {
   quota?: QuotaWithId;
   classes: ResourceClassesWithId;
@@ -831,6 +836,7 @@ export type ResourcePoolPut = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform: RuntimePlatform;
+  cpu_limit_factor?: CpuLimitFactor | RemoveCpuLimitFactor;
 };
 export type QuotaPatch = {
   cpu?: Cpu;
@@ -884,6 +890,7 @@ export type ResourcePoolPatch = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform?: RuntimePlatform;
+  cpu_limit_factor?: CpuLimitFactor | RemoveCpuLimitFactor;
 };
 export type ResourceClassesWithIdResponse = ResourceClassWithId[];
 export type ResourceClassPatch = ResourceClassProperties;

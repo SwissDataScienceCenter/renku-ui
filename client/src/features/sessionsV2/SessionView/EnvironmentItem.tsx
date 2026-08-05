@@ -572,10 +572,12 @@ function CustomBuildEnvironmentValues({
         label="Environment type"
         value={builder_variant || ""}
       />
-      <EnvironmentRowWithLabel
-        label="User interface"
-        value={frontend_variant || ""}
-      />
+      {launcherCategory === "session" && (
+        <EnvironmentRowWithLabel
+          label="User interface"
+          value={frontend_variant || ""}
+        />
+      )}
       {launcherCategory === "job" &&
         environment.container_image === BUILDER_IMAGE_NOT_READY_VALUE && (
           <>

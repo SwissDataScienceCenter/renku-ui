@@ -123,7 +123,7 @@ function SearchResultListItem({ item }: SearchResultListItemProps) {
       to={url}
       data-cy="search-list-item"
     >
-      <Row className="g-2">
+      <Row className={cx("g-2", "flex-nowrap")}>
         <Col xs="auto">
           <h5>
             <SearchResultListItemIcon item={item} />
