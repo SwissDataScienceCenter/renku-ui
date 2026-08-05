@@ -52,24 +52,27 @@ export default function ProjectStorageLinkDisplay({
 }: ProjectStorageLinkDisplayProps) {
   // Handle hash
   const [hash, setHash] = useLocationHash();
-  const dcHash = useMemo(
+  const storageHash = useMemo(
     () => `project-storage-${projectStorage.id}`,
     [projectStorage.id],
   );
-  const showOffCanvas = useMemo(() => hash === dcHash, [dcHash, hash]);
+  const showOffCanvas = useMemo(
+    () => hash === storageHash,
+    [storageHash, hash],
+  );
   const toggleOffCanvas = useCallback(() => {
     setHash((prev) => {
-      const isOpen = prev === dcHash;
-      return isOpen ? "" : dcHash;
+      const isOpen = prev === storageHash;
+      return isOpen ? "" : storageHash;
     });
-  }, [dcHash, setHash]);
+  }, [storageHash, setHash]);
 
   // Handle url with Hash
   const location = useLocation();
   const targetOffcanvasLocation: To = {
     pathname: location.pathname,
     search: location.search,
-    hash: `#${dcHash}`,
+    hash: `#${storageHash}`,
   };
 
   const [isEditOpen, setIsEditOpen] = useState(false);

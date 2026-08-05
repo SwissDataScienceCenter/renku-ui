@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { InfoCircle } from "react-bootstrap-icons";
 import {
   Card,
@@ -52,6 +52,19 @@ export default function ProjectStorageView({
 
   const toggleEdit = useCallback(() => {
     setIsEditOpen((open) => !open);
+  }, []);
+
+  // Prevents body scroll-lock when deleting project storage
+  const showViewRef = useRef(showView);
+  useEffect(() => {
+    showViewRef.current = showView;
+  }, [showView]);
+  useEffect(() => {
+    return () => {
+      if (showViewRef.current) {
+        document.body.style.overflow = "";
+      }
+    };
   }, []);
 
   return (
