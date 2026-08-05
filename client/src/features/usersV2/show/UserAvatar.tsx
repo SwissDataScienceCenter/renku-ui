@@ -176,6 +176,7 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
           "text-black",
           styles.avatar,
         )}
+        data-cy="member-list-overflow"
       >
         +{count}
       </div>

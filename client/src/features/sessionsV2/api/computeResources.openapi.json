@@ -2333,6 +2333,9 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "cpu_limit_factor": {
+            "$ref": "#/components/schemas/CpuLimitFactor"
           }
         },
         "required": ["classes", "name", "public", "default"],
@@ -2405,6 +2408,16 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "cpu_limit_factor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CpuLimitFactor"
+              },
+              {
+                "$ref": "#/components/schemas/RemoveCpuLimitFactor"
+              }
+            ]
           }
         },
         "example": {
@@ -2459,6 +2472,16 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "cpu_limit_factor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CpuLimitFactor"
+              },
+              {
+                "$ref": "#/components/schemas/RemoveCpuLimitFactor"
+              }
+            ]
           }
         },
         "required": ["classes", "name", "public", "default", "platform"],
@@ -2542,6 +2565,9 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "cpu_limit_factor": {
+            "$ref": "#/components/schemas/CpuLimitFactor"
           }
         },
         "required": ["classes", "name", "id", "public", "default", "platform"],
@@ -2623,6 +2649,9 @@
           },
           "credits_used": {
             "$ref": "#/components/schemas/CreditsUsed"
+          },
+          "cpu_limit_factor": {
+            "$ref": "#/components/schemas/CpuLimitFactor"
           }
         },
         "required": ["classes", "name", "id", "public", "default", "platform"],
@@ -3421,6 +3450,20 @@
       "IngressAnnotations": {
         "type": "object",
         "additionalProperties": true
+      },
+      "CpuLimitFactor": {
+        "type": "number",
+        "format": "float",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "The value used to multiply cpu requests to get the limit. If unset there will be no cpu limits."
+      },
+      "RemoveCpuLimitFactor": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 0,
+        "description": "Indicates that the cpu limits should not be set and if a limit is set it should be removed",
+        "format": "float"
       }
     },
     "responses": {
