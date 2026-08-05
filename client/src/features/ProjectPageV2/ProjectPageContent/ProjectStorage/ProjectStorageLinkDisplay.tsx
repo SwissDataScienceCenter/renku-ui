@@ -43,11 +43,13 @@ import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectStorageForm from "./ProjectStorageForm";
 import ProjectStorageView from "./ProjectStorageView";
 
+interface ProjectStorageLinkDisplayProps {
+  projectStorage: ProjectStorage;
+}
+
 export default function ProjectStorageLinkDisplay({
   projectStorage,
-}: {
-  projectStorage: ProjectStorage;
-}) {
+}: ProjectStorageLinkDisplayProps) {
   // Handle hash
   const [hash, setHash] = useLocationHash();
   const dcHash = useMemo(
@@ -337,7 +339,7 @@ export function EditProjectStorageModal({
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} centered>
       <ModalHeader toggle={toggle} tag="h2">
-        Edit Project Storage
+        <RenkuStorageIcon className={cx("bi", "me-1")} /> Edit Project Storage
       </ModalHeader>
       <ModalBody>
         <ProjectStorageForm
