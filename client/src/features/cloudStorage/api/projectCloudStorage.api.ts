@@ -21,7 +21,7 @@ import { projectCloudStorageGeneratedApi } from "./projectCloudStorage.generated
 // Adds tag handling for cache management
 const projectCloudStorageApi = projectCloudStorageGeneratedApi.enhanceEndpoints(
   {
-    addTagTypes: ["CloudStorage", "CloudStorageSchema"],
+    addTagTypes: ["CloudStorageSchema"],
     endpoints: {
       getStorageSchema: {
         providesTags: ["CloudStorageSchema"],
