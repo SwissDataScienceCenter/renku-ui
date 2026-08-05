@@ -343,7 +343,6 @@ function ProjectSearchDataConnectorBodyAndFooter({
   isOpen,
   project,
   switchMode,
-  toggle,
 }: ProjectConnectDataConnectorsModalProps) {
   // ? The logic for the input string is the following:
   // ? 0. check if it's a doi
