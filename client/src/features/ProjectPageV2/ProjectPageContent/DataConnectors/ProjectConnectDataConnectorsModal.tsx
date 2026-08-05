@@ -217,18 +217,20 @@ export function ProjectConnectDataConnectorModeSwitch({
 }: {
   mode: ProjectConnectDataConnectorMode;
   switchMode: (mode: ProjectConnectDataConnectorMode) => void;
-  project: Project;
+  project?: Project;
 }) {
-  const permissions = useProjectPermissions({ projectId: project.id });
+  const permissions = useProjectPermissions({ projectId: project?.id ?? "" });
+  const canManageProjectStorage =
+    permissions.arePermissionsResolved && permissions.delete; // User needs to be project owner
   const { data: storageAllowData } =
-    useGetDataConnectorsStorageAllowByProjectIdQuery({
-      projectId: project.id,
-    });
-  const { data: projectStorage } = useGetProjectsByProjectIdStorageQuery({
-    projectId: project.id,
-  });
+    useGetDataConnectorsStorageAllowByProjectIdQuery(
+      canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
+    );
+  const { data: projectStorage } = useGetProjectsByProjectIdStorageQuery(
+    canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
+  );
   const canAddProjectStorage =
-    storageAllowData && projectStorage?.length === 0 && permissions.delete; // User needs to be project owner
+    canManageProjectStorage && storageAllowData && projectStorage?.length === 0;
 
   return (
     <ButtonGroup>
@@ -318,7 +320,7 @@ function ProjectStorageDataConnectorBodyAndFooter({
   }, [isOpen]);
 
   return (
-    <ModalBody data-cy="data-connector-add-storage-body" toggle={toggle}>
+    <ModalBody data-cy="data-connector-add-storage-body">
       {switchMode && (
         <div className="mb-3">
           <ProjectConnectDataConnectorModeSwitch
@@ -599,7 +601,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
   // Show components
   return (
     <Form noValidate>
-      <ModalBody data-cy="data-connector-search-body" toggle={toggle}>
+      <ModalBody data-cy="data-connector-search-body">
         {switchMode && (
           <div className="mb-3">
             <ProjectConnectDataConnectorModeSwitch

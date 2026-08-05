@@ -167,8 +167,8 @@ function ProjectDataConnectorBoxContent({
           )}
           {projectStorageData && projectStorageData.length > 0 && (
             <ListGroup flush>
-              {projectStorageData.map((ps, index) => (
-                <ProjectStorageLinkDisplay key={index} projectStorage={ps} />
+              {projectStorageData.map((ps) => (
+                <ProjectStorageLinkDisplay key={ps.id} projectStorage={ps} />
               ))}
             </ListGroup>
           )}

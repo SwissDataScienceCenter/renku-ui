@@ -98,7 +98,7 @@ export default function ProjectStorageForm({
       const result = await postDataConnectorsStorageMutation({
         projectStoragePost: {
           namespace: namespace ?? "",
-          size: values.size,
+          size: Number(values.size),
           mount_path: values.mountPath,
         },
       });
@@ -111,7 +111,7 @@ export default function ProjectStorageForm({
         storageId: projectStorage.id,
         "If-Match": projectStorage.etag ?? "",
         projectStoragePatch: {
-          size: values.size,
+          size: Number(values.size),
           mount_path: values.mountPath,
         },
       });

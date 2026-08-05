@@ -152,7 +152,7 @@ function AddOrEditDataConnector({
             <ProjectConnectDataConnectorModeSwitch
               mode="create"
               switchMode={switchMode}
-              project={project as Project}
+              project={project}
             />
           </div>
         )}
