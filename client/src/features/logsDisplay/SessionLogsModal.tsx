@@ -17,7 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
@@ -25,6 +25,10 @@ import {
   persistedLogsApi,
   useGetPersistedLogsForModalQuery,
 } from "../persistedLogs/api/persistedLogs.api";
+import {
+  useGetResourcePoolsByResourcePoolIdQuery,
+  useGetResourcePoolsQuery,
+} from "../sessionsV2/api/computeResources.api";
 import {
   SessionResponse,
   sessionsV2Api,
@@ -54,7 +58,29 @@ export default function SessionLogsModal({
     sessionName ? { sessionId: sessionName } : skipToken,
   );
 
-  if (persistedLogsEnabled && session?.session_type === "non-interactive") {
+  const { data: resourcePools } = useGetResourcePoolsQuery(
+    session?.resource_class_id ? {} : skipToken,
+  );
+  const resourcePool = useMemo(
+    () =>
+      session?.resource_class_id
+        ? resourcePools?.find(({ classes }) =>
+            classes.some(({ id }) => id === session.resource_class_id),
+          )
+        : undefined,
+    [resourcePools, session],
+  );
+  const { data: resourcePoolInfo } = useGetResourcePoolsByResourcePoolIdQuery(
+    resourcePool ? { resourcePoolId: resourcePool.id } : skipToken,
+  );
+
+  // NOTE: persisted logs cannot work if `cluster` is defined on the resource pool (remote k8s cluster)
+  if (
+    persistedLogsEnabled &&
+    session?.session_type === "non-interactive" &&
+    resourcePoolInfo != null &&
+    resourcePoolInfo.cluster == null
+  ) {
     return (
       <PersistedLogsModal
         isOpen={isOpen}
