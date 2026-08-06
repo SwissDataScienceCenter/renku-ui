@@ -40,7 +40,10 @@ import {
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
-import type { ProjectStorageAllow } from "../dataConnectorsV2/api/data-connectors.api.ts";
+import {
+  useGetDataConnectorsStorageConfigQuery,
+  type ProjectStorageAllow,
+} from "../dataConnectorsV2/api/data-connectors.api.ts";
 import {
   useDeleteDataConnectorsStorageAllowByProjectIdMutation,
   useGetDataConnectorsStorageAllowQuery,
@@ -155,11 +158,14 @@ function AddOrEditProjectStorageAllowModal({
   toggle,
   project,
 }: AddOrEditProjectStorageAllowModalProps) {
+  const { data: storageConfig } = useGetDataConnectorsStorageConfigQuery();
+  const maxSize = storageConfig?.max_size ?? PROJECT_STORAGE_MAX_GB;
+
   const { control, handleSubmit } = useForm<ProjectStorageAllowForm>({
     mode: "onChange",
     defaultValues: {
       project_id: project?.project_id ?? "",
-      max_size: project?.max_size ?? PROJECT_STORAGE_MAX_GB,
+      max_size: project?.max_size ?? maxSize,
     },
   });
   const [postDataConnectorsStorageAllowMutation, result] =
@@ -201,10 +207,10 @@ function AddOrEditProjectStorageAllowModal({
     if (isOpen) {
       control._reset({
         project_id: project?.project_id ?? "",
-        max_size: project?.max_size ?? PROJECT_STORAGE_MAX_GB,
+        max_size: project?.max_size ?? maxSize,
       });
     }
-  }, [control, isOpen, project]);
+  }, [control, isOpen, project, maxSize]);
 
   const onClose = useCallback(() => {
     result.reset();
@@ -278,7 +284,7 @@ function AddOrEditProjectStorageAllowModal({
                       id="max_size"
                       type="number"
                       min={PROJECT_STORAGE_MIN_GB}
-                      max={PROJECT_STORAGE_MAX_GB}
+                      max={maxSize}
                       step={PROJECT_STORAGE_STEP_GB}
                       {...field}
                       value={field.value ?? ""}
@@ -300,7 +306,7 @@ function AddOrEditProjectStorageAllowModal({
                   <div className="invalid-feedback">
                     {error?.message || "Please provide a valid value."}
                   </div>
-                  <FormText>Max: {PROJECT_STORAGE_MAX_GB} GB</FormText>
+                  <FormText>Max: {maxSize} GB</FormText>
                 </>
               )}
               rules={{
@@ -310,8 +316,8 @@ function AddOrEditProjectStorageAllowModal({
                   message: `Please select a value greater than or equal to ${PROJECT_STORAGE_MIN_GB}.`,
                 },
                 max: {
-                  value: PROJECT_STORAGE_MAX_GB,
-                  message: `Selected value exceeds maximum allowed value (${PROJECT_STORAGE_MAX_GB} GB).`,
+                  value: maxSize,
+                  message: `Selected value exceeds maximum allowed value (${maxSize} GB).`,
                 },
                 validate: {
                   integer: (value: unknown) =>
