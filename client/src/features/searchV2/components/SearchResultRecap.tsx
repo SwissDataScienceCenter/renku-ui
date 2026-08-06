@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { ReactNode, useMemo } from "react";
 
+import { getFilterValueLabel } from "~/features/searchV2/contextSearch.utils";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { useGetSearchQueryQuery } from "../api/searchV2Api.api";
 import {
@@ -33,51 +34,64 @@ import { selectSearchApiQuery } from "../searchV2.slice";
 
 export default function SearchResultRecap() {
   const state = useAppSelector(({ searchV2 }) => searchV2);
+  const {
+    contentType,
+    created,
+    directMember,
+    keywords,
+    query,
+    role,
+    visibility,
+  } = state;
   const apiQuery = useAppSelector(selectSearchApiQuery);
   const { data, isFetching } = useGetSearchQueryQuery({ params: apiQuery });
   const total = data?.pagingInfo.totalResult;
 
   const filters = useMemo(() => {
     const parts: ReactNode[] = [];
-    if (state.contentType) {
+    if (contentType) {
       parts.push(
         <span key="type">
-          {FILTER_CONTENT.label}: {state.contentType}
+          {FILTER_CONTENT.label}:{" "}
+          {getFilterValueLabel([contentType], FILTER_CONTENT.allowedValues)}
         </span>,
       );
     }
-    if (state.visibility) {
+    if (visibility) {
       parts.push(
         <span key="visibility">
-          {FILTER_VISIBILITY.label}: {state.visibility}
+          {FILTER_VISIBILITY.label}:{" "}
+          {getFilterValueLabel([visibility], FILTER_VISIBILITY.allowedValues)}
         </span>,
       );
     }
-    if (state.role) {
+    if (role) {
       parts.push(
         <span key="role">
-          {FILTER_MY_ROLE.label}: {state.role}
+          {FILTER_MY_ROLE.label}:{" "}
+          {getFilterValueLabel(role.split(","), FILTER_MY_ROLE.allowedValues)}
         </span>,
       );
     }
-    if (state.keywords) {
+    if (keywords) {
       parts.push(
         <span key="keywords">
-          {FILTER_KEYWORD.label}: {state.keywords}
+          {FILTER_KEYWORD.label}: {keywords}
         </span>,
       );
     }
-    if (state.directMember) {
+    if (directMember) {
       parts.push(
         <span key="member">
-          {FILTER_MEMBER.label}: {state.directMember}
+          {FILTER_MEMBER.label}: {directMember}
         </span>,
       );
     }
-    if (state.created) {
+    if (created) {
       parts.push(
         <span key="created">
-          {FILTER_DATE.label}: {state.created}
+          {FILTER_DATE.label}:{" "}
+          {getFilterValueLabel([created], FILTER_DATE.allowedValues)}
         </span>,
       );
     }
@@ -91,7 +105,7 @@ export default function SearchResultRecap() {
         ))}
       </>
     ) : null;
-  }, [state]);
+  }, [contentType, created, directMember, keywords, role, visibility]);
 
   return (
     <p className="mb-0">
@@ -102,10 +116,10 @@ export default function SearchResultRecap() {
           {total ? total : "No"} {total && total > 1 ? "results" : "result"}
         </span>
       )}
-      {state.query && (
+      {query && (
         <>
           {" "}
-          for <span className="fw-semibold">{`"${state.query}"`}</span>
+          for <span className="fw-semibold">{`"${query}"`}</span>
         </>
       )}
       {filters && (

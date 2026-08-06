@@ -26,8 +26,6 @@ import {
   DataServicesVersionResponse,
   KgVersion,
   KgVersionResponse,
-  NotebooksVersion,
-  NotebooksVersionResponse,
 } from "./versions.types";
 
 export const versionsApi = createApi({
@@ -126,49 +124,6 @@ export const versionsApi = createApi({
       providesTags: (result) =>
         result ? [{ type: "Version", id: "knowledge-graph" }] : [],
     }),
-    getNotebooksVersion: builder.query<NotebooksVersion, void>({
-      query: () => {
-        return {
-          url: "notebooks/version",
-        };
-      },
-      transformResponse: (response: NotebooksVersionResponse) => {
-        // We assume there is only one renku-notebooks service version.
-        if (response.versions?.length < 1)
-          throw new Error("Unexpected response");
-        const singleVersion = response.versions[0];
-
-        return {
-          name: response.name,
-          version: singleVersion?.version ?? "unavailable",
-          anonymousSessionsEnabled:
-            singleVersion?.data?.anonymousSessionsEnabled ?? false,
-          sshEnabled: singleVersion?.data?.sshEnabled ?? false,
-          cloudStorageEnabled:
-            singleVersion?.data?.cloudstorageEnabled ?? false,
-          defaultCullingThresholds: singleVersion?.data
-            ?.defaultCullingThresholds ?? {
-            registered: { hibernation: 0, idle: 0 },
-            anonymous: { hibernation: 0, idle: 0 },
-          },
-        };
-      },
-      transformErrorResponse: () => {
-        return {
-          name: "error",
-          version: "unavailable",
-          anonymousSessionsEnabled: false,
-          sshEnabled: false,
-          cloudStorageEnabled: false,
-          defaultCullingThresholds: {
-            registered: { hibernation: 0, idle: 0 },
-            anonymous: { hibernation: 0, idle: 0 },
-          },
-        } as NotebooksVersion;
-      },
-      providesTags: (result) =>
-        result ? [{ type: "Version", id: "notebooks" }] : [],
-    }),
   }),
 });
 
@@ -176,5 +131,4 @@ export const {
   useGetCoreVersionsQuery,
   useGetDataServicesVersionQuery,
   useGetKgVersionQuery,
-  useGetNotebooksVersionQuery,
 } = versionsApi;

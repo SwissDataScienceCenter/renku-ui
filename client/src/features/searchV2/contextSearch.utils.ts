@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { FilterValue } from "~/features/searchV2/contextSearch.types";
 import { DATE_FILTER_CUSTOM_SEPARATOR } from "./contextSearch.constants";
 
 export function parseCustomDateFilter(value: string): {
@@ -40,4 +41,16 @@ export function buildCustomDateFilterValue(
   if (afterDate) parts.push(`>${afterDate}`);
   if (beforeDate) parts.push(`<${beforeDate}`);
   return parts.join(DATE_FILTER_CUSTOM_SEPARATOR);
+}
+
+export function getFilterValueLabel(
+  values: string[],
+  allowedValues: FilterValue[],
+): string {
+  const validLabels = values
+    .map((value) => allowedValues.find((v) => v.value === value)?.label)
+    .filter((label): label is string => typeof label === "string");
+  if (validLabels.length === 0) return values.join(" ");
+
+  return validLabels.join(", ");
 }
