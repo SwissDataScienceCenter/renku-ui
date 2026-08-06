@@ -17,8 +17,10 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import {
   persistedLogsApi,
   useGetPersistedLogsForModalQuery,
@@ -44,11 +46,15 @@ export default function SessionLogsModal({
   sessionName,
   toggle,
 }: SessionLogsModalProps) {
+  const { params } = useContext(AppContext);
+  const persistedLogsEnabled =
+    params?.PERSISTED_LOGS_ENABLED ?? DEFAULT_APP_PARAMS.PERSISTED_LOGS_ENABLED;
+
   const { data: session } = useGetSessionsBySessionIdQuery(
     sessionName ? { sessionId: sessionName } : skipToken,
   );
 
-  if (session?.session_type === "non-interactive") {
+  if (persistedLogsEnabled && session?.session_type === "non-interactive") {
     return (
       <PersistedLogsModal
         isOpen={isOpen}

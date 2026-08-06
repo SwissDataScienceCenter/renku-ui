@@ -45,6 +45,7 @@ export interface AppParams {
   UPLOAD_THRESHOLD: UploadThresholdParams;
   USER_PREFERENCES_MAX_PINNED_PROJECTS: number;
   CONTACT_EMAIL: string;
+  PERSISTED_LOGS_ENABLED: boolean;
 }
 
 export type AppParamsStrings = {

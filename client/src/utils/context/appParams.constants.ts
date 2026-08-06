@@ -83,4 +83,5 @@ export const DEFAULT_APP_PARAMS: AppParams = {
   IMAGE_BUILDERS_ENABLED: false,
   BUILD_PRIVATE_REPO_BUILDS_ENABLED: false,
   CONTACT_EMAIL: "hello@renku.io",
+  PERSISTED_LOGS_ENABLED: false,
 };

@@ -17,17 +17,23 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useCallback, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import {
   persistedLogsApi,
   useGetPersistedBuildLogsForModalQuery,
 } from "../persistedLogs/api/persistedLogs.api";
 import {
+  sessionLaunchersV2Api,
+  useGetBuildsByBuildIdLogsQuery as useGetBuildLogsQuery,
   type Build,
   type BuildList,
 } from "../sessionsV2/api/sessionLaunchersV2.api";
 import LogsModal from "./LogsModal";
+
+const BUILD_LOGS_MAX_LINES = 250;
 
 interface BuildLogsModalProps {
   builds: BuildList | undefined;
@@ -74,16 +80,34 @@ function BuildLogsModalInner({
   isOpen,
   toggle,
 }: BuildLogsModalInnerProps) {
-  const query = useGetPersistedBuildLogsForModalQuery(
-    isOpen
+  const { params } = useContext(AppContext);
+  const persistedLogsEnabled =
+    params?.PERSISTED_LOGS_ENABLED ?? DEFAULT_APP_PARAMS.PERSISTED_LOGS_ENABLED;
+
+  const persistedLogsQuery = useGetPersistedBuildLogsForModalQuery(
+    isOpen && persistedLogsEnabled
       ? {
           buildId: build.id,
         }
       : skipToken,
   );
+  const kubernetesLogsQuery = useGetBuildLogsQuery(
+    isOpen && !persistedLogsEnabled
+      ? {
+          buildId: build.id,
+          maxLines: BUILD_LOGS_MAX_LINES,
+        }
+      : skipToken,
+  );
+  const query = useMemo(
+    () => (persistedLogsEnabled ? persistedLogsQuery : kubernetesLogsQuery),
+    [kubernetesLogsQuery, persistedLogsEnabled, persistedLogsQuery],
+  );
 
-  const [trigger] =
-    persistedLogsApi.endpoints.getPersistedBuildLogsForModal.useLazyQuery();
+  const [trigger] = persistedLogsEnabled
+    ? persistedLogsApi.endpoints.getPersistedBuildLogsForModal.useLazyQuery()
+    : sessionLaunchersV2Api.endpoints.getBuildsByBuildIdLogs.useLazyQuery();
+
   const downloadQueryTrigger = useCallback(
     () => trigger({ buildId: build.id }),
     [build.id, trigger],
