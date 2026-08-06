@@ -83,7 +83,7 @@ export default function ProjectStorageAllowSection() {
                     </div>
                     <div className={cx("d-flex", "gap-2")}>
                       <EditProjectStorageAllowButton project={e} />
-                      <RemoveProjectStorageAllowButton project={e} />
+                      <DeleteProjectStorageAllowButton project={e} />
                     </div>
                   </div>
                 </ListGroupItem>
@@ -332,13 +332,13 @@ function AddOrEditProjectStorageAllowModal({
   );
 }
 
-interface RemoveProjectStorageAllowButtonProps {
+interface DeleteProjectStorageAllowButtonProps {
   project: ProjectStorageAllow;
 }
 
-function RemoveProjectStorageAllowButton({
+function DeleteProjectStorageAllowButton({
   project,
-}: RemoveProjectStorageAllowButtonProps) {
+}: DeleteProjectStorageAllowButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
