@@ -286,13 +286,7 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       providesTags: ["ProjectStorageAllow"],
     },
     getDataConnectorsStorageAllowByProjectId: {
-      providesTags: (_result, _error, { projectId }) =>
-        projectId
-          ? [
-              { id: projectId, type: "ProjectStorageAllow" },
-              "ProjectStorageAllow",
-            ]
-          : ["ProjectStorageAllow"],
+      providesTags: ["ProjectStorageAllow"],
     },
     postDataConnectorsStorageAllow: {
       invalidatesTags: ["ProjectStorageAllow"],

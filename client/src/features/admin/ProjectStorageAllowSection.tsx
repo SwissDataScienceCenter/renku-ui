@@ -37,24 +37,24 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ErrorAlert, WarnAlert } from "~/components/Alert";
+import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
   useGetDataConnectorsStorageConfigQuery,
   type ProjectStorageAllow,
-} from "../dataConnectorsV2/api/data-connectors.api.ts";
+} from "../dataConnectorsV2/api/data-connectors.api";
 import {
   useDeleteDataConnectorsStorageAllowByProjectIdMutation,
   useGetDataConnectorsStorageAllowQuery,
+  usePatchDataConnectorsStorageAllowByProjectIdMutation,
   usePostDataConnectorsStorageAllowMutation,
 } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
-import { usePatchDataConnectorsStorageAllowByProjectIdMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api.ts";
 import {
   PROJECT_STORAGE_MAX_GB,
   PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
-} from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants.ts";
+} from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
 
 export default function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetDataConnectorsStorageAllowQuery({});
@@ -64,11 +64,7 @@ export default function ProjectStorageAllowSection() {
       <h2>Project Storage Allow List</h2>
       <AddProjectStorageAllowButton />
       {isLoading && <Loader />}
-      {error && (
-        <ErrorAlert>
-          <pre>{JSON.stringify(error, null, 2)}</pre>
-        </ErrorAlert>
-      )}
+      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
       {data && (
         <>
           <div>
@@ -161,7 +157,7 @@ function AddOrEditProjectStorageAllowModal({
   const { data: storageConfig } = useGetDataConnectorsStorageConfigQuery();
   const maxSize = storageConfig?.max_size ?? PROJECT_STORAGE_MAX_GB;
 
-  const { control, handleSubmit } = useForm<ProjectStorageAllowForm>({
+  const { control, handleSubmit, reset } = useForm<ProjectStorageAllowForm>({
     mode: "onChange",
     defaultValues: {
       project_id: project?.project_id ?? "",
@@ -204,29 +200,16 @@ function AddOrEditProjectStorageAllowModal({
   };
 
   useEffect(() => {
-    if (isOpen) {
-      control._reset({
-        project_id: project?.project_id ?? "",
-        max_size: project?.max_size ?? maxSize,
-      });
+    if (!isOpen) {
+      reset();
+      result.reset();
+      patchResult.reset();
     }
-  }, [control, isOpen, project, maxSize]);
-
-  const onClose = useCallback(() => {
-    result.reset();
-    patchResult.reset();
-    toggle();
-  }, [toggle, result, patchResult]);
+  }, [isOpen, reset, result, patchResult]);
 
   return (
-    <Modal
-      backdrop="static"
-      centered
-      isOpen={isOpen}
-      size="lg"
-      toggle={onClose}
-    >
-      <ModalHeader tag="h2" toggle={onClose}>
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader tag="h2" toggle={toggle}>
         {project
           ? "Edit Project Storage Allow Entry"
           : "Add Project to Storage Allow List"}
@@ -329,7 +312,7 @@ function AddOrEditProjectStorageAllowModal({
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="outline-danger" onClick={onClose}>
+          <Button color="outline-danger" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
@@ -394,10 +377,10 @@ function DeleteProjectStorageAllowModal({
   }, [deleteStorageAllow, project.project_id]);
 
   useEffect(() => {
-    if (result.isSuccess || result.isError) {
+    if (result.isSuccess) {
       toggle();
     }
-  }, [result.isError, result.isSuccess, toggle]);
+  }, [result.isSuccess, toggle]);
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
