@@ -56,6 +56,10 @@ export default function DataConnectorCredentialsModal({
   const isSuccess =
     deleteCredentialsResult.isSuccess || saveCredentialsResult.isSuccess;
 
+  const closeModal = useCallback(() => {
+    setOpen(false);
+  }, [setOpen]);
+
   const onSave = useCallback(
     (configs: DataConnectorConfiguration[]) => {
       const activeConfigs = configs.filter((c) => c.active);
@@ -111,7 +115,7 @@ export default function DataConnectorCredentialsModal({
           This data connector does not require any credentials.
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => setOpen(false)}>
+          <Button color="primary" onClick={closeModal}>
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
