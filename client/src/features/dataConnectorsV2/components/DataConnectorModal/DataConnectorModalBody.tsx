@@ -761,7 +761,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
         validationResult?.isSuccess && (
           <div className="mb-3">
             <DataConnectorSaveCredentialsInfo
-              control={control}
+              checked={cloudStorageState.saveCredentials}
               onFieldValueChange={onFieldValueChange}
             />
           </div>
