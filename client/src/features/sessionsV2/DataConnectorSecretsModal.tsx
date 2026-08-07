@@ -287,6 +287,12 @@ export default function DataConnectorSecretsModal({
   const hasSavedCredentials = dataConnectorConfigs.some(
     (csc) => csc.savedCredentialFields?.length > 0,
   );
+  const total = dataConnectorConfigs.length;
+  const showCredentialsCounter =
+    (context === "session" || context === "job") && total > 1;
+  const modalTitle = showCredentialsCounter
+    ? `${CONTEXT_STRINGS[context].header} ${index + 1} of ${total}`
+    : CONTEXT_STRINGS[context].header;
 
   return (
     <Modal
@@ -295,7 +301,7 @@ export default function DataConnectorSecretsModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader tag="h2">{CONTEXT_STRINGS[context].header}</ModalHeader>
+      <ModalHeader tag="h2">{modalTitle}</ModalHeader>
       <Form
         noValidate
         data-cy="data-connector-edit-options"
