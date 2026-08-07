@@ -21,6 +21,7 @@ import { useCallback, useEffect } from "react";
 import { XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
+import { SuccessAlert } from "../../../components/Alert";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import DataConnectorSecretsModal from "../../sessionsV2/DataConnectorSecretsModal";
@@ -52,6 +53,9 @@ export default function DataConnectorCredentialsModal({
   const [deleteCredentials, deleteCredentialsResult] =
     useDeleteDataConnectorsByDataConnectorIdSecretsMutation();
 
+  const isSuccess =
+    deleteCredentialsResult.isSuccess || saveCredentialsResult.isSuccess;
+
   const onSave = useCallback(
     (configs: DataConnectorConfiguration[]) => {
       const activeConfigs = configs.filter((c) => c.active);
@@ -82,10 +86,12 @@ export default function DataConnectorCredentialsModal({
   );
 
   useEffect(() => {
-    if (deleteCredentialsResult.isSuccess || saveCredentialsResult.isSuccess) {
-      setOpen(false);
+    if (!isOpen) {
+      saveCredentialsResult.reset();
+      deleteCredentialsResult.reset();
     }
-  }, [deleteCredentialsResult, saveCredentialsResult.isSuccess, setOpen]);
+  }, [deleteCredentialsResult, isOpen, saveCredentialsResult]);
+
   if (!isOpen) return null;
   if (
     dataConnector?.storage.sensitive_fields == null ||
@@ -103,6 +109,36 @@ export default function DataConnectorCredentialsModal({
         </ModalHeader>
         <ModalBody>
           This data connector does not require any credentials.
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => setOpen(false)}>
+            <XLg className={cx("bi", "me-1")} />
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
+    );
+  }
+
+  if (isSuccess) {
+    return (
+      <Modal
+        centered
+        data-cy="data-connector-credentials-success-modal"
+        isOpen={isOpen}
+        size="lg"
+      >
+        <ModalHeader className={cx("fw-bold")}>
+          Data Connector Credentials
+        </ModalHeader>
+        <ModalBody>
+          <SuccessAlert className="mb-0" dismissible={false} timeout={0}>
+            <p className="mb-0">
+              {deleteCredentialsResult.isSuccess
+                ? "The credentials have been successfully cleared."
+                : "The credentials have been successfully updated."}
+            </p>
+          </SuccessAlert>
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={() => setOpen(false)}>
