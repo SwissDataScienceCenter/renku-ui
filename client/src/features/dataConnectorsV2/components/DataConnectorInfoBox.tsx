@@ -247,6 +247,20 @@ export default function DataConnectorInfoBox({
         </InfoEntry>
 
         <DataConnectorAdditionalFields dataConnector={dataConnector} />
+
+        <InfoEntry title={"ID Code"} dataCy="id-code">
+          <div className={cx("align-items-center", "d-flex", "gap-2")}>
+            <span className="text-truncate">
+              {dataConnector?.id ?? "No available"}
+            </span>
+            {dataConnector?.id && (
+              <Clipboard
+                className={cx("border-0", "btn", "p-0", "shadow-none")}
+                clipboardText={dataConnector?.id}
+              />
+            )}
+          </div>
+        </InfoEntry>
       </CardBody>
     </Card>
   );

@@ -22,6 +22,7 @@ import { useMemo } from "react";
 import {
   Bookmarks,
   Clock,
+  CodeSquare,
   Diagram3Fill,
   Eye,
   InfoCircle,
@@ -31,6 +32,7 @@ import {
 import { generatePath, Link } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import CopyProjectButton from "~/features/ProjectPageV2/ProjectPageContent/ProjectInformation/CopyProjectButton";
@@ -206,6 +208,22 @@ export default function ProjectInformation({
         )}
       </ProjectInformationBox>
       <ProjectCopyTemplateInformationBox project={project} />
+      <ProjectInformationBox
+        icon={<CodeSquare className="bi" />}
+        title="ID Code:"
+      >
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <span className="text-truncate">
+            {project?.id ?? "Not available"}
+          </span>
+          {project?.id && (
+            <Clipboard
+              className={cx("border-0", "btn", "p-0", "shadow-none")}
+              clipboardText={project?.id}
+            />
+          )}
+        </div>
+      </ProjectInformationBox>
     </div>
   );
   return output === "plain" ? (

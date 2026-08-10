@@ -24,6 +24,7 @@ import {
   Braces,
   CircleFill,
   Clock,
+  CodeSquare,
   Cpu,
   Database,
   ExclamationTriangleFill,
@@ -53,6 +54,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert } from "~/components/Alert";
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -662,47 +664,79 @@ export function SessionView({
           <SessionViewSessionSecrets />
 
           {launcher && (
-            <Card>
-              <CardHeader
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "justify-content-between",
-                )}
-              >
-                <h3 className={cx("mb-0", "me-2")}>
-                  <Braces className={cx("me-1", "bi")} />
-                  Environment Variables
-                </h3>
-                <PermissionsGuard
-                  disabled={null}
-                  enabled={
-                    <>
-                      <Button
-                        color="outline-primary"
-                        id="modify-env-variables-button"
-                        onClick={toggleEnvVariables}
-                        size="sm"
-                        tabIndex={0}
-                      >
-                        <Pencil className="bi" />
-                      </Button>
-                      <UncontrolledTooltip target="modify-env-variables-button">
-                        Modify environment variables
-                      </UncontrolledTooltip>
-                    </>
-                  }
-                  requestedPermission="write"
-                  userPermissions={permissions}
-                />
-              </CardHeader>
-              <CardBody>
-                <p className="mb-2">
-                  Environment variables pass information into the session.
-                </p>
-                <EnvVariablesCard launcher={launcher} />
-              </CardBody>
-            </Card>
+            <>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className={cx("mb-0", "me-2")}>
+                    <Braces className={cx("me-1", "bi")} />
+                    Environment Variables
+                  </h3>
+                  <PermissionsGuard
+                    disabled={null}
+                    enabled={
+                      <>
+                        <Button
+                          color="outline-primary"
+                          id="modify-env-variables-button"
+                          onClick={toggleEnvVariables}
+                          size="sm"
+                          tabIndex={0}
+                        >
+                          <Pencil className="bi" />
+                        </Button>
+                        <UncontrolledTooltip target="modify-env-variables-button">
+                          Modify environment variables
+                        </UncontrolledTooltip>
+                      </>
+                    }
+                    requestedPermission="write"
+                    userPermissions={permissions}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <p className="mb-2">
+                    Environment variables pass information into the session.
+                  </p>
+                  <EnvVariablesCard launcher={launcher} />
+                </CardBody>
+              </Card>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className={cx("mb-0", "me-2")}>
+                    <CodeSquare className={cx("me-1", "bi")} />
+                    ID Code
+                  </h3>
+                </CardHeader>
+                <CardBody>
+                  <p className="mb-2">
+                    Launcher ID is a unique identifier for the session launcher.
+                  </p>
+                  <div className={cx("align-items-center", "d-flex", "gap-2")}>
+                    <span className="text-truncate">
+                      {launcher?.id ?? "Not available"}
+                    </span>
+                    {launcher?.id && (
+                      <Clipboard
+                        className={cx("border-0", "btn", "p-0", "shadow-none")}
+                        clipboardText={launcher?.id}
+                      />
+                    )}
+                  </div>
+                </CardBody>
+              </Card>
+            </>
           )}
         </div>
       </OffcanvasBody>
