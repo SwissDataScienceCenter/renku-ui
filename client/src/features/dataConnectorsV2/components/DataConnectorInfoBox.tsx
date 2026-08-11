@@ -211,9 +211,7 @@ export default function DataConnectorInfoBox({
                 </ExternalLink>
                 <Clipboard
                   className={cx("border-0", "btn", "p-0", "shadow-none")}
-                  clipboardText={
-                    dataConnector.storage.configuration["doi"] as string
-                  }
+                  clipboardText={doiReference ?? ""}
                 />
               </div>
             </InfoEntry>
