@@ -76,11 +76,6 @@ export default function SessionsPersistedLogsHistoryModal({
   launcher,
   toggle,
 }: PersistedLogsHistoryModalProps) {
-  const { params } = useContext(AppContext);
-  const persistedLogsTtlSeconds =
-    params?.PERSISTED_LOGS_TTL_SECONDS ??
-    DEFAULT_APP_PARAMS.PERSISTED_LOGS_TTL_SECONDS;
-
   const {
     data: sessionRuns,
     isFetching,
