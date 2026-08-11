@@ -202,7 +202,8 @@ tee > ./public/config.json << EOF
   "SESSION_CLASS_EMAIL_US": { "enabled": false },
   "IMAGE_BUILDERS_ENABLED": true,
   "BUILD_PRIVATE_REPO_BUILDS_ENABLED": true,
-  "CONTACT_EMAIL":  "hello@renku.io"
+  "CONTACT_EMAIL":  "hello@renku.io",
+  "PERSISTED_LOGS_ENABLED": true
 }
 EOF
 
