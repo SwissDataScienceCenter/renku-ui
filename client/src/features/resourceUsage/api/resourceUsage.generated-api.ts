@@ -8,7 +8,11 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({
         url: `/resource_pools/${queryArg.resourcePoolId}/usage`,
-        params: { start_date: queryArg.startDate, end_date: queryArg.endDate },
+        params: {
+          start_date: queryArg.startDate,
+          end_date: queryArg.endDate,
+          user_id: queryArg.userId,
+        },
       }),
     }),
     getResourcePoolsByResourcePoolIdLimits: build.query<
@@ -75,6 +79,7 @@ export type GetResourcePoolsByResourcePoolIdUsageApiArg = {
   resourcePoolId: number;
   startDate?: string;
   endDate?: string;
+  userId?: string;
 };
 export type GetResourcePoolsByResourcePoolIdLimitsApiResponse =
   /** status 200 Return the resource pool limits. */ ResourcePoolLimits;
@@ -87,8 +92,7 @@ export type PutResourcePoolsByResourcePoolIdLimitsApiArg = {
   resourcePoolId: number;
   resourcePoolLimitPut: ResourcePoolLimitPut;
 };
-export type DeleteResourcePoolsByResourcePoolIdLimitsApiResponse =
-  /** status 204 No content on success. */ void;
+export type DeleteResourcePoolsByResourcePoolIdLimitsApiResponse = unknown;
 export type DeleteResourcePoolsByResourcePoolIdLimitsApiArg = {
   resourcePoolId: number;
 };
@@ -106,7 +110,7 @@ export type PutResourcePoolsByResourcePoolIdClassesAndClassIdCostApiArg = {
   resourceClassCostPut: ResourceClassCostPut;
 };
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdCostApiResponse =
-  /** status 204 No content on success. */ void;
+  unknown;
 export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdCostApiArg = {
   resourcePoolId: number;
   classId: number;

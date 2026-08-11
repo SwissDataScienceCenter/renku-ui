@@ -13,7 +13,7 @@
   "paths": {
     "/resource_pools/{resource_pool_id}/usage": {
       "get": {
-        "summary": "Get usage and limits of the supplied pool. If a `start_date` is not given, the usage of the current week is returned.",
+        "summary": "Get usage and limits of the supplied pool. If a `start_date`\nis not given, the usage of the current week is returned.\n\nA query parameter `user_id` can be specified and the current\nuser is used if this is not present. This endpoint requires\nadmin privileges, if the `user_id` query parameter is not the\ncurrent user.\n",
         "parameters": [
           {
             "in": "path",
@@ -39,6 +39,14 @@
             "schema": {
               "type": "string",
               "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "user_id",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
