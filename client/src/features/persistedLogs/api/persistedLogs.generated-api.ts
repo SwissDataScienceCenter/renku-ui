@@ -34,11 +34,11 @@ const injectedRtkApi = api.injectEndpoints({
 });
 export { injectedRtkApi as persistedLogsGeneratedApi };
 export type GetPersistedLogsSessionsByLauncherIdApiResponse =
-  /** status 200 The session logs from the corresponding run and container, paginated.
+  /** status 200 The persisted logs from the corresponding session run.
    */ PersistedSessionLogs;
 export type GetPersistedLogsSessionsByLauncherIdApiArg = {
   launcherId: Ulid;
-  params?: PersistedLogsGetQuery;
+  params?: PersistedSessionLogsGetQuery;
 };
 export type GetPersistedLogsSessionsByLauncherIdRunsApiResponse =
   /** status 200 The session runs for which logs exist.
@@ -65,14 +65,14 @@ export type PersistedLogLine = {
   log_line: string;
 };
 export type PersistedLogLines = PersistedLogLine[];
-export type SessionRunLog = {
+export type ContainerLogs = {
   container: string;
   logs: PersistedLogLines;
 };
-export type SessionRunLogs = SessionRunLog[];
+export type LogsPerContainer = ContainerLogs[];
 export type PersistedSessionLogs = {
   run: SessionRun;
-  logs: SessionRunLogs;
+  logs: LogsPerContainer;
 };
 export type ErrorResponse = {
   error: {
@@ -83,11 +83,11 @@ export type ErrorResponse = {
     trace_id?: string;
   };
 };
-export type PersistedLogsGetQuery = {
+export type PersistedSessionLogsGetQuery = {
   run_id?: Ulid;
   submission_id?: string;
 };
 export type SessionRuns = SessionRun[];
 export type PersistedBuildLogs = {
-  logs: SessionRunLogs;
+  logs: LogsPerContainer;
 };

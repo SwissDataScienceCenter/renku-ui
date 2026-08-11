@@ -13,6 +13,8 @@
   "paths": {
     "/persisted_logs/sessions/{launcher_id}": {
       "get": {
+        "summary": "Get persisted logs for a session",
+        "description": "Returns logs for a given session launcher belonging to the current user.\n\n* If the `run_id` is not specified, logs from the most recent run will be returned.\n* For offline jobs (`launcher_type: non-interactive`), the `submission_id` can\nalso be used to get the corresponding logs.\n\nNOTE: logs are persisted for a limited amount of time. Once expired, logs are\npurged from the database.\n",
         "parameters": [
           {
             "in": "path",
@@ -28,13 +30,13 @@
             "style": "form",
             "explode": true,
             "schema": {
-              "$ref": "#/components/schemas/PersistedLogsGetQuery"
+              "$ref": "#/components/schemas/PersistedSessionLogsGetQuery"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "The session logs from the corresponding run and container, paginated.\n",
+            "description": "The persisted logs from the corresponding session run.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -44,7 +46,7 @@
             }
           },
           "404": {
-            "description": "The session launcher does not exist",
+            "description": "The session launcher does not exist or there are no logs persisted for it at the moment.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -62,6 +64,8 @@
     },
     "/persisted_logs/sessions/{launcher_id}/runs": {
       "get": {
+        "summary": "Get the list of session runs for a given session launcher",
+        "description": "Returns the list of session runs for the given session launcher.\n\nNOTE: session runs are removed when the corresponding logs have expired.\n",
         "parameters": [
           {
             "in": "path",
@@ -102,6 +106,8 @@
     },
     "/persisted_logs/builds/{build_id}": {
       "get": {
+        "summary": "Get persisted logs for a build",
+        "description": "Returns logs for a given image build.\n\nNOTE: logs are persisted for a limited amount of time. Once expired, logs are\npurged from the database.\n",
         "parameters": [
           {
             "in": "path",
@@ -144,14 +150,14 @@
   "components": {
     "schemas": {
       "PersistedSessionLogs": {
-        "description": "Logs for a session",
+        "description": "Persisted logs for a session",
         "type": "object",
         "properties": {
           "run": {
             "$ref": "#/components/schemas/SessionRun"
           },
           "logs": {
-            "$ref": "#/components/schemas/SessionRunLogs"
+            "$ref": "#/components/schemas/LogsPerContainer"
           }
         },
         "required": ["run", "logs"]
@@ -183,23 +189,23 @@
         "required": ["id", "launcher_id"]
       },
       "PersistedBuildLogs": {
-        "description": "Logs for an image build",
+        "description": "Persisted logs for an image build",
         "type": "object",
         "properties": {
           "logs": {
-            "$ref": "#/components/schemas/SessionRunLogs"
+            "$ref": "#/components/schemas/LogsPerContainer"
           }
         },
         "required": ["logs"]
       },
-      "SessionRunLogs": {
-        "description": "Logs of a session run, organized by pod container",
+      "LogsPerContainer": {
+        "description": "Logs organized by pod container",
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/SessionRunLog"
+          "$ref": "#/components/schemas/ContainerLogs"
         }
       },
-      "SessionRunLog": {
+      "ContainerLogs": {
         "description": "Logs of a single container",
         "type": "object",
         "properties": {
@@ -244,8 +250,8 @@
         "type": "string",
         "pattern": "[0-9]+"
       },
-      "PersistedLogsGetQuery": {
-        "description": "Query params for querying persisted logs",
+      "PersistedSessionLogsGetQuery": {
+        "description": "Query params for querying persisted logs of a session",
         "type": "object",
         "properties": {
           "run_id": {
