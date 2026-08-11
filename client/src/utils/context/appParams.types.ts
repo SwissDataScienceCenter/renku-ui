@@ -47,6 +47,7 @@ export interface AppParams {
   USER_PREFERENCES_MAX_PINNED_PROJECTS: number;
   CONTACT_EMAIL: string;
   PERSISTED_LOGS_ENABLED: boolean;
+  PERSISTED_LOGS_TTL_SECONDS: number;
 }
 
 export type AppParamsStrings = {

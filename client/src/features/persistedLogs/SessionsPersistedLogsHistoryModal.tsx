@@ -20,7 +20,14 @@ import type { SerializedError } from "@reduxjs/toolkit";
 import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { DateTime, Duration } from "luxon";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ArrowLeft,
   ArrowRepeat,
@@ -41,8 +48,13 @@ import { decodeTime as decodeTimeULID, isValid as isValidULID } from "ulid";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { toHumanDateTime } from "~/utils/helpers/DateTimeUtils";
-import { toHumanRelativeDuration } from "~/utils/helpers/DurationUtils";
+import {
+  toHumanDuration,
+  toHumanRelativeDuration,
+} from "~/utils/helpers/DurationUtils";
 import { LogsModalBody, useDownloadLogs } from "../logsDisplay/LogsModal";
 import type { SessionLauncher } from "../sessionsV2/api/sessionLaunchersV2.api";
 import {
@@ -64,6 +76,11 @@ export default function SessionsPersistedLogsHistoryModal({
   launcher,
   toggle,
 }: PersistedLogsHistoryModalProps) {
+  const { params } = useContext(AppContext);
+  const persistedLogsTtlSeconds =
+    params?.PERSISTED_LOGS_TTL_SECONDS ??
+    DEFAULT_APP_PARAMS.PERSISTED_LOGS_TTL_SECONDS;
+
   const {
     data: sessionRuns,
     isFetching,
@@ -82,6 +99,12 @@ export default function SessionsPersistedLogsHistoryModal({
   const onClickBack = useCallback(() => {
     setSelectedRunId("");
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      window.setTimeout(() => setSelectedRunId(""), 0);
+    }
+  }, [isOpen, setSelectedRunId]);
 
   return (
     <ScrollableModal
@@ -162,6 +185,11 @@ function LogsHistoryBody({
   sessionRuns,
   setSelectedRunId,
 }: LogsHistoryBodyProps) {
+  const { params } = useContext(AppContext);
+  const persistedLogsTtlSeconds =
+    params?.PERSISTED_LOGS_TTL_SECONDS ??
+    DEFAULT_APP_PARAMS.PERSISTED_LOGS_TTL_SECONDS;
+
   const selectedSessionRun = useMemo(
     () =>
       selectedRunId
@@ -192,7 +220,8 @@ function LogsHistoryBody({
   if (sessionRuns.length == 0) {
     return (
       <p className="mb-0">
-        The logs history is empty. Note that logs are purged after a while.
+        The logs history is empty. Note that logs are purged after{" "}
+        {toHumanDuration({ duration: persistedLogsTtlSeconds })}.
       </p>
     );
   }
@@ -202,15 +231,21 @@ function LogsHistoryBody({
   }
 
   return (
-    <ListGroup tag="div">
-      {sessionRuns.map((sessionRun) => (
-        <SessionRunItem
-          key={sessionRun.id}
-          sessionRun={sessionRun}
-          setSelectedRunId={setSelectedRunId}
-        />
-      ))}
-    </ListGroup>
+    <>
+      <p>
+        Note that logs are purged after{" "}
+        {toHumanDuration({ duration: persistedLogsTtlSeconds })}.
+      </p>
+      <ListGroup tag="div">
+        {sessionRuns.map((sessionRun) => (
+          <SessionRunItem
+            key={sessionRun.id}
+            sessionRun={sessionRun}
+            setSelectedRunId={setSelectedRunId}
+          />
+        ))}
+      </ListGroup>
+    </>
   );
 }
 

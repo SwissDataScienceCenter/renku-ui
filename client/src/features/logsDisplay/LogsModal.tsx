@@ -123,6 +123,7 @@ export default function LogsModal({
           isLoading={isLoading}
           refetch={refetch}
           defaultTab={defaultTab}
+          sessionState={sessionState}
         />
       </ModalBody>
       <ModalFooter>
@@ -138,7 +139,8 @@ export default function LogsModal({
   );
 }
 
-type LogsModalBodyProps = LogsQuery & Pick<LogsModalModalProps, "defaultTab">;
+type LogsModalBodyProps = LogsQuery &
+  Pick<LogsModalModalProps, "defaultTab" | "sessionState">;
 
 export function LogsModalBody({
   data,
@@ -147,6 +149,7 @@ export function LogsModalBody({
   isLoading,
   refetch,
   defaultTab,
+  sessionState,
 }: LogsModalBodyProps) {
   if (isLoading) {
     return <Loader />;
@@ -155,7 +158,11 @@ export function LogsModalBody({
   if (error || data == null) {
     return (
       <p data-cy="logs-unavailable-message" className="mb-0">
-        Logs unavailable. Please try to{" "}
+        Logs unavailable.{" "}
+        {(sessionState === "succeeded" || sessionState === "failed") && (
+          <>Note that logs may have been purged. </>
+        )}
+        Please try to{" "}
         <Button
           color="primary"
           onClick={refetch}

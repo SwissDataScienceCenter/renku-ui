@@ -84,6 +84,10 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "USER_PREFERENCES_MAX_PINNED_PROJECTS",
   );
+  const PERSISTED_LOGS_TTL_SECONDS = validateInteger(
+    params_,
+    "PERSISTED_LOGS_TTL_SECONDS",
+  );
 
   // Object params
   const HOMEPAGE = validateHomepage(params_);
@@ -123,6 +127,7 @@ export function validatedAppParams(params: unknown): AppParams {
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
     PERSISTED_LOGS_ENABLED,
+    PERSISTED_LOGS_TTL_SECONDS,
   };
 }
 
