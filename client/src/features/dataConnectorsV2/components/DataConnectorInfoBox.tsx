@@ -19,6 +19,7 @@ import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { Loader } from "~/components/Loader";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { TimeCaption } from "~/components/TimeCaption";
 import { STORAGES_WITH_ACCESS_MODE } from "~/features/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "~/features/cloudStorage/projectCloudStorage.utils";
 import { useGetNamespacesByNamespaceSlugQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
@@ -230,6 +231,21 @@ export default function DataConnectorInfoBox({
           </InfoEntry>
         )}
 
+        {dataConnector.expires_at && (
+          <InfoEntry
+            title={
+              <ExpiresAtTitle expiresAt={new Date(dataConnector.expires_at)} />
+            }
+            dataCy="expires-at"
+          >
+            <TimeCaption
+              datetime={dataConnector.expires_at}
+              enableTooltip
+              noCaption
+            />
+          </InfoEntry>
+        )}
+
         <InfoEntry title={<MountPointHead />} dataCy="mount-point">
           {dataConnector.storage.target_path}
         </InfoEntry>
@@ -284,6 +300,27 @@ function MountPointHead() {
       </span>
       <UncontrolledTooltip target={ref} placement="bottom">
         This is where the data connector will be mounted during sessions.
+      </UncontrolledTooltip>
+    </>
+  );
+}
+
+interface ExpiresAtTitleProps {
+  expiresAt: Date;
+}
+function ExpiresAtTitle({ expiresAt }: ExpiresAtTitleProps) {
+  const expired = expiresAt < new Date();
+  const ref = useRef(null);
+  return (
+    <>
+      <span>{expired ? "Expired" : "Expires"}</span>
+      <span ref={ref}>
+        <InfoCircle className="ms-1" />
+      </span>
+      <UncontrolledTooltip target={ref} placement="bottom">
+        {expired
+          ? "This data connector has expired. You need to refresh it to use it in sessions or jobs."
+          : "This data connector has an expire date and will need to be refreshed after reaching it."}
       </UncontrolledTooltip>
     </>
   );
