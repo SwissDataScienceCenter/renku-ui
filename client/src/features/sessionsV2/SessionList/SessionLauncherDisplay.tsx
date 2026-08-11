@@ -189,11 +189,13 @@ export function SessionLauncherDisplay({
             launcher={launcher}
             toggle={toggleEnvVariables}
           />
-          <SessionsPersistedLogsHistoryModal
-            isOpen={isLogsHistoryOpen}
-            launcher={launcher}
-            toggle={toggleLogsHistory}
-          />
+          {persistedLogsEnabled && (
+            <SessionsPersistedLogsHistoryModal
+              isOpen={isLogsHistoryOpen}
+              launcher={launcher}
+              toggle={toggleLogsHistory}
+            />
+          )}
         </>
       )}
     </>
