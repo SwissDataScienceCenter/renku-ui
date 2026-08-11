@@ -412,6 +412,7 @@ function SearchFilterContent({
                   visualization={visualization}
                   type={filter.allowSelectMany ? "checkbox" : "radio"}
                 >
+                  {element.icon}
                   {element.label}
                   {element.quantity !== undefined ? (
                     <Badge className="ms-1">{element.quantity}</Badge>

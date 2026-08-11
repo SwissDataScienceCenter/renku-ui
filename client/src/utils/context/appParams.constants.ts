@@ -55,6 +55,11 @@ const DEFAULT_SESSION_CLASS_EMAIL_US: AppParams["SESSION_CLASS_EMAIL_US"] = {
   enabled: false,
 };
 
+const DEFAULT_CULLING_THRESHOLDS: AppParams["CULLING_THRESHOLDS"] = {
+  registered: { idle: 0, hibernation: 0 },
+  anonymous: { idle: 0, hibernation: 0 },
+};
+
 export const DEFAULT_APP_PARAMS: AppParams = {
   ANONYMOUS_SESSIONS: false,
   BASE_URL: "",
@@ -83,5 +88,6 @@ export const DEFAULT_APP_PARAMS: AppParams = {
   IMAGE_BUILDERS_ENABLED: false,
   BUILD_PRIVATE_REPO_BUILDS_ENABLED: false,
   CONTACT_EMAIL: "hello@renku.io",
+  CULLING_THRESHOLDS: DEFAULT_CULLING_THRESHOLDS,
   PERSISTED_LOGS_ENABLED: false,
 };

@@ -25,6 +25,7 @@ import type {
   AppParamsBooleans,
   AppParamsNumbers,
   AppParamsStrings,
+  CullingThresholdsParams,
   PreviewThresholdParams,
   PrivacyBannerLayoutParams,
   SessionClassEmailUsParams,
@@ -91,11 +92,13 @@ export function validatedAppParams(params: unknown): AppParams {
   const TEMPLATES = validateTemplates(params_);
   const UPLOAD_THRESHOLD = validateUploadThreshold(params_);
   const SESSION_CLASS_EMAIL_US = validateSessionClassEmailUs(params_);
+  const CULLING_THRESHOLDS = validateCullingThresholds(params_);
 
   return {
     ANONYMOUS_SESSIONS,
     BASE_URL,
     CONTACT_EMAIL,
+    CULLING_THRESHOLDS,
     GATEWAY_URL,
     HOMEPAGE,
     IMAGE_BUILDERS_ENABLED,
@@ -252,6 +255,32 @@ function validateUploadThreshold(params: RawAppParams): UploadThresholdParams {
       ? rawParams.soft
       : DEFAULT_APP_PARAMS["PREVIEW_THRESHOLD"].soft;
   return { soft };
+}
+
+function validateCullingThresholds(
+  params: RawAppParams,
+): CullingThresholdsParams {
+  const value = params["CULLING_THRESHOLDS"];
+  if (typeof value !== "object" || value == null) {
+    return DEFAULT_APP_PARAMS["CULLING_THRESHOLDS"];
+  }
+
+  const rawParams = value as {
+    registered?: { idle: unknown; hibernation: unknown };
+    anonymous?: { idle: unknown; hibernation: unknown };
+  };
+
+  const validateGroup = (
+    group: { idle: unknown; hibernation: unknown } | undefined,
+  ) => ({
+    idle: typeof group?.idle === "number" ? group.idle : 0,
+    hibernation: typeof group?.hibernation === "number" ? group.hibernation : 0,
+  });
+
+  return {
+    registered: validateGroup(rawParams.registered),
+    anonymous: validateGroup(rawParams.anonymous),
+  };
 }
 
 function validateSessionClassEmailUs(

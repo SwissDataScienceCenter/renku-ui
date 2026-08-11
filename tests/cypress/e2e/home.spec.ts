@@ -31,6 +31,37 @@ describe("display the home page", () => {
       "Connecting data, code, compute, and people.",
     );
   });
+
+  it("uses the standard hero layout", () => {
+    cy.get("#rk-anon-home-hero").should("have.class", "bg-navy");
+    cy.get("#rk-anon-home-custom-header").should("not.exist");
+  });
+});
+
+describe("display the customized home page", () => {
+  beforeEach(() => {
+    fixtures
+      .config({ fixture: "config-custom-homepage.json" })
+      .versions()
+      .userNone();
+    cy.visit("/");
+  });
+
+  it("shows the header on a navy background with visible navigation", () => {
+    cy.getDataCy("header-nav").should("have.class", "bg-body");
+    cy.get("#rk-anon-home-hero").should("not.exist");
+    cy.get("#login-button").should("be.visible");
+    cy.contains("h1", "Custom deployment homepage").should("be.visible");
+    cy.get(".custom-home-banner")
+      .should("be.visible")
+      .and("contain.text", "This is a white-based custom landing page.");
+  });
+
+  it("shows the standard footer and preserves custom HTML classes", () => {
+    cy.get("#rk-anon-home-bottom-nav").should("be.visible");
+    cy.get("#rk-anon-home-bottom-nav").should("have.class", "bg-navy");
+    cy.get(".custom-home-banner").should("have.class", "custom-home-banner");
+  });
 });
 
 describe("404 page", () => {

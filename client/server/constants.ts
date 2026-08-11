@@ -86,6 +86,7 @@ export const CONFIG_JSON = {
   BUILD_PRIVATE_REPO_BUILDS_ENABLED:
     process.env.BUILD_PRIVATE_REPO_BUILDS_ENABLED,
   CONTACT_EMAIL: process.env.CONTACT_EMAIL || "hello@renku.io",
+  CULLING_THRESHOLDS: safeJsonToObject(process.env.CULLING_THRESHOLDS),
 };
 
 export const SAMPLE_PRIVACY_CONTENT = `# Privacy statement

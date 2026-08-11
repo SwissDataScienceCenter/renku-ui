@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { CheckLg, PersonFillX, TrashFill, XLg } from "react-bootstrap-icons";
 import {
   Button,
@@ -34,6 +34,8 @@ import { ErrorAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
@@ -46,7 +48,6 @@ import {
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import { useGetUsersQuery } from "../usersV2/api/users.api";
-import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
@@ -317,7 +318,9 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
     hibernation_threshold: hibernationThreshold,
   } = resourcePool;
 
-  const { data, isError, isLoading } = useGetNotebooksVersionQuery();
+  const { params } = useContext(AppContext);
+  const cullingThresholds =
+    params?.CULLING_THRESHOLDS ?? DEFAULT_APP_PARAMS["CULLING_THRESHOLDS"];
 
   return (
     <div
@@ -338,15 +341,9 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
         <span className="text-nowrap">
           {idleThreshold
             ? toFullHumanDuration(idleThreshold)
-            : isLoading
-              ? "(Loading...)"
-              : isError
-                ? "unavailable"
-                : data?.defaultCullingThresholds?.registered.idle
-                  ? toFullHumanDuration(
-                      data.defaultCullingThresholds.registered.idle,
-                    )
-                  : "unknown"}
+            : cullingThresholds.registered.idle
+              ? toFullHumanDuration(cullingThresholds.registered.idle)
+              : "unknown"}
         </span>
       </div>
       <div className="col">
@@ -354,15 +351,9 @@ function ResourcePoolThresholds({ resourcePool }: ResourcePoolItemProps) {
         <span className="text-nowrap">
           {hibernationThreshold
             ? toFullHumanDuration(hibernationThreshold)
-            : isLoading
-              ? "(Loading...)"
-              : isError
-                ? "unavailable"
-                : data?.defaultCullingThresholds?.registered.hibernation
-                  ? toFullHumanDuration(
-                      data.defaultCullingThresholds.registered.hibernation,
-                    )
-                  : "unknown"}
+            : cullingThresholds.registered.hibernation
+              ? toFullHumanDuration(cullingThresholds.registered.hibernation)
+              : "unknown"}
         </span>
       </div>
       <div className={cx("col", "ms-auto")}>

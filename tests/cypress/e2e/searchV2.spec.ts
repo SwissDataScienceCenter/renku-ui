@@ -71,4 +71,30 @@ describe("Search V2", () => {
     cy.location("pathname").should("eq", "/search");
     cy.location("search").should("include", "type=User");
   });
+
+  it("shows an overflow badge for a long member list", () => {
+    fixtures
+      .searchV2ListProjects({ numberOfProjects: 1, numberOfUsers: 0 })
+      .listProjectV2Members({
+        fixture: "projectV2/list-projectV2-members-long.json",
+        projectId: "*",
+      });
+    cy.viewport(1000, 660);
+    cy.visit("/search");
+
+    cy.getDataCy("search-query-input").type("test{enter}");
+    cy.wait("@listProjectV2Members");
+    cy.getDataCy("search-list-item").should("have.length", 1);
+
+    cy.getDataCy("member-list-row")
+      .should("be.visible")
+      .within(() => {
+        cy.contains("Member One").should("be.visible");
+        cy.contains("Member Twenty").should("not.be.visible");
+        cy.getDataCy("member-list-overflow")
+          .should("be.visible")
+          .invoke("text")
+          .should("match", /^\+[1-9]\d*$/);
+      });
+  });
 });

@@ -33,9 +33,9 @@
   "REAL_STATUSPAGE_ID": "r3j2c84ftq49",
   "HOMEPAGE": {
     "custom": {
-      "enabled": false,
+      "enabled": true,
       "main": {
-        "contentMd": "",
+        "contentMd": "# Custom deployment homepage\n\n<div class=\"custom-home-banner\">This is a white-based custom landing page.</div>",
         "backgroundImage": {
           "url": ""
         }
@@ -49,20 +49,6 @@
       "projects": [
         {
           "identifier": "lorenzo.cavazzi.tech/readme-file-dev"
-        },
-        {
-          "overrideDescription": "### Lorem ipsum\n\nDolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          "identifier": "e2e/nuevo-projecto"
-        },
-        {
-          "overrideDescription": "### Lorem ipsum\n\nDolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          "overrideImageUrl": "../stockimages/dataset2.svg",
-          "identifier": "e2e/testing-datasets",
-          "overrideTitle": "Override Everything"
-        },
-        {
-          "identifier": "e2e/local-test-project",
-          "overrideTitle": "Override Title"
         }
       ]
     }
@@ -70,9 +56,5 @@
   "USER_PREFERENCES_MAX_PINNED_PROJECTS": 5,
   "IMAGE_BUILDERS_ENABLED": true,
   "BUILD_PRIVATE_REPO_BUILDS_ENABLED": true,
-  "CONTACT_EMAIL": "hello@renku.io",
-  "CULLING_THRESHOLDS": {
-    "registered": { "idle": 86400, "hibernation": 259200 },
-    "anonymous": { "idle": 43200, "hibernation": 0 }
-  }
+  "CONTACT_EMAIL": "hello@renku.io"
 }
