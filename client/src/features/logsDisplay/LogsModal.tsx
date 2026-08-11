@@ -177,15 +177,23 @@ export function LogsModalBody({
   }
 
   if (Object.keys(data).length < 1) {
-    return <NoLogsAvailable refetch={refetch} />;
+    return <NoLogsAvailable refetch={refetch} sessionState={sessionState} />;
   }
 
   return <TabbedLogs data={data} defaultTab={defaultTab} />;
 }
 
-type NoLogsAvailableProps = Pick<LogsQuery, "refetch">;
+type NoLogsAvailableProps = Pick<LogsQuery, "refetch"> &
+  Pick<LogsModalModalProps, "sessionState">;
 
-function NoLogsAvailable({ refetch }: NoLogsAvailableProps) {
+function NoLogsAvailable({ refetch, sessionState }: NoLogsAvailableProps) {
+  if (sessionState === "succeeded" || sessionState === "failed") {
+    return (
+      <p data-cy="no-logs-message">
+        No logs available. Note that logs may have been purged.
+      </p>
+    );
+  }
   return (
     <>
       <p data-cy="no-logs-message">No logs available for this pod yet.</p>
