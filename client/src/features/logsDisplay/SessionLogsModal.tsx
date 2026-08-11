@@ -23,7 +23,7 @@ import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import {
   persistedLogsApi,
-  useGetPersistedLogsForModalQuery,
+  useGetPersistedSessionLogsForModalQuery,
 } from "../persistedLogs/api/persistedLogs.api";
 import {
   useGetResourcePoolsByResourcePoolIdQuery,
@@ -157,7 +157,7 @@ function PersistedLogsModal({
   sessionName,
   toggle,
 }: PersistedLogsModalProps) {
-  const query = useGetPersistedLogsForModalQuery(
+  const query = useGetPersistedSessionLogsForModalQuery(
     isOpen
       ? {
           launcherId: session.launcher_id,
@@ -169,7 +169,7 @@ function PersistedLogsModal({
   );
 
   const [trigger] =
-    persistedLogsApi.endpoints.getPersistedLogsForModal.useLazyQuery();
+    persistedLogsApi.endpoints.getPersistedSessionLogsForModal.useLazyQuery();
   const downloadQueryTrigger = useCallback(
     () =>
       trigger({

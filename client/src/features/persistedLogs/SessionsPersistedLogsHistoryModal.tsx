@@ -47,8 +47,8 @@ import { LogsModalBody, useDownloadLogs } from "../logsDisplay/LogsModal";
 import type { SessionLauncher } from "../sessionsV2/api/sessionLaunchersV2.api";
 import {
   persistedLogsApi,
-  useGetPersistedLogsForModalQuery,
   useGetPersistedLogsSessionsByLauncherIdRunsQuery,
+  useGetPersistedSessionLogsForModalQuery,
   type SessionRun,
   type SessionRuns,
 } from "./api/persistedLogs.api";
@@ -291,7 +291,7 @@ interface LogsDisplayProps {
 }
 
 function LogsDisplay({ isOpen, sessionRun }: LogsDisplayProps) {
-  const query = useGetPersistedLogsForModalQuery(
+  const query = useGetPersistedSessionLogsForModalQuery(
     isOpen
       ? {
           launcherId: sessionRun.launcher_id,
@@ -344,7 +344,7 @@ interface LogsActionsInnerProps {
 function LogsActionsInner({ sessionRun }: LogsActionsInnerProps) {
   const logsName = `${sessionRun.submission_id ? sessionRun.submission_id + "_" : ""}${sessionRun.launcher_id}`;
 
-  const query = useGetPersistedLogsForModalQuery({
+  const query = useGetPersistedSessionLogsForModalQuery({
     launcherId: sessionRun.launcher_id,
     params: {
       run_id: sessionRun.id,
@@ -353,7 +353,7 @@ function LogsActionsInner({ sessionRun }: LogsActionsInnerProps) {
   });
 
   const [trigger] =
-    persistedLogsApi.endpoints.getPersistedLogsForModal.useLazyQuery();
+    persistedLogsApi.endpoints.getPersistedSessionLogsForModal.useLazyQuery();
   const downloadQueryTrigger = useCallback(
     () =>
       trigger({
@@ -379,7 +379,7 @@ function LogsActionsInner({ sessionRun }: LogsActionsInnerProps) {
       <Button
         color="outline-primary"
         id="session-refresh-logs"
-        onClick={downloadQueryTrigger}
+        onClick={query.refetch}
         disabled={query.isFetching}
       >
         {query.isFetching ? (

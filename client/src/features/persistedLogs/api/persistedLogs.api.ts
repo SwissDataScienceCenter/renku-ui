@@ -43,7 +43,7 @@ const withFixedEndpoints = persistedLogsGeneratedApi.injectEndpoints({
 // Adds a data transform for compatibility with logs modal
 const withTransformedEndpoints = withFixedEndpoints.injectEndpoints({
   endpoints: (build) => ({
-    getPersistedLogsForModal: build.query<
+    getPersistedSessionLogsForModal: build.query<
       Record<string, string>,
       GetPersistedLogsSessionsByLauncherIdApiArg
     >({
@@ -89,13 +89,16 @@ const withTransformedEndpoints = withFixedEndpoints.injectEndpoints({
 
 // Adds tag handling for cache management
 export const persistedLogsApi = withTransformedEndpoints.enhanceEndpoints({
-  addTagTypes: ["PersistedLogs", "SessionRun"],
+  addTagTypes: ["SessionPersistedLogs", "SessionRun", "BuildPersistedLogs"],
   endpoints: {
     getPersistedLogsSessionsByLauncherId: {
       providesTags: (result) =>
         result
-          ? [{ id: result.run.id, type: "PersistedLogs" }, "PersistedLogs"]
-          : ["PersistedLogs"],
+          ? [
+              { id: result.run.id, type: "SessionPersistedLogs" },
+              "SessionPersistedLogs",
+            ]
+          : ["SessionPersistedLogs"],
     },
     getPersistedLogsSessionsByLauncherIdRuns: {
       providesTags: (result) =>
@@ -106,13 +109,22 @@ export const persistedLogsApi = withTransformedEndpoints.enhanceEndpoints({
             ]
           : ["SessionRun"],
     },
+    getPersistedLogsBuildsByBuildId: {
+      providesTags: (result, _, args) =>
+        result
+          ? [
+              { id: args.buildId, type: "BuildPersistedLogs" },
+              "BuildPersistedLogs",
+            ]
+          : ["BuildPersistedLogs"],
+    },
   },
 });
 
 export const {
   useGetPersistedLogsSessionsByLauncherIdQuery,
   useGetPersistedLogsSessionsByLauncherIdRunsQuery,
-  useGetPersistedLogsForModalQuery,
+  useGetPersistedSessionLogsForModalQuery,
   useGetPersistedLogsBuildsByBuildIdQuery,
   useGetPersistedBuildLogsForModalQuery,
 } = persistedLogsApi;
