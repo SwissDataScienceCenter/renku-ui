@@ -98,7 +98,7 @@ export default function JobCard({ project, session, onOpen }: JobCardProps) {
           </Col>
           <Col
             xs={12}
-            lg={6}
+            xl={6}
             className={cx(
               "d-flex",
               "flex-column",

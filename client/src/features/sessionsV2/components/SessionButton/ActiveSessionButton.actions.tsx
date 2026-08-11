@@ -30,7 +30,6 @@ import { Link } from "react-router";
 import { Button } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
-import { JOB_STOPPING_BUTTON_LABEL } from "~/features/sessionsV2/session.utils.ts";
 import { SessionStatusState } from "../../sessionsV2.types";
 
 export interface ActiveSessionActionContext {
@@ -49,7 +48,7 @@ export interface ActiveSessionActionContext {
   toggleModifySession: () => void;
 }
 
-function StoppingStatusButton({ label }: { label: string }) {
+export function StoppingStatusButton({ label }: { label: string }) {
   return (
     <Button color="primary" data-cy="stopping-btn" disabled>
       <Loader className="me-1" inline size={16} />
@@ -57,28 +56,6 @@ function StoppingStatusButton({ label }: { label: string }) {
     </Button>
   );
 }
-
-// TODO: Reuse this button when a confirmation action is present to avoid dismiss jobs by mistake
-// function DismissJobButton({
-//   buttonClassName,
-//   color = "outline-primary",
-//   onStopSession,
-// }: {
-//   buttonClassName?: string;
-//   color?: "outline-primary" | "primary";
-//   onStopSession: () => void;
-// }) {
-//   return (
-//     <Button
-//       color={color}
-//       className={color === "outline-primary" ? buttonClassName : undefined}
-//       data-cy={"dismiss-job-button"}
-//       onClick={onStopSession}
-//     >
-//       <Trash className={cx("bi", "me-1")} /> Dismiss
-//     </Button>
-//   );
-// }
 
 function PausingStatusButton() {
   return (
@@ -114,6 +91,25 @@ function ResumeStatusButton({
           Resume
         </>
       )}
+    </Button>
+  );
+}
+
+export function DismissJobButton({
+  isRunning,
+  onDismiss,
+}: {
+  isRunning: boolean;
+  onDismiss: () => void;
+}) {
+  return (
+    <Button
+      color="outline-primary"
+      data-cy="delete-job-button"
+      onClick={onDismiss}
+    >
+      <Trash className={cx("bi", "me-1")} />
+      {isRunning ? "Cancel" : "Dismiss"}
     </Button>
   );
 }
@@ -265,16 +261,12 @@ export function getJobDefaultAction(
 ): ReactNode {
   const {
     status,
-    isStopping,
     isHibernating,
     isResuming,
     onResumeSession,
     toggleLogsModal,
   } = ctx;
 
-  if (status === "stopping" || isStopping) {
-    return <StoppingStatusButton label={JOB_STOPPING_BUTTON_LABEL} />;
-  }
   if (isHibernating) {
     return <PausingStatusButton />;
   }
