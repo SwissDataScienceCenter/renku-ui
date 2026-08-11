@@ -158,6 +158,7 @@ export function SessionLauncherDisplay({
         toggleDelete={toggleDelete}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleEnvVariables={toggleEnvVariables}
+        toggleLogsHistory={persistedLogsEnabled ? toggleLogsHistory : undefined}
       />
       {launcher && (
         <>
