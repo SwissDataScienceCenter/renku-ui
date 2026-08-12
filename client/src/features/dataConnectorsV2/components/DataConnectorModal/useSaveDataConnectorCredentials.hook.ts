@@ -44,12 +44,8 @@ export default function useSaveDataConnectorCredentials() {
 
   useEffect(() => {
     const dataConnectorId = dataConnectorResultId;
-    if (dataConnectorId == null) return;
-    if (!schemata) return;
-    const options = flatDataConnector.options as
-      | CloudStorageDetailsOptions
-      | undefined;
-    if (!options) return;
+    const options = flatDataConnector.options;
+    if (!dataConnectorId || !schemata || !options) return;
 
     const dataConnectorSecretPatchList = buildDataConnectorSecretPatchList(
       findSensitive(
