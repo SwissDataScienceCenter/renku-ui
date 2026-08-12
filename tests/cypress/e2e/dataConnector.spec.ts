@@ -947,6 +947,13 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.wait("@patchDataConnectorSecrets");
     cy.wait("@getDataConnectorSecrets");
 
+    cy.getDataCy("data-connector-credentials-success-modal")
+      .should("be.visible")
+      .and("contain.text", "The credentials have been successfully updated.");
+    cy.getDataCy("data-connector-credentials-success-modal")
+      .contains("Close")
+      .click();
+
     // Credentials should be stored
     cy.getDataCy("data-connector-title").should(
       "contain.text",
@@ -1021,6 +1028,13 @@ describe("Set up data connectors with credentials in group pages", () => {
     cy.getDataCy("data-connector-credentials-modal").contains("Clear").click();
     cy.wait("@deleteDataConnectorSecrets");
     cy.wait("@getDataConnectorSecrets2");
+
+    cy.getDataCy("data-connector-credentials-success-modal")
+      .should("be.visible")
+      .and("contain.text", "The credentials have been successfully cleared.");
+    cy.getDataCy("data-connector-credentials-success-modal")
+      .contains("Close")
+      .click();
 
     // Credentials should be changed
     cy.getDataCy("data-connector-title").should(
