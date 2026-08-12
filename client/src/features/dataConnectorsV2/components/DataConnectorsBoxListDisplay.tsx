@@ -30,13 +30,7 @@ import {
   Pencil,
 } from "react-bootstrap-icons";
 import { Link, To, useLocation } from "react-router";
-import {
-  Badge,
-  Col,
-  ListGroupItem,
-  Row,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Col, ListGroupItem, Row, UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
