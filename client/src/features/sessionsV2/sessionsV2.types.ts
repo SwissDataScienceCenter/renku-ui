@@ -23,7 +23,10 @@ import {
   SessionType,
   SubmissionId,
 } from "~/features/sessionsV2/api/sessionsV2.generated-api";
-import type { ResourceClassWithId } from "./api/computeResources.api";
+import type {
+  ResourceClassWithId,
+  ResourceClassWithIdFiltered,
+} from "./api/computeResources.api";
 import type {
   BuildParametersPost,
   DefaultUrl,
@@ -192,6 +195,10 @@ export interface SessionEnvironmentVariable {
   value: string;
 }
 
+export interface SessionLauncherResourceUsageLimit {
+  resourceClass: ResourceClassWithIdFiltered | undefined;
+  quotaEnforced: boolean; // TODO: Replace this placeholder with the actual value when available from the API
+}
 export type ImageStatus =
   | "only-old-image-available"
   | "no-available"
