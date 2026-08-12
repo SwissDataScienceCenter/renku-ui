@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import {
   ArrowRightCircle,
   FileEarmarkText,
@@ -27,10 +27,10 @@ import {
   Trash,
 } from "react-bootstrap-icons";
 import { Link } from "react-router";
-import { Button } from "reactstrap";
+import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
-import { JOB_STOPPING_BUTTON_LABEL } from "~/features/sessionsV2/session.utils.ts";
+import { JOB_STOPPING_BUTTON_LABEL } from "~/features/sessionsV2/session.utils";
 import { SessionStatusState } from "../../sessionsV2.types";
 
 export interface ActiveSessionActionContext {
@@ -38,6 +38,8 @@ export interface ActiveSessionActionContext {
   isStopping: boolean;
   isHibernating: boolean;
   isResuming: boolean;
+  isCheckingUsageQuota: boolean;
+  isUsageQuotaReached: boolean;
   failedScheduling: boolean;
   isUserLoggedIn: boolean;
   showSessionUrl: string;
@@ -118,6 +120,43 @@ function ResumeStatusButton({
   );
 }
 
+function CheckingUsageQuotaButton() {
+  return (
+    <Button
+      className={cx("border-end-0", "rounded-end-0")}
+      color="outline-primary"
+      data-cy="resume-session-button"
+      disabled
+    >
+      <Loader className="me-1" inline size={16} />
+      Checking quota
+    </Button>
+  );
+}
+
+function UsageQuotaReachedResumeButton() {
+  const tooltipTarget = useRef<HTMLSpanElement>(null);
+
+  return (
+    <>
+      <span className="d-inline-flex" ref={tooltipTarget}>
+        <Button
+          className={cx("disabled", "border-end-0", "rounded-end-0")}
+          color="outline-primary"
+          data-cy="resume-session-button"
+          disabled
+        >
+          Quota Reached
+        </Button>
+      </span>
+      <UncontrolledTooltip target={tooltipTarget}>
+        Please modify the session to use a different resource class. The quota
+        for this resource pool has been fully used.
+      </UncontrolledTooltip>
+    </>
+  );
+}
+
 function LogsStatusButton({
   onClick,
   label,
@@ -190,6 +229,8 @@ export function getInteractiveSessionDefaultAction(
     isStopping,
     isHibernating,
     isResuming,
+    isCheckingUsageQuota,
+    isUsageQuotaReached,
     failedScheduling,
     isUserLoggedIn,
     showSessionUrl,
@@ -200,7 +241,6 @@ export function getInteractiveSessionDefaultAction(
     toggleLogsModal,
     toggleModifySession,
   } = ctx;
-
   if (status === "stopping" || isStopping) {
     return <StoppingStatusButton label="Shutting down" />;
   }
@@ -224,6 +264,12 @@ export function getInteractiveSessionDefaultAction(
     );
   }
   if (status === "hibernated") {
+    if (isCheckingUsageQuota) {
+      return <CheckingUsageQuotaButton />;
+    }
+    if (isUsageQuotaReached) {
+      return <UsageQuotaReachedResumeButton />;
+    }
     return (
       <ResumeStatusButton
         isResuming={isResuming}
@@ -271,7 +317,6 @@ export function getJobDefaultAction(
     onResumeSession,
     toggleLogsModal,
   } = ctx;
-
   if (status === "stopping" || isStopping) {
     return <StoppingStatusButton label={JOB_STOPPING_BUTTON_LABEL} />;
   }
@@ -281,7 +326,6 @@ export function getJobDefaultAction(
   if (status === "starting" || status === "running" || status === "succeeded") {
     return <LogsStatusButton onClick={toggleLogsModal} label="View logs" />;
   }
-
   if (status === "hibernated") {
     return (
       <ResumeStatusButton
