@@ -30,15 +30,15 @@ export function LauncherEnvironmentIcon({
 }) {
   const currentEnvironment = launcher.environment;
   return currentEnvironment?.environment_kind === "GLOBAL" ? (
-    <EnvironmentIcon type="global" size={16} className={className ?? "me-2"} />
+    <EnvironmentIcon type="global" size={16} className={className ?? "me-1"} />
   ) : currentEnvironment?.environment_image_source === "build" ? (
     <EnvironmentIcon
       type="codeBased"
       size={16}
-      className={className ?? "me-2"}
+      className={className ?? "me-1"}
     />
   ) : currentEnvironment?.environment_kind === "CUSTOM" ? (
-    <EnvironmentIcon type="custom" size={16} className={className ?? "me-2"} />
+    <EnvironmentIcon type="custom" size={16} className={className ?? "me-1"} />
   ) : null;
 }
 
