@@ -110,11 +110,7 @@ export default function ProjectDataConnectorsBox({
         projectStorageData={projectStorageData}
       />
       {projectStorageError && (
-        <RtkOrDataServicesError
-          className="mt-2"
-          error={projectStorageError}
-          dismissible={false}
-        />
+        <RtkOrDataServicesError className="mt-2" error={projectStorageError} />
       )}
     </>
   );

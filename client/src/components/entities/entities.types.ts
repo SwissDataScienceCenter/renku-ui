@@ -1,6 +1,6 @@
 export type EntityTypes =
   | "code-repository"
   | "data-connector"
-  | "renku-storage"
+  | "project-storage"
   | "job-launcher"
   | "session-launcher";

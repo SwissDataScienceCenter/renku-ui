@@ -76,7 +76,7 @@ export default function ProjectStorageView({
     >
       <OffcanvasBody data-cy="project-storage-view">
         <OffcanvasTopButtons
-          entityType="renku-storage"
+          entityType="project-storage"
           toggleView={toggleView}
         />
 
@@ -112,7 +112,10 @@ function ProjectStorageViewHeader({
   toggleEdit: () => void;
 }) {
   return (
-    <OffcanvasHeaderWithType entityType="renku-storage" title="Project storage">
+    <OffcanvasHeaderWithType
+      entityType="project-storage"
+      title="Project storage"
+    >
       <ProjectStorageActions
         projectStorage={projectStorage}
         toggleView={toggleView}
@@ -156,7 +159,7 @@ function MountPointHead() {
         <InfoCircle className="ms-1" />
       </span>
       <UncontrolledTooltip target={ref} placement="bottom">
-        This is where the project storage will be mounted during sessions.
+        This is where the project storage will be mounted.
       </UncontrolledTooltip>
     </>
   );

@@ -29,7 +29,7 @@ export default function OffcanvasHeaderWithType({
     _entityIcon
   ) : entityType === "data-connector" ? (
     <Database className="me-1" />
-  ) : entityType === "renku-storage" ? (
+  ) : entityType === "project-storage" ? (
     <RenkuStorageIcon className="me-1" />
   ) : entityType === "session-launcher" ? (
     <PlayCircle className="me-1" />
@@ -45,7 +45,7 @@ export default function OffcanvasHeaderWithType({
     ? _entityName
     : entityType === "data-connector"
       ? "Data connector"
-      : entityType === "renku-storage"
+      : entityType === "project-storage"
         ? "Renku storage"
         : entityType === "job-launcher"
           ? "Job launcher"

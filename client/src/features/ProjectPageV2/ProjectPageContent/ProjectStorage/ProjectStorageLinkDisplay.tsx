@@ -293,7 +293,7 @@ function DeleteProjectStorageModal({
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader tag="h2" toggle={toggle}>
-        Are you sure?
+        Remove project storage permanently
       </ModalHeader>
       <ModalBody>
         {result.error && <RtkOrDataServicesError error={result.error} />}

@@ -272,6 +272,7 @@ export function ProjectConnectDataConnectorModeSwitch({
           "btn-outline-primary",
           "btn",
           "d-flex",
+          "border-start-0",
         )}
       >
         <PlusLg className={cx("fs-3", "me-1")} />
@@ -296,6 +297,7 @@ export function ProjectConnectDataConnectorModeSwitch({
               "btn-outline-primary",
               "btn",
               "d-flex",
+              "border-start-0",
             )}
           >
             <RenkuStorageIcon className={cx("fs-3", "me-1")} />
@@ -941,5 +943,5 @@ function DataConnectorSearchSourceBadge({
       </div>
     );
 
-  return <div className={cx("mb-0", "small", "text-muted")}>{badgeText}</div>;
+  return <div className={cx("small", "text-muted")}>{badgeText}</div>;
 }
