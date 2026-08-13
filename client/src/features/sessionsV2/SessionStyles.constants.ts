@@ -18,7 +18,7 @@
 
 import {
   CheckCircleFill,
-  ExclamationDiamondFill,
+  ExclamationTriangleFill,
   GearFill,
   PauseBtnFill,
 } from "react-bootstrap-icons";
@@ -52,7 +52,7 @@ export const SESSION_STYLES = {
     borderColor: "border-warning",
     sessionLine: linePlaying,
     sessionIcon: playingIcon,
-    jobIcon: ExclamationDiamondFill,
+    jobIcon: ExclamationTriangleFill,
   },
   SUCCESS: {
     textColorCard: "text-success-emphasis",
@@ -82,7 +82,7 @@ export const SESSION_STYLES = {
     borderColor: "border-danger",
     sessionLine: lineFailed,
     sessionIcon: failedIcon,
-    jobIcon: ExclamationDiamondFill,
+    jobIcon: ExclamationTriangleFill,
   },
   STOPPING: {
     textColorCard: "text-warning-emphasis",
