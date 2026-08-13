@@ -51,7 +51,8 @@
     "update-api:searchV2": "node scripts/update_api_spec.js searchV2",
     "update-api:sessionLaunchersV2": "node scripts/update_api_spec.js sessionLaunchersV2",
     "update-api:sessionsV2": "node scripts/update_api_spec.js sessionsV2",
-    "update-api:users": "node scripts/update_api_spec.js users"
+    "update-api:users": "node scripts/update_api_spec.js users",
+    "check-new-docs-links": "node scripts/check_docs_links.js"
   },
   "type": "module",
   "dependencies": {
