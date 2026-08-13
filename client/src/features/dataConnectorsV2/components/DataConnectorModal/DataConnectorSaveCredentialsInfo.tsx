@@ -17,51 +17,35 @@
  */
 
 import cx from "classnames";
-import { Control, Controller } from "react-hook-form";
 import { Label } from "reactstrap";
 
 import { InfoAlert } from "../../../../components/Alert";
-import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import { DataConnectorMountForm } from "./DataConnectorModalBody";
 
 type DataConnectorSaveCredentialsInfoProps = {
-  control: Control<DataConnectorMountForm>;
+  checked: boolean;
   onFieldValueChange: (field: "saveCredentials", value: boolean) => void;
 };
 
 export default function DataConnectorSaveCredentialsInfo({
-  control,
+  checked,
   onFieldValueChange,
 }: DataConnectorSaveCredentialsInfoProps) {
-  const { cloudStorageState } = useAppSelector(
-    (state) => state.dataConnectorFormSlice,
-  );
   return (
     <div className="mt-3">
       <Label className="form-label" for="saveCredentials">
         Save credentials
       </Label>
 
-      <Controller
-        name="saveCredentials"
-        control={control}
-        render={({ field }) => (
-          <input
-            id="saveCredentials"
-            type="checkbox"
-            {...field}
-            className={cx("form-check-input", "ms-1")}
-            onChange={(e) => {
-              field.onChange(e);
-              onFieldValueChange("saveCredentials", e.target.checked);
-            }}
-            value=""
-            checked={cloudStorageState.saveCredentials}
-          />
-        )}
-        rules={{ required: true }}
+      <input
+        id="saveCredentials"
+        type="checkbox"
+        className={cx("form-check-input", "ms-1")}
+        onChange={(e) =>
+          onFieldValueChange("saveCredentials", e.target.checked)
+        }
+        checked={checked}
       />
-      {cloudStorageState.saveCredentials && (
+      {checked && (
         <div className="mt-1">
           <InfoAlert timeout={0} dismissible={false}>
             <p className="mb-0">

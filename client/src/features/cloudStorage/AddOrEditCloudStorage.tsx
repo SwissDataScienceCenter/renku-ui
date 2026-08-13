@@ -64,6 +64,7 @@ import {
 } from "../connectedServices/connectedServices.constants";
 import type { DataConnectorSecret } from "../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
+import DataConnectorSaveCredentialsInfo from "../dataConnectorsV2/components/DataConnectorModal/DataConnectorSaveCredentialsInfo";
 import { ConnectButton } from "./../connectedServices/ConnectedServicesPage";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
@@ -840,6 +841,7 @@ export function AddStorageOptions({
   state,
   storage,
   storageSecrets,
+  validationSucceeded,
 }: AddStorageStepProps) {
   const options = getSchemaOptions(
     schema,
@@ -1024,6 +1026,14 @@ export function AddStorageOptions({
       {optionItems}
       {hasAccessMode && sourcePath}
       {moreOptionsThanInTheShortList && advancedOptions}
+      {dataConnectorId && validationSucceeded && (
+        <DataConnectorSaveCredentialsInfo
+          checked={state.saveCredentials}
+          onFieldValueChange={(_field, value) =>
+            setState({ saveCredentials: value })
+          }
+        />
+      )}
     </form>
   );
 }
