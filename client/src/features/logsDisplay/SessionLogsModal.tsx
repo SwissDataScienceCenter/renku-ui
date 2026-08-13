@@ -141,7 +141,6 @@ function KubernetesLogsModal({
           ? session?.status?.message
           : undefined
       }
-      // eslint-disable-next-line spellcheck/spell-checker
       defaultTab="amalthea-session"
     />
   );
@@ -193,7 +192,6 @@ function PersistedLogsModal({
           ? session?.status?.message
           : undefined
       }
-      // eslint-disable-next-line spellcheck/spell-checker
       defaultTab="amalthea-session"
     />
   );

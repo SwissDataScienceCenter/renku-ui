@@ -40,6 +40,7 @@ const jsRules = {
       skipWords: [
         "accessor",
         "allowfullscreen",
+        "amalthea",
         "amazonaws",
         "anser",
         "apiversion",

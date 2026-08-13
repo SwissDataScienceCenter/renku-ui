@@ -340,7 +340,6 @@ function LogsDisplay({ isOpen, sessionRun }: LogsDisplayProps) {
       isFetching={query.isFetching}
       isLoading={query.isLoading}
       refetch={query.refetch}
-      // eslint-disable-next-line spellcheck/spell-checker
       defaultTab="amalthea-session"
     />
   );
