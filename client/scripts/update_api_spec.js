@@ -38,6 +38,8 @@ async function main() {
       updateNamespaceV2Api();
     } else if (arg.trim() === "notifications") {
       updateNotificationsApi();
+    } else if (arg.trim() === "persistedLogs") {
+      updatePersistedLogsApi();
     } else if (arg.trim() === "platform") {
       updatePlatformApi();
     } else if (arg.trim() === "projectCloudStorage") {
@@ -93,6 +95,13 @@ async function updateNamespaceV2Api() {
   updateApiFiles({
     specFile: "components/renku_data_services/namespace/api.spec.yaml",
     destFile: "src/features/projectsV2/api/namespace.openapi.json",
+  });
+}
+
+async function updatePersistedLogsApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/persisted_logs/api.spec.yaml",
+    destFile: "src/features/persistedLogs/api/persistedLogs.openapi.json",
   });
 }
 

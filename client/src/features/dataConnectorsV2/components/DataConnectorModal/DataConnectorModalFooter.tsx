@@ -23,7 +23,6 @@ import { ArrowCounterclockwise } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 
 import {
-  findSensitive,
   getSchemaOptions,
   hasProviderShortlist,
 } from "~/features/cloudStorage/projectCloudStorage.utils";
@@ -31,16 +30,12 @@ import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServi
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import AddStorageBreadcrumbNavbar from "../../../cloudStorage/AddStorageBreadcrumbNavbar";
-import {
-  AddCloudStorageState,
-  CloudStorageDetailsOptions,
-} from "../../../cloudStorage/projectCloudStorage.types";
+import { AddCloudStorageState } from "../../../cloudStorage/projectCloudStorage.types";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import type { DataConnectorRead } from "../../api/data-connectors.api";
 import {
   useGetDataConnectorsByDataConnectorIdSecretsQuery,
   usePatchDataConnectorsByDataConnectorIdMutation,
-  usePatchDataConnectorsByDataConnectorIdSecretsMutation,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsMutation,
 } from "../../api/data-connectors.enhanced-api";
@@ -55,6 +50,7 @@ import {
   DataConnectorModalBackButton,
   DataConnectorModalContinueButton,
 } from "./dataConnectorModalButtons";
+import useSaveDataConnectorCredentials from "./useSaveDataConnectorCredentials.hook";
 
 interface DataConnectorModalFooterProps {
   dataConnector?: DataConnectorRead | null;
@@ -73,14 +69,12 @@ function DataConnectorCreateFooter({
   const dispatch = useAppDispatch();
   const {
     cloudStorageState,
-    credentialSaveStatus,
     dataConnectorResultId,
     flatDataConnector,
     isActionOngoing,
     projectLinkStatus,
     schemata,
     success,
-    validationResult,
   } = useAppSelector((state) => state.dataConnectorFormSlice);
 
   // Enhanced setters
@@ -97,8 +91,7 @@ function DataConnectorCreateFooter({
 
   // Mutations
   const [createDataConnector, createResult] = usePostDataConnectorsMutation();
-  const [saveCredentials, saveCredentialsResult] =
-    usePatchDataConnectorsByDataConnectorIdSecretsMutation();
+  const { saveCredentialsResult } = useSaveDataConnectorCredentials();
   const [createProjectLink, createProjectLinkResult] =
     usePostDataConnectorsByDataConnectorIdProjectLinksMutation();
 
@@ -174,80 +167,6 @@ function DataConnectorCreateFooter({
       createResult.reset();
     }
   }, [createResult, dispatch]);
-
-  useEffect(() => {
-    const dataConnectorId = dataConnectorResultId;
-    if (dataConnectorId == null) return;
-    if (!schemata) return;
-    const sensitiveFieldNames = findSensitive(
-      schemata.find((s) => s.prefix === flatDataConnector.schema),
-    );
-    const options = flatDataConnector.options as CloudStorageDetailsOptions;
-    if (!options) return;
-    const dataConnectorSecretPatchList = sensitiveFieldNames
-      .map((name) => ({
-        name,
-        value: options[name],
-      }))
-      .filter((secret) => secret.value != undefined && secret.value != "")
-      .map((secret) => ({
-        name: secret.name,
-        value: "" + secret.value,
-      }));
-    const shouldSaveCredentials =
-      shouldSaveDataConnectorCredentials(
-        dataConnectorSecretPatchList,
-        cloudStorageState.saveCredentials,
-        validationResult?.isSuccess ?? false,
-      ) && credentialSaveStatus === "none";
-    if (!shouldSaveCredentials) return;
-
-    saveCredentials({
-      dataConnectorId,
-      dataConnectorSecretPatchList,
-    });
-  }, [
-    credentialSaveStatus,
-    dataConnectorResultId,
-    saveCredentials,
-    cloudStorageState.saveCredentials,
-    schemata,
-    flatDataConnector.options,
-    flatDataConnector.schema,
-    validationResult?.isSuccess,
-  ]);
-
-  useEffect(() => {
-    if (
-      credentialSaveStatus === "success" ||
-      credentialSaveStatus === "failure"
-    ) {
-      return;
-    }
-    const status =
-      validationResult?.isSuccess != true
-        ? "none"
-        : dataConnectorResultId == null || saveCredentialsResult.isUninitialized
-          ? "none"
-          : saveCredentialsResult.isLoading
-            ? "trying"
-            : saveCredentialsResult.isSuccess
-              ? "success"
-              : saveCredentialsResult.isError
-                ? "failure"
-                : "none";
-    dispatch(
-      dataConnectorFormSlice.actions.setCredentialSaveStatus({
-        credentialSaveStatus: status,
-      }),
-    );
-  }, [
-    credentialSaveStatus,
-    dataConnectorResultId,
-    dispatch,
-    saveCredentialsResult,
-    validationResult,
-  ]);
 
   useEffect(() => {
     const dataConnectorId = dataConnectorResultId;
@@ -433,10 +352,12 @@ function DataConnectorEditFooter({
   // Mutations
   const [updateDataConnector, updateResult] =
     usePatchDataConnectorsByDataConnectorIdMutation();
+  const { saveCredentialsResult } = useSaveDataConnectorCredentials();
 
   const reset = useCallback(() => {
     const resetStatus = dataConnectorToFlattened(dataConnector);
     updateResult.reset();
+    saveCredentialsResult.reset();
 
     dispatch(
       dataConnectorFormSlice.actions.reset({
@@ -444,7 +365,7 @@ function DataConnectorEditFooter({
         hasDataConnector: dataConnector != null,
       }),
     );
-  }, [dataConnector, dispatch, updateResult]);
+  }, [dataConnector, dispatch, saveCredentialsResult, updateResult]);
 
   // Reset the state when the modal is closed
   useEffect(() => {
@@ -632,17 +553,5 @@ export default function DataConnectorModalFooter({
       project={project}
       toggle={toggle}
     />
-  );
-}
-
-function shouldSaveDataConnectorCredentials(
-  dataConnectorSecretPatchList: { name: string; value: string }[],
-  stateSaveCredentials: boolean,
-  validationSucceeded: boolean,
-) {
-  return !!(
-    dataConnectorSecretPatchList.length > 0 &&
-    stateSaveCredentials &&
-    validationSucceeded
   );
 }

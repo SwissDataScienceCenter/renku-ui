@@ -18,7 +18,12 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { Pencil, RocketTakeoff, Trash } from "react-bootstrap-icons";
+import {
+  ClockHistory,
+  Pencil,
+  RocketTakeoff,
+  Trash,
+} from "react-bootstrap-icons";
 import { generatePath } from "react-router";
 import {
   Badge,
@@ -172,12 +177,14 @@ export default function SessionsV2({ project }: SessionsV2Props) {
 interface SessionV2ActionsProps {
   launcher: SessionLauncher;
   toggleUpdate?: () => void;
+  toggleLogsHistory?: () => void;
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
 }
 export function SessionV2Actions({
   launcher,
   toggleDelete,
+  toggleLogsHistory,
   toggleUpdate,
   toggleUpdateEnvironment,
 }: SessionV2ActionsProps) {
@@ -218,6 +225,15 @@ export function SessionV2Actions({
                   <LauncherEnvironmentIcon launcher={launcher} />
                   Edit environment
                 </DropdownItem>
+                {toggleLogsHistory && (
+                  <DropdownItem
+                    data-cy="session-view-menu-logs-history"
+                    onClick={toggleLogsHistory}
+                  >
+                    <ClockHistory className={cx("bi", "me-1")} />
+                    View logs history
+                  </DropdownItem>
+                )}
                 <DropdownItem divider />
                 <DropdownItem
                   data-cy="session-view-menu-delete"
