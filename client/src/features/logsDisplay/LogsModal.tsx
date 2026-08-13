@@ -160,7 +160,7 @@ export function LogsModalBody({
       <p data-cy="logs-unavailable-message" className="mb-0">
         Logs unavailable.{" "}
         {(sessionState === "succeeded" || sessionState === "failed") && (
-          <>Note that logs may have been purged. </>
+          <>Note that old logs are regularly purged. </>
         )}
         Please try to{" "}
         <Button
@@ -190,7 +190,7 @@ function NoLogsAvailable({ refetch, sessionState }: NoLogsAvailableProps) {
   if (sessionState === "succeeded" || sessionState === "failed") {
     return (
       <p data-cy="no-logs-message">
-        No logs available. Note that logs may have been purged.
+        No logs available. Note that old logs are regularly purged.
       </p>
     );
   }
