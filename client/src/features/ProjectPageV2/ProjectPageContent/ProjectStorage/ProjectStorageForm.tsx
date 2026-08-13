@@ -21,12 +21,13 @@ import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
-  Form,
   FormText,
   Input,
   InputGroup,
   InputGroupText,
   Label,
+  ModalBody,
+  ModalFooter,
   UncontrolledTooltip,
 } from "reactstrap";
 
@@ -40,6 +41,10 @@ import {
   usePatchDataConnectorsStorageByStorageIdMutation,
   usePostDataConnectorsStorageMutation,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import {
+  ProjectConnectDataConnectorModeSwitch,
+  type switchModeProps,
+} from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 import {
   PROJECT_STORAGE_DEFAULT_GB,
   PROJECT_STORAGE_DEFAULT_MOUNT_PATH,
@@ -57,6 +62,7 @@ interface ProjectStorageFormProps {
   projectId: string;
   namespace?: string;
   projectStorage?: ProjectStorage;
+  switchMode?: switchModeProps;
   toggle: () => void;
 }
 
@@ -64,6 +70,7 @@ export default function ProjectStorageForm({
   projectId,
   namespace,
   projectStorage,
+  switchMode,
   toggle,
 }: ProjectStorageFormProps) {
   const {
@@ -98,7 +105,7 @@ export default function ProjectStorageForm({
       const result = await postDataConnectorsStorageMutation({
         projectStoragePost: {
           namespace: namespace ?? "",
-          size: Number(values.size),
+          size: values.size,
           mount_path: values.mountPath,
         },
       });
@@ -111,7 +118,7 @@ export default function ProjectStorageForm({
         storageId: projectStorage.id,
         "If-Match": projectStorage.etag ?? "",
         projectStoragePatch: {
-          size: Number(values.size),
+          size: values.size,
           mount_path: values.mountPath,
         },
       });
@@ -122,8 +129,17 @@ export default function ProjectStorageForm({
   };
 
   return (
-    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-      <>
+    <>
+      <ModalBody data-cy="project-storage-body">
+        {switchMode && (
+          <div className="mb-3">
+            <ProjectConnectDataConnectorModeSwitch
+              mode="add-storage"
+              switchMode={switchMode}
+            />
+          </div>
+        )}
+
         <RtkOrDataServicesError
           error={
             postDataConnectorsStorageStatus.error ||
@@ -221,37 +237,36 @@ export default function ProjectStorageForm({
           />
           <div className="invalid-feedback">Please provide a mount point.</div>
           <div className={cx("form-text", "text-muted")}>
-            This is where the project storage will be mounted during sessions.
-            You can either specify an absolute path (starting with `/`) or a
-            relative path (relative to your session&apos;s working directory).
+            This is where the project storage will be mounted. You can either
+            specify an absolute path (starting with `/`) or a relative path
+            (relative to your session&apos;s working directory).
           </div>
         </div>
-
-        <div className={cx("d-flex", "gap-2", "justify-content-end")}>
-          <Button
-            color="outline-primary"
-            data-cy="project-storage-form-cancel-button"
-            onClick={() => toggle()}
-          >
-            <XLg className={cx("bi", "me-1")} />
-            Cancel
-          </Button>
-          <Button
-            color="primary"
-            data-cy="project-storage-form-submit-button"
-            type="submit"
-          >
-            {projectStorage ? (
-              "Update project storage"
-            ) : (
-              <>
-                <PlusLg className={cx("bi", "me-1")} />
-                Add project storage
-              </>
-            )}
-          </Button>
-        </div>
-      </>
-    </Form>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          color="outline-primary"
+          data-cy="project-storage-form-cancel-button"
+          onClick={() => toggle()}
+        >
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          data-cy="project-storage-form-submit-button"
+          onClick={handleSubmit(onSubmit)}
+        >
+          {projectStorage ? (
+            "Update project storage"
+          ) : (
+            <>
+              <PlusLg className={cx("bi", "me-1")} />
+              Add project storage
+            </>
+          )}
+        </Button>
+      </ModalFooter>
+    </>
   );
 }

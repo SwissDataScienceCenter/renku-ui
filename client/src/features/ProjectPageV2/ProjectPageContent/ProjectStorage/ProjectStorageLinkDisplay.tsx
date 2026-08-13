@@ -344,13 +344,11 @@ export function EditProjectStorageModal({
       <ModalHeader toggle={toggle} tag="h2">
         <RenkuStorageIcon className={cx("bi", "me-1")} /> Edit Project Storage
       </ModalHeader>
-      <ModalBody>
-        <ProjectStorageForm
-          projectId={projectStorage.project_id}
-          projectStorage={projectStorage}
-          toggle={toggle}
-        />
-      </ModalBody>
+      <ProjectStorageForm
+        projectId={projectStorage.project_id}
+        projectStorage={projectStorage}
+        toggle={toggle}
+      />
     </Modal>
   );
 }

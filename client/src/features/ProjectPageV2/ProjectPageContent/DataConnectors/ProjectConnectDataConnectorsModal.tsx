@@ -94,7 +94,7 @@ interface ProjectConnectDataConnectorsModalProps extends Omit<
   "dataConnector" | "projectId"
 > {
   project: Project;
-  switchMode?: (mode: ProjectConnectDataConnectorMode) => void;
+  switchMode?: switchModeProps;
 }
 
 export type ProjectConnectDataConnectorMode =
@@ -114,9 +114,26 @@ export default function ProjectConnectDataConnectorsModal({
     dispatch(dataConnectorFormSlice.actions.resetTransientState());
     originalToggle();
   }, [dispatch, originalToggle]);
-  const switchMode = useCallback((mode: ProjectConnectDataConnectorMode) => {
-    setMode(mode);
-  }, []);
+
+  const permissions = useProjectPermissions({ projectId: project?.id ?? "" });
+  const canManageProjectStorage =
+    permissions.arePermissionsResolved && permissions.delete; // User needs to be project owner
+  const { data: storageAllowData } =
+    useGetDataConnectorsStorageAllowByProjectIdQuery(
+      canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
+    );
+  const { data: projectStorage } = useGetProjectsByProjectIdStorageQuery(
+    canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
+  );
+  const canAddProjectStorage =
+    canManageProjectStorage && storageAllowData && projectStorage?.length === 0;
+
+  const switchMode = {
+    callback: useCallback((mode: ProjectConnectDataConnectorMode) => {
+      setMode(mode);
+    }, []),
+    canAddProjectStorage,
+  };
 
   return (
     <ScrollableModal
@@ -210,28 +227,18 @@ function ProjectCreateDataConnectorBodyAndFooter({
   );
 }
 
+export interface switchModeProps {
+  callback: (mode: ProjectConnectDataConnectorMode) => void;
+  canAddProjectStorage: boolean;
+}
+
 export function ProjectConnectDataConnectorModeSwitch({
   mode,
   switchMode,
-  project,
 }: {
   mode: ProjectConnectDataConnectorMode;
-  switchMode: (mode: ProjectConnectDataConnectorMode) => void;
-  project?: Project;
+  switchMode: switchModeProps;
 }) {
-  const permissions = useProjectPermissions({ projectId: project?.id ?? "" });
-  const canManageProjectStorage =
-    permissions.arePermissionsResolved && permissions.delete; // User needs to be project owner
-  const { data: storageAllowData } =
-    useGetDataConnectorsStorageAllowByProjectIdQuery(
-      canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
-    );
-  const { data: projectStorage } = useGetProjectsByProjectIdStorageQuery(
-    canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
-  );
-  const canAddProjectStorage =
-    canManageProjectStorage && storageAllowData && projectStorage?.length === 0;
-
   return (
     <ButtonGroup>
       <Input
@@ -240,7 +247,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         id="project-data-controller-mode-search"
         value="search"
         checked={mode === "search"}
-        onChange={() => switchMode("search")}
+        onChange={() => switchMode.callback("search")}
       />
       <Label
         data-cy="project-data-controller-mode-search"
@@ -262,7 +269,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         id="project-data-controller-mode-create"
         value="create"
         checked={mode === "create"}
-        onChange={() => switchMode("create")}
+        onChange={() => switchMode.callback("create")}
       />
       <Label
         data-cy="project-data-controller-mode-create"
@@ -279,7 +286,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         Create a data connector
       </Label>
 
-      {canAddProjectStorage && (
+      {switchMode.canAddProjectStorage && (
         <>
           <Input
             type="radio"
@@ -287,7 +294,7 @@ export function ProjectConnectDataConnectorModeSwitch({
             id="project-data-controller-mode-add-storage"
             value="add-storage"
             checked={mode === "add-storage"}
-            onChange={() => switchMode("add-storage")}
+            onChange={() => switchMode.callback("add-storage")}
           />
           <Label
             data-cy="project-data-controller-mode-add-storage"
@@ -322,22 +329,12 @@ function ProjectStorageDataConnectorBodyAndFooter({
   }, [isOpen]);
 
   return (
-    <ModalBody data-cy="data-connector-add-storage-body">
-      {switchMode && (
-        <div className="mb-3">
-          <ProjectConnectDataConnectorModeSwitch
-            mode="add-storage"
-            switchMode={switchMode}
-            project={project}
-          />
-        </div>
-      )}
-      <ProjectStorageForm
-        projectId={project.id}
-        namespace={`${project.namespace}/${project.slug}`}
-        toggle={toggle}
-      />
-    </ModalBody>
+    <ProjectStorageForm
+      projectId={project.id}
+      namespace={`${project.namespace}/${project.slug}`}
+      switchMode={switchMode}
+      toggle={toggle}
+    />
   );
 }
 
@@ -608,7 +605,6 @@ function ProjectSearchDataConnectorBodyAndFooter({
             <ProjectConnectDataConnectorModeSwitch
               mode="search"
               switchMode={switchMode}
-              project={project}
             />
           </div>
         )}
