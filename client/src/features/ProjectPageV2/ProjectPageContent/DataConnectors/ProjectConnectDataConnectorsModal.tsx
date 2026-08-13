@@ -116,8 +116,7 @@ export default function ProjectConnectDataConnectorsModal({
   }, [dispatch, originalToggle]);
 
   const permissions = useProjectPermissions({ projectId: project?.id ?? "" });
-  const canManageProjectStorage =
-    permissions.arePermissionsResolved && permissions.delete; // User needs to be project owner
+  const canManageProjectStorage = permissions.delete; // User needs to be project owner
   const { data: storageAllowData } =
     useGetDataConnectorsStorageAllowByProjectIdQuery(
       canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
@@ -229,7 +228,7 @@ function ProjectCreateDataConnectorBodyAndFooter({
 
 export interface switchModeProps {
   callback: (mode: ProjectConnectDataConnectorMode) => void;
-  canAddProjectStorage: boolean;
+  canAddProjectStorage?: boolean;
 }
 
 export function ProjectConnectDataConnectorModeSwitch({
