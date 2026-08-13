@@ -322,7 +322,13 @@ export function SessionView({
 
   const resourceDetails =
     !isLoadingLauncherResourceClass && launcherResourceRequests ? (
-      <SessionRowResourceRequests resourceRequests={launcherResourceRequests} />
+      <SessionRowResourceRequests
+        resourceRequests={launcherResourceRequests}
+        usageLimit={{
+          resourceClass: userLauncherResourceClass,
+          quotaEnforced: userLauncherResourceClass?.quota_enforced === true,
+        }}
+      />
     ) : (
       <p>This session launcher does not have a default resource class.</p>
     );

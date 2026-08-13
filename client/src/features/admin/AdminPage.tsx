@@ -38,6 +38,9 @@ import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
+import { useGetResourcePoolsByResourcePoolIdLimitsQuery } from "../resourceUsage/api/resourceUsage.api";
+import UpdateResourceClassCostButton from "../resourceUsage/UpdateResourceClassCostButton";
+import UpdateResourcePoolUsageLimitsButton from "../resourceUsage/UpdateResourcePoolUsageLimitsButton";
 import {
   useDeleteResourcePoolsByResourcePoolIdMutation,
   useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
@@ -46,6 +49,7 @@ import {
   type PoolUserWithId,
   type ResourceClassWithId,
   type ResourcePoolWithId,
+  type ResourcePoolWithIdFiltered,
 } from "../sessionsV2/api/computeResources.api";
 import { useGetUsersQuery } from "../usersV2/api/users.api";
 import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
@@ -156,7 +160,10 @@ function ResourcePoolsList() {
 }
 
 interface ResourcePoolItemProps {
-  resourcePool: ResourcePoolWithId;
+  // TODO: Cluster is not declared as being in the response
+  // check if it should be added to the API spec
+  resourcePool: ResourcePoolWithIdFiltered &
+    Pick<ResourcePoolWithId, "cluster">;
 }
 
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
@@ -174,6 +181,9 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
   const toggle = useCallback(() => {
     setIsOpen((isOpen) => !isOpen);
   }, []);
+  const { data: usageLimits } = useGetResourcePoolsByResourcePoolIdLimitsQuery({
+    resourcePoolId: resourcePool.id,
+  });
 
   return (
     <Card className="mt-2">
@@ -229,7 +239,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
                 )}
               >
                 <div className={cx("col", "col-sm-12", "col-md", "text-start")}>
-                  Quota:
+                  Resource Quota:
                 </div>
                 <div className="col">{quota.cpu}&nbsp;CPUs</div>
                 <div className="col">{quota.memory}&nbsp;GB RAM</div>
@@ -242,7 +252,37 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
               <p className="mb-0">No quota</p>
             )}
           </div>
-
+          <div className={cx("border-bottom", "py-2")}>
+            <div
+              className={cx(
+                "align-items-center",
+                "row",
+                "row-cols-1",
+                "row-cols-sm-4",
+                "row-cols-md-5",
+                "text-end",
+              )}
+            >
+              <div className={cx("col", "col-sm-12", "col-md", "text-start")}>
+                Usage Quota:
+              </div>
+              {usageLimits != null && (
+                <div className="col">
+                  {usageLimits.user_limit} credits / user
+                </div>
+              )}
+              {usageLimits != null && (
+                <div className="col">
+                  {usageLimits.total_limit} credits total
+                </div>
+              )}
+              <div className={cx("col", "ms-auto")}>
+                <UpdateResourcePoolUsageLimitsButton
+                  resourcePool={resourcePool}
+                />
+              </div>
+            </div>
+          </div>
           <div className={cx("border-bottom", "py-2")}>
             {clusterId != null ? (
               <p className="mb-0">
@@ -430,6 +470,22 @@ function ResourceClassItem({
         </div>
         <div className={cx(columnClasses)}>
           node affinities: {node_affinities?.length ?? 0}
+        </div>
+        <div
+          className={cx(
+            columnClasses,
+            "ms-auto",
+            "d-flex",
+            "flex-column",
+            "flex-sm-row",
+            "flex-wrap",
+            "justify-content-end",
+          )}
+        >
+          <UpdateResourceClassCostButton
+            resourceClass={resourceClass}
+            resourcePool={resourcePool}
+          />
         </div>
         <div
           className={cx(

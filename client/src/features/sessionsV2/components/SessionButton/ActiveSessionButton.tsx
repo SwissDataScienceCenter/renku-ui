@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BoxArrowUpRight,
   CheckLg,
@@ -93,11 +93,24 @@ export default function ActiveSessionButton({
   className,
 }: ActiveSessionButtonProps) {
   const { renkuToastDanger } = useRenkuToast();
-
   const navigate = useNavigate();
 
   const { data: user } = useGetUserQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
+
+  const { data: resourcePools, isLoading: isLoadingResourcePools } =
+    useGetResourcePoolsQuery({});
+  const currentResourceClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap(({ classes }) => classes)
+        .find(({ id }) => id === session.resource_class_id),
+    [resourcePools, session.resource_class_id],
+  );
+  const isUsageQuotaReached =
+    currentResourceClass?.quota_enforced === true &&
+    currentResourceClass.usage_hours_remaining != null &&
+    currentResourceClass.usage_hours_remaining <= 0;
 
   const [showLogsModal, setShowLogsModal] = useState<boolean>(false);
   const toggleLogsModal = useCallback(() => {
@@ -116,7 +129,6 @@ export default function ActiveSessionButton({
       sessionPatchRequest: { state: "running" },
     });
     // TODO: fix react-hooks/set-state-in-effect
-
     setIsResuming(true);
   }, [resumeSession, session.name]);
   const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatusV2({
@@ -196,7 +208,6 @@ export default function ActiveSessionButton({
   const onStopSession = useCallback(() => {
     stopSession({ sessionId: session.name });
     // TODO: fix react-hooks/set-state-in-effect
-
     setIsStopping(true);
   }, [session.name, stopSession]);
   useEffect(() => {
@@ -210,6 +221,7 @@ export default function ActiveSessionButton({
       setIsStopping(false);
     }
   }, [errorStopSession, renkuToastDanger]);
+
   // Modal for confirming session deletion
   const [showModalStopSession, setShowModalStopSession] = useState(false);
   const toggleStopSession = useCallback(
@@ -243,6 +255,7 @@ export default function ActiveSessionButton({
       });
     }
   }, [errorModifySession, renkuToastDanger]);
+
   // Modal for modifying a session (change the session class)
   const [showModalModifySession, setShowModalModifySession] = useState(false);
   const toggleModifySession = useCallback(
@@ -261,7 +274,6 @@ export default function ActiveSessionButton({
         // eslint-disable-next-line spellcheck/spell-checker
         "Your session cannot be scheduled due to insufficent resources.",
       ));
-
   const buttonClassName = cx(
     "btn",
     "btn-rk-green",
@@ -273,12 +285,13 @@ export default function ActiveSessionButton({
   );
 
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
-
   const actionContext = {
     status,
     isStopping,
     isHibernating,
     isResuming,
+    isCheckingUsageQuota: isLoadingResourcePools,
+    isUsageQuotaReached,
     failedScheduling,
     isUserLoggedIn,
     showSessionUrl,
@@ -296,9 +309,7 @@ export default function ActiveSessionButton({
       : launcherCategory === "job"
         ? getJobDefaultAction(actionContext)
         : null;
-
   const isRunning = status === "running" || status === "starting";
-
   const hibernateAction = status !== "stopping" &&
     status !== "running" && // when running the pause button is already visible as main action
     (status !== "failed" || failedScheduling) &&
@@ -311,7 +322,6 @@ export default function ActiveSessionButton({
         Pause session
       </DropdownItem>
     );
-
   const deleteAction = status !== "stopping" && !isStopping && (
     <DropdownItem
       data-cy="delete-session-button"
@@ -321,7 +331,6 @@ export default function ActiveSessionButton({
       Shut down session
     </DropdownItem>
   );
-
   const dismissAction = launcherCategory === "job" && (
     <DropdownItem
       data-cy="delete-session-button"
@@ -331,7 +340,6 @@ export default function ActiveSessionButton({
       {isRunning ? "Cancel" : "Dismiss"}
     </DropdownItem>
   );
-
   const modifyAction = (status === "hibernated" || status === "failed") &&
     !isStopping &&
     !isHibernating &&
@@ -344,7 +352,6 @@ export default function ActiveSessionButton({
         Modify session resources
       </DropdownItem>
     );
-
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
     <DropdownItem href={session.url} target="_blank">
@@ -352,7 +359,6 @@ export default function ActiveSessionButton({
       Open in new tab
     </DropdownItem>
   );
-
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={toggleLogsModal}>
       <FileEarmarkText className={cx("bi", "me-1")} />
@@ -378,7 +384,6 @@ export default function ActiveSessionButton({
             {modifyAction}
             {(hibernateAction || deleteAction || modifyAction) &&
               (openInNewTabAction || logsAction) && <DropdownItem divider />}
-
             {openInNewTabAction}
             {logsAction}
           </>
@@ -425,6 +430,7 @@ interface ConfirmDeleteModalProps {
   toggleModal: () => void;
   launcherCategory: LauncherCategory;
 }
+
 function ConfirmDeleteModal({
   isOpen,
   isStopping,
@@ -439,7 +445,6 @@ function ConfirmDeleteModal({
     onStopSession();
     toggleModal();
   }, [onStopSession, toggleModal]);
-
   const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
 
   return (
@@ -533,7 +538,6 @@ function ModifySessionModalContent({
   resource_class_id,
 }: ModifySessionModalContentProps) {
   const { state } = status;
-
   const {
     data: resourcePools,
     isLoading,
@@ -549,7 +553,6 @@ function ModifySessionModalContent({
       setCurrentSessionClass(newValue);
     }
   }, []);
-
   const onClick = useCallback(
     ({ resumeSession }: { resumeSession: boolean }) => {
       return function modifySession() {
@@ -562,7 +565,6 @@ function ModifySessionModalContent({
     },
     [currentSessionClass, onModifySession, toggleModal],
   );
-
   useEffect(() => {
     const currentSessionClass = resourcePools
       ?.flatMap((pool) => pool.classes)
@@ -586,7 +588,6 @@ function ModifySessionModalContent({
     ) : (
       <p>You can modify the session class before resuming this session.</p>
     );
-
   const selector = isLoading ? (
     <FetchingResourcePools />
   ) : !resourcePools || resourcePools.length == 0 || isError ? (
