@@ -640,7 +640,15 @@ function ResourcePoolMemberItem({
   return (
     <li>
       <div className={cx("hstack", "gap-2")}>
-        {resolved.icon}
+        {resourcePoolMember.member_type === "user" && (
+          <PersonFill className={cx("bi", "me-1")} />
+        )}
+        {resourcePoolMember.member_type === "group" && (
+          <PeopleFill className={cx("bi", "me-1")} />
+        )}
+        {resourcePoolMember.member_type === "project" && (
+          <FolderFill className={cx("bi", "me-1")} />
+        )}
         <div>{resolved.label}</div>
         <div className="ms-3">
           <RemoveMemberFromResourcePoolButton
@@ -656,7 +664,6 @@ function ResourcePoolMemberItem({
 
 function useResolveResourcePoolMember(member: PoolMemberResponse) {
   const realm = useKeycloakRealm();
-  const userResponse = member as PoolMemberUserResponse;
 
   const {
     data: keycloakUser,
@@ -665,20 +672,20 @@ function useResolveResourcePoolMember(member: PoolMemberResponse) {
   } = useGetKeycloakUserQuery(
     {
       realm,
-      userId: userResponse.id,
+      userId: member.id,
     },
     { skip: member.member_type !== "user" },
   );
 
   switch (member.member_type) {
     case "user": {
+      const userResponse = member as PoolMemberUserResponse;
       const label =
         keycloakUser != null
           ? `${keycloakUser.firstName} ${keycloakUser.lastName} <${keycloakUser.email}>`
           : (userResponse.email ?? userResponse.id);
 
       return {
-        icon: <PersonFill className={cx("bi", "me-1")} />,
         isLoading,
         error,
         label,
@@ -687,7 +694,6 @@ function useResolveResourcePoolMember(member: PoolMemberResponse) {
     case "group": {
       const groupResponse = member as PoolMemberGroupResponse;
       return {
-        icon: <PeopleFill className={cx("bi", "me-1")} />,
         isLoading: false,
         error: undefined,
         label: `${groupResponse.name} (${groupResponse.slug})`,
@@ -696,7 +702,6 @@ function useResolveResourcePoolMember(member: PoolMemberResponse) {
     case "project": {
       const projectResponse = member as PoolMemberProjectResponse;
       return {
-        icon: <FolderFill className={cx("bi", "me-1")} />,
         isLoading: false,
         error: undefined,
         label: `${projectResponse.name} (${projectResponse.namespace})`,

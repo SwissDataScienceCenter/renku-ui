@@ -23,6 +23,7 @@ import {
   Control,
   Controller,
   FieldArrayWithId,
+  FieldErrors,
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
@@ -44,7 +45,7 @@ import useResolveBatchItem from "./useResolveBatchItem.hook";
 interface BatchInputSectionProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<AddMemberToResourcePoolForm, any>;
-  errors: { batchInput?: { type?: string } };
+  errors: FieldErrors<AddMemberToResourcePoolForm>;
   fields: FieldArrayWithId<AddMemberToResourcePoolForm, "batchItems", "id">[];
   memberType: MemberType;
   onFind: () => void;

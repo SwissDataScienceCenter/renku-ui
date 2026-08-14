@@ -33,7 +33,6 @@ import {
   Input,
   InputGroup,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -41,6 +40,7 @@ import {
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
+import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
   usePostResourcePoolsByResourcePoolIdMembersMutation,
   type PoolMember,
@@ -234,7 +234,7 @@ function AddMemberToResourcePoolModal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal
+    <ScrollableModal
       backdrop="static"
       centered
       fullscreen="lg"
@@ -279,6 +279,7 @@ function AddMemberToResourcePoolModal({
                   "justify-content-center",
                   "w-50",
                 )}
+                data-cy="add-member-input-mode-search"
                 htmlFor="add-member-input-mode-search-radio"
               >
                 <div className={cx("d-flex", "flex-column", "gap-2", "w-100")}>
@@ -330,6 +331,7 @@ function AddMemberToResourcePoolModal({
                   "justify-content-center",
                   "w-50",
                 )}
+                data-cy="add-member-input-mode-batch"
                 htmlFor="add-member-input-mode-batch-radio"
               >
                 <div className={cx("d-flex", "flex-column", "gap-2", "w-100")}>
@@ -459,7 +461,7 @@ function AddMemberToResourcePoolModal({
           </Button>
         )}
       </ModalFooter>
-    </Modal>
+    </ScrollableModal>
   );
 }
 
@@ -479,7 +481,7 @@ function SearchInputSection({
   return (
     <div>
       {pickedMember != null ? (
-        <div className={"mb-3"}>
+        <div className="mb-3">
           <Label className="form-label">
             Selected {MEMBER_TYPE_LABELS[memberType].singular}
           </Label>
