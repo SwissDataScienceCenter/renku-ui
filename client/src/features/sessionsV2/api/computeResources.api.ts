@@ -40,7 +40,12 @@ const withFixedEndpoints = computeResourcesGeneratedApi.injectEndpoints({
 
 // Adds tag handling for cache management
 export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: ["ResourceClass", "ResourcePool", "ResourcePoolUser"],
+  addTagTypes: [
+    "ResourceClass",
+    "ResourcePool",
+    "ResourcePoolUser",
+    "ResourcePoolMember",
+  ],
   endpoints: {
     getResourcePools: {
       providesTags: (result) =>
@@ -114,6 +119,28 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
         { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
       ],
     },
+    getResourcePoolsByResourcePoolIdMembers: {
+      providesTags: (result, _error, { resourcePoolId }) =>
+        result
+          ? [
+              ...result.map((member) => ({
+                id: `${member.member_type}-${member.id}`,
+                type: "ResourcePoolMember" as const,
+              })),
+              { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
+            ]
+          : [{ id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" }],
+    },
+    postResourcePoolsByResourcePoolIdMembers: {
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
+      ],
+    },
+    deleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberId: {
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
+      ],
+    },
   },
 });
 
@@ -135,6 +162,11 @@ export const {
   useGetResourcePoolsByResourcePoolIdUsersQuery,
   usePostResourcePoolsByResourcePoolIdUsersMutation,
   useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
+
+  // "members" hooks
+  useGetResourcePoolsByResourcePoolIdMembersQuery,
+  usePostResourcePoolsByResourcePoolIdMembersMutation,
+  useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
 } = computeResourcesApi;
 
 export type * from "./computeResources.generated-api";
