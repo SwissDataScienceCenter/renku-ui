@@ -18,10 +18,8 @@
 
 import { useMemo } from "react";
 
-import {
-  useGetGroupsByGroupSlugQuery,
-  useGetNamespacesByFirstSlugAndSecondSlugQuery,
-} from "../projectsV2/api/namespace.api";
+import { useGetGroupsByGroupSlugQuery } from "../projectsV2/api/namespace.api";
+import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { MemberType } from "./addMemberToResourcePool.types";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
@@ -67,11 +65,11 @@ export default function useResolveBatchItem(
   const enabled = firstSlug.length > 0 && secondSlug.length > 0;
 
   const {
-    data: namespace,
+    data: project,
     isFetching: isFetchingProject,
     isError: isProjectError,
-  } = useGetNamespacesByFirstSlugAndSecondSlugQuery(
-    { firstSlug, secondSlug },
+  } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
+    { namespace: firstSlug, slug: secondSlug },
     { skip: memberType !== "project" || !enabled },
   );
 
@@ -109,18 +107,14 @@ export default function useResolveBatchItem(
         if (isFetchingProject) {
           return { isFetching: true, found: false };
         }
-        if (
-          isProjectError ||
-          namespace == null ||
-          namespace.namespace_kind !== "project"
-        ) {
+        if (isProjectError || project == null) {
           return { isFetching: false, found: false };
         }
         return {
           isFetching: false,
           found: true,
-          id: namespace.id,
-          name: namespace.name ?? namespace.slug,
+          id: project.id,
+          name: project.name ?? project.slug,
         };
       }
     }
@@ -134,6 +128,6 @@ export default function useResolveBatchItem(
     isUserError,
     matchedUser,
     memberType,
-    namespace,
+    project,
   ]);
 }
