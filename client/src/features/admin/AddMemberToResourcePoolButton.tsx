@@ -78,6 +78,21 @@ import {
   type PoolMember,
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
+import type {
+  AddMemberToResourcePoolForm,
+  BatchItemForm,
+  InputMode,
+  MemberType,
+  PickedMember,
+} from "./addMemberToResourcePool.types";
+import {
+  BATCH_INPUT_HELP,
+  BATCH_INPUT_PLACEHOLDER,
+  buildPoolMember,
+  MEMBER_TYPE_LABELS,
+  MEMBER_TYPE_OPTIONS,
+  parseBatchInput,
+} from "./addMemberToResourcePool.utils";
 import adminKeycloakApi, {
   useGetKeycloakUsersQuery,
 } from "./adminKeycloak.api";
@@ -116,9 +131,6 @@ interface AddMemberToResourcePoolModalProps {
   resourcePool: ResourcePoolWithId;
   toggle: () => void;
 }
-
-type MemberType = "user" | "group" | "project";
-type InputMode = "search" | "batch";
 
 function AddMemberToResourcePoolModal({
   isOpen,
@@ -398,21 +410,6 @@ function AddMemberToResourcePoolModal({
     </Modal>
   );
 }
-
-const MEMBER_TYPE_OPTIONS: { value: MemberType; label: string }[] = [
-  { value: "user", label: "User" },
-  { value: "group", label: "Group" },
-  { value: "project", label: "Project" },
-];
-
-const MEMBER_TYPE_LABELS: Record<
-  MemberType,
-  { singular: string; plural: string }
-> = {
-  user: { singular: "User", plural: "Users" },
-  group: { singular: "Group", plural: "Groups" },
-  project: { singular: "Project", plural: "Projects" },
-};
 
 const INPUT_MODE_OPTIONS: { value: InputMode; label: string }[] = [
   { value: "search", label: "Search" },
@@ -785,18 +782,6 @@ function BatchInputSection({
   );
 }
 
-const BATCH_INPUT_HELP: Record<MemberType, string> = {
-  user: "Paste a list of user emails, one per line.",
-  group: "Paste a list of group slugs, one per line.",
-  project: "Paste a list of project paths (namespace/project), one per line.",
-};
-
-const BATCH_INPUT_PLACEHOLDER: Record<MemberType, string> = {
-  user: "user_1@example.com\nuser_2@example.com",
-  group: "my-group\nanother-group",
-  project: "user/project-1\ngroup/project-2",
-};
-
 interface BatchItemRowProps {
   className?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1001,66 +986,4 @@ function useResolveBatchItem(memberType: MemberType, input: string) {
     memberType,
     namespace,
   ]);
-}
-
-type PickedMember = PickedUser | PickedGroup | PickedProject;
-
-interface PickedUser {
-  type: "user";
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-}
-
-interface PickedGroup {
-  type: "group";
-  id: string;
-  name: string;
-  slug: string;
-}
-
-interface PickedProject {
-  type: "project";
-  id: string;
-  name: string;
-  namespace: string;
-  slug: string;
-}
-
-interface BatchItemForm {
-  input: string;
-  isFetching: boolean;
-  found: boolean;
-  addToResourcePool: boolean;
-  id?: string;
-  name?: string;
-}
-
-interface AddMemberToResourcePoolForm {
-  pickedMember?: PickedMember;
-  batchInput: string;
-  batchItems: BatchItemForm[];
-}
-
-function buildPoolMember(memberType: MemberType, id: string): PoolMember {
-  switch (memberType) {
-    case "user":
-      return { member_type: "user", id, role: "viewer" };
-    case "group":
-      return { member_type: "group", id, role: "group_viewer" };
-    case "project":
-      return { member_type: "project", id, role: "project_viewer" };
-  }
-}
-
-function parseBatchInput(input: string, memberType: MemberType): string[] {
-  const lines = input
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-  if (memberType === "project") {
-    return lines.filter((line) => line.includes("/"));
-  }
-  return lines;
 }
