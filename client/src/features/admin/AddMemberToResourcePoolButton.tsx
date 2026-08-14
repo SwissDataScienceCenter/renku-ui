@@ -65,10 +65,6 @@ import {
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
-  useGetGroupsByGroupSlugQuery,
-  useGetNamespacesByFirstSlugAndSecondSlugQuery,
-} from "~/features/projectsV2/api/namespace.api";
-import {
   useGetSearchQueryQuery,
   type SearchGroup,
   type SearchProject,
@@ -93,11 +89,10 @@ import {
   MEMBER_TYPE_OPTIONS,
   parseBatchInput,
 } from "./addMemberToResourcePool.utils";
-import adminKeycloakApi, {
-  useGetKeycloakUsersQuery,
-} from "./adminKeycloak.api";
+import adminKeycloakApi from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
+import useResolveBatchItem from "./useResolveBatchItem.hook";
 
 interface AddMemberToResourcePoolButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -877,113 +872,4 @@ function BatchItemRow({
       )}
     </li>
   );
-}
-
-function useResolveBatchItem(memberType: MemberType, input: string) {
-  const realm = useKeycloakRealm();
-
-  const {
-    data: users,
-    isFetching: isFetchingUser,
-    isError: isUserError,
-  } = useGetKeycloakUsersQuery(
-    { realm, search: input },
-    { skip: memberType !== "user" },
-  );
-
-  const matchedUser = useMemo(() => {
-    if (memberType !== "user" || users == null) {
-      return undefined;
-    }
-    return users.find(
-      (keycloakUser) =>
-        keycloakUser.email.toLowerCase() === input.toLowerCase(),
-    );
-  }, [input, memberType, users]);
-
-  const {
-    data: group,
-    isFetching: isFetchingGroup,
-    isError: isGroupError,
-  } = useGetGroupsByGroupSlugQuery(
-    { groupSlug: input },
-    { skip: memberType !== "group" },
-  );
-
-  const [firstSlug, secondSlug] = useMemo(() => {
-    const parts = input.split("/").map((part) => part.trim());
-    return parts.length === 2 ? parts : ["", ""];
-  }, [input]);
-  const enabled = firstSlug.length > 0 && secondSlug.length > 0;
-
-  const {
-    data: namespace,
-    isFetching: isFetchingProject,
-    isError: isProjectError,
-  } = useGetNamespacesByFirstSlugAndSecondSlugQuery(
-    { firstSlug, secondSlug },
-    { skip: memberType !== "project" || !enabled },
-  );
-
-  return useMemo(() => {
-    switch (memberType) {
-      case "user": {
-        if (isFetchingUser) {
-          return { isFetching: true, found: false };
-        }
-        if (isUserError || matchedUser == null) {
-          return { isFetching: false, found: false };
-        }
-        return {
-          isFetching: false,
-          found: true,
-          id: matchedUser.id,
-          name: `${matchedUser.firstName} ${matchedUser.lastName}`,
-        };
-      }
-      case "group": {
-        if (isFetchingGroup) {
-          return { isFetching: true, found: false };
-        }
-        if (isGroupError || group == null) {
-          return { isFetching: false, found: false };
-        }
-        return {
-          isFetching: false,
-          found: true,
-          id: group.id,
-          name: group.name,
-        };
-      }
-      case "project": {
-        if (isFetchingProject) {
-          return { isFetching: true, found: false };
-        }
-        if (
-          isProjectError ||
-          namespace == null ||
-          namespace.namespace_kind !== "project"
-        ) {
-          return { isFetching: false, found: false };
-        }
-        return {
-          isFetching: false,
-          found: true,
-          id: namespace.id,
-          name: namespace.name ?? namespace.slug,
-        };
-      }
-    }
-  }, [
-    group,
-    isFetchingGroup,
-    isFetchingProject,
-    isFetchingUser,
-    isGroupError,
-    isProjectError,
-    isUserError,
-    matchedUser,
-    memberType,
-    namespace,
-  ]);
 }
