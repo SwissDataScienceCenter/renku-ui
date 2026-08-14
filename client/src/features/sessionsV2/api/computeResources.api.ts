@@ -40,12 +40,7 @@ const withFixedEndpoints = computeResourcesGeneratedApi.injectEndpoints({
 
 // Adds tag handling for cache management
 export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: [
-    "ResourceClass",
-    "ResourcePool",
-    "ResourcePoolUser",
-    "ResourcePoolMember",
-  ],
+  addTagTypes: ["ResourceClass", "ResourcePool", "ResourcePoolMember"],
   endpoints: {
     getResourcePools: {
       providesTags: (result) =>
@@ -97,28 +92,6 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
         "ResourceClass",
       ],
     },
-    getResourcePoolsByResourcePoolIdUsers: {
-      providesTags: (result, _error, { resourcePoolId }) =>
-        result
-          ? [
-              ...result.map(({ id }) => ({
-                id,
-                type: "ResourcePoolUser" as const,
-              })),
-              { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
-            ]
-          : [{ id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" }],
-    },
-    postResourcePoolsByResourcePoolIdUsers: {
-      invalidatesTags: (_result, _error, { resourcePoolId }) => [
-        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
-      ],
-    },
-    deleteResourcePoolsByResourcePoolIdUsersAndUserId: {
-      invalidatesTags: (_result, _error, { resourcePoolId }) => [
-        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
-      ],
-    },
     getResourcePoolsByResourcePoolIdMembers: {
       providesTags: (result, _error, { resourcePoolId }) =>
         result
@@ -157,11 +130,6 @@ export const {
   usePostResourcePoolsByResourcePoolIdClassesMutation,
   usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
-
-  // "users" hooks
-  useGetResourcePoolsByResourcePoolIdUsersQuery,
-  usePostResourcePoolsByResourcePoolIdUsersMutation,
-  useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
 
   // "members" hooks
   useGetResourcePoolsByResourcePoolIdMembersQuery,
