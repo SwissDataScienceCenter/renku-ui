@@ -253,48 +253,134 @@ function AddMemberToResourcePoolModal({
         >
           {result.error && <RtkOrDataServicesError error={result.error} />}
 
-          <div className={"mb-3"}>
-            <Label className="form-label">Member type</Label>
-            <ButtonGroup>
-              {MEMBER_TYPE_OPTIONS.map(({ value, label }) => (
-                <Button
-                  key={value}
-                  active={memberType === value}
-                  color="outline-primary"
-                  onClick={() => {
-                    setMemberType(value);
-                    onResetMember();
-                    setValue("batchInput", "");
-                    setValue("batchItems", []);
-                  }}
-                  type="button"
-                >
-                  {label}
-                </Button>
-              ))}
+          <div className={cx("mb-3")}>
+            <ButtonGroup size="sm" className="w-100">
+              <input
+                type="radio"
+                className="btn-check"
+                name="inputMode"
+                autoComplete="off"
+                checked={inputMode === "search"}
+                id="add-member-input-mode-search-radio"
+                onChange={() => {
+                  setInputMode("search");
+                  onResetMember();
+                  setValue("batchInput", "");
+                  setValue("batchItems", []);
+                }}
+              />
+              <label
+                className={cx(
+                  "btn",
+                  "btn-outline-primary",
+                  "p-2",
+                  "p-md-4",
+                  "d-flex",
+                  "justify-content-center",
+                  "w-50",
+                )}
+                htmlFor="add-member-input-mode-search-radio"
+              >
+                <div className={cx("d-flex", "flex-column", "gap-2", "w-100")}>
+                  <div
+                    className={cx(
+                      "d-flex",
+                      "flex-row",
+                      "gap-3",
+                      "text-center",
+                      "text-md-start",
+                      "align-items-center",
+                    )}
+                  >
+                    <PersonFillAdd
+                      className={cx("d-none", "d-md-block")}
+                      size={30}
+                    />
+                    <span className="fw-bold">Search</span>
+                  </div>
+                  <p
+                    className={cx("mb-0", "text-start", "d-none", "d-md-block")}
+                  >
+                    Find and add a single member.
+                  </p>
+                </div>
+              </label>
+
+              <input
+                type="radio"
+                className="btn-check"
+                name="inputMode"
+                autoComplete="off"
+                checked={inputMode === "batch"}
+                id="add-member-input-mode-batch-radio"
+                onChange={() => {
+                  setInputMode("batch");
+                  onResetMember();
+                  setValue("batchInput", "");
+                  setValue("batchItems", []);
+                }}
+              />
+              <label
+                className={cx(
+                  "btn",
+                  "btn-outline-primary",
+                  "p-2",
+                  "p-md-4",
+                  "d-flex",
+                  "justify-content-center",
+                  "w-50",
+                )}
+                htmlFor="add-member-input-mode-batch-radio"
+              >
+                <div className={cx("d-flex", "flex-column", "gap-2", "w-100")}>
+                  <div
+                    className={cx(
+                      "d-flex",
+                      "flex-row",
+                      "gap-3",
+                      "text-center",
+                      "text-md-start",
+                      "align-items-center",
+                    )}
+                  >
+                    <PeopleFill
+                      className={cx("d-none", "d-md-block")}
+                      size={30}
+                    />
+                    <span className="fw-bold">Batch</span>
+                  </div>
+                  <p
+                    className={cx("mb-0", "text-start", "d-none", "d-md-block")}
+                  >
+                    Paste a list to add multiple members at once.
+                  </p>
+                </div>
+              </label>
             </ButtonGroup>
           </div>
 
-          <div className={"mb-3"}>
-            <Label className="form-label">Input mode</Label>
-            <ButtonGroup>
-              {INPUT_MODE_OPTIONS.map(({ value, label }) => (
-                <Button
-                  key={value}
-                  active={inputMode === value}
-                  color="outline-primary"
-                  onClick={() => {
-                    setInputMode(value);
-                    onResetMember();
-                    setValue("batchInput", "");
-                    setValue("batchItems", []);
-                  }}
-                  type="button"
-                >
-                  {label}
-                </Button>
-              ))}
-            </ButtonGroup>
+          <div className={cx("mb-3")}>
+            <Label className="form-label">Member type</Label>
+            <div>
+              <ButtonGroup>
+                {MEMBER_TYPE_OPTIONS.map(({ value, label }) => (
+                  <Button
+                    key={value}
+                    active={memberType === value}
+                    color="outline-primary"
+                    onClick={() => {
+                      setMemberType(value);
+                      onResetMember();
+                      setValue("batchInput", "");
+                      setValue("batchItems", []);
+                    }}
+                    type="button"
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </ButtonGroup>
+            </div>
           </div>
 
           {inputMode === "search" ? (
@@ -376,11 +462,6 @@ function AddMemberToResourcePoolModal({
     </Modal>
   );
 }
-
-const INPUT_MODE_OPTIONS: { value: InputMode; label: string }[] = [
-  { value: "search", label: "Search" },
-  { value: "batch", label: "Batch" },
-];
 
 interface SearchInputSectionProps {
   memberType: MemberType;
