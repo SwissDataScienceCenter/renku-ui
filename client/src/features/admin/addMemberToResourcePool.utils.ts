@@ -19,12 +19,6 @@
 import type { PoolMember } from "../sessionsV2/api/computeResources.api";
 import type { MemberType } from "./addMemberToResourcePool.types";
 
-export const MEMBER_TYPE_OPTIONS: { value: MemberType; label: string }[] = [
-  { value: "user", label: "User" },
-  { value: "group", label: "Group" },
-  { value: "project", label: "Project" },
-];
-
 export const MEMBER_TYPE_LABELS: Record<
   MemberType,
   { singular: string; plural: string }

@@ -129,7 +129,7 @@ interface BatchItemRowProps {
   watch: UseFormWatch<AddMemberToResourcePoolForm>;
 }
 
-export function BatchItemRow({
+function BatchItemRow({
   className,
   control,
   index,
