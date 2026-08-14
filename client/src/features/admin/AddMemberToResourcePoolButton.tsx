@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -229,14 +229,10 @@ function AddMemberToResourcePoolModal({
     );
   }, [memberType, setError, setValue, watchBatchInput]);
 
-  const selectedCount = useMemo(
-    () => watchBatchItems.filter((item) => item.addToResourcePool).length,
-    [watchBatchItems],
-  );
-  const isFetchingBatchItems = useMemo(
-    () => watchBatchItems.some((item) => item.isFetching),
-    [watchBatchItems],
-  );
+  const selectedCount = watchBatchItems.filter(
+    (item) => item.addToResourcePool,
+  ).length;
+  const isFetchingBatchItems = watchBatchItems.some((item) => item.isFetching);
 
   useEffect(() => {
     if (!result.isSuccess) {
