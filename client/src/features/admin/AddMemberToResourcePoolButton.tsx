@@ -10,49 +10,26 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
 import cx from "classnames";
-import {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
-import Autosuggest, {
-  ChangeEvent,
-  InputProps,
-  SuggestionSelectedEventData,
-  SuggestionsFetchRequestedParams,
-} from "react-autosuggest";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  ExclamationCircleFill,
   PeopleFill,
   PersonFillAdd,
   XLg,
 } from "react-bootstrap-icons";
-import {
-  Control,
-  Controller,
-  FieldArrayWithId,
-  useFieldArray,
-  useForm,
-  UseFormSetValue,
-  UseFormWatch,
-} from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import {
   Button,
   ButtonGroup,
   Form,
-  FormText,
   Input,
   InputGroup,
   Label,
@@ -65,34 +42,28 @@ import {
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
-  useGetSearchQueryQuery,
-  type SearchGroup,
-  type SearchProject,
-} from "~/features/searchV2/api/searchV2Api.api";
-import {
   usePostResourcePoolsByResourcePoolIdMembersMutation,
   type PoolMember,
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import type {
   AddMemberToResourcePoolForm,
-  BatchItemForm,
   InputMode,
   MemberType,
   PickedMember,
 } from "./addMemberToResourcePool.types";
 import {
-  BATCH_INPUT_HELP,
-  BATCH_INPUT_PLACEHOLDER,
   buildPoolMember,
   MEMBER_TYPE_LABELS,
   MEMBER_TYPE_OPTIONS,
   parseBatchInput,
 } from "./addMemberToResourcePool.utils";
-import adminKeycloakApi from "./adminKeycloak.api";
-import { KeycloakUser } from "./adminKeycloak.types";
-import useKeycloakRealm from "./useKeycloakRealm.hook";
-import useResolveBatchItem from "./useResolveBatchItem.hook";
+import BatchInputSection from "./BatchInputSection";
+import {
+  GroupAutoSuggest,
+  ProjectAutoSuggest,
+  UserAutoSuggest,
+} from "./MemberAutoSuggest";
 
 interface AddMemberToResourcePoolButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -469,407 +440,4 @@ function renderPickedMemberLabel(member: PickedMember): string {
     case "project":
       return `${member.name} (${member.namespace})`;
   }
-}
-
-interface MemberAutoSuggestProps<T> {
-  placeholder: string;
-  suggestions: T[];
-  value: string;
-  onValueChange: (value: string) => void;
-  getSuggestionValue: (suggestion: T) => string;
-  renderSuggestion: (suggestion: T) => ReactNode;
-  onSuggestionSelected: (suggestion: T) => void;
-  onSuggestionsFetchRequested?: (value: string) => void;
-}
-
-function MemberAutoSuggest<T>({
-  placeholder,
-  suggestions,
-  value,
-  onValueChange,
-  getSuggestionValue,
-  renderSuggestion,
-  onSuggestionSelected,
-  onSuggestionsFetchRequested,
-}: MemberAutoSuggestProps<T>) {
-  const onChange = useCallback(
-    (_event: FormEvent<HTMLElement>, { newValue }: ChangeEvent) => {
-      onValueChange(newValue);
-    },
-    [onValueChange],
-  );
-
-  const inputProps: InputProps<T> = { placeholder, value, onChange };
-
-  const handleSuggestionsFetchRequested = useCallback(
-    ({ value }: SuggestionsFetchRequestedParams) => {
-      onSuggestionsFetchRequested?.(value);
-    },
-    [onSuggestionsFetchRequested],
-  );
-
-  const handleSuggestionSelected = useCallback(
-    (
-      _event: FormEvent<HTMLElement>,
-      { suggestion }: SuggestionSelectedEventData<T>,
-    ) => {
-      onSuggestionSelected(suggestion);
-    },
-    [onSuggestionSelected],
-  );
-
-  return (
-    <Autosuggest<T>
-      suggestions={suggestions}
-      inputProps={inputProps}
-      getSuggestionValue={getSuggestionValue}
-      onSuggestionsClearRequested={() => {}}
-      onSuggestionsFetchRequested={handleSuggestionsFetchRequested}
-      onSuggestionSelected={handleSuggestionSelected}
-      renderSuggestion={renderSuggestion}
-    />
-  );
-}
-
-function UserAutoSuggest({
-  onPick,
-}: {
-  onPick: (member: PickedMember | null | undefined) => void;
-}) {
-  const realm = useKeycloakRealm();
-  const [value, setValue] = useState("");
-  const [getKeycloakUsers, { data: users }] =
-    adminKeycloakApi.useLazyGetKeycloakUsersQuery();
-
-  const onSuggestionsFetchRequested = useCallback(
-    (searchValue: string) =>
-      getKeycloakUsers(
-        { realm, search: searchValue },
-        /*preferCacheValue=*/ true,
-      ),
-    [getKeycloakUsers, realm],
-  );
-
-  const onSuggestionSelected = useCallback(
-    (suggestion: KeycloakUser) => {
-      onPick({
-        type: "user",
-        id: suggestion.id,
-        email: suggestion.email,
-        firstName: suggestion.firstName,
-        lastName: suggestion.lastName,
-      });
-    },
-    [onPick],
-  );
-
-  const getSuggestionValue = useCallback(
-    ({ firstName, lastName }: KeycloakUser) => `${firstName} ${lastName}`,
-    [],
-  );
-
-  const renderSuggestion = ({ firstName, lastName, email }: KeycloakUser) => (
-    <div>
-      {firstName} {lastName} &lt;{email}&gt;
-    </div>
-  );
-
-  return (
-    <MemberAutoSuggest
-      placeholder="Search for a user's name or email"
-      suggestions={users ?? []}
-      value={value}
-      onValueChange={setValue}
-      getSuggestionValue={getSuggestionValue}
-      renderSuggestion={renderSuggestion}
-      onSuggestionSelected={onSuggestionSelected}
-      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-    />
-  );
-}
-
-function GroupAutoSuggest({
-  onPick,
-}: {
-  onPick: (member: PickedMember | null | undefined) => void;
-}) {
-  const [value, setValue] = useState("");
-  const { data: searchResult } = useGetSearchQueryQuery(
-    { params: { q: value, page: 1, per_page: 20 } },
-    { skip: value.length < 2 },
-  );
-
-  const suggestions = useMemo(
-    () =>
-      (searchResult?.items ?? []).filter(
-        (item): item is SearchGroup => item.type === "Group",
-      ),
-    [searchResult],
-  );
-
-  const onSuggestionSelected = useCallback(
-    (suggestion: SearchGroup) => {
-      onPick({
-        type: "group",
-        id: suggestion.id,
-        name: suggestion.name,
-        slug: suggestion.slug,
-      });
-    },
-    [onPick],
-  );
-
-  const getSuggestionValue = useCallback(
-    (group: SearchGroup) => `${group.name} (${group.slug})`,
-    [],
-  );
-
-  const renderSuggestion = (group: SearchGroup) => (
-    <div>{`${group.name} (${group.slug})`}</div>
-  );
-
-  return (
-    <MemberAutoSuggest
-      placeholder="Search for a group by name or slug"
-      suggestions={suggestions}
-      value={value}
-      onValueChange={setValue}
-      getSuggestionValue={getSuggestionValue}
-      renderSuggestion={renderSuggestion}
-      onSuggestionSelected={onSuggestionSelected}
-    />
-  );
-}
-
-function ProjectAutoSuggest({
-  onPick,
-}: {
-  onPick: (member: PickedMember | null | undefined) => void;
-}) {
-  const [value, setValue] = useState("");
-  const { data: searchResult } = useGetSearchQueryQuery(
-    { params: { q: value, page: 1, per_page: 20 } },
-    { skip: value.length < 2 },
-  );
-
-  const suggestions = useMemo(
-    () =>
-      (searchResult?.items ?? []).filter(
-        (item): item is SearchProject => item.type === "Project",
-      ),
-    [searchResult],
-  );
-
-  const getNamespaceLabel = (project: SearchProject) =>
-    project.namespace?.type === "Group"
-      ? project.namespace.name
-      : (project.namespace?.slug ?? project.path);
-
-  const onSuggestionSelected = useCallback(
-    (suggestion: SearchProject) => {
-      onPick({
-        type: "project",
-        id: suggestion.id,
-        name: suggestion.name,
-        namespace: getNamespaceLabel(suggestion),
-        slug: suggestion.slug,
-      });
-    },
-    [onPick],
-  );
-
-  const getSuggestionValue = useCallback(
-    (project: SearchProject) =>
-      `${project.name} (${getNamespaceLabel(project)})`,
-    [],
-  );
-
-  const renderSuggestion = (project: SearchProject) => (
-    <div>{`${project.name} (${getNamespaceLabel(project)})`}</div>
-  );
-
-  return (
-    <MemberAutoSuggest
-      placeholder="Search for a project by name or namespace"
-      suggestions={suggestions}
-      value={value}
-      onValueChange={setValue}
-      getSuggestionValue={getSuggestionValue}
-      renderSuggestion={renderSuggestion}
-      onSuggestionSelected={onSuggestionSelected}
-    />
-  );
-}
-
-interface BatchInputSectionProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: Control<AddMemberToResourcePoolForm, any>;
-  errors: { batchInput?: { type?: string } };
-  fields: FieldArrayWithId<AddMemberToResourcePoolForm, "batchItems", "id">[];
-  memberType: MemberType;
-  onFind: () => void;
-  setValue: UseFormSetValue<AddMemberToResourcePoolForm>;
-  watch: UseFormWatch<AddMemberToResourcePoolForm>;
-}
-
-function BatchInputSection({
-  control,
-  errors,
-  fields,
-  memberType,
-  onFind,
-  setValue,
-  watch,
-}: BatchInputSectionProps) {
-  if (fields.length === 0) {
-    return (
-      <div>
-        <Label className="form-label" for="addMembersBatchInput">
-          {MEMBER_TYPE_LABELS[memberType].plural}
-        </Label>
-        <FormText id="addMembersBatchInputHelp" tag="div">
-          {BATCH_INPUT_HELP[memberType]}
-        </FormText>
-        <Controller
-          control={control}
-          name="batchInput"
-          render={({ field }) => (
-            <textarea
-              aria-describedby="addMembersBatchInputHelp"
-              className={cx("form-control", errors.batchInput && "is-invalid")}
-              id="addMembersBatchInput"
-              placeholder={BATCH_INPUT_PLACEHOLDER[memberType]}
-              rows={10}
-              {...field}
-            />
-          )}
-          rules={{ required: true }}
-        />
-        <div className="invalid-feedback">Please provide a list</div>
-        <Button className="mt-2" onClick={onFind}>
-          Find {MEMBER_TYPE_LABELS[memberType].plural}
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div className="form-label">{MEMBER_TYPE_LABELS[memberType].plural}</div>
-      <ol className="list-group">
-        {fields.map((item, index) => (
-          <BatchItemRow
-            key={item.id}
-            className={cx(
-              index === 0 && "rounded-top",
-              index + 1 === fields.length && "rounded-bottom",
-            )}
-            control={control}
-            index={index}
-            item={item}
-            memberType={memberType}
-            setValue={setValue}
-            watch={watch}
-          />
-        ))}
-      </ol>
-    </div>
-  );
-}
-
-interface BatchItemRowProps {
-  className?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: Control<AddMemberToResourcePoolForm, any>;
-  index: number;
-  item: FieldArrayWithId<AddMemberToResourcePoolForm, "batchItems", "id">;
-  memberType: MemberType;
-  setValue: UseFormSetValue<AddMemberToResourcePoolForm>;
-  watch: UseFormWatch<AddMemberToResourcePoolForm>;
-}
-
-function BatchItemRow({
-  className,
-  control,
-  index,
-  item,
-  memberType,
-  setValue,
-  watch,
-}: BatchItemRowProps) {
-  const batchItem = watch(`batchItems.${index}`) as BatchItemForm;
-  const resolved = useResolveBatchItem(memberType, item.input);
-
-  useEffect(() => {
-    if (resolved.isFetching) {
-      return;
-    }
-
-    setValue(`batchItems.${index}.isFetching`, false);
-    setValue(`batchItems.${index}.found`, resolved.found);
-    setValue(`batchItems.${index}.addToResourcePool`, resolved.found);
-    setValue(`batchItems.${index}.id`, resolved.id ?? "");
-    setValue(`batchItems.${index}.name`, resolved.name ?? "");
-  }, [index, resolved, setValue]);
-
-  return (
-    <li
-      className={cx(
-        className,
-        "list-group-item",
-        "d-flex",
-        "flex-row",
-        "flex-wrap",
-        "justify-content-between",
-        "align-items-center",
-        "bg-rk-white",
-        !batchItem.isFetching && !batchItem.found && "text-danger",
-      )}
-    >
-      {batchItem.isFetching ? (
-        <span>
-          <Loader className="me-1" inline size={16} />
-          {batchItem.input}
-        </span>
-      ) : !batchItem.found ? (
-        <span>
-          <ExclamationCircleFill className={cx("bi", "me-1")} />
-          {batchItem.input}
-        </span>
-      ) : (
-        <div className="form-check">
-          <Controller
-            control={control}
-            name={`batchItems.${index}.addToResourcePool`}
-            render={({ field }) => (
-              <Input
-                className="form-check-input"
-                id={`addMemberBatchItem-${item.id}`}
-                type="checkbox"
-                checked={field.value}
-                innerRef={field.ref}
-                onBlur={field.onBlur}
-                onChange={field.onChange}
-              />
-            )}
-          />
-          <Label
-            className="form-check-label"
-            for={`addMemberBatchItem-${item.id}`}
-          >
-            {batchItem.input}
-          </Label>
-        </div>
-      )}
-      {batchItem.isFetching ? (
-        <span className="fst-italic">Fetching...</span>
-      ) : batchItem.found ? (
-        <span>{batchItem.name}</span>
-      ) : (
-        <span className="fst-italic">
-          {MEMBER_TYPE_LABELS[memberType].singular} not found
-        </span>
-      )}
-    </li>
-  );
 }
