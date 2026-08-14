@@ -123,6 +123,7 @@ export default function LogsModal({
           isLoading={isLoading}
           refetch={refetch}
           defaultTab={defaultTab}
+          sessionState={sessionState}
         />
       </ModalBody>
       <ModalFooter>
@@ -138,15 +139,17 @@ export default function LogsModal({
   );
 }
 
-type LogsModalBodyProps = LogsQuery & Pick<LogsModalModalProps, "defaultTab">;
+type LogsModalBodyProps = LogsQuery &
+  Pick<LogsModalModalProps, "defaultTab" | "sessionState">;
 
-function LogsModalBody({
+export function LogsModalBody({
   data,
   error,
   isFetching,
   isLoading,
   refetch,
   defaultTab,
+  sessionState,
 }: LogsModalBodyProps) {
   if (isLoading) {
     return <Loader />;
@@ -155,7 +158,11 @@ function LogsModalBody({
   if (error || data == null) {
     return (
       <p data-cy="logs-unavailable-message" className="mb-0">
-        Logs unavailable. Please try to{" "}
+        Logs unavailable.{" "}
+        {(sessionState === "succeeded" || sessionState === "failed") && (
+          <>Note that old logs are regularly purged. </>
+        )}
+        Please try to{" "}
         <Button
           color="primary"
           onClick={refetch}
@@ -170,15 +177,23 @@ function LogsModalBody({
   }
 
   if (Object.keys(data).length < 1) {
-    return <NoLogsAvailable refetch={refetch} />;
+    return <NoLogsAvailable refetch={refetch} sessionState={sessionState} />;
   }
 
   return <TabbedLogs data={data} defaultTab={defaultTab} />;
 }
 
-type NoLogsAvailableProps = Pick<LogsQuery, "refetch">;
+type NoLogsAvailableProps = Pick<LogsQuery, "refetch"> &
+  Pick<LogsModalModalProps, "sessionState">;
 
-function NoLogsAvailable({ refetch }: NoLogsAvailableProps) {
+function NoLogsAvailable({ refetch, sessionState }: NoLogsAvailableProps) {
+  if (sessionState === "succeeded" || sessionState === "failed") {
+    return (
+      <p data-cy="no-logs-message">
+        No logs available. Note that old logs are regularly purged.
+      </p>
+    );
+  }
   return (
     <>
       <p data-cy="no-logs-message">No logs available for this pod yet.</p>
@@ -355,7 +370,7 @@ function ModalFooterButtons({
  *
  * NOTE: will download with maxLines = 250, so the logs will be incomplete
  */
-function useDownloadLogs(
+export function useDownloadLogs(
   name: string,
   refetch: LogsQuery["refetch"],
   downloadQueryTrigger: DownloadLogsLazyQueryTrigger | undefined | null,

@@ -74,11 +74,19 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "BUILD_PRIVATE_REPO_BUILDS_ENABLED",
   );
+  const PERSISTED_LOGS_ENABLED = validateBoolean(
+    params_,
+    "PERSISTED_LOGS_ENABLED",
+  );
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
     params_,
     "USER_PREFERENCES_MAX_PINNED_PROJECTS",
+  );
+  const PERSISTED_LOGS_TTL_SECONDS = validateInteger(
+    params_,
+    "PERSISTED_LOGS_TTL_SECONDS",
   );
 
   // Object params
@@ -118,6 +126,8 @@ export function validatedAppParams(params: unknown): AppParams {
     UISERVER_URL,
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
+    PERSISTED_LOGS_ENABLED,
+    PERSISTED_LOGS_TTL_SECONDS,
   };
 }
 

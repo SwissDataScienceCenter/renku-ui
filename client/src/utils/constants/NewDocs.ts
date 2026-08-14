@@ -41,7 +41,7 @@ export const NEW_DOCS_DATA_CONNECTORS_FROM_REPO = newDocsLinkPage(
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
 export const NEW_DOCS_HOW_TO_USE_OWN_DOCKER_IMAGE = newDocsLinkPage(
-  "docs/users/sessions/guides/environments/use-your-own-docker-image-for-renku-session",
+  "docs/users/compute/environment/guides/use-your-own-docker-image-for-renku-session",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
 export const NEW_DOCS_COMMUNITY_PORTAL = newDocsLinkPage(
@@ -73,7 +73,7 @@ export const NEW_DOCS_CREATE_PROJECT = newDocsLinkPage(
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
 export const NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED = newDocsLinkPage(
-  "docs/users/sessions/guides/environments/create-environment-with-custom-packages-installed",
+  "docs/users/compute/environment/guides/create-environment-with-custom-packages-installed",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
 export const NEW_DOCS_HOW_RENKU_WORKS = newDocsLinkPage(

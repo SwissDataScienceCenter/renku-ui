@@ -17,9 +17,20 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useCallback } from "react";
+import { useCallback, useContext, useMemo } from "react";
 
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import {
+  persistedLogsApi,
+  useGetPersistedSessionLogsForModalQuery,
+} from "../persistedLogs/api/persistedLogs.api";
+import {
+  useGetResourcePoolsByResourcePoolIdQuery,
+  useGetResourcePoolsQuery,
+} from "../sessionsV2/api/computeResources.api";
+import {
+  SessionResponse,
   sessionsV2Api,
   useGetSessionsBySessionIdLogsQuery,
   useGetSessionsBySessionIdQuery,
@@ -39,10 +50,67 @@ export default function SessionLogsModal({
   sessionName,
   toggle,
 }: SessionLogsModalProps) {
+  const { params } = useContext(AppContext);
+  const persistedLogsEnabled =
+    params?.PERSISTED_LOGS_ENABLED ?? DEFAULT_APP_PARAMS.PERSISTED_LOGS_ENABLED;
+
   const { data: session } = useGetSessionsBySessionIdQuery(
     sessionName ? { sessionId: sessionName } : skipToken,
   );
 
+  const { data: resourcePools } = useGetResourcePoolsQuery(
+    session?.resource_class_id ? {} : skipToken,
+  );
+  const resourcePool = useMemo(
+    () =>
+      session?.resource_class_id
+        ? resourcePools?.find(({ classes }) =>
+            classes.some(({ id }) => id === session.resource_class_id),
+          )
+        : undefined,
+    [resourcePools, session],
+  );
+  const { data: resourcePoolInfo } = useGetResourcePoolsByResourcePoolIdQuery(
+    resourcePool ? { resourcePoolId: resourcePool.id } : skipToken,
+  );
+
+  // NOTE: persisted logs cannot work if `cluster` is defined on the resource pool (remote k8s cluster)
+  if (
+    persistedLogsEnabled &&
+    session?.session_type === "non-interactive" &&
+    resourcePoolInfo != null &&
+    resourcePoolInfo.cluster == null
+  ) {
+    return (
+      <PersistedLogsModal
+        isOpen={isOpen}
+        session={session}
+        sessionName={sessionName}
+        toggle={toggle}
+      />
+    );
+  }
+
+  return (
+    <KubernetesLogsModal
+      isOpen={isOpen}
+      session={session}
+      sessionName={sessionName}
+      toggle={toggle}
+    />
+  );
+}
+
+interface KubernetesLogsModalProps extends SessionLogsModalProps {
+  session: SessionResponse | undefined;
+}
+
+function KubernetesLogsModal({
+  isOpen,
+  session,
+  sessionName,
+  toggle,
+}: KubernetesLogsModalProps) {
   const query = useGetSessionsBySessionIdLogsQuery(
     isOpen
       ? {
@@ -73,7 +141,57 @@ export default function SessionLogsModal({
           ? session?.status?.message
           : undefined
       }
-      // eslint-disable-next-line spellcheck/spell-checker
+      defaultTab="amalthea-session"
+    />
+  );
+}
+
+interface PersistedLogsModalProps extends SessionLogsModalProps {
+  session: SessionResponse;
+}
+
+function PersistedLogsModal({
+  isOpen,
+  session,
+  sessionName,
+  toggle,
+}: PersistedLogsModalProps) {
+  const query = useGetPersistedSessionLogsForModalQuery(
+    isOpen
+      ? {
+          launcherId: session.launcher_id,
+          params: {
+            submission_id: session.submission_id,
+          },
+        }
+      : skipToken,
+  );
+
+  const [trigger] =
+    persistedLogsApi.endpoints.getPersistedSessionLogsForModal.useLazyQuery();
+  const downloadQueryTrigger = useCallback(
+    () =>
+      trigger({
+        launcherId: session.launcher_id,
+        params: { submission_id: session.submission_id },
+      }),
+    [session.launcher_id, session.submission_id, trigger],
+  );
+
+  return (
+    <LogsModal
+      isOpen={isOpen}
+      name={sessionName}
+      query={query}
+      downloadQueryTrigger={downloadQueryTrigger}
+      title={"Logs"}
+      toggle={toggle}
+      sessionState={session?.status?.state}
+      sessionError={
+        session?.status?.state === "failed"
+          ? session?.status?.message
+          : undefined
+      }
       defaultTab="amalthea-session"
     />
   );

@@ -74,5 +74,7 @@
   "CULLING_THRESHOLDS": {
     "registered": { "idle": 86400, "hibernation": 259200 },
     "anonymous": { "idle": 43200, "hibernation": 0 }
-  }
+  },
+  "PERSISTED_LOGS_ENABLED": true,
+  "PERSISTED_LOGS_TTL_SECONDS": 86400
 }
