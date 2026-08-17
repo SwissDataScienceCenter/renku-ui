@@ -123,14 +123,7 @@ function AddResourceClassModal({
     (data: ResourceClassForm) => {
       const { remote: remoteForm, ...rest } = data;
       const tolerations = rest.tolerations.map(({ label }) => label);
-      const remote = buildResourceClassRemote(
-        remoteForm ?? {
-          systemName: "",
-          partition: "",
-          forwardResourceValues: false,
-        },
-        requiresIntegerCpu,
-      );
+      const remote = buildResourceClassRemote(remoteForm, requiresIntegerCpu);
       addResourceClass({
         resourcePoolId: resourcePool.id,
         resourceClass: {

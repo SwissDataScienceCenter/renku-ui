@@ -65,7 +65,7 @@ export interface ResourceClassForm {
   default: boolean;
   tolerations: ResourceClassFormToleration[];
   node_affinities: ResourceClassFormNodeAffinity[];
-  remote?: ResourceClassFormRemote;
+  remote: ResourceClassFormRemote;
 }
 
 export interface ResourceClassFormToleration {

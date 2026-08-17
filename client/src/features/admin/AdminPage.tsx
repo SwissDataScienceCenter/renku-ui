@@ -474,20 +474,18 @@ function ResourceClassItem({
           node affinities: {node_affinities?.length ?? 0}
         </div>
         {requiresIntegerCpu && (
-          <div className={cx(columnClasses)}>
-            system: {resourceClass.remote?.system_name ?? "—"}
-          </div>
-        )}
-        {requiresIntegerCpu && (
-          <div className={cx(columnClasses)}>
-            partition: {resourceClass.remote?.partition ?? "—"}
-          </div>
-        )}
-        {requiresIntegerCpu && (
-          <div className={cx(columnClasses)}>
-            forward resources:{" "}
-            {resourceClass.remote?.forward_resource_values ? "yes" : "no"}
-          </div>
+          <>
+            <div className={cx(columnClasses)}>
+              system: {resourceClass.remote?.system_name ?? "—"}
+            </div>
+            <div className={cx(columnClasses)}>
+              partition: {resourceClass.remote?.partition ?? "—"}
+            </div>
+            <div className={cx(columnClasses)}>
+              forward resources:{" "}
+              {resourceClass.remote?.forward_resource_values ? "yes" : "no"}
+            </div>
+          </>
         )}
         <div
           className={cx(

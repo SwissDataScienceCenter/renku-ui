@@ -95,10 +95,13 @@ export default function ResourceClassFirecrestFields<T extends FieldValues>({
           render={({ field }) => (
             <div className="form-check">
               <Input
+                className="form-check-input"
                 id={`${formPrefix}RemoteForwardResourceValues`}
                 type="checkbox"
                 checked={field.value}
-                {...field}
+                innerRef={field.ref}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
               />
               <Label
                 className={cx("form-check-label", "ms-2")}
