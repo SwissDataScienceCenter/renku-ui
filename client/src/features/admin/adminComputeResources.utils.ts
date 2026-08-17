@@ -20,14 +20,7 @@ interface RemoteKindLike {
   kind: string | null;
 }
 
-/**
- * Firecrest resource pools submit jobs to an HPC scheduler (e.g. SLURM) that
- * only accepts whole CPU cores. The data-services backend therefore rejects
- * resource classes (and the auto-created default class) carrying fractional
- * `cpu` values on firecrest pools. K8s pools express cpu in millicores, so
- * fractional values (e.g. 0.1) are valid there. Run:AI is left untouched for
- * now pending backend confirmation.
- */
+// Firecrest pools need whole CPU cores (SLURM); K8s allows fractional.
 export function poolRequiresIntegerCpu(
   remote: RemoteKindLike | null | undefined,
 ): boolean {

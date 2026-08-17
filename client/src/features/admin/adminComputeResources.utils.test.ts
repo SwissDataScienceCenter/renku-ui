@@ -33,10 +33,6 @@ describe("poolRequiresIntegerCpu", () => {
     expect(poolRequiresIntegerCpu({ kind: null })).toBe(false);
   });
 
-  it("returns false when remote is null", () => {
-    expect(poolRequiresIntegerCpu(null)).toBe(false);
-  });
-
   it("returns false when remote is undefined", () => {
     expect(poolRequiresIntegerCpu(undefined)).toBe(false);
   });

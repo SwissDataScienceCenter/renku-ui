@@ -81,6 +81,7 @@ function AddResourceClassModal({
 }: AddResourceClassModalProps) {
   const { id, quota } = resourcePool;
   const requiresIntegerCpu = poolRequiresIntegerCpu(resourcePool.remote);
+  const cpuStep = requiresIntegerCpu ? 1 : 0.1;
 
   const [addResourceClass, result] =
     usePostResourcePoolsByResourcePoolIdClassesMutation();
@@ -91,7 +92,7 @@ function AddResourceClassModal({
     handleSubmit,
   } = useForm<ResourceClassForm>({
     defaultValues: {
-      cpu: requiresIntegerCpu ? 1 : 0.1,
+      cpu: cpuStep,
       default: false,
       default_storage: 1,
       gpu: 0,
@@ -193,14 +194,14 @@ function AddResourceClassModal({
                   className={cx(errors.cpu && "is-invalid")}
                   id={`addResourceClassCpu-${id}`}
                   type="number"
-                  min={requiresIntegerCpu ? 1 : 0.1}
-                  step={requiresIntegerCpu ? 1 : 0.1}
+                  min={cpuStep}
+                  step={cpuStep}
                   max={quota?.cpu}
                   {...field}
                 />
               )}
               rules={{
-                min: requiresIntegerCpu ? 1 : 0.1,
+                min: cpuStep,
                 max: quota?.cpu,
                 validate: requiresIntegerCpu
                   ? (value) =>

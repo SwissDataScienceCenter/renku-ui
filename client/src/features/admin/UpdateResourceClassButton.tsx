@@ -89,6 +89,7 @@ function UpdateResourceClassModal({
   const { id } = resourceClass;
   const { quota } = resourcePool;
   const requiresIntegerCpu = poolRequiresIntegerCpu(resourcePool.remote);
+  const cpuStep = requiresIntegerCpu ? 1 : 0.1;
 
   const [updateResourceClass, result] =
     usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation();
@@ -225,13 +226,13 @@ function UpdateResourceClassModal({
                   className={cx(errors.cpu && "is-invalid")}
                   id={`updateResourceClassCpu-${id}`}
                   type="number"
-                  min={requiresIntegerCpu ? 1 : 0.1}
-                  step={requiresIntegerCpu ? 1 : 0.1}
+                  min={cpuStep}
+                  step={cpuStep}
                   {...field}
                 />
               )}
               rules={{
-                min: requiresIntegerCpu ? 1 : 0.1,
+                min: cpuStep,
                 max: quota?.cpu,
                 validate: requiresIntegerCpu
                   ? (value) =>
