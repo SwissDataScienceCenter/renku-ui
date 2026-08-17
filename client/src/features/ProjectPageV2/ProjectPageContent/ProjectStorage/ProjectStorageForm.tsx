@@ -166,6 +166,7 @@ export default function ProjectStorageForm({
                 <InputGroup className={cx(error && "is-invalid")}>
                   <Input
                     id="size"
+                    data-cy="project-storage-form-size-input"
                     className={cx(error && "is-invalid")}
                     type="number"
                     min={PROJECT_STORAGE_MIN_GB}
