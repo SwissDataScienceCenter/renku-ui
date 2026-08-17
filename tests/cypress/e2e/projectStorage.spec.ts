@@ -142,6 +142,20 @@ describe("Manage project storage in project page and side panel by project owner
   });
 });
 
+function assertCannotEditOrDeleteProjectStorage() {
+  cy.getDataCy("project-storage-item").should("be.visible");
+  cy.getDataCy("project-storage-edit").should("not.exist");
+  cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
+
+  // Also check in the side panel
+  cy.getDataCy("project-storage-item").click();
+  cy.getDataCy("project-storage-view").should("be.visible");
+  cy.getDataCy("project-storage-view").within(() => {
+    cy.getDataCy("project-storage-edit").should("not.exist");
+    cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
+  });
+}
+
 describe("View project storage for project editor / viewer", () => {
   beforeEach(() => {
     fixtures
@@ -158,43 +172,14 @@ describe("View project storage for project editor / viewer", () => {
       .listProjectStorage({ hasProjectStorage: true });
   });
 
-  it("project editor can see project storage but cannot edit/delete", () => {
-    fixtures.getProjectV2Permissions({
-      fixture: "projectV2/projectV2-permissions-editor.json",
-    });
-
-    cy.visit(`/p/${projectFullSlug}`);
-
-    cy.getDataCy("project-storage-item").should("be.visible");
-    cy.getDataCy("project-storage-edit").should("not.exist");
-    cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
-
-    // Also check in the side panel
-    cy.getDataCy("project-storage-item").click();
-    cy.getDataCy("project-storage-view").should("be.visible");
-    cy.getDataCy("project-storage-view").within(() => {
-      cy.getDataCy("project-storage-edit").should("not.exist");
-      cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
-    });
-  });
-
-  it("project viewer can see project storage but cannot edit/delete", () => {
-    fixtures.getProjectV2Permissions({
-      fixture: "projectV2/projectV2-permissions-viewer.json",
-    });
-
-    cy.visit(`/p/${projectFullSlug}`);
-
-    cy.getDataCy("project-storage-item").should("be.visible");
-    cy.getDataCy("project-storage-edit").should("not.exist");
-    cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
-
-    // Also check in the side panel
-    cy.getDataCy("project-storage-item").click();
-    cy.getDataCy("project-storage-view").should("be.visible");
-    cy.getDataCy("project-storage-view").within(() => {
-      cy.getDataCy("project-storage-edit").should("not.exist");
-      cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
+  [
+    { role: "editor", fixture: "projectV2/projectV2-permissions-editor.json" },
+    { role: "viewer", fixture: "projectV2/projectV2-permissions-viewer.json" },
+  ].forEach(({ role, fixture }) => {
+    it(`project ${role} can see project storage but cannot edit/delete`, () => {
+      fixtures.getProjectV2Permissions({ fixture });
+      cy.visit(`/p/${projectFullSlug}`);
+      assertCannotEditOrDeleteProjectStorage();
     });
   });
 });
@@ -221,16 +206,6 @@ describe("View project storage for public project when not logged in", () => {
   });
 
   it("can view project storage but cannot edit/delete", () => {
-    cy.getDataCy("project-storage-item").should("be.visible");
-    cy.getDataCy("project-storage-edit").should("not.exist");
-    cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
-
-    // Also check in the side panel
-    cy.getDataCy("project-storage-item").click();
-    cy.getDataCy("project-storage-view").should("be.visible");
-    cy.getDataCy("project-storage-view").within(() => {
-      cy.getDataCy("project-storage-edit").should("not.exist");
-      cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
-    });
+    assertCannotEditOrDeleteProjectStorage();
   });
 });
