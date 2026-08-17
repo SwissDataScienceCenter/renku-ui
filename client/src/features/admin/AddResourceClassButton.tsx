@@ -39,7 +39,11 @@ import {
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import type { ResourceClassForm } from "./adminComputeResources.types";
-import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
+import {
+  buildResourceClassRemote,
+  poolRequiresIntegerCpu,
+} from "./adminComputeResources.utils";
+import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
 
 interface AddResourceClassButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -99,6 +103,7 @@ function AddResourceClassModal({
       max_storage: 1,
       memory: 1,
       name: "",
+      remote: { systemName: "", partition: "", forwardResourceValues: false },
     },
   });
   const {
@@ -116,16 +121,26 @@ function AddResourceClassModal({
   } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
     (data: ResourceClassForm) => {
-      const tolerations = data.tolerations.map(({ label }) => label);
+      const { remote: remoteForm, ...rest } = data;
+      const tolerations = rest.tolerations.map(({ label }) => label);
+      const remote = buildResourceClassRemote(
+        remoteForm ?? {
+          systemName: "",
+          partition: "",
+          forwardResourceValues: false,
+        },
+        requiresIntegerCpu,
+      );
       addResourceClass({
         resourcePoolId: resourcePool.id,
         resourceClass: {
-          ...data,
+          ...rest,
           tolerations,
+          remote,
         },
       });
     },
-    [addResourceClass, resourcePool.id],
+    [addResourceClass, requiresIntegerCpu, resourcePool.id],
   );
 
   const onAddTolerationLabel = useCallback(() => {
@@ -303,6 +318,17 @@ function AddResourceClassModal({
               )}
             />
           </div>
+
+          {requiresIntegerCpu && (
+            <div className="mb-3">
+              <div className="form-label">Firecrest options</div>
+              <ResourceClassFirecrestFields
+                control={control}
+                formPrefix="addResourceClass"
+                name="remote"
+              />
+            </div>
+          )}
 
           <div className="mb-3">
             <div className="form-label">Tolerations</div>
