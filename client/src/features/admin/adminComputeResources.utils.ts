@@ -26,3 +26,29 @@ export function poolRequiresIntegerCpu(
 ): boolean {
   return remote?.kind === "firecrest";
 }
+
+export interface ResourceClassFormRemote {
+  systemName: string;
+  partition: string;
+  forwardResourceValues: boolean;
+}
+
+export function buildResourceClassRemote(
+  form: ResourceClassFormRemote,
+  isFirecrest: boolean,
+):
+  | {
+      system_name?: string;
+      partition?: string;
+      forward_resource_values: boolean;
+    }
+  | undefined {
+  if (!isFirecrest) return undefined;
+  const system_name = form.systemName.trim() || undefined;
+  const partition = form.partition.trim() || undefined;
+  return {
+    system_name,
+    partition,
+    forward_resource_values: form.forwardResourceValues,
+  };
+}

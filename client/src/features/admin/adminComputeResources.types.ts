@@ -17,6 +17,7 @@
  */
 
 import { type RemoteConfiguration as BackendRemoteConfiguration } from "../sessionsV2/api/computeResources.generated-api";
+import { type ResourceClassFormRemote } from "./adminComputeResources.utils";
 
 export interface ResourcePoolForm {
   name: string;
@@ -64,6 +65,7 @@ export interface ResourceClassForm {
   default: boolean;
   tolerations: ResourceClassFormToleration[];
   node_affinities: ResourceClassFormNodeAffinity[];
+  remote?: ResourceClassFormRemote;
 }
 
 export interface ResourceClassFormToleration {
