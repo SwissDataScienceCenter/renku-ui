@@ -40,7 +40,11 @@ import {
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import { ResourceClassForm } from "./adminComputeResources.types";
-import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
+import {
+  buildResourceClassRemote,
+  poolRequiresIntegerCpu,
+} from "./adminComputeResources.utils";
+import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
 
 import styles from "./UpdateResourceClassButton.module.scss";
 
@@ -108,6 +112,12 @@ function UpdateResourceClassModal({
       max_storage: resourceClass.max_storage,
       memory: resourceClass.memory,
       name: resourceClass.name,
+      remote: {
+        systemName: resourceClass.remote?.system_name ?? "",
+        partition: resourceClass.remote?.partition ?? "",
+        forwardResourceValues:
+          resourceClass.remote?.forward_resource_values ?? false,
+      },
       tolerations: (resourceClass.tolerations ?? []).map((label) => ({
         label,
       })),
@@ -129,17 +139,32 @@ function UpdateResourceClassModal({
   } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
     (data: ResourceClassForm) => {
-      const tolerations = data.tolerations.map(({ label }) => label);
+      const { remote: remoteForm, ...rest } = data;
+      const tolerations = rest.tolerations.map(({ label }) => label);
+      const remote = buildResourceClassRemote(
+        remoteForm ?? {
+          systemName: "",
+          partition: "",
+          forwardResourceValues: false,
+        },
+        requiresIntegerCpu,
+      );
       updateResourceClass({
         resourcePoolId: resourcePool.id,
         classId: `${resourceClass.id}`,
         resourceClassPatch: {
-          ...data,
+          ...rest,
           tolerations,
+          remote,
         },
       });
     },
-    [resourceClass.id, resourcePool.id, updateResourceClass],
+    [
+      resourceClass.id,
+      resourcePool.id,
+      requiresIntegerCpu,
+      updateResourceClass,
+    ],
   );
 
   const onAddTolerationLabel = useCallback(() => {
@@ -166,6 +191,12 @@ function UpdateResourceClassModal({
       max_storage: resourceClass.max_storage,
       memory: resourceClass.memory,
       name: resourceClass.name,
+      remote: {
+        systemName: resourceClass.remote?.system_name ?? "",
+        partition: resourceClass.remote?.partition ?? "",
+        forwardResourceValues:
+          resourceClass.remote?.forward_resource_values ?? false,
+      },
       tolerations: (resourceClass.tolerations ?? []).map((label) => ({
         label,
       })),
@@ -334,6 +365,17 @@ function UpdateResourceClassModal({
               )}
             />
           </div>
+
+          {requiresIntegerCpu && (
+            <div className="mb-3">
+              <div className="form-label">Firecrest options</div>
+              <ResourceClassFirecrestFields
+                control={control}
+                formPrefix="updateResourceClass"
+                name="remote"
+              />
+            </div>
+          )}
 
           <div className="mb-3">
             <div className="form-label">Tolerations</div>
