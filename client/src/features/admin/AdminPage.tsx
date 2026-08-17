@@ -56,6 +56,7 @@ import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
+import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 import ConnectedServicesSection from "./ConnectedServicesSection";
@@ -450,6 +451,7 @@ function ResourceClassItem({
   } = resourceClass;
 
   const columnClasses = ["col-12", "col-sm-4", "col-md-3", "col-xl-2"];
+  const requiresIntegerCpu = poolRequiresIntegerCpu(resourcePool.remote);
 
   return (
     <li>
@@ -471,6 +473,22 @@ function ResourceClassItem({
         <div className={cx(columnClasses)}>
           node affinities: {node_affinities?.length ?? 0}
         </div>
+        {requiresIntegerCpu && (
+          <div className={cx(columnClasses)}>
+            system: {resourceClass.remote?.system_name ?? "—"}
+          </div>
+        )}
+        {requiresIntegerCpu && (
+          <div className={cx(columnClasses)}>
+            partition: {resourceClass.remote?.partition ?? "—"}
+          </div>
+        )}
+        {requiresIntegerCpu && (
+          <div className={cx(columnClasses)}>
+            forward resources:{" "}
+            {resourceClass.remote?.forward_resource_values ? "yes" : "no"}
+          </div>
+        )}
         <div
           className={cx(
             columnClasses,
