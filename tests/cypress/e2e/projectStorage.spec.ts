@@ -15,8 +15,6 @@ describe("Add project storage in a project page by project owner", () => {
       })
       .listProjectDataConnectors()
       .getDataConnector();
-
-    cy.visit(`/p/${projectFullSlug}`);
   });
 
   it("do not show add button if project is not in allow list", () => {
@@ -24,6 +22,7 @@ describe("Add project storage in a project page by project owner", () => {
       .getProjectStorageAllow({ allowed: false })
       .listProjectStorage({ hasProjectStorage: false });
 
+    cy.visit(`/p/${projectFullSlug}`);
     cy.getDataCy("add-data-connector").click();
     cy.getDataCy("project-data-connector-connect-header").should("be.visible");
     cy.getDataCy("project-data-controller-mode-add-storage").should(
@@ -31,15 +30,24 @@ describe("Add project storage in a project page by project owner", () => {
     );
   });
 
-  it("show add button to project owner if project is in allow list and no project storage setup", () => {
+  it("show add button to project owner if project is in allow list and no project storage setup & add storage", () => {
     fixtures
       .getProjectStorageAllow({ allowed: true })
-      .listProjectStorage({ hasProjectStorage: false });
+      .listProjectStorage({ hasProjectStorage: false })
+      .postProjectStorage();
 
+    cy.visit(`/p/${projectFullSlug}`);
     cy.getDataCy("add-data-connector").click();
     cy.getDataCy("project-data-controller-mode-add-storage").should(
       "be.visible",
     );
+    cy.getDataCy("project-data-controller-mode-add-storage").click();
+    cy.getDataCy("project-storage-body").should("be.visible");
+    cy.getDataCy("project-storage-form-size-input").clear().type("5");
+    cy.getDataCy("project-storage-form-mount-point-input").clear().type("test");
+    cy.getDataCy("project-storage-form-submit-button").click();
+    cy.wait("@postProjectStorage");
+    cy.getDataCy("project-storage-body").should("not.exist");
   });
 
   it("do not show add button to project owner if project is in allow list and project storage already setup", () => {
@@ -47,6 +55,7 @@ describe("Add project storage in a project page by project owner", () => {
       .getProjectStorageAllow({ allowed: true })
       .listProjectStorage({ hasProjectStorage: true });
 
+    cy.visit(`/p/${projectFullSlug}`);
     cy.getDataCy("add-data-connector").click();
     cy.getDataCy("project-data-connector-connect-header").should("be.visible");
     cy.getDataCy("project-data-controller-mode-add-storage").should(
@@ -78,7 +87,6 @@ describe("Manage project storage in project page and side panel by project owner
 
   it("view project storage in project page and in the side panel", () => {
     cy.getDataCy("project-storage-item").should("be.visible");
-
     cy.getDataCy("project-storage-item").click();
     cy.getDataCy("project-storage-view").should("be.visible");
   });
@@ -92,12 +100,15 @@ describe("Manage project storage in project page and side panel by project owner
       .type("test1");
     cy.getDataCy("project-storage-form-submit-button").click();
     cy.wait("@patchProjectStorage");
+    cy.getDataCy("project-storage-body").should("not.exist");
   });
 
   it("edit project storage in the side panel", () => {
     cy.getDataCy("project-storage-item").click();
 
-    cy.get('div.float-end [data-cy="project-storage-edit"]').click();
+    cy.getDataCy("project-storage-view").within(() => {
+      cy.getDataCy("project-storage-edit").click();
+    });
     cy.getDataCy("project-storage-body").should("be.visible");
     cy.getDataCy("project-storage-form-size-input").clear().type("5");
     cy.getDataCy("project-storage-form-mount-point-input")
@@ -105,6 +116,7 @@ describe("Manage project storage in project page and side panel by project owner
       .type("test2");
     cy.getDataCy("project-storage-form-submit-button").click();
     cy.wait("@patchProjectStorage");
+    cy.getDataCy("project-storage-body").should("not.exist");
   });
 
   it("delete project storage in project page", () => {
@@ -113,15 +125,20 @@ describe("Manage project storage in project page and side panel by project owner
     cy.getDataCy("project-storage-delete-confirm-button").should("be.visible");
     cy.getDataCy("project-storage-delete-confirm-button").click();
     cy.wait("@deleteProjectStorage");
+    cy.getDataCy("project-storage-delete-confirm-button").should("not.exist");
   });
 
   it("delete project storage in the side panel", () => {
     cy.getDataCy("project-storage-item").click();
-    cy.get('div.float-end [data-cy="project-storage-menu-dropdown"]').click();
-    cy.get('div.dropdown-menu.show [data-cy="project-storage-delete"]').click();
+    cy.getDataCy("project-storage-view").within(() => {
+      cy.getDataCy("project-storage-menu-dropdown").click();
+      cy.getDataCy("project-storage-delete").click();
+    });
     cy.getDataCy("project-storage-delete-confirm-button").should("be.visible");
     cy.getDataCy("project-storage-delete-confirm-button").click();
     cy.wait("@deleteProjectStorage");
+    cy.getDataCy("project-storage-delete-confirm-button").should("not.exist");
+    cy.getDataCy("project-storage-view").should("not.be.visible");
   });
 });
 
@@ -139,8 +156,6 @@ describe("View project storage for project editor / viewer", () => {
       .getDataConnector()
       .getProjectStorageAllow({ allowed: true })
       .listProjectStorage({ hasProjectStorage: true });
-
-    cy.visit(`/p/${projectFullSlug}`);
   });
 
   it("project editor can see project storage but cannot edit/delete", () => {
@@ -148,6 +163,8 @@ describe("View project storage for project editor / viewer", () => {
       fixture: "projectV2/projectV2-permissions-editor.json",
     });
 
+    cy.visit(`/p/${projectFullSlug}`);
+
     cy.getDataCy("project-storage-item").should("be.visible");
     cy.getDataCy("project-storage-edit").should("not.exist");
     cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
@@ -155,12 +172,10 @@ describe("View project storage for project editor / viewer", () => {
     // Also check in the side panel
     cy.getDataCy("project-storage-item").click();
     cy.getDataCy("project-storage-view").should("be.visible");
-    cy.get('div.float-end [data-cy="project-storage-edit"]').should(
-      "not.exist",
-    );
-    cy.get('div.float-end [data-cy="project-storage-menu-dropdown"]').should(
-      "not.exist",
-    );
+    cy.getDataCy("project-storage-view").within(() => {
+      cy.getDataCy("project-storage-edit").should("not.exist");
+      cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
+    });
   });
 
   it("project viewer can see project storage but cannot edit/delete", () => {
@@ -168,6 +183,8 @@ describe("View project storage for project editor / viewer", () => {
       fixture: "projectV2/projectV2-permissions-viewer.json",
     });
 
+    cy.visit(`/p/${projectFullSlug}`);
+
     cy.getDataCy("project-storage-item").should("be.visible");
     cy.getDataCy("project-storage-edit").should("not.exist");
     cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
@@ -175,12 +192,10 @@ describe("View project storage for project editor / viewer", () => {
     // Also check in the side panel
     cy.getDataCy("project-storage-item").click();
     cy.getDataCy("project-storage-view").should("be.visible");
-    cy.get('div.float-end [data-cy="project-storage-edit"]').should(
-      "not.exist",
-    );
-    cy.get('div.float-end [data-cy="project-storage-menu-dropdown"]').should(
-      "not.exist",
-    );
+    cy.getDataCy("project-storage-view").within(() => {
+      cy.getDataCy("project-storage-edit").should("not.exist");
+      cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
+    });
   });
 });
 
@@ -213,11 +228,9 @@ describe("View project storage for public project when not logged in", () => {
     // Also check in the side panel
     cy.getDataCy("project-storage-item").click();
     cy.getDataCy("project-storage-view").should("be.visible");
-    cy.get('div.float-end [data-cy="project-storage-edit"]').should(
-      "not.exist",
-    );
-    cy.get('div.float-end [data-cy="project-storage-menu-dropdown"]').should(
-      "not.exist",
-    );
+    cy.getDataCy("project-storage-view").within(() => {
+      cy.getDataCy("project-storage-edit").should("not.exist");
+      cy.getDataCy("project-storage-menu-dropdown").should("not.exist");
+    });
   });
 });
