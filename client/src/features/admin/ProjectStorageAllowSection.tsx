@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { Pencil, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
+import { CheckLg, Pencil, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -60,38 +60,37 @@ export default function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetDataConnectorsStorageAllowQuery({});
 
   return (
-    <section className="my-4">
+    <section className="mt-4">
       <h2>Project Storage Allow List</h2>
       <AddProjectStorageAllowButton />
-      {isLoading && <Loader />}
-      {error && <RtkOrDataServicesError error={error} dismissible={false} />}
-      {data && (
+      {isLoading ? (
+        <Loader />
+      ) : error ? (
+        <RtkOrDataServicesError error={error} dismissible={false} />
+      ) : data ? (
         <>
-          <div>
-            <ListGroup>
-              {data.map((e) => (
-                <ListGroupItem key={e.project_id}>
-                  <div
-                    className={cx(
-                      "d-flex",
-                      "justify-content-between",
-                      "align-items-center",
-                    )}
-                  >
-                    <div>
-                      <strong>{e.namespace}</strong> (max {e.max_size} GB)
-                    </div>
-                    <div className={cx("d-flex", "gap-2")}>
-                      <EditProjectStorageAllowButton project={e} />
-                      <DeleteProjectStorageAllowButton project={e} />
-                    </div>
-                  </div>
-                </ListGroupItem>
-              ))}
-            </ListGroup>
-          </div>
+          <ListGroup>
+            {data.map((e) => (
+              <ListGroupItem
+                key={e.project_id}
+                className={cx(
+                  "d-flex",
+                  "justify-content-between",
+                  "align-items-center",
+                )}
+              >
+                <div>
+                  <strong>{e.namespace}</strong> (max {e.max_size} GB)
+                </div>
+                <div className={cx("d-flex", "gap-2")}>
+                  <EditProjectStorageAllowButton project={e} />
+                  <DeleteProjectStorageAllowButton project={e} />
+                </div>
+              </ListGroupItem>
+            ))}
+          </ListGroup>
         </>
-      )}
+      ) : null}
     </section>
   );
 }
@@ -210,9 +209,7 @@ function AddOrEditProjectStorageAllowModal({
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader tag="h2" toggle={toggle}>
-        {project
-          ? "Edit Project Storage Allow Entry"
-          : "Add Project to Storage Allow List"}
+        {project ? "Edit Project Storage" : "Add Project Storage"}
       </ModalHeader>
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
@@ -318,7 +315,10 @@ function AddOrEditProjectStorageAllowModal({
           </Button>
           <Button color="primary" disabled={result.isLoading} type="submit">
             {project ? (
-              "Edit"
+              <>
+                <CheckLg className={cx("bi", "me-1")} />
+                Update
+              </>
             ) : (
               <>
                 <PlusLg className={cx("bi", "me-1")} />
