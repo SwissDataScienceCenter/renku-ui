@@ -139,14 +139,13 @@ function UpdateResourceClassModal({
   } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
     (data: ResourceClassForm) => {
-      const { remote: remoteForm, ...rest } = data;
-      const tolerations = rest.tolerations.map(({ label }) => label);
-      const remote = buildResourceClassRemote(remoteForm, requiresIntegerCpu);
+      const tolerations = data.tolerations.map(({ label }) => label);
+      const remote = buildResourceClassRemote(data.remote, requiresIntegerCpu);
       updateResourceClass({
         resourcePoolId: resourcePool.id,
         classId: `${resourceClass.id}`,
         resourceClassPatch: {
-          ...rest,
+          ...data,
           tolerations,
           remote,
         },
