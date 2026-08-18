@@ -148,9 +148,10 @@ export default function ProjectStorageForm({
         />
         {!projectStorage && (
           <InfoAlert dismissible={false} timeout={0}>
-            You can add a project storage to this project. This will create a
-            new storage volume that will be mounted in your sessions to avoid
-            data loss on session shutdown.
+            You can add a project storage to this project. Project storage will
+            be mounted in your sessions and jobs (not in apps). Project owners
+            and project editors will have read-write access, while other users
+            will have read-only access to this storage.
           </InfoAlert>
         )}
         <div className="mb-3">

@@ -28,6 +28,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { InfoAlert } from "~/components/Alert";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import type { ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
@@ -86,6 +87,12 @@ export default function ProjectStorageView({
             toggleView={toggleView}
             toggleEdit={toggleEdit}
           />
+
+          <InfoAlert dismissible={false} timeout={0}>
+            Project storage is mounted in your sessions and jobs (not in apps).
+            Project owners and project editors have read-write access, while
+            other users have read-only access to this storage.
+          </InfoAlert>
 
           <ProjectStorageInfoBox
             projectStorage={projectStorage}
