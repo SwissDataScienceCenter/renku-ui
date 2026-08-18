@@ -314,6 +314,7 @@ function DeleteProjectStorageModal({
           Cancel
         </Button>
         <Button
+          data-cy="project-storage-delete-confirm-button"
           color="danger"
           disabled={result.isLoading}
           onClick={onDelete}

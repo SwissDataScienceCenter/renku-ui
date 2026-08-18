@@ -23,6 +23,7 @@ import { Admin } from "./admin";
 import { CloudStorage } from "./cloudStorage";
 import { ConnectedServices } from "./connectedServices";
 import { DataConnector } from "./dataConnectors";
+import { ProjectStorage } from "./projectStorage";
 import { DataServices } from "./dataServices";
 import BaseFixtures from "./fixtures";
 import { Global } from "./global";
@@ -43,11 +44,13 @@ const Fixtures = SearchV2(
         Sessions(
           Admin(
             DataConnector(
-              DataServices(
-                CloudStorage(
-                  Projects(
-                    Secrets(
-                      Terms(User(ConnectedServices(Global(BaseFixtures)))),
+              ProjectStorage(
+                DataServices(
+                  CloudStorage(
+                    Projects(
+                      Secrets(
+                        Terms(User(ConnectedServices(Global(BaseFixtures)))),
+                      ),
                     ),
                   ),
                 ),
