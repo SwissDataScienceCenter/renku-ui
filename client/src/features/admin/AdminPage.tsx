@@ -61,6 +61,7 @@ import { KeycloakUser } from "./adminKeycloak.types";
 import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
+import ProjectStorageAllowSection from "./ProjectStorageAllowSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
@@ -76,6 +77,7 @@ export default function AdminPage() {
       <ComputeResourcesSection />
       <ConnectedServicesSection />
       <SessionEnvironmentsSection />
+      <ProjectStorageAllowSection />
     </>
   );
 }
