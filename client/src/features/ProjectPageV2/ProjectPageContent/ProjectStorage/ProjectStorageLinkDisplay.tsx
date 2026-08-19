@@ -36,8 +36,8 @@ import { WarnAlert } from "~/components/Alert";
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
-import { type ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
-import { useDeleteDataConnectorsStorageByStorageIdMutation } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import { useDeleteStorageByStorageIdMutation } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import { type ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectStorageForm from "./ProjectStorageForm";
@@ -278,8 +278,7 @@ function DeleteProjectStorageModal({
   toggle,
   executeOnSuccess,
 }: DeleteProjectStorageModalProps) {
-  const [deleteStorage, result] =
-    useDeleteDataConnectorsStorageByStorageIdMutation();
+  const [deleteStorage, result] = useDeleteStorageByStorageIdMutation();
   const onDelete = useCallback(() => {
     deleteStorage({ storageId });
   }, [deleteStorage, storageId]);

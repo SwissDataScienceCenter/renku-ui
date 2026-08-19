@@ -51,11 +51,9 @@ export function ProjectStorage<T extends FixturesConstructor>(Parent: T) {
         allowed = false,
       } = args ?? {};
       const response = allowed ? { fixture } : { statusCode: 404 };
-      cy.intercept(
-        "GET",
-        `/api/data/data_connectors/storage/allow/${projectId}`,
-        response,
-      ).as(name);
+      cy.intercept("GET", `/api/data/storage/allow/${projectId}`, response).as(
+        name,
+      );
       return this;
     }
 
@@ -82,7 +80,7 @@ export function ProjectStorage<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       cy.fixture(fixture).then((projectStorage) => {
         // eslint-disable-next-line max-nested-callbacks
-        cy.intercept("POST", `/api/data/data_connectors/storage`, (req) => {
+        cy.intercept("POST", `/api/data/storage`, (req) => {
           const newProjectStorage = req.body;
           expect(newProjectStorage.size).to.not.be.undefined;
           expect(newProjectStorage.mount_path).to.not.be.undefined;
@@ -102,18 +100,14 @@ export function ProjectStorage<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       cy.fixture(fixture).then((projectStorage) => {
         // eslint-disable-next-line max-nested-callbacks
-        cy.intercept(
-          "PATCH",
-          `/api/data/data_connectors/storage/${storageId}`,
-          (req) => {
-            const newProjectStorage = req.body;
-            expect(newProjectStorage.size).to.not.be.undefined;
-            expect(newProjectStorage.mount_path).to.not.be.undefined;
-            projectStorage.size = newProjectStorage.size;
-            projectStorage.mount_path = newProjectStorage.mount_path;
-            req.reply({ body: projectStorage, statusCode: 200 });
-          },
-        ).as(name);
+        cy.intercept("PATCH", `/api/data/storage/${storageId}`, (req) => {
+          const newProjectStorage = req.body;
+          expect(newProjectStorage.size).to.not.be.undefined;
+          expect(newProjectStorage.mount_path).to.not.be.undefined;
+          projectStorage.size = newProjectStorage.size;
+          projectStorage.mount_path = newProjectStorage.mount_path;
+          req.reply({ body: projectStorage, statusCode: 200 });
+        }).as(name);
       });
       return this;
     }
@@ -123,7 +117,7 @@ export function ProjectStorage<T extends FixturesConstructor>(Parent: T) {
         name = "deleteProjectStorage",
         storageId = "PROJECTSTORAGEULID26CHARACTERS",
       } = args ?? {};
-      cy.intercept("DELETE", `/api/data/data_connectors/storage/${storageId}`, {
+      cy.intercept("DELETE", `/api/data/storage/${storageId}`, {
         statusCode: 204,
       }).as(name);
       return this;

@@ -41,15 +41,15 @@ import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
-  useGetDataConnectorsStorageConfigQuery,
-  type ProjectStorageAllow,
-} from "../dataConnectorsV2/api/data-connectors.api";
+  useDeleteStorageAllowByProjectIdMutation,
+  useGetStorageAllowQuery,
+  usePatchStorageAllowByProjectIdMutation,
+  usePostStorageAllowMutation,
+} from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
-  useDeleteDataConnectorsStorageAllowByProjectIdMutation,
-  useGetDataConnectorsStorageAllowQuery,
-  usePatchDataConnectorsStorageAllowByProjectIdMutation,
-  usePostDataConnectorsStorageAllowMutation,
-} from "../dataConnectorsV2/api/data-connectors.enhanced-api";
+  useGetStorageConfigQuery,
+  type ProjectStorageAllow,
+} from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
 import {
   PROJECT_STORAGE_MAX_GB,
   PROJECT_STORAGE_MIN_GB,
@@ -57,7 +57,7 @@ import {
 } from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
 
 export default function ProjectStorageAllowSection() {
-  const { data, error, isLoading } = useGetDataConnectorsStorageAllowQuery({});
+  const { data, error, isLoading } = useGetStorageAllowQuery({});
 
   return (
     <section className="mt-4">
@@ -153,7 +153,7 @@ function AddOrEditProjectStorageAllowModal({
   toggle,
   project,
 }: AddOrEditProjectStorageAllowModalProps) {
-  const { data: storageConfig } = useGetDataConnectorsStorageConfigQuery();
+  const { data: storageConfig } = useGetStorageConfigQuery();
   const maxSize = storageConfig?.max_size ?? PROJECT_STORAGE_MAX_GB;
 
   const { control, handleSubmit, reset } = useForm<ProjectStorageAllowForm>({
@@ -163,16 +163,15 @@ function AddOrEditProjectStorageAllowModal({
       max_size: project?.max_size ?? maxSize,
     },
   });
-  const [postDataConnectorsStorageAllowMutation, result] =
-    usePostDataConnectorsStorageAllowMutation();
+  const [postStorageAllowMutation, result] = usePostStorageAllowMutation();
 
-  const [patchDataConnectorsStorageAllowByProjectIdMutation, patchResult] =
-    usePatchDataConnectorsStorageAllowByProjectIdMutation();
+  const [patchStorageAllowByProjectIdMutation, patchResult] =
+    usePatchStorageAllowByProjectIdMutation();
 
   const onSubmit = async (values: ProjectStorageAllowForm) => {
     if (project) {
       // Update existing project storage allow entry
-      const result = await patchDataConnectorsStorageAllowByProjectIdMutation({
+      const result = await patchStorageAllowByProjectIdMutation({
         projectId: project.project_id,
         "If-Match": project.etag ?? "",
         projectStorageAllowPatch: {
@@ -186,7 +185,7 @@ function AddOrEditProjectStorageAllowModal({
     }
 
     // Create new project storage allow entry
-    const result = await postDataConnectorsStorageAllowMutation({
+    const result = await postStorageAllowMutation({
       projectStorageAllowPost: {
         project_id: values.project_id,
         max_size: values.max_size,
@@ -371,7 +370,7 @@ function DeleteProjectStorageAllowModal({
   toggle,
 }: DeleteProjectStorageAllowModalProps) {
   const [deleteStorageAllow, result] =
-    useDeleteDataConnectorsStorageAllowByProjectIdMutation();
+    useDeleteStorageAllowByProjectIdMutation();
   const onDelete = useCallback(() => {
     deleteStorageAllow({ projectId: project.project_id });
   }, [deleteStorageAllow, project.project_id]);

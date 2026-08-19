@@ -29,16 +29,16 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useGetProjectsByProjectIdStorageQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import { type ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
 import {
   type DataConnectorToProjectLink,
   type GetProjectsByProjectIdDataConnectorLinksApiResponse,
-  type ProjectStorage,
 } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
   useGetDataConnectorsByDataConnectorIdQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
-  useGetProjectsByProjectIdStorageQuery,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { ErrorAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";

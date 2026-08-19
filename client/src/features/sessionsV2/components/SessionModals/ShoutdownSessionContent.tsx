@@ -23,11 +23,9 @@ import { Collapse } from "reactstrap";
 
 import CollapseBody from "~/components/container/CollapseBody";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { useGetProjectsByProjectIdStorageQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
-import {
-  useGetDataConnectorsListByDataConnectorIdsQuery,
-  useGetProjectsByProjectIdStorageQuery,
-} from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import { useGetDataConnectorsListByDataConnectorIdsQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { getRepositoryName } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import { useGetProjectsByProjectIdQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import { useGetSessionLaunchersByLauncherIdQuery } from "../../api/sessionLaunchersV2.api";

@@ -33,12 +33,12 @@ import {
 
 import { InfoAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
-import { type ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
-  useGetDataConnectorsStorageAllowByProjectIdQuery,
-  usePatchDataConnectorsStorageByStorageIdMutation,
-  usePostDataConnectorsStorageMutation,
-} from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+  useGetStorageAllowByProjectIdQuery,
+  usePatchStorageByStorageIdMutation,
+  usePostStorageMutation,
+} from "~/features/cloudStorage/api/projectCloudStorage.api";
+import { type ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
 import {
   ProjectConnectDataConnectorModeSwitch,
   type switchModeProps,
@@ -84,23 +84,19 @@ export default function ProjectStorageForm({
     },
   });
 
-  const [postDataConnectorsStorageMutation, postDataConnectorsStorageStatus] =
-    usePostDataConnectorsStorageMutation();
-  const [
-    patchDataConnectorsStorageByStorageIdMutation,
-    patchDataConnectorsStorageByStorageIdStatus,
-  ] = usePatchDataConnectorsStorageByStorageIdMutation();
-  const { data: storageAllowData } =
-    useGetDataConnectorsStorageAllowByProjectIdQuery({
-      projectId: projectId,
-    });
+  const [postStorageMutation, postStorageStatus] = usePostStorageMutation();
+  const [patchStorageByStorageIdMutation, patchStorageByStorageIdStatus] =
+    usePatchStorageByStorageIdMutation();
+  const { data: storageAllowData } = useGetStorageAllowByProjectIdQuery({
+    projectId: projectId,
+  });
   const projectStorageMaxSize =
     storageAllowData?.max_size ?? PROJECT_STORAGE_MAX_GB;
 
   const onSubmit = async (values: ProjectStorageFormValues) => {
     if (!projectStorage) {
       // Create new project storage
-      const result = await postDataConnectorsStorageMutation({
+      const result = await postStorageMutation({
         projectStoragePost: {
           namespace: namespace ?? "",
           size: values.size,
@@ -112,7 +108,7 @@ export default function ProjectStorageForm({
       }
     } else {
       // Update existing project storage
-      const result = await patchDataConnectorsStorageByStorageIdMutation({
+      const result = await patchStorageByStorageIdMutation({
         storageId: projectStorage.id,
         "If-Match": projectStorage.etag ?? "",
         projectStoragePatch: {
@@ -139,10 +135,7 @@ export default function ProjectStorageForm({
         )}
 
         <RtkOrDataServicesError
-          error={
-            postDataConnectorsStorageStatus.error ||
-            patchDataConnectorsStorageByStorageIdStatus.error
-          }
+          error={postStorageStatus.error || patchStorageByStorageIdStatus.error}
         />
         {!projectStorage && (
           <InfoAlert dismissible={false} timeout={0}>

@@ -50,10 +50,12 @@ import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
 import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
-import { useGetDataConnectorsStorageAllowByProjectIdQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
+import {
+  useGetProjectsByProjectIdStorageQuery,
+  useGetStorageAllowByProjectIdQuery,
+} from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   useGetProjectsByProjectIdDataConnectorLinksQuery,
-  useGetProjectsByProjectIdStorageQuery,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
   usePostDataConnectorsGlobalMutation,
 } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -117,10 +119,9 @@ export default function ProjectConnectDataConnectorsModal({
 
   const permissions = useProjectPermissions({ projectId: project?.id ?? "" });
   const canManageProjectStorage = permissions.delete; // User needs to be project owner
-  const { data: storageAllowData } =
-    useGetDataConnectorsStorageAllowByProjectIdQuery(
-      canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
-    );
+  const { data: storageAllowData } = useGetStorageAllowByProjectIdQuery(
+    canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
+  );
   const { data: projectStorage } = useGetProjectsByProjectIdStorageQuery(
     canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
   );

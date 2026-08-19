@@ -158,8 +158,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
     "DataConnectors",
     "DataConnectorsProjectLinks",
     "DataConnectorSecrets",
-    "ProjectStorage",
-    "ProjectStorageAllow",
   ],
   endpoints: {
     deleteDataConnectorsByDataConnectorId: {
@@ -270,33 +268,6 @@ const enhancedApi = injectedApi.enhanceEndpoints({
           ? [{ id: depositId, type: "Deposits" }, "Deposits"]
           : ["Deposits"],
     },
-    getProjectsByProjectIdStorage: {
-      providesTags: ["ProjectStorage"],
-    },
-    postDataConnectorsStorage: {
-      invalidatesTags: ["ProjectStorage"],
-    },
-    deleteDataConnectorsStorageByStorageId: {
-      invalidatesTags: ["ProjectStorage"],
-    },
-    patchDataConnectorsStorageByStorageId: {
-      invalidatesTags: ["ProjectStorage"],
-    },
-    getDataConnectorsStorageAllow: {
-      providesTags: ["ProjectStorageAllow"],
-    },
-    getDataConnectorsStorageAllowByProjectId: {
-      providesTags: ["ProjectStorageAllow"],
-    },
-    postDataConnectorsStorageAllow: {
-      invalidatesTags: ["ProjectStorageAllow"],
-    },
-    deleteDataConnectorsStorageAllowByProjectId: {
-      invalidatesTags: ["ProjectStorageAllow"],
-    },
-    patchDataConnectorsStorageAllowByProjectId: {
-      invalidatesTags: ["ProjectStorageAllow"],
-    },
   },
 });
 
@@ -329,13 +300,4 @@ export const {
   useGetDataConnectorsByDataConnectorIdPermissionsQuery,
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   useGetProjectsByProjectIdInaccessibleDataConnectorLinksQuery,
-  useGetProjectsByProjectIdStorageQuery,
-  usePostDataConnectorsStorageMutation,
-  useDeleteDataConnectorsStorageByStorageIdMutation,
-  usePatchDataConnectorsStorageByStorageIdMutation,
-  useGetDataConnectorsStorageAllowQuery,
-  useGetDataConnectorsStorageAllowByProjectIdQuery,
-  usePostDataConnectorsStorageAllowMutation,
-  useDeleteDataConnectorsStorageAllowByProjectIdMutation,
-  usePatchDataConnectorsStorageAllowByProjectIdMutation,
 } = enhancedApi;
