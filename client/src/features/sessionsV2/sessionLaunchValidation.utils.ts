@@ -95,3 +95,22 @@ export function dataConnectorsShouldSaveCredentials(
 ): boolean {
   return configs?.some(shouldCloudStorageSaveCredentials) ?? false;
 }
+
+export function isDataConnectorExpired(
+  config: SessionStartDataConnectorConfiguration,
+): boolean {
+  if (!config.active || config.skip) {
+    return false;
+  }
+  const { dataConnector } = config;
+  return (
+    !!dataConnector.expires_at &&
+    new Date(dataConnector.expires_at) < new Date()
+  );
+}
+
+export function dataConnectorsHaveExpired(
+  configs: SessionStartDataConnectorConfiguration[] | undefined,
+): boolean {
+  return configs?.some(isDataConnectorExpired) ?? false;
+}

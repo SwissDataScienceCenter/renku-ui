@@ -55,6 +55,7 @@ import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "./SaveCloudStorageCredentials";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 import { UsageAvailable, validateEnvVariableName } from "./session.utils";
+import SessionExpiredDataConnectorsModal from "./SessionExpiredDataConnectorsModal";
 import SessionImageModal from "./SessionImageModal";
 import {
   dataConnectorsNeedCredentials,
@@ -434,6 +435,7 @@ function StartSessionFromLauncher({
       !needsCredentials &&
       !shouldSaveCredentials &&
       startSessionOptionsV2.dataConnectors &&
+      startSessionOptionsV2.dataConnectorsExpirationReady &&
       startSessionOptionsV2.imageReady &&
       startSessionOptionsV2.repositoriesReady &&
       startSessionOptionsV2.userSecretsReady &&
@@ -447,6 +449,7 @@ function StartSessionFromLauncher({
     sessionStarted,
     shouldSaveCredentials,
     startSessionOptionsV2.dataConnectors,
+    startSessionOptionsV2.dataConnectorsExpirationReady,
     startSessionOptionsV2.imageReady,
     startSessionOptionsV2.repositoriesReady,
     startSessionOptionsV2.userSecretsReady,
@@ -492,6 +495,19 @@ function StartSessionFromLauncher({
   if (!fetchingApi && !startSessionOptionsV2.repositoriesReady) {
     return (
       <StartSessionRepositoriesModal launcher={launcher} project={project} />
+    );
+  }
+
+  if (
+    !fetchingApi &&
+    startSessionOptionsV2.dataConnectors &&
+    !startSessionOptionsV2.dataConnectorsExpirationReady
+  ) {
+    return (
+      <StartSessionExpiredDataConnectorsModal
+        launcher={launcher}
+        project={project}
+      />
     );
   }
 
@@ -749,6 +765,54 @@ function StartSessionRepositoriesModal({
           status={steps}
         />
         <SessionRepositoriesModal isOpen={showModal} project={project} />
+      </div>
+    </div>
+  );
+}
+
+function StartSessionExpiredDataConnectorsModal({
+  launcher,
+  project,
+}: StartSessionFromLauncherProps) {
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
+  );
+
+  const showModal = !startSessionOptionsV2.dataConnectorsExpirationReady;
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div>
+      <div
+        className={cx(
+          progressBoxStyles.progressBoxSmall,
+          progressBoxStyles.progressBoxSmallSteps,
+        )}
+      >
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Launching session ${launcher.name}`}
+          status={steps}
+        />
+        <SessionExpiredDataConnectorsModal
+          isOpen={showModal}
+          project={project}
+          dataConnectors={startSessionOptionsV2.dataConnectors ?? []}
+        />
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { capitalize } from "lodash-es";
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
+  ArrowClockwise,
   Folder,
   Globe2,
   InfoCircle,
@@ -10,7 +11,13 @@ import {
   Lock,
 } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
-import { Card, CardBody, CardHeader, UncontrolledTooltip } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
 import { Clipboard } from "~/components/clipboard/Clipboard";
@@ -19,6 +26,7 @@ import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { Loader } from "~/components/Loader";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { TimeCaption } from "~/components/TimeCaption";
 import { STORAGES_WITH_ACCESS_MODE } from "~/features/cloudStorage/projectCloudStorage.constants";
 import { getCredentialFieldDefinitions } from "~/features/cloudStorage/projectCloudStorage.utils";
 import { useGetNamespacesByNamespaceSlugQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
@@ -32,6 +40,7 @@ import {
   useGetDataConnectorSource,
 } from "../components/dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
+import DataConnectorRefreshExpiredModal from "./DataConnectorRefreshExpiredModal";
 
 interface DataConnectorInfoBoxProps {
   dataConnector: DataConnectorRead;
@@ -82,6 +91,15 @@ export default function DataConnectorInfoBox({
     return null;
   }, [dataConnector, scope]);
 
+  const expired = dataConnector.expires_at
+    ? new Date(dataConnector.expires_at) < new Date()
+    : false;
+
+  const [isRefreshExpiredOpen, setRefreshExpiredOpen] = useState(false);
+  const toggleRefreshExpired = useCallback(() => {
+    setRefreshExpiredOpen((open) => !open);
+  }, []);
+
   // Non-global only
   const { data: referenceNamespace, isLoading: isLoadingReferenceNamespace } =
     useGetNamespacesByNamespaceSlugQuery(
@@ -119,6 +137,24 @@ export default function DataConnectorInfoBox({
         </span>
       </CardHeader>
       <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
+        {expired && (
+          <WarnAlert className={cx("mb-0")} timeout={0}>
+            <p className="mb-2">
+              This data connector has expired and should be refreshed by an
+              owner to use it in sessions, jobs or apps.
+            </p>
+            <Button
+              color="primary"
+              onClick={toggleRefreshExpired}
+              size="sm"
+              type="button"
+            >
+              <ArrowClockwise className={cx("bi", "me-1")} />
+              Refresh
+            </Button>
+          </WarnAlert>
+        )}
+
         <InfoEntry title="Identifier">
           <div className={cx("align-items-center", "d-flex", "gap-2")}>
             {identifier}
@@ -211,9 +247,7 @@ export default function DataConnectorInfoBox({
                 </ExternalLink>
                 <Clipboard
                   className={cx("border-0", "btn", "p-0", "shadow-none")}
-                  clipboardText={
-                    dataConnector.storage.configuration["doi"] as string
-                  }
+                  clipboardText={doiReference ?? ""}
                 />
               </div>
             </InfoEntry>
@@ -229,6 +263,21 @@ export default function DataConnectorInfoBox({
                 </KeywordBadge>
               ))}
             </KeywordContainer>
+          </InfoEntry>
+        )}
+
+        {dataConnector.expires_at && (
+          <InfoEntry
+            title={
+              <ExpiresAtTitle expiresAt={new Date(dataConnector.expires_at)} />
+            }
+            dataCy="expires-at"
+          >
+            <TimeCaption
+              datetime={dataConnector.expires_at}
+              enableTooltip
+              noCaption
+            />
           </InfoEntry>
         )}
 
@@ -248,6 +297,14 @@ export default function DataConnectorInfoBox({
 
         <DataConnectorAdditionalFields dataConnector={dataConnector} />
       </CardBody>
+      {expired && (
+        <DataConnectorRefreshExpiredModal
+          dataConnector={dataConnector}
+          isOpen={isRefreshExpiredOpen}
+          setOpen={setRefreshExpiredOpen}
+          toggleModal={toggleRefreshExpired}
+        />
+      )}
     </Card>
   );
 }
@@ -286,6 +343,27 @@ function MountPointHead() {
       </span>
       <UncontrolledTooltip target={ref} placement="bottom">
         This is where the data connector will be mounted during sessions.
+      </UncontrolledTooltip>
+    </>
+  );
+}
+
+interface ExpiresAtTitleProps {
+  expiresAt: Date;
+}
+function ExpiresAtTitle({ expiresAt }: ExpiresAtTitleProps) {
+  const expired = expiresAt < new Date();
+  const ref = useRef(null);
+  return (
+    <>
+      <span>{expired ? "Expired" : "Expires"}</span>
+      <span ref={ref}>
+        <InfoCircle className="ms-1" />
+      </span>
+      <UncontrolledTooltip target={ref} placement="bottom">
+        {expired
+          ? "This data connector has expired. You need to refresh it to use it in sessions or jobs."
+          : "This data connector has an expire date and will need to be refreshed after reaching it."}
       </UncontrolledTooltip>
     </>
   );
