@@ -39,6 +39,7 @@ import {
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import type { ResourceClassForm } from "./adminComputeResources.types";
+import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 
 interface AddResourceClassButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -79,6 +80,8 @@ function AddResourceClassModal({
   toggle,
 }: AddResourceClassModalProps) {
   const { id, quota } = resourcePool;
+  const requiresIntegerCpu = poolRequiresIntegerCpu(resourcePool.remote);
+  const cpuStep = requiresIntegerCpu ? 1 : 0.1;
 
   const [addResourceClass, result] =
     usePostResourcePoolsByResourcePoolIdClassesMutation();
@@ -89,7 +92,7 @@ function AddResourceClassModal({
     handleSubmit,
   } = useForm<ResourceClassForm>({
     defaultValues: {
-      cpu: 0.1,
+      cpu: cpuStep,
       default: false,
       default_storage: 1,
       gpu: 0,
@@ -191,13 +194,21 @@ function AddResourceClassModal({
                   className={cx(errors.cpu && "is-invalid")}
                   id={`addResourceClassCpu-${id}`}
                   type="number"
-                  min={0.1}
-                  step={0.1}
+                  min={cpuStep}
+                  step={cpuStep}
                   max={quota?.cpu}
                   {...field}
                 />
               )}
-              rules={{ min: 0.1, max: quota?.cpu }}
+              rules={{
+                min: cpuStep,
+                max: quota?.cpu,
+                validate: requiresIntegerCpu
+                  ? (value) =>
+                      Number.isInteger(Number(value)) ||
+                      "CPUs must be a whole number for firecrest pools"
+                  : undefined,
+              }}
             />
             <div className="invalid-feedback">Invalid value for CPUs</div>
           </div>
