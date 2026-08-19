@@ -1,8 +1,9 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { capitalize } from "lodash-es";
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
+  ArrowClockwise,
   Folder,
   Globe2,
   InfoCircle,
@@ -10,7 +11,13 @@ import {
   Lock,
 } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
-import { Card, CardBody, CardHeader, UncontrolledTooltip } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
 import { Clipboard } from "~/components/clipboard/Clipboard";
@@ -33,6 +40,7 @@ import {
   useGetDataConnectorSource,
 } from "../components/dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
+import DataConnectorRefreshExpiredModal from "./DataConnectorRefreshExpiredModal";
 
 interface DataConnectorInfoBoxProps {
   dataConnector: DataConnectorRead;
@@ -88,6 +96,11 @@ export default function DataConnectorInfoBox({
       ? new Date(dataConnector.expires_at) < new Date()
       : false;
 
+  const [isRefreshExpiredOpen, setRefreshExpiredOpen] = useState(false);
+  const toggleRefreshExpired = useCallback(() => {
+    setRefreshExpiredOpen((open) => !open);
+  }, []);
+
   // Non-global only
   const { data: referenceNamespace, isLoading: isLoadingReferenceNamespace } =
     useGetNamespacesByNamespaceSlugQuery(
@@ -127,8 +140,19 @@ export default function DataConnectorInfoBox({
       <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
         {expired && (
           <WarnAlert className={cx("mb-0")} timeout={0}>
-            This data connector has expired and should be refreshed by an owner
-            to use it in sessions, jobs or apps.
+            <p className="mb-2">
+              This data connector has expired and should be refreshed by an
+              owner to use it in sessions, jobs or apps.
+            </p>
+            <Button
+              color="primary"
+              onClick={toggleRefreshExpired}
+              size="sm"
+              type="button"
+            >
+              <ArrowClockwise className={cx("bi", "me-1")} />
+              Refresh
+            </Button>
           </WarnAlert>
         )}
 
@@ -274,6 +298,14 @@ export default function DataConnectorInfoBox({
 
         <DataConnectorAdditionalFields dataConnector={dataConnector} />
       </CardBody>
+      {expired && (
+        <DataConnectorRefreshExpiredModal
+          dataConnector={dataConnector}
+          isOpen={isRefreshExpiredOpen}
+          setOpen={setRefreshExpiredOpen}
+          toggleModal={toggleRefreshExpired}
+        />
+      )}
     </Card>
   );
 }
