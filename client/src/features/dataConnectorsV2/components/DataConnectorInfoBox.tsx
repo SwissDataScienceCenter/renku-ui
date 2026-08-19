@@ -83,6 +83,11 @@ export default function DataConnectorInfoBox({
     return null;
   }, [dataConnector, scope]);
 
+  const expired =
+    scope === "global" && dataConnector.expires_at
+      ? new Date(dataConnector.expires_at) < new Date()
+      : false;
+
   // Non-global only
   const { data: referenceNamespace, isLoading: isLoadingReferenceNamespace } =
     useGetNamespacesByNamespaceSlugQuery(
@@ -120,6 +125,13 @@ export default function DataConnectorInfoBox({
         </span>
       </CardHeader>
       <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
+        {expired && (
+          <WarnAlert className={cx("mb-0")} timeout={0}>
+            This data connector has expired and should be refreshed by an owner
+            to use it in sessions, jobs or apps.
+          </WarnAlert>
+        )}
+
         <InfoEntry title="Identifier">
           <div className={cx("align-items-center", "d-flex", "gap-2")}>
             {identifier}
