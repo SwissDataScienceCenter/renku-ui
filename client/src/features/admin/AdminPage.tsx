@@ -54,10 +54,7 @@ import {
   useDeleteResourcePoolsByResourcePoolIdMutation,
   useGetResourcePoolsByResourcePoolIdMembersQuery,
   useGetResourcePoolsQuery,
-  type PoolMemberGroupResponse,
-  type PoolMemberProjectResponse,
   type PoolMemberResponse,
-  type PoolMemberUserResponse,
   type ResourceClassWithId,
   type ResourcePoolWithId,
   type ResourcePoolWithIdFiltered,
@@ -679,11 +676,10 @@ function useResolveResourcePoolMember(member: PoolMemberResponse) {
 
   switch (member.member_type) {
     case "user": {
-      const userResponse = member as PoolMemberUserResponse;
       const label =
         keycloakUser != null
           ? `${keycloakUser.firstName} ${keycloakUser.lastName} <${keycloakUser.email}>`
-          : (userResponse.email ?? userResponse.id);
+          : (member.email ?? member.id);
 
       return {
         isLoading,
@@ -692,19 +688,17 @@ function useResolveResourcePoolMember(member: PoolMemberResponse) {
       };
     }
     case "group": {
-      const groupResponse = member as PoolMemberGroupResponse;
       return {
         isLoading: false,
         error: undefined,
-        label: `${groupResponse.name} (${groupResponse.slug})`,
+        label: `${member.name} (${member.slug})`,
       };
     }
     case "project": {
-      const projectResponse = member as PoolMemberProjectResponse;
       return {
         isLoading: false,
         error: undefined,
-        label: `${projectResponse.name} (${projectResponse.namespace})`,
+        label: `${member.name} (${member.namespace})`,
       };
     }
   }
