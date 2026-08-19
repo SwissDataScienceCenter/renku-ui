@@ -36,6 +36,7 @@ export interface SessionStartDataConnectorConfiguration {
 
 export interface StartSessionOptionsV2 {
   dataConnectors?: SessionStartDataConnectorConfiguration[];
+  dataConnectorsExpirationReady: boolean;
   defaultUrl: string;
   environmentVariables: SessionEnvironmentVariable[];
   imageReady: boolean;
