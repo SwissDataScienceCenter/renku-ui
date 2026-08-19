@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { getDataConnectorScope } from "../dataConnectorsV2/components/dataConnector.utils";
 import { shouldInterrupt } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { GetRepositoriesApiResponse } from "../repositories/api/repositories.api";
@@ -104,9 +103,7 @@ export function isDataConnectorExpired(
     return false;
   }
   const { dataConnector } = config;
-  const scope = getDataConnectorScope(dataConnector.namespace);
   return (
-    scope === "global" &&
     !!dataConnector.expires_at &&
     new Date(dataConnector.expires_at) < new Date()
   );

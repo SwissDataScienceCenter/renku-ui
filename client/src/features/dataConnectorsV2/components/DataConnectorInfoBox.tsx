@@ -91,10 +91,9 @@ export default function DataConnectorInfoBox({
     return null;
   }, [dataConnector, scope]);
 
-  const expired =
-    scope === "global" && dataConnector.expires_at
-      ? new Date(dataConnector.expires_at) < new Date()
-      : false;
+  const expired = dataConnector.expires_at
+    ? new Date(dataConnector.expires_at) < new Date()
+    : false;
 
   const [isRefreshExpiredOpen, setRefreshExpiredOpen] = useState(false);
   const toggleRefreshExpired = useCallback(() => {

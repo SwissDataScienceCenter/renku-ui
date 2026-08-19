@@ -479,10 +479,9 @@ function DataConnectorActionsInner({
     return deposits.data.deposits[0];
   }, [deposits.data]);
 
-  const expiresAt =
-    dataConnector.expires_at && scope === "global"
-      ? new Date(dataConnector.expires_at)
-      : undefined;
+  const expiresAt = dataConnector.expires_at
+    ? new Date(dataConnector.expires_at)
+    : undefined;
   const expired = expiresAt ? expiresAt < new Date() : false;
 
   // List of actionable items
