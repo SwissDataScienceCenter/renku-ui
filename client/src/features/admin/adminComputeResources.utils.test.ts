@@ -18,7 +18,10 @@
 
 import { describe, expect, it } from "vitest";
 
-import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
+import {
+  buildResourceClassRemote,
+  poolRequiresIntegerCpu,
+} from "./adminComputeResources.utils";
 
 describe("poolRequiresIntegerCpu", () => {
   it("returns true for a firecrest remote configuration", () => {
@@ -37,3 +40,62 @@ describe("poolRequiresIntegerCpu", () => {
     expect(poolRequiresIntegerCpu(undefined)).toBe(false);
   });
 });
+
+/* eslint-disable spellcheck/spell-checker */
+describe("buildResourceClassRemote", () => {
+  it("omits system_name and partition when both are empty strings", () => {
+    expect(
+      buildResourceClassRemote(
+        { systemName: "", partition: "", forwardResourceValues: false },
+        true,
+      ),
+    ).toEqual({ forward_resource_values: false });
+  });
+
+  it("returns the full snake_case payload when all fields are populated", () => {
+    expect(
+      buildResourceClassRemote(
+        {
+          systemName: "eiger",
+          partition: "normal",
+          forwardResourceValues: true,
+        },
+        true,
+      ),
+    ).toEqual({
+      system_name: "eiger",
+      partition: "normal",
+      forward_resource_values: true,
+    });
+  });
+
+  it("trims whitespace and omits an empty partition", () => {
+    expect(
+      buildResourceClassRemote(
+        {
+          systemName: "  eiger  ",
+          partition: "",
+          forwardResourceValues: false,
+        },
+        true,
+      ),
+    ).toEqual({
+      system_name: "eiger",
+      forward_resource_values: false,
+    });
+  });
+
+  it("returns undefined when the pool is not firecrest", () => {
+    expect(
+      buildResourceClassRemote(
+        {
+          systemName: "eiger",
+          partition: "normal",
+          forwardResourceValues: true,
+        },
+        false,
+      ),
+    ).toBeUndefined();
+  });
+});
+/* eslint-enable spellcheck/spell-checker */
