@@ -54,7 +54,7 @@
     "update-api:sessionLaunchersV2": "node scripts/update_api_spec.js sessionLaunchersV2",
     "update-api:sessionsV2": "node scripts/update_api_spec.js sessionsV2",
     "update-api:users": "node scripts/update_api_spec.js users",
-    "check-docs-links": "vitest run src/utils/constants/docs.test.ts:5"
+    "test:docs-links": "vitest src/utils/constants/docs.test.ts:6"
   },
   "type": "module",
   "dependencies": {
