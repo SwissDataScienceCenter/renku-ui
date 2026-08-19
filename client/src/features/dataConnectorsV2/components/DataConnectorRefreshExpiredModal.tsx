@@ -90,18 +90,18 @@ export default function DataConnectorRefreshExpiredModal({
         ) : (
           <>
             <p>
-              The global data connector <strong>{dataConnector?.name}</strong>{" "}
-              has expired and needs to be refreshed.
+              The data connector <strong>{dataConnector?.name}</strong> has
+              expired and needs to be refreshed.
             </p>
             <p>
-              Please click on Refresh after following the instruction at this
-              link:
+              Please click on the Refresh button after following the instruction
+              at this link:
               <br />
               <ExternalLink href={fullLink}>{fullLink}</ExternalLink>
             </p>
             <InfoAlert timeout={0}>
               <p className="mb-2">
-                Mind that you need permission on the{" "}
+                You might need permission on the{" "}
                 {dataConnector?.publisher_url ? (
                   <ExternalLink href={dataConnector?.publisher_url}>
                     target platform
@@ -113,7 +113,7 @@ export default function DataConnectorRefreshExpiredModal({
               </p>
               <p className="mb-0">
                 After completing all the steps, it might take a while for the
-                content to be available
+                content to be available.
               </p>
             </InfoAlert>
           </>
