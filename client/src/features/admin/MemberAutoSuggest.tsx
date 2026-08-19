@@ -38,6 +38,7 @@ import {
 import type { PickedMember } from "./addMemberToResourcePool.types";
 import adminKeycloakApi from "./adminKeycloak.api";
 import type { KeycloakUser } from "./adminKeycloak.types";
+import { buildTypeScopedSearchQuery } from "./MemberAutoSuggest.utils";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
 interface MemberAutoSuggestProps<T> {
@@ -164,7 +165,13 @@ export function GroupAutoSuggest({
 }) {
   const [value, setValue] = useState("");
   const { data: searchResult } = useGetSearchQueryQuery(
-    { params: { q: value, page: 1, per_page: 20 } },
+    {
+      params: {
+        q: buildTypeScopedSearchQuery(value, "Group"),
+        page: 1,
+        per_page: 20,
+      },
+    },
     { skip: value.length < 2 },
   );
 
@@ -217,7 +224,13 @@ export function ProjectAutoSuggest({
 }) {
   const [value, setValue] = useState("");
   const { data: searchResult } = useGetSearchQueryQuery(
-    { params: { q: value, page: 1, per_page: 20 } },
+    {
+      params: {
+        q: buildTypeScopedSearchQuery(value, "Project"),
+        page: 1,
+        per_page: 20,
+      },
+    },
     { skip: value.length < 2 },
   );
 
