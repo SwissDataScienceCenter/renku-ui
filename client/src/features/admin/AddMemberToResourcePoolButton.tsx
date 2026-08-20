@@ -432,7 +432,7 @@ function SearchInputSection({
           </Label>
           <InputGroup>
             <Input
-              className="rounded-0 rounded-start"
+              className={cx("rounded-0", "rounded-start")}
               disabled
               type="text"
               value={renderPickedMemberLabel(pickedMember)}
