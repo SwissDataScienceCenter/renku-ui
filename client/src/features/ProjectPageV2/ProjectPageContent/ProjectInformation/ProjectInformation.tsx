@@ -21,6 +21,7 @@ import cx from "classnames";
 import { useMemo } from "react";
 import {
   Bookmarks,
+  Clipboard2,
   Clock,
   Diagram3Fill,
   Eye,
@@ -31,6 +32,7 @@ import {
 import { generatePath, Link } from "react-router";
 import { Badge, Card, CardBody, CardHeader } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import CopyProjectButton from "~/features/ProjectPageV2/ProjectPageContent/ProjectInformation/CopyProjectButton";
@@ -154,6 +156,20 @@ export default function ProjectInformation({
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <ProjectInformationBox
         icon={<JournalAlbum className="bi" />}
+        title="Identifier:"
+      >
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <span className="text-truncate">
+            {`${project.namespace}/${project?.slug}`}
+          </span>
+          <Clipboard
+            className={cx("border-0", "btn", "p-0", "shadow-none")}
+            clipboardText={`${project.namespace}/${project?.slug}`}
+          />
+        </div>
+      </ProjectInformationBox>
+      <ProjectInformationBox
+        icon={<Clipboard2 className="bi" />}
         title="Namespace:"
       >
         <p className="mb-0">

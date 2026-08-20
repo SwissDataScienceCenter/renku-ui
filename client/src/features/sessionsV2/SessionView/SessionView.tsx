@@ -28,6 +28,7 @@ import {
   Database,
   ExclamationTriangleFill,
   FileCode,
+  InfoCircle,
   Link45deg,
   Pencil,
   PlayCircle,
@@ -53,6 +54,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert } from "~/components/Alert";
+import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -671,47 +673,66 @@ export function SessionView({
           <SessionViewSessionSecrets />
 
           {launcher && (
-            <Card>
-              <CardHeader
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "justify-content-between",
-                )}
-              >
-                <h3 className={cx("mb-0", "me-2")}>
-                  <Braces className={cx("me-1", "bi")} />
-                  Environment Variables
-                </h3>
-                <PermissionsGuard
-                  disabled={null}
-                  enabled={
-                    <>
-                      <Button
-                        color="outline-primary"
-                        id="modify-env-variables-button"
-                        onClick={toggleEnvVariables}
-                        size="sm"
-                        tabIndex={0}
-                      >
-                        <Pencil className="bi" />
-                      </Button>
-                      <UncontrolledTooltip target="modify-env-variables-button">
-                        Modify environment variables
-                      </UncontrolledTooltip>
-                    </>
-                  }
-                  requestedPermission="write"
-                  userPermissions={permissions}
-                />
-              </CardHeader>
-              <CardBody>
-                <p className="mb-2">
-                  Environment variables pass information into the session.
-                </p>
-                <EnvVariablesCard launcher={launcher} />
-              </CardBody>
-            </Card>
+            <>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className={cx("mb-0", "me-2")}>
+                    <Braces className={cx("me-1", "bi")} />
+                    Environment Variables
+                  </h3>
+                  <PermissionsGuard
+                    disabled={null}
+                    enabled={
+                      <>
+                        <Button
+                          color="outline-primary"
+                          id="modify-env-variables-button"
+                          onClick={toggleEnvVariables}
+                          size="sm"
+                          tabIndex={0}
+                        >
+                          <Pencil className="bi" />
+                        </Button>
+                        <UncontrolledTooltip target="modify-env-variables-button">
+                          Modify environment variables
+                        </UncontrolledTooltip>
+                      </>
+                    }
+                    requestedPermission="write"
+                    userPermissions={permissions}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <p className="mb-2">
+                    Environment variables pass information into the session.
+                  </p>
+                  <EnvVariablesCard launcher={launcher} />
+                </CardBody>
+              </Card>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className={cx("mb-0", "me-2")}>
+                    <InfoCircle className={cx("me-1", "bi")} />
+                    Info
+                  </h3>
+                </CardHeader>
+                <CardBody>
+                  <InternalIdField id={launcher.id} />
+                </CardBody>
+              </Card>
+            </>
           )}
         </div>
       </OffcanvasBody>

@@ -28,6 +28,7 @@ import {
   OffcanvasBody,
 } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import ExternalLink from "~/components/ExternalLink";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
@@ -45,7 +46,7 @@ import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.ho
 import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorActions from "./DataConnectorActions";
 import DataConnectorCredentialsBox from "./DataConnectorCredentialsBox";
-import DataConnectorInfoBox from "./DataConnectorInfoBox";
+import DataConnectorInfoBox, { InfoEntry } from "./DataConnectorInfoBox";
 import { DataConnectorIntegrationBox } from "./DataConnectorIntegrationBox";
 import DataConnectorModal from "./DataConnectorModal";
 import DataConnectorProjectsBox from "./DataConnectorProjectsBox";
@@ -106,6 +107,23 @@ export default function DataConnectorView({
       slug: dataConnector.slug,
     },
   );
+
+  const internalId = (
+    <InfoEntry title={"Internal ID"} dataCy="internalId">
+      <div className={cx("align-items-center", "d-flex", "gap-2")}>
+        <span className="text-truncate">
+          {dataConnector?.id ?? "No available"}
+        </span>
+        {dataConnector?.id && (
+          <Clipboard
+            className={cx("border-0", "btn", "p-0", "shadow-none")}
+            clipboardText={dataConnector?.id}
+          />
+        )}
+      </div>
+    </InfoEntry>
+  );
+
   return (
     <Offcanvas
       toggle={toggleView}
@@ -129,6 +147,7 @@ export default function DataConnectorView({
             dataConnector={dataConnector}
             headerTag="h3"
             visibilityWarning={dataConnectorPotentiallyInaccessible}
+            internalId={internalId}
           />
 
           <DataConnectorIntegrationBox
