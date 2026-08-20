@@ -67,9 +67,9 @@ export default function ContactUsCard() {
       <Card className={cx("border-0", styles.card)}>
         <CardBody>
           <CardTitle>
-            <h4>
+            <p>
               Do you have another platform you&apos;d like to connect to Renku?
-            </h4>
+            </p>
           </CardTitle>
           <CardText>
             <Button
