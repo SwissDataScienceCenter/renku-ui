@@ -160,14 +160,12 @@ export default function ProjectInformation({
       >
         <div className={cx("align-items-center", "d-flex", "gap-2")}>
           <span className="text-truncate">
-            {project?.slug ?? "Not available"}
+            {`${project.namespace}/${project?.slug}`}
           </span>
-          {project?.slug && (
-            <Clipboard
-              className={cx("border-0", "btn", "p-0", "shadow-none")}
-              clipboardText={project?.slug}
-            />
-          )}
+          <Clipboard
+            className={cx("border-0", "btn", "p-0", "shadow-none")}
+            clipboardText={`${project.namespace}/${project?.slug}`}
+          />
         </div>
       </ProjectInformationBox>
       <ProjectInformationBox
