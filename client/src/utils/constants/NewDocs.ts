@@ -80,10 +80,6 @@ export const NEW_DOCS_QUICK_START_TUTORIAL = newDocsLinkPage(
   "docs/users/getting-started",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
-export const NEW_DOCS_CREATE_PROJECT = newDocsLinkPage(
-  "docs/users/getting-started/create-project",
-)(DEFAULT_NEW_DOC_LINK_ARGS);
-
 export const NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED = newDocsLinkPage(
   "docs/users/compute/environment/guides/create-environment-with-custom-packages-installed",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
