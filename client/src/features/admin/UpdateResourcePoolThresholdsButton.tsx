@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -33,11 +33,12 @@ import {
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import {
   usePatchResourcePoolsByResourcePoolIdMutation,
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
-import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import { ResourcePoolDefaultThreshold } from "./AddResourcePoolButton";
 import type { UpdateResourcePoolThresholdsForm } from "./adminComputeResources.types";
 
@@ -87,7 +88,9 @@ function UpdateResourcePoolThresholdsModal({
   const { id, name } = resourcePool;
 
   // Fetch default values
-  const notebookVersion = useGetNotebooksVersionQuery();
+  const { params } = useContext(AppContext);
+  const cullingThresholds =
+    params?.CULLING_THRESHOLDS ?? DEFAULT_APP_PARAMS["CULLING_THRESHOLDS"];
 
   // Form state
   const {
@@ -193,11 +196,7 @@ function UpdateResourcePoolThresholdsModal({
               Please enter a number greater than 0 or leave blank.
             </div>
             <ResourcePoolDefaultThreshold
-              duration={
-                notebookVersion.data?.defaultCullingThresholds?.registered.idle
-              }
-              isError={notebookVersion.isError}
-              isLoading={notebookVersion.isLoading}
+              duration={cullingThresholds.registered.idle}
             />
             {resourcePool.idle_threshold && (
               <Label className={cx("d-block", "form-text")}>
@@ -234,12 +233,7 @@ function UpdateResourcePoolThresholdsModal({
             />
             <div className="invalid-feedback">Please provide a threshold</div>
             <ResourcePoolDefaultThreshold
-              duration={
-                notebookVersion.data?.defaultCullingThresholds?.registered
-                  .hibernation
-              }
-              isError={notebookVersion.isError}
-              isLoading={notebookVersion.isLoading}
+              duration={cullingThresholds.registered.hibernation}
             />
             {resourcePool.hibernation_threshold && (
               <Label className={cx("d-block", "form-text")}>

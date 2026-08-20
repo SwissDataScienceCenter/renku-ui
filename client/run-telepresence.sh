@@ -203,7 +203,9 @@ tee > ./public/config.json << EOF
   "IMAGE_BUILDERS_ENABLED": true,
   "BUILD_PRIVATE_REPO_BUILDS_ENABLED": true,
   "APPS_ENABLED": true,
-  "CONTACT_EMAIL":  "hello@renku.io"
+  "CONTACT_EMAIL":  "hello@renku.io",
+  "PERSISTED_LOGS_ENABLED": true,
+  "PERSISTED_LOGS_TTL_SECONDS": 86400
 }
 EOF
 

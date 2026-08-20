@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -33,14 +33,16 @@ import {
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import {
   useGetResourcePoolsQuery,
   usePostResourcePoolsMutation,
   type RemoteConfiguration,
 } from "../sessionsV2/api/computeResources.api";
-import { useGetNotebooksVersionQuery } from "../versions/versions.api";
 import type { ResourcePoolForm } from "./adminComputeResources.types";
+import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import ResourcePoolClusterIdInput from "./forms/ResourcePoolClusterIdInput";
 import ResourcePoolRemoteSection from "./forms/ResourcePoolRemoteSection";
 
@@ -68,7 +70,9 @@ interface AddResourcePoolModalProps {
 function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
   // Fetch existing resource pools and default values
   const { data: resourcePools } = useGetResourcePoolsQuery({});
-  const notebookVersion = useGetNotebooksVersionQuery();
+  const { params } = useContext(AppContext);
+  const cullingThresholds =
+    params?.CULLING_THRESHOLDS ?? DEFAULT_APP_PARAMS["CULLING_THRESHOLDS"];
   const defaultSessionClass = useMemo(
     () =>
       resourcePools
@@ -127,10 +131,15 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
   const [addResourcePool, result] = usePostResourcePoolsMutation();
   const onSubmit = useCallback(
     (data: ResourcePoolForm) => {
+      const requiresIntegerCpu = poolRequiresIntegerCpu({
+        kind: data.remote.enabled ? data.remote.kind : null,
+      });
       const populatedClass = defaultSessionClass
         ? {
             name: defaultSessionClass.name,
-            cpu: defaultSessionClass.cpu,
+            cpu: requiresIntegerCpu
+              ? Math.ceil(defaultSessionClass.cpu)
+              : defaultSessionClass.cpu,
             memory: defaultSessionClass.memory,
             gpu: defaultSessionClass.gpu,
             max_storage: defaultSessionClass.max_storage,
@@ -292,11 +301,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               Please enter a number greater than 0 or leave blank.
             </div>
             <ResourcePoolDefaultThreshold
-              duration={
-                notebookVersion.data?.defaultCullingThresholds?.registered.idle
-              }
-              isError={notebookVersion.isError}
-              isLoading={notebookVersion.isLoading}
+              duration={cullingThresholds.registered.idle}
             />
           </div>
           <div>
@@ -329,12 +334,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
               Please enter a number greater than 0 or leave blank.
             </div>
             <ResourcePoolDefaultThreshold
-              duration={
-                notebookVersion.data?.defaultCullingThresholds?.registered
-                  .hibernation
-              }
-              isError={notebookVersion.isError}
-              isLoading={notebookVersion.isLoading}
+              duration={cullingThresholds.registered.hibernation}
             />
           </div>
 
@@ -423,20 +423,14 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
 
 interface ResourcePoolDefaultThresholdInterface {
   duration?: number;
-  isError: boolean;
-  isLoading: boolean;
 }
 export function ResourcePoolDefaultThreshold({
   duration,
-  isError,
-  isLoading,
 }: ResourcePoolDefaultThresholdInterface) {
   const text = useMemo(() => {
-    if (isLoading) return "Loading default values...";
-    if (isError) return "Error loading default values.";
     if (!duration) return "No default threshold available.";
     return `Default threshold: ${toFullHumanDuration(duration)}`;
-  }, [duration, isError, isLoading]);
+  }, [duration]);
 
   return <Label className="form-text">{text}</Label>;
 }

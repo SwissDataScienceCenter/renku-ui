@@ -43,6 +43,7 @@ import { resetFavicon, setFavicon } from "../display/displaySlice";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetResourcePoolsQuery } from "./api/computeResources.generated-api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
 import {
@@ -53,7 +54,7 @@ import { SelectResourceClassModal } from "./components/SessionModals/SelectResou
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "./SaveCloudStorageCredentials";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
-import { validateEnvVariableName } from "./session.utils";
+import { UsageAvailable, validateEnvVariableName } from "./session.utils";
 import SessionImageModal from "./SessionImageModal";
 import {
   dataConnectorsNeedCredentials,
@@ -116,7 +117,6 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
-
   const [
     startSessionV2,
     { data: session, error: error, isLoading: isLoadingStartSession, isError },
@@ -202,6 +202,11 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
     ]);
   }, [error, isLoadingStartSession, startSessionOptionsV2]);
 
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const resourceClass = resourcePools
+    ?.flatMap((pool) => pool.classes)
+    .find((cls) => cls.id === startSessionOptionsV2.sessionClass);
+
   return (
     <div>
       {error && <RtkOrDataServicesError error={error} dismissible={false} />}
@@ -218,6 +223,13 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
           style={ProgressStyle.Light}
           title={`Launching session ${launcher.name}`}
           status={steps}
+          extraDescription={
+            resourceClass?.usage_hours_remaining != null && (
+              <UsageAvailable
+                usageAvailableHours={resourceClass?.usage_hours_remaining}
+              />
+            )
+          }
         />
       </div>
     </div>
@@ -440,6 +452,11 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.userSecretsReady,
   ]);
 
+  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const resourceClass = resourcePools
+    ?.flatMap((pool) => pool.classes)
+    .find((cls) => cls.id === startSessionOptionsV2.sessionClass);
+
   const steps = [
     {
       id: 0,
@@ -520,6 +537,13 @@ function StartSessionFromLauncher({
         style={ProgressStyle.Light}
         title={`Launching session ${launcher.name}`}
         status={steps}
+        extraDescription={
+          resourceClass?.usage_hours_remaining != null && (
+            <UsageAvailable
+              usageAvailableHours={resourceClass?.usage_hours_remaining}
+            />
+          )
+        }
       />
       <SelectResourceClassModal
         isOpen={isPendingResourceClass}

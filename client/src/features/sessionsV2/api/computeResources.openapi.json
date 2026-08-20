@@ -2019,6 +2019,9 @@
           },
           "quota_enforced": {
             "$ref": "#/components/schemas/QuotaEnforced"
+          },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
           }
         }
       },
@@ -2060,6 +2063,9 @@
               }
             ],
             "default": false
+          },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
           }
         },
         "required": [
@@ -2154,6 +2160,9 @@
               }
             ],
             "default": false
+          },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
           }
         },
         "required": [
@@ -2333,6 +2342,9 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "cpu_limit_factor": {
+            "$ref": "#/components/schemas/CpuLimitFactor"
           }
         },
         "required": ["classes", "name", "public", "default"],
@@ -2405,6 +2417,16 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "cpu_limit_factor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CpuLimitFactor"
+              },
+              {
+                "$ref": "#/components/schemas/RemoveCpuLimitFactor"
+              }
+            ]
           }
         },
         "example": {
@@ -2459,6 +2481,16 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "cpu_limit_factor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CpuLimitFactor"
+              },
+              {
+                "$ref": "#/components/schemas/RemoveCpuLimitFactor"
+              }
+            ]
           }
         },
         "required": ["classes", "name", "public", "default", "platform"],
@@ -2542,6 +2574,9 @@
           },
           "platform": {
             "$ref": "#/components/schemas/RuntimePlatform"
+          },
+          "cpu_limit_factor": {
+            "$ref": "#/components/schemas/CpuLimitFactor"
           }
         },
         "required": ["classes", "name", "id", "public", "default", "platform"],
@@ -2623,6 +2658,9 @@
           },
           "credits_used": {
             "$ref": "#/components/schemas/CreditsUsed"
+          },
+          "cpu_limit_factor": {
+            "$ref": "#/components/schemas/CpuLimitFactor"
           }
         },
         "required": ["classes", "name", "id", "public", "default", "platform"],
@@ -3135,6 +3173,23 @@
         },
         "required": ["kind", "api_url", "system_name"]
       },
+      "RemoteClassConfigurationFirecrest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "system_name": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestSystemName"
+          },
+          "partition": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestPartition"
+          },
+          "forward_resource_values": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, Amalthea forwards the resource class CPU, memory, and GPU values to FirecREST. When false (the default), the HPC grid selects the resources; the class values are still used for display and quota matching.\n"
+          }
+        }
+      },
       "RemoteConfigurationFirecrestProviderId": {
         "type": "string",
         "description": "The ID of a provider (see oauth2 section).\nThis is used to allow seamless authentication using Renku integrations.\n",
@@ -3421,6 +3476,20 @@
       "IngressAnnotations": {
         "type": "object",
         "additionalProperties": true
+      },
+      "CpuLimitFactor": {
+        "type": "number",
+        "format": "float",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "The value used to multiply cpu requests to get the limit. If unset there will be no cpu limits."
+      },
+      "RemoveCpuLimitFactor": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 0,
+        "description": "Indicates that the cpu limits should not be set and if a limit is set it should be removed",
+        "format": "float"
       }
     },
     "responses": {

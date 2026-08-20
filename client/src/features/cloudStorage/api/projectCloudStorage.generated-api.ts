@@ -2,56 +2,6 @@ import { projectCloudStorageEmptyApi as api } from "./projectCloudStorage.empty-
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getStorageByStorageId: build.query<
-      GetStorageByStorageIdApiResponse,
-      GetStorageByStorageIdApiArg
-    >({
-      query: (queryArg) => ({ url: `/storage/${queryArg.storageId}` }),
-    }),
-    putStorageByStorageId: build.mutation<
-      PutStorageByStorageIdApiResponse,
-      PutStorageByStorageIdApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/storage/${queryArg.storageId}`,
-        method: "PUT",
-        body: queryArg.body,
-      }),
-    }),
-    patchStorageByStorageId: build.mutation<
-      PatchStorageByStorageIdApiResponse,
-      PatchStorageByStorageIdApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/storage/${queryArg.storageId}`,
-        method: "PATCH",
-        body: queryArg.body,
-      }),
-    }),
-    deleteStorageByStorageId: build.mutation<
-      DeleteStorageByStorageIdApiResponse,
-      DeleteStorageByStorageIdApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/storage/${queryArg.storageId}`,
-        method: "DELETE",
-      }),
-    }),
-    getStorage: build.query<GetStorageApiResponse, GetStorageApiArg>({
-      query: (queryArg) => ({
-        url: `/storage`,
-        params: {
-          storage_params: queryArg.storageParams,
-        },
-      }),
-    }),
-    postStorage: build.mutation<PostStorageApiResponse, PostStorageApiArg>({
-      query: (queryArg) => ({
-        url: `/storage`,
-        method: "POST",
-        body: queryArg.body,
-      }),
-    }),
     getStorageSchema: build.query<
       GetStorageSchemaApiResponse,
       GetStorageSchemaApiArg
@@ -92,44 +42,6 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as projectCloudStorageGeneratedApi };
-export type GetStorageByStorageIdApiResponse =
-  /** status 200 Found the cloud storage */ CloudStorageGetRead;
-export type GetStorageByStorageIdApiArg = {
-  /** the id of the storage */
-  storageId: Ulid;
-};
-export type PutStorageByStorageIdApiResponse =
-  /** status 201 The cloud storage entry was created */ CloudStorageGetRead;
-export type PutStorageByStorageIdApiArg = {
-  /** the id of the storage */
-  storageId: Ulid;
-  body: CloudStorage | CloudStorageUrl;
-};
-export type PatchStorageByStorageIdApiResponse =
-  /** status 201 The cloud storage entry was created */ CloudStorageGetRead;
-export type PatchStorageByStorageIdApiArg = {
-  /** the id of the storage */
-  storageId: Ulid;
-  body: CloudStoragePatch;
-};
-export type DeleteStorageByStorageIdApiResponse = unknown;
-export type DeleteStorageByStorageIdApiArg = {
-  /** the id of the storage */
-  storageId: Ulid;
-};
-export type GetStorageApiResponse =
-  /** status 200 the storage configurations for the project */ CloudStorageGetRead[];
-export type GetStorageApiArg = {
-  /** query parameters */
-  storageParams?: {
-    project_id?: GitlabProjectId;
-  };
-};
-export type PostStorageApiResponse =
-  /** status 201 The cloud storage entry was created */ CloudStorageGetRead;
-export type PostStorageApiArg = {
-  body: CloudStorage | CloudStorageUrl;
-};
 export type GetStorageSchemaApiResponse =
   /** status 200 The cloud storage schema definition */ RCloneSchema;
 export type GetStorageSchemaApiArg = void;
@@ -150,45 +62,6 @@ export type PostStorageSchemaObscureApiArg = {
   body: {
     configuration: RCloneConfig;
   };
-};
-export type GitlabProjectId = string;
-export type Ulid = string;
-export type ProjectId = {
-  project_id: GitlabProjectId | Ulid;
-};
-export type StorageType = string;
-export type StorageTypeRead = string;
-export type StorageName = string;
-export type RCloneConfig = {
-  [key: string]: number | (string | null) | boolean | object;
-};
-export type CloudStorage = ProjectId & {
-  storage_type?: StorageType;
-  name: StorageName;
-  configuration: RCloneConfig;
-  /** the source path to mount, usually starts with bucket/container name */
-  source_path: string;
-  /** the target path relative to the repository where the storage should be mounted */
-  target_path: string;
-  /** Whether this storage should be mounted readonly or not */
-  readonly?: boolean;
-};
-export type CloudStorageRead = ProjectId & {
-  storage_type?: StorageTypeRead;
-  name: StorageName;
-  configuration: RCloneConfig;
-  /** the source path to mount, usually starts with bucket/container name */
-  source_path: string;
-  /** the target path relative to the repository where the storage should be mounted */
-  target_path: string;
-  /** Whether this storage should be mounted readonly or not */
-  readonly?: boolean;
-};
-export type CloudStorageWithId = CloudStorage & {
-  storage_id: Ulid;
-};
-export type CloudStorageWithIdRead = CloudStorageRead & {
-  storage_id: Ulid;
 };
 export type RCloneOption = {
   /** name of the option */
@@ -236,54 +109,6 @@ export type RCloneOption = {
     | "Encoding"
     | "Bits";
 };
-export type CloudStorageGet = {
-  storage: CloudStorageWithId;
-  sensitive_fields?: RCloneOption[];
-};
-export type CloudStorageGetRead = {
-  storage: CloudStorageWithIdRead;
-  sensitive_fields?: RCloneOption[];
-};
-export type ErrorResponse = {
-  error: {
-    code: number;
-    detail?: string;
-    message: string;
-    /** Sentry trace ID for linking to corresponding log entries */
-    trace_id?: string;
-  };
-};
-export type CloudStorageUrl = ProjectId & {
-  storage_url: string;
-  name: StorageName;
-  /** the target path relative to the repository where the storage should be mounted */
-  target_path: string;
-  /** Whether this storage should be mounted readonly or not */
-  readonly?: boolean;
-};
-export type SourcePath = string;
-export type CloudStoragePatch = {
-  project_id?: GitlabProjectId | Ulid;
-  storage_type?: StorageType;
-  name?: StorageName;
-  configuration?: RCloneConfig;
-  source_path?: SourcePath;
-  /** the target path relative to the repository where the storage should be mounted */
-  target_path?: string;
-  /** Whether this storage should be mounted readonly or not */
-  readonly?: boolean;
-};
-export type CloudStoragePatchRead = {
-  project_id?: GitlabProjectId | Ulid;
-  storage_type?: StorageTypeRead;
-  name?: StorageName;
-  configuration?: RCloneConfig;
-  source_path?: SourcePath;
-  /** the target path relative to the repository where the storage should be mounted */
-  target_path?: string;
-  /** Whether this storage should be mounted readonly or not */
-  readonly?: boolean;
-};
 export type RCloneEntry = {
   /** Human readable name of the provider */
   name: string;
@@ -295,16 +120,23 @@ export type RCloneEntry = {
   options: RCloneOption[];
 };
 export type RCloneSchema = RCloneEntry[];
+export type ErrorResponse = {
+  error: {
+    code: number;
+    detail?: string;
+    message: string;
+    /** Sentry trace ID for linking to corresponding log entries */
+    trace_id?: string;
+  };
+};
 export type RCloneConfigValidate = {
   [key: string]: number | (string | null) | boolean | object;
 };
+export type RCloneConfig = {
+  [key: string]: number | (string | null) | boolean | object;
+};
+export type SourcePath = string;
 export const {
-  useGetStorageByStorageIdQuery,
-  usePutStorageByStorageIdMutation,
-  usePatchStorageByStorageIdMutation,
-  useDeleteStorageByStorageIdMutation,
-  useGetStorageQuery,
-  usePostStorageMutation,
   useGetStorageSchemaQuery,
   usePostStorageSchemaValidateMutation,
   usePostStorageSchemaTestConnectionMutation,

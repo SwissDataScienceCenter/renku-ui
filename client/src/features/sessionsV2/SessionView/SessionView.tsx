@@ -28,6 +28,7 @@ import {
   Database,
   ExclamationTriangleFill,
   FileCode,
+  InfoCircle,
   Link45deg,
   Pencil,
   PlayCircle,
@@ -53,6 +54,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, InfoAlert } from "~/components/Alert";
+import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -244,6 +246,7 @@ interface SessionViewProps {
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
   toggleEnvVariables?: () => void;
+  toggleLogsHistory?: () => void;
 }
 export function SessionView({
   id,
@@ -257,6 +260,7 @@ export function SessionView({
   toggleUpdate,
   toggleUpdateEnvironment,
   toggleEnvVariables,
+  toggleLogsHistory,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
@@ -324,9 +328,10 @@ export function SessionView({
   const launcherMenu = launcher && (
     <SessionV2Actions
       launcher={launcher}
-      toggleDelete={toggleDelete ?? undefined}
-      toggleUpdate={toggleUpdate ?? undefined}
-      toggleUpdateEnvironment={toggleUpdateEnvironment ?? undefined}
+      toggleDelete={toggleDelete}
+      toggleLogsHistory={toggleLogsHistory}
+      toggleUpdate={toggleUpdate}
+      toggleUpdateEnvironment={toggleUpdateEnvironment}
     />
   );
   const description = launcher?.description;
@@ -339,7 +344,13 @@ export function SessionView({
 
   const resourceDetails =
     !isLoadingLauncherResourceClass && launcherResourceRequests ? (
-      <SessionRowResourceRequests resourceRequests={launcherResourceRequests} />
+      <SessionRowResourceRequests
+        resourceRequests={launcherResourceRequests}
+        usageLimit={{
+          resourceClass: userLauncherResourceClass,
+          quotaEnforced: userLauncherResourceClass?.quota_enforced === true,
+        }}
+      />
     ) : (
       <p>This session launcher does not have a default resource class.</p>
     );
@@ -673,48 +684,67 @@ export function SessionView({
           )}
 
           {launcher && (
-            <Card>
-              <CardHeader
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "justify-content-between",
-                )}
-              >
-                <h3 className={cx("mb-0", "me-2")}>
-                  <Braces className={cx("me-1", "bi")} />
-                  Environment Variables
-                </h3>
-                <PermissionsGuard
-                  disabled={null}
-                  enabled={
-                    <>
-                      <Button
-                        color="outline-primary"
-                        id="modify-env-variables-button"
-                        onClick={toggleEnvVariables}
-                        size="sm"
-                        tabIndex={0}
-                      >
-                        <Pencil className="bi" />
-                      </Button>
-                      <UncontrolledTooltip target="modify-env-variables-button">
-                        Modify environment variables
-                      </UncontrolledTooltip>
-                    </>
-                  }
-                  requestedPermission="write"
-                  userPermissions={permissions}
-                />
-              </CardHeader>
-              <CardBody>
-                <p className="mb-2">
-                  Environment variables pass information into the{" "}
-                  {launcherCategory === "app" ? "app" : "session"}.
-                </p>
-                <EnvVariablesCard launcher={launcher} />
-              </CardBody>
-            </Card>
+            <>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className={cx("mb-0", "me-2")}>
+                    <Braces className={cx("me-1", "bi")} />
+                    Environment Variables
+                  </h3>
+                  <PermissionsGuard
+                    disabled={null}
+                    enabled={
+                      <>
+                        <Button
+                          color="outline-primary"
+                          id="modify-env-variables-button"
+                          onClick={toggleEnvVariables}
+                          size="sm"
+                          tabIndex={0}
+                        >
+                          <Pencil className="bi" />
+                        </Button>
+                        <UncontrolledTooltip target="modify-env-variables-button">
+                          Modify environment variables
+                        </UncontrolledTooltip>
+                      </>
+                    }
+                    requestedPermission="write"
+                    userPermissions={permissions}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <p className="mb-2">
+                    Environment variables pass information into the{" "}
+                    {launcherCategory === "app" ? "app" : "session"}.
+                  </p>
+                  <EnvVariablesCard launcher={launcher} />
+                </CardBody>
+              </Card>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className={cx("mb-0", "me-2")}>
+                    <InfoCircle className={cx("me-1", "bi")} />
+                    Info
+                  </h3>
+                </CardHeader>
+                <CardBody>
+                  <InternalIdField id={launcher.id} />
+                </CardBody>
+              </Card>
+            </>
           )}
         </div>
       </OffcanvasBody>

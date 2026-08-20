@@ -23,7 +23,6 @@ import type {
 } from "../dataConnectorsV2/api/data-connectors.api";
 import { hasSchemaAccessMode } from "../dataConnectorsV2/components/dataConnector.utils";
 import type { SessionStartDataConnectorConfiguration } from "../sessionsV2/startSessionOptionsV2.types";
-import type { CloudStorageGet } from "./api/projectCloudStorage.api";
 import {
   CLOUD_OPTIONS_OVERRIDE,
   CLOUD_OPTIONS_PROVIDER_OVERRIDE,
@@ -35,7 +34,6 @@ import {
   STORAGES_WITH_ACCESS_MODE,
 } from "./projectCloudStorage.constants";
 import type {
-  CloudStorage,
   CloudStorageCredential,
   CloudStorageDetails,
   CloudStorageOptionTypes,
@@ -46,19 +44,9 @@ import type {
 
 const LAST_POSITION = 1000;
 
-interface CloudStorageOptions extends RCloneOption {
-  requiredCredential: boolean;
-}
-
-type SensitiveFields =
-  | CloudStorage["sensitive_fields"]
-  | CloudStorageGet["sensitive_fields"];
-type StorageConfiguration =
-  | CloudStorage["storage"]["configuration"]
-  | CloudStorageGet["storage"]["configuration"];
 type StorageAndSensitiveFieldsDefinition = {
-  storage: { configuration: StorageConfiguration };
-  sensitive_fields?: SensitiveFields;
+  storage: { configuration: RCloneConfig };
+  sensitive_fields?: RCloneOption[];
 };
 
 export function parseCloudStorageConfiguration(
@@ -106,24 +94,16 @@ export function convertFromAdvancedConfig(
   return values.length ? values.join("\n") + "\n" : "";
 }
 
-export function getCredentialFieldDefinitions<
-  T extends StorageAndSensitiveFieldsDefinition,
->(
-  storageDefinition: T,
-):
-  | (T extends CloudStorageGet ? CloudStorageOptions : CloudStorageCredential)[]
-  | undefined {
+export function getCredentialFieldDefinitions(
+  storageDefinition: StorageAndSensitiveFieldsDefinition,
+): CloudStorageCredential[] | undefined {
   const { storage, sensitive_fields } = storageDefinition;
   const { configuration } = storage;
   const providedSensitiveFields = getProvidedSensitiveFields(configuration);
-  const result = sensitive_fields?.map((field) => ({
+  return sensitive_fields?.map((field) => ({
     ...field,
     requiredCredential: providedSensitiveFields.includes(field?.name || ""),
   }));
-  if (result == null) return result;
-  return result as (T extends CloudStorageGet
-    ? CloudStorageOptions
-    : CloudStorageCredential)[];
 }
 
 function getProvidedSensitiveFields(configuration: RCloneConfig): string[] {

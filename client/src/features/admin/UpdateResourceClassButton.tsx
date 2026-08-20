@@ -40,6 +40,11 @@ import {
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import { ResourceClassForm } from "./adminComputeResources.types";
+import {
+  buildResourceClassRemote,
+  poolRequiresIntegerCpu,
+} from "./adminComputeResources.utils";
+import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
 
 import styles from "./UpdateResourceClassButton.module.scss";
 
@@ -87,6 +92,8 @@ function UpdateResourceClassModal({
 }: UpdateResourceClassModalProps) {
   const { id } = resourceClass;
   const { quota } = resourcePool;
+  const requiresIntegerCpu = poolRequiresIntegerCpu(resourcePool.remote);
+  const cpuStep = requiresIntegerCpu ? 1 : 0.1;
 
   const [updateResourceClass, result] =
     usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation();
@@ -105,6 +112,12 @@ function UpdateResourceClassModal({
       max_storage: resourceClass.max_storage,
       memory: resourceClass.memory,
       name: resourceClass.name,
+      remote: {
+        systemName: resourceClass.remote?.system_name ?? "",
+        partition: resourceClass.remote?.partition ?? "",
+        forwardResourceValues:
+          resourceClass.remote?.forward_resource_values ?? false,
+      },
       tolerations: (resourceClass.tolerations ?? []).map((label) => ({
         label,
       })),
@@ -127,16 +140,23 @@ function UpdateResourceClassModal({
   const onSubmit = useCallback(
     (data: ResourceClassForm) => {
       const tolerations = data.tolerations.map(({ label }) => label);
+      const remote = buildResourceClassRemote(data.remote, requiresIntegerCpu);
       updateResourceClass({
         resourcePoolId: resourcePool.id,
         classId: `${resourceClass.id}`,
         resourceClassPatch: {
           ...data,
           tolerations,
+          remote,
         },
       });
     },
-    [resourceClass.id, resourcePool.id, updateResourceClass],
+    [
+      resourceClass.id,
+      resourcePool.id,
+      requiresIntegerCpu,
+      updateResourceClass,
+    ],
   );
 
   const onAddTolerationLabel = useCallback(() => {
@@ -163,6 +183,12 @@ function UpdateResourceClassModal({
       max_storage: resourceClass.max_storage,
       memory: resourceClass.memory,
       name: resourceClass.name,
+      remote: {
+        systemName: resourceClass.remote?.system_name ?? "",
+        partition: resourceClass.remote?.partition ?? "",
+        forwardResourceValues:
+          resourceClass.remote?.forward_resource_values ?? false,
+      },
       tolerations: (resourceClass.tolerations ?? []).map((label) => ({
         label,
       })),
@@ -223,12 +249,20 @@ function UpdateResourceClassModal({
                   className={cx(errors.cpu && "is-invalid")}
                   id={`updateResourceClassCpu-${id}`}
                   type="number"
-                  min={0.1}
-                  step={0.1}
+                  min={cpuStep}
+                  step={cpuStep}
                   {...field}
                 />
               )}
-              rules={{ min: 0.1, max: quota?.cpu }}
+              rules={{
+                min: cpuStep,
+                max: quota?.cpu,
+                validate: requiresIntegerCpu
+                  ? (value) =>
+                      Number.isInteger(Number(value)) ||
+                      "CPUs must be a whole number for firecrest pools"
+                  : undefined,
+              }}
             />
             <div className="invalid-feedback">Invalid value for CPUs</div>
           </div>
@@ -323,6 +357,17 @@ function UpdateResourceClassModal({
               )}
             />
           </div>
+
+          {requiresIntegerCpu && (
+            <div className="mb-3">
+              <div className="form-label">Firecrest options</div>
+              <ResourceClassFirecrestFields
+                control={control}
+                formPrefix="updateResourceClass"
+                name="remote"
+              />
+            </div>
+          )}
 
           <div className="mb-3">
             <div className="form-label">Tolerations</div>

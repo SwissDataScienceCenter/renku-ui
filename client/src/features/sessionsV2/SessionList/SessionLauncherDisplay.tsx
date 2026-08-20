@@ -17,8 +17,11 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 
+import SessionsPersistedLogsHistoryModal from "~/features/persistedLogs/SessionsPersistedLogsHistoryModal";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
@@ -49,12 +52,17 @@ export function SessionLauncherDisplay({
   launcher,
   project,
 }: SessionLauncherDisplayProps) {
+  const { params } = useContext(AppContext);
+  const persistedLogsEnabled =
+    params?.PERSISTED_LOGS_ENABLED ?? DEFAULT_APP_PARAMS.PERSISTED_LOGS_ENABLED;
+
   const { name } = launcher;
   const [isUpdateEnvironmentOpen, setIsUpdateEnvironmentOpen] = useState(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isShareLinkOpen, setIsShareLinkOpen] = useState(false);
   const [isEnvVariablesOpen, setEnvVariablesOpen] = useState(false);
+  const [isLogsHistoryOpen, setIsLogsHistoryOpen] = useState(false);
 
   const toggleUpdate = useCallback(() => {
     setIsUpdateOpen((open) => !open);
@@ -70,6 +78,9 @@ export function SessionLauncherDisplay({
   }, []);
   const toggleEnvVariables = useCallback(() => {
     setEnvVariablesOpen((open) => !open);
+  }, []);
+  const toggleLogsHistory = useCallback(() => {
+    setIsLogsHistoryOpen((open) => !open);
   }, []);
 
   const [hash, setHash] = useLocationHash();
@@ -143,6 +154,7 @@ export function SessionLauncherDisplay({
         toggleSessionView={toggleSessionView}
         openSessionViewWithJob={openSessionViewWithJob}
         toggleEnvVariables={toggleEnvVariables}
+        toggleLogsHistory={persistedLogsEnabled ? toggleLogsHistory : undefined}
       />
       <SessionView
         id={launcherHash}
@@ -156,6 +168,7 @@ export function SessionLauncherDisplay({
         toggleDelete={toggleDelete}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleEnvVariables={toggleEnvVariables}
+        toggleLogsHistory={persistedLogsEnabled ? toggleLogsHistory : undefined}
       />
       {launcher && (
         <>
@@ -186,6 +199,13 @@ export function SessionLauncherDisplay({
             launcher={launcher}
             toggle={toggleEnvVariables}
           />
+          {persistedLogsEnabled && (
+            <SessionsPersistedLogsHistoryModal
+              isOpen={isLogsHistoryOpen}
+              launcher={launcher}
+              toggle={toggleLogsHistory}
+            />
+          )}
         </>
       )}
     </>

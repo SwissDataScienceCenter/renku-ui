@@ -29,10 +29,12 @@ import dataConnectorFormSlice from "~/features/dataConnectorsV2/state/dataConnec
 import { displaySlice } from "~/features/display/displaySlice";
 import { loginStateSlice } from "~/features/loginHandler/loginState.slice";
 import { notificationsEmptyApi as notificationsApi } from "~/features/notifications/api/notifications.empty-api";
+import { persistedLogsEmptyApi as persistedLogsApi } from "~/features/persistedLogs/api/persistedLogs.empty-api";
 import { platformEmptyApi as platformApi } from "~/features/platform/api/platform-empty.api";
 import { statuspageEmptyApi as statuspageApi } from "~/features/platform/statuspage-api/statuspage-empty.api";
 import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import { repositoriesApi } from "~/features/repositories/api/repositories.api";
+import { resourceUsageEmptyApi as resourceUsageApi } from "~/features/resourceUsage/api/resourceUsage.empty-api";
 import { searchV2EmptyApi as searchV2Api } from "~/features/searchV2/api/searchV2-empty.api";
 import { searchV2Slice } from "~/features/searchV2/searchV2.slice";
 import { appsEmptyApi as appsApi } from "~/features/sessionsV2/api/apps.empty-api";
@@ -65,10 +67,12 @@ export const store = configureStore({
     [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
     [doiResolverApi.reducerPath]: doiResolverApi.reducer,
     [notificationsApi.reducerPath]: notificationsApi.reducer,
+    [persistedLogsApi.reducerPath]: persistedLogsApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectV2Api.reducerPath]: projectV2Api.reducer,
     [repositoriesApi.reducerPath]: repositoriesApi.reducer,
+    [resourceUsageApi.reducerPath]: resourceUsageApi.reducer,
     [searchV2Api.reducerPath]: searchV2Api.reducer,
     [sessionLaunchersV2Api.reducerPath]: sessionLaunchersV2Api.reducer,
     [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
@@ -90,10 +94,12 @@ export const store = configureStore({
       .concat(dataConnectorsApi.middleware)
       .concat(doiResolverApi.middleware)
       .concat(notificationsApi.middleware)
+      .concat(persistedLogsApi.middleware)
       .concat(platformApi.middleware)
       .concat(projectCloudStorageApi.middleware)
       .concat(projectV2Api.middleware)
       .concat(repositoriesApi.middleware)
+      .concat(resourceUsageApi.middleware)
       .concat(searchV2Api.middleware)
       .concat(sessionLaunchersV2Api.middleware)
       .concat(sessionsV2Api.middleware)

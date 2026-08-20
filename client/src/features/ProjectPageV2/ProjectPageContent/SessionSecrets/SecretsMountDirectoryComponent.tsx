@@ -58,14 +58,14 @@ export default function SecretsMountDirectoryComponent() {
   return (
     <>
       <InputGroup>
-        <Input type="text" value={mountDir} readOnly />
+        <Input disabled type="text" value={mountDir} readOnly />
         <PermissionsGuard
           disabled={null}
           enabled={
             <>
               <Button color="outline-primary" innerRef={ref} onClick={toggle}>
-                <Pencil className="bi" />
-                <span className="visually-hidden">Edit</span>
+                <Pencil className="me-1" />
+                <span>Edit</span>
               </Button>
               <UncontrolledTooltip target={ref}>
                 Edit the secrets mount location

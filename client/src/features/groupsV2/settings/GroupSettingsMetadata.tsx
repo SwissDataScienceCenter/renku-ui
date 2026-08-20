@@ -32,6 +32,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import InternalIdField from "~/components/InternalIdField";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
@@ -269,6 +270,8 @@ export default function GroupMetadataForm({ group }: GroupMetadataFormProps) {
           requestedPermission="write"
           userPermissions={permissions.permissions}
         />
+
+        <InternalIdField id={group.id} />
 
         <div className={cx("d-flex", "gap-2")}>
           <PermissionsGuard

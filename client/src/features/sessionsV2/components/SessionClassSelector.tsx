@@ -22,7 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import Select, {
   ClassNamesConfig,
@@ -40,8 +40,10 @@ import {
   type ResourceClassWithIdFiltered,
   type ResourcePoolWithIdFiltered,
 } from "~/features/sessionsV2/api/computeResources.api";
-import { useGetNotebooksVersionQuery } from "~/features/versions/versions.api";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { toHumanDuration } from "~/utils/helpers/DurationUtils";
+import { usageAvailableString } from "../session.utils";
 
 import styles from "./SessionClassSelector.module.scss";
 
@@ -139,14 +141,12 @@ const SessionClassSelector = ({
   onChange,
   resourcePools,
 }: SessionClassSelectorProps) => {
-  const { data: nbVersion } = useGetNotebooksVersionQuery();
+  const { params } = useContext(AppContext);
+  const cullingThresholds =
+    params?.CULLING_THRESHOLDS ?? DEFAULT_APP_PARAMS["CULLING_THRESHOLDS"];
   const options = useMemo(
-    () =>
-      makeGroupedOptions(
-        resourcePools,
-        nbVersion?.defaultCullingThresholds?.registered.idle,
-      ),
-    [resourcePools, nbVersion],
+    () => makeGroupedOptions(resourcePools, cullingThresholds.registered.idle),
+    [resourcePools, cullingThresholds],
   );
 
   return (
@@ -167,10 +167,8 @@ const SessionClassSelector = ({
         value={currentSessionClass}
       />
       <SessionClassThresholds
-        defaultHibernation={
-          nbVersion?.defaultCullingThresholds?.registered?.hibernation
-        }
-        defaultIdle={nbVersion?.defaultCullingThresholds?.registered?.idle}
+        defaultHibernation={cullingThresholds.registered.hibernation}
+        defaultIdle={cullingThresholds.registered.idle}
         currentSessionClass={currentSessionClass}
         resourcePools={resourcePools}
       />
@@ -276,22 +274,26 @@ interface OptionOrSingleValueContentProps {
 const OptionOrSingleValueContent = ({
   sessionClass,
 }: OptionOrSingleValueContentProps) => {
+  const canBeUsed =
+    sessionClass.matching &&
+    (sessionClass.usage_hours_remaining == null ||
+      sessionClass.usage_hours_remaining > 0);
   const labelClassName = cx(
     "text-wrap",
     "text-break",
     styles.label,
-    sessionClass.matching && styles.labelMatches,
+    canBeUsed && styles.labelMatches,
   );
   const detailValueClassName = cx(styles.detail, styles.detailValue);
   const detailLabelClassName = cx(styles.detail, styles.detailLabel);
+  const icon = canBeUsed ? faCheckCircle : faExclamationTriangle;
   return (
     <>
       <span className={labelClassName}>
-        <FontAwesomeIcon
-          icon={sessionClass.matching ? faCheckCircle : faExclamationTriangle}
-          fixedWidth
-        />{" "}
-        {sessionClass.name}
+        <FontAwesomeIcon icon={icon} /> {sessionClass.name}{" "}
+        <span className="text-muted">
+          {usageAvailableString(sessionClass.usage_hours_remaining, true)}
+        </span>
       </span>{" "}
       <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
       <span className={detailLabelClassName}>CPUs</span>{" "}

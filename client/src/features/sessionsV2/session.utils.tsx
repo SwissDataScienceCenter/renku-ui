@@ -16,6 +16,9 @@
  * limitations under the License
  */
 
+import cx from "classnames";
+import { Alarm, Stopwatch } from "react-bootstrap-icons";
+
 import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudStorage.utils";
 import { FaviconStatus } from "../display/display.types";
 import type {
@@ -139,6 +142,16 @@ export function isTruthy<T>(
   value: T | false | null | undefined,
 ): value is Exclude<T, false | null | undefined> {
   return Boolean(value);
+}
+
+/**
+ * PATCH uses `null` to clear command/args. An empty array is invalid
+ * and a missing field leaves the previous value unchanged.
+ */
+function jsonStringArrayOrNull(
+  value: string[] | null | undefined,
+): string[] | null {
+  return value?.length ? value : null;
 }
 
 export function getNewLauncherFormDefaultValues(
@@ -312,10 +325,9 @@ export function getFormattedEnvironmentValues(
       if (!argsFormatted.parsed) {
         return { success: false, error: "Invalid job args format" };
       }
-      if (argsFormatted.data == null || argsFormatted.data.length === 0) {
-        return { success: false, error: "Job args can't be empty" };
+      if (argsFormatted.data?.length) {
+        buildPayload.args = argsFormatted.data;
       }
-      buildPayload.args = argsFormatted.data;
     }
     return { success: true, data: buildPayload };
   }
@@ -370,8 +382,10 @@ export function getFormattedEnvironmentValuesForEdit(
   if (!result.success) {
     return result;
   }
-  const commandParsed = safeParseJSONStringArray(data.command);
-  const argsParsed = safeParseJSONStringArray(data.args);
+  const command = jsonStringArrayOrNull(
+    safeParseJSONStringArray(data.command).data,
+  );
+  const args = jsonStringArrayOrNull(safeParseJSONStringArray(data.args).data);
 
   if (
     environmentSelect === "global" ||
@@ -383,10 +397,8 @@ export function getFormattedEnvironmentValuesForEdit(
       ...result,
       data: {
         ...environment,
-        ...(commandParsed.data
-          ? { command: commandParsed.data }
-          : { command: null }),
-        ...(argsParsed.data ? { args: argsParsed.data } : { args: null }),
+        command,
+        args,
       },
     };
   }
@@ -404,7 +416,7 @@ export function getFormattedEnvironmentValuesForEdit(
       (value) => value === platform_,
     ) ?? BUILDER_PLATFORMS[0].value;
 
-  if (launcherCategory === "job" && !commandParsed.data?.length) {
+  if (launcherCategory === "job" && !command?.length) {
     return { success: false, error: "Job command is required" };
   }
 
@@ -413,8 +425,8 @@ export function getFormattedEnvironmentValuesForEdit(
     data: {
       environment_image_source: "build",
       environment_kind: "CUSTOM",
-      ...(commandParsed.data && { command: commandParsed.data }),
-      ...(argsParsed.data && { args: argsParsed.data }),
+      command,
+      args,
       build_parameters: {
         builder_variant,
         frontend_variant,
@@ -423,7 +435,7 @@ export function getFormattedEnvironmentValuesForEdit(
         context_dir: context_dir ?? "",
         platforms: [platform],
       },
-    },
+    } as SessionLauncherEnvironmentPatchParams,
   };
 }
 
@@ -723,6 +735,40 @@ export function isImageCompatibleWith(
   return imagePlatforms.some((p) => p === platform);
 }
 
+export function usageAvailableString(
+  usageAvailableHours: number | undefined,
+  short = false,
+): string | null {
+  if (usageAvailableHours == null) return null;
+  if (short) return `${usageAvailableHours}h available`;
+  return `${usageAvailableHours}h of compute time`;
+}
+
+export function UsageAvailable({
+  usageAvailableHours,
+}: {
+  usageAvailableHours: number;
+}) {
+  if (usageAvailableHours <= 0)
+    return (
+      <>
+        <Alarm fontSize={16} className={cx("flex-shrink-0", "me-2")} />
+        <span>
+          Usage quota for this resource pool <strong>has been reached</strong>
+        </span>
+      </>
+    );
+
+  return (
+    <>
+      <Stopwatch fontSize={16} className={cx("flex-shrink-0", "me-2")} />
+      <span>
+        <strong>{usageAvailableString(usageAvailableHours, false)}</strong>{" "}
+        until quota is used
+      </span>
+    </>
+  );
+}
 export function getLaunchActionTooltip(
   projectWritePermission: boolean,
   imageStatus: ImageStatus,

@@ -26,6 +26,7 @@ export interface AppParams {
   IMAGE_BUILDERS_ENABLED: boolean;
   BUILD_PRIVATE_REPO_BUILDS_ENABLED: boolean;
   APPS_ENABLED: boolean;
+  CULLING_THRESHOLDS: CullingThresholdsParams;
   KEYCLOAK_REALM: string;
   MAINTENANCE: string;
   PREVIEW_THRESHOLD: PreviewThresholdParams;
@@ -46,6 +47,8 @@ export interface AppParams {
   UPLOAD_THRESHOLD: UploadThresholdParams;
   USER_PREFERENCES_MAX_PINNED_PROJECTS: number;
   CONTACT_EMAIL: string;
+  PERSISTED_LOGS_ENABLED: boolean;
+  PERSISTED_LOGS_TTL_SECONDS: number;
 }
 
 export type AppParamsStrings = {
@@ -69,6 +72,17 @@ export type AppParamsNumbers = {
 export interface PreviewThresholdParams {
   hard: number;
   soft: number;
+}
+
+export interface CullingThresholdsParams {
+  registered: {
+    idle: number;
+    hibernation: number;
+  };
+  anonymous: {
+    idle: number;
+    hibernation: number;
+  };
 }
 
 export interface PrivacyBannerLayoutParams {

@@ -94,14 +94,10 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
     }
 
     versions(args?: VersionsArgs) {
-      const { core, notebooks, ui } = Cypress._.defaultsDeep({}, args, {
+      const { core, ui } = Cypress._.defaultsDeep({}, args, {
         core: {
           fixture: "version-core.json",
           name: "getCoreVersions",
-        },
-        notebooks: {
-          fixture: "version-notebooks.json",
-          name: "getNotebooksVersions",
         },
         ui: {
           fixture: "version-ui.json",
@@ -111,11 +107,6 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
 
       const coreResponse = { fixture: core.fixture };
       cy.intercept("GET", "/api/renku/versions", coreResponse).as(core.name);
-
-      const notebooksResponse = { fixture: notebooks.fixture };
-      cy.intercept("GET", "/api/notebooks/version", notebooksResponse).as(
-        notebooks.name,
-      );
 
       const uiResponse = { fixture: ui.fixture };
       cy.intercept("GET", "/ui-server/api/versions", uiResponse).as(ui.name);
@@ -154,7 +145,6 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
 
 interface VersionsArgs {
   core?: SimpleFixture;
-  notebooks?: SimpleFixture;
   ui?: SimpleFixture;
 }
 

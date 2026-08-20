@@ -40,6 +40,8 @@ async function main() {
       updateNamespaceV2Api();
     } else if (arg.trim() === "notifications") {
       updateNotificationsApi();
+    } else if (arg.trim() === "persistedLogs") {
+      updatePersistedLogsApi();
     } else if (arg.trim() === "platform") {
       updatePlatformApi();
     } else if (arg.trim() === "projectCloudStorage") {
@@ -48,6 +50,8 @@ async function main() {
       updateProjectV2Api();
     } else if (arg.trim() === "repositories") {
       updateRepositoriesApi();
+    } else if (arg.trim() === "resourceUsage") {
+      updateResourceUsageApi();
     } else if (arg.trim() === "searchV2") {
       updateSearchV2Api();
     } else if (arg.trim() === "sessionLaunchersV2") {
@@ -107,6 +111,13 @@ async function updateNamespaceV2Api() {
   });
 }
 
+async function updatePersistedLogsApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/persisted_logs/api.spec.yaml",
+    destFile: "src/features/persistedLogs/api/persistedLogs.openapi.json",
+  });
+}
+
 async function updatePlatformApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/platform/api.spec.yaml",
@@ -132,6 +143,13 @@ async function updateRepositoriesApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/repositories/api.spec.yaml",
     destFile: "src/features/repositories/api/repositories.openapi.json",
+  });
+}
+
+async function updateResourceUsageApi() {
+  updateApiFiles({
+    specFile: "components/renku_data_services/resource_usage/api.spec.yaml",
+    destFile: "src/features/resourceUsage/api/resourceUsage.openapi.json",
   });
 }
 

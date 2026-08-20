@@ -631,6 +631,15 @@ export type NodeAffinity = {
 export type NodeAffinityList = NodeAffinity[];
 export type IntegerId = number;
 export type QuotaEnforced = boolean;
+export type RemoteConfigurationFirecrestSystemName = string;
+export type RemoteConfigurationFirecrestPartition = string;
+export type RemoteClassConfigurationFirecrest = {
+  system_name?: RemoteConfigurationFirecrestSystemName;
+  partition?: RemoteConfigurationFirecrestPartition;
+  /** When true, Amalthea forwards the resource class CPU, memory, and GPU values to FirecREST. When false (the default), the HPC grid selects the resources; the class values are still used for display and quota matching.
+   */
+  forward_resource_values?: boolean;
+};
 export type ResourceClassWithId = {
   name: Name;
   default: DefaultFlag;
@@ -643,6 +652,7 @@ export type ResourceClassWithId = {
   node_affinities?: NodeAffinityList;
   id: IntegerId;
   quota_enforced?: QuotaEnforced;
+  remote?: RemoteClassConfigurationFirecrest;
 };
 export type ErrorResponse = {
   error: {
@@ -726,8 +736,6 @@ export type ResourceClassWithIdFiltered = ResourceClassWithId & {
 export type PublicFlag = boolean;
 export type RemoteConfigurationFirecrestProviderId = string;
 export type RemoteConfigurationFirecrestApiUrl = string;
-export type RemoteConfigurationFirecrestSystemName = string;
-export type RemoteConfigurationFirecrestPartition = string;
 export type RemoteConfigurationFirecrest = {
   /** Kind of remote resource pool */
   kind: "firecrest";
@@ -751,6 +759,7 @@ export type HibernationThreshold = number;
 export type HibernationWarningPeriod = number;
 export type RuntimePlatform = "linux/amd64" | "linux/arm64";
 export type CreditsUsed = number;
+export type CpuLimitFactor = number;
 export type ResourcePoolWithIdFiltered = {
   quota?: QuotaWithId;
   classes: ResourceClassWithIdFiltered[];
@@ -765,6 +774,7 @@ export type ResourcePoolWithIdFiltered = {
   cluster_id?: Ulid;
   platform: RuntimePlatform;
   credits_used?: CreditsUsed;
+  cpu_limit_factor?: CpuLimitFactor;
 };
 export type ResourcePoolsWithIdFiltered = ResourcePoolWithIdFiltered[];
 export type CpuFilter = number;
@@ -785,6 +795,7 @@ export type ResourcePoolWithId = {
     id: Ulid;
   };
   platform: RuntimePlatform;
+  cpu_limit_factor?: CpuLimitFactor;
 };
 export type QuotaWithOptionalId = {
   cpu: Cpu;
@@ -803,6 +814,7 @@ export type ResourceClass = {
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
+  remote?: RemoteClassConfigurationFirecrest;
 };
 export type ResourceClasses = ResourceClass[];
 export type ResourcePool = {
@@ -817,8 +829,10 @@ export type ResourcePool = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform?: RuntimePlatform;
+  cpu_limit_factor?: CpuLimitFactor;
 };
 export type ResourceClassesWithId = ResourceClassWithId[];
+export type RemoveCpuLimitFactor = number;
 export type ResourcePoolPut = {
   quota?: QuotaWithId;
   classes: ResourceClassesWithId;
@@ -831,6 +845,7 @@ export type ResourcePoolPut = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform: RuntimePlatform;
+  cpu_limit_factor?: CpuLimitFactor | RemoveCpuLimitFactor;
 };
 export type QuotaPatch = {
   cpu?: Cpu;
@@ -848,6 +863,7 @@ export type ResourceClassProperties = {
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
+  remote?: RemoteClassConfigurationFirecrest;
 };
 export type ResourceClassPatchWithId = ResourceClassProperties & {
   id: IntegerId;
@@ -884,6 +900,7 @@ export type ResourcePoolPatch = {
   hibernation_warning_period?: HibernationWarningPeriod;
   cluster_id?: Ulid;
   platform?: RuntimePlatform;
+  cpu_limit_factor?: CpuLimitFactor | RemoveCpuLimitFactor;
 };
 export type ResourceClassesWithIdResponse = ResourceClassWithId[];
 export type ResourceClassPatch = ResourceClassProperties;

@@ -16,18 +16,7 @@
  * limitations under the License.
  */
 
-import type {
-  CloudStorageGet,
-  RCloneEntry,
-  RCloneOption,
-} from "./api/projectCloudStorage.api";
-
-export interface CloudStorage extends Omit<
-  CloudStorageGet,
-  "sensitive_fields"
-> {
-  sensitive_fields?: { name: string; help: string }[];
-}
+import type { RCloneEntry, RCloneOption } from "./api/projectCloudStorage.api";
 
 type CloudStorageSensitiveFieldDefinition = Pick<RCloneOption, "name" | "help">;
 
